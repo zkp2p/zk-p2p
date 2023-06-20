@@ -1,0 +1,39 @@
+{
+  "name": "zkp2p-contracts",
+  "version": "1.0.0",
+  "description": "Contracts for the ZK Peer to Peer fiat on/off-ramp",
+  "main": "index.js",
+  "author": "bweick <brian.weickmann@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn clean && yarn compile && yarn build:ts:latest",
+    "build:ts:latest": "yarn typechain && yarn transpile",
+    "chain": "npx hardhat node",
+    "clean": "rm -f coverage.json; rm -rf .coverage_cache; rm -rf .coverage_contracts; rm -rf cache; rm -rf coverage; rm -rf typechain; rm -rf artifacts; rm -rf dist",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "coverage": "hardhat coverage",
+    "typechain": "hardhat typechain",
+    "transpile": "tsc"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-verify": "^1.0.0",
+    "@typechain/ethers-v6": "^0.4.0",
+    "@typechain/hardhat": "^8.0.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": ">=9.1.0",
+    "@types/node": ">=12.0.0",
+    "chai": "^4.2.0",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.15.0",
+    "hardhat-gas-reporter": "^1.0.8",
+    "solidity-coverage": "^0.8.0",
+    "ts-node": ">=8.0.0",
+    "typechain": "^8.1.0",
+    "typescript": ">=4.5.0"
+  }
+}
