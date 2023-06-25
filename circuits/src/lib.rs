@@ -975,7 +975,8 @@ mod test {
             )
             .unwrap();
         let email_bytes = {
-            let mut f = File::open("./build/demo.eml").unwrap();
+            // NOTE: Download a Venmo payment received email into the build folder. We don't include it in the repo due to privacy reasons
+            let mut f = File::open("./build/venmo_receive_payment.eml").unwrap();
             let mut buf = Vec::new();
             f.read_to_end(&mut buf).unwrap();
             buf

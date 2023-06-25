@@ -1,12 +1,24 @@
-# halo2-zk-email
+# ZKP2P Halo2 Circuits
 
-**Email verification circuit in halo2.** Documentation coming soon.
+**Forked from [Halo2 ZK Email](https://github.com/zkemail/halo2-zk-email)**
 
 ## Disclaimer
-DO NOT USE THIS LIBRARY IN PRODUCTION. At this point, this is under development not audited. It has known and unknown bugs and security flaws.
+THIS REPO IS UNDER HEAVY DEVELOPMENT, DO NOT USE IN PRODUCTION. At this point, this is under development not audited. It has known and unknown bugs and security flaws.
 
-## Features
-`halo2-zk-email` provides a library and a command-line interface for an email verification circuit compatible with the [halo2 library developed by privacy-scaling-explorations team](https://github.com/privacy-scaling-explorations/halo2).
+## Overview
+The ZKP2P halo2 circuits generate proofs of email for P2P payment networks. We have implemented the following circuits:
+
+**Halo2 Circuit - Offramper Receive Payment Circuit**
+Main circuit that offramper generates a proof of Venmo payment received email
+1. Verifies the DKIM signature (RSA, SHA256)
+2. Extracts Venmo payer ID, time of payment from email
+3. Houses nullifier to prevent replay attacks
+4. Contains other order information to tie a proof to an order ID to prevent frontrunning
+
+| Regex Config | Description |
+| -------- | -------- |
+| Onramper Regex | Extracts the Venmo payer ID from the payment received email body |
+| Timestamp Regex | Extracts timestamp from venmo payment received email header |
 
 ## Requirement
 - rustc 1.68.0-nightly (0468a00ae 2022-12-17)
@@ -19,16 +31,8 @@ brew tap ethereum/ethereum
 brew install solidity
 ```
 
-## Installation and Build
-You can install and build our library with the following commands.
-```bash
-git clone https://github.com/zkemail/halo2-zk-email.git
-cd halo2-zk-email
-cargo build --release
-```
-
 ## Description
-To generate a sample circuit and it's non aggregated EVM verifier, do:
+To generate any ZKP2P circuits and it's non aggregated EVM verifier:
 ```bash
 cargo build --release
 cargo run --release -- gen-params --k 18
