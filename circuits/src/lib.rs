@@ -958,11 +958,11 @@ mod test {
                     &[Path::new("./test_data/bodyhash_substr_0.txt").to_path_buf()],
                 )
                 .unwrap();
-            let regex_from_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/from_defs.json").unwrap()).unwrap();
-            regex_from_decomposed
+            let regex_to_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/to_defs.json").unwrap()).unwrap();
+            regex_to_decomposed
                 .gen_regex_files(
-                    &Path::new("./test_data/from_allstr.txt").to_path_buf(),
-                    &[Path::new("./test_data/from_substr_0.txt").to_path_buf()],
+                    &Path::new("./test_data/to_allstr.txt").to_path_buf(),
+                    &[Path::new("./test_data/to_substr_0.txt").to_path_buf()],
                 )
                 .unwrap();
             let regex_body_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/test_generated_paypal_send_body_defs.json").unwrap()).unwrap();
@@ -982,6 +982,7 @@ mod test {
             let private_key = cfdkim::DkimPrivateKey::Rsa(_private_key);
             let message = concat!(
                 "From: alice@zkemail.com\r\n",
+                "To: bob@zkemail.com\r\n",
                 "\r\n",
                 "\r\n8.0&xt=3D104038%2C124817\" target=3D\"_blank\"><span>8ML446422N055381A</span><=\r\ns",
                 "\r\n"
@@ -990,7 +991,7 @@ mod test {
             let email = parse_mail(message).unwrap();
             let logger = slog::Logger::root(slog::Discard, slog::o!());
             let signer = SignerBuilder::new()
-                .with_signed_headers(&["From"])
+                .with_signed_headers(&["From", "To"])
                 .unwrap()
                 .with_private_key(private_key)
                 .with_selector("default")
@@ -1112,11 +1113,11 @@ mod test {
                 &[Path::new("./test_data/bodyhash_substr_0.txt").to_path_buf()],
             )
             .unwrap();
-        let regex_from_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/from_defs.json").unwrap()).unwrap();
-        regex_from_decomposed
+        let regex_to_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/to_defs.json").unwrap()).unwrap();
+        regex_to_decomposed
             .gen_regex_files(
-                &Path::new("./test_data/from_allstr.txt").to_path_buf(),
-                &[Path::new("./test_data/from_substr_0.txt").to_path_buf()],
+                &Path::new("./test_data/to_allstr.txt").to_path_buf(),
+                &[Path::new("./test_data/to_substr_0.txt").to_path_buf()],
             )
             .unwrap();
         let regex_body_decomposed: DecomposedRegexConfig = serde_json::from_reader(File::open("./test_data/test_ex_paypal_send_body_defs.json").unwrap()).unwrap();
@@ -1138,6 +1139,7 @@ mod test {
 
         let logger = slog::Logger::root(slog::Discard, slog::o!());
         let public_key = resolve_public_key(&logger, &email_bytes).await.unwrap();
+        println!("publick {:?}", public_key);
         let public_key = match public_key {
             cfdkim::DkimPublicKey::Rsa(pk) => pk,
             _ => panic!("not supportted public key type."),
