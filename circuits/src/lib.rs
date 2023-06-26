@@ -984,7 +984,7 @@ mod test {
                 "From: alice@zkemail.com\r\n",
                 "To: bob@zkemail.com\r\n",
                 "\r\n",
-                "\r\n8.0&xt=3D104038%2C124817\" target=3D\"_blank\"><span>8ML446422N055381A</span><=\r\ns",
+                "\r\n8.0&xt=3D104038%2C124817\" target=3D\"_blank\"><span>8ML446422N055381A</span><=\r\n",
                 "\r\n"
             )
             .as_bytes();
