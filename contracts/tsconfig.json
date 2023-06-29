@@ -12,6 +12,11 @@
     "declarationDir": "./dist/types",
     "declarationMap": true,
     "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": ["utils/*"],
+      "@typechain/*": ["typechain/*"]
+    }
   },
   "include": [
     "index.ts",
