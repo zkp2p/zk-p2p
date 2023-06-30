@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { Account } from "./types";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 const provider = ethers.provider;
 
