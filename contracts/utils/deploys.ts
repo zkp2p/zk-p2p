@@ -1,4 +1,4 @@
-import { BigNumberish, Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 
 import { Address } from "@utils/types";
 
@@ -17,7 +17,7 @@ export default class DeployHelper {
     return await new Ramp__factory(this._deployerSigner).deploy(owner, usdc);
   }
 
-  public async deployUSDCMock(mintAmount: BigInt, name: string, symbol: string): Promise<USDCMock> {
+  public async deployUSDCMock(mintAmount: BigNumber, name: string, symbol: string): Promise<USDCMock> {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
   }
 }
