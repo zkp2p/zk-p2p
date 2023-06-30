@@ -1,7 +1,6 @@
 import "module-alias/register";
 
-import { ethers } from "ethers";
-import { JsonRpcProvider } from "ethers";
+import { ethers } from "hardhat";
 
 import {
   Address,
@@ -17,7 +16,8 @@ import {
 import { Blockchain } from "@utils/common";
 
 const expect = getWaffleExpect();
-const blockchain = new Blockchain(new JsonRpcProvider());
+
+const blockchain = new Blockchain(ethers.provider);
 
 describe.only("Ramp", () => {
   let owner: Account;
@@ -33,8 +33,20 @@ describe.only("Ramp", () => {
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
-    console.log(ethers.parseUnits("1000000000", 6));
-    usdc = await deployer.deployUSDCMock(ethers.parseUnits("1000000000", 6), "USDC", "USDC");
-    ramp = await deployer.deployRamp(owner.address, await usdc.getAddress());
+    console.log(ethers.utils.parseUnits("1000000000", 6));
+    usdc = await deployer.deployUSDCMock(ethers.utils.parseUnits("1000000000", 6), "USDC", "USDC");
+    ramp = await deployer.deployRamp(owner.address, await usdc.address);
+  });
+
+  describe("#constructor", async () => {
+    it("should set the correct owner", async () => {
+      const ownerAddress: Address = await ramp.owner();
+      expect(ownerAddress).to.eq(owner.address);
+    });
+
+    it("should set the correct usdc", async () => {
+      const usdcAddress: Address = await ramp.usdc();
+      expect(usdcAddress).to.eq(usdc.address);
+    });
   });
 });

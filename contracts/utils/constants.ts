@@ -1,6 +1,6 @@
-import { ZeroAddress } from "ethers";
+import { BigNumber, constants } from "ethers";
 
-export const ADDRESS_ZERO = ZeroAddress;
-export const ZERO = BigInt(0);
-export const ONE = BigInt(1);
-export const ONE_DAY_IN_SECONDS = BigInt(86400);
+export const ADDRESS_ZERO = constants.AddressZero;
+export const ZERO = constants.Zero;
+export const ONE = constants.One;
+export const ONE_DAY_IN_SECONDS = BigNumber.from(86400);

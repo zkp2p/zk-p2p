@@ -1,10 +1,10 @@
-import { BrowserProvider, JsonRpcProvider } from "ethers";
+import { providers } from "ethers";
 
 export class Blockchain {
-  public _provider: BrowserProvider | JsonRpcProvider;
+  public _provider: providers.Web3Provider | providers.JsonRpcProvider;
   private _snapshotId: number;
 
-  constructor(_provider: BrowserProvider | JsonRpcProvider) {
+  constructor(_provider: providers.Web3Provider | providers.JsonRpcProvider) {
     this._provider = _provider;
 
     this._snapshotId = 0;
@@ -29,7 +29,7 @@ export class Blockchain {
     await this.sendJSONRpcRequestAsync("evm_revert", ["0x1"]);
   }
 
-  public async getChainId(): Promise<BigInt> {
+  public async getChainId(): Promise<number> {
     return (await this._provider.getNetwork()).chainId;
   }
 

@@ -2,11 +2,11 @@
 import chai from "chai";
 import { solidity } from "ethereum-waffle";
 import { Blockchain } from "../common";
-import { JsonRpcProvider } from "ethers";
+import { ethers } from "hardhat";
 
 chai.use(solidity);
 
-const provider = new JsonRpcProvider();
+const provider = ethers.provider;
 
 // HARDHAT / WAFFLE
 export const getWaffleExpect = (): Chai.ExpectStatic => {
