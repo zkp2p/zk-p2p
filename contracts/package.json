@@ -11,7 +11,9 @@
     "chain": "npx hardhat node",
     "clean": "rm -f coverage.json; rm -rf .coverage_cache; rm -rf .coverage_contracts; rm -rf cache; rm -rf coverage; rm -rf typechain; rm -rf artifacts; rm -rf dist",
     "compile": "hardhat compile",
-    "test": "hardhat test",
+    "test": "npx hardhat test",
+    "test:clean": "yarn build && yarn test",
+    "test:fast": "NO_COMPILE=true TS_NODE_TRANSPILE_ONLY=1 yarn test --no-compile",
     "coverage": "hardhat coverage",
     "typechain": "hardhat typechain",
     "transpile": "tsc"

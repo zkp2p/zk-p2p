@@ -1,4 +1,5 @@
-import { providers } from "ethers";
+import { ZERO } from "@utils/constants";
+import { BigNumber, providers } from "ethers";
 
 export class Blockchain {
   public _provider: providers.Web3Provider | providers.JsonRpcProvider;
@@ -38,9 +39,9 @@ export class Blockchain {
     await this.sendJSONRpcRequestAsync("evm_mine", []);
   }
 
-  public async getCurrentTimestamp(): Promise<BigInt> {
+  public async getCurrentTimestamp(): Promise<BigNumber> {
     const block = await this._provider.getBlock(await this._provider.getBlockNumber());
-    return block ? BigInt(block.timestamp) : BigInt(0);
+    return block ? BigNumber.from(block.timestamp) : ZERO;
   }
 
   public async setNextBlockTimestamp(timestamp: number): Promise<any> {
@@ -53,9 +54,9 @@ export class Blockchain {
     }
   }
 
-  public async getLatestBlockNumber(): Promise<BigInt> {
+  public async getLatestBlockNumber(): Promise<BigNumber> {
     const block = await this._provider.getBlock("latest");
-    return block ? BigInt(block.number) : BigInt(0);
+    return block ? BigNumber.from(block.number) : ZERO;
   }
 
   private async sendJSONRpcRequestAsync(method: string, params: any[]): Promise<any> {
