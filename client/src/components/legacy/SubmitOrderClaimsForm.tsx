@@ -5,15 +5,15 @@ import { useSignMessage } from 'wagmi'
 import { Button } from "./Button";
 import { Col, SubHeader } from "./Layout";
 import { OrderTable } from './OrderTable';
-import { NumberedStep } from "../components/NumberedStep";
+import { NumberedStep } from "./NumberedStep";
 
-import { OnRampOrderClaim } from "../helpers/types";
+import { OnRampOrderClaim } from "../../helpers/types";
 import {
   decryptMessageWithAccount,
   generateAccountFromSignature
-} from '../helpers/messagEncryption';
-import { generateVenmoIdHash } from "../helpers/venmoHash";
-import { formatAmountsForUSDC } from '../helpers/tableFormatters';
+} from '../../helpers/messagEncryption';
+import { generateVenmoIdHash } from "../../helpers/venmoHash";
+import { formatAmountsForUSDC } from '../../helpers/tableFormatters';
 
 
 interface SubmitOrderClaimsFormProps {

@@ -4,17 +4,17 @@ import { useMount } from "react-use";
 
 // @ts-ignore
 import styled from "styled-components";
-import { Button } from "../components/Button";
-import { ClaimOrderForm } from "../components/ClaimOrderForm";
-import { Col, Header, SubHeader } from "../components/Layout";
-import { StyledLink } from "../components/StyledLink";
-import { NewOrderForm } from "../components/NewOrderForm";
-import { NumberedStep } from "../components/NumberedStep";
-import { OrderTable } from '../components/OrderTable';
-import { SubmitOrderClaimsForm } from "../components/SubmitOrderClaimsForm";
-import { SubmitOrderGenerateProofForm } from "../components/SubmitOrderGenerateProofForm";
-import { SubmitOrderOnRampForm } from "../components/SubmitOrderOnRampForm";
-import { TopBanner } from "../components/TopBanner";
+import { Button } from "../components/legacy/Button";
+import { ClaimOrderForm } from "../components/legacy/ClaimOrderForm";
+import { Col, Header, SubHeader } from "../components/legacy/Layout";
+import { StyledLink } from "../components/legacy/StyledLink";
+import { NewOrderForm } from "../components/legacy/NewOrderForm";
+import { NumberedStep } from "../components/legacy/NumberedStep";
+import { OrderTable } from '../components/legacy/OrderTable';
+import { SubmitOrderClaimsForm } from "../components/legacy/SubmitOrderClaimsForm";
+import { SubmitOrderGenerateProofForm } from "../components/legacy/SubmitOrderGenerateProofForm";
+import { SubmitOrderOnRampForm } from "../components/legacy/SubmitOrderOnRampForm";
+import { TopBanner } from "../components/legacy/TopBanner";
 
 import {
   Chain,
