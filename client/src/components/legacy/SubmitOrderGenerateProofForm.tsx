@@ -5,15 +5,15 @@ import styled from 'styled-components';
 import { Button } from "./Button";
 import { Col, SubHeader } from "./Layout";
 import { LabeledTextArea } from './LabeledTextArea';
-import { ProgressBar } from "../components/ProgressBar";
-import { NumberedStep } from "../components/NumberedStep";
+import { ProgressBar } from "./ProgressBar";
+import { NumberedStep } from "./NumberedStep";
 
-import { downloadProofFiles, generateProof } from "../helpers/zkp";
-import { insert13Before10 } from "../scripts/generate_input";
+import { downloadProofFiles, generateProof } from "../../helpers/zkp";
+import { insert13Before10 } from "../../scripts/generate_input";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
-import { OnRampOrder, OnRampOrderClaim } from "../helpers/types";
+import { OnRampOrder, OnRampOrderClaim } from "../../helpers/types";
 
-const generate_input = require("../scripts/generate_input");
+const generate_input = require("../../scripts/generate_input");
 
 
 interface SubmitOrderGenerateProofFormProps {

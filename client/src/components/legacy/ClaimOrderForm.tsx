@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { Button } from "../components/Button";
-import { Col, SubHeader } from "../components/Layout";
-import { NumberedStep } from "../components/NumberedStep";
-import { ReadOnlyInput } from "../components/ReadOnlyInput";
-import { SingleLineInput } from "../components/SingleLineInput";
-import { StyledLink } from "../components/StyledLink";
+import { Button } from "./Button";
+import { Col, SubHeader } from "./Layout";
+import { NumberedStep } from "./NumberedStep";
+import { ReadOnlyInput } from "./ReadOnlyInput";
+import { SingleLineInput } from "./SingleLineInput";
+import { StyledLink } from "./StyledLink";
 
-import { encryptMessage } from "../helpers/messagEncryption";
-import { generateVenmoIdHash } from "../helpers/venmoHash";
+import { encryptMessage } from "../../helpers/messagEncryption";
+import { generateVenmoIdHash } from "../../helpers/venmoHash";
 
 
 interface ClaimOrderFormProps {

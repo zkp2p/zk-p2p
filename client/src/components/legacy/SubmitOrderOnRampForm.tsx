@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Button } from "./Button";
 import { Col, SubHeader } from "./Layout";
 import { LabeledTextArea } from './LabeledTextArea';
-import { NumberedStep } from "../components/NumberedStep";
+import { NumberedStep } from "./NumberedStep";
 
 
 interface SubmitOrderOnRampFormProps {

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSignMessage } from 'wagmi'
 
-import { Button } from "../components/Button";
-import { Col, SubHeader } from "../components/Layout";
-import { NumberedStep } from "../components/NumberedStep";
-import { SingleLineInput } from "../components/SingleLineInput";
-import { generateAccountFromSignature, getPublicKeyFromAccount } from '../helpers/messagEncryption';
+import { Button } from "./Button";
+import { Col, SubHeader } from "./Layout";
+import { NumberedStep } from "./NumberedStep";
+import { SingleLineInput } from "./SingleLineInput";
+import { generateAccountFromSignature, getPublicKeyFromAccount } from '../../helpers/messagEncryption';
 
 
 interface NewOrderFormProps {
