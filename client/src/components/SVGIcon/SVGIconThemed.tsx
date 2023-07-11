@@ -51,7 +51,7 @@ export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
   
   const color = isLightMode
     ? `rgba(51, 51, 51, ${lightOpacity})`
-    : `rgba(255, 255, 255, ${darkOpacity})`;
+    : `rgba(23, 23, 23, ${darkOpacity})`;
   styles.backgroundColor = color;
 
   return (
