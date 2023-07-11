@@ -25,7 +25,7 @@ import {
   usePrepareContractWrite,
 } from "wagmi";
 
-import { abi } from "../helpers/ramp.abi";
+import { abi } from "../helpers/abi/ramp.abi";
 import { contractAddresses } from "../helpers/deployed_addresses";
 import { OnRampOrder, OnRampOrderClaim } from "../helpers/types";
 import { UINT256_MAX } from "../helpers/constants";
