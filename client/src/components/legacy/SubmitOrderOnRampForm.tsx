@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Button } from "./Button";
+import { Button } from "../Button/Button";
 import { Col, SubHeader } from "./Layout";
 import { LabeledTextArea } from './LabeledTextArea';
 import { NumberedStep } from "./NumberedStep";

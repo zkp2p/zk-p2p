@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { Toggle } from "../components/Toggle/Toggle";
+import { Button } from "../components/Button/Button";
 
 
 export const Swap: React.FC<{}> = (props) => {
@@ -8,6 +9,9 @@ export const Swap: React.FC<{}> = (props) => {
     <Container>
       <Main>
         <Toggle />
+        <Button>
+          Swap
+        </Button>
       </Main>
     </Container>
   );

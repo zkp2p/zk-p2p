@@ -4,7 +4,7 @@ import { useMount } from "react-use";
 
 // @ts-ignore
 import styled from "styled-components";
-import { Button } from "../components/legacy/Button";
+import { Button } from "../components/Button/Button";
 import { ClaimOrderForm } from "../components/legacy/ClaimOrderForm";
 import { Col, Header, SubHeader } from "../components/legacy/Layout";
 import { StyledLink } from "../components/legacy/StyledLink";

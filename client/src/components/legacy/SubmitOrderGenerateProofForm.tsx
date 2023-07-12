@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAsync, useUpdateEffect } from "react-use";
 import styled from 'styled-components';
 
-import { Button } from "./Button";
+import { Button } from "../Button/Button";
 import { Col, SubHeader } from "./Layout";
 import { LabeledTextArea } from './LabeledTextArea';
 import { ProgressBar } from "./ProgressBar";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSignMessage } from 'wagmi'
 
-import { Button } from "./Button";
+import { Button } from "../Button/Button";
 import { Col, SubHeader } from "./Layout";
 import { OrderTable } from './OrderTable';
 import { NumberedStep } from "./NumberedStep";
