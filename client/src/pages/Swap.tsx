@@ -1,10 +1,14 @@
 import styled from "styled-components";
 
+import { Toggle } from "../components/Toggle/Toggle";
+
 
 export const Swap: React.FC<{}> = (props) => {
   return (
     <Container>
-      Swap
+      <Main>
+        <Toggle />
+      </Main>
     </Container>
   );
 };
@@ -42,5 +46,11 @@ const Container = styled.div`
       width: 500px;
     }
   }
+`;
+
+const Main = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 `;
 
