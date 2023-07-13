@@ -1,10 +1,18 @@
 import styled from "styled-components";
 
+import { Toggle } from "../components/Toggle/Toggle";
+import { Button } from "../components/Button/Button";
+
 
 export const Swap: React.FC<{}> = (props) => {
   return (
     <Container>
-      Swap
+      <Main>
+        <Toggle />
+        <Button>
+          Swap
+        </Button>
+      </Main>
     </Container>
   );
 };
@@ -42,5 +50,11 @@ const Container = styled.div`
       width: 500px;
     }
   }
+`;
+
+const Main = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 `;
 
