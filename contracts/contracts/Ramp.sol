@@ -87,6 +87,14 @@ contract Ramp is Ownable {
     }
 
     /* ============ External Functions ============ */
+
+    /**
+     * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
+     * sender of the transaction.
+     *
+     * @param _pubInputs The public inputs of the proof
+     * @param _proof The proof
+     */
     function register(uint256[] memory _pubInputs, bytes memory _proof) external {
         bytes32 accountId = bytes32(_pubInputs[0]); // VALIDATE THIS IS THE CORRECT PUBLIC INPUT
         require(accountIds[accountId] == address(0), "Account already registered");
@@ -95,6 +103,16 @@ contract Ramp is Ownable {
         emit AccountRegistered(accountId, msg.sender);
     }
 
+    /**
+     * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. If a deposit by the same user
+     * with the same conversion rate and convenience fee already exists then the deposit amount is added to the existing deposit. User
+     * must approve the contract to transfer the deposit amount of USDC.
+     *
+     * @param _venmoId The venmo id of the account owner
+     * @param _depositAmount The amount of USDC to off-ramp
+     * @param _receiveAmount The amount of USD to receive
+     * @param _convenienceFee The amount of USDC per on-ramp transaction available to be claimed by off-ramper
+     */
     function offRamp(
         bytes32 _venmoId,
         uint256 _depositAmount,
@@ -185,9 +203,7 @@ contract Ramp is Ownable {
 
         // Validate proof
 
-        bytes32[] memory prunableIntents = new bytes32[](1);
-        prunableIntents[0] = _intentHash;
-        _pruneIntents(deposit, prunableIntents);
+        _pruneIntent(deposit, _intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
 
