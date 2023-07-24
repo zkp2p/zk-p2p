@@ -1,6 +1,7 @@
 import "module-alias/register";
 
 import { ethers } from "hardhat";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 import {
   Address,
@@ -15,7 +16,7 @@ import {
 } from "@utils/test/index";
 import { Blockchain, ether, usdc } from "@utils/common";
 import { BigNumber } from "ethers";
-import { ZERO, ZERO_BYTES32 } from "@utils/constants";
+import { ZERO, ZERO_BYTES32, ADDRESS_ZERO } from "@utils/constants";
 import { calculateDepositHash, calculateIntentHash } from "@utils/protocolUtils";
 import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
@@ -23,7 +24,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("Ramp", () => {
+describe("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -162,7 +163,7 @@ describe.only("Ramp", () => {
         );
       });
 
-      describe("when the deposit hash already exists", async () => {
+      describe("when the deposit hash already exists and no intents have been submitted", async () => {
         beforeEach(async () => {
           await subject();
         });
@@ -176,6 +177,31 @@ describe.only("Ramp", () => {
           const deposit = await ramp.getDeposit(depositHash);
 
           expect(deposit.remainingDeposits).to.eq(subjectDepositAmount.mul(2));
+        });
+      });
+
+      describe("when the deposit hash already exists but no deposits remain and there's an outstanding intent", async () => {
+        beforeEach(async () => {
+          await subject();
+
+          const conversionRate = subjectDepositAmount.mul(ether(1)).div(subjectReceiveAmount);
+          const depositHash = calculateDepositHash(subjectVenmoId, conversionRate, subjectConvenienceFee);
+          await ramp.connect(onRamper.wallet).signalIntent(
+            ethers.utils.formatBytes32String("proofOfVenmoTwo"),
+            depositHash,
+            subjectDepositAmount
+          );
+        });
+
+        it("should update the remainingDeposits param", async () => {
+          await subject();
+
+          const conversionRate = subjectDepositAmount.mul(ether(1)).div(subjectReceiveAmount);
+          const depositHash = calculateDepositHash(subjectVenmoId, conversionRate, subjectConvenienceFee);
+
+          const deposit = await ramp.getDeposit(depositHash);
+
+          expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         });
       });
 
@@ -365,6 +391,19 @@ describe.only("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Signaled amount must be greater than 0");
+        });
+      });
+
+      describe("when the intent has already been submitted", async () => {
+        beforeEach(async () => {
+          await subject();
+          const lastTimestamp = await time.latest();
+
+          await time.setNextBlockTimestamp(lastTimestamp);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent already exists");
         });
       });
       
@@ -721,6 +760,53 @@ describe.only("Ramp", () => {
           subjectCaller = onRamper;
         });
 
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Sender must be the account owner");
+        });
+      });
+    });
+
+    describe("#setAccountOwner", async () => {
+      let subjectVenmoId: string;
+      let subjectNewOwner: Address;
+      let subjectCaller: Account;
+  
+      beforeEach(async () => {
+        subjectVenmoId = ethers.utils.formatBytes32String("proofOfVenmo");
+        subjectNewOwner = owner.address;;
+        subjectCaller = offRamper;
+      });
+  
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setAccountOwner(subjectVenmoId, subjectNewOwner);
+      }
+  
+      it("should update the owner", async () => {
+        await subject();
+  
+        const newOwnerAddress = await ramp.accountIds(subjectVenmoId);
+        expect(newOwnerAddress).to.eq(subjectNewOwner);
+      });
+  
+      it("should emit an AccountOwnerUpdated event", async () => {
+        await expect(subject()).to.emit(ramp, "AccountOwnerUpdated").withArgs(subjectVenmoId, subjectNewOwner);
+      });
+  
+      describe("when the new owner is the zero address", async () => {
+        beforeEach(async () => {
+          subjectNewOwner = ADDRESS_ZERO;
+        });
+  
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("New owner cannot be zero address");
+        });
+      });
+  
+      describe("when the caller is not the address associated with the account", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+  
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Sender must be the account owner");
         });

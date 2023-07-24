@@ -248,6 +248,8 @@ contract Ramp is Ownable {
         require(_newOwner != address(0), "New owner cannot be zero address");
 
         accountIds[_venmoId] = _newOwner;
+
+        emit AccountOwnerUpdated(_venmoId, _newOwner);
     }
 
     /* ============ External View Functions ============ */
