@@ -8,17 +8,14 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 
 
-export default function Pool() {
+export default function SwapModal() {
   return (
       <ComponentWrapper>
         <Column>
           <TitleRow padding="0">
             <ThemedText.HeadlineMedium>
-              Pool
+              Swap
             </ThemedText.HeadlineMedium>
-            <Button>
-              + New Position
-            </Button>
           </TitleRow>
 
           <MainContentWrapper>

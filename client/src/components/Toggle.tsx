@@ -1,30 +1,31 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
 
-interface ToggleButtonProps {
-  selected: boolean;
+interface ToggleProps {
+  isSwapTab: boolean;
+  handleToggle: (target: string) => void;
 }
 
-export const Toggle: React.FC = () => {
-  const [isSwapTab, setIsSwapTab] = useState(true);
+interface ToggleButtonProps {
+  isSwapTab: boolean;
+}
 
-  const toggleTab = (target: string) => {
-    const tab = (typeof target === 'string' && target) || 'Swap';
-    setIsSwapTab(tab === 'Swap');
-  };
-
+export const Toggle: React.FC<ToggleProps> = ({
+  handleToggle,
+  isSwapTab
+}) => {
   return (
     <ToggleContainer>
       <ToggleButton
-        onClick={() => toggleTab('Swap')}
-        selected={isSwapTab}
+        onClick={() => handleToggle('Swap')}
+        isSwapTab={isSwapTab}
       >
         Swap
       </ToggleButton>
       <ToggleButton
-        onClick={() => toggleTab('Pool')}
-        selected={!isSwapTab}
+        onClick={() => handleToggle('Pool')}
+        isSwapTab={!isSwapTab}
       >
         Pool
       </ToggleButton>
@@ -50,7 +51,7 @@ const ToggleButton = styled.span<ToggleButtonProps>`
   border-radius: 40px;
   cursor: pointer;
 
-  ${({ selected }) => selected && css`
+  ${({ isSwapTab }) => isSwapTab && css`
     background: #df2e2d;
     color: #ffffff;
     box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
