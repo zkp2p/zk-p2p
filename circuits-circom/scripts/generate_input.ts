@@ -417,6 +417,6 @@ async function test_generate(writeToFile: boolean = true, email_file_name: strin
 
 // If file called directly with `npx tsx generate_inputs.ts`
 if (typeof require !== "undefined" && require.main === module) {
-  // Example usage: yarn gen-input venmo_receive_payment EMAIL_VENMO_RECEIVE
+  // Example usage: yarn gen-input venmo_receive EMAIL_VENMO_RECEIVE
   test_generate(true, process.argv[2], CircuitType[process.argv[3] as keyof typeof CircuitType]);
 }
