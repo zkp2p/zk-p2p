@@ -7,5 +7,9 @@ yarn-error.log
 .DS_Store
 
 build/
+*/inputs/*
+*/emls/*
+*.env
+*/.yarn
 
 .vscode
