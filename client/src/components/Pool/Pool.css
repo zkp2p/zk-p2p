@@ -1,0 +1,66 @@
+.page-wrapper {
+  padding: 68px 8px 0px;
+  max-width: 870px;
+  width: 100%;
+}
+
+@media only screen and (max-width: 992px) {
+  .page-wrapper {
+    max-width: 800px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .page-wrapper {
+    max-width: 500px;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .page-wrapper {
+    padding-top: 48px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .page-wrapper {
+    padding-top: 20px;
+  }
+}
+
+.title-row {
+  color: #B2B9D2; /* Assumed value, replace with the actual color from your theme */
+}
+
+@media only screen and (max-width: 768px) {
+  .title-row {
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+}
+
+.button-row {
+  margin-left: 8px;
+}
+
+@media only screen and (max-width: 768px) {
+  .button-row {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+}
+
+.main-content-wrapper {
+  background-color: #FFFFFF; /* Assumed value, replace with the actual color from your theme */
+  border: 1px solid #E4E4E4; /* Assumed value, replace with the actual color from your theme */
+  padding: 0;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
+    0px 24px 32px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+}
