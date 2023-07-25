@@ -3,14 +3,14 @@ import { Inbox } from 'react-feather'
 import styled, { css, useTheme } from 'styled-components/macro'
 
 import { Button } from '../Button'
-import { AutoColumn } from '../Column'
-import { RowBetween } from '../Row'
+import { AutoColumn } from '../layouts/Column'
+import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 
 
 export default function Pool() {
   return (
-      <PageWrapper>
+      <ComponentWrapper>
         <Column>
           <TitleRow padding="0">
             <ThemedText.HeadlineMedium>
@@ -30,16 +30,16 @@ export default function Pool() {
               </div>
               </ThemedText.DeprecatedBody>
               <Button>
-                Connect a wallet
+                Connect Wallet
               </Button>
             </ErrorContainer>
           </MainContentWrapper>
         </Column>
-      </PageWrapper>
+      </ComponentWrapper>
   )
 }
 
-const PageWrapper = styled(AutoColumn)`
+const ComponentWrapper = styled(AutoColumn)`
   padding-top: 8px;
   max-width: 800px;
   width: 100%;

@@ -1,8 +1,7 @@
 import styled from "styled-components";
 
 import { Toggle } from "../components/Toggle";
-import { Button } from "../components/Button";
-import Pool from "../components/Pool/Pool"
+import Pool from "../components/Pool"
 
 
 export const Swap: React.FC<{}> = (props) => {
@@ -19,7 +18,7 @@ export const Swap: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 48px 8px 0px;
+  padding: 12px 8px 0px;
 
   & .title {
     display: flex;

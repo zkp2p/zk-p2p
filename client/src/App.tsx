@@ -4,12 +4,10 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-import { useLocation } from "react-use";
 
-import { MainPage } from "./pages/MainPage";
+import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
-import { Permissions } from "./pages/Permissions";
 import { TopNav } from "./components/layouts/TopNav";
 import { BottomNav } from "./components/layouts/BottomNav";
 
@@ -42,9 +40,3 @@ const App = () => {
 };
 
 export default App;
-
-const Main: React.FC = () => {
-  const { search } = useLocation();
-
-  return <MainPage key={search} />;
-};
