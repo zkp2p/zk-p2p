@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import { Toggle } from "../components/Toggle/Toggle";
-import { Button } from "../components/Button/Button";
+import { Toggle } from "../components/Toggle";
+import { Button } from "../components/Button";
 import Pool from "../components/Pool/Pool"
 
 

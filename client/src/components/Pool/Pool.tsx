@@ -2,7 +2,7 @@
 import { Inbox } from 'react-feather'
 import styled, { css, useTheme } from 'styled-components/macro'
 
-import { Button } from '../Button/Button'
+import { Button } from '../Button'
 import { AutoColumn } from '../Column'
 import { RowBetween } from '../Row'
 import { ThemedText } from '../../theme/text'
