@@ -1,4 +1,5 @@
 node_modules/
+*/node_modules/
 
 .env
 yarn-error.log
@@ -6,3 +7,9 @@ yarn-error.log
 .DS_Store
 
 build/
+*/inputs/*
+*/emls/*
+*.env
+*/.yarn
+
+.vscode
