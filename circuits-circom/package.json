@@ -1,0 +1,6 @@
+{
+  "name": "circuits-circom",
+  "dependencies": {
+    "@zk-email/circuits": "^1.1.0"
+  }
+}
