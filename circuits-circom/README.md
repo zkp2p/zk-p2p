@@ -5,10 +5,36 @@ This folder contains the Circom circuits for ZKP2P
 ## Circuits
 
 ### Venmo Receive Email
+Main circuit that offramper generates a proof of Venmo payment received email
+- Verifies the DKIM signature (RSA, SHA256)
+- Extracts Venmo payer ID, time of payment from email
+- Houses nullifier to prevent replay attacks
+- Contains other order information to tie a proof to an order ID to prevent frontrunning
+
+| Regex Config | Description |
+| -------- | -------- |
+| Onramper Regex | Extracts the Venmo payer ID from the payment received email body |
+| Timestamp Regex | Extracts timestamp from venmo payment received email header |
 
 ### Venmo Send Email
+Main circuit that onramper generates a proof of payment if offramper fails to generate proof above
+1. Verifies the DKIM signature (RSA, SHA256)
+2. Extracts payee ID and amount for the Venmo transaction
+3. Houses nullifier to prevent replay attacks
+4. Contains other order information to tie a proof to an order ID to prevent frontrunning
+
+| Regex Config | Description |
+| -------- | -------- |
+| Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body |
+| Amount Regex | Extracts $ amount sent from from venmo payment sent email header |
 
 ## Usage
+
+### Generating Regexes
+1. `cd` into `regex_to_circom`
+2. Update `regex_to_dfa.js` with the regex or raw regex string. To validate if the regex is run correctly, you can use [ZK Regex UI](https://frontend-zk-regex.vercel.app/)
+3. Run `python3 gen.py` to generate the Circom template
+4. Copy the output into a circom regex file
 
 ### Compilation
 1. Create circuit.env `cp circuit.env.example circuit.env` 
