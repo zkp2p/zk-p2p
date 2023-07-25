@@ -42,6 +42,7 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 3. `cd` into `scripts` and run `./1_compile.sh`. This will generate the R1CS SYM and WASM files
 
 ### Generate witness
+1. Copy an eml file into `circuits-circom/emls` for a given email type. Venmo send and receive emails are different. Make sure you are downloading the original email file. For example you can follow the following steps in [Gmail](https://support.google.com/mail/answer/29436?hl=en#zippy=%2Cgmail). Name your Venmo receive email `venmo_receive.eml` and Venmo send email `venmo_send.eml`. 
 1. In `circuits-circom` directory, run `yarn gen-inputs EML_FILE_NAME EMAIL_TYPE` where EML_FILE_NAME is the name of the eml file in `circuits-circom/emls` and EMAIL_TYPE is the type of the email. This will generate an input file with the name `input_EML_FILE_NAME.json`. Example: `yarn gen-inputs venmo_receive EMAIL_VENMO_RECEIVE`
 2. `cd` into `scripts` and run `./2_gen_witness.sh` which will generate the witness needed to generate the proof
 3. For development purposes, you only need to run up to this step
