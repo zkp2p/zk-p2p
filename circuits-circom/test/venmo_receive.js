@@ -8,8 +8,6 @@ const Fr = new F1Field(exports.p);
 
 const assert = chai.assert;
 
-const sha256 = require("./helpers/sha256");
-
 const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
@@ -63,7 +61,7 @@ describe("Venmo receive test", function () {
         assert.equal(b.toString("hex"), b2.toString("hex"), true);
     });
 
-    it("Should calculate correct xxxxx", async () => {
+    it("Should generate witnesses", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
@@ -74,8 +72,7 @@ describe("Venmo receive test", function () {
             true
         );
 
-        console.log(witness)
-        // TODO: Write tests below
-
+        assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
+        // TODO: Add more tests
     }).timeout(1000000);
 });
