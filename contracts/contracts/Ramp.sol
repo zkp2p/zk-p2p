@@ -5,6 +5,8 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
 
+import { Verifier } from "./verifiers/VenmoReceiveVerifier.sol";
+
 pragma solidity ^0.8.18;
 
 contract Ramp is Ownable {
