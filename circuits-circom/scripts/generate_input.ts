@@ -235,7 +235,7 @@ export async function getCircuitInputs(
       venmo_receive_id_idx,
       // IDs
       order_id,
-      claim_id
+      // claim_id
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const SEND_ID_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
@@ -258,7 +258,7 @@ export async function getCircuitInputs(
       venmo_send_id_idx,
       // IDs
       order_id,
-      claim_id
+      // claim_id
     };
   } else if (circuit === CircuitType.EMAIL_TWITTER) {
     const USERNAME_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
