@@ -12,7 +12,7 @@
     "clean": "rm -f coverage.json; rm -rf .coverage_cache; rm -rf .coverage_contracts; rm -rf cache; rm -rf coverage; rm -rf typechain; rm -rf artifacts; rm -rf dist",
     "compile": "hardhat compile",
     "coverage": "yarn clean && yarn build && npx hardhat coverage",
-    "importVerifier": "cp -r ../circuits-circom/contracts ./contracts/verifiers",
+    "importVerifier": "rm -rf ./contracts/verifiers/ && cp -r ../circuits-circom/contracts ./contracts/verifiers",
     "test": "npx hardhat test",
     "test:clean": "yarn build && yarn test",
     "test:fast": "NO_COMPILE=true TS_NODE_TRANSPILE_ONLY=1 yarn test --no-compile",
