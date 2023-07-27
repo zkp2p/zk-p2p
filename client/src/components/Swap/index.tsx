@@ -66,7 +66,7 @@ const MainContentWrapper = styled.main`
   display: flex;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
-  padding: 0; 
+  padding: 36px 0px;
   border-radius: 16px;
   flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),

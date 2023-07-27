@@ -16,7 +16,7 @@ export const Registration: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 36px 8px 0px;
+  padding: 8px 8px 0px;
 
   & .title {
     display: flex;
