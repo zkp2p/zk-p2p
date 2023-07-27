@@ -140,7 +140,7 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6400;  // 6200 length + 200 chars long custom message
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6016;  // 5708 length + 300 chars long custom message
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 5652 length + 300 chars long custom message
   }
 
   // Derive modulus from signature
