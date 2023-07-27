@@ -17,7 +17,8 @@ export const ReadOnlyInput: React.FC<{
 };
 
 const InputContainer = styled(Col)`
-  gap: 8px;
+  gap: 12px;
+  margin: 4px;
 `;
 
 const Input = styled.input`

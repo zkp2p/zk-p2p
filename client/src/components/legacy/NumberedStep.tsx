@@ -36,4 +36,6 @@ const NumberedStepLabel = styled(CenterAllDiv)`
   border: 1px solid rgba(255, 255, 255, 0.3);
 `;
 
-const NumberedStepText = styled.span``;
+const NumberedStepText = styled.span`
+  margin: 4px;
+`;
