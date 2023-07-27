@@ -1,65 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button } from "../Button";
-import { Col, SubHeader } from "../legacy/Layout";
-import { NumberedStep } from "../legacy/NumberedStep";
-import { ReadOnlyInput } from "../legacy/ReadOnlyInput";
-import { SingleLineInput } from "../legacy/SingleLineInput";
+import { Col } from "../legacy/Layout";
 
-// import { encryptMessage } from "../helpers/messagEncryption";
-// import { generateVenmoIdHash } from "../helpers/venmoHash";
-// import { abi } from "../helpers/ramp.abi";
-// import { OnRampOrder } from "../helpers/types";
-// import { contractAddresses } from "../helpers/deployed_addresses";
-// import { formatAmountsForTransactionParameter } from '../helpers/transactionFormat';
+import { ExistingRegistration } from "./ExistingRegistration";
+import { NewRegistrationProof } from "./NewRegistrationProof";
+import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
 
 
 interface RegistrationFormProps {
   // loggedInWalletAddress: string;
-  // senderRequestedAmountDisplay: number;
 }
  
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   // loggedInWalletAddress,
-  // senderRequestedAmountDisplay,
 }) => {
-  // const persistedVenmoIdKey = `persistedVenmoId_${loggedInWalletAddress}`;
-  // const [venmoIdInput, setVenmoIdInput] = useState<string>(localStorage.getItem(persistedVenmoIdKey) || "");
-  const [requestedUSDAmountInput, setRequestedUSDAmountInput] = useState<number>(0);
-
-  // const [encryptedVenmoId, setEncryptedVenmoId] = useState<string>('');
-  // const [hashedVenmoId, setHashedVenmoId] = useState<string>('');
-  // const [requestedAmount, setRequestedAmount] = useState<number>(0);
-
   /*
-    Contract Writes
+    State
   */
 
-  //
-  // legacy: claimOrder(uint256 _orderNonce)
-  // new:    claimOrder(uint256 _venmoId, uint256 _orderNonce, bytes calldata _encryptedVenmoId, uint256 _minAmountToPay)
-  //
-  // const { config: writeClaimOrderConfig } = usePrepareContractWrite({
-  //   addressOrName: contractAddresses['goerli'].ramp,
-  //   contractInterface: abi,
-  //   functionName: 'claimOrder',
-  //   args: [
-  //     hashedVenmoId,
-  //     selectedOrder.orderId,
-  //     '0x' + encryptedVenmoId,
-  //     formatAmountsForTransactionParameter(requestedAmount)
-
-  //   ],
-  //   onError: (error: { message: any }) => {
-  //     console.error(error.message);
-  //   },
-  // });
-
-  // const {
-  //   isLoading: isWriteClaimOrderLoading,
-  //   write: writeClaimOrder
-  // } = useContractWrite(writeClaimOrderConfig);
+  // ----- transaction state -----
+  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
+  const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
 
   /*
     Hooks
@@ -75,95 +37,67 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
   */
   return (
     <ComponentWrapper>
-      <SubHeader>Registration</SubHeader>
-      <RegistrationBodyContainer>
+      <Body>
         <ExistingRegistrationContainer>
-          <ReadOnlyInput
-            label="Order Creator"
-            value="Test Order Creator"
-          />
-          <ReadOnlyInput
-            label="Requested USDC Amount"
-            value="Test Requested USDC Amount"
-          />
+          <ExistingRegistration />
         </ExistingRegistrationContainer>
-        <NumberedInputContainer>
-          <NumberedStep>
-            Specify a Venmo ID (not handle, see our guide on retrieving your ID)
-            to receive USD at and a required USD amount to receive. Your Venmo ID will be encrypted.
-            Submitting this transaction will escrow 10 fUSDC for the
-            on-ramper. If this is your first time, you will need to mint.
-          </NumberedStep>
-        </NumberedInputContainer>
         <NewRegistrationContainer>
-          <SingleLineInput
-            label="Venmo ID"
-            value="My Venmo ID"
-            placeholder={'1234567891011121314'}
-            onChange={(e) => {
-              // setVenmoIdInput(e.currentTarget.value);
-            }}
-          />
-          <SingleLineInput
-            label="USD Amount to Request"
-            value={requestedUSDAmountInput === 0 ? '' : requestedUSDAmountInput.toString()}
-            placeholder={'0'}
-            onChange={(e) => {
-              setRequestedUSDAmountInput(e.currentTarget.value);
-            }}
-          />
+          <Column>
+            <NewRegistrationProof
+              loggedInWalletAddress={'0x123'}
+              setSubmitOrderProof={setSubmitOrderProof}
+              setSubmitOrderPublicSignals={setSubmitOrderPublicSignals}
+            />
+          </Column>
+          <Column>
+            <NewRegistrationSubmit
+              proof={'{"pi_a":["3291784209879362577606086029850751887940155573303155039418365843301783849228","20372266672396218804322040936573741566123024771824035258362536004620900873588","1"],"pi_b":[["18182941061095370046889375561496614389216314328396531250907530953695244333029","19403457916758929009344186669414337242177199501412127017914415452213627069733"],["11197830984911287107893459669398460583304236692805521536999778875921167851272","12077687609501956208235428214356335182618912020383319054765276771144195362233"],["1","0"]],"pi_c":["12585383347322907138844813847360198340224278122693364672462605900163046933131","3061690965777783420357585230296215498333024532441086383579841927574404217720","1"],"protocol":"groth16","curve":"bn128"}'}
+              publicSignals={'["14725009150715507569351386527345409524196547864550498192724844424892192758335","53","0","0","683441457792668103047675496834917209","1011953822609495209329257792734700899","1263501452160533074361275552572837806","2083482795601873989011209904125056704","642486996853901942772546774764252018","1463330014555221455251438998802111943","2411895850618892594706497264082911185","520305634984671803945830034917965905","47421696716332554","0","0","0","0","0","0","0","0","18"]'}
+            />
+          </Column>
         </NewRegistrationContainer>
-        <Button
-          onClick={async () => {
-            // Sign venmo id with encrypting key from the order
-            // const encryptedVenmoId = await encryptMessage(venmoIdInput, selectedOrder.onRamperEncryptPublicKey);
-            // setEncryptedVenmoId(encryptedVenmoId);
-            // console.log(encryptedVenmoId);
-
-            // Generate hash of the venmo id
-            // const hashedVenmoId = await generateVenmoIdHash(venmoIdInput);
-            // setHashedVenmoId(hashedVenmoId);
-            // console.log(hashedVenmoId);
-
-            // Set the requested USD amount
-            // setRequestedAmount(requestedUSDAmountInput);
-
-            // Persist venmo id input so user doesn't have to paste it again in the future
-            // localStorage.setItem(persistedVenmoIdKey, venmoIdInput);
-
-            // writeClaimOrder?.();
-          }}
-          >
-          Claim Order
-        </Button>
-      </RegistrationBodyContainer>
+      </Body>
     </ComponentWrapper>
   );
 };
 
 const ComponentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 1200px;
+`;
+
+const Body = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+`;
+
+const ExistingRegistrationContainer = styled.div`
   gap: 1rem;
-  padding-top: 8px;
-  max-width: 800px;
-  width: 100%;
-`;
-
-const RegistrationBodyContainer = styled(Col)`
-  gap: 2rem;
-`;
-
-const ExistingRegistrationContainer = styled(Col)`
+  align-self: flex-start;
   background: rgba(255, 255, 255, 0.1);
-  gap: 1rem;
+  padding: 1.5rem;
   border-radius: 4px;
-  padding: 1rem;
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const Column = styled.div`
+  gap: 1rem;
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const NewRegistrationContainer = styled.div`
+  display: grid;
+  gap: 1rem;
+  align-self: flex-start;
 `;
 
 const NumberedInputContainer = styled(Col)`
-  gap: 1rem;
-`;
-
-const NewRegistrationContainer = styled(Col)`
   gap: 1rem;
 `;
