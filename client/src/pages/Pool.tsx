@@ -1,13 +1,16 @@
+import React, { useState } from 'react';
 import styled from "styled-components";
 
-import PermissionsForm from "../components/PermissionsForm"
+import { Toggle } from "../components/Toggle";
+import PoolTable from "../components/Pool"
 
 
-export const Permissions: React.FC<{}> = (props) => {
+export const Pool: React.FC<{}> = (props) => {
+
   return (
     <PageWrapper>
       <Main>
-        <PermissionsForm />
+        <PoolTable />
       </Main>
     </PageWrapper>
   );
@@ -16,7 +19,7 @@ export const Permissions: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 8px 8px 0px;
+  padding: 12px 8px 0px;
 
   & .title {
     display: flex;
@@ -42,3 +45,4 @@ const Main = styled.div`
   align-items: center;
   justify-content: center;
 `;
+

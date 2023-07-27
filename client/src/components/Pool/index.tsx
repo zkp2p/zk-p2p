@@ -8,7 +8,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 
 
-export default function Pool() {
+export default function PoolTable() {
   return (
       <ComponentWrapper>
         <Column>

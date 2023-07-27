@@ -11,86 +11,101 @@ import { ThemedText } from '../../theme/text'
 export default function SwapModal() {
   return (
       <ComponentWrapper>
-        <Column>
-          <TitleRow padding="0">
-            <ThemedText.HeadlineMedium>
-              Swap
-            </ThemedText.HeadlineMedium>
-          </TitleRow>
-
-          <MainContentWrapper>
-            <ErrorContainer>
-              <ThemedText.DeprecatedBody textAlign="center">
-              <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-              <div>
-                Your active pool positions will appear here.
-              </div>
-              </ThemedText.DeprecatedBody>
-              <Button>
-                Connect Wallet
-              </Button>
-            </ErrorContainer>
-          </MainContentWrapper>
-        </Column>
+        <TopArea>
+          <Title>Token</Title>
+        </TopArea>
+        <FromArea>
+          <TopItem>
+            {/* Replace o-tooltip with an equivalent React component or library */}
+            <Left>From</Left>
+            {/* Replace CommLoading with an equivalent React component or library */}
+            <Right>{/* Replace with fromBalance state variable */}</Right>
+          </TopItem>
+          <BottomItem>
+            <Left>
+              {/* Replace svg-icon with an equivalent React component or library */}
+              {/* Replace with showChainName() method */}
+              {/* Replace SvgIconThemed with an equivalent React component or library */}
+            </Left>
+            <Right>
+              <input
+                type="text"
+                placeholder={'0.0'}
+              />
+              {/* Replace el-button with an equivalent React component or library */}
+              {/* Replace ObSelect with an equivalent React component or library */}
+            </Right>
+          </BottomItem>
+        </FromArea>
       </ComponentWrapper>
   )
 }
 
-const ComponentWrapper = styled(AutoColumn)`
-  max-width: 800px;
+const ComponentWrapper = styled.div`
+  max-width: 480px;
   width: 100%;
-`
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
   padding: 1.5rem;
-  border-radius: 4px;
-  justify-content: center;
-`;
+  border-radius: 20px;
+  background: #0D111C;
+`
 
-const TitleRow = styled(RowBetween)`
-  margin-bottom: 20px;
-  height: 50px;
-  align-items: flex-end;
-  color: #FFF;
-
-  @media (max-width: 600px) {
-    flex-wrap: wrap;
-    gap: 12px;
-    width: 100%;
-  };
-`;
-
-const MainContentWrapper = styled.main`
+const TopArea = styled.div`
   display: flex;
-  background-color: #0D111C;
-  border: 1px solid #98a1c03d;
-  padding: 36px 0px;
-  border-radius: 16px;
-  flex-direction: column;
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
-  overflow: hidden;
-`;
-
-const ErrorContainer = styled.div`
   align-items: center;
+  position: relative;
+`;
+
+const Title = styled.span`
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 20px;
+  margin-right: 10px;
+`;
+
+// FromArea, TopItem, and BottomItem
+const FromArea = styled.div`
+  margin-top: 20px;
+  height: 96px;
+  border-radius: 20px;
+  position: relative;
+  padding: 20px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+`;
+
+const TopItem = styled.div`
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const BottomItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  align-items: center;
+`;
+
+// Left and Right
+const Left = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  display: flex;
   justify-content: center;
-  margin: auto;
-  max-width: 340px;
-  min-height: 25vh;
-  gap: 36px;
-`
+  align-items: center;
+  cursor: pointer;
+`;
 
-const IconStyle = css`
-  width: 48px;
-  height: 48px;
-  margin-bottom: 0.5rem;
-`
-
-const InboxIcon = styled(Inbox)`
-  ${IconStyle}
-`
+const Right = styled.div`
+  width: 100%;
+  text-align: right;
+  border: 0;
+  outline: 0;
+  appearance: none;
+  background-color: transparent;
+  transition: all 0.2s ease 0s;
+  flex-direction: row-reverse;
+`;

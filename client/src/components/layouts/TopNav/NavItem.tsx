@@ -35,6 +35,10 @@ export const NavItem: React.FC<NavItemProps> = ({
       ],
     },
     {
+      name: 'Pool',
+      href: '/pool',
+    },
+    {
       name: 'Registration',
       href: '/register',
     },
