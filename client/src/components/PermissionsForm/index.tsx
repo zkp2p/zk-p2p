@@ -1,5 +1,5 @@
 
-import { Inbox } from 'react-feather'
+import { Filter } from 'react-feather'
 import styled, { css, useTheme } from 'styled-components/macro'
 
 import { Button } from '../Button'
@@ -24,7 +24,7 @@ export default function PermissionsForm() {
           <MainContentWrapper>
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
-              <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+              <ListIcon strokeWidth={1} style={{ marginTop: '2em' }} />
               <div>
                 Your allow and deny wallet addresses will appear here.
               </div>
@@ -94,6 +94,6 @@ const IconStyle = css`
   margin-bottom: 0.5rem;
 `
 
-const InboxIcon = styled(Inbox)`
+const ListIcon = styled(Filter)`
   ${IconStyle}
 `

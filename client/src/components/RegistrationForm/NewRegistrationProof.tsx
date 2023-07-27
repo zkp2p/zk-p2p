@@ -275,9 +275,7 @@ const ProcessStatus = styled.div<{ status: string }>`
 `;
 
 const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: grid;
 `;
 
 const HeaderContainer = styled.div`

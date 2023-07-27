@@ -22,7 +22,7 @@ const NumberedStepContainer = styled(Row)`
   background: rgba(255, 255, 255, 0.05);
   gap: 1rem;
   border-radius: 4px;
-  padding: 12px 24px;
+  padding: 12px 16px;
   color: #fff;
   line-height: 1.3;
 `;
