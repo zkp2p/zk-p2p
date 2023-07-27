@@ -6,7 +6,8 @@
     "@zk-email/helpers": "^1.0.3",
     "buffer": "^6.0.3",
     "circomlib": "^2.0.5",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "snarkjs": "git+https://github.com/vb7401/snarkjs.git#24981febe8826b6ab76ae4d76cf7f9142919d2b8"
   },
   "scripts": {
     "gen-input": "npx tsx ./scripts/generate_input.ts",
