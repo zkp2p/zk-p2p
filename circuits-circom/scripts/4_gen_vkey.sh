@@ -2,7 +2,7 @@
 
 source circuit.env
 R1CS_FILE="$BUILD_DIR/$CIRCUIT_NAME.r1cs"
-PHASE1=../circuits/powersOfTau28_hez_final_22.ptau
+PHASE1="$PTAU_DIR/powersOfTau28_hez_final_$PTAU.ptau"
 
 echo "****EXPORTING VKEY****"
 start=$(date +%s)

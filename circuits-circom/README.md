@@ -38,7 +38,14 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 
 ### Compilation
 1. Create circuit.env `cp circuit.env.example circuit.env` 
-2. Edit circuit.env to point to the correct paths
+2. Edit circuit.env to point to the correct paths. Example:
+```
+CIRCUIT_NAME=venmo_receive
+BUILD_DIR="../build/$CIRCUIT_NAME"
+PTAU_DIR="../.."
+PTAU=23
+RAPIDSNARK_PATH="./../../rapidsnark/build/prover"
+```
 3. `cd` into `scripts` and run `./1_compile.sh`. This will generate the R1CS SYM and WASM files
 
 ### Generate witness
