@@ -139,6 +139,15 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // PACKING: 16,800 constraints (Total: [x])
     reveal_venmo_send_packed <== ShiftAndPack(max_body_bytes, max_venmo_send_len, pack_size)(venmo_send_regex_reveal, venmo_send_id_idx);
 
+    // Hash offramper ID
+    component hash = Poseidon(max_venmo_send_packed_bytes);
+    assert(max_venmo_send_packed_bytes < 16);
+    for (var i = 0; i < max_venmo_send_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_venmo_send_packed[i];
+    }
+    signal output packed_offramper_id_hashed <== hash.out;
+    log("Hash of packed Venmo offramper ID", packed_offramper_id_hashed);
+
     // Nullifier
     // Packed SHA256 hash of the email header and body hash (the part that is signed upon)
     signal output nullifier[msg_len];
