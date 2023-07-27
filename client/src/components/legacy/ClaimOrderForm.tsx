@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { Button } from "../Button/Button";
+import { Button } from "../Button";
 import { Col, SubHeader } from "./Layout";
 import { NumberedStep } from "./NumberedStep";
 import { ReadOnlyInput } from "./ReadOnlyInput";

@@ -40,5 +40,5 @@ const Nav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 12px;
+  margin: 36px;
 `;

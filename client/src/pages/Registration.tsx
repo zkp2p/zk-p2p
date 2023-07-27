@@ -1,23 +1,29 @@
 import styled from "styled-components";
 
+import { RegistrationForm } from "../components/RegistrationForm"
+
 
 export const Registration: React.FC<{}> = (props) => {
   return (
-    <Container>
-      Registration
-    </Container>
+    <PageWrapper>
+      <Main>
+        <RegistrationForm />
+      </Main>
+    </PageWrapper>
   );
 };
 
-const Container = styled.div`
+const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  padding: 36px 8px 0px;
+
   & .title {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  
   & .main {
     & .signaturePane {
       flex: 1;
@@ -28,19 +34,11 @@ const Container = styled.div`
       }
     }
   }
-
-  & .bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    & p {
-      text-align: center;
-    }
-    & .labeledTextAreaContainer {
-      align-self: center;
-      max-width: 50vw;
-      width: 500px;
-    }
-  }
 `;
 
+const Main = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;

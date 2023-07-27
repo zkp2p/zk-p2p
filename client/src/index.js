@@ -8,8 +8,9 @@ import { optimism } from 'wagmi/chains'
 import {
   getDefaultWallets,
   RainbowKitProvider,
-  darkTheme,
+  darkTheme
 } from "@rainbow-me/rainbowkit";
+import merge from 'lodash.merge';
 
 import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -38,10 +39,25 @@ const client = createClient({
   webSocketProvider,
 });
 
+const zkp2pTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: '#df2e2d',
+  },
+  radii: {
+    connectButton: '20px',
+  },
+  fonts: {
+    body: 'Graphik',
+  },
+  shadows: {
+    connectButton: 'inset 0px -4px 0px rgba(0, 0, 0, 0.16)',
+  }
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <WagmiConfig client={client}>
-      <RainbowKitProvider chains={chains} theme={darkTheme()}>
+      <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
         <App />
       </RainbowKitProvider>
     </WagmiConfig>

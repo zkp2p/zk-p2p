@@ -1,6 +1,6 @@
 .bottom-nav {
-  margin-top: 36px;
-  padding-bottom: 12px;
+  margin-top: 0px;
+  margin-bottom: 16px;
 }
 
 .bottom-nav .links {
@@ -8,7 +8,7 @@
   justify-content: center;
   align-content: center;
   height: 24px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .bottom-nav .links .links-content .links-item {
@@ -46,11 +46,4 @@
 .bottom-nav .terms:hover {
   text-decoration: underline;
   opacity: 0.8;
-}
-
-@media (max-width: 600px) {
-  .bottom-nav {
-    margin-top: 20px;
-    padding-bottom: 24px;
-  }
 }

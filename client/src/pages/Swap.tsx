@@ -1,31 +1,40 @@
+import React, { useState } from 'react';
 import styled from "styled-components";
 
-import { Toggle } from "../components/Toggle/Toggle";
-import { Button } from "../components/Button/Button";
+import { Toggle } from "../components/Toggle";
+import Pool from "../components/Pool"
+import SwapModal from "../components/Swap"
 
 
 export const Swap: React.FC<{}> = (props) => {
+  const [isSwapTab, setIsSwapTab] = useState(true);
+
+  const togglePressed = (target: string) => {
+    const tab = (typeof target === 'string' && target) || 'Swap';
+    setIsSwapTab(tab === 'Swap');
+  };
+
   return (
-    <Container>
+    <PageWrapper>
       <Main>
-        <Toggle />
-        <Button>
-          Swap
-        </Button>
+        <Toggle handleToggle={togglePressed} isSwapTab={isSwapTab} />
+          {isSwapTab ? <SwapModal /> : <Pool />}
       </Main>
-    </Container>
+    </PageWrapper>
   );
 };
 
-const Container = styled.div`
+const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  padding: 12px 8px 0px;
+
   & .title {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  
   & .main {
     & .signaturePane {
       flex: 1;
@@ -36,25 +45,12 @@ const Container = styled.div`
       }
     }
   }
-
-  & .bottom {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    & p {
-      text-align: center;
-    }
-    & .labeledTextAreaContainer {
-      align-self: center;
-      max-width: 50vw;
-      width: 500px;
-    }
-  }
 `;
 
 const Main = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
