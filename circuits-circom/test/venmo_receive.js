@@ -5,6 +5,7 @@ const F1Field = require("ffjavascript").F1Field;
 const Scalar = require("ffjavascript").Scalar;
 exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(exports.p);
+const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
 
 const assert = chai.assert;
 
@@ -33,10 +34,34 @@ function bitArray2buffer(a) {
     return b;
 }
 
+function bytesToPacked(arr) {
+    // Convert into bigint from string
+    let arrInt = arr.map(BigInt);
+    let n = arrInt.length;
+    let out = BigInt(0);
+    for (let k = 0; k < n; k++) {
+        out += arrInt[k] * BigInt(2 ** (8 * k));  // little endian
+    }
+    return out;
+}
+
+function chunkArray(arr, chunkSize, length) {
+    let chunks = [];
+    for (let i = 0; i < length; i += chunkSize) {
+        let chunk = arr.slice(i, i + chunkSize);
+        if (chunk.length < chunkSize) {
+            chunk = chunk.concat(new Array(chunkSize - chunk.length).fill('0'));
+        }
+        chunks.push(chunk);
+    }
+    return chunks;
+}
+
 describe("Venmo receive test", function () {
     this.timeout(100000);
 
     let cir;
+    let poseidon;
 
     before( async() => {
         cir = await wasm_tester(
@@ -48,17 +73,8 @@ describe("Venmo receive test", function () {
                 verbose: true,
             }
         );
-    });
 
-    it("Should work bits to array and array to bits", async () => {
-        const b = new Buffer.alloc(64);
-        for (let i=0; i<64; i++) {
-            b[i] = i+1;
-        }
-        const a = buffer2bitArray(b);
-        const b2 = bitArray2buffer(a);
-
-        assert.equal(b.toString("hex"), b2.toString("hex"), true);
+        poseidon = await buildPoseidon();
     });
 
     it("Should generate witnesses", async () => {
@@ -73,6 +89,147 @@ describe("Venmo receive test", function () {
         );
 
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
-        // TODO: Add more tests
+    }).timeout(1000000);
+
+    it("Should return the correct packed timestamp", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed timestamp
+        // Indexes 1 to 6 represent the packed timestamp (30 bytes \ 7)
+        const packed_timestamp = witness.slice(1, 6);
+
+        // Get expected packed timestamp
+        const regex_start = Number(input["email_timestamp_idx"]);
+        const regex_start_sub_array = input["in_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("59"); // Look for `;` to end the timestamp which is 59 in ascii
+        const timestamp_array = regex_start_sub_array.slice(0, regex_end);
+        
+        // Chunk bytes into 7 and pack
+        let chunkedArrays = chunkArray(timestamp_array, 7, 30);
+
+        chunkedArrays.map((arr, i) => {
+            // Pack each chunk
+            let expectedValue = bytesToPacked(arr);
+
+            // Check packed timestamp is the same
+            assert.equal(expectedValue, packed_timestamp[i], true);
+        });
+    }).timeout(1000000);
+
+    it("Should return the correct packed offramper id", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed offramper_id
+        // Indexes 6 to 11 represent the packed offramper_id (30 bytes \ 7)
+        const packed_offramper_id = witness.slice(6, 11);
+
+        // Get expected packed offramper_id
+        const regex_start = Number(input["venmo_receive_id_idx"]);
+        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the offramper_id which is 38 in ascii
+        const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
+        
+        // Chunk bytes into 7 and pack
+        let chunkedArrays = chunkArray(offramper_id_array, 7, 30);
+
+        chunkedArrays.map((arr, i) => {
+            // Pack each chunk
+            let expectedValue = bytesToPacked(arr);
+
+            // Check packed offramper_id is the same
+            assert.equal(expectedValue, packed_offramper_id[i], true);
+        });
+    }).timeout(1000000);
+
+    it("Should return the correct hashed offramper id", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned hashed offramper_id
+        // Indexes 11 represents the hashed offramper_id
+        const hashed_offramper_id = witness[11];
+
+        // Get expected hashed offramper_id
+        const packed_offramper_id = witness.slice(6, 11);
+        const expected_hash = poseidon(packed_offramper_id);
+
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
+    }).timeout(1000000);
+
+    // it("Should return the correct nullifier", async () => {
+    //     // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+    //     // Otherwise, you can download the original eml from any Venmo receive payment transaction
+    //     const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+    //     const jsonString = fs.readFileSync(venmo_path, "utf8");
+    //     const input = JSON.parse(jsonString);
+    //     const witness = await cir.calculateWitness(
+    //         input,
+    //         true
+    //     );
+
+    //     // TODO add nullifier test
+    // }).timeout(1000000);
+
+    it("Should return the correct modulus", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus
+        const modulus = witness.slice(15, 32);
+        
+        // Get expected modulus
+        const expected_modulus = input["modulus"];
+
+        assert.equal(JSON.stringify(modulus), JSON.stringify(expected_modulus), true);
+    }).timeout(1000000);
+
+    it("Should return the correct order id", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus
+        const order_id = witness[32];
+        
+        // Get expected modulus
+        const expected_order_id = input["order_id"];
+
+        assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
     }).timeout(1000000);
 });
