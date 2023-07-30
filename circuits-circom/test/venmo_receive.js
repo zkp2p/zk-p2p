@@ -63,8 +63,6 @@ describe("Venmo receive test", function () {
     let cir;
     let poseidon;
 
-    const PUBLIC_INPUT_LEN = 32;
-
     before( async() => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_receive.circom"),
@@ -194,4 +192,44 @@ describe("Venmo receive test", function () {
 
     //     // TODO add nullifier test
     // }).timeout(1000000);
+
+    it("Should return the correct modulus", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus
+        const modulus = witness.slice(15, 32);
+        
+        // Get expected modulus
+        const expected_modulus = input["modulus"];
+
+        assert.equal(JSON.stringify(modulus), JSON.stringify(expected_modulus), true);
+    }).timeout(1000000);
+
+    it("Should return the correct order id", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus
+        const order_id = witness[32];
+        
+        // Get expected modulus
+        const expected_order_id = input["order_id"];
+
+        assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
+    }).timeout(1000000);
 });
