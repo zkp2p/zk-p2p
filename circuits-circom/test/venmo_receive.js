@@ -179,20 +179,6 @@ describe("Venmo receive test", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
     }).timeout(1000000);
 
-    // it("Should return the correct nullifier", async () => {
-    //     // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
-    //     // Otherwise, you can download the original eml from any Venmo receive payment transaction
-    //     const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
-    //     const jsonString = fs.readFileSync(venmo_path, "utf8");
-    //     const input = JSON.parse(jsonString);
-    //     const witness = await cir.calculateWitness(
-    //         input,
-    //         true
-    //     );
-
-    //     // TODO add nullifier test
-    // }).timeout(1000000);
-
     it("Should return the correct modulus", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
@@ -205,12 +191,32 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned modulus
-        const modulus = witness.slice(15, 32);
+        const modulus = witness.slice(12, 29);
         
         // Get expected modulus
         const expected_modulus = input["modulus"];
 
         assert.equal(JSON.stringify(modulus), JSON.stringify(expected_modulus), true);
+    }).timeout(1000000);
+
+    it("Should return the correct signature", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned signature
+        const signature = witness.slice(29, 46);
+        
+        // Get expected signature
+        const expected_signature = input["signature"];
+
+        assert.equal(JSON.stringify(signature), JSON.stringify(expected_signature), true);
     }).timeout(1000000);
 
     it("Should return the correct order id", async () => {
@@ -225,7 +231,7 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[32];
+        const order_id = witness[46];
         
         // Get expected modulus
         const expected_order_id = input["order_id"];
