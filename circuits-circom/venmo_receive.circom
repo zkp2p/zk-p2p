@@ -93,7 +93,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output packed_onramper_id_hashed <== hash.out;
     // log("Hash of packed Venmo Onramper ID", packed_onramper_id_hashed);
 
-    // The following signals do not take part in any computation, but tie the proof to a specific order_id & claim_id to prevent replay attacks and frontrunning.
+    // The following signals do not take part in any computation, but tie the proof to a specific order_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
     signal input order_id;
     signal order_id_squared;
@@ -101,7 +101,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 }
 
 // In circom, all output signals of the main component are public (and cannot be made private), the input signals of the main component are private if not stated otherwise using the keyword public as above. The rest of signals are all private and cannot be made public.
-// This makes modulus and reveal_twitter_packed public. hash(signature) can optionally be made public, but is not recommended since it allows the mailserver to trace who the offender is.
+// This makes modulus, order_id and signature public. Signature being public means it allows the mailserver to trace who the offender is.
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
@@ -109,4 +109,4 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 9 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ modulus, order_id ] } = VenmoReceiveEmail(1024, 6400, 121, 17, 7);
+component main { public [ modulus, signature, order_id ] } = VenmoReceiveEmail(1024, 6400, 121, 17, 7);
