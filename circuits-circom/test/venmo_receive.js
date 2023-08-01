@@ -57,7 +57,7 @@ function chunkArray(arr, chunkSize, length) {
     return chunks;
 }
 
-describe("Venmo receive test", function () {
+describe("Venmo receive WASM tester", function () {
     this.timeout(100000);
 
     let cir;
@@ -91,6 +91,39 @@ describe("Venmo receive test", function () {
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
     }).timeout(1000000);
 
+    it("Should return the correct packed from email", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed from email
+        // Indexes 1 to 6 represent the packed from email (30 bytes \ 7)
+        const packed_from_email = witness.slice(1, 6);
+
+        // Get expected packed from email
+        const regex_start = Number(input["email_from_idx"]);
+        const regex_start_sub_array = input["in_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
+        const from_email_array = regex_start_sub_array.slice(0, regex_end);
+        
+        // Chunk bytes into 7 and pack
+        let chunkedArrays = chunkArray(from_email_array, 7, 30);
+
+        chunkedArrays.map((arr, i) => {
+            // Pack each chunk
+            let expectedValue = bytesToPacked(arr);
+
+            // Check packed email is the same
+            assert.equal(expectedValue, packed_from_email[i], true);
+        });
+    }).timeout(1000000);
+
     it("Should return the correct packed timestamp", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
@@ -103,8 +136,8 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned packed timestamp
-        // Indexes 1 to 6 represent the packed timestamp (30 bytes \ 7)
-        const packed_timestamp = witness.slice(1, 6);
+        // Indexes 6 to 11 represent the packed timestamp (30 bytes \ 7)
+        const packed_timestamp = witness.slice(6, 11);
 
         // Get expected packed timestamp
         const regex_start = Number(input["email_timestamp_idx"]);
@@ -136,8 +169,8 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned packed offramper_id
-        // Indexes 6 to 11 represent the packed offramper_id (30 bytes \ 7)
-        const packed_offramper_id = witness.slice(6, 11);
+        // Indexes 11 to 16 represent the packed offramper_id (30 bytes \ 7)
+        const packed_offramper_id = witness.slice(11, 16);
 
         // Get expected packed offramper_id
         const regex_start = Number(input["venmo_receive_id_idx"]);
@@ -169,11 +202,11 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned hashed offramper_id
-        // Indexes 11 represents the hashed offramper_id
-        const hashed_offramper_id = witness[11];
+        // Indexes 16 represents the hashed offramper_id
+        const hashed_offramper_id = witness[16];
 
         // Get expected hashed offramper_id
-        const packed_offramper_id = witness.slice(6, 11);
+        const packed_offramper_id = witness.slice(11, 16);
         const expected_hash = poseidon(packed_offramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
@@ -191,7 +224,7 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned modulus
-        const modulus = witness.slice(12, 29);
+        const modulus = witness.slice(17, 34);
         
         // Get expected modulus
         const expected_modulus = input["modulus"];
@@ -211,7 +244,7 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned signature
-        const signature = witness.slice(29, 46);
+        const signature = witness.slice(34, 51);
         
         // Get expected signature
         const expected_signature = input["signature"];
@@ -231,7 +264,7 @@ describe("Venmo receive test", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[46];
+        const order_id = witness[51];
         
         // Get expected modulus
         const expected_order_id = input["order_id"];

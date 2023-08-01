@@ -219,7 +219,7 @@ export async function getCircuitInputs(
     const venmo_receive_id_idx = (Buffer.from(bodyRemaining).indexOf(RECEIVE_ID_SELECTOR) + RECEIVE_ID_SELECTOR.length).toString();
     const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
 
-    console.log("Indexes into for venmo receive email are: ", email_timestamp_idx, venmo_receive_id_idx);
+    console.log("Indexes into for venmo receive email are: ", email_from_idx, email_timestamp_idx, venmo_receive_id_idx);
 
     circuitInputs = {
       in_padded,
@@ -233,16 +233,16 @@ export async function getCircuitInputs(
       // venmo specific indices
       email_timestamp_idx,
       venmo_receive_id_idx,
+      email_from_idx,
       // IDs
-      order_id,
-      // claim_id
+      order_id
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const SEND_ID_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
     const venmo_send_id_idx = (Buffer.from(bodyRemaining).indexOf(SEND_ID_SELECTOR) + SEND_ID_SELECTOR.length).toString();
 
     const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
-    console.log("Indexes into for venmo send email are: ", venmo_amount_idx, venmo_send_id_idx);
+    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_amount_idx, venmo_send_id_idx);
 
     circuitInputs = {
       in_padded,
@@ -256,9 +256,9 @@ export async function getCircuitInputs(
       // venmo specific indices
       venmo_amount_idx,
       venmo_send_id_idx,
+      email_from_idx,
       // IDs
       order_id,
-      // claim_id
     };
   } else if (circuit === CircuitType.EMAIL_TWITTER) {
     const USERNAME_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
