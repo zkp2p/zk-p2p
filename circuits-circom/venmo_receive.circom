@@ -1,16 +1,8 @@
 pragma circom 2.1.5;
 
-include "circomlib/circuits/bitify.circom";
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/helpers/sha.circom";
-include "@zk-email/circuits/helpers/rsa.circom";
-include "@zk-email/circuits/helpers/base64.circom";
-include "@zk-email/circuits/helpers/extract.circom";
 include "@zk-email/circuits/email-verifier.circom";
-
 include "@zk-email/circuits/regexes/from_regex.circom";
-include "@zk-email/circuits/regexes/tofrom_domain_regex.circom";
-include "@zk-email/circuits/regexes/body_hash_regex.circom";
 include "./regexes/venmo_receive_id.circom";
 include "./regexes/venmo_timestamp.circom";
 
@@ -25,10 +17,8 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input signature[k]; // rsa signature. split up into k parts of n bits each.
     signal input in_len_padded_bytes; // length of in email data including the padding, which will inform the sha256 block length
 
-
     // Base 64 body hash variables
     signal input body_hash_idx;
-
     // The precomputed_sha value is the Merkle-Damgard state of our SHA hash uptil our first regex match which allows us to save SHA constraints by only hashing the relevant part of the body
     signal input precomputed_sha[32];
     // Suffix of the body after precomputed SHA
