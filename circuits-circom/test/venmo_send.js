@@ -80,7 +80,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should generate witnesses", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -94,7 +94,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct packed from email", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -127,7 +127,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct packed amount", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -160,7 +160,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct packed offramper id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -193,7 +193,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct hashed offramper id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -215,7 +215,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct modulus", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -235,7 +235,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct signature", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -255,7 +255,7 @@ describe("Venmo send WASM tester", function () {
 
     it("Should return the correct order id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
