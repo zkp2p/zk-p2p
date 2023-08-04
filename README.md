@@ -4,10 +4,10 @@
 
 ZKP2P is a trustless and privacy-preserving fiat to crypto onramp powered by ZK proofs. We are working with the Privacy and Scaling Exploration ([PSE](https://pse.dev/projects/zkp2p)) group to explore applications for zero knowledge proving systems. This (V2) repo is currently under active development to launch a productionized version with audits. Once completed, this application will enable fiat to crypto on ramping through Venmo, a popular P2P payment network in the US.
 
-After launch, we will continue experimenting with new infrastructure to improve on the UX by bringing down proving times and integrate other payment rails such as Paypal and Transferwise.
-
 V1 (PoC) is live on Optimism and Goerli, try it out at [zkp2p.xyz](https://zkp2p.xyz/). See the [repo](https://github.com/zkp2p/zk-p2p-v1) and [demo](https://drive.google.com/file/d/1CaPoVMrZUEuvsFhXLLI9D1wUXevqSwkT/view?usp=drive_link) for usage tips.
 Follow us on our [Twitter](https://twitter.com/zkp2p) and out [Telegram](https://t.me/+XDj9FNnW-xs5ODNl) for announcements and updates!
+
+After the launch of V2, we will continue experimenting with new infrastructure to improve on the UX by bringing down proving times and integrate other payment rails such as Paypal and Transferwise.
 
 <img width="1000" align="center" src="https://user-images.githubusercontent.com/6797244/229355494-3f9fd4aa-76a2-4219-b294-88e356e43345.jpeg"/>
 
