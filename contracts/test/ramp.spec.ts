@@ -7,7 +7,7 @@ import {
   Address,
 } from "@utils/types";
 import { Account } from "@utils/test/types";
-import { Ramp, USDCMock } from "@utils/contracts";
+import { Ramp, USDCMock, VenmoReceiveProcessorMock, VenmoSendProcessorMock } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -31,6 +31,8 @@ describe("Ramp", () => {
 
   let ramp: Ramp;
   let usdcToken: USDCMock;
+  let receiveProcessor: VenmoReceiveProcessorMock;
+  let sendProcessor: VenmoSendProcessorMock;
 
   let deployer: DeployHelper;
 
@@ -38,16 +40,18 @@ describe("Ramp", () => {
     [
       owner,
       offRamper,
-      onRamper
+      onRamper,
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
 
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
+    receiveProcessor = await deployer.deployVenmoReceiveProcessorMock();
+    sendProcessor = await deployer.deployVenmoSendProcessorMock();
 
     await usdcToken.transfer(offRamper.address, usdc(10000));
 
-    ramp = await deployer.deployRamp(owner.address, await usdcToken.address);
+    ramp = await deployer.deployRamp(owner.address, await usdcToken.address, receiveProcessor.address, sendProcessor.address);
   });
 
   describe("#constructor", async () => {
@@ -59,6 +63,16 @@ describe("Ramp", () => {
     it("should set the correct usdc", async () => {
       const usdcAddress: Address = await ramp.usdc();
       expect(usdcAddress).to.eq(usdcToken.address);
+    });
+
+    it("should set the correct receiveProcessor", async () => {
+      const receiveProcessorAddress: Address = await ramp.receiveProcessor();
+      expect(receiveProcessorAddress).to.eq(receiveProcessor.address);
+    });
+
+    it("should set the correct sendProcessor", async () => {
+      const sendProcessorAddress: Address = await ramp.sendProcessor();
+      expect(sendProcessorAddress).to.eq(sendProcessor.address);
     });
   });
 
@@ -419,12 +433,14 @@ describe("Ramp", () => {
     });
 
     describe("#onRampWithConvenience", async () => {
-      let subjectIntentHash: string;
-      let subjectPubInputs: string[];
-      let subjectProof: string;
+      let subjectA: [BigNumber, BigNumber];
+      let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
+      let subjectC: [BigNumber, BigNumber];
+      let subjectSignals: BigNumber[];
       let subjectCaller: Account;
 
       let depositHash: string;
+      let intentHash: string;
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
@@ -442,16 +458,22 @@ describe("Ramp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(venmoId, depositHash, usdc(50));
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
+        intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
+        
+        subjectSignals = new Array<BigNumber>(32).fill(ZERO);
+        subjectSignals[0] = currentTimestamp;
+        subjectSignals[1] = BigNumber.from(1);
+        subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+        subjectSignals[3] = BigNumber.from(intentHash);
 
-        subjectIntentHash = intentHash;
-        subjectPubInputs = [ethers.utils.formatBytes32String("proofOfVenmo")];
-        subjectProof = "0x01";
+        subjectA = [ZERO, ZERO];
+        subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
+        subjectC = [ZERO, ZERO];
         subjectCaller = offRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).onRampWithConvenience(subjectIntentHash, subjectPubInputs, subjectProof);
+        return ramp.connect(subjectCaller.wallet).onRampWithConvenience(subjectA, subjectB, subjectC, subjectSignals);
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
@@ -473,7 +495,7 @@ describe("Ramp", () => {
       it("should delete the intent from the intents mapping", async () => {
         await subject();
 
-        const intent = await ramp.intents(subjectIntentHash);
+        const intent = await ramp.intents(intentHash);
 
         expect(intent.onramper).to.eq(ZERO_BYTES32);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
@@ -490,17 +512,27 @@ describe("Ramp", () => {
 
         expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
         expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
-        expect(postDeposit.intentHashes).to.not.include(subjectIntentHash);
+        expect(postDeposit.intentHashes).to.not.include(intentHash);
       });
 
       it("should emit an IntentFulfilled event", async () => {
         await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
-          subjectIntentHash,
+          intentHash,
           depositHash,
           ethers.utils.formatBytes32String("proofOfVenmoTwo"),
           usdc(50),
           usdc(2)
         );
+      });
+
+      describe("when the onRamperIdHash doesn't match the intent", async () => {
+        beforeEach(async () => {
+          subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper id does not match");
+        });
       });
 
       describe("when the caller is not the offRamper", async () => {
@@ -514,12 +546,14 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#onRamp", async () => {
-      let subjectIntentHash: string;
-      let subjectPubInputs: string[];
-      let subjectProof: string;
+    describe.only("#onRamp", async () => {
+      let subjectA: [BigNumber, BigNumber];
+      let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
+      let subjectC: [BigNumber, BigNumber];
+      let subjectSignals: BigNumber[];
       let subjectCaller: Account;
 
+      let intentHash: string;
       let depositHash: string;
 
       beforeEach(async () => {
@@ -538,16 +572,22 @@ describe("Ramp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(venmoId, depositHash, usdc(50));
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
+        intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
 
-        subjectIntentHash = intentHash;
-        subjectPubInputs = [ethers.utils.formatBytes32String("proofOfVenmo")];
-        subjectProof = "0x01";
+        subjectSignals = new Array<BigNumber>(32).fill(ZERO);
+        subjectSignals[0] = usdc(50);
+        subjectSignals[1] = BigNumber.from(1);
+        subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+        subjectSignals[3] = BigNumber.from(intentHash);
+
+        subjectA = [ZERO, ZERO];
+        subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
+        subjectC = [ZERO, ZERO];
         subjectCaller = onRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).onRamp(subjectIntentHash, subjectPubInputs, subjectProof);
+        return ramp.connect(subjectCaller.wallet).onRamp(subjectA, subjectB, subjectC, subjectSignals);
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
@@ -566,7 +606,7 @@ describe("Ramp", () => {
       it("should delete the intent from the intents mapping", async () => {
         await subject();
 
-        const intent = await ramp.intents(subjectIntentHash);
+        const intent = await ramp.intents(intentHash);
 
         expect(intent.onramper).to.eq(ZERO_BYTES32);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
@@ -583,17 +623,37 @@ describe("Ramp", () => {
 
         expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
         expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
-        expect(postDeposit.intentHashes).to.not.include(subjectIntentHash);
+        expect(postDeposit.intentHashes).to.not.include(intentHash);
       });
 
       it("should emit an IntentFulfilled event", async () => {
         await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
-          subjectIntentHash,
+          intentHash,
           depositHash,
           ethers.utils.formatBytes32String("proofOfVenmoTwo"),
           usdc(50),
           ZERO
         );
+      });
+
+      describe("when the amount paid was not enough", async () => {
+        beforeEach(async () => {
+          subjectSignals[0] = usdc(49.99);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Payment was not enough");
+        });
+      });
+
+      describe("when the offRamperIdHash doesn't match the intent", async () => {
+        beforeEach(async () => {
+          subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Offramper id does not match");
+        });
       });
     });
 

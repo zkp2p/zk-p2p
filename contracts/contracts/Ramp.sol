@@ -5,7 +5,8 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
 
-import { Verifier } from "./verifiers/VenmoReceiveVerifier.sol";
+import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
+import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
 
 pragma solidity ^0.8.18;
 
@@ -77,14 +78,25 @@ contract Ramp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
+    IReceiveProcessor public immutable receiveProcessor;
+    ISendProcessor public immutable sendProcessor;
 
-    mapping(bytes32=>address) public accountIds;
+    mapping(bytes32 => address) public accountIds;
     mapping(bytes32 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
     /* ============ Constructor ============ */
-    constructor(address _owner, IERC20 _usdc) Ownable() {
+    constructor(
+        address _owner,
+        IERC20 _usdc,
+        IReceiveProcessor _receiveProcessor,
+        ISendProcessor _sendProcessor
+    )
+        Ownable()
+    {
         usdc = _usdc;
+        receiveProcessor = _receiveProcessor;
+        sendProcessor = _sendProcessor;
         transferOwnership(_owner);
     }
 
@@ -94,8 +106,8 @@ contract Ramp is Ownable {
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
      * sender of the transaction.
      *
-     * @param _pubInputs The public inputs of the proof
-     * @param _proof The proof
+     * @param _pubInputs    The public inputs of the proof
+     * @param _proof        The proof
      */
     function register(uint256[] memory _pubInputs, bytes memory _proof) external {
         bytes32 accountId = bytes32(_pubInputs[0]); // VALIDATE THIS IS THE CORRECT PUBLIC INPUT
@@ -110,10 +122,10 @@ contract Ramp is Ownable {
      * with the same conversion rate and convenience fee already exists then the deposit amount is added to the existing deposit. User
      * must approve the contract to transfer the deposit amount of USDC.
      *
-     * @param _venmoId The venmo id of the account owner
-     * @param _depositAmount The amount of USDC to off-ramp
-     * @param _receiveAmount The amount of USD to receive
-     * @param _convenienceFee The amount of USDC per on-ramp transaction available to be claimed by off-ramper
+     * @param _venmoId          The venmo id of the account owner
+     * @param _depositAmount    The amount of USDC to off-ramp
+     * @param _receiveAmount    The amount of USD to receive
+     * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
     function offRamp(
         bytes32 _venmoId,
@@ -149,8 +161,7 @@ contract Ramp is Ownable {
         require(accountIds[_venmoId] == msg.sender, "Sender must be the account owner");
         require(_amount > 0, "Signaled amount must be greater than 0");
 
-        bytes32 intentHash = keccak256(abi.encodePacked(_venmoId, _depositHash, block.timestamp));
-        require(intents[intentHash].amount == 0, "Intent already exists");
+        bytes32 intentHash = _calculateIntentHash(_venmoId, _depositHash);
 
         Deposit storage deposit = deposits[_depositHash];
         if (deposit.remainingDeposits < _amount) {
@@ -180,38 +191,56 @@ contract Ramp is Ownable {
         emit IntentSignaled(intentHash, _depositHash, _venmoId, _amount, block.timestamp);
     }
 
-    function onRampWithConvenience(bytes32 _intentHash, uint256[] memory _pubInputs, bytes memory _proof) external {
-        Intent memory intent = intents[_intentHash];
+    function onRampWithConvenience(
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[32] memory _signals
+    )
+        external
+    {
+        (
+            Intent memory intent,
+            bytes32 intentHash
+        ) = _verifyOnRampWithConvenienceProof(_a, _b, _c, _signals);
+
         Deposit storage deposit = deposits[intent.deposit];
 
         bytes32 depositor = deposits[intent.deposit].depositor;
 
         require(accountIds[depositor] == msg.sender, "Sender must be the account owner");
-        // Validate proof
 
-        _pruneIntent(deposit, _intentHash);
+        _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
 
         usdc.transfer(accountIds[intent.onramper], intent.amount - deposit.convenienceFee);
         usdc.transfer(msg.sender, deposit.convenienceFee);
 
-        emit IntentFulfilled(_intentHash, intent.deposit, intent.onramper, intent.amount, deposit.convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, deposit.convenienceFee);
     }
 
-    function onRamp(bytes32 _intentHash, uint256[] memory _pubInputs, bytes memory _proof) external {
-        Intent memory intent = intents[_intentHash];
-        Deposit storage deposit = deposits[intent.deposit];
+    function onRamp(
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[32] memory _signals
+    )
+        external
+    {
+        (
+            Intent memory intent,
+            Deposit storage deposit,
+            bytes32 intentHash
+        ) = _verifyOnRampProof(_a, _b, _c, _signals);
 
-        // Validate proof
-
-        _pruneIntent(deposit, _intentHash);
+        _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
 
         usdc.transfer(accountIds[intent.onramper], intent.amount);
         
-        emit IntentFulfilled(_intentHash, intent.deposit, intent.onramper, intent.amount, 0);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, 0);
     }
 
     function withdrawDeposit(bytes32[] memory _depositHashes) external {
@@ -254,6 +283,12 @@ contract Ramp is Ownable {
         emit AccountOwnerUpdated(_venmoId, _newOwner);
     }
 
+    /* ============ Governance Functions ============ */
+
+    // Set new SendProcessor
+    // Set new ReceiveProcessor
+    // Set ConvenienceRewardTimePeriod
+
     /* ============ External View Functions ============ */
 
     function getDeposit(bytes32 _depositHash) external view returns (Deposit memory) {
@@ -261,6 +296,19 @@ contract Ramp is Ownable {
     }
 
     /* ============ Internal Functions ============ */
+
+    function _calculateIntentHash(
+        bytes32 _venmoId,
+        bytes32 _depositHash
+    )
+        internal
+        view
+        virtual
+        returns (bytes32 intentHash)
+    {
+        intentHash = keccak256(abi.encodePacked(_venmoId, _depositHash, block.timestamp));
+        require(intents[intentHash].amount == 0, "Intent already exists");
+    }
 
     function _getPrunableIntents(
         bytes32 _depositHash
@@ -296,5 +344,54 @@ contract Ramp is Ownable {
         _deposit.intentHashes.removeStorage(_intent);
 
         emit IntentPruned(_intent, depositHash);
+    }
+
+    function _verifyOnRampWithConvenienceProof(
+        uint256[2] memory a,
+        uint256[2][2] memory b,
+        uint256[2] memory c,
+        uint256[32] memory signals
+    )
+        internal
+        view
+        returns(Intent memory, bytes32)
+    {
+        (
+            uint256 timestamp,
+            uint256 onRamperId,
+            bytes32 onRamperIdHash,
+            bytes32 intentHash
+        ) = receiveProcessor.processProof(a, b, c, signals);
+
+        Intent memory intent = intents[intentHash];
+        require(intent.onramper == onRamperIdHash, "Onramper id does not match");
+
+        return (intent, intentHash);
+    }
+
+    function _verifyOnRampProof(
+        uint256[2] memory a,
+        uint256[2][2] memory b,
+        uint256[2] memory c,
+        uint256[32] memory signals
+    )
+        internal
+        view
+        returns(Intent memory, Deposit storage, bytes32)
+    {
+        (
+            uint256 amount,
+            uint256 offRamperId,
+            bytes32 offRamperIdHash,
+            bytes32 intentHash
+        ) = receiveProcessor.processProof(a, b, c, signals);
+
+        Intent memory intent = intents[intentHash];
+        Deposit storage deposit = deposits[intent.deposit];
+
+        require(deposit.depositor == offRamperIdHash, "Offramper id does not match");
+        require(amount >= intent.amount, "Payment was not enough");
+
+        return (intent, deposit, intentHash);
     }
 }
