@@ -59,8 +59,8 @@ const Container = styled.div`
   align-items: flex-start;
   padding: 16px;
   border-radius: 16px;
-  border: 1.5px solid #DEE2E6;
-  background: #FFFFFF;
+  border: 1.5px solid #98a1c03d;
+  background-color: #131A2A;
 
   &:focus-within {
     border-color: #1253FF;
@@ -73,13 +73,12 @@ const Label = styled.label`
   font-size: 14px;
   font-weight: 550;
   margin-top: 8px;
-  color: #495057;
+  color: #CED4DA;
 `;
 
 const InputWrapper = styled.div`
   position: relative;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   width: 100%; 
   margin-top: 8px;
@@ -90,8 +89,8 @@ const StyledInput = styled.input`
   width: 100%;
   border: 0;
   padding: 0;
-  color: #1f2937;
-  background-color: #ffffff;
+  color: #FFFFFF;
+  background-color: #131A2A;;
   font-size: 28px;
 
   &:focus {

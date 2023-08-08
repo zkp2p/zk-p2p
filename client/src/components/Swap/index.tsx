@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
 import styled from 'styled-components';
 
 import { Input } from "./Input";
@@ -6,33 +6,26 @@ import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
 
 
-export interface Player {
-  name: string;
-  cashInAmount: number;
-  cashOutAmount: number;
-}
-
-export type FormPlayer = {
-  name: string;
-  amountIn: string;
-  amountOut: string;
+export type SwapQuote = {
+  fiatIn: string;
+  tokenOut: string;
 };
 
-interface FormProps {
+interface SwapModalProps {
 }
 
-const SwapModal: React.FC<FormProps> = ({
-}: FormProps) => {
-  const [currentFormPlayer, setCurrentFormPlayer] = useState<FormPlayer>({ name: '', amountIn: '', amountOut: '' });
+const SwapModal: React.FC<SwapModalProps> = ({
+}: SwapModalProps) => {
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ fiatIn: '', tokenOut: '' });
 
   /*
     Event Handlers
   */
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof FormPlayer) => {
-    const playerCopy = {...currentFormPlayer}
-    playerCopy[field] = event.target.value;
-    setCurrentFormPlayer(playerCopy);
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
+    const quoteCopy = {...currentQuote}
+    quoteCopy[field] = event.target.value;
+    setCurrentQuote(quoteCopy);
   };
 
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -48,27 +41,13 @@ const SwapModal: React.FC<FormProps> = ({
   const handleAdd = (event: React.FormEvent<HTMLButtonElement>) => {
     // Prevent the default form submit action
     event.preventDefault();
-    
-    // Sanitize the inputs in the row
-    if (!currentFormPlayer.name || !currentFormPlayer.amountIn || !currentFormPlayer.amountOut) {
-      alert('Please complete the row before adding a new one.');
-      return;
-    }
-
-    const playerToAdd = {
-      name: currentFormPlayer.name,
-      cashInAmount: parseFloat(currentFormPlayer.amountIn),
-      cashOutAmount: parseFloat(currentFormPlayer.amountOut)
-    };
 
     // Reset form fields
-    setCurrentFormPlayer({ name: '', amountIn: '', amountOut: '' });
+    setCurrentQuote({ fiatIn: '', tokenOut: ''});
   };
 
   const isFormComplete = () => {
-    const formComplete = currentFormPlayer.name !== '' &&
-                         currentFormPlayer.amountIn !== '' &&
-                         currentFormPlayer.amountOut !== '';
+    const formComplete = currentQuote.fiatIn !== ''
     
     return formComplete;
   };
@@ -83,10 +62,10 @@ const SwapModal: React.FC<FormProps> = ({
 
       <MainContentWrapper>
         <Input
-          label="U.S. Dollar"
+          label="U.S. Dollars"
           name={`amountIn`}
-          value={currentFormPlayer.amountIn}
-          onChange={event => handleInputChange(event, 'amountIn')}
+          value={currentQuote.fiatIn}
+          onChange={event => handleInputChange(event, 'fiatIn')}
           type="number"
           inputLabel="$"
           placeholder="0.00"
@@ -94,21 +73,21 @@ const SwapModal: React.FC<FormProps> = ({
         <Input
           label="USDC"
           name={`amountOut`}
-          value={currentFormPlayer.amountOut}
-          onChange={event => handleInputChange(event, 'amountOut')}
+          value={currentQuote.tokenOut}
+          onChange={event => handleInputChange(event, 'tokenOut')}
           onKeyDown={handleEnterPress}
           type="number"
           inputLabel="USDC"
-          placeholder="0.00"
+          placeholder="0"
         />
         <ButtonContainer>
-          <AddPlayerButton
+          <MainButton
             type="button"
             onClick={(event) => handleAdd(event)}
             disabled={!isFormComplete()}
           >
             Connect Wallet
-          </AddPlayerButton>
+          </MainButton>
         </ButtonContainer>
       </MainContentWrapper>
     </Wrapper>
@@ -120,6 +99,7 @@ const Wrapper = styled(AutoColumn)`
   width: 100%;
   border-radius: 16px;
   border: 1px solid #DEE2E6;
+  margin-top: 50px;
   padding: 1rem;
   gap: 1rem;
   background-color: #0D111C;
@@ -135,7 +115,7 @@ const TitleContainer = styled.div`
 const MainContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
   align-self: center;
   border-radius: 4px;
   justify-content: center;
@@ -146,7 +126,7 @@ const ButtonContainer = styled.div`
   justify-content: center;
 `;
 
-const AddPlayerButton = styled.button`
+const MainButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
