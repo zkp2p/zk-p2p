@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -24,7 +23,7 @@ const App = () => {
 
         <div className="app-content">
           <Routes>
-            <Route path="/swap" element={<Swap />} />
+            <Route path="/" element={<Swap />} />
             <Route path="/swap" element={<Swap />} />
             <Route path="/pool" element={<Pool />} />
             <Route path="/register" element={<Registration />} />
