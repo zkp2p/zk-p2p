@@ -1,32 +1,30 @@
-export enum OrderStatus {
-  UNOPENED = "unopened",
-  OPEN = "open",
-  FILLED = "filled",
-  CANCELLED = "cancelled",
+// struct Deposit {
+//   bytes32 depositor;
+//   uint256 remainingDeposits;          // Amount of remaining deposited liquidity
+//   uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
+//   uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
+//   uint256 convenienceFee;             // Amount of USDC per on-ramp transaction available to be claimed by off-ramper
+//   bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
+// }
+
+export interface Intent {
+  depositor: string;
+  remainingDepositAmount: number;
+  outstandingIntentAmount: number;
+  conversionRate: number;
+  convenienceFee: number;
 }
-  
-export interface OnRampOrder {
-  orderId: number;
+
+// struct Intent {
+//   bytes32 onramper;
+//   bytes32 deposit;
+//   uint256 amount;
+//   uint256 intentTimestamp;
+// }
+
+export interface Intent {
   onRamper: string;
-  onRamperEncryptPublicKey: string;
-  amountToReceive: number;
-  maxAmountToPay: number;
-  status: OrderStatus;
-}
-
-export enum OrderClaimStatus {
-  UNSUBMITTED = "unsubmitted",
-  SUBMITTED = "submitted",
-  USED = "used",
-  CLAWBACK = "clawback"
-}
-
-export interface OnRampOrderClaim {
-  claimId: number;
-  offRamper: string;
-  hashedVenmoId: string;
-  status: OrderClaimStatus;
-  encryptedOffRamperVenmoId: string;
-  claimExpirationTime: number;
-  minAmountToPay: number;
+  deposit: string;
+  amount: number;
+  timestamp: number;
 }
