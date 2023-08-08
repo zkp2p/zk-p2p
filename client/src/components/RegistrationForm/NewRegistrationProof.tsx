@@ -6,9 +6,9 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
-import { NumberedStep } from "../legacy/NumberedStep";
-import { EmailInputTypeSwitch } from "../legacy/EmailInputTypeSwitch";
-import { DragAndDropTextBox } from "../legacy/DragAndDropTextBox";
+import { NumberedStep } from "../common/NumberedStep";
+import { EmailInputTypeSwitch } from "../common/EmailInputTypeSwitch";
+import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
@@ -28,7 +28,10 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   setSubmitOrderProof,
   setSubmitOrderPublicSignals
 }) => {
-  const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(true);
+  const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
+  const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
+      storedValue !== null ? JSON.parse(storedValue) : true
+  );
   
   const [emailFull, setEmailFull] = useState<string>(localStorage.emailFull || "");
 
@@ -93,10 +96,14 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   if (error) console.error(error);
   
   const circuitInputs = value || {};
-  console.log("Circuit inputs:", circuitInputs);
+  // console.log("Circuit inputs:", circuitInputs);
 
   const handleEmailInputTypeChanged = (checked: boolean) => {
+    // Update state maintained in parent component
     setIsEmailInputSettingDrag(checked);
+
+    // Store preference in local storage
+    localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
   };
 
   return (
@@ -110,8 +117,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
           <HeaderContainer>
             <Title>{isEmailInputSettingDrag ? 'Drag and Drop .eml' : 'Paste Email'}</Title>
             <EmailInputTypeSwitch
-              inputTypeChecked={isEmailInputSettingDrag}
-              isLightMode={false}
+              switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
               />
           </HeaderContainer>
@@ -260,7 +266,7 @@ const Container = styled.div`
 `;
 
 const Body = styled(Col)`
-  gap: 2rem;
+  gap: 0.75rem;
 `;
 
 const NewRegistrationProofFormBodyTitleContainer = styled(Col)`

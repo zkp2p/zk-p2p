@@ -29,10 +29,8 @@ export const LabeledTextArea: React.FC<{
   secret,
 }) => {
   return (
-    <LabeledTextAreaContainer
-      className={_.compact(["labeledTextAreaContainer", className]).join(" ")}
-    >
-      <Label>{label}</Label>
+    <LabeledTextAreaContainer className={_.compact(["labeledTextAreaContainer", className]).join(" ")}>
+      <Label isEmpty={!label}>{label}</Label>
       {warning && (
         <span className="warning" style={{ color: warningColor }}>
           {warning}
@@ -54,19 +52,21 @@ export const LabeledTextArea: React.FC<{
   );
 };
 
-const Label = styled.label`
+const Label = styled.label<{ isEmpty: boolean }>`
   color: rgba(255, 255, 255, 0.8);
+  padding-bottom: ${(props) => (props.isEmpty ? '0' : '8px')};
 `;
 
 const LabeledTextAreaContainer = styled(Col)`
   height: 15vh;
   border-radius: 4px;
   position: relative;
-  gap: 8px;
+
   & .warning {
     color: #bd3333;
     font-size: 80%;
   }
+
   .secret {
     position: absolute;
     width: 100%;
@@ -82,6 +82,7 @@ const LabeledTextAreaContainer = styled(Col)`
     align-items: center;
     transition: opacity 0.3s ease-in-out;
   }
+
   &:hover .secret,
   & :focus + .secret {
     opacity: 0;
@@ -96,6 +97,7 @@ const TextArea = styled.textarea`
 	padding: 16px;
 	transition: all 0.2s ease-in-out;
 	resize: none;
+
   &:hover {
 		border: 1px solid rgba(255, 255, 255, 0.8);
   }

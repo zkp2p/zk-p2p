@@ -4,7 +4,7 @@ import { useSignMessage } from 'wagmi'
 
 import { Button } from "../Button";
 import { Col, SubHeader } from "./Layout";
-import { NumberedStep } from "./NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "./SingleLineInput";
 import { generateAccountFromSignature, getPublicKeyFromAccount } from '../../helpers/messagEncryption';
 

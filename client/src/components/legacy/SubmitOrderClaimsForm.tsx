@@ -5,7 +5,7 @@ import { useSignMessage } from 'wagmi'
 import { Button } from "../Button";
 import { Col, SubHeader } from "./Layout";
 import { OrderTable } from './OrderTable';
-import { NumberedStep } from "./NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 
 import { OnRampOrderClaim } from "../../helpers/types";
 import {

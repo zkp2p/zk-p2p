@@ -6,7 +6,7 @@ import { Button } from "../Button";
 import { Col, SubHeader } from "./Layout";
 import { LabeledTextArea } from './LabeledTextArea';
 import { ProgressBar } from "./ProgressBar";
-import { NumberedStep } from "./NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";

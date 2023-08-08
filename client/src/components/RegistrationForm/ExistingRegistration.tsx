@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
-import { NumberedStep } from "../legacy/NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../legacy/ReadOnlyInput";
 import { SingleLineInput } from "../legacy/SingleLineInput";
 

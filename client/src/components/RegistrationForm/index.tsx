@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { Col } from "../legacy/Layout";
-
 import { Button } from '../Button'
 import { ExistingRegistration } from "./ExistingRegistration";
 import { NewRegistrationProof } from "./NewRegistrationProof";
@@ -56,7 +54,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
           </Button>
         </TitleRow>
 
-        <MainContentWrapper>
+        <Content>
           {!isNewRegistration ? (
             <ExistingRegistrationContainer>
               <ExistingRegistration />
@@ -78,7 +76,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
               </Column>
             </NewRegistrationContainer>
           )}
-        </MainContentWrapper>
+        </Content>
       </Column>
     </Wrapper>
   );
@@ -110,10 +108,10 @@ const TitleRow = styled(RowBetween)`
   };
 `;
 
-const MainContentWrapper = styled.div`
+const Content = styled.div`
   gap: 1rem;
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.1);
+  background-color: #0D111C;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;

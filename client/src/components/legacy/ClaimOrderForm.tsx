@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Button } from "../Button";
 import { Col, SubHeader } from "./Layout";
-import { NumberedStep } from "./NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "./ReadOnlyInput";
 import { SingleLineInput } from "./SingleLineInput";
 import { StyledLink } from "./StyledLink";
