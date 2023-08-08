@@ -1,23 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Switch } from '@mui/material';
 import styled from 'styled-components';
 
 
 interface EmailInputTypeSwitchProps {
-  inputTypeChecked: boolean;
-  isLightMode: boolean;
+  switchChecked: boolean;
   onSwitchChange: (checked: boolean) => void;
 }
 
 export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
-  inputTypeChecked = true,
-  isLightMode,
+  switchChecked = true,
   onSwitchChange,
 }) => {
-  useEffect(() => {
-    localStorage.setItem('proofEmailVersion', String(inputTypeChecked));
-  }, [inputTypeChecked]);
-
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSwitchChange(event.target.checked);
   };
@@ -28,9 +22,9 @@ export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
         Input Mode
       </SwitchLabel>
       <Switch
-        defaultChecked={inputTypeChecked}
+        checked={switchChecked}
         onChange={handleSwitchChange}
-        color={inputTypeChecked ? (!isLightMode ? 'primary' : 'secondary') : 'default'}
+        color={switchChecked ? 'primary' : 'secondary'}
       />
     </div>
   )

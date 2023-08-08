@@ -8,7 +8,7 @@ import {
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
-import { NumberedStep } from "../legacy/NumberedStep";
+import { NumberedStep } from "../common/NumberedStep";
 import { abi } from "../../helpers/abi/ramp.abi";
 import { contractAddresses } from "../../helpers/deployed_addresses";
 

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { CenterAllDiv, Row } from "./Layout";
+import { CenterAllDiv, Row } from "../legacy/Layout";
 
 
 export const NumberedStep: React.FC<{
@@ -21,10 +21,10 @@ export const NumberedStep: React.FC<{
 const NumberedStepContainer = styled(Row)`
   background: rgba(255, 255, 255, 0.05);
   gap: 1rem;
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 12px 16px;
   color: #fff;
-  line-height: 1.3;
+  line-height: 1.4;
 `;
 
 const NumberedStepLabel = styled(CenterAllDiv)`

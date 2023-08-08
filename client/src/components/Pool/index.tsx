@@ -21,7 +21,7 @@ export default function PoolTable() {
           </Button>
         </TitleRow>
 
-        <MainContentWrapper>
+        <Content>
           <ErrorContainer>
             <ThemedText.DeprecatedBody textAlign="center">
             <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -33,14 +33,14 @@ export default function PoolTable() {
               Connect Wallet
             </Button>
           </ErrorContainer>
-        </MainContentWrapper>
+        </Content>
       </Column>
     </Wrapper>
   )
 }
 
 const Wrapper = styled(AutoColumn)`
-  max-width: 800px;
+  max-width: 680px;
   width: 100%;
 `
 
@@ -65,7 +65,7 @@ const TitleRow = styled(RowBetween)`
   };
 `;
 
-const MainContentWrapper = styled.main`
+const Content = styled.main`
   display: flex;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
