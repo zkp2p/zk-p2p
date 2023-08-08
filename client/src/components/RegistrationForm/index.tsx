@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useAccount } from "wagmi";
 
 import { Button } from '../Button'
 import { ExistingRegistration } from "./ExistingRegistration";
@@ -8,18 +9,15 @@ import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 
-
-interface RegistrationFormProps {
-  // loggedInWalletAddress: string;
-}
  
-export const RegistrationForm: React.FC<RegistrationFormProps> = ({
-  // loggedInWalletAddress,
-}) => {
+export const RegistrationForm: React.FC = () => {
+  const { address } = useAccount();
+
   /*
     State
   */
 
+  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
   const [isNewRegistration, setIsNewRegistration] = useState<boolean>(false);
 
   const handleUpdateClick = () => {
@@ -34,10 +32,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
     Hooks
   */
 
-  // useEffect(() => {
-  //   setRequestedUSDAmountInput(0);
-  //   setRequestedAmount(0);
-  // }, [selectedOrder]);
+  useEffect(() => {
+    if (address) {
+      setEthereumAddress(address);
+    } else {
+      setEthereumAddress("");
+    }
+  }, [address]);
 
   /*
     Component
@@ -57,7 +58,9 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         <Content>
           {!isNewRegistration ? (
             <ExistingRegistrationContainer>
-              <ExistingRegistration />
+              <ExistingRegistration
+                loggedInWalletAddress={ethereumAddress}
+              />
             </ExistingRegistrationContainer>
           ) : (
             <NewRegistrationContainer>
