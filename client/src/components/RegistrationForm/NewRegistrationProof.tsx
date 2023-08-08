@@ -3,7 +3,7 @@ import { useAsync, useUpdateEffect } from "react-use";
 import styled from 'styled-components';
 
 import { Button } from "../Button";
-import { Col, SubHeader } from "../legacy/Layout";
+import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../legacy/NumberedStep";
@@ -101,7 +101,6 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
 
   return (
     <Container>
-      <SubHeader>New Registration</SubHeader>
       <Body>
         <NumberedStep>
           Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
@@ -271,7 +270,7 @@ const NewRegistrationProofFormBodyTitleContainer = styled(Col)`
 const ProcessStatus = styled.div<{ status: string }>`
   font-size: 8px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 16px;
 `;
 
 const ButtonContainer = styled.div`

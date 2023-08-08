@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { Button } from "../Button";
-import { Col, SubHeader } from "../legacy/Layout";
+import { Col } from "../legacy/Layout";
 import { NumberedStep } from "../legacy/NumberedStep";
 import { ReadOnlyInput } from "../legacy/ReadOnlyInput";
 import { SingleLineInput } from "../legacy/SingleLineInput";
@@ -33,7 +33,6 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   */
   return (
     <Container>
-      <SubHeader>Existing Registration</SubHeader>
       <Body>
         <NumberedInputContainer>
           <NumberedStep>

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from "styled-components";
 
-import { Toggle } from "../components/Toggle";
 import PoolTable from "../components/Pool"
 
 
