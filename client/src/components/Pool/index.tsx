@@ -12,11 +12,11 @@ export default function PoolTable() {
   return (
     <Wrapper>
       <Column>
-        <TitleRow padding="0">
+        <TitleRow>
           <ThemedText.HeadlineMedium>
             Pool
           </ThemedText.HeadlineMedium>
-          <Button>
+          <Button height={44}>
             + New Position
           </Button>
         </TitleRow>
@@ -57,6 +57,7 @@ const TitleRow = styled(RowBetween)`
   height: 50px;
   align-items: flex-end;
   color: #FFF;
+  padding: 0 1rem;
 
   @media (max-width: 600px) {
     flex-wrap: wrap;

@@ -12,11 +12,11 @@ export default function PermissionsForm() {
   return (
       <ComponentWrapper>
         <Column>
-          <TitleRow padding="0">
+          <TitleRow>
             <ThemedText.HeadlineMedium>
               Permissions
             </ThemedText.HeadlineMedium>
-            <Button>
+            <Button height={44}>
               + New Entry
             </Button>
           </TitleRow>
@@ -26,7 +26,7 @@ export default function PermissionsForm() {
               <ThemedText.DeprecatedBody textAlign="center">
               <ListIcon strokeWidth={1} style={{ marginTop: '2em' }} />
               <div>
-                Your allow and deny wallet addresses will appear here.
+                Your allowed and denied wallet addresses will appear here.
               </div>
               </ThemedText.DeprecatedBody>
               <Button>
@@ -57,6 +57,7 @@ const TitleRow = styled(RowBetween)`
   height: 50px;
   align-items: flex-end;
   color: #FFF;
+  padding: 0 1rem;
 
   @media (max-width: 600px) {
     flex-wrap: wrap;

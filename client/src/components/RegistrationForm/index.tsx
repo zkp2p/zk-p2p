@@ -46,11 +46,11 @@ export const RegistrationForm: React.FC = () => {
   return (
     <Wrapper>
       <Column>
-        <TitleRow padding="0">
+        <TitleRow>
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleUpdateClick}>
+          <Button onClick={handleUpdateClick} height={44}>
             + Update
           </Button>
         </TitleRow>
@@ -103,6 +103,7 @@ const TitleRow = styled(RowBetween)`
   height: 50px;
   align-items: flex-end;
   color: #FFF;
+  padding: 0 1rem;
 
   @media (max-width: 600px) {
     flex-wrap: wrap;

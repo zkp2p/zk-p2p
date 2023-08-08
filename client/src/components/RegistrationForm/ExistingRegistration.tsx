@@ -1,32 +1,75 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import {
+  useContractRead,
+  useNetwork,
+} from 'wagmi';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../legacy/ReadOnlyInput";
 import { SingleLineInput } from "../legacy/SingleLineInput";
+import { encryptMessage } from "../../helpers/messagEncryption";
+import { generateVenmoIdHash } from "../../helpers/venmoHash";
+// import { abi } from "../helpers/ramp.abi";
+// import { useRampContractAddress } from '../hooks/useContractAddress';
 
 
 interface ExistingRegistrationProps {
-  // loggedInWalletAddress: string;
-  // senderRequestedAmountDisplay: number;
+  loggedInWalletAddress: string;
 }
  
 export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
-  // loggedInWalletAddress,
-  // senderRequestedAmountDisplay,
+  loggedInWalletAddress,
 }) => {
-  const loggedInWalletAddress = '';
-  const [venmoIDInput, setVenmoIDInput] = useState<string>('');
+  const { chain } = useNetwork();
+
+  const persistedVenmoIdKey = `persistedVenmoId_${loggedInWalletAddress}`;
+  const [venmoIdInput, setVenmoIdInput] = useState<string>(localStorage.getItem(persistedVenmoIdKey) || "");
+  
+  const [hashedVenmoId, setHashedVenmoId] = useState<string>('');
 
   /*
     Hooks
   */
 
   useEffect(() => {
-    setVenmoIDInput('');
+    setVenmoIdInput('');
   }, [loggedInWalletAddress]);
+
+  useEffect(() => {
+    // create an async function inside the effect
+    const updateVenmoId = async () => {
+      if(venmoIdInput && venmoIdInput.length > 15) {
+  
+        const hashedVenmoId = await generateVenmoIdHash(venmoIdInput);
+        setHashedVenmoId(hashedVenmoId);
+  
+        // Persist venmo id input so user doesn't have to paste it again in the future
+        localStorage.setItem(persistedVenmoIdKey, venmoIdInput);
+      }
+    }
+  
+    updateVenmoId();
+  }, [venmoIdInput]);
+
+  /*
+    Contract Reads
+  */
+  
+  // mapping(bytes32 => address) public accountIds;
+  // const {
+  //   data: orderClaimsData,
+  //   isLoading: isReadOrderClaimsLoading,
+  //   isError: isReadOrderClaimsError,
+  //   refetch: refetchClaimedOrders,
+  // } = useContractRead({
+  //   addressOrName: useRampContractAddress(chain),
+  //   contractInterface: abi,
+  //   functionName: 'getClaimsForOrder',
+  //   args: [hashedVenmoId],
+  // });
 
   /*
     Component
@@ -49,7 +92,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           value="645716473020416186"
           placeholder={'1234567891011121314'}
           onChange={(e) => {
-            setVenmoIDInput(e.currentTarget.value);
+            setVenmoIdInput(e.currentTarget.value);
           }}
         />
         <Button

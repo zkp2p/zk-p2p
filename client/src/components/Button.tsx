@@ -3,17 +3,20 @@ import styled, { css } from 'styled-components';
 
 
 interface ButtonProps {
+  height?: number;
   disabled?: boolean;
   onClick?: () => void;
   children?: React.ReactNode;
 }
 
 export const Button: React.FC<ButtonProps> = ({
+  height = 48,
   disabled = false,
   onClick,
   children
 }) => (
   <BaseButton
+    height={height}
     disabled={disabled}
     onClick={onClick}
   >
@@ -22,7 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
 );
 
 const BaseButton = styled.button<ButtonProps>`
-  height: 48px;
+  height: ${({ height }) => height}px;
   background: #df2e2d;
   box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
   border-radius: 24px;
