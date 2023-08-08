@@ -10,36 +10,36 @@ import { ThemedText } from '../../theme/text'
 
 export default function PoolTable() {
   return (
-      <ComponentWrapper>
-        <Column>
-          <TitleRow padding="0">
-            <ThemedText.HeadlineMedium>
-              Pool
-            </ThemedText.HeadlineMedium>
-            <Button>
-              + New Position
-            </Button>
-          </TitleRow>
+    <Wrapper>
+      <Column>
+        <TitleRow padding="0">
+          <ThemedText.HeadlineMedium>
+            Pool
+          </ThemedText.HeadlineMedium>
+          <Button>
+            + New Position
+          </Button>
+        </TitleRow>
 
-          <MainContentWrapper>
-            <ErrorContainer>
-              <ThemedText.DeprecatedBody textAlign="center">
-              <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-              <div>
-                Your active pool positions will appear here.
-              </div>
-              </ThemedText.DeprecatedBody>
-              <Button>
-                Connect Wallet
-              </Button>
-            </ErrorContainer>
-          </MainContentWrapper>
-        </Column>
-      </ComponentWrapper>
+        <MainContentWrapper>
+          <ErrorContainer>
+            <ThemedText.DeprecatedBody textAlign="center">
+            <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+            <div>
+              Your active pool positions will appear here.
+            </div>
+            </ThemedText.DeprecatedBody>
+            <Button>
+              Connect Wallet
+            </Button>
+          </ErrorContainer>
+        </MainContentWrapper>
+      </Column>
+    </Wrapper>
   )
 }
 
-const ComponentWrapper = styled(AutoColumn)`
+const Wrapper = styled(AutoColumn)`
   max-width: 800px;
   width: 100%;
 `

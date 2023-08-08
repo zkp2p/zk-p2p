@@ -1,111 +1,174 @@
+import React, { useState, ChangeEvent, useEffect } from "react";
+import styled from 'styled-components';
 
-import { Inbox } from 'react-feather'
-import styled, { css, useTheme } from 'styled-components/macro'
-
-import { Button } from '../Button'
+import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
-import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 
 
-export default function SwapModal() {
-  return (
-      <ComponentWrapper>
-        <TopArea>
-          <Title>Token</Title>
-        </TopArea>
-        <FromArea>
-          <TopItem>
-            {/* Replace o-tooltip with an equivalent React component or library */}
-            <Left>From</Left>
-            {/* Replace CommLoading with an equivalent React component or library */}
-            <Right>{/* Replace with fromBalance state variable */}</Right>
-          </TopItem>
-          <BottomItem>
-            <Left>
-              {/* Replace svg-icon with an equivalent React component or library */}
-              {/* Replace with showChainName() method */}
-              {/* Replace SvgIconThemed with an equivalent React component or library */}
-            </Left>
-            <Right>
-              <input
-                type="text"
-                placeholder={'0.0'}
-              />
-              {/* Replace el-button with an equivalent React component or library */}
-              {/* Replace ObSelect with an equivalent React component or library */}
-            </Right>
-          </BottomItem>
-        </FromArea>
-      </ComponentWrapper>
-  )
+export interface Player {
+  name: string;
+  cashInAmount: number;
+  cashOutAmount: number;
 }
 
-const ComponentWrapper = styled.div`
-  max-width: 480px;
+export type FormPlayer = {
+  name: string;
+  amountIn: string;
+  amountOut: string;
+};
+
+interface FormProps {
+}
+
+const SwapModal: React.FC<FormProps> = ({
+}: FormProps) => {
+  const [currentFormPlayer, setCurrentFormPlayer] = useState<FormPlayer>({ name: '', amountIn: '', amountOut: '' });
+
+  /*
+    Event Handlers
+  */
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof FormPlayer) => {
+    const playerCopy = {...currentFormPlayer}
+    playerCopy[field] = event.target.value;
+    setCurrentFormPlayer(playerCopy);
+  };
+
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      // Prevent the default action
+      event.preventDefault();
+
+      // Call the handleAdd function
+      handleAdd(event as any);
+    }
+  };
+
+  const handleAdd = (event: React.FormEvent<HTMLButtonElement>) => {
+    // Prevent the default form submit action
+    event.preventDefault();
+    
+    // Sanitize the inputs in the row
+    if (!currentFormPlayer.name || !currentFormPlayer.amountIn || !currentFormPlayer.amountOut) {
+      alert('Please complete the row before adding a new one.');
+      return;
+    }
+
+    const playerToAdd = {
+      name: currentFormPlayer.name,
+      cashInAmount: parseFloat(currentFormPlayer.amountIn),
+      cashOutAmount: parseFloat(currentFormPlayer.amountOut)
+    };
+
+    // Reset form fields
+    setCurrentFormPlayer({ name: '', amountIn: '', amountOut: '' });
+  };
+
+  const isFormComplete = () => {
+    const formComplete = currentFormPlayer.name !== '' &&
+                         currentFormPlayer.amountIn !== '' &&
+                         currentFormPlayer.amountOut !== '';
+    
+    return formComplete;
+  };
+
+  return (
+    <Wrapper>
+      <TitleContainer>
+        <ThemedText.HeadlineSmall>
+          Swap
+        </ThemedText.HeadlineSmall>
+      </TitleContainer>
+
+      <MainContentWrapper>
+        <Input
+          label="U.S. Dollar"
+          name={`amountIn`}
+          value={currentFormPlayer.amountIn}
+          onChange={event => handleInputChange(event, 'amountIn')}
+          type="number"
+          inputLabel="$"
+          placeholder="0.00"
+        />
+        <Input
+          label="USDC"
+          name={`amountOut`}
+          value={currentFormPlayer.amountOut}
+          onChange={event => handleInputChange(event, 'amountOut')}
+          onKeyDown={handleEnterPress}
+          type="number"
+          inputLabel="USDC"
+          placeholder="0.00"
+        />
+        <ButtonContainer>
+          <AddPlayerButton
+            type="button"
+            onClick={(event) => handleAdd(event)}
+            disabled={!isFormComplete()}
+          >
+            Connect Wallet
+          </AddPlayerButton>
+        </ButtonContainer>
+      </MainContentWrapper>
+    </Wrapper>
+  );
+};
+
+const Wrapper = styled(AutoColumn)`
+  max-width: 464px;
   width: 100%;
-  padding: 1.5rem;
-  border-radius: 20px;
-  background: #0D111C;
-`
+  border-radius: 16px;
+  border: 1px solid #DEE2E6;
+  padding: 1rem;
+  gap: 1rem;
+  background-color: #0D111C;
+  border: 1px solid #98a1c03d;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
+`;
 
-const TopArea = styled.div`
+const TitleContainer = styled.div`
   display: flex;
-  align-items: center;
-  position: relative;
+  margin-left: 0.75rem;
 `;
 
-const Title = styled.span`
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 20px;
-  margin-right: 10px;
-`;
-
-// FromArea, TopItem, and BottomItem
-const FromArea = styled.div`
-  margin-top: 20px;
-  height: 96px;
-  border-radius: 20px;
-  position: relative;
-  padding: 20px;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-`;
-
-const TopItem = styled.div`
+const MainContentWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-self: center;
+  border-radius: 4px;
+  justify-content: center;
 `;
 
-const BottomItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  align-items: center;
-`;
-
-// Left and Right
-const Left = styled.div`
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 24px;
-  white-space: nowrap;
+const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
-  cursor: pointer;
 `;
 
-const Right = styled.div`
+const AddPlayerButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  padding: 1rem;
   width: 100%;
-  text-align: right;
-  border: 0;
-  outline: 0;
-  appearance: none;
-  background-color: transparent;
-  transition: all 0.2s ease 0s;
-  flex-direction: row-reverse;
+  font-size: 20px;
+  font-weight: 550;
+  transition: all 75ms;
+
+  background-color: #212529;
+  color: #F8F9FA;
+  
+  &:hover {
+    background-color: #343A40;
+    color: #E9ECEF;
+  }
+
+  &:disabled {
+    background-color: #df2e2d;
+    color: #F8F9FA;
+  }
 `;
+
+export default SwapModal;
