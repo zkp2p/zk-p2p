@@ -1,6 +1,5 @@
 /*jslint browser: true*/
 /*global require, exports*/
-import { STRING_PRESELECTOR } from "../src/helpers/constants.ts";
 import { minDfa, nfaToDfa, regexToNfa } from "./lexical";
 
 /** This section defines helper regex components -- to edit the regex used, edit the return
@@ -96,9 +95,6 @@ function test_regex() {
   // TODO: it seems like there is a min regex string length of 2 chars?
   // Prefix with 3 chars and then manually edit regex circom `$ab` -> `$`;
   let venmo_amount_regex = `$` + `(${r0to9_with_period})+` + `\r\n`;
-
-  // -------- TWITTER BODY REGEX ---------
-  // let regex = STRING_PRESELECTOR + `${word_char}+`;
 
   // ---------- DEPRECATAED REGEXES ----------
   // let order_invariant_header_regex_raw = `(((\\n|^)(((from):([A-Za-z0-9 _."@-]+<)?[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.]+>)?|(subject:[a-zA-Z 0-9]+)?|((to):([A-Za-z0-9 _."@-]+<)?[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.]+>)?)(\\r))+)`;
