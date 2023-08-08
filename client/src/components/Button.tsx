@@ -22,10 +22,10 @@ export const Button: React.FC<ButtonProps> = ({
 );
 
 const BaseButton = styled.button<ButtonProps>`
-  height: 50px;
+  height: 48px;
   background: #df2e2d;
   box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
-  border-radius: 25px;
+  border-radius: 24px;
   padding: 8px 24px;
   text-align: center;
   color: white;

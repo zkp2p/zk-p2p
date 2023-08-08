@@ -16,7 +16,7 @@ export const Permissions: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 8px 8px 0px;
+  padding: 12px 8px 0px;
 `;
 
 const Main = styled.div`

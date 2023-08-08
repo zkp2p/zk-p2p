@@ -6,7 +6,7 @@ import {
 } from 'wagmi'
 
 import { Button } from "../Button";
-import { Col, SubHeader } from "../legacy/Layout";
+import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../legacy/NumberedStep";
 import { abi } from "../../helpers/abi/ramp.abi";
@@ -62,7 +62,6 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
 
   return (
     <Container>
-      <SubHeader>Submit Registration</SubHeader>
       <Body>
           <NumberedStep>
             Upon successful proof generation above, both the proof and public inputs will be
