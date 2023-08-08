@@ -19,7 +19,7 @@ args = parser.parse_args()
 bucket_name = args.bucket_name
 # build_dir = args.build_dir
 # circuit_name = args.circuit_name
-prefix_to_tar = args.prefix_to_tar
+prefixes_to_tar = args.prefix_to_tar.split(',')
 prefixes = args.prefix.split(',')
 dirs = args.dirs.split(',')
 
@@ -41,7 +41,7 @@ def upload_to_s3(filename, dir=""):
 for dir in dirs:
     for file in os.listdir(dir):
         # Check if the file matches the pattern
-        if file.startswith(prefix_to_tar):
+        if any(file.startswith(prefix_to_tar) for prefix_to_tar in prefixes_to_tar):
             source_file_path = dir + file
             upload_to_s3(file, dir)  # Uncompressed file
 
