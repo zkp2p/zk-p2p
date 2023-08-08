@@ -40,7 +40,7 @@ export default function PoolTable() {
 }
 
 const Wrapper = styled(AutoColumn)`
-  max-width: 800px;
+  max-width: 680px;
   width: 100%;
 `
 

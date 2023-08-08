@@ -83,7 +83,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 };
 
 const Wrapper = styled.div`
-  max-width: 800px;
+  max-width: 680px;
   width: 100%;
 `;
 
