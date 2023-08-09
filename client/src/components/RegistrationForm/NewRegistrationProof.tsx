@@ -121,7 +121,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
           <StyledArrowLeft/>
         </button>
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          New Registration
+          Update Registration
         </ThemedText.HeadlineSmall>
       </RowBetween>
 
