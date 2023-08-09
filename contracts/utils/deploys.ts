@@ -2,10 +2,10 @@ import { BigNumber, Signer } from "ethers";
 
 import { Address } from "@utils/types";
 
-import { Ramp, USDCMock, VenmoReceiveProcessorMock, VenmoReceiveVerifier, VenmoSendProcessorMock, VenmoSendVerifier} from "./contracts";
+import { Ramp, USDCMock, VenmoReceiveProcessorMock, VenmoReceiveProcessor, VenmoSendProcessorMock, VenmoSendProcessor} from "./contracts";
 import { Ramp__factory } from "../typechain/factories/contracts";
 import { USDCMock__factory, VenmoReceiveProcessorMock__factory, VenmoSendProcessorMock__factory } from "../typechain/factories/contracts/mocks";
-import { VenmoReceiveVerifier__factory, VenmoSendVerifier__factory } from "../typechain/factories/contracts/verifiers";
+import { VenmoReceiveProcessor__factory, VenmoSendProcessor__factory } from "../typechain/factories/contracts/processors";
 
 export default class DeployHelper {
   private _deployerSigner: Signer;
@@ -27,12 +27,18 @@ export default class DeployHelper {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
   }
 
-  public async deployVenmoReceiveVerifier(): Promise<VenmoReceiveVerifier> {
-    return await new VenmoReceiveVerifier__factory(this._deployerSigner).deploy();
+  public async deployVenmoReceiveProcessor(
+    venmoKeys: BigNumber[],
+    emailFromAddress: string,
+  ): Promise<VenmoReceiveProcessor> {
+    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
   }
 
-  public async deployVenmoSendVerifier(): Promise<VenmoSendVerifier> {
-    return await new VenmoSendVerifier__factory(this._deployerSigner).deploy();
+  public async deployVenmoSendProcessor(
+    venmoKeys: BigNumber[],
+    emailFromAddress: string,
+  ): Promise<VenmoSendProcessor> {
+    return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoReceiveProcessorMock(): Promise<VenmoReceiveProcessorMock> {

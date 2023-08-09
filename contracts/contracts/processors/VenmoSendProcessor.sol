@@ -1,115 +1,153 @@
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+
+import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
 import { VenmoSendVerifier } from "../verifiers/VenmoSendVerifier.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoSendProcessor is VenmoSendVerifier {
+contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
+
+    /* ============ Constants ============ */
+    uint16 private constant BYTES_IN_PACKED_BYTES = 7;  // 7 bytes in a packed item returned from circom
+    
+    /* ============ State Variables ============ */
+    uint256[17] public venmoMailserverKeys;
+    bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
-    constructor() VenmoSendVerifier() {}
+    constructor(
+        uint256[17] memory _venmoMailserverKeys,
+        string memory _emailFromAddress
+    )
+        VenmoSendVerifier()
+        Ownable()
+    {
+        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
 
+        venmoMailserverKeys = _venmoMailserverKeys;
+        emailFromAddress = bytes(_emailFromAddress);
+    }
+
+    /* ============ External Functions ============ */
+
+    function setVenmoMailserverKeys(uint256[17] memory _venmoMailserverKeys) external onlyOwner {
+        venmoMailserverKeys = _venmoMailserverKeys;
+    }
+
+    // Set emailFromAddress
+    
     /* ============ External View Functions ============ */
     function processProof(
-        uint[2] memory a,
-        uint[2][2] memory b,
-        uint[2] memory c,
-        uint[32] memory signals
+        uint[2] memory _a,
+        uint[2][2] memory _b,
+        uint[2] memory _c,
+        uint[51] memory _signals
     )
-        external
+        public
         view
-        returns(uint256 amount, uint256 venmoId, bytes32 venmoIdHash, bytes32 intentHash)
+        override
+        returns(uint256 amount, uint256 offRamperId, bytes32 offRamperIdHash, bytes32 intentHash)
     {
-        require(verifyProof(a, b, c, signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(verifyProof(_a, _b, _c, _signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        // // Signals [0] is offRamper Venmo ID
-        // offRamperVenmoId = signals[0];
+        // Signals [0:5] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_signals, 0);
+        require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // // Signals [1:3] are packed amount value
-        // uint256[3] memory amountSignals;
-        // for (uint256 i = 1; i < 4; i++) {
-        //     amountSignals[i - 1] = signals[i];
-        // }
-        // uint256 amount = _stringToUint256(_convertPackedBytesToBytes(amountSignals, bytesInPackedBytes * 3));
-        // usdAmount = amount * 10 ** 6;
+        // Signals [5:10] are the packed timestamp, multiply by 1e4 since venmo only gives us two decimals instead of 6
+        amount = _stringToUint256(_parseSignalArray(_signals, 5)) * 1e4;
 
-        // // Signals [4, 5, 6] are nullifier
-        // bytes memory nullifierAsBytes = abi.encodePacked(
-        //     signals[4], signals[5], signals[6]
-        // );
-        // nullifier = keccak256(nullifierAsBytes);
-        // require(!nullified[nullifier], "Email has already been used");
+        // Signals [10:15] is the packed offRamperId
+        offRamperId = _stringToUint256(_parseSignalArray(_signals, 10));
 
-        // // Signals [7, 8, ...., 23] are modulus.
-        // for (uint256 i = 7; i < msgLen - 2; i++) {
-        //     require(signals[i] == venmoMailserverKeys[i - 7], "Invalid: RSA modulus not matched");
-        // }
+        // Signals [15] is the packed offRamperIdHsdh
+        offRamperIdHash = bytes32(_signals[15]);
 
-        // // Signals [24] is orderId
-        // orderId = signals[msgLen - 2];
+        // Signals [16:33] are modulus.
+        for (uint256 i = 16; i < 33; i++) {
+            require(_signals[i] == venmoMailserverKeys[i - 16], "Invalid: RSA modulus not matched");
+        }
 
-        // // Signals [25] is claimId
-        // claimId = signals[msgLen - 1];
+        // Signals [50] is intentHash
+        intentHash = bytes32(_signals[50]);
+    }
+
+    function getVenmoMailserverKeys() external view returns (uint256[17] memory) {
+        return venmoMailserverKeys;
+    }
+
+    function getEmailFromAddress() external view returns (bytes memory) {
+        return emailFromAddress;
     }
 
     /* ============ Internal Functions ============ */
+
+    function _parseSignalArray(uint256[51] memory _signals, uint8 _from) internal pure returns (string memory) {
+        uint256[5] memory signalArray;
+        for (uint256 i = _from; i < _from + 5; i++) {
+            signalArray[i - _from] = _signals[i];
+        }
+
+        return _convertPackedBytesToBytes(signalArray, BYTES_IN_PACKED_BYTES * 5);
+    }
 
     // Unpacks uint256s into bytes and then extracts the non-zero characters
     // Only extracts contiguous non-zero characters and ensures theres only 1 such state
     // Note that unpackedLen may be more than packedBytes.length * 8 since there may be 0s
     // TODO: Remove console.logs and define this as a pure function instead of a view
-    // function _convertPackedBytesToBytes(uint256[3] memory packedBytes, uint256 maxBytes) public pure returns (string memory extractedString) {
-    //     uint8 state = 0;
-    //     // bytes: 0 0 0 0 y u s h _ g 0 0 0
-    //     // state: 0 0 0 0 1 1 1 1 1 1 2 2 2
-    //     bytes memory nonzeroBytesArray = new bytes(packedBytes.length * 7);
-    //     uint256 nonzeroBytesArrayIndex = 0;
-    //     for (uint16 i = 0; i < packedBytes.length; i++) {
-    //         uint256 packedByte = packedBytes[i];
-    //         uint8[] memory unpackedBytes = new uint8[](bytesInPackedBytes);
-    //         for (uint j = 0; j < bytesInPackedBytes; j++) {
-    //             unpackedBytes[j] = uint8(packedByte >> (j * 8));
-    //         }
+    function _convertPackedBytesToBytes(uint256[5] memory packedBytes, uint256 maxBytes) public pure returns (string memory extractedString) {
+        uint8 state = 0;
+        // bytes: 0 0 0 0 y u s h _ g 0 0 0
+        // state: 0 0 0 0 1 1 1 1 1 1 2 2 2
+        bytes memory nonzeroBytesArray = new bytes(packedBytes.length * 7);
+        uint256 nonzeroBytesArrayIndex = 0;
+        for (uint16 i = 0; i < packedBytes.length; i++) {
+            uint256 packedByte = packedBytes[i];
+            uint8[] memory unpackedBytes = new uint8[](BYTES_IN_PACKED_BYTES);
+            for (uint j = 0; j < BYTES_IN_PACKED_BYTES; j++) {
+                unpackedBytes[j] = uint8(packedByte >> (j * 8));
+            }
 
-    //         for (uint256 j = 0; j < bytesInPackedBytes; j++) {
-    //             uint256 unpackedByte = unpackedBytes[j]; //unpackedBytes[j];
-    //             if (unpackedByte != 0) {
-    //                 nonzeroBytesArray[nonzeroBytesArrayIndex] = bytes1(uint8(unpackedByte));
-    //                 nonzeroBytesArrayIndex++;
-    //                 if (state % 2 == 0) {
-    //                     state += 1;
-    //                 }
-    //             } else {
-    //                 if (state % 2 == 1) {
-    //                     state += 1;
-    //                 }
-    //             }
-    //             packedByte = packedByte >> 8;
-    //         }
-    //     }
+            for (uint256 j = 0; j < BYTES_IN_PACKED_BYTES; j++) {
+                uint256 unpackedByte = unpackedBytes[j]; //unpackedBytes[j];
+                if (unpackedByte != 0) {
+                    nonzeroBytesArray[nonzeroBytesArrayIndex] = bytes1(uint8(unpackedByte));
+                    nonzeroBytesArrayIndex++;
+                    if (state % 2 == 0) {
+                        state += 1;
+                    }
+                } else {
+                    if (state % 2 == 1) {
+                        state += 1;
+                    }
+                }
+                packedByte = packedByte >> 8;
+            }
+        }
 
-    //     string memory returnValue = string(nonzeroBytesArray);
-    //     require(state == 2, "Invalid final state of packed bytes in email");
-    //     // console.log("Characters in username: ", nonzeroBytesArrayIndex);
-    //     require(nonzeroBytesArrayIndex <= maxBytes, "Venmo id too long");
-    //     return returnValue;
-    //     // Have to end at the end of the email -- state cannot be 1 since there should be an email footer
-    // }
+        extractedString = string(nonzeroBytesArray);
+        require(state == 2, "Invalid final state of packed bytes in email");
+        // console.log("Characters in username: ", nonzeroBytesArrayIndex);
+        require(nonzeroBytesArrayIndex <= maxBytes, "Venmo id too long");
+        // Have to end at the end of the email -- state cannot be 1 since there should be an email footer
+    }
 
     // // Code example:
-    // function _stringToUint256(string memory s) internal pure returns (uint256) {
-    //     bytes memory b = bytes(s);
-    //     uint256 result = 0;
-    //     uint256 oldResult = 0;
+    function _stringToUint256(string memory s) internal pure returns (uint256) {
+        bytes memory b = bytes(s);
+        uint256 result = 0;
+        uint256 oldResult = 0;
 
-    //     for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
-    //         // UNSAFE: Check that the character is a number - we include padding 0s in Venmo ids
-    //         if (uint8(b[i]) >= 48 && uint8(b[i]) <= 57) {
-    //             // store old value so we can check for overflows
-    //             oldResult = result;
-    //             result = result * 10 + (uint8(b[i]) - 48);
-    //             // prevent overflows
-    //             require(result >= oldResult, "Overflow detected");
-    //         }
-    //     }
-    //     return result; 
-    // }
+        for (uint i = 0; i < b.length; i++) { // c = b[i] was not needed
+            // UNSAFE: Check that the character is a number - we include padding 0s in Venmo ids
+            if (uint8(b[i]) >= 48 && uint8(b[i]) <= 57) {
+                // store old value so we can check for overflows
+                oldResult = result;
+                result = result * 10 + (uint8(b[i]) - 48);
+                // prevent overflows
+                require(result >= oldResult, "Overflow detected");
+            }
+        }
+        return result; 
+    }
 }

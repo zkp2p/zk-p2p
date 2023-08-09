@@ -1,8 +1,8 @@
 export {
   Ramp,
   USDCMock,
+  VenmoReceiveProcessor,
   VenmoReceiveProcessorMock,
-  VenmoReceiveVerifier,
   VenmoSendProcessorMock,
-  VenmoSendVerifier,
+  VenmoSendProcessor,
 } from "../typechain";

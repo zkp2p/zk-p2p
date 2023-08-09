@@ -195,7 +195,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[32] memory _signals
+        uint256[51] memory _signals
     )
         external
     {
@@ -224,7 +224,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[32] memory _signals
+        uint256[51] memory _signals
     )
         external
     {
@@ -350,7 +350,7 @@ contract Ramp is Ownable {
         uint256[2] memory a,
         uint256[2][2] memory b,
         uint256[2] memory c,
-        uint256[32] memory signals
+        uint256[51] memory signals
     )
         internal
         view
@@ -373,7 +373,7 @@ contract Ramp is Ownable {
         uint256[2] memory a,
         uint256[2][2] memory b,
         uint256[2] memory c,
-        uint256[32] memory signals
+        uint256[51] memory signals
     )
         internal
         view

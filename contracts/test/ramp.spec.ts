@@ -546,7 +546,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#onRamp", async () => {
+    describe("#onRamp", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
       let subjectC: [BigNumber, BigNumber];
@@ -574,7 +574,7 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(32).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(51).fill(ZERO);
         subjectSignals[0] = usdc(50);
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
