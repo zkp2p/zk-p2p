@@ -7,7 +7,7 @@ yarn-error.log
 .DS_Store
 
 build/
-*/inputs/*
+*/inputs/*.json
 */emls/*
 *.env
 */.yarn

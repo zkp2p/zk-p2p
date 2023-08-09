@@ -9,7 +9,7 @@ include "./regexes/venmo_timestamp.circom";
 template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(max_header_bytes % 64 == 0);
     assert(max_body_bytes % 64 == 0);
-    assert(n * k > 1024); // constraints for 2048 bit RSA
+    assert(n * k > 1024); // constraints for 1024 bit RSA
     assert(n < (255 \ 2)); // we want a multiplication to fit into a circom signal
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
