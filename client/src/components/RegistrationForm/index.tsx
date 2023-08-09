@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAccount } from "wagmi";
 
-import { Button } from '../Button'
 import { ExistingRegistration } from "./ExistingRegistration";
 import { NewRegistrationProof } from "./NewRegistrationProof";
 import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
 
  
 export const RegistrationForm: React.FC = () => {
@@ -21,7 +18,11 @@ export const RegistrationForm: React.FC = () => {
   const [isNewRegistration, setIsNewRegistration] = useState<boolean>(false);
 
   const handleUpdateClick = () => {
-    setIsNewRegistration(prev => !prev);
+    setIsNewRegistration(true);
+  }
+
+  const handleBackClick = () => {
+    setIsNewRegistration(false);
   }
 
   // ----- transaction state -----
@@ -46,22 +47,12 @@ export const RegistrationForm: React.FC = () => {
   return (
     <Wrapper>
       <Column>
-        <TitleRow padding="0">
-          <ThemedText.HeadlineMedium>
-            Registration
-          </ThemedText.HeadlineMedium>
-          <Button onClick={handleUpdateClick}>
-            + Update
-          </Button>
-        </TitleRow>
-
         <Content>
           {!isNewRegistration ? (
-            <ExistingRegistrationContainer>
-              <ExistingRegistration
-                loggedInWalletAddress={ethereumAddress}
-              />
-            </ExistingRegistrationContainer>
+            <ExistingRegistration
+              loggedInWalletAddress={ethereumAddress}
+              handleNewRegistrationClick={handleUpdateClick}
+            />
           ) : (
             <NewRegistrationContainer>
               <Column>
@@ -69,6 +60,7 @@ export const RegistrationForm: React.FC = () => {
                   loggedInWalletAddress={'0x123'}
                   setSubmitOrderProof={setSubmitOrderProof}
                   setSubmitOrderPublicSignals={setSubmitOrderPublicSignals}
+                  handleBackClick={handleBackClick}
                 />
               </Column>
               <Column>
@@ -86,43 +78,27 @@ export const RegistrationForm: React.FC = () => {
 };
 
 const Wrapper = styled.div`
-  max-width: 680px;
+  max-width: 660px;
   width: 100%;
+  padding-top: 1.5rem;
 `;
 
 const Column = styled.div`
   gap: 1rem;
   align-self: flex-start;
-  padding: 1.5rem;
   border-radius: 16px;
   justify-content: center;
-`;
-
-const TitleRow = styled(RowBetween)`
-  margin-bottom: 20px;
-  height: 50px;
-  align-items: flex-end;
-  color: #FFF;
-
-  @media (max-width: 600px) {
-    flex-wrap: wrap;
-    gap: 12px;
-    width: 100%;
-  };
 `;
 
 const Content = styled.div`
   gap: 1rem;
   align-self: flex-start;
-  background-color: #0D111C;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-const ExistingRegistrationContainer = styled.div`
-  padding: 1.5rem;
 `;
 
 const NewRegistrationContainer = styled.div`
   display: grid;
+  padding: 1.5rem;
+  background-color: #0D111C;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;

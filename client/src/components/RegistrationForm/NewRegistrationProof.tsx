@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useAsync, useUpdateEffect } from "react-use";
+import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 
 import { Button } from "../Button";
+import { RowBetween } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
+import { ThemedText } from '../../theme/text'
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
@@ -21,12 +24,14 @@ interface NewRegistrationProofProps {
   loggedInWalletAddress: string;
   setSubmitOrderProof: (proof: string) => void;
   setSubmitOrderPublicSignals: (publicSignals: string) => void;
+  handleBackClick: () => void;
 }
  
 export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   loggedInWalletAddress,
   setSubmitOrderProof,
-  setSubmitOrderPublicSignals
+  setSubmitOrderPublicSignals,
+  handleBackClick
 }) => {
   const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
@@ -108,6 +113,18 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
 
   return (
     <Container>
+      <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+        <button
+          onClick={handleBackClick}
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <StyledArrowLeft/>
+        </button>
+        <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          Update Registration
+        </ThemedText.HeadlineSmall>
+      </RowBetween>
+
       <Body>
         <NumberedStep>
           Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
@@ -119,7 +136,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
-              />
+            />
           </HeaderContainer>
           {isEmailInputSettingDrag ? (
             <DragAndDropTextBox
@@ -291,6 +308,10 @@ const HeaderContainer = styled.div`
 const Title = styled.h4`
   // Add any styles you want for your title here
 `;
+
+const StyledArrowLeft = styled(ArrowLeft)`
+  color: #FFF;
+`
 
 const TimerDisplayContainer = styled.div`
   display: flex;
