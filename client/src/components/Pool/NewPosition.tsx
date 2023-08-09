@@ -35,7 +35,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       <Body>
         <NumberedStep>
-          Create a new pool permission.
+          Create a new pool position.
         </NumberedStep>
         <ButtonContainer>
           <Button
