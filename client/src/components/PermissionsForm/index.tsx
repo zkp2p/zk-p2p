@@ -40,14 +40,14 @@ export default function PermissionsForm() {
 }
 
 const ComponentWrapper = styled(AutoColumn)`
-  max-width: 680px;
+  max-width: 660px;
   width: 100%;
+  padding-top: 1.5rem;
 `
 
 const Column = styled.div`
   gap: 1rem;
   align-self: flex-start;
-  padding: 1.5rem;
   border-radius: 4px;
   justify-content: center;
 `;
