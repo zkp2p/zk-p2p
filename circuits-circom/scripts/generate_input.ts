@@ -74,6 +74,8 @@ export enum CircuitType {
   EMAIL_TWITTER = "email_twitter",
   EMAIL_VENMO_RECEIVE = "email_venmo_receive",
   EMAIL_VENMO_SEND = "email_venmo_send",
+  EMAIL_VENMO_RECEIVE_REGISTRATION = "email_venmo_receive_registration",
+  EMAIL_VENMO_SEND_REGISTRATION = "email_venmo_send_registration",
   EMAIL_SUBJECT = "email_subject",
 }
 
@@ -141,6 +143,12 @@ export async function getCircuitInputs(
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 5652 length + 300 chars long custom message
+  } else if (circuit === CircuitType.EMAIL_VENMO_RECEIVE_REGISTRATION) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 6200 length + 200 chars long custom message
+  } else if (circuit === CircuitType.EMAIL_VENMO_SEND_REGISTRATION) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "\r\ntps://venmo.com/code?user_id=3D";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6400;  // 5652 length + 300 chars long custom message
   }
 
   // Derive modulus from signature
@@ -278,6 +286,44 @@ export async function getCircuitInputs(
       address_plus_one,
       body_hash_idx,
       // email_from_idx,
+    };
+  } else if (circuit == CircuitType.EMAIL_VENMO_RECEIVE_REGISTRATION) {
+    const RECEIVE_ID_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const venmo_receive_id_idx = (Buffer.from(bodyRemaining).indexOf(RECEIVE_ID_SELECTOR) + RECEIVE_ID_SELECTOR.length).toString();
+
+    console.log("Indexes into for venmo receive email are: ", email_from_idx, venmo_receive_id_idx);
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // venmo specific indices
+      venmo_receive_id_idx,
+      email_from_idx,
+    };
+  } else if (circuit == CircuitType.EMAIL_VENMO_SEND_REGISTRATION) {
+    const SEND_ID_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const venmo_send_id_idx = (Buffer.from(bodyRemaining).indexOf(SEND_ID_SELECTOR) + SEND_ID_SELECTOR.length).toString();
+
+    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_send_id_idx);
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // venmo specific indices
+      venmo_send_id_idx,
+      email_from_idx,
     };
   } else if (circuit === CircuitType.EMAIL_SUBJECT) {
     // First word after "subject:" (usually send/Send)
