@@ -57,26 +57,26 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     reveal_email_amount_packed <== ShiftAndPack(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, venmo_amount_idx);
 
-    // VENMO SEND OFFRAMPER ID REGEX: [x]
+    // VENMO SEND PAYEE ID REGEX: [x]
     // TODO We will optimize the size later on
-    var max_venmo_send_len = 30;
-    var max_venmo_send_packed_bytes = count_packed(max_venmo_send_len, pack_size); // ceil(max_num_bytes / 7)
+    var max_payee_len = 30;
+    var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
-    signal input venmo_send_id_idx;
-    signal output reveal_venmo_send_packed[max_venmo_send_packed_bytes];
+    signal input venmo_payee_id_idx;
+    signal output reveal_payee_packed[max_payee_packed_bytes];
 
-    signal (venmo_send_regex_out, venmo_send_regex_reveal[max_body_bytes]) <== VenmoPayeeId(max_body_bytes)(in_body_padded);
-    signal is_found_venmo_send <== IsZero()(venmo_send_regex_out);
-    is_found_venmo_send === 0;
+    signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== VenmoPayeeId(max_body_bytes)(in_body_padded);
+    signal is_found_payee <== IsZero()(payee_regex_out);
+    is_found_payee === 0;
 
     // PACKING: 16,800 constraints (Total: [x])
-    reveal_venmo_send_packed <== ShiftAndPack(max_body_bytes, max_venmo_send_len, pack_size)(venmo_send_regex_reveal, venmo_send_id_idx);
+    reveal_payee_packed <== ShiftAndPack(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
 
     // Hash offramper ID
-    component hash = Poseidon(max_venmo_send_packed_bytes);
-    assert(max_venmo_send_packed_bytes < 16);
-    for (var i = 0; i < max_venmo_send_packed_bytes; i++) {
-        hash.inputs[i] <== reveal_venmo_send_packed[i];
+    component hash = Poseidon(max_payee_packed_bytes);
+    assert(max_payee_packed_bytes < 16);
+    for (var i = 0; i < max_payee_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_payee_packed[i];
     }
     signal output packed_offramper_id_hashed <== hash.out;
 

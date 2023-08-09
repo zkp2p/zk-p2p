@@ -44,31 +44,31 @@ template VenmoSendRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack
 
     // VENMO SEND PAYER ID REGEX: [x]
     // TODO We will optimize the size later on
-    var max_venmo_send_len = 30;
-    var max_venmo_send_packed_bytes = count_packed(max_venmo_send_len, pack_size); // ceil(max_num_bytes / 7)
+    var max_payer_len = 30;
+    var max_payer_packed_bytes = count_packed(max_payer_len, pack_size); // ceil(max_num_bytes / 7)
     
-    signal input venmo_send_id_idx;
-    signal output reveal_venmo_send_packed[max_venmo_send_packed_bytes];
+    signal input venmo_payer_id_idx;
+    signal output reveal_payer_packed[max_payer_packed_bytes];
 
-    signal (venmo_send_regex_out, venmo_send_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
+    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
     for (var i = 0; i < max_body_bytes; i++) {
-        if (venmo_send_regex_reveal[i] != 0 ) {
-            log(venmo_send_regex_reveal[i]);
+        if (payer_regex_reveal[i] != 0 ) {
+            log(payer_regex_reveal[i]);
         }
     }
-    signal is_found_venmo_send <== IsZero()(venmo_send_regex_out);
-    is_found_venmo_send === 0;
+    signal is_found_payer <== IsZero()(payer_regex_out);
+    is_found_payer === 0;
 
     // PACKING: 16,800 constraints (Total: [x])
-    reveal_venmo_send_packed <== ShiftAndPack(max_body_bytes, max_venmo_send_len, pack_size)(venmo_send_regex_reveal, venmo_send_id_idx);
+    reveal_payer_packed <== ShiftAndPack(max_body_bytes, max_payer_len, pack_size)(payer_regex_reveal, venmo_payer_id_idx);
 
     // Hash offramper ID
-    component hash = Poseidon(max_venmo_send_packed_bytes);
-    assert(max_venmo_send_packed_bytes < 16);
-    for (var i = 0; i < max_venmo_send_packed_bytes; i++) {
-        hash.inputs[i] <== reveal_venmo_send_packed[i];
+    component hash = Poseidon(max_payer_packed_bytes);
+    assert(max_payer_packed_bytes < 16);
+    for (var i = 0; i < max_payer_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_payer_packed[i];
     }
-    signal output packed_offramper_id_hashed <== hash.out;
+    signal output packed_payer_id_hashed <== hash.out;
 }
 
 // In circom, all output signals of the main component are public (and cannot be made private), the input signals of the main component are private if not stated otherwise using the keyword public as above. The rest of signals are all private and cannot be made public.

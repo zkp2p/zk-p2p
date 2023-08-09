@@ -60,24 +60,24 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // VENMO RECEIVE ONRAMPER ID REGEX: [x]
     // We will optimize the size later on
-    var max_venmo_receive_len = 30;
-    var max_venmo_receive_packed_bytes = count_packed(max_venmo_receive_len, pack_size); // ceil(max_num_bytes / 7)
+    var max_payer_len = 30;
+    var max_payer_packed_bytes = count_packed(max_payer_len, pack_size); // ceil(max_num_bytes / 7)
     
-    signal input venmo_receive_id_idx;
-    signal output reveal_venmo_receive_packed[max_venmo_receive_packed_bytes];
+    signal input venmo_payer_id_idx;
+    signal output reveal_payer_packed[max_payer_packed_bytes];
 
-    signal (venmo_receive_regex_out, venmo_receive_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
-    signal is_found_venmo_receive <== IsZero()(venmo_receive_regex_out);
-    is_found_venmo_receive === 0;
+    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
+    signal is_found_payer <== IsZero()(payer_regex_out);
+    is_found_payer === 0;
 
     // PACKING: 16,800 constraints (Total: [x])
-    reveal_venmo_receive_packed <== ShiftAndPack(max_body_bytes, max_venmo_receive_len, pack_size)(venmo_receive_regex_reveal, venmo_receive_id_idx);
+    reveal_payer_packed <== ShiftAndPack(max_body_bytes, max_payer_len, pack_size)(payer_regex_reveal, venmo_payer_id_idx);
 
     // Hash onramper ID
-    component hash = Poseidon(max_venmo_receive_packed_bytes);
-    assert(max_venmo_receive_packed_bytes < 16);
-    for (var i = 0; i < max_venmo_receive_packed_bytes; i++) {
-        hash.inputs[i] <== reveal_venmo_receive_packed[i];
+    component hash = Poseidon(max_payer_packed_bytes);
+    assert(max_payer_packed_bytes < 16);
+    for (var i = 0; i < max_payer_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_payer_packed[i];
     }
     signal output packed_onramper_id_hashed <== hash.out;
 
