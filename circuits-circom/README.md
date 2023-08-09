@@ -48,9 +48,10 @@ Circuits taht use the Venmo regexes:
 
 | Circuit Name | Regex Template | Description |
 | ------------ | -------------- | ----------- |
-| VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
 | VenmoSend    | VenmoPayeeID   | Extracts the Venmo payee ID from the payment sent email body |
-
+| VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
+| VenmoSendRegisration | VenmoPayerID | Extracts the Venmo payer ID from the registration email body |
+| VenmoReceiveRegistration | VenmoPayeeID | Extracts the Venmo payee ID from the registration email body |
 
 
 ## Usage
