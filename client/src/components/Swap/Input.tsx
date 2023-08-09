@@ -12,6 +12,7 @@ interface InputProps {
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   inputLabel?: string;
+  readOnly?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -24,6 +25,7 @@ export const Input: React.FC<InputProps> = ({
   placeholder,
   inputLabel,
   type = "text",
+  readOnly = false,
 }: InputProps) => {
   Input.displayName = "Input";
 
@@ -41,7 +43,9 @@ export const Input: React.FC<InputProps> = ({
             value={value}
             onChange={onChange}
             onFocus={onFocus}
-            onKeyDown={onKeyDown}/>
+            onKeyDown={onKeyDown}
+            readOnly={readOnly}
+          />
           {inputLabel ? (
             <InputLabel>
                 <span>{inputLabel}</span>
@@ -63,7 +67,7 @@ const Container = styled.div`
   background-color: #131A2A;
 
   &:focus-within {
-    border-color: #1253FF;
+    border-color: #CED4DA;
     border-width: 1px;
   }
 `;
@@ -84,13 +88,17 @@ const InputWrapper = styled.div`
   margin-top: 8px;
 `;
 
-const StyledInput = styled.input`
+interface StyledInputProps {
+  readOnly?: boolean;
+}
+
+const StyledInput = styled.input<StyledInputProps>`
   display: flex;
   width: 100%;
   border: 0;
   padding: 0;
   color: #FFFFFF;
-  background-color: #131A2A;;
+  background-color: #131A2A;
   font-size: 28px;
 
   &:focus {
@@ -98,8 +106,8 @@ const StyledInput = styled.input`
     outline: none;
   }
 
-  &::placeholder {
-    color: #CED4DA;
+  &:placeholder {
+    color: #6C757D;
   }
 
   &[type='number'] {
@@ -109,6 +117,12 @@ const StyledInput = styled.input`
       -webkit-appearance: none;
       margin: 0;
     }
+  }
+
+  ${({ readOnly }) => 
+    readOnly && `
+      pointer-events: none;
+    `
   }
 `;
 

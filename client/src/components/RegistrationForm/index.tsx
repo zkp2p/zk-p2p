@@ -50,7 +50,7 @@ export const RegistrationForm: React.FC = () => {
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleUpdateClick} height={44}>
+          <Button onClick={handleUpdateClick} height={40}>
             + Update
           </Button>
         </TitleRow>

@@ -79,6 +79,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
           type="number"
           inputLabel="USDC"
           placeholder="0"
+          readOnly={true}
         />
         <ButtonContainer>
           <MainButton

@@ -16,7 +16,7 @@ export default function PoolTable() {
           <ThemedText.HeadlineMedium>
             Pool
           </ThemedText.HeadlineMedium>
-          <Button height={44}>
+          <Button height={40}>
             + New Position
           </Button>
         </TitleRow>

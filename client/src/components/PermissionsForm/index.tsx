@@ -16,7 +16,7 @@ export default function PermissionsForm() {
             <ThemedText.HeadlineMedium>
               Permissions
             </ThemedText.HeadlineMedium>
-            <Button height={44}>
+            <Button height={40}>
               + New Entry
             </Button>
           </TitleRow>
