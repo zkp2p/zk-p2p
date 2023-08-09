@@ -32,6 +32,27 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 | Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body     |
 | Amount Regex       | Extracts $ amount sent from from venmo payment sent email header |
 
+## Regexes
+
+### Venmo
+
+Both the Venmo send and receive email have the same HTML structure. 
+They both contain the Venmo payer ID and the payee ID. Hence we have abstracted the regexes into their own templates.
+
+| Regex Template | Regex | Description |
+| -------------- | ----- | ----------- |
+| VenmoPayerID   |  `\r\ntps://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9)+` | Extracts the Venmo payer ID from both send and receive emails |
+| VenmoPayeeID   |  `   href=3D\"https://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+` | Extracts the Venmo payee ID from both send and receive emails |
+
+Circuits taht use the Venmo regexes:
+
+| Circuit Name | Regex Template | Description |
+| ------------ | -------------- | ----------- |
+| VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
+| VenmoSend    | VenmoPayeeID   | Extracts the Venmo payee ID from the payment sent email body |
+
+
+
 ## Usage
 
 ### Generating Regexes

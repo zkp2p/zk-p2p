@@ -3,7 +3,7 @@ pragma circom 2.1.5;
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
-include "./regexes/venmo_send_id.circom";
+include "./regexes/venmo_payee_id.circom";
 include "./regexes/venmo_amount.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
@@ -65,7 +65,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input venmo_send_id_idx;
     signal output reveal_venmo_send_packed[max_venmo_send_packed_bytes];
 
-    signal (venmo_send_regex_out, venmo_send_regex_reveal[max_body_bytes]) <== VenmoSendId(max_body_bytes)(in_body_padded);
+    signal (venmo_send_regex_out, venmo_send_regex_reveal[max_body_bytes]) <== VenmoPayeeId(max_body_bytes)(in_body_padded);
     signal is_found_venmo_send <== IsZero()(venmo_send_regex_out);
     is_found_venmo_send === 0;
 
