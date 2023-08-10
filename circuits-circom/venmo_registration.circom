@@ -4,7 +4,6 @@ include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
-include "./regexes/venmo_timestamp.circom";
 
 template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(max_header_bytes % 64 == 0);
