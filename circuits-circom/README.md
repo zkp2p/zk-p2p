@@ -71,6 +71,18 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 | Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body     |
 | Amount Regex       | Extracts $ amount sent from from venmo payment sent email header |
 
+### Venmo Registration
+Main circuit that both onramper and offramper must generate a proof prior to using the protocol
+
+1. Verifies the DKIM signature (RSA, SHA256)
+2. Extracts actor ID
+3. Houses nullifier to prevent replay attacks
+4. Contains other order information to tie a proof to an order ID to prevent frontrunning
+
+| Regex Config       | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| Actor ID Regex | Extracts the Venmo actor ID which is the same for any of the 4 Venmo confirmation emails (send, receive, request, complete payment)  |
+
 ## Regexes
 
 ### Venmo
@@ -82,16 +94,15 @@ They both contain the Venmo payer ID and the payee ID. Hence we have abstracted 
 | -------------- | ----- | ----------- |
 | VenmoPayerID   |  `\r\ntps://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9)+` | Extracts the Venmo payer ID from both send and receive emails |
 | VenmoPayeeID   |  `   href=3D\"https://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+` | Extracts the Venmo payee ID from both send and receive emails |
+| VenmoActorId   |  `&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+">/r/n` | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
 
-Circuits taht use the Venmo regexes:
+Circuits that use the Venmo regexes:
 
 | Circuit Name | Regex Template | Description |
 | ------------ | -------------- | ----------- |
 | VenmoSend    | VenmoPayeeID   | Extracts the Venmo payee ID from the payment sent email body |
 | VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
-| VenmoSendRegisration | VenmoPayerID | Extracts the Venmo payer ID from the registration email body |
-| VenmoReceiveRegistration | VenmoPayeeID | Extracts the Venmo payee ID from the registration email body |
-
+| VenmoRegistration | VenmoActorID   | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
 
 ## Usage
 
@@ -125,13 +136,14 @@ RAPIDSNARK_PATH="./../../rapidsnark/build/prover"
 4. For development purposes, you only need to run up to this step
 
 ### Run tests
-
-
+1. Inside the `circuits-circom` directory, first complete the `Compilation` and `Generate Witness` steps above for all the circuits. Tests will use the `input_EML_FILE_NAME.json`, `.wasm`, and `.r1cs` files.
+2. Run `yarn test`
 
 ### Proving Key Generation
 
-1. `cd` into `scripts` and run `cp entropy.env.example entropy.env`. Entropy is needed to generate the proving key successfully
-2. Run `./3_gen_both_zkeys.sh` which will generate the proving key for the circuit
+1. `cd` into `scripts` and run `cp entropy.env.example entropy.env`. Open the file and input your randomness. Entropy is needed to generate the proving key successfully
+2. For production, run `./3_gen_both_zkeys.sh` which will generate both the chunked and nonchunked proving keys for the circuit
+3. For dev, run `./3_gen_zkey_unsafe.sh`, which will skip phase2 contribution and save keygen time (DO NOT USE IN PRODUCTION)
 
 ### Generating Proofs
 
