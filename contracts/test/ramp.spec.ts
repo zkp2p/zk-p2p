@@ -432,7 +432,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#onRampWithConvenience", async () => {
+    describe.only("#onRampWithConvenience", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
       let subjectC: [BigNumber, BigNumber];
@@ -460,7 +460,7 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
         
-        subjectSignals = new Array<BigNumber>(32).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(51).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
@@ -523,6 +523,38 @@ describe("Ramp", () => {
           usdc(50),
           usdc(2)
         );
+      });
+
+      describe("when the proof wasn't submitted in time to get the convenience reward", async () => {
+        beforeEach(async () => {
+          await blockchain.increaseTimeAsync(30);
+        });
+
+        it("should transfer the usdc correctly to all parties", async () => {
+          const onRamperPreBalance = await usdcToken.balanceOf(onRamper.address);
+          const offRamperPreBalance = await usdcToken.balanceOf(offRamper.address);
+          const rampPreBalance = await usdcToken.balanceOf(ramp.address);
+          
+          await subject();
+  
+          const onRamperPostBalance = await usdcToken.balanceOf(onRamper.address);
+          const offRamperPostBalance = await usdcToken.balanceOf(offRamper.address);
+          const rampPostBalance = await usdcToken.balanceOf(ramp.address);
+  
+          expect(onRamperPostBalance).to.eq(onRamperPreBalance.add(usdc(50)));
+          expect(offRamperPostBalance).to.eq(offRamperPreBalance.add(usdc(0)));
+          expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
+        });
+  
+        it("should emit an IntentFulfilled event", async () => {
+          await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
+            intentHash,
+            depositHash,
+            ethers.utils.formatBytes32String("proofOfVenmoTwo"),
+            usdc(50),
+            0
+          );
+        });
       });
 
       describe("when the onRamperIdHash doesn't match the intent", async () => {

@@ -18,9 +18,10 @@ export default class DeployHelper {
     owner: Address,
     usdc: Address,
     receiveVerifier: Address,
-    sendVerifier: Address
+    sendVerifier: Address,
+    convenienceRewardTimePeriod: BigNumber = BigNumber.from(10),
   ): Promise<Ramp> {
-    return await new Ramp__factory(this._deployerSigner).deploy(owner, usdc, receiveVerifier, sendVerifier);
+    return await new Ramp__factory(this._deployerSigner).deploy(owner, usdc, receiveVerifier, sendVerifier, convenienceRewardTimePeriod);
   }
 
   public async deployUSDCMock(mintAmount: BigNumber, name: string, symbol: string): Promise<USDCMock> {

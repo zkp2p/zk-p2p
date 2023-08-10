@@ -15,9 +15,10 @@ contract RampMock is Ramp {
         address _owner,
         IERC20 _usdc,
         IReceiveProcessor _receiveProcessor,
-        ISendProcessor _sendProcessor
+        ISendProcessor _sendProcessor,
+        uint256 _convenienceRewardTimePeriod
     )
-        Ramp(_owner, _usdc, _receiveProcessor, _sendProcessor)
+        Ramp(_owner, _usdc, _receiveProcessor, _sendProcessor, _convenienceRewardTimePeriod)
     {}
 
     function _calculateIntentHash(

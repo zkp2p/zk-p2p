@@ -75,7 +75,7 @@ describe("VenmoSendProcessor", () => {
     });
   });
 
-  describe.only("#processProof", async () => {
+  describe("#processProof", async () => {
     let subjectA: [BigNumber, BigNumber];
     let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
     let subjectC: [BigNumber, BigNumber];

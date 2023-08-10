@@ -8,6 +8,8 @@ import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
 import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
 import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
 
+import "hardhat/console.sol";
+
 pragma solidity ^0.8.18;
 
 contract Ramp is Ownable {
@@ -85,18 +87,22 @@ contract Ramp is Ownable {
     mapping(bytes32 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
+    uint256 public convenienceRewardTimePeriod;
+
     /* ============ Constructor ============ */
     constructor(
         address _owner,
         IERC20 _usdc,
         IReceiveProcessor _receiveProcessor,
-        ISendProcessor _sendProcessor
+        ISendProcessor _sendProcessor,
+        uint256 _convenienceRewardTimePeriod
     )
         Ownable()
     {
         usdc = _usdc;
         receiveProcessor = _receiveProcessor;
         sendProcessor = _sendProcessor;
+        convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
         transferOwnership(_owner);
     }
 
@@ -201,7 +207,8 @@ contract Ramp is Ownable {
     {
         (
             Intent memory intent,
-            bytes32 intentHash
+            bytes32 intentHash,
+            bool distributeConvenienceReward
         ) = _verifyOnRampWithConvenienceProof(_a, _b, _c, _signals);
 
         Deposit storage deposit = deposits[intent.deposit];
@@ -214,10 +221,11 @@ contract Ramp is Ownable {
 
         deposit.outstandingIntentAmount -= intent.amount;
 
-        usdc.transfer(accountIds[intent.onramper], intent.amount - deposit.convenienceFee);
-        usdc.transfer(msg.sender, deposit.convenienceFee);
+        uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
+        usdc.transfer(accountIds[intent.onramper], intent.amount - convenienceFee);
+        usdc.transfer(msg.sender, convenienceFee);
 
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, deposit.convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, convenienceFee);
     }
 
     function onRamp(
@@ -287,7 +295,11 @@ contract Ramp is Ownable {
 
     // Set new SendProcessor
     // Set new ReceiveProcessor
-    // Set ConvenienceRewardTimePeriod
+
+    function setConvenienceRewardTimePeriod(uint256 _convenienceRewardTimePeriod) external onlyOwner {
+        require(_convenienceRewardTimePeriod != 0, "Convenience reward time period cannot be zero");
+        convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
+    }
 
     /* ============ External View Functions ============ */
 
@@ -354,7 +366,7 @@ contract Ramp is Ownable {
     )
         internal
         view
-        returns(Intent memory, bytes32)
+        returns(Intent memory, bytes32, bool)
     {
         (
             uint256 timestamp,
@@ -366,7 +378,8 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
         require(intent.onramper == onRamperIdHash, "Onramper id does not match");
 
-        return (intent, intentHash);
+        bool distributeConvenienceReward = block.timestamp - timestamp < convenienceRewardTimePeriod;
+        return (intent, intentHash, distributeConvenienceReward);
     }
 
     function _verifyOnRampProof(
