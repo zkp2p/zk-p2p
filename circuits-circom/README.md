@@ -2,6 +2,45 @@
 
 This folder contains the Circom circuits for ZKP2P
 
+## Venmo Emails
+
+Venmo uses the same HTML template for it's send, receive, request completed sent and request completed received emails. 
+Although each email has different Venmo IDs, at the 4 spaces in the HTML template.
+
+
+The HTML template:
+```html
+                <!-- actor name -->
+                <a style=3D"color:#0074DE; text-decoration:none" href=3D"ht=
+tps://venmo.com/code?user_id=3D<VENMO_ID_1>&actor_id=3D<EMAIL_RECEIVER_VENMO_ID>=
+xxxxxx">
+                    You
+                </a>
+                <!-- action -->
+                <span>
+                    paid
+                </span>
+              =20
+                <!-- recipient name -->
+                <a style=3D"color:#0074DE; text-decoration:none"
+                   =20
+                    href=3D"https://venmo.com/code?user_id=3D<VENMO_ID_2>=
+xxxxx&actor_id=3D<EMAIL_RECEIVER_VENMO_ID>">
+                   =20
+                    Receiver's name
+                </a>
+```
+
+
+| Email | VENMO_ID_1 | VENMO_ID_2 |
+| ----- | ---------- | ---------- |
+| Venmo Send | Sender/Payer Venmo ID  | Receiver/Payee Venmo ID |
+| Venmo Receive | Sender/Payer Venmo ID  | Receiver/Payee Venmo ID |
+| Venmo Request Completed Send | Receiver/Payee Venmo ID  | Sender/Payer Venmo ID |
+| Venmo Request Completed Receive | Receiver/Payee Venmo ID  | Sender/Payer Venmo ID |
+
+To prevent users from using request complete emails to generate proofs, we must ensure that the email is a send or receive email using appropriate regexes.
+
 ## Circuits
 
 ### Venmo Receive Email
