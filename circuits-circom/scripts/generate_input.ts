@@ -52,6 +52,7 @@ export interface ICircuitInputs {
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
+  venmo_actor_id_idx?: string;
   order_id?: string;
   claim_id?: string;
 
@@ -74,8 +75,7 @@ export enum CircuitType {
   EMAIL_TWITTER = "email_twitter",
   EMAIL_VENMO_RECEIVE = "email_venmo_receive",
   EMAIL_VENMO_SEND = "email_venmo_send",
-  EMAIL_VENMO_RECEIVE_REGISTRATION = "email_venmo_receive_registration",
-  EMAIL_VENMO_SEND_REGISTRATION = "email_venmo_send_registration",
+  EMAIL_VENMO_REGISTRATION = "email_venmo_registration",
   EMAIL_SUBJECT = "email_subject",
 }
 
@@ -143,12 +143,9 @@ export async function getCircuitInputs(
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 5652 length + 300 chars long custom message
-  } else if (circuit === CircuitType.EMAIL_VENMO_RECEIVE_REGISTRATION) {
+  } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 6200 length + 200 chars long custom message
-  } else if (circuit === CircuitType.EMAIL_VENMO_SEND_REGISTRATION) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "\r\ntps://venmo.com/code?user_id=3D";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6400;  // 5652 length + 300 chars long custom message
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6400;  // 6200 length + 200 chars long custom message
   }
 
   // Derive modulus from signature
@@ -287,30 +284,11 @@ export async function getCircuitInputs(
       body_hash_idx,
       // email_from_idx,
     };
-  } else if (circuit == CircuitType.EMAIL_VENMO_RECEIVE_REGISTRATION) {
-    const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
-    const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
+  } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
+    const actor_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const venmo_actor_id_idx = (Buffer.from(bodyRemaining).indexOf(actor_id_selector) + actor_id_selector.length).toString();
 
-    console.log("Indexes into for venmo receive email are: ", email_from_idx, venmo_payee_id_idx);
-
-    circuitInputs = {
-      in_padded,
-      modulus,
-      signature,
-      in_len_padded_bytes,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-      body_hash_idx,
-      // venmo specific indices
-      venmo_payee_id_idx,
-      email_from_idx,
-    };
-  } else if (circuit == CircuitType.EMAIL_VENMO_SEND_REGISTRATION) {
-    const payer_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
-    const venmo_payer_id_idx = (Buffer.from(bodyRemaining).indexOf(payer_id_selector) + payer_id_selector.length).toString();
-
-    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_payer_id_idx);
+    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_actor_id_idx);
 
     circuitInputs = {
       in_padded,
@@ -322,7 +300,7 @@ export async function getCircuitInputs(
       in_body_len_padded_bytes,
       body_hash_idx,
       // venmo specific indices
-      venmo_payer_id_idx,
+      venmo_actor_id_idx,
       email_from_idx,
     };
   } else if (circuit === CircuitType.EMAIL_SUBJECT) {
