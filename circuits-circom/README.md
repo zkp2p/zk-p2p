@@ -90,11 +90,11 @@ Main circuit that both onramper and offramper must generate a proof prior to usi
 Both the Venmo send and receive email have the same HTML structure. 
 They both contain the Venmo payer ID and the payee ID. Hence we have abstracted the regexes into their own templates.
 
-| Regex Template | Regex | Description |
-| -------------- | ----- | ----------- |
-| VenmoPayerID   |  `\r\ntps://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9)+` | Extracts the Venmo payer ID from both send and receive emails |
-| VenmoPayeeID   |  `   href=3D\"https://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+` | Extracts the Venmo payee ID from both send and receive emails |
-| VenmoActorId   |  `&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+">/r/n` | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
+| Regex Template | Regex                                                                                           | Description                                                                                                                  |
+|----------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| VenmoPayerID   | `\r\ntps://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+`                         | Extracts the Venmo payer ID from both send and receive emails                                                                |
+| VenmoPayeeID   | `href=3D\"https://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9\|\r\|\n\|=)+`       | Extracts the Venmo payee ID from both send and receive emails                                                                |
+| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
 
 Circuits that use the Venmo regexes:
 
