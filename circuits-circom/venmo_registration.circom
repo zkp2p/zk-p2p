@@ -25,7 +25,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Length of the body after precomputed SHA
     signal input in_body_len_padded_bytes;
 
-    // EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0)(in_padded, modulus, signature, in_len_padded_bytes, body_hash_idx, precomputed_sha, in_body_padded, in_body_len_padded_bytes);
+    EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0)(in_padded, modulus, signature, in_len_padded_bytes, body_hash_idx, precomputed_sha, in_body_padded, in_body_len_padded_bytes);
 
     // FROM HEADER REGEX: 736,553 constraints
     // TODO: we set max len to 30 for all public outputs below for ease of use in the verifier contract for now
@@ -43,29 +43,24 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // VENMO EMAIL RECEIVER ID REGEX: [x]
     // We will optimize the size later on
-    var max_actor_len = 30;
-    var max_actor_packed_bytes = count_packed(max_actor_len, pack_size); // ceil(max_num_bytes / 7)
+    var max_actor_id_len = 30;
+    var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_actor_id_idx;
-    signal output reveal_actor_packed[max_actor_packed_bytes];
+    signal output reveal_actor_packed[max_actor_id_packed_bytes];
 
-    signal (actor_regex_out, actor_regex_reveal[max_body_bytes]) <== VenmoActorId(max_body_bytes)(in_body_padded);
+    signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes]) <== VenmoActorId(max_body_bytes)(in_body_padded);
 
-    for (var i = 0; i < max_body_bytes; i++) {
-        if (actor_regex_reveal[i] != 0) {
-            log(actor_regex_reveal[i]);
-        }
-    }
-    signal is_found_actor <== IsZero()(actor_regex_out);
-    is_found_actor === 0;
+    signal is_found_actor_id <== IsZero()(actor_id_regex_out);
+    is_found_actor_id === 0;
 
     // PACKING: 16,800 constraints (Total: [x])
-    reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_len, pack_size)(actor_regex_reveal, venmo_actor_id_idx);
+    reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_id_len, pack_size)(actor_id_regex_reveal, venmo_actor_id_idx);
 
     // Hash email receiver ID
-    component hash = Poseidon(max_actor_packed_bytes);
-    assert(max_actor_packed_bytes < 16);
-    for (var i = 0; i < max_actor_packed_bytes; i++) {
+    component hash = Poseidon(max_actor_id_packed_bytes);
+    assert(max_actor_id_packed_bytes < 16);
+    for (var i = 0; i < max_actor_id_packed_bytes; i++) {
         hash.inputs[i] <== reveal_actor_packed[i];
     }
     signal output packed_actor_id_hashed <== hash.out;

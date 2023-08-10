@@ -174,7 +174,7 @@ describe("Venmo receive WASM tester", function () {
         const packed_onramper_id = witness.slice(11, 16);
 
         // Get expected packed onramper_id
-        const regex_start = Number(input["venmo_receive_id_idx"]);
+        const regex_start = Number(input["venmo_payer_id_idx"]);
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the onramper_id which is 38 in ascii
         const onramper_id_array = regex_start_sub_array.slice(0, regex_end);
