@@ -4,7 +4,8 @@
 
 ZKP2P is a trustless and privacy-preserving fiat to crypto onramp powered by ZK proofs. This (V2) repo is currently under active development to launch a productionized version with audits. Once completed, this application will enable fiat to crypto on ramping through Venmo, a popular P2P payment network in the US.
 
-<img width="1000" align="center" src="https://user-images.githubusercontent.com/6797244/229355494-3f9fd4aa-76a2-4219-b294-88e356e43345.jpeg"/>
+<img width="1000" align="center" src="https://github.com/zkp2p/zk-p2p/assets/73331595/3dce3e57-2f83-46fb-ba3f-576df97d31d7"/>
+
 
 ## Overview
 The network is powered by ZK proofs of DKIM signatures in payment confirmation emails, proving the SHA256, email regex, and RSA without revealing sensitive contents in the email. We are working with the Privacy and Scaling Exploration ([PSE](https://pse.dev/projects/zkp2p)) group to explore applications for zero knowledge proving systems
