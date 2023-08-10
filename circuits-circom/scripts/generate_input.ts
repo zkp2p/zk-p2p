@@ -72,10 +72,10 @@ export enum CircuitType {
   RSA = "rsa",
   SHA = "sha",
   TEST = "test",
-  EMAIL_TWITTER = "email_twitter",
-  EMAIL_VENMO_RECEIVE = "email_venmo_receive",
-  EMAIL_VENMO_SEND = "email_venmo_send",
-  EMAIL_VENMO_REGISTRATION = "email_venmo_registration",
+  EMAIL_TWITTER = "twitter",
+  EMAIL_VENMO_RECEIVE = "venmo_receive",
+  EMAIL_VENMO_SEND = "venmo_send",
+  EMAIL_VENMO_REGISTRATION = "venmo_registration",
   EMAIL_SUBJECT = "email_subject",
 }
 
@@ -432,7 +432,7 @@ async function test_generate(writeToFile: boolean = true, email_file_name: strin
   console.log(JSON.stringify(gen_inputs));
   if (writeToFile) {
     const file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
-    const filename = nonce ? `${file_dir}/input_${nonce}.json` : `./inputs/input_${email_file_name}.json`;
+    const filename = nonce ? `${file_dir}/input_${nonce}.json` : `./inputs/input_${type}.json`;
     console.log(`Writing to default file ${filename}`);
     fs.writeFileSync(filename, JSON.stringify(gen_inputs), { flag: "w" });
   }
