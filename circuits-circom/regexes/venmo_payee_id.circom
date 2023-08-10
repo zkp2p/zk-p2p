@@ -3,7 +3,7 @@ pragma circom 2.1.5;
 include "@zk-email/circuits/regexes/regex_helpers.circom";
 
 // `   href=3D\"https://venmo.com/code\\?user_id=3D(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+`
-template VenmoSendId (msg_bytes) {
+template VenmoPayeeId (msg_bytes) {
     signal input msg[msg_bytes];
     signal output out;
 
