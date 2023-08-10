@@ -285,7 +285,7 @@ export async function getCircuitInputs(
       // email_from_idx,
     };
   } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
-    const actor_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const actor_id_selector = Buffer.from('&actor_id=3D');
     const venmo_actor_id_idx = (Buffer.from(bodyRemaining).indexOf(actor_id_selector) + actor_id_selector.length).toString();
 
     console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_actor_id_idx);

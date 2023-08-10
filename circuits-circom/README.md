@@ -124,6 +124,10 @@ RAPIDSNARK_PATH="./../../rapidsnark/build/prover"
 3. `cd` into `scripts` and run `./2_gen_witness.sh` which will generate the witness needed to generate the proof
 4. For development purposes, you only need to run up to this step
 
+### Run tests
+
+
+
 ### Proving Key Generation
 
 1. `cd` into `scripts` and run `cp entropy.env.example entropy.env`. Entropy is needed to generate the proving key successfully
