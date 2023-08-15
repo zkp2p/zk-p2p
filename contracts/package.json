@@ -8,32 +8,45 @@
   "scripts": {
     "build": "yarn clean && yarn compile && yarn build:ts:latest",
     "build:ts:latest": "yarn typechain && yarn transpile",
-    "chain": "npx hardhat node",
+    "chain": "npx hardhat node --no-deploy",
     "clean": "rm -f coverage.json; rm -rf .coverage_cache; rm -rf .coverage_contracts; rm -rf cache; rm -rf coverage; rm -rf typechain; rm -rf artifacts; rm -rf dist",
     "compile": "hardhat compile",
-    "test": "hardhat test",
-    "coverage": "hardhat coverage",
+    "coverage": "yarn clean && yarn build && npx hardhat coverage",
+    "deploy:localhost": "npx hardhat deploy --network localhost",
+    "importVerifier": "rm -rf ./contracts/verifiers/ && cp -r ../circuits-circom/contracts ./contracts/verifiers",
+    "test": "npx hardhat test",
+    "test:clean": "yarn build && yarn test",
+    "test:fast": "NO_COMPILE=true TS_NODE_TRANSPILE_ONLY=1 yarn test --no-compile",
     "typechain": "hardhat typechain",
     "transpile": "tsc"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
-    "@nomicfoundation/hardhat-ethers": "^3.0.0",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
-    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomicfoundation/hardhat-verify": "^1.0.0",
-    "@typechain/ethers-v6": "^0.4.0",
-    "@typechain/hardhat": "^8.0.0",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@typechain/ethers-v5": "^10.2.0",
+    "@typechain/hardhat": "^6.1.5",
     "@types/chai": "^4.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": ">=12.0.0",
     "chai": "^4.2.0",
-    "ethers": "^6.4.0",
-    "hardhat": "^2.15.0",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.12.6",
+    "hardhat-deploy": "^0.11.34",
     "hardhat-gas-reporter": "^1.0.8",
-    "solidity-coverage": "^0.8.0",
+    "module-alias": "^2.2.3",
+    "solidity-coverage": "^0.8.4",
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",
     "typescript": ">=4.5.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.2",
+    "ethereum-waffle": "^4.0.10"
+  },
+  "_moduleAliases": {
+    "@utils": "utils",
+    "@typechain": "typechain"
   }
 }
