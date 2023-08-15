@@ -1,13 +1,13 @@
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { IReceiveProcessor } from "../interfaces/IReceiveProcessor.sol";
+import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
-import { VenmoReceiveVerifier } from "../verifiers/VenmoReceiveVerifier.sol";
+import { VenmoRegistrationVerifier } from "../verifiers/VenmoRegistrationVerifier.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownable {
-    
+contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationProcessor, Ownable {
+
     using ProofParsingUtils for string;
     using ProofParsingUtils for uint256[5];
 
@@ -20,7 +20,7 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
         uint256[17] memory _venmoMailserverKeys,
         string memory _emailFromAddress
     )
-        VenmoReceiveVerifier()
+        VenmoRegistrationVerifier()
         Ownable()
     {
         require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
@@ -35,19 +35,17 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
         venmoMailserverKeys = _venmoMailserverKeys;
     }
 
-    // Set emailFromAddress
-    
     /* ============ External View Functions ============ */
     function processProof(
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[51] memory _signals
+        uint[45] memory _signals
     )
         public
         view
         override
-        returns(uint256 timestamp, uint256 onRamperId, bytes32 onRamperIdHash, bytes32 intentHash)
+        returns(uint256 onRamperId, bytes32 onRamperIdHash)
     {
         require(verifyProof(_a, _b, _c, _signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
@@ -55,22 +53,16 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
         string memory fromEmail = _parseSignalArray(_signals, 0);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [5:10] are the packed timestamp
-        timestamp = _parseSignalArray(_signals, 5).stringToUint256();
+        // Signals [5:10] is the packed onRamperId
+        onRamperId = _parseSignalArray(_signals, 5).stringToUint256();
 
-        // Signals [10:15] is the packed onRamperId
-        onRamperId = _parseSignalArray(_signals, 10).stringToUint256();
+        // Signals [10] is the packed onRamperIdHsdh
+        onRamperIdHash = bytes32(_signals[10]);
 
-        // Signals [15] is the packed onRamperIdHsdh
-        onRamperIdHash = bytes32(_signals[15]);
-
-        // Signals [16:33] are modulus.
-        for (uint256 i = 16; i < 33; i++) {
-            require(_signals[i] == venmoMailserverKeys[i - 16], "Invalid: RSA modulus not matched");
+        // Signals [11:28] are modulus.
+        for (uint256 i = 11; i < 28; i++) {
+            require(_signals[i] == venmoMailserverKeys[i - 11], "Invalid: RSA modulus not matched");
         }
-
-        // Signals [50] is intentHash
-        intentHash = bytes32(_signals[50]);
     }
 
     function getVenmoMailserverKeys() external view returns (uint256[17] memory) {
@@ -83,7 +75,7 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[51] memory _signals, uint8 _from) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[45] memory _signals, uint8 _from) internal pure returns (string memory) {
         uint256[5] memory signalArray;
         for (uint256 i = _from; i < _from + 5; i++) {
             signalArray[i - _from] = _signals[i];

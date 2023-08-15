@@ -102,7 +102,6 @@ describe("VenmoReceiveProcessor", () => {
       //   onRamperIdHash,
       //   intentHash
       // } = await subject();
-      console.log(await subject());
     });
   });
 });

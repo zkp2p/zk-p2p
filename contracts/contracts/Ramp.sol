@@ -6,9 +6,8 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
 
 import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
+import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
-
-import "hardhat/console.sol";
 
 pragma solidity ^0.8.18;
 
@@ -80,8 +79,9 @@ contract Ramp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
-    IReceiveProcessor public immutable receiveProcessor;
-    ISendProcessor public immutable sendProcessor;
+    IReceiveProcessor public receiveProcessor;
+    IRegistrationProcessor public registrationProcessor;
+    ISendProcessor public sendProcessor;
 
     mapping(bytes32 => address) public accountIds;
     mapping(bytes32 => Deposit) public deposits;
@@ -94,6 +94,7 @@ contract Ramp is Ownable {
         address _owner,
         IERC20 _usdc,
         IReceiveProcessor _receiveProcessor,
+        IRegistrationProcessor _registrationProcessor,
         ISendProcessor _sendProcessor,
         uint256 _convenienceRewardTimePeriod
     )
@@ -101,6 +102,7 @@ contract Ramp is Ownable {
     {
         usdc = _usdc;
         receiveProcessor = _receiveProcessor;
+        registrationProcessor = _registrationProcessor;
         sendProcessor = _sendProcessor;
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
         transferOwnership(_owner);
@@ -111,16 +113,22 @@ contract Ramp is Ownable {
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
      * sender of the transaction.
-     *
-     * @param _pubInputs    The public inputs of the proof
-     * @param _proof        The proof
      */
-    function register(uint256[] memory _pubInputs, bytes memory _proof) external {
-        bytes32 accountId = bytes32(_pubInputs[0]); // VALIDATE THIS IS THE CORRECT PUBLIC INPUT
-        require(accountIds[accountId] == address(0), "Account already registered");
+    function register(
+        uint[2] memory _a,
+        uint[2][2] memory _b,
+        uint[2] memory _c,
+        uint[45] memory _signals
+    )
+        external
+    {
+        (
+            uint256 venmoId,
+            bytes32 venmoIdHash
+        ) = _verifyRegistrationProof(_a, _b, _c, _signals);
 
-        accountIds[accountId] = msg.sender;
-        emit AccountRegistered(accountId, msg.sender);
+        accountIds[venmoIdHash] = msg.sender;
+        emit AccountRegistered(venmoIdHash, msg.sender);
     }
 
     /**
@@ -295,6 +303,7 @@ contract Ramp is Ownable {
 
     // Set new SendProcessor
     // Set new ReceiveProcessor
+    // Set new RegistrationProcessor
 
     function setConvenienceRewardTimePeriod(uint256 _convenienceRewardTimePeriod) external onlyOwner {
         require(_convenienceRewardTimePeriod != 0, "Convenience reward time period cannot be zero");
@@ -359,10 +368,10 @@ contract Ramp is Ownable {
     }
 
     function _verifyOnRampWithConvenienceProof(
-        uint256[2] memory a,
-        uint256[2][2] memory b,
-        uint256[2] memory c,
-        uint256[51] memory signals
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[51] memory _signals
     )
         internal
         view
@@ -373,7 +382,7 @@ contract Ramp is Ownable {
             uint256 onRamperId,
             bytes32 onRamperIdHash,
             bytes32 intentHash
-        ) = receiveProcessor.processProof(a, b, c, signals);
+        ) = receiveProcessor.processProof(_a, _b, _c, _signals);
 
         Intent memory intent = intents[intentHash];
         require(intent.onramper == onRamperIdHash, "Onramper id does not match");
@@ -383,10 +392,10 @@ contract Ramp is Ownable {
     }
 
     function _verifyOnRampProof(
-        uint256[2] memory a,
-        uint256[2][2] memory b,
-        uint256[2] memory c,
-        uint256[51] memory signals
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[51] memory _signals
     )
         internal
         view
@@ -397,7 +406,7 @@ contract Ramp is Ownable {
             uint256 offRamperId,
             bytes32 offRamperIdHash,
             bytes32 intentHash
-        ) = receiveProcessor.processProof(a, b, c, signals);
+        ) = receiveProcessor.processProof(_a, _b, _c, _signals);
 
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
@@ -406,5 +415,25 @@ contract Ramp is Ownable {
         require(amount >= intent.amount, "Payment was not enough");
 
         return (intent, deposit, intentHash);
+    }
+
+    function _verifyRegistrationProof(
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[45] memory _signals
+    )
+        internal
+        view
+        returns(uint256, bytes32)
+    {
+        (
+            uint256 venmoId,
+            bytes32 venmoIdHash
+        ) = registrationProcessor.processProof(_a, _b, _c, _signals);
+
+        require(accountIds[venmoIdHash] == address(0), "Account already registered");
+
+        return (venmoId, venmoIdHash);
     }
 }

@@ -2,10 +2,10 @@ pragma solidity ^0.8.18;
 
 interface IReceiveProcessor {
     function processProof(
-        uint[2] memory a,
-        uint[2][2] memory b,
-        uint[2] memory c,
-        uint[51] memory signals
+        uint[2] memory _a,
+        uint[2][2] memory _b,
+        uint[2] memory _c,
+        uint[51] memory _signals
     )
         external
         view

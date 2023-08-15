@@ -7,7 +7,13 @@ import {
   Address,
 } from "@utils/types";
 import { Account } from "@utils/test/types";
-import { Ramp, USDCMock, VenmoReceiveProcessorMock, VenmoSendProcessorMock } from "@utils/contracts";
+import {
+  Ramp,
+  USDCMock,
+  VenmoReceiveProcessorMock,
+  VenmoRegistrationProcessorMock,
+  VenmoSendProcessorMock
+} from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -32,6 +38,7 @@ describe("Ramp", () => {
   let ramp: Ramp;
   let usdcToken: USDCMock;
   let receiveProcessor: VenmoReceiveProcessorMock;
+  let registrationProcessor: VenmoRegistrationProcessorMock;
   let sendProcessor: VenmoSendProcessorMock;
 
   let deployer: DeployHelper;
@@ -47,11 +54,18 @@ describe("Ramp", () => {
 
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
     receiveProcessor = await deployer.deployVenmoReceiveProcessorMock();
+    registrationProcessor = await deployer.deployVenmoRegistrationProcessorMock();
     sendProcessor = await deployer.deployVenmoSendProcessorMock();
 
     await usdcToken.transfer(offRamper.address, usdc(10000));
 
-    ramp = await deployer.deployRamp(owner.address, await usdcToken.address, receiveProcessor.address, sendProcessor.address);
+    ramp = await deployer.deployRamp(
+      owner.address,
+      usdcToken.address,
+      receiveProcessor.address,
+      registrationProcessor.address,
+      sendProcessor.address
+    );
   });
 
   describe("#constructor", async () => {
@@ -70,6 +84,11 @@ describe("Ramp", () => {
       expect(receiveProcessorAddress).to.eq(receiveProcessor.address);
     });
 
+    it("should set the correct registrationProcessor", async () => {
+      const registrationProcessorAddress: Address = await ramp.registrationProcessor();
+      expect(registrationProcessorAddress).to.eq(registrationProcessor.address);
+    });
+
     it("should set the correct sendProcessor", async () => {
       const sendProcessorAddress: Address = await ramp.sendProcessor();
       expect(sendProcessorAddress).to.eq(sendProcessor.address);
@@ -77,29 +96,36 @@ describe("Ramp", () => {
   });
 
   describe("#register", async () => {
-    let subjectPubInputs: string[];
-    let subjectProof: string;
+    let subjectA: [BigNumber, BigNumber];
+    let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
+    let subjectC: [BigNumber, BigNumber];
+    let subjectSignals: BigNumber[];
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectPubInputs = [ethers.utils.formatBytes32String("proofOfVenmo")];
-      subjectProof = "0x01";
+      subjectSignals = new Array<BigNumber>(45).fill(ZERO);
+      subjectSignals[0] = BigNumber.from(1);
+      subjectSignals[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+
+      subjectA = [ZERO, ZERO];
+      subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
+      subjectC = [ZERO, ZERO];
       subjectCaller = offRamper;
     });
 
     async function subject(): Promise<any> {
-      return ramp.connect(subjectCaller.wallet).register(subjectPubInputs, subjectProof);
+      return ramp.connect(subjectCaller.wallet).register(subjectA, subjectB, subjectC, subjectSignals);
     }
 
     it("should register the caller", async () => {
       await subject();
 
-      const offRamperAddress = await ramp.accountIds(subjectPubInputs[0]);
+      const offRamperAddress = await ramp.accountIds(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
       expect(offRamperAddress).to.eq(subjectCaller.address);
     });
 
     it("should emit an AccountRegistered event", async () => {
-      await expect(subject()).to.emit(ramp, "AccountRegistered").withArgs(subjectPubInputs[0], subjectCaller.address);
+      await expect(subject()).to.emit(ramp, "AccountRegistered").withArgs(ethers.utils.formatBytes32String("proofOfVenmoTwo"), subjectCaller.address);
     });
 
     describe("when the caller is already registered", async () => {
@@ -115,8 +141,30 @@ describe("Ramp", () => {
 
   context("when the on and off ramper are registered", async () => {
     beforeEach(async () => {
-      await ramp.connect(offRamper.wallet).register([ethers.utils.formatBytes32String("proofOfVenmo")], "0x01");
-      await ramp.connect(onRamper.wallet).register([ethers.utils.formatBytes32String("proofOfVenmoTwo")], "0x01");
+      const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
+      const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+      const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
+
+      const signalsOffRamp = new Array<BigNumber>(45).fill(ZERO);
+      signalsOffRamp[0] = ZERO;
+      signalsOffRamp[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+
+      const signalsOnRamp = new Array<BigNumber>(45).fill(ZERO);
+      signalsOnRamp[0] = ZERO;
+      signalsOnRamp[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+
+      await ramp.connect(offRamper.wallet).register(
+        _a,
+        _b,
+        _c,
+        signalsOffRamp
+      );
+      await ramp.connect(onRamper.wallet).register(
+        _a,
+        _b,
+        _c,
+        signalsOnRamp
+      );
 
       await usdcToken.connect(offRamper.wallet).approve(ramp.address, usdc(10000));
     });
@@ -432,7 +480,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#onRampWithConvenience", async () => {
+    describe("#onRampWithConvenience", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
       let subjectC: [BigNumber, BigNumber];
