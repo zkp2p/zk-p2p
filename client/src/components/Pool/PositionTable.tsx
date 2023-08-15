@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Inbox } from 'react-feather'
 import styled, { css } from 'styled-components/macro'
 
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
+import { Deposit } from "../../helpers/types";
 
 
 interface PositionTableProps {
@@ -16,8 +17,18 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   loggedInWalletAddress,
   handleNewPositionClick
 }) => {
+  const [positions, setPositions] = useState<Deposit[]>([]);
+  // If no loggedInWalletAddress, show nothing
+  // If loggedInWalletAddress, but no positions, show zero state
+  // If loggedInWalletAddress, with postiions, show position row
+
+  // TODO: Update with logic fetching positions when logged in address is available
+  useEffect(() => {
+    setPositions([]);
+  }, []);
+
   return (
-    <Wrapper>
+    <Container>
       <Column>
         <TitleRow>
           <ThemedText.HeadlineMedium>
@@ -29,24 +40,43 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         </TitleRow>
 
         <Content>
-          <ErrorContainer>
-            <ThemedText.DeprecatedBody textAlign="center">
-            <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-            <div>
-              Your active pool positions will appear here.
-            </div>
-            </ThemedText.DeprecatedBody>
-            <Button>
-              Connect Wallet
-            </Button>
-          </ErrorContainer>
+          {!loggedInWalletAddress ? (
+            <ErrorContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+                <div>
+                  Your active pool positions will appear here!
+                </div>
+              </ThemedText.DeprecatedBody>
+              <Button>
+                Connect Wallet
+              </Button>
+            </ErrorContainer>
+          ) : positions.length === 0 ? (
+            <ErrorContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+                <div>
+                  You have no active positions.
+                </div>
+              </ThemedText.DeprecatedBody>
+            </ErrorContainer>
+          ) : (
+            <PositionsContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <div>
+                  You have positions!
+                </div>
+              </ThemedText.DeprecatedBody>
+            </PositionsContainer>
+          )}
         </Content>
       </Column>
-    </Wrapper>
+    </Container>
   )
 }
 
-const Wrapper = styled.div`
+const Container = styled.div`
   width: 100%;
   gap: 1rem;
 `
@@ -103,4 +133,15 @@ const IconStyle = css`
 
 const InboxIcon = styled(Inbox)`
   ${IconStyle}
+`
+
+const PositionsContainer = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  max-width: 340px;
+  min-height: 25vh;
+  gap: 36px;
 `
