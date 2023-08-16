@@ -7,7 +7,7 @@
 //   bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
 // }
 
-export interface Intent {
+export interface Deposit {
   depositor: string;
   remainingDepositAmount: number;
   outstandingIntentAmount: number;
