@@ -20,7 +20,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 }) => {
   const [positions, setPositions] = useState<Deposit[]>([]);
 
-  // Test data
   useEffect(() => {
     setPositions([
       {

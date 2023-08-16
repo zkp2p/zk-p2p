@@ -45,7 +45,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 1.5rem;
   background-color: #0D111C;
 
   &:focus-within {
