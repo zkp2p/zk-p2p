@@ -6,6 +6,7 @@ import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { Deposit } from "../../helpers/types";
+import { PositionRow } from "./PositionRow";
 
 
 interface PositionTableProps {
@@ -18,14 +19,34 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   handleNewPositionClick
 }) => {
   const [positions, setPositions] = useState<Deposit[]>([]);
-  // If no loggedInWalletAddress, show nothing
-  // If loggedInWalletAddress, but no positions, show zero state
-  // If loggedInWalletAddress, with postiions, show position row
 
-  // TODO: Update with logic fetching positions when logged in address is available
+  // Test data
   useEffect(() => {
-    setPositions([]);
+    setPositions([
+      {
+        depositor: '0x1234...5678',
+        remainingDepositAmount: 10_000_000_000, // 10_000
+        outstandingIntentAmount: 200_000_000,   // 200
+        conversionRate: 1_000_000,              // 1%
+        convenienceFee: 100_000                 // 1%
+      },
+      {
+        depositor: '0x1234...5678',
+        remainingDepositAmount: 10_000_000_000,
+        outstandingIntentAmount: 200_000_000,
+        conversionRate: 1_000_000,
+        convenienceFee: 100_000
+      }
+    ]);
   }, []);
+
+  function convertDepositAmountToUSD(depositAmount: number) {
+    return (depositAmount / 1_000_000).toString();
+  }
+
+  function convertRatesToPercentage(rate: number) {
+    return (rate / 1_000_000).toFixed(2) + '%';
+  }
 
   return (
     <Container>
@@ -63,11 +84,24 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             </ErrorContainer>
           ) : (
             <PositionsContainer>
-              <ThemedText.DeprecatedBody textAlign="center">
-                <div>
-                  You have positions!
-                </div>
-              </ThemedText.DeprecatedBody>
+              <PositionCountTitle>
+                <ThemedText.LabelSmall textAlign="left">
+                  Your positions ({positions.length})
+                </ThemedText.LabelSmall>
+              </PositionCountTitle>
+              <Table>
+                {positions.map((position, rowIndex) => (
+                  <PositionRowStyled key={rowIndex}>
+                    <PositionRow
+                      remainingDepositAmount={convertDepositAmountToUSD(position.remainingDepositAmount)}
+                      outstandingIntentAmount={convertDepositAmountToUSD(position.outstandingIntentAmount)}
+                      conversionRate={convertRatesToPercentage(position.conversionRate)}
+                      convenienceFee={convertRatesToPercentage(position.convenienceFee)}
+                      rowIndex={rowIndex}
+                    />
+                  </PositionRowStyled>
+                ))}
+              </Table>
             </PositionsContainer>
           )}
         </Content>
@@ -106,7 +140,6 @@ const Content = styled.main`
   display: flex;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
-  padding: 36px 0px;
   border-radius: 16px;
   flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
@@ -120,6 +153,7 @@ const ErrorContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   margin: auto;
+  padding: 36px 0px;
   max-width: 340px;
   min-height: 25vh;
   gap: 36px;
@@ -136,12 +170,43 @@ const InboxIcon = styled(Inbox)`
 `
 
 const PositionsContainer = styled.div`
-  align-items: center;
   display: flex;
+  align-items: flex-start;
   flex-direction: column;
-  justify-content: center;
-  margin: auto;
-  max-width: 340px;
-  min-height: 25vh;
-  gap: 36px;
+  justify-content: flex-start;
+  width: 100%;
 `
+
+const PositionCountTitle = styled.div`
+  width: 100%;
+  text-align: left;
+  padding-top: 1.25rem;
+  padding-bottom: 1rem;
+  padding-left: 1.5rem;
+  border-bottom: 1px solid #98a1c03d;
+`
+
+const Table = styled.div`
+  width: 100%;
+  border-radius: 8px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
+  font-size: 16px;
+  color: #616161;
+
+  & > * {
+    border-bottom: 1px solid #98a1c03d;
+  }
+
+  & > *:last-child {
+    border-bottom: none;
+  }
+`;
+
+const PositionRowStyled = styled.div`
+  &:last-child {
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+`;

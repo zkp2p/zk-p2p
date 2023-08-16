@@ -1,59 +1,43 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import styled from 'styled-components';
 
+import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
-interface InputProps {
-  label: string;
-  name: string;
-  value?: string;
-  type?: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  inputLabel?: string;
-  readOnly?: boolean;
+
+interface PositionRowProps {
+  remainingDepositAmount: string;
+  outstandingIntentAmount: string;
+  conversionRate: string;
+  convenienceFee: string;
+  rowIndex: number;
 }
 
-export const Input: React.FC<InputProps> = ({
-  label,
-  name,
-  value,
-  onChange,
-  onFocus,
-  onKeyDown,
-  placeholder,
-  inputLabel,
-  type = "text",
-  readOnly = false,
-}: InputProps) => {
-  Input.displayName = "Input";
+export const PositionRow: React.FC<PositionRowProps> = ({
+  remainingDepositAmount,
+  outstandingIntentAmount,
+  conversionRate,
+  convenienceFee,
+  rowIndex,
+}: PositionRowProps) => {
+  PositionRow.displayName = "PositionRow";
+
+  const outstandingAndRemainingLabel = `${outstandingIntentAmount} / ${remainingDepositAmount} USDC`;
 
   return (
-      <Container>
-        <Label htmlFor={name}>
-            {label}
-        </Label>
-        <InputWrapper>
-          <StyledInput
-            type={type}
-            name={name}
-            id={name}
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
-            onFocus={onFocus}
-            onKeyDown={onKeyDown}
-            readOnly={readOnly}
-          />
-          {inputLabel ? (
-            <InputLabel>
-                <span>{inputLabel}</span>
-            </InputLabel>
-            ) : null
-          }
-        </InputWrapper>
-      </Container>
+    <Container>
+      <AmountContainer>
+        <SVGIconThemed icon={'usdc'} width={'22'} height={'22'}/>
+        <AmountLabel> {outstandingAndRemainingLabel} </AmountLabel>
+      </AmountContainer>
+      <FeeLabelsContainer>
+        <PercentageLabel>
+          <Label>Conversion Rate:</Label> <Value>{conversionRate}</Value>
+        </PercentageLabel>
+        <PercentageLabel>
+          <Label>Convenience Fee:</Label> <Value>{convenienceFee}</Value>
+        </PercentageLabel>
+      </FeeLabelsContainer>
+    </Container>
   );
 };
 
@@ -61,10 +45,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1.5px solid #98a1c03d;
-  background-color: #131A2A;
+  padding: 1.25rem 1.5rem;
+  background-color: #0D111C;
 
   &:focus-within {
     border-color: #CED4DA;
@@ -72,65 +54,41 @@ const Container = styled.div`
   }
 `;
 
-const Label = styled.label`
-  display: flex;
-  font-size: 14px;
-  font-weight: 550;
-  margin-top: 8px;
-  color: #CED4DA;
-`;
-
-const InputWrapper = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: space-between;
+const AmountContainer = styled.div`
   width: 100%; 
-  margin-top: 8px;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  line-height: 24px;
 `;
 
-interface StyledInputProps {
-  readOnly?: boolean;
-}
-
-const StyledInput = styled.input<StyledInputProps>`
+const AmountLabel = styled.label`
   display: flex;
-  width: 100%;
-  border: 0;
-  padding: 0;
+  font-size: 18px;
   color: #FFFFFF;
-  background-color: #131A2A;
-  font-size: 28px;
-
-  &:focus {
-    box-shadow: none;
-    outline: none;
-  }
-
-  &:placeholder {
-    color: #6C757D;
-  }
-
-  &[type='number'] {
-    -moz-appearance: textfield;
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  }
-
-  ${({ readOnly }) => 
-    readOnly && `
-      pointer-events: none;
-    `
-  }
+  align-items: center;
 `;
 
-const InputLabel = styled.div`
+const FeeLabelsContainer = styled.div`
+  width: 100%; 
   display: flex;
-  position: absolute;
-  right: 2px;
-  pointer-events: none;
-  color: #9ca3af;
-  font-size: 20px;
+  flex-direction: row;
+  gap: 8px;
+  padding-top: 8px;
+  color: #6C757D;
+`;
+
+const PercentageLabel = styled.div`
+  display: flex;
+`;
+
+const Label = styled.span`
+  color: #6C757D;
+  font-size: 14px;
+`;
+
+const Value = styled.span`
+  color: #FFFFFF;
+  font-size: 14px;
+  margin-left: 4px;
 `;

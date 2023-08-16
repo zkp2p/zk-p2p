@@ -29,23 +29,15 @@ export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
     onClick,
     className
 }) => {
-  const styles: CSSProperties = {};
-  
-  if (width) {
-    styles.width = width;
-  }
-
-  if (height) {
-    styles.height = height;
-  }
+  const styles: CSSProperties = {
+    display: 'inline-block'
+  };
   
   const showedClass = `svg-icon-${size} ${className}`;
   
   const showedIconName = typeof icon === 'string'
     ? `${themeMode}-${icon}`
     : iconName;
-
-  console.log(showedIconName);
   
   const isLightMode = themeMode === 'light';
   
@@ -55,8 +47,11 @@ export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
   styles.backgroundColor = color;
 
   return (
-    <div className={showedClass} style={styles} onClick={onClick}>
-      <SVGIcon iconName={showedIconName} />
+    <div
+      className={showedClass}
+      style={styles}
+      onClick={onClick}>
+        <SVGIcon iconName={showedIconName} width={width} height={height} />
     </div>
   );
 };
