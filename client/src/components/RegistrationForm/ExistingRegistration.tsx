@@ -29,6 +29,8 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 }) => {
   const { chain } = useNetwork();
 
+  console.log(chain);
+
   const persistedVenmoIdKey = `persistedVenmoId_${loggedInWalletAddress}`;
   const [venmoIdInput, setVenmoIdInput] = useState<string>(localStorage.getItem(persistedVenmoIdKey) || "");
   
