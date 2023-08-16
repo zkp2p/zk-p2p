@@ -17,7 +17,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 
 const { chains, provider, webSocketProvider } = configureChains(
-  [chain.goerli, optimism],
+  [chain.hardhat, chain.goerli, optimism],
   [
     alchemyProvider(
       // { apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }
