@@ -1,610 +1,683 @@
 export const abi = [
    {
-      inputs: [
-         {
-            internalType: "uint256[17]",
-            name: "_venmoMailserverKeys",
-            type: "uint256[17]"
-         },
-         {
-            internalType: "contract IERC20",
-            name: "_usdc",
-            type: "address"
-         },
-         {
-            internalType: "uint256",
-            name: "_maxAmount",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "nonpayable",
-      type: "constructor"
+     "inputs": [
+       {
+         "internalType": "address",
+         "name": "_owner",
+         "type": "address"
+       },
+       {
+         "internalType": "contract IERC20",
+         "name": "_usdc",
+         "type": "address"
+       },
+       {
+         "internalType": "contract IReceiveProcessor",
+         "name": "_receiveProcessor",
+         "type": "address"
+       },
+       {
+         "internalType": "contract IRegistrationProcessor",
+         "name": "_registrationProcessor",
+         "type": "address"
+       },
+       {
+         "internalType": "contract ISendProcessor",
+         "name": "_sendProcessor",
+         "type": "address"
+       },
+       {
+         "internalType": "uint256",
+         "name": "_convenienceRewardTimePeriod",
+         "type": "uint256"
+       }
+     ],
+     "stateMutability": "nonpayable",
+     "type": "constructor"
    },
    {
-      anonymous: false,
-      inputs: [
-         {
-            indexed: true,
-            internalType: "address",
-            name: "previousOwner",
-            type: "address"
-         },
-         {
-            indexed: true,
-            internalType: "address",
-            name: "newOwner",
-            type: "address"
-         }
-      ],
-      name: "OwnershipTransferred",
-      type: "event"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "venmoId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": false,
+         "internalType": "address",
+         "name": "newOwner",
+         "type": "address"
+       }
+     ],
+     "name": "AccountOwnerUpdated",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256[3]",
-            name: "packedBytes",
-            type: "uint256[3]"
-         },
-         {
-            internalType: "uint256",
-            name: "maxBytes",
-            type: "uint256"
-         }
-      ],
-      name: "_convertPackedBytesToBytes",
-      outputs: [
-         {
-            internalType: "string",
-            name: "extractedString",
-            type: "string"
-         }
-      ],
-      stateMutability: "pure",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "accountId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "address",
+         "name": "account",
+         "type": "address"
+       }
+     ],
+     "name": "AccountRegistered",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_orderId",
-            type: "uint256"
-         }
-      ],
-      name: "cancelOrder",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "depositHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "venmoId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "conversionRate",
+         "type": "uint256"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "convenienceFee",
+         "type": "uint256"
+       }
+     ],
+     "name": "DepositReceived",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_venmoId",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "_orderNonce",
-            type: "uint256"
-         },
-         {
-            internalType: "bytes",
-            name: "_encryptedVenmoId",
-            type: "bytes"
-         },
-         {
-            internalType: "uint256",
-            name: "_minAmountToPay",
-            type: "uint256"
-         }
-      ],
-      name: "claimOrder",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "depositHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "venmoId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+       }
+     ],
+     "name": "DepositWithdrawn",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_orderId",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "_claimId",
-            type: "uint256"
-         }
-      ],
-      name: "clawback",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "intentHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "depositHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "venmoId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "convenienceFee",
+         "type": "uint256"
+       }
+     ],
+     "name": "IntentFulfilled",
+     "type": "event"
    },
    {
-      inputs: [
-         
-      ],
-      name: "getAllOrders",
-      outputs: [
-         {
-            components: [
-               {
-                  internalType: "uint256",
-                  name: "id",
-                  type: "uint256"
-               },
-               {
-                  components: [
-                     {
-                        internalType: "address",
-                        name: "onRamper",
-                        type: "address"
-                     },
-                     {
-                        internalType: "bytes",
-                        name: "onRamperEncryptPublicKey",
-                        type: "bytes"
-                     },
-                     {
-                        internalType: "uint256",
-                        name: "amountToReceive",
-                        type: "uint256"
-                     },
-                     {
-                        internalType: "uint256",
-                        name: "maxAmountToPay",
-                        type: "uint256"
-                     },
-                     {
-                        internalType: "enum Ramp.OrderStatus",
-                        name: "status",
-                        type: "uint8"
-                     }
-                  ],
-                  internalType: "struct Ramp.Order",
-                  name: "order",
-                  type: "tuple"
-               }
-            ],
-            internalType: "struct Ramp.OrderWithId[]",
-            name: "",
-            type: "tuple[]"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "intentHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "depositHash",
+         "type": "bytes32"
+       }
+     ],
+     "name": "IntentPruned",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_orderId",
-            type: "uint256"
-         }
-      ],
-      name: "getClaimsForOrder",
-      outputs: [
-         {
-            components: [
-               {
-                  internalType: "address",
-                  name: "offRamper",
-                  type: "address"
-               },
-               {
-                  internalType: "uint256",
-                  name: "venmoId",
-                  type: "uint256"
-               },
-               {
-                  internalType: "enum Ramp.ClaimStatus",
-                  name: "status",
-                  type: "uint8"
-               },
-               {
-                  internalType: "bytes",
-                  name: "encryptedOffRamperVenmoId",
-                  type: "bytes"
-               },
-               {
-                  internalType: "uint256",
-                  name: "claimExpirationTime",
-                  type: "uint256"
-               },
-               {
-                  internalType: "uint256",
-                  name: "minAmountToPay",
-                  type: "uint256"
-               }
-            ],
-            internalType: "struct Ramp.OrderClaim[]",
-            name: "",
-            type: "tuple[]"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "intentHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "depositHash",
+         "type": "bytes32"
+       },
+       {
+         "indexed": true,
+         "internalType": "bytes32",
+         "name": "venmoId",
+         "type": "bytes32"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+       },
+       {
+         "indexed": false,
+         "internalType": "uint256",
+         "name": "timestamp",
+         "type": "uint256"
+       }
+     ],
+     "name": "IntentSignaled",
+     "type": "event"
    },
    {
-      inputs: [
-         
-      ],
-      name: "maxAmount",
-      outputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "anonymous": false,
+     "inputs": [
+       {
+         "indexed": true,
+         "internalType": "address",
+         "name": "previousOwner",
+         "type": "address"
+       },
+       {
+         "indexed": true,
+         "internalType": "address",
+         "name": "newOwner",
+         "type": "address"
+       }
+     ],
+     "name": "OwnershipTransferred",
+     "type": "event"
    },
    {
-      inputs: [
-         {
-            internalType: "bytes32",
-            name: "",
-            type: "bytes32"
-         }
-      ],
-      name: "nullified",
-      outputs: [
-         {
-            internalType: "bool",
-            name: "",
-            type: "bool"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [],
+     "name": "PRECISE_UNIT",
+     "outputs": [
+       {
+         "internalType": "uint256",
+         "name": "",
+         "type": "uint256"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256[2]",
-            name: "_a",
-            type: "uint256[2]"
-         },
-         {
-            internalType: "uint256[2][2]",
-            name: "_b",
-            type: "uint256[2][2]"
-         },
-         {
-            internalType: "uint256[2]",
-            name: "_c",
-            type: "uint256[2]"
-         },
-         {
-            internalType: "uint256[26]",
-            name: "_signals",
-            type: "uint256[26]"
-         }
-      ],
-      name: "onRamp",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "",
+         "type": "bytes32"
+       }
+     ],
+     "name": "accountIds",
+     "outputs": [
+       {
+         "internalType": "address",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      name: "orderClaimNonce",
-      outputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [],
+     "name": "convenienceRewardTimePeriod",
+     "outputs": [
+       {
+         "internalType": "uint256",
+         "name": "",
+         "type": "uint256"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      name: "orderClaimedByVenmoId",
-      outputs: [
-         {
-            internalType: "bool",
-            name: "",
-            type: "bool"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "",
+         "type": "bytes32"
+       }
+     ],
+     "name": "deposits",
+     "outputs": [
+       {
+         "internalType": "bytes32",
+         "name": "depositor",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "uint256",
+         "name": "remainingDeposits",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "outstandingIntentAmount",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "conversionRate",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "convenienceFee",
+         "type": "uint256"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      name: "orderClaims",
-      outputs: [
-         {
-            internalType: "address",
-            name: "offRamper",
-            type: "address"
-         },
-         {
-            internalType: "uint256",
-            name: "venmoId",
-            type: "uint256"
-         },
-         {
-            internalType: "enum Ramp.ClaimStatus",
-            name: "status",
-            type: "uint8"
-         },
-         {
-            internalType: "bytes",
-            name: "encryptedOffRamperVenmoId",
-            type: "bytes"
-         },
-         {
-            internalType: "uint256",
-            name: "claimExpirationTime",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "minAmountToPay",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "_depositHash",
+         "type": "bytes32"
+       }
+     ],
+     "name": "getDeposit",
+     "outputs": [
+       {
+         "components": [
+           {
+             "internalType": "bytes32",
+             "name": "depositor",
+             "type": "bytes32"
+           },
+           {
+             "internalType": "uint256",
+             "name": "remainingDeposits",
+             "type": "uint256"
+           },
+           {
+             "internalType": "uint256",
+             "name": "outstandingIntentAmount",
+             "type": "uint256"
+           },
+           {
+             "internalType": "uint256",
+             "name": "conversionRate",
+             "type": "uint256"
+           },
+           {
+             "internalType": "uint256",
+             "name": "convenienceFee",
+             "type": "uint256"
+           },
+           {
+             "internalType": "bytes32[]",
+             "name": "intentHashes",
+             "type": "bytes32[]"
+           }
+         ],
+         "internalType": "struct Ramp.Deposit",
+         "name": "",
+         "type": "tuple"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         
-      ],
-      name: "orderNonce",
-      outputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "",
+         "type": "bytes32"
+       }
+     ],
+     "name": "intents",
+     "outputs": [
+       {
+         "internalType": "bytes32",
+         "name": "onramper",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "bytes32",
+         "name": "deposit",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "intentTimestamp",
+         "type": "uint256"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      name: "orders",
-      outputs: [
-         {
-            internalType: "address",
-            name: "onRamper",
-            type: "address"
-         },
-         {
-            internalType: "bytes",
-            name: "onRamperEncryptPublicKey",
-            type: "bytes"
-         },
-         {
-            internalType: "uint256",
-            name: "amountToReceive",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "maxAmountToPay",
-            type: "uint256"
-         },
-         {
-            internalType: "enum Ramp.OrderStatus",
-            name: "status",
-            type: "uint8"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "_venmoId",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "uint256",
+         "name": "_depositAmount",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "_receiveAmount",
+         "type": "uint256"
+       },
+       {
+         "internalType": "uint256",
+         "name": "_convenienceFee",
+         "type": "uint256"
+       }
+     ],
+     "name": "offRamp",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    },
    {
-      inputs: [
-         
-      ],
-      name: "owner",
-      outputs: [
-         {
-            internalType: "address",
-            name: "",
-            type: "address"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "uint256[2]",
+         "name": "_a",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[2][2]",
+         "name": "_b",
+         "type": "uint256[2][2]"
+       },
+       {
+         "internalType": "uint256[2]",
+         "name": "_c",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[51]",
+         "name": "_signals",
+         "type": "uint256[51]"
+       }
+     ],
+     "name": "onRamp",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_amount",
-            type: "uint256"
-         },
-         {
-            internalType: "uint256",
-            name: "_maxAmountToPay",
-            type: "uint256"
-         },
-         {
-            internalType: "bytes",
-            name: "_encryptPublicKey",
-            type: "bytes"
-         }
-      ],
-      name: "postOrder",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "uint256[2]",
+         "name": "_a",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[2][2]",
+         "name": "_b",
+         "type": "uint256[2][2]"
+       },
+       {
+         "internalType": "uint256[2]",
+         "name": "_c",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[51]",
+         "name": "_signals",
+         "type": "uint256[51]"
+       }
+     ],
+     "name": "onRampWithConvenience",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    },
    {
-      inputs: [
-         
-      ],
-      name: "renounceOwnership",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [],
+     "name": "owner",
+     "outputs": [
+       {
+         "internalType": "address",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "_maxAmount",
-            type: "uint256"
-         }
-      ],
-      name: "setMaxAmount",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [],
+     "name": "receiveProcessor",
+     "outputs": [
+       {
+         "internalType": "contract IReceiveProcessor",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256[17]",
-            name: "_venmoMailserverKeys",
-            type: "uint256[17]"
-         }
-      ],
-      name: "setVenmoMailserverKeys",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "uint256[2]",
+         "name": "_a",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[2][2]",
+         "name": "_b",
+         "type": "uint256[2][2]"
+       },
+       {
+         "internalType": "uint256[2]",
+         "name": "_c",
+         "type": "uint256[2]"
+       },
+       {
+         "internalType": "uint256[45]",
+         "name": "_signals",
+         "type": "uint256[45]"
+       }
+     ],
+     "name": "register",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "address",
-            name: "newOwner",
-            type: "address"
-         }
-      ],
-      name: "transferOwnership",
-      outputs: [
-         
-      ],
-      stateMutability: "nonpayable",
-      type: "function"
+     "inputs": [],
+     "name": "registrationProcessor",
+     "outputs": [
+       {
+         "internalType": "contract IRegistrationProcessor",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         
-      ],
-      name: "usdc",
-      outputs: [
-         {
-            internalType: "contract IERC20",
-            name: "",
-            type: "address"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [],
+     "name": "renounceOwnership",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      name: "venmoMailserverKeys",
-      outputs: [
-         {
-            internalType: "uint256",
-            name: "",
-            type: "uint256"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [],
+     "name": "sendProcessor",
+     "outputs": [
+       {
+         "internalType": "contract ISendProcessor",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
    },
    {
-      inputs: [
-         {
-            internalType: "uint256[2]",
-            name: "a",
-            type: "uint256[2]"
-         },
-         {
-            internalType: "uint256[2][2]",
-            name: "b",
-            type: "uint256[2][2]"
-         },
-         {
-            internalType: "uint256[2]",
-            name: "c",
-            type: "uint256[2]"
-         },
-         {
-            internalType: "uint256[26]",
-            name: "input",
-            type: "uint256[26]"
-         }
-      ],
-      name: "verifyProof",
-      outputs: [
-         {
-            internalType: "bool",
-            name: "r",
-            type: "bool"
-         }
-      ],
-      stateMutability: "view",
-      type: "function"
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "_venmoId",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "address",
+         "name": "_newOwner",
+         "type": "address"
+       }
+     ],
+     "name": "setAccountOwner",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
+   },
+   {
+     "inputs": [
+       {
+         "internalType": "uint256",
+         "name": "_convenienceRewardTimePeriod",
+         "type": "uint256"
+       }
+     ],
+     "name": "setConvenienceRewardTimePeriod",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
+   },
+   {
+     "inputs": [
+       {
+         "internalType": "bytes32",
+         "name": "_venmoId",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "bytes32",
+         "name": "_depositHash",
+         "type": "bytes32"
+       },
+       {
+         "internalType": "uint256",
+         "name": "_amount",
+         "type": "uint256"
+       }
+     ],
+     "name": "signalIntent",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
+   },
+   {
+     "inputs": [
+       {
+         "internalType": "address",
+         "name": "newOwner",
+         "type": "address"
+       }
+     ],
+     "name": "transferOwnership",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
+   },
+   {
+     "inputs": [],
+     "name": "usdc",
+     "outputs": [
+       {
+         "internalType": "contract IERC20",
+         "name": "",
+         "type": "address"
+       }
+     ],
+     "stateMutability": "view",
+     "type": "function"
+   },
+   {
+     "inputs": [
+       {
+         "internalType": "bytes32[]",
+         "name": "_depositHashes",
+         "type": "bytes32[]"
+       }
+     ],
+     "name": "withdrawDeposit",
+     "outputs": [],
+     "stateMutability": "nonpayable",
+     "type": "function"
    }
 ];
