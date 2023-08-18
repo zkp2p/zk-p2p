@@ -68,7 +68,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
             <PermissionsContainer>
               <PermissionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your permissions ({permissions.length})
+                  Your restricted users ({permissions.length})
                 </ThemedText.LabelSmall>
               </PermissionCountTitle>
               <Table>

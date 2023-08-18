@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Col } from "./Layout";
+import { Col } from "../legacy/Layout";
 
 
 export const SingleLineInput: React.FC<{

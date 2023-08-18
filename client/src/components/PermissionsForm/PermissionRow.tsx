@@ -1,5 +1,6 @@
 import React from "react";
-import styled from 'styled-components';
+import { UserX } from 'react-feather'
+import styled, { css } from 'styled-components/macro'
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
@@ -20,7 +21,7 @@ export const PermissionRow: React.FC<PermissionRowProps> = ({
   return (
     <Container>
       <AddressContainer>
-        <SVGIconThemed icon={'usdc'} width={'22'} height={'22'}/>
+        <UserXIcon strokeWidth={1.5} />
         <AddressLabel> {outstandingAndRemainingLabel} </AddressLabel>
       </AddressContainer>
     </Container>
@@ -39,6 +40,16 @@ const Container = styled.div`
     border-width: 1px;
   }
 `;
+
+const IconStyle = css`
+  width: 22px;
+  height: 22px;
+  color: #FFF;
+`
+
+const UserXIcon = styled(UserX)`
+  ${IconStyle}
+`
 
 const AddressContainer = styled.div`
   width: 100%; 
