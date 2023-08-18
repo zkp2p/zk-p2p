@@ -184,6 +184,11 @@ const Table = styled.div`
 `;
 
 const PermissionRowStyled = styled.div`
+  &:hover {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: none;
+  }    
+
   &:last-child {
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;

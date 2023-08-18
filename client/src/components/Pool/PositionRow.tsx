@@ -57,7 +57,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 1.5rem 1.5rem;
-  background-color: #0D111C;
 
   &:focus-within {
     border-color: #CED4DA;
