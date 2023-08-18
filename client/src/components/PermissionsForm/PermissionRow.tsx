@@ -2,8 +2,6 @@ import React from "react";
 import { UserX } from 'react-feather'
 import styled, { css } from 'styled-components/macro'
 
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
-
 
 interface PermissionRowProps {
   address: string;
@@ -42,9 +40,9 @@ const Container = styled.div`
 `;
 
 const IconStyle = css`
-  width: 22px;
-  height: 22px;
-  color: #FFF;
+  width: 24px;
+  height: 24px;
+  color: #6C757D;
 `
 
 const UserXIcon = styled(UserX)`

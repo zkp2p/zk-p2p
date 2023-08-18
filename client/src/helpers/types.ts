@@ -15,6 +15,16 @@ export interface Deposit {
   convenienceFee: number;
 }
 
+export interface DepositPrime {
+  depositor: string;
+  remainingDepositAmount: number;
+  totalDepositAmount: number;
+  outstandingIntentAmount: number;
+  intentCount: number;
+  conversionRate: number;
+  convenienceFee: number;
+}
+
 // struct Intent {
 //   bytes32 onramper;
 //   bytes32 deposit;
