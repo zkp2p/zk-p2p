@@ -10,8 +10,8 @@ import { RowBetween } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
-import { ReadOnlyInput } from "../legacy/ReadOnlyInput";
-import { SingleLineInput } from "../legacy/SingleLineInput";
+import { ReadOnlyInput } from "../common/ReadOnlyInput";
+import { SingleLineInput } from "../common/SingleLineInput";
 import { encryptMessage } from "../../helpers/messagEncryption";
 import { generateVenmoIdHash } from "../../helpers/venmoHash";
 // import { abi } from "../helpers/ramp.abi";
@@ -81,7 +81,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
     Component
   */
   return (
-    <Wrapper>
+    <Container>
       <Column>
         <TitleRow>
           <ThemedText.HeadlineMedium>
@@ -91,6 +91,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
             + Update
           </Button>
         </TitleRow>
+        
         <Body>
           <NumberedInputContainer>
             <NumberedStep>
@@ -119,11 +120,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           </Button>
         </Body>
       </Column>
-    </Wrapper>
+    </Container>
   );
 };
 
-const Wrapper = styled.div`
+const Container = styled.div`
   width: 100%;
   gap: 1rem;
 `;

@@ -5,30 +5,41 @@ import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 
 interface PositionRowProps {
+  depositorHash: string;
   remainingDepositAmount: string;
+  totalDepositAmount: string;
   outstandingIntentAmount: string;
+  intentCount: string;
   conversionRate: string;
   convenienceFee: string;
   rowIndex: number;
 }
 
 export const PositionRow: React.FC<PositionRowProps> = ({
+  depositorHash,
   remainingDepositAmount,
+  totalDepositAmount,
   outstandingIntentAmount,
+  intentCount,
   conversionRate,
   convenienceFee,
   rowIndex,
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
 
-  const outstandingAndRemainingLabel = `${outstandingIntentAmount} / ${remainingDepositAmount} USDC`;
+  const depositRemainingLabel = `Remaining: ${remainingDepositAmount} / ${totalDepositAmount}`;
+  const intentAmountLabel = `Outstanding Intents: ${intentCount} (${outstandingIntentAmount})`;
 
   return (
     <Container>
       <AmountContainer>
-        <SVGIconThemed icon={'usdc'} width={'22'} height={'22'}/>
-        <AmountLabel> {outstandingAndRemainingLabel} </AmountLabel>
+        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        <AmountLabelsContainer>
+          <AmountLabel> {depositRemainingLabel} </AmountLabel>
+          <AmountLabel> {intentAmountLabel} </AmountLabel>
+        </AmountLabelsContainer>
       </AmountContainer>
+
       <FeeLabelsContainer>
         <PercentageLabel>
           <Label>Conversion Rate:</Label> <Value>{conversionRate}</Value>
@@ -45,8 +56,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1.5rem 1.5rem;
-  background-color: #0D111C;
+  padding: 1.5rem;
 
   &:focus-within {
     border-color: #CED4DA;
@@ -55,16 +65,22 @@ const Container = styled.div`
 `;
 
 const AmountContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+`;
+
+const AmountLabelsContainer = styled.div`
   width: 100%; 
   display: flex;
-  flex-direction: row;
-  gap: 1rem;
+  gap: 2px;
+  flex-direction: column;
   line-height: 24px;
 `;
 
 const AmountLabel = styled.label`
   display: flex;
-  font-size: 18px;
+  font-size: 15px;
   color: #FFFFFF;
   align-items: center;
 `;
@@ -74,7 +90,7 @@ const FeeLabelsContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 8px;
-  padding-top: 8px;
+  padding-top: 12px;
   color: #6C757D;
 `;
 

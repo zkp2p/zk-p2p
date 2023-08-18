@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components/macro'
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { Deposit } from "../../helpers/types";
+import { Deposit, DepositPrime } from "../../helpers/types";
 import { PositionRow } from "./PositionRow";
 
 
@@ -18,33 +18,41 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   loggedInWalletAddress,
   handleNewPositionClick
 }) => {
-  const [positions, setPositions] = useState<Deposit[]>([]);
+  const [positions, setPositions] = useState<DepositPrime[]>([]);
 
   useEffect(() => {
     setPositions([
       {
         depositor: '0x1234...5678',
-        remainingDepositAmount: 10_000_000_000, // 10_000
+        remainingDepositAmount: 4_000_100_000,  // 4_000
+        totalDepositAmount: 10_000_000_000,     // 10_000
         outstandingIntentAmount: 200_000_000,   // 200
-        conversionRate: 1_000_000,              // 1%
-        convenienceFee: 100_000                 // 1%
+        intentCount: 2,                         // 2
+        conversionRate: 500_000,                // 0.5%
+        convenienceFee: 5_000_000               // 5
       },
       {
         depositor: '0x1234...5678',
-        remainingDepositAmount: 10_000_000_000,
-        outstandingIntentAmount: 200_000_000,
+        remainingDepositAmount: 5_500_000_000,
+        totalDepositAmount: 7_500_000_000,
+        outstandingIntentAmount: 300_000_000,
+        intentCount: 1,
         conversionRate: 1_000_000,
-        convenienceFee: 100_000
+        convenienceFee: 2_000_000
       }
     ]);
   }, []);
 
   function convertDepositAmountToUSD(depositAmount: number) {
-    return (depositAmount / 1_000_000).toString();
+    return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
   function convertRatesToPercentage(rate: number) {
     return (rate / 1_000_000).toFixed(2) + '%';
+  }
+
+  function convertFeeToFlatAmount(rate: number) {
+    return (rate / 1_000_000).toFixed(0) + ' USDC';
   }
 
   return (
@@ -92,10 +100,13 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 {positions.map((position, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
+                      depositorHash={position.depositor}
                       remainingDepositAmount={convertDepositAmountToUSD(position.remainingDepositAmount)}
+                      totalDepositAmount={convertDepositAmountToUSD(position.totalDepositAmount)}
                       outstandingIntentAmount={convertDepositAmountToUSD(position.outstandingIntentAmount)}
+                      intentCount={position.intentCount.toString()}
                       conversionRate={convertRatesToPercentage(position.conversionRate)}
-                      convenienceFee={convertRatesToPercentage(position.convenienceFee)}
+                      convenienceFee={convertFeeToFlatAmount(position.convenienceFee)}
                       rowIndex={rowIndex}
                     />
                   </PositionRowStyled>
@@ -204,6 +215,11 @@ const Table = styled.div`
 `;
 
 const PositionRowStyled = styled.div`
+  &:hover {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: none;
+  }  
+
   &:last-child {
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;

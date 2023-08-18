@@ -4,7 +4,7 @@ import { ReactComponent as DefaultTokenLogo } from '../../icons/svg/ethereum-tok
 import { ReactComponent as LightGithubLogo } from '../../icons/svg/light-github.svg';
 import { ReactComponent as DarkGithubLogo } from '../../icons/svg/dark-github.svg';
 import { ReactComponent as LightTwitterLogo } from '../../icons/svg/light-twitter.svg';
-import { ReactComponent as DarkTwitterLogo } from '../../icons/svg/light-twitter.svg';
+import { ReactComponent as DarkTwitterLogo } from '../../icons/svg/dark-twitter.svg';
 import { ReactComponent as LightUsdcLogo } from '../../icons/svg/light-usdc.svg';
 import { ReactComponent as DarkUsdcLogo } from '../../icons/svg/dark-usdc.svg';
 

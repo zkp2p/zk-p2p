@@ -1,9 +1,11 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useEffect, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
+import { useAccount } from "wagmi";
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
+import { IntentTable } from './IntentContainer'
 
 
 export type SwapQuote = {
@@ -16,7 +18,22 @@ interface SwapModalProps {
 
 const SwapModal: React.FC<SwapModalProps> = ({
 }: SwapModalProps) => {
+  const { address } = useAccount();
+
+  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ fiatIn: '', tokenOut: '' });
+
+  /*
+    Hooks
+  */
+
+  useEffect(() => {
+    if (address) {
+      setEthereumAddress(address);
+    } else {
+      setEthereumAddress("");
+    }
+  }, [address]);
 
   /*
     Event Handlers
@@ -54,53 +71,66 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
   return (
     <Wrapper>
-      <TitleContainer>
-        <ThemedText.HeadlineSmall>
-          Swap
-        </ThemedText.HeadlineSmall>
-      </TitleContainer>
-
-      <MainContentWrapper>
-        <Input
-          label="U.S. Dollars"
-          name={`amountIn`}
-          value={currentQuote.fiatIn}
-          onChange={event => handleInputChange(event, 'fiatIn')}
-          type="number"
-          inputLabel="$"
-          placeholder="0.00"
-        />
-        <Input
-          label="USDC"
-          name={`amountOut`}
-          value={currentQuote.tokenOut}
-          onChange={event => handleInputChange(event, 'tokenOut')}
-          onKeyDown={handleEnterPress}
-          type="number"
-          inputLabel="USDC"
-          placeholder="0"
-          readOnly={true}
-        />
-        <ButtonContainer>
-          <MainButton
-            type="button"
-            onClick={(event) => handleAdd(event)}
-            disabled={!isFormComplete()}
-          >
-            Connect Wallet
-          </MainButton>
-        </ButtonContainer>
-      </MainContentWrapper>
+      <SwapModalContainer>
+        <TitleContainer>
+          <ThemedText.HeadlineSmall>
+            Swap
+          </ThemedText.HeadlineSmall>
+        </TitleContainer>
+  
+        <MainContentWrapper>
+          <Input
+            label="U.S. Dollars"
+            name={`amountIn`}
+            value={currentQuote.fiatIn}
+            onChange={event => handleInputChange(event, 'fiatIn')}
+            type="number"
+            inputLabel="$"
+            placeholder="0.00"
+          />
+          <Input
+            label="USDC"
+            name={`amountOut`}
+            value={currentQuote.tokenOut}
+            onChange={event => handleInputChange(event, 'tokenOut')}
+            onKeyDown={handleEnterPress}
+            type="number"
+            inputLabel="USDC"
+            placeholder="0"
+            readOnly={true}
+          />
+          <ButtonContainer>
+            <MainButton
+              type="button"
+              onClick={(event) => handleAdd(event)}
+              disabled={!isFormComplete()}
+            >
+              Connect Wallet
+            </MainButton>
+          </ButtonContainer>
+        </MainContentWrapper>
+      </SwapModalContainer>
+  
+      <IntentTable
+        loggedInWalletAddress={ethereumAddress}
+        handleNewPositionClick={() => {}}
+      />
     </Wrapper>
   );
 };
 
-const Wrapper = styled(AutoColumn)`
-  max-width: 464px;
+const Wrapper = styled.div`
   width: 100%;
+  max-width: 464px;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const SwapModalContainer = styled(AutoColumn)`
   border-radius: 16px;
   border: 1px solid #DEE2E6;
-  margin-top: 50px;
   padding: 1rem;
   gap: 1rem;
   background-color: #0D111C;

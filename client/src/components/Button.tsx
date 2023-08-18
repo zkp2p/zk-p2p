@@ -35,7 +35,6 @@ const BaseButton = styled.button<ButtonProps>`
   font-weight: 700;
   font-size: 16px;
   font-family: 'Graphik';
-  line-height: 24px;
   cursor: pointer;
   display: inline-block;
   transition: all 0.2s ease-in-out;

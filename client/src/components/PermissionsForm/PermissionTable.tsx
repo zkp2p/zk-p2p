@@ -68,7 +68,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
             <PermissionsContainer>
               <PermissionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your permissions ({permissions.length})
+                  Your restricted users ({permissions.length})
                 </ThemedText.LabelSmall>
               </PermissionCountTitle>
               <Table>
@@ -184,6 +184,11 @@ const Table = styled.div`
 `;
 
 const PermissionRowStyled = styled.div`
+  &:hover {
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: none;
+  }    
+
   &:last-child {
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
