@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
-import { IntentRow } from "./IntentRow";
+import { IntentRow } from "./OnRamperIntentRow";
 import { Intent } from "../../helpers/types";
 
 
