@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
-import { IntentTable } from './IntentTable'
+import { IntentTable } from './OnRamperIntentTable'
 
 
 export type SwapQuote = {

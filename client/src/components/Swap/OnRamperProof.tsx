@@ -121,7 +121,7 @@ export const OnRamperProof: React.FC<OnRamperProofProps> = ({
           <StyledArrowLeft/>
         </button>
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          On Ramp
+          Complete On Ramp
         </ThemedText.HeadlineSmall>
       </RowBetween>
 
