@@ -1,11 +1,10 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
-import { useAccount } from "wagmi";
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
-import { IntentTable } from './IntentContainer'
+import { IntentTable } from './OnRamperIntentTable'
 
 
 export type SwapQuote = {
@@ -14,26 +13,14 @@ export type SwapQuote = {
 };
 
 interface SwapModalProps {
+  onIntentTableRowClick?: (rowData: any[]) => void;
 }
 
 const SwapModal: React.FC<SwapModalProps> = ({
+  onIntentTableRowClick
 }: SwapModalProps) => {
-  const { address } = useAccount();
 
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ fiatIn: '', tokenOut: '' });
-
-  /*
-    Hooks
-  */
-
-  useEffect(() => {
-    if (address) {
-      setEthereumAddress(address);
-    } else {
-      setEthereumAddress("");
-    }
-  }, [address]);
 
   /*
     Event Handlers
@@ -77,7 +64,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             Swap
           </ThemedText.HeadlineSmall>
         </TitleContainer>
-  
+
         <MainContentWrapper>
           <Input
             label="U.S. Dollars"
@@ -110,10 +97,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
           </ButtonContainer>
         </MainContentWrapper>
       </SwapModalContainer>
-  
+
       <IntentTable
-        loggedInWalletAddress={ethereumAddress}
-        handleNewPositionClick={() => {}}
+        onRowClick={onIntentTableRowClick}
       />
     </Wrapper>
   );

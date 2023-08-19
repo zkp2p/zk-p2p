@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Filter } from 'react-feather'
-import styled, { css } from 'styled-components/macro'
+import styled from 'styled-components/macro'
 
-import { Button } from '../Button'
-import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { IntentRow } from "./IntentRow";
+import { IntentRow } from "./OffRamperIntentRow";
 import { Intent } from "../../helpers/types";
+
 
 // export interface Intent {
 //   onRamper: string;
@@ -16,13 +14,15 @@ import { Intent } from "../../helpers/types";
 // }
 
 interface IntentTableProps {
-  loggedInWalletAddress: string;
-  handleNewPositionClick: () => void;
+  onRowClick?: (rowData: any[]) => void;
+  selectedRow?: number;
+  rowsPerPage?: number;
 }
 
 export const IntentTable: React.FC<IntentTableProps> = ({
-  loggedInWalletAddress,
-  handleNewPositionClick
+  onRowClick,
+  selectedRow,
+  rowsPerPage = 10
 }) => {
   const [intents, setIntents] = useState<Intent[]>([]);
 
@@ -66,12 +66,17 @@ export const IntentTable: React.FC<IntentTableProps> = ({
           <IntentContainer>
             <IntentCountTitle>
               <ThemedText.LabelSmall textAlign="left">
-                Open Intents
+                Intents on Deposits
               </ThemedText.LabelSmall>
             </IntentCountTitle>
             <Table>
               {intents.map((intent, rowIndex) => (
-                <PermissionRowStyled key={rowIndex}>
+                <PermissionRowStyled
+                  key={rowIndex}
+                  onClick={() => {
+                    onRowClick && onRowClick([rowIndex])}
+                  }
+                >
                   <IntentRow
                     address={intent.onRamper}
                     amount={convertDepositAmountToUSD(intent.amount)}
