@@ -127,7 +127,7 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
 
       <Body>
         <NumberedStep>
-          Open your sent Venmo transaction email and select 'Show original' to view the full contents. Download and drag
+          Open your payment received Venmo transaction email and select 'Show original' to view the full contents. Download and drag
           the .eml file into the box below or paste the contents directly.
         </NumberedStep>
         <OffRamperProofFormBodyTitleContainer>
