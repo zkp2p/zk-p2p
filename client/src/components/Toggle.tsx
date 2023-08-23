@@ -24,10 +24,10 @@ export const Toggle: React.FC<ToggleProps> = ({
         Swap
       </ToggleButton>
       <ToggleButton
-        onClick={() => handleToggle('Pool')}
+        onClick={() => handleToggle('Deposit')}
         isSwapTab={!isSwapTab}
       >
-        Pool
+        Deposit
       </ToggleButton>
     </ToggleContainer>
   );

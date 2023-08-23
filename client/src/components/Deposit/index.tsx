@@ -11,7 +11,7 @@ import { OffRamperProof } from './OffRamperProof'
 import { OffRamperSubmit } from './OffRamperSubmit'
 
 
-export default function PoolTable() {
+export default function Deposit() {
   const { address } = useAccount();
 
   /*

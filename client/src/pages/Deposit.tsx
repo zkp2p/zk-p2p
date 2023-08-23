@@ -1,15 +1,15 @@
 import React from 'react';
 import styled from "styled-components";
 
-import PoolTable from "../components/Pool"
+import DepositTable from "../components/Deposit"
 
 
-export const Pool: React.FC<{}> = (props) => {
+export const Deposit: React.FC<{}> = (props) => {
 
   return (
     <PageWrapper>
       <Main>
-        <PoolTable />
+        <DepositTable />
       </Main>
     </PageWrapper>
   );

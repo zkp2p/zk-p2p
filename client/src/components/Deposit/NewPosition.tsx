@@ -38,7 +38,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
         <Body>
           <NumberedStep>
-            Create a new pool position by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
+            Create a new deposit by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
           </NumberedStep>
           <SingleLineInput
             label="Deposit Amount"

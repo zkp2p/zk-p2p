@@ -60,7 +60,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       <Column>
         <TitleRow>
           <ThemedText.HeadlineMedium>
-            Pool
+            Deposit
           </ThemedText.HeadlineMedium>
           <Button onClick={handleNewPositionClick} height={40}>
             + New Position
@@ -73,7 +73,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  Your active pool positions will appear here!
+                  Your active deposits will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
               <Button>

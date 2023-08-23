@@ -7,7 +7,7 @@ import {
 import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
-import { Pool } from "./pages/Pool";
+import { Deposit } from "./pages/Deposit";
 import { TopNav } from "./components/layouts/TopNav";
 import { BottomNav } from "./components/layouts/BottomNav";
 
@@ -25,7 +25,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Swap />} />
             <Route path="/swap" element={<Swap />} />
-            <Route path="/pool" element={<Pool />} />
+            <Route path="/deposit" element={<Deposit />} />
             <Route path="/register" element={<Registration />} />
             <Route path="/permissions" element={<Permissions />} />
             <Route element={<>Not found</>} />

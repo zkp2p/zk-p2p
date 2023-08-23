@@ -66,7 +66,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
           <IntentContainer>
             <IntentCountTitle>
               <ThemedText.LabelSmall textAlign="left">
-                Intents on Deposits
+                Orders on Deposits
               </ThemedText.LabelSmall>
             </IntentCountTitle>
             <Table>
