@@ -1,9 +1,6 @@
-import {
-  Link,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 import React, { useState } from 'react';
-
-import './NavItem.css';
+import styled, { css } from 'styled-components';
 
 
 type Nav = {
@@ -14,10 +11,14 @@ type Nav = {
 
 interface NavItemProps {
   vertical?: boolean;
+  selectedItem: string;
+  setSelectedItem: (item: string) => void;
 }
 
 export const NavItem: React.FC<NavItemProps> = ({ 
-  vertical = false
+  vertical = false,
+  selectedItem,
+  setSelectedItem
 }) => {
   const [navigationItems, setNavigationItems] = useState<Nav[]>([
     {
@@ -48,20 +49,75 @@ export const NavItem: React.FC<NavItemProps> = ({
     },
   ]);
 
-  const [selectedItem, setSelectedItem] = useState<string>('Swap');
-
   return (
-    <div className={`header-links-box ${vertical ? 'column' : 'row'}`}>
+    <HeaderLinksBox vertical={vertical}>
       {navigationItems.map((item, idx) => (
-        <Link
+        <StyledLink
           key={item.name}
           to={item.href}
           onClick={() => setSelectedItem(item.name)}
-          className={`nav-item center ${selectedItem === item.name ? 'selected' : ''}`}
+          selected={selectedItem === item.name}
         >
           {item.name}
-        </Link>
+        </StyledLink>
       ))}
-    </div>
+    </HeaderLinksBox>
   );
 };
+
+const HeaderLinksBox = styled.div<{ vertical: boolean }>`
+  display: flex;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  flex-direction: ${props => props.vertical ? 'column' : 'row'};
+`;
+
+const StyledLink = styled(Link)<{ selected: boolean }>`
+  position: relative;
+  display: inline-flex;
+  margin-right: 24px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  ${props => props.selected && css`
+    &::after {
+      content: '';
+      position: absolute;
+      width: 32px;
+      height: 4px;
+      background: white;
+      bottom: calc(50% - 24px);
+      left: calc(50% - 16px);
+      border-radius: 8px;
+    }
+  `}
+
+  @media (max-width: 768px) {
+    &.nav-item-sub {
+      position: relative;
+      display: inline-flex;
+      line-height: 24px;
+      margin-bottom: 12px;
+      padding-bottom: 16px;
+
+      ${props => props.selected && css`
+        &::after {
+          content: '';
+          position: absolute;
+          width: 40px;
+          height: 6px;
+          background: white;
+          bottom: 0px;
+          left: calc(50% - 20px);
+          border-radius: 11px;
+        }
+      `}
+    }
+  }
+`;

@@ -2,31 +2,37 @@ import {
   Link,
 } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useLocation } from "react-use";
+import React, { useState } from 'react';
 import styled from "styled-components";
 
 import { NavItem } from "./NavItem";
-import { SVGIconThemed } from "../../SVGIcon/SVGIconThemed";
 
 
 export const TopNav: React.FC = () => {
-  const { pathname } = useLocation();
+
+  const [selectedItem, setSelectedItem] = useState<string>('Swap');
 
   return (
-    <Nav>
-      <NavItem />
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10rem",
-        }}
-      >
-        <ConnectButton />
-      </div>
-    </Nav>
+    <NavBar>
+      <LogoAndNavItems>
+        <Logo to="/swap" onClick={() => setSelectedItem('Swap')}>
+          <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
+        </Logo>
+        
+        <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+      </LogoAndNavItems>
+        
+      <ConnectButton />
+    </NavBar>
   );
 }
+
+const NavBar = styled.nav`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 36px;
+`;
 
 const Logo = styled(Link)`
   text-transform: uppercase;
@@ -34,11 +40,16 @@ const Logo = styled(Link)`
   color: #fff;
   text-decoration: none;
   font-size: 1.2rem;
+
+  img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+  }
 `;
 
-const Nav = styled.nav`
+const LogoAndNavItems = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin: 36px;
+  gap: 2rem;
 `;
