@@ -20,7 +20,7 @@ export const TopNav: React.FC = () => {
         <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
       </LogoAndNavItems>
         
-      <CustomConnectButton height={44} />
+      <CustomConnectButton height={40} />
     </NavBar>
   );
 }
