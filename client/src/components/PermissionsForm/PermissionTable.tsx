@@ -38,9 +38,11 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
           <ThemedText.HeadlineMedium>
             Permissions
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleNewPositionClick} height={40}>
-            + New Entry
-          </Button>
+          {loggedInWalletAddress ? (
+            <Button onClick={handleNewPositionClick} height={40}>
+                + New Entry
+            </Button>
+          ) : null}
         </TitleRow>
 
         <Content>

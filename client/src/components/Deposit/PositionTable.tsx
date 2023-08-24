@@ -63,9 +63,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           <ThemedText.HeadlineMedium>
             Deposit
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleNewPositionClick} height={40}>
-            + New Position
-          </Button>
+          {loggedInWalletAddress ? (
+            <Button onClick={handleNewPositionClick} height={40}>
+                + New Position
+            </Button>
+          ) : null}
         </TitleRow>
 
         <Content>

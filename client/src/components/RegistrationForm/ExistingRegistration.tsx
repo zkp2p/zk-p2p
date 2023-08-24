@@ -89,9 +89,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleNewRegistrationClick} height={40}>
-            + Update
-          </Button>
+          {loggedInWalletAddress ? (
+            <Button onClick={handleNewRegistrationClick} height={40}>
+                + Update
+            </Button>
+          ) : null}
         </TitleRow>
 
         <Content>
