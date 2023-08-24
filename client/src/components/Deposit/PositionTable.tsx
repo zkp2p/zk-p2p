@@ -7,6 +7,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { Deposit, DepositPrime } from "../../helpers/types";
 import { PositionRow } from "./PositionRow";
+import { CustomConnectButton } from "../common/ConnectButton"
 
 
 interface PositionTableProps {
@@ -76,9 +77,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                   Your active deposits will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <Button>
-                Connect Wallet
-              </Button>
+              <CustomConnectButton />
             </ErrorContainer>
           ) : positions.length === 0 ? (
             <ErrorContainer>

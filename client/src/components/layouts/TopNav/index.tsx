@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styled from "styled-components";
 
+import { CustomConnectButton } from "../../common/ConnectButton";
 import { NavItem } from "./NavItem";
 
 
@@ -20,7 +20,7 @@ export const TopNav: React.FC = () => {
         <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
       </LogoAndNavItems>
         
-      <ConnectButton />
+      <CustomConnectButton height={44} />
     </NavBar>
   );
 }

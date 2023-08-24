@@ -6,6 +6,7 @@ import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { PermissionRow } from "./PermissionRow";
+import { CustomConnectButton } from "../common/ConnectButton"
 
 
 interface Permission {
@@ -51,9 +52,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
                   Your allowed and denied wallet address will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <Button>
-                Connect Wallet
-              </Button>
+              <CustomConnectButton />
             </ErrorContainer>
           ) : permissions.length === 0 ? (
             <ErrorContainer>
