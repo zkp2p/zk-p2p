@@ -49,7 +49,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
               <ThemedText.DeprecatedBody textAlign="center">
                 <FilterIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  Your allowed and denied wallet address will appear here.
+                  Your denied users list will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
