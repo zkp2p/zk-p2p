@@ -77,6 +77,7 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
   position: relative;
   display: inline-flex;
   margin-right: 24px;
+  margin-bottom: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -92,7 +93,7 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
       width: 32px;
       height: 4px;
       background: white;
-      bottom: calc(50% - 24px);
+      bottom: calc(50% - 22px);
       left: calc(50% - 16px);
       border-radius: 8px;
     }
