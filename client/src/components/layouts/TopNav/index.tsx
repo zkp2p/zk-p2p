@@ -1,8 +1,6 @@
-import {
-  Link,
-} from "react-router-dom";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styled from "styled-components";
 
 import { NavItem } from "./NavItem";
