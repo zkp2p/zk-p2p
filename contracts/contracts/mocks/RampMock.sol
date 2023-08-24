@@ -18,6 +18,7 @@ contract RampMock is Ramp {
         IReceiveProcessor _receiveProcessor,
         IRegistrationProcessor _registrationProcessor,
         ISendProcessor _sendProcessor,
+        uint256 _minDepositAmount,
         uint256 _convenienceRewardTimePeriod
     )
         Ramp(
@@ -26,19 +27,8 @@ contract RampMock is Ramp {
             _receiveProcessor,
             _registrationProcessor,
             _sendProcessor,
+            _minDepositAmount,
             _convenienceRewardTimePeriod
         )
     {}
-
-    function _calculateIntentHash(
-        bytes32 /*_venmoId*/,
-        bytes32 /*_depositHash*/
-    )
-        internal
-        view
-        override
-        returns (bytes32 intentHash)
-    {
-        return configuredIntentHash;
-    }
 }

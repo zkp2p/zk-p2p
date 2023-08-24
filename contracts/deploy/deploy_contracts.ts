@@ -28,6 +28,7 @@ const SERVER_KEYS = [
 const FROM_EMAIL = "venmo@venmo.com".padEnd(35, "\0");
 
 const CONVENIENCE_TIME_PERIOD = BigNumber.from(60);
+const MIN_DEPOSIT_AMOUNT = usdc(20);
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
@@ -62,6 +63,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       receiveProcessor.address,
       registrationProcessor.address,
       sendProcessor.address,
+      MIN_DEPOSIT_AMOUNT,
       CONVENIENCE_TIME_PERIOD
     ],
   });

@@ -16,9 +16,9 @@ contract Ramp is Ownable {
     using Bytes32ArrayUtils for bytes32[];
 
     /* ============ Events ============ */
-    event AccountRegistered(bytes32 indexed accountId, address indexed account);
+    event AccountRegistered(address indexed accountOwner, bytes32 indexed venmoIdHash);
     event DepositReceived(
-        bytes32 indexed depositHash,
+        uint256 indexed depositId,
         bytes32 indexed venmoId,
         uint256 amount,
         uint256 conversionRate,
@@ -26,7 +26,7 @@ contract Ramp is Ownable {
     );
     event IntentSignaled(
         bytes32 indexed intentHash,
-        bytes32 indexed depositHash,
+        uint256 indexed depositId,
         bytes32 indexed venmoId,
         uint256 amount,
         uint256 timestamp
@@ -34,32 +34,32 @@ contract Ramp is Ownable {
 
     event IntentPruned(
         bytes32 indexed intentHash,
-        bytes32 indexed depositHash
+        uint256 indexed depositId
     );
-
+    // Do we want to emit the onRamper or the venmoId
     event IntentFulfilled(
         bytes32 indexed intentHash,
-        bytes32 indexed depositHash,
-        bytes32 indexed venmoId,
+        uint256 indexed depositId,
+        address indexed onRamper,
         uint256 amount,
         uint256 convenienceFee
     );
-
+    // Do we want to emit the depositor or the venmoId
     event DepositWithdrawn(
-        bytes32 indexed depositHash,
-        bytes32 indexed venmoId,
+        uint256 indexed depositId,
+        address indexed depositor,
         uint256 amount
-    );
-
-    event AccountOwnerUpdated(
-        bytes32 indexed venmoId,
-        address newOwner
     );
 
     /* ============ Structs ============ */
 
+    struct AccountInfo {
+        bytes32 venmoIdHash;
+        uint256[] deposits;
+    }
+
     struct Deposit {
-        bytes32 depositor;
+        address depositor;
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
         uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
@@ -68,14 +68,15 @@ contract Ramp is Ownable {
     }
 
     struct Intent {
-        bytes32 onramper;
-        bytes32 deposit;
+        address onramper;
+        uint256 deposit;
         uint256 amount;
         uint256 intentTimestamp;
     }
 
     /* ============ Constants ============ */
     uint256 public constant PRECISE_UNIT = 1e18;
+    uint256 public constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
@@ -83,11 +84,14 @@ contract Ramp is Ownable {
     IRegistrationProcessor public registrationProcessor;
     ISendProcessor public sendProcessor;
 
-    mapping(bytes32 => address) public accountIds;
-    mapping(bytes32 => Deposit) public deposits;
+    mapping(address => AccountInfo) public accounts;
+    mapping(bytes32 => bytes32) public venmoIdIntent;   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
+    mapping(uint256 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
     uint256 public convenienceRewardTimePeriod;
+    uint256 public minDepositAmount;
+    uint256 public depositCounter;
 
     /* ============ Constructor ============ */
     constructor(
@@ -96,6 +100,7 @@ contract Ramp is Ownable {
         IReceiveProcessor _receiveProcessor,
         IRegistrationProcessor _registrationProcessor,
         ISendProcessor _sendProcessor,
+        uint256 _minDepositAmount,
         uint256 _convenienceRewardTimePeriod
     )
         Ownable()
@@ -104,6 +109,7 @@ contract Ramp is Ownable {
         receiveProcessor = _receiveProcessor;
         registrationProcessor = _registrationProcessor;
         sendProcessor = _sendProcessor;
+        minDepositAmount = _minDepositAmount;
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
         transferOwnership(_owner);
     }
@@ -122,19 +128,21 @@ contract Ramp is Ownable {
     )
         external
     {
+        require(accounts[msg.sender].venmoIdHash == bytes32(0), "Account already associated with venmoId");
         (
             uint256 venmoId,
             bytes32 venmoIdHash
         ) = _verifyRegistrationProof(_a, _b, _c, _signals);
 
-        accountIds[venmoIdHash] = msg.sender;
-        emit AccountRegistered(venmoIdHash, msg.sender);
+        accounts[msg.sender].venmoIdHash = venmoIdHash;
+
+        emit AccountRegistered(msg.sender, venmoIdHash);
     }
 
     /**
-     * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. If a deposit by the same user
-     * with the same conversion rate and convenience fee already exists then the deposit amount is added to the existing deposit. User
-     * must approve the contract to transfer the deposit amount of USDC.
+     * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to
+     * previous deposits. Every deposit has it's own unique identifier. Usermust approve the contract to transfer the deposit amount
+     * of USDC.
      *
      * @param _venmoId          The venmo id of the account owner
      * @param _depositAmount    The amount of USDC to off-ramp
@@ -147,42 +155,42 @@ contract Ramp is Ownable {
         uint256 _receiveAmount,
         uint256 _convenienceFee
     ) external {
-        require(accountIds[_venmoId] == msg.sender, "Sender must be the account owner");
-        require(_depositAmount > 0, "Deposit amount must be greater than 0");
+        require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
+        require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
 
         uint256 conversionRate = (_depositAmount * PRECISE_UNIT) / _receiveAmount;
-        bytes32 depositIdHash = keccak256(abi.encodePacked(_venmoId, conversionRate, _convenienceFee));
+        uint256 depositId = depositCounter++;
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
+        accounts[msg.sender].deposits.push(depositId);
 
-        Deposit storage deposit = deposits[depositIdHash];
+        deposits[depositId] = Deposit({
+            depositor: msg.sender,
+            remainingDeposits: _depositAmount,
+            outstandingIntentAmount: 0,
+            conversionRate: conversionRate,
+            convenienceFee: _convenienceFee,
+            intentHashes: new bytes32[](0)
+        });
 
-        if (deposit.outstandingIntentAmount !=0 || deposit.remainingDeposits != 0) {
-            deposit.remainingDeposits += _depositAmount;
-        } else {
-            deposit.depositor = _venmoId;
-            deposit.remainingDeposits = _depositAmount;
-            deposit.outstandingIntentAmount = 0;
-            deposit.conversionRate = conversionRate;
-            deposit.convenienceFee = _convenienceFee;
-        }
-
-        emit DepositReceived(depositIdHash, _venmoId, _depositAmount, conversionRate, _convenienceFee);
+        emit DepositReceived(depositId, _venmoId, _depositAmount, conversionRate, _convenienceFee);
     }
 
-    function signalIntent(bytes32 _venmoId, bytes32 _depositHash, uint256 _amount) external {
-        require(accountIds[_venmoId] == msg.sender, "Sender must be the account owner");
+    // Do we need to pass in venmoId here??
+    function signalIntent(bytes32 _venmoId, uint256 _depositId, uint256 _amount) external {
+        require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
         require(_amount > 0, "Signaled amount must be greater than 0");
+        require(venmoIdIntent[_venmoId] == bytes32(0), "Intent still outstanding");
 
-        bytes32 intentHash = _calculateIntentHash(_venmoId, _depositHash);
+        bytes32 intentHash = _calculateIntentHash(_venmoId, _depositId);
 
-        Deposit storage deposit = deposits[_depositHash];
+        Deposit storage deposit = deposits[_depositId];
         if (deposit.remainingDeposits < _amount) {
             (
                 bytes32[] memory prunableIntents,
                 uint256 reclaimableAmount
-            ) = _getPrunableIntents(_depositHash);
+            ) = _getPrunableIntents(_depositId);
 
             require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
 
@@ -192,19 +200,32 @@ contract Ramp is Ownable {
         }
 
         intents[intentHash] = Intent({
-            onramper: _venmoId,
-            deposit: _depositHash,
+            onramper: msg.sender,
+            deposit: _depositId,
             amount: _amount,
             intentTimestamp: block.timestamp
         });
+
+        venmoIdIntent[_venmoId] = intentHash;
 
         deposit.remainingDeposits -= _amount;
         deposit.outstandingIntentAmount += _amount;
         deposit.intentHashes.push(intentHash);
 
-        emit IntentSignaled(intentHash, _depositHash, _venmoId, _amount, block.timestamp);
+        emit IntentSignaled(intentHash, _depositId, _venmoId, _amount, block.timestamp);
     }
 
+    // function replaceIntent(bytes32 _venmoId, bytes32 _depositId, uint256 _amount) external {
+    //     require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
+    //     require(_amount > 0, "Signaled amount must be greater than 0");
+    //     require(venmoIdIntent[_venmoId] != bytes32(0), "Intent must be outstanding to call");
+
+    //     bytes32 pendingIntentHash = accounts[msg.sender].pendingIntentHash;
+    //     Intent storage currentIntent = intents[pendingIntentHash];
+    //     _pruneIntent(deposits[currentIntent.deposit], pendingIntentHash);
+    // }
+
+    // DO we need to prune deposits now? In order to not pass blank deposits
     function onRampWithConvenience(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
@@ -221,21 +242,20 @@ contract Ramp is Ownable {
 
         Deposit storage deposit = deposits[intent.deposit];
 
-        bytes32 depositor = deposits[intent.deposit].depositor;
-
-        require(accountIds[depositor] == msg.sender, "Sender must be the account owner");
+        require(deposit.depositor == msg.sender, "Sender must be the account owner");
 
         _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
 
         uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
-        usdc.transfer(accountIds[intent.onramper], intent.amount - convenienceFee);
+        usdc.transfer(intent.onramper, intent.amount - convenienceFee);
         usdc.transfer(msg.sender, convenienceFee);
 
         emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, convenienceFee);
     }
 
+    // DO we need to prune deposits now? In order to not pass blank deposits
     function onRamp(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
@@ -254,24 +274,24 @@ contract Ramp is Ownable {
 
         deposit.outstandingIntentAmount -= intent.amount;
 
-        usdc.transfer(accountIds[intent.onramper], intent.amount);
+        usdc.transfer(intent.onramper, intent.amount);
         
         emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, 0);
     }
 
-    function withdrawDeposit(bytes32[] memory _depositHashes) external {
+    function withdrawDeposit(uint256[] memory _depositIds) external {
         uint256 returnAmount;
 
-        for (uint256 i = 0; i < _depositHashes.length; ++i) {
-            bytes32 depositHash = _depositHashes[i];
-            Deposit storage deposit = deposits[depositHash];
+        for (uint256 i = 0; i < _depositIds.length; ++i) {
+            uint256 depositId = _depositIds[i];
+            Deposit storage deposit = deposits[depositId];
 
-            require(accountIds[deposit.depositor] == msg.sender, "Sender must be the account owner");
+            require(deposit.depositor == msg.sender, "Sender must be the depositor");
 
             (
                 bytes32[] memory prunableIntents,
                 uint256 reclaimableAmount
-            ) = _getPrunableIntents(depositHash);
+            ) = _getPrunableIntents(depositId);
 
             _pruneIntents(deposit, prunableIntents);
 
@@ -279,24 +299,15 @@ contract Ramp is Ownable {
             
             deposit.outstandingIntentAmount -= reclaimableAmount;
 
-            emit DepositWithdrawn(depositHash, deposit.depositor, deposit.remainingDeposits + reclaimableAmount);
+            emit DepositWithdrawn(depositId, deposit.depositor, deposit.remainingDeposits + reclaimableAmount);
             
             delete deposit.remainingDeposits;
             if (deposit.outstandingIntentAmount == 0) {
-                delete deposits[depositHash];
+                delete deposits[depositId];
             }
         }
 
         usdc.transfer(msg.sender, returnAmount);
-    }
-
-    function setAccountOwner(bytes32 _venmoId, address _newOwner) external {
-        require(accountIds[_venmoId] == msg.sender, "Sender must be the account owner");
-        require(_newOwner != address(0), "New owner cannot be zero address");
-
-        accountIds[_venmoId] = _newOwner;
-
-        emit AccountOwnerUpdated(_venmoId, _newOwner);
     }
 
     /* ============ Governance Functions ============ */
@@ -310,35 +321,63 @@ contract Ramp is Ownable {
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
     }
 
+    function setMinDepositAmount(uint256 _minDepositAmount) external onlyOwner {
+        require(_minDepositAmount != 0, "Minimum deposit cannot be zero");
+        minDepositAmount = _minDepositAmount;
+    }
+
     /* ============ External View Functions ============ */
 
-    function getDeposit(bytes32 _depositHash) external view returns (Deposit memory) {
-        return deposits[_depositHash];
+    function getDeposit(uint256 _depositId) external view returns (Deposit memory) {
+        return deposits[_depositId];
+    }
+
+    function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
+        uint256[] memory accountDepositIds = accounts[_account].deposits;
+        accountDeposits = new Deposit[](accountDepositIds.length);
+        
+        for (uint256 i = 0; i < accountDepositIds.length; ++i) {
+            accountDeposits[i] = deposits[accountDepositIds[i]];
+        }
+    }
+
+    function getAccountVenmoId(address _account) external view returns (bytes32) {
+        return accounts[_account].venmoIdHash;
+    }
+
+    function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray) {
+        depositArray = new Deposit[](_depositIds.length);
+
+        for (uint256 i = 0; i < _depositIds.length; ++i) {
+            depositArray[i] = deposits[_depositIds[i]];
+        }
+
+        return depositArray;
     }
 
     /* ============ Internal Functions ============ */
 
     function _calculateIntentHash(
         bytes32 _venmoId,
-        bytes32 _depositHash
+        uint256 _depositId
     )
         internal
         view
         virtual
         returns (bytes32 intentHash)
     {
-        intentHash = keccak256(abi.encodePacked(_venmoId, _depositHash, block.timestamp));
+        intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
         require(intents[intentHash].amount == 0, "Intent already exists");
     }
 
     function _getPrunableIntents(
-        bytes32 _depositHash
+        uint256 _depositId
     )
         internal
         view
         returns(bytes32[] memory prunableIntents, uint256 reclaimedAmount)
     {
-        bytes32[] memory intentHashes = deposits[_depositHash].intentHashes;
+        bytes32[] memory intentHashes = deposits[_depositId].intentHashes;
         prunableIntents = new bytes32[](intentHashes.length);
 
         for (uint256 i = 0; i < intentHashes.length; ++i) {
@@ -359,12 +398,13 @@ contract Ramp is Ownable {
     }
 
     function _pruneIntent(Deposit storage _deposit, bytes32 _intent) internal {
-        bytes32 depositHash = intents[_intent].deposit;
+        uint256 depositId = intents[_intent].deposit;
 
+        delete venmoIdIntent[accounts[intents[_intent].onramper].venmoIdHash];
         delete intents[_intent];
         _deposit.intentHashes.removeStorage(_intent);
 
-        emit IntentPruned(_intent, depositHash);
+        emit IntentPruned(_intent, depositId);
     }
 
     function _verifyOnRampWithConvenienceProof(
@@ -385,7 +425,7 @@ contract Ramp is Ownable {
         ) = receiveProcessor.processProof(_a, _b, _c, _signals);
 
         Intent memory intent = intents[intentHash];
-        require(intent.onramper == onRamperIdHash, "Onramper id does not match");
+        require(accounts[intent.onramper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
 
         bool distributeConvenienceReward = block.timestamp - timestamp < convenienceRewardTimePeriod;
         return (intent, intentHash, distributeConvenienceReward);
@@ -411,7 +451,7 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
 
-        require(deposit.depositor == offRamperIdHash, "Offramper id does not match");
+        require(accounts[deposit.depositor].venmoIdHash == offRamperIdHash, "Offramper id does not match");
         require(amount >= intent.amount, "Payment was not enough");
 
         return (intent, deposit, intentHash);
@@ -431,8 +471,6 @@ contract Ramp is Ownable {
             uint256 venmoId,
             bytes32 venmoIdHash
         ) = registrationProcessor.processProof(_a, _b, _c, _signals);
-
-        require(accountIds[venmoIdHash] == address(0), "Account already registered");
 
         return (venmoId, venmoIdHash);
     }
