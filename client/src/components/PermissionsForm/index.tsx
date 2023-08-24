@@ -31,13 +31,13 @@ export default function PermissionsForm() {
     Hooks
   */
 
-    useEffect(() => {
-      if (address) {
-        setEthereumAddress(address);
-      } else {
-        setEthereumAddress("");
-      }
-    }, [address]);
+  useEffect(() => {
+    if (address) {
+      setEthereumAddress(address);
+    } else {
+      setEthereumAddress("");
+    }
+  }, [address]);
 
   return (
     <Wrapper>

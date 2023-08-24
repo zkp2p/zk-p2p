@@ -25,6 +25,24 @@ export const RowBetween = styled(Row)`
   justify-content: space-between;
 `
 
+export const TitleCenteredRow = styled(Row)`
+  justify-content: space-between;
+
+  & > * {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  & > *:first-child {
+    justify-content: flex-start;
+  }
+
+  & > *:last-child {
+    justify-content: flex-end;
+  }
+`
+
 export const RowFlat = styled.div`
   display: flex;
   align-items: flex-end;

@@ -4,7 +4,7 @@ import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 
 import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
+import { TitleCenteredRow } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
 import { ThemedText } from '../../theme/text'
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
@@ -113,17 +113,24 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
 
   return (
     <Container>
-      <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+      <TitleCenteredRow style={{ padding: '0.5rem 0rem 1.5rem 0rem' }}>
         <button
           onClick={handleBackClick}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
         >
           <StyledArrowLeft/>
         </button>
+        
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Update Registration
         </ThemedText.HeadlineSmall>
-      </RowBetween>
+
+        <EmailInputTypeSwitch
+          switchChecked={isEmailInputSettingDrag}
+          onSwitchChange={handleEmailInputTypeChanged}
+          label={"Fast"}
+        />
+      </TitleCenteredRow>
 
       <Body>
         <NumberedStep>

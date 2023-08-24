@@ -6,11 +6,13 @@ import styled from 'styled-components';
 interface EmailInputTypeSwitchProps {
   switchChecked: boolean;
   onSwitchChange: (checked: boolean) => void;
+  label?: string;
 }
 
 export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
   switchChecked = true,
   onSwitchChange,
+  label = 'Input Mode',
 }) => {
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSwitchChange(event.target.checked);
@@ -19,7 +21,7 @@ export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
       <SwitchLabel>
-        Input Mode
+        {label}
       </SwitchLabel>
       <Switch
         checked={switchChecked}
