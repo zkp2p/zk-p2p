@@ -15,6 +15,7 @@ import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
+import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
 
 const generate_input = require("../../scripts/generate_input");
@@ -139,7 +140,7 @@ export const OnRamperProof: React.FC<OnRamperProofProps> = ({
         </NumberedStep>
         <OnRamperProofFormBodyTitleContainer>
           <HeaderContainer>
-            <Title>{isEmailInputSettingDrag ? 'Drag and Drop .eml' : 'Paste Email'}</Title>
+            <Title>Email</Title>
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
@@ -161,6 +162,7 @@ export const OnRamperProof: React.FC<OnRamperProofProps> = ({
             <LabeledTextArea
               label=""
               value={emailFull}
+              placeholder={PLACEHOLDER_EMAIL_BODY}
               onChange={(e) => {
                 setEmailFull(e.currentTarget.value);
               }}

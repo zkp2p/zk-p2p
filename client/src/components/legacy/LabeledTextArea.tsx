@@ -15,6 +15,7 @@ export const LabeledTextArea: React.FC<{
   disabled?: boolean;
   disabledReason?: string;
   secret?: boolean;
+  placeholder?: string;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
 }> = ({
   style,
@@ -27,6 +28,7 @@ export const LabeledTextArea: React.FC<{
   onChange,
   className,
   secret,
+  placeholder
 }) => {
   return (
     <LabeledTextAreaContainer className={_.compact(["labeledTextAreaContainer", className]).join(" ")}>
@@ -40,6 +42,7 @@ export const LabeledTextArea: React.FC<{
         style={style}
         aria-label={label} 
         title={disabled ? disabledReason : ""}
+        placeholder={placeholder}
         disabled={disabled}
         value={value}
         onChange={onChange}

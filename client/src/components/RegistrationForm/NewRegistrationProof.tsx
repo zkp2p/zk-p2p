@@ -16,6 +16,7 @@ import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
+import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
 
 const generate_input = require("../../scripts/generate_input");
 
@@ -120,7 +121,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
         >
           <StyledArrowLeft/>
         </button>
-        
+
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Update Registration
         </ThemedText.HeadlineSmall>
@@ -139,7 +140,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
         </NumberedStep>
         <NewRegistrationProofFormBodyTitleContainer>
           <HeaderContainer>
-            <Title>{isEmailInputSettingDrag ? 'Drag and Drop .eml' : 'Paste Email'}</Title>
+            <Title>Email</Title>
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
@@ -161,6 +162,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
             <LabeledTextArea
               label=""
               value={emailFull}
+              placeholder={PLACEHOLDER_EMAIL_BODY}
               onChange={(e) => {
                 setEmailFull(e.currentTarget.value);
               }}
