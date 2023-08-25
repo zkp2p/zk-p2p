@@ -1,20 +1,21 @@
-import { useAccount } from "wagmi";
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { ExistingRegistration } from "./ExistingRegistration";
 import { NewRegistrationProof } from "./NewRegistrationProof";
 import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
+import AccountContext from '../../contexts/Account/AccountContext';
 
  
 export const RegistrationForm: React.FC = () => {
-  const { address } = useAccount();
+  /*
+   * Context
+   */
+  const { ethereumAddress } = React.useContext(AccountContext);
 
   /*
-    State
-  */
-
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
+   * State
+   */
   const [isNewRegistration, setIsNewRegistration] = useState<boolean>(false);
 
   const handleUpdateClick = () => {
@@ -28,18 +29,6 @@ export const RegistrationForm: React.FC = () => {
   // ----- transaction state -----
   const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
   const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
-
-  /*
-    Hooks
-  */
-
-  useEffect(() => {
-    if (address) {
-      setEthereumAddress(address);
-    } else {
-      setEthereumAddress("");
-    }
-  }, [address]);
 
   /*
     Component

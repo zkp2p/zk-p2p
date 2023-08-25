@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
-import { useAccount } from "wagmi";
 
 import { AutoColumn } from '../layouts/Column'
 import { NewPosition } from './NewPosition'
@@ -9,15 +8,18 @@ import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../helpers/types";
 import { OffRamperProof } from './OffRamperProof'
 import { OffRamperSubmit } from './OffRamperSubmit'
+import AccountContext from '../../contexts/Account/AccountContext';
 
 
 export default function Deposit() {
-  const { address } = useAccount();
+  /*
+   * Context
+   */
+  const { ethereumAddress } = React.useContext(AccountContext);
 
   /*
     State
   */
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
@@ -45,18 +47,6 @@ export default function Deposit() {
 
     setSelectedIntent(rowData[0]);
   };
-
-  /*
-    Hooks
-  */
-
-  useEffect(() => {
-    if (address) {
-      setEthereumAddress(address);
-    } else {
-      setEthereumAddress("");
-    }
-  }, [address]);
 
   function renderContent() {
     if (isAddPosition) {

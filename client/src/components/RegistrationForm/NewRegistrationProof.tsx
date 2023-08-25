@@ -23,7 +23,6 @@ import {
   PROVING_TYPE_TOOLTIP
 } from "../../helpers/tooltips";
 
-
 const generate_input = require("../../scripts/generate_input");
 
 
