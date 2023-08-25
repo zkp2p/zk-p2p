@@ -35,7 +35,7 @@ const NavBar = styled.nav`
 const Logo = styled(Link)`
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #fff;
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.2rem;
 

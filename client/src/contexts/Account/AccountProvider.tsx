@@ -1,5 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from 'wagmi';
+
+import { contractAddresses } from "../../helpers/deployed_addresses";
 
 import AccountContext from './AccountContext'
 
@@ -10,11 +12,16 @@ interface ProvidersProps {
 
 const AccountProvider = ({ children }: ProvidersProps) => {
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   /*
-    State
-  */
+   * State
+   */
   const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
+  const [network, setNetwork] = useState<string>(chain?.network ?? "");
+
+  const [rampAddress, setRampAddress] = useState<string>("");
+  const [usdcAddress, setUsdcAddress] = useState<string>("");
 
   /*
    * Hooks
@@ -27,10 +34,25 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     }
   }, [address]);
 
+  useEffect(() => {
+    if (chain) {
+      setNetwork(chain.network);
+      setRampAddress(contractAddresses[chain.network].ramp);
+      setUsdcAddress(contractAddresses[chain.network].fusdc);
+    } else {
+      setNetwork("");
+      setRampAddress("");
+      setUsdcAddress("");
+    }
+  }, [chain]);
+
   return (
     <AccountContext.Provider
       value={{
-        ethereumAddress
+        ethereumAddress,
+        network,
+        rampAddress,
+        usdcAddress
       }}
     >
       {children}

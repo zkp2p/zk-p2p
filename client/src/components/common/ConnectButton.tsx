@@ -129,9 +129,11 @@ const LoggedInBalanceAndAccount = styled.div`
 const AccountBalance = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   color: #ffffff;
   font-family: 'Graphik';
   font-weight: 700;
+  letter-spacing: 0.25px;
   font-size: 16px;
   padding-left: 16px;
 `;
@@ -141,7 +143,7 @@ const LoggedInButton = styled.button`
   align-items: center;
   justify-content: center;
   border: none;
-  background: #0D111C;
+  background: #3A3B3F;
   border-radius: 24px;
   letter-spacing: 0.75px;
   color: #ffffff;
