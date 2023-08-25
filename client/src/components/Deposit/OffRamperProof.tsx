@@ -149,8 +149,8 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
         <LabeledSwitch
           switchChecked={isProvingTypeFast ?? true }
           onSwitchChange={handleProvingTypeChanged}
-          checkedLabel={"Fast"}
-          uncheckedLabel={"Private"}
+          checkedLabel={"Speed"}
+          uncheckedLabel={"Privacy"}
           helperText={PROVING_TYPE_TOOLTIP}
         />
       </TitleCenteredRow>
