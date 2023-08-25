@@ -57,11 +57,12 @@ export const LabeledTextArea: React.FC<{
 
 const Label = styled.label<{ isEmpty: boolean }>`
   color: rgba(255, 255, 255, 0.8);
-  padding-bottom: ${(props) => (props.isEmpty ? '0' : '8px')};
+  padding-bottom: ${(props) => (props.isEmpty ? '0' : '10px')};
+  padding-left: 8px;
 `;
 
 const LabeledTextAreaContainer = styled(Col)`
-  height: 15vh;
+  height: 16vh;
   border-radius: 4px;
   position: relative;
 
