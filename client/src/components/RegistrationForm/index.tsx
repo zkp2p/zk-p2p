@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useAccount } from "wagmi";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components/macro'
 
 import { ExistingRegistration } from "./ExistingRegistration";
 import { NewRegistrationProof } from "./NewRegistrationProof";

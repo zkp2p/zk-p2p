@@ -38,9 +38,11 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
           <ThemedText.HeadlineMedium>
             Permissions
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleNewPositionClick} height={40}>
-            + New Entry
-          </Button>
+          {loggedInWalletAddress ? (
+            <Button onClick={handleNewPositionClick} height={40}>
+                + New Entry
+            </Button>
+          ) : null}
         </TitleRow>
 
         <Content>
@@ -49,7 +51,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
               <ThemedText.DeprecatedBody textAlign="center">
                 <FilterIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  Your allowed and denied wallet address will appear here.
+                  Your denied users list will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />

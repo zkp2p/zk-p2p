@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { CheckCircle } from 'react-feather'
 import {
   useContractRead,
   useNetwork,
 } from 'wagmi';
 
 import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
-import { ThemedText } from '../../theme/text'
-import { NumberedStep } from "../common/NumberedStep";
-import { ReadOnlyInput } from "../common/ReadOnlyInput";
-import { SingleLineInput } from "../common/SingleLineInput";
+import { CustomConnectButton } from "../common/ConnectButton"
 import { encryptMessage } from "../../helpers/messagEncryption";
 import { generateVenmoIdHash } from "../../helpers/venmoHash";
+import { NumberedStep } from "../common/NumberedStep";
+import { ReadOnlyInput } from "../common/ReadOnlyInput";
+import { RowBetween } from '../layouts/Row'
+import { SingleLineInput } from "../common/SingleLineInput";
+import { ThemedText } from '../../theme/text'
 // import { abi } from "../helpers/ramp.abi";
 // import { useRampContractAddress } from '../hooks/useContractAddress';
 
@@ -87,38 +89,54 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          <Button onClick={handleNewRegistrationClick} height={40}>
-            + Update
-          </Button>
+          {loggedInWalletAddress ? (
+            <Button onClick={handleNewRegistrationClick} height={40}>
+                + Update
+            </Button>
+          ) : null}
         </TitleRow>
-        
-        <Body>
-          <NumberedInputContainer>
-            <NumberedStep>
-              Your Venmo ID is hashed on chain to conceal your identity. Verify your existing registered ID by pasting your
-              Venmo ID below and tapping verify
-            </NumberedStep>
-          </NumberedInputContainer>
-          <ReadOnlyInput
-            label="Current Registration Status"
-            value="Registered"
-          />
-          <SingleLineInput
-            label="Verify Venmo ID"
-            value="645716473020416186"
-            placeholder={'1234567891011121314'}
-            onChange={(e) => {
-              setVenmoIdInput(e.currentTarget.value);
-            }}
-          />
-          <Button
-            onClick={async () => {
-              // TODO: Poseidon hash venmoIDInput and give feedback if it matches the existing registration
-            }}
-            >
-            Verify
-          </Button>
-        </Body>
+
+        <Content>
+          {!loggedInWalletAddress ? (
+                <ErrorContainer>
+                  <ThemedText.DeprecatedBody textAlign="center">
+                    <CheckCircleIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+                    <div>
+                      Your Venmo registration will appear here.
+                    </div>
+                  </ThemedText.DeprecatedBody>
+                  <CustomConnectButton />
+                </ErrorContainer>
+          ) : (
+            <Body>
+              <NumberedInputContainer>
+                <NumberedStep>
+                  Your Venmo ID is hashed on chain to conceal your identity. Verify your existing registered ID by pasting your
+                  Venmo ID below and tapping verify
+                </NumberedStep>
+              </NumberedInputContainer>
+              <ReadOnlyInput
+                label="Current Registration Status"
+                value="Registered"
+              />
+              <SingleLineInput
+                label="Verify Venmo ID"
+                value="645716473020416186"
+                placeholder={'1234567891011121314'}
+                onChange={(e) => {
+                  setVenmoIdInput(e.currentTarget.value);
+                }}
+              />
+              <Button
+                onClick={async () => {
+                  // TODO: Poseidon hash venmoIDInput and give feedback if it matches the existing registration
+                }}
+                >
+                Verify
+              </Button>
+            </Body>
+          )}
+        </Content>
       </Column>
     </Container>
   );
@@ -149,6 +167,39 @@ const TitleRow = styled(RowBetween)`
     width: 100%;
   };
 `;
+
+const Content = styled.main`
+  display: flex;
+  background-color: #0D111C;
+  border: 1px solid #98a1c03d;
+  border-radius: 16px;
+  flex-direction: column;
+  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
+    0px 24px 32px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+`;
+
+const ErrorContainer = styled.div`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  padding: 36px 0px;
+  max-width: 340px;
+  min-height: 25vh;
+  gap: 36px;
+`
+
+const IconStyle = css`
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.5rem;
+`
+
+const CheckCircleIcon = styled(CheckCircle)`
+  ${IconStyle}
+`
 
 const Body = styled.div`
   display: flex;

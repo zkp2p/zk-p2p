@@ -115,7 +115,7 @@ const NetworkSelector = styled.button`
   font-weight: 700;
   font-size: 16px;
   border-radius: 24px;
-  padding: 10px 16px;
+  padding: 8px 16px;
 `;
 
 const LoggedInBalanceAndAccount = styled.div`
@@ -123,7 +123,7 @@ const LoggedInBalanceAndAccount = styled.div`
   align-items: stretch;
   border-radius: 24px;
   background: #1A1B1F;
-  gap: 16px;
+  gap: 12px;
 `;
 
 const AccountBalance = styled.div`

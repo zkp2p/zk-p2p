@@ -4,7 +4,7 @@ import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 
 import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
+import { TitleCenteredRow } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
 import { ThemedText } from '../../theme/text'
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
@@ -16,6 +16,11 @@ import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
+import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
+import {
+  INPUT_MODE_TOOLTIP,
+  PROVING_TYPE_TOOLTIP
+} from "../../helpers/tooltips";
 
 const generate_input = require("../../scripts/generate_input");
 
@@ -33,9 +38,17 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   setSubmitOrderPublicSignals,
   handleBackClick
 }) => {
-  const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
+  /*
+   * State
+   */
+  const storedProvingTypeSetting = localStorage.getItem('isPovingTypeRemote');
+  const [isPovingTypeRemote, setIsPovingTypeRemote] = useState<boolean>(
+      storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
+  );
+  
+  const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
-      storedValue !== null ? JSON.parse(storedValue) : true
+      storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : true
   );
   
   const [emailFull, setEmailFull] = useState<string>(localStorage.emailFull || "");
@@ -103,27 +116,44 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   const circuitInputs = value || {};
   // console.log("Circuit inputs:", circuitInputs);
 
+
+  /*
+   * Handlers
+   */
   const handleEmailInputTypeChanged = (checked: boolean) => {
-    // Update state maintained in parent component
     setIsEmailInputSettingDrag(checked);
 
-    // Store preference in local storage
     localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
+  };
+
+  const handleProvingTypeChanged = (checked: boolean) => {
+    setIsPovingTypeRemote(checked);
+
+    localStorage.setItem('isPovingTypeRemote', JSON.stringify(checked));
   };
 
   return (
     <Container>
-      <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+      <TitleCenteredRow style={{ padding: '0.5rem 0rem 1.5rem 0rem' }}>
         <button
           onClick={handleBackClick}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
         >
           <StyledArrowLeft/>
         </button>
+
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Update Registration
         </ThemedText.HeadlineSmall>
-      </RowBetween>
+
+        <EmailInputTypeSwitch
+          switchChecked={isPovingTypeRemote}
+          onSwitchChange={handleProvingTypeChanged}
+          checkedLabel={"Fast"}
+          uncheckedLabel={"Private"}
+          helperText={PROVING_TYPE_TOOLTIP}
+        />
+      </TitleCenteredRow>
 
       <Body>
         <NumberedStep>
@@ -132,10 +162,13 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
         </NumberedStep>
         <NewRegistrationProofFormBodyTitleContainer>
           <HeaderContainer>
-            <Title>{isEmailInputSettingDrag ? 'Drag and Drop .eml' : 'Paste Email'}</Title>
+            <Title>Email</Title>
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
+              checkedLabel={"Drag"}
+              uncheckedLabel={"Paste"}
+              helperText={INPUT_MODE_TOOLTIP}
             />
           </HeaderContainer>
           {isEmailInputSettingDrag ? (
@@ -154,6 +187,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
             <LabeledTextArea
               label=""
               value={emailFull}
+              placeholder={PLACEHOLDER_EMAIL_BODY}
               onChange={(e) => {
                 setEmailFull(e.currentTarget.value);
               }}
@@ -303,6 +337,7 @@ const ButtonContainer = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  padding-left: 8px;
 `;
 
 const Title = styled.h4`
