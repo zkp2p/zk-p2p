@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useAsync, useUpdateEffect } from "react-use";
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
@@ -12,6 +12,7 @@ import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
 import { EmailInputTypeSwitch } from "../common/EmailInputTypeSwitch";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
+import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
@@ -39,18 +40,18 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
   handleBackClick
 }) => {
   /*
+   * Contexts
+   */
+  const {
+    isProvingTypeFast,
+    isInputModeDrag,
+    setIsProvingTypeFast,
+    setIsInputModeDrag
+  } = useContext(ProofGenSettingsContext);
+
+  /*
    * State
    */
-  const storedProvingTypeSetting = localStorage.getItem('isPovingTypeRemote');
-  const [isPovingTypeRemote, setIsPovingTypeRemote] = useState<boolean>(
-      storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
-  );
-
-  const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
-  const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
-      storedValue !== null ? JSON.parse(storedValue) : true
-  );
-  
   const [emailFull, setEmailFull] = useState<string>(localStorage.emailFull || "");
 
   const [displayMessage, setDisplayMessage] = useState<string>("Generate Proof");
@@ -119,16 +120,16 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
   /*
    * Handlers
    */
-  const handleEmailInputTypeChanged = (checked: boolean) => {
-    setIsEmailInputSettingDrag(checked);
-
-    localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
+  const handleProvingTypeChanged = (checked: boolean) => {
+    if (setIsProvingTypeFast) {
+      setIsProvingTypeFast(checked);
+    }
   };
 
-  const handleProvingTypeChanged = (checked: boolean) => {
-    setIsPovingTypeRemote(checked);
-
-    localStorage.setItem('isPovingTypeRemote', JSON.stringify(checked));
+  const handleEmailInputTypeChanged = (checked: boolean) => {
+    if (setIsInputModeDrag) {
+      setIsInputModeDrag(checked);
+    }
   };
 
   return (
@@ -146,7 +147,7 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
         </ThemedText.HeadlineSmall>
 
         <EmailInputTypeSwitch
-          switchChecked={isPovingTypeRemote}
+          switchChecked={isProvingTypeFast ?? true }
           onSwitchChange={handleProvingTypeChanged}
           checkedLabel={"Fast"}
           uncheckedLabel={"Private"}
@@ -163,14 +164,14 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
           <HeaderContainer>
             <Title>Email</Title>
             <EmailInputTypeSwitch
-              switchChecked={isEmailInputSettingDrag}
+              switchChecked={isInputModeDrag ?? true}
               onSwitchChange={handleEmailInputTypeChanged}
               checkedLabel={"Drag"}
               uncheckedLabel={"Paste"}
               helperText={INPUT_MODE_TOOLTIP}
             />
           </HeaderContainer>
-          {isEmailInputSettingDrag ? (
+          {isInputModeDrag ? (
             <DragAndDropTextBox
               onFileDrop={(file: File) => {
                 const reader = new FileReader();
