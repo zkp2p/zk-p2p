@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
-import { useAccount } from "wagmi";
 
 import { AutoColumn } from '../layouts/Column'
 import { NewPermission } from './NewPermission'
 import { PermissionTable } from './PermissionTable'
+import AccountContext from '../../contexts/Account/AccountContext';
 
 
 export default function PermissionsForm() {
-  const { address } = useAccount();
+  /*
+   * Context
+   */
+  const { ethereumAddress } = React.useContext(AccountContext);
 
   /*
-    State
-  */
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
+   * State
+   */
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   /*
@@ -26,18 +28,6 @@ export default function PermissionsForm() {
   const handleBackClick = () => {
     setIsAddPosition(false);
   }
-
-  /*
-    Hooks
-  */
-
-  useEffect(() => {
-    if (address) {
-      setEthereumAddress(address);
-    } else {
-      setEthereumAddress("");
-    }
-  }, [address]);
 
   return (
     <Wrapper>

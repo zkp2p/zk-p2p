@@ -1,39 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from "styled-components";
-import { useAccount } from "wagmi";
 
 import SwapModal from "../components/Swap"
 import { OnRamperProof } from '../components/Swap/OnRamperProof'
 import { OnRamperSubmit } from '../components/Swap/OnRamperSubmit'
 import { Intent } from "../helpers/types";
+import AccountContext from '../contexts/Account/AccountContext';
 
 
 export const Swap: React.FC<{}> = (props) => {
-  const { address } = useAccount();
+  /*
+   * Context
+   */
+  const { ethereumAddress } = React.useContext(AccountContext);
 
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
-
+  /*
+   * State
+   */
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
 
   const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
   const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
 
   /*
-    Hooks
-  */
-
-  useEffect(() => {
-    if (address) {
-      setEthereumAddress(address);
-    } else {
-      setEthereumAddress("");
-    }
-  }, [address]);
-
-  /*
-    Handlers
-  */
-
+   * Handlers
+   */
   const handleBackClick = () => {
     setSelectedIntent(null);
   }
