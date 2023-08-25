@@ -42,4 +42,6 @@ const DragAndDropTextBoxWrapper = styled(Col)`
 	align-items: center;
 	justify-content: center;
 	border: 2px dashed #ccc;
+	box-sizing: border-box;
+	padding: 2px;
 `;
