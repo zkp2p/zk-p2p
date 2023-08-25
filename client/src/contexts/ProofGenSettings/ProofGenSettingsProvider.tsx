@@ -15,7 +15,6 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-
   const storedProvingTypeSetting = localStorage.getItem('isProvingTypeRemote');
   const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   
@@ -30,7 +29,6 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   /*
    * Hooks
    */
-
   useEffect(() => {
     localStorage.setItem('isProvingTypeRemote', JSON.stringify(isProvingTypeRemote));
   }, [isProvingTypeRemote]);
@@ -38,22 +36,6 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(isEmailInputSettingDrag));
   }, [isEmailInputSettingDrag]);
-
-  /*
-   * Handlers
-   */
-  
-  // const handleEmailInputTypeChanged = (checked: boolean) => {
-  //   setIsEmailInputSettingDrag(checked);
-
-  //   localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
-  // };
-
-  // const handleProvingTypeChanged = (checked: boolean) => {
-  //   setIsProvingTypeRemote(checked);
-
-  //   localStorage.setItem('isPovingTypeRemote', JSON.stringify(checked));
-  // };
 
   return (
     <ProofGenSettingsContext.Provider
