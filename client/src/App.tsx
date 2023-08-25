@@ -14,6 +14,7 @@ import { BottomNav } from "./components/layouts/BottomNav";
 
 import AccountProvider from "./contexts/Account/AccountProvider";
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
+import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -53,9 +54,11 @@ interface ProvidersProps {
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <AccountProvider>
-      <ProofGenSettingsProvider>
-        { children }
-      </ProofGenSettingsProvider>
+      <RampRegistrationProvider>
+        <ProofGenSettingsProvider>
+          { children }
+        </ProofGenSettingsProvider>
+      </RampRegistrationProvider>
     </AccountProvider>
   )
 }
