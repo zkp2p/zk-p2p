@@ -160,8 +160,9 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
           Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
           the .eml file into the box below or paste the contents directly.
         </NumberedStep>
+
         <NewRegistrationProofFormBodyTitleContainer>
-          <HeaderContainer>
+          <TitleAndEmailSwitchContainer>
             <Title>Email</Title>
             <EmailInputTypeSwitch
               switchChecked={isInputModeDrag ?? true}
@@ -170,7 +171,8 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
               uncheckedLabel={"Paste"}
               helperText={INPUT_MODE_TOOLTIP}
             />
-          </HeaderContainer>
+          </TitleAndEmailSwitchContainer>
+
           {isInputModeDrag ? (
             <DragAndDropTextBox
               onFileDrop={(file: File) => {
@@ -194,6 +196,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
             />
           )}
         </NewRegistrationProofFormBodyTitleContainer>
+        
         <ButtonContainer>
           <Button
             disabled={emailFull.length === 0}
@@ -334,7 +337,7 @@ const ButtonContainer = styled.div`
   display: grid;
 `;
 
-const HeaderContainer = styled.div`
+const TitleAndEmailSwitchContainer = styled.div`
   display: flex;
   justify-content: space-between;
   padding-left: 8px;
