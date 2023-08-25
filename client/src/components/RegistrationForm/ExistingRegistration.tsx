@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { CheckCircle } from 'react-feather'
-import {
-  useContractRead,
-  useNetwork,
-} from 'wagmi';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
@@ -16,8 +12,7 @@ import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
 import { SingleLineInput } from "../common/SingleLineInput";
 import { ThemedText } from '../../theme/text'
-// import { abi } from "../helpers/ramp.abi";
-// import { useRampContractAddress } from '../hooks/useContractAddress';
+import useRampRegistration from '../../hooks/useRampRegistration'
 
 
 interface ExistingRegistrationProps {
@@ -29,10 +24,14 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   loggedInWalletAddress,
   handleNewRegistrationClick
 }) => {
-  const { chain } = useNetwork();
+  /*
+    Contexts
+  */
+  const { registrationHash } = useRampRegistration();
 
-  console.log(chain);
-
+  /*
+    State
+  */
   const persistedVenmoIdKey = `persistedVenmoId_${loggedInWalletAddress}`;
   const [venmoIdInput, setVenmoIdInput] = useState<string>(localStorage.getItem(persistedVenmoIdKey) || "");
   
@@ -61,23 +60,6 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   
     updateVenmoId();
   }, [venmoIdInput]);
-
-  /*
-    Contract Reads
-  */
-  
-  // mapping(bytes32 => address) public accountIds;
-  // const {
-  //   data: orderClaimsData,
-  //   isLoading: isReadOrderClaimsLoading,
-  //   isError: isReadOrderClaimsError,
-  //   refetch: refetchClaimedOrders,
-  // } = useContractRead({
-  //   addressOrName: useRampContractAddress(chain),
-  //   contractInterface: abi,
-  //   functionName: 'getClaimsForOrder',
-  //   args: [hashedVenmoId],
-  // });
 
   /*
     Component
@@ -116,8 +98,8 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 </NumberedStep>
               </NumberedInputContainer>
               <ReadOnlyInput
-                label="Current Registration Status"
-                value="Registered"
+                label="Registration Status"
+                value={ registrationHash ? "Registered" : "Not Registered" }
               />
               <SingleLineInput
                 label="Verify Venmo ID"

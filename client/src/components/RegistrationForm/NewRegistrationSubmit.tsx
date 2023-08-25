@@ -1,16 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
-import { NumberedStep } from "../common/NumberedStep";
 import { abi } from "../../helpers/abi/ramp.abi";
-import { contractAddresses } from "../../helpers/deployed_addresses";
+import useAccount from '../../hooks/useAccount'
 
 
 interface NewRegistrationSubmitProps {
@@ -22,6 +18,11 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
   proof,
   publicSignals,
 }) => {
+  /*
+   * Contexts
+   */
+  const { rampAddress } = useAccount()
+
   /*
     Contract Writes
   */
@@ -43,9 +44,9 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
   };
 
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
-    addressOrName: contractAddresses['goerli'].ramp,
-    contractInterface: abi,
-    functionName: 'onRamp',
+    address: rampAddress as `0x${string}`,
+    abi: abi,
+    functionName: 'register',
     args: [
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,
@@ -82,7 +83,7 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
             writeCompleteOrder?.();
           }}
         >
-          Submit Registration Transaction
+          Submit
         </Button>
       </Body>
     </Container>

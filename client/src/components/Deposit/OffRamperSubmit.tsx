@@ -85,7 +85,7 @@ export const OffRamperSubmit: React.FC<OffRamperSubmitProps> = ({
             writeCompleteOrder?.();
           }}
         >
-          Submit Registration Transaction
+          Submit
         </Button>
       </Body>
     </Container>

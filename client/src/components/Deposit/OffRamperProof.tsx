@@ -134,7 +134,7 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
 
   return (
     <Container>
-      <TitleCenteredRow style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+      <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
         <button
           onClick={handleBackClick}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
