@@ -10,7 +10,7 @@ import { ThemedText } from '../../theme/text'
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
-import { EmailInputTypeSwitch } from "../common/EmailInputTypeSwitch";
+import { LabeledSwitch } from "../common/LabeledSwitch";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
@@ -146,7 +146,7 @@ export const OnRamperProof: React.FC<OnRamperProofProps> = ({
           Complete Swap
         </ThemedText.HeadlineSmall>
 
-        <EmailInputTypeSwitch
+        <LabeledSwitch
           switchChecked={isProvingTypeFast ?? true}
           onSwitchChange={handleProvingTypeChanged}
           checkedLabel={"Fast"}
@@ -163,7 +163,7 @@ export const OnRamperProof: React.FC<OnRamperProofProps> = ({
         <OnRamperProofFormBodyTitleContainer>
           <HeaderContainer>
             <Title>Email</Title>
-            <EmailInputTypeSwitch
+            <LabeledSwitch
               switchChecked={isInputModeDrag ?? true}
               onSwitchChange={handleEmailInputTypeChanged}
               checkedLabel={"Drag"}
