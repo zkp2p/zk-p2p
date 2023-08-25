@@ -50,7 +50,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   */
   return (
     <Container>
-      <TitleCenteredRow style={{ padding: '0.5rem 0rem 1.5rem 0rem' }}>
+      <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
         <button
           onClick={handleBackClick}
           style={{ background: 'none', border: 'none', cursor: 'pointer' }}
