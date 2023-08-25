@@ -12,6 +12,7 @@ import { Deposit } from "./pages/Deposit";
 import { TopNav } from "./components/layouts/TopNav";
 import { BottomNav } from "./components/layouts/BottomNav";
 
+import AccountProvider from "./contexts/Account/AccountProvider";
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
 
 import "./App.css";
@@ -51,9 +52,11 @@ interface ProvidersProps {
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
-    <ProofGenSettingsProvider>
-      { children }
-    </ProofGenSettingsProvider>
+    <AccountProvider>
+      <ProofGenSettingsProvider>
+        { children }
+      </ProofGenSettingsProvider>
+    </AccountProvider>
   )
 }
 

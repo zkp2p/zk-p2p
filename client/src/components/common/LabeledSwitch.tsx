@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import QuestionHelper from './QuestionHelper';
 
 
-interface EmailInputTypeSwitchProps {
+interface LabeledSwitchProps {
   switchChecked: boolean;
   onSwitchChange: (checked: boolean) => void;
   checkedLabel?: string;
@@ -13,7 +13,7 @@ interface EmailInputTypeSwitchProps {
   helperText?: string;
 }
 
-export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
+export const LabeledSwitch: React.FC<LabeledSwitchProps> = ({
   switchChecked = true,
   onSwitchChange,
   checkedLabel = 'Checked Label',

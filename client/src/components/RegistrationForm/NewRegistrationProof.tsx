@@ -1,28 +1,21 @@
 import React, { useContext, useState } from 'react';
 import { useAsync, useUpdateEffect } from "react-use";
-import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 
 import { Button } from "../Button";
-import { TitleCenteredRow } from '../layouts/Row'
 import { Col } from "../legacy/Layout";
-import { ThemedText } from '../../theme/text'
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
-import { EmailInputTypeSwitch } from "../common/EmailInputTypeSwitch";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
+import { LabeledSwitch } from "../common/LabeledSwitch";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
 import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
-import {
-  INPUT_MODE_TOOLTIP,
-  PROVING_TYPE_TOOLTIP
-} from "../../helpers/tooltips";
-
+import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
 
 const generate_input = require("../../scripts/generate_input");
 
@@ -31,22 +24,18 @@ interface NewRegistrationProofProps {
   loggedInWalletAddress: string;
   setSubmitOrderProof: (proof: string) => void;
   setSubmitOrderPublicSignals: (publicSignals: string) => void;
-  handleBackClick: () => void;
 }
  
 export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   loggedInWalletAddress,
   setSubmitOrderProof,
   setSubmitOrderPublicSignals,
-  handleBackClick
 }) => {
   /*
    * Contexts
    */
   const {
-    isProvingTypeFast,
     isInputModeDrag,
-    setIsProvingTypeFast,
     setIsInputModeDrag
   } = useContext(ProofGenSettingsContext);
   
@@ -118,60 +107,159 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   const circuitInputs = value || {};
   // console.log("Circuit inputs:", circuitInputs);
 
+  const isProofGenerationStarted = () => {
+    return status !== "not-started";
+  };
+
   /*
    * Handlers
    */
-  const handleProvingTypeChanged = (checked: boolean) => {
-    if (setIsProvingTypeFast) {
-      setIsProvingTypeFast(checked);
-    }
-  };
-
   const handleEmailInputTypeChanged = (checked: boolean) => {
     if (setIsInputModeDrag) {
       setIsInputModeDrag(checked);
     }
   };
 
+  const handleGenerateProofClick = async () => {
+    console.log("Generating proof...");
+    setDisplayMessage("Generating proof...");
+    setStatus("generating-input");
+
+    const formattedArray = await insert13Before10(Uint8Array.from(Buffer.from(emailFull)));
+
+    // Due to a quirk in carriage return parsing in JS, we need to manually edit carriage returns to match DKIM parsing
+    console.log("formattedArray", formattedArray);
+    console.log("buffFormArray", Buffer.from(formattedArray.buffer));
+    console.log("buffFormArray", formattedArray.toString());
+
+    let input = "";
+    try {
+      input = await generate_input.generate_inputs(
+        Buffer.from(formattedArray.buffer),
+        "1",                                                        // TODO: Update me
+        "1"                                                         // TODO: Update me
+      );
+    } catch (e) {
+      console.log("Error generating input", e);
+      setDisplayMessage("Prove");
+      setStatus("error-bad-input");
+      return;
+    }
+    console.log("Generated input:", JSON.stringify(input));
+
+    // Insert input structuring code here
+    // const input = buildInput(pubkey, msghash, sig);
+    // console.log(JSON.stringify(input, (k, v) => (typeof v == "bigint" ? v.toString() : v), 2));
+
+    /*
+      Download proving files
+    */
+    console.time("zk-dl");
+    recordTimeForActivity("startedDownloading");
+    setDisplayMessage("Downloading compressed proving files... (this may take a few minutes)");
+    setStatus("downloading-proof-files");
+    await downloadProofFiles(filename, () => {
+      setDownloadProgress((p) => p + 1);
+    });
+    console.timeEnd("zk-dl");
+    recordTimeForActivity("finishedDownloading");
+
+    /*
+      Generate proof
+    */
+    console.time("zk-gen");
+    recordTimeForActivity("startedProving");
+    setDisplayMessage("Starting proof generation... (this will take 6-10 minutes and ~5GB RAM)");
+    setStatus("generating-proof");
+    console.log("Starting proof generation");
+    // alert("Generating proof, will fail due to input");
+
+    const { proof, publicSignals } = await generateProof(input, "circuit"); 
+    console.log("Finished proof generation");
+    console.timeEnd("zk-gen");
+    recordTimeForActivity("finishedProving");
+
+    /*
+      Set proof
+    */
+    setSubmitOrderProof(JSON.stringify(proof));
+
+    /*
+      Retrieve public signals
+    */
+    // let kek = publicSignals.map((x: string) => BigInt(x));
+    // let soln = packedNBytesToString(kek.slice(0, 12));
+    // let soln2 = packedNBytesToString(kek.slice(12, 147));
+    // let soln3 = packedNBytesToString(kek.slice(147, 150));
+    // setPublicSignals(`From: ${soln}\nTo: ${soln2}\nUsername: ${soln3}`);
+    
+    /*
+      Set public signals
+    */
+    setSubmitOrderPublicSignals(JSON.stringify(publicSignals));
+
+    if (!circuitInputs) {
+      setStatus("error-failed-to-prove");
+      return;
+    }
+    setDisplayMessage("Finished computing ZK proof");
+    setStatus("done");
+    try {
+      (window as any).cJson = JSON.stringify(circuitInputs);
+      console.log("wrote circuit input to window.cJson. Run copy(cJson)");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  /*
+    * Components
+    */
+  function ProofGenerationStatus() {
+    return (
+      <>
+        {displayMessage === "Downloading compressed proving files... (this may take a few minutes)" && (
+          <ProgressBar
+            width={downloadProgress * 10}
+            label={`${downloadProgress} / 10 items`}
+          />
+        )}
+
+        <ProcessStatus status={status}>
+          {status !== "not-started" ? (
+            <div>
+              Status:
+              <span data-testid={"status-" + status}>{status}</span>
+            </div>
+          ) : (
+            <div data-testid={"status-" + status}></div>
+          )}
+          <TimerDisplay timers={stopwatch} />
+        </ProcessStatus>
+      </>
+    );
+  }
+
   return (
     <Container>
-      <TitleCenteredRow style={{ padding: '0.5rem 0rem 1.5rem 0rem' }}>
-        <button
-          onClick={handleBackClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          <StyledArrowLeft/>
-        </button>
-
-        <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          Update Registration
-        </ThemedText.HeadlineSmall>
-
-        <EmailInputTypeSwitch
-          switchChecked={isProvingTypeFast ?? true}
-          onSwitchChange={handleProvingTypeChanged}
-          checkedLabel={"Fast"}
-          uncheckedLabel={"Private"}
-          helperText={PROVING_TYPE_TOOLTIP}
-        />
-      </TitleCenteredRow>
-
       <Body>
         <NumberedStep>
           Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
           the .eml file into the box below or paste the contents directly.
         </NumberedStep>
-        <NewRegistrationProofFormBodyTitleContainer>
-          <HeaderContainer>
-            <Title>Email</Title>
-            <EmailInputTypeSwitch
+
+        <TitleRowAndTextAreaContainer>
+          <TitleAndEmailSwitchRowContainer>
+            Email
+            <LabeledSwitch
               switchChecked={isInputModeDrag ?? true}
               onSwitchChange={handleEmailInputTypeChanged}
               checkedLabel={"Drag"}
               uncheckedLabel={"Paste"}
               helperText={INPUT_MODE_TOOLTIP}
             />
-          </HeaderContainer>
+          </TitleAndEmailSwitchRowContainer>
+
           {isInputModeDrag ? (
             <DragAndDropTextBox
               onFileDrop={(file: File) => {
@@ -194,134 +282,31 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
               }}
             />
           )}
-        </NewRegistrationProofFormBodyTitleContainer>
+        </TitleRowAndTextAreaContainer>
+        
         <ButtonContainer>
           <Button
             disabled={emailFull.length === 0}
-            onClick={async () => {
-              console.log("Generating proof...");
-              setDisplayMessage("Generating proof...");
-              setStatus("generating-input");
-
-              const formattedArray = await insert13Before10(Uint8Array.from(Buffer.from(emailFull)));
-
-              // Due to a quirk in carriage return parsing in JS, we need to manually edit carriage returns to match DKIM parsing
-              console.log("formattedArray", formattedArray);
-              console.log("buffFormArray", Buffer.from(formattedArray.buffer));
-              console.log("buffFormArray", formattedArray.toString());
-
-              let input = "";
-              try {
-                input = await generate_input.generate_inputs(
-                  Buffer.from(formattedArray.buffer),
-                  "1",                                                        // TODO: Update me
-                  "1"                                                         // TODO: Update me
-                );
-              } catch (e) {
-                console.log("Error generating input", e);
-                setDisplayMessage("Prove");
-                setStatus("error-bad-input");
-                return;
-              }
-              console.log("Generated input:", JSON.stringify(input));
-
-              // Insert input structuring code here
-              // const input = buildInput(pubkey, msghash, sig);
-              // console.log(JSON.stringify(input, (k, v) => (typeof v == "bigint" ? v.toString() : v), 2));
-
-              /*
-                Download proving files
-              */
-              console.time("zk-dl");
-              recordTimeForActivity("startedDownloading");
-              setDisplayMessage("Downloading compressed proving files... (this may take a few minutes)");
-              setStatus("downloading-proof-files");
-              await downloadProofFiles(filename, () => {
-                setDownloadProgress((p) => p + 1);
-              });
-              console.timeEnd("zk-dl");
-              recordTimeForActivity("finishedDownloading");
-
-              /*
-                Generate proof
-              */
-              console.time("zk-gen");
-              recordTimeForActivity("startedProving");
-              setDisplayMessage("Starting proof generation... (this will take 6-10 minutes and ~5GB RAM)");
-              setStatus("generating-proof");
-              console.log("Starting proof generation");
-              // alert("Generating proof, will fail due to input");
-
-              const { proof, publicSignals } = await generateProof(input, "circuit"); 
-              console.log("Finished proof generation");
-              console.timeEnd("zk-gen");
-              recordTimeForActivity("finishedProving");
-
-              /*
-                Set proof
-              */
-              setSubmitOrderProof(JSON.stringify(proof));
-
-              /*
-                Retrieve public signals
-              */
-              // let kek = publicSignals.map((x: string) => BigInt(x));
-              // let soln = packedNBytesToString(kek.slice(0, 12));
-              // let soln2 = packedNBytesToString(kek.slice(12, 147));
-              // let soln3 = packedNBytesToString(kek.slice(147, 150));
-              // setPublicSignals(`From: ${soln}\nTo: ${soln2}\nUsername: ${soln3}`);
-              
-              /*
-                Set public signals
-              */
-              setSubmitOrderPublicSignals(JSON.stringify(publicSignals));
-
-              if (!circuitInputs) {
-                setStatus("error-failed-to-prove");
-                return;
-              }
-              setDisplayMessage("Finished computing ZK proof");
-              setStatus("done");
-              try {
-                (window as any).cJson = JSON.stringify(circuitInputs);
-                console.log("wrote circuit input to window.cJson. Run copy(cJson)");
-              } catch (e) {
-                console.error(e);
-              }
-            }}
+            onClick={handleGenerateProofClick}
           >
             {displayMessage}
           </Button>
         </ButtonContainer>
-        {displayMessage === "Downloading compressed proving files... (this may take a few minutes)" && (
-            <ProgressBar width={downloadProgress * 10} label={`${downloadProgress} / 10 items`} />
-          )}
-          <ProcessStatus status={status}>
-            {status !== "not-started" ? (
-              <div>
-                Status:
-                <span data-testid={"status-" + status}>{status}</span>
-              </div>
-            ) : (
-              <div data-testid={"status-" + status}></div>
-            )}
-            <TimerDisplay timers={stopwatch} />
-          </ProcessStatus>
+        
+        { isProofGenerationStarted() && <ProofGenerationStatus />}
       </Body>
     </Container>
   );
 };
 
 const Container = styled.div`
-  width: 100%;
-  gap: 1rem;
 `;
 
 const Body = styled(Col)`
-  gap: 0.75rem;
+  gap: 1rem;
 `;
 
-const NewRegistrationProofFormBodyTitleContainer = styled(Col)`
+const TitleRowAndTextAreaContainer = styled(Col)`
   gap: 0rem;
 `;
 
@@ -333,21 +318,15 @@ const ProcessStatus = styled.div<{ status: string }>`
 
 const ButtonContainer = styled.div`
   display: grid;
+  padding-top: 1rem;
 `;
 
-const HeaderContainer = styled.div`
+const TitleAndEmailSwitchRowContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding-left: 8px;
 `;
-
-const Title = styled.h4`
-  // Add any styles you want for your title here
-`;
-
-const StyledArrowLeft = styled(ArrowLeft)`
-  color: #FFF;
-`
 
 const TimerDisplayContainer = styled.div`
   display: flex;

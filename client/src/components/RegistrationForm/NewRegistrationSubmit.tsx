@@ -63,22 +63,19 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
   return (
     <Container>
       <Body>
-          <NumberedStep>
-            Upon successful proof generation above, both the proof and public inputs will be
-            populated automatically. Prior to submission, select the correct order claim for
-            the Venmo payment you completed from table of claims above.
-          </NumberedStep>
         <LabeledTextArea
           label="Proof Output"
           value={proof}
           disabled={true}
         />
+
         <LabeledTextArea
           label="Public Signals"
           value={publicSignals}
           disabled={true}
           secret
         />
+        
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
@@ -93,7 +90,6 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
 };
 
 const Container = styled.div`
-  width: 100%;
   gap: 1rem;
 `;
 
