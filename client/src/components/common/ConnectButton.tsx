@@ -141,13 +141,13 @@ const LoggedInButton = styled.button`
   align-items: center;
   justify-content: center;
   border: none;
-  background: #3A3B3F;
+  background: #0D111C;
   border-radius: 24px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.75px;
   color: #ffffff;
   font-family: 'Graphik';
   font-weight: 700;
   font-size: 16px;
   align-self: stretch;
-  padding: 0px 16px;
+  padding: 0px 20px;
 `;
