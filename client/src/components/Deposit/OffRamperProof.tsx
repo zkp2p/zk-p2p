@@ -17,6 +17,10 @@ import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
 import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
+import {
+  INPUT_MODE_TOOLTIP,
+  PROVING_TYPE_TOOLTIP
+} from "../../helpers/tooltips";
 
 const generate_input = require("../../scripts/generate_input");
 
@@ -34,6 +38,14 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
   setSubmitOrderPublicSignals,
   handleBackClick
 }) => {
+  /*
+   * State
+   */
+  const storedProvingTypeSetting = localStorage.getItem('isPovingTypeRemote');
+  const [isPovingTypeRemote, setIsPovingTypeRemote] = useState<boolean>(
+      storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
+  );
+
   const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
       storedValue !== null ? JSON.parse(storedValue) : true
@@ -104,12 +116,19 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
   const circuitInputs = value || {};
   // console.log("Circuit inputs:", circuitInputs);
 
+  /*
+   * Handlers
+   */
   const handleEmailInputTypeChanged = (checked: boolean) => {
-    // Update state maintained in parent component
     setIsEmailInputSettingDrag(checked);
 
-    // Store preference in local storage
     localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
+  };
+
+  const handleProvingTypeChanged = (checked: boolean) => {
+    setIsPovingTypeRemote(checked);
+
+    localStorage.setItem('isPovingTypeRemote', JSON.stringify(checked));
   };
 
   return (
@@ -127,9 +146,11 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
         </ThemedText.HeadlineSmall>
 
         <EmailInputTypeSwitch
-          switchChecked={isEmailInputSettingDrag}
-          onSwitchChange={handleEmailInputTypeChanged}
-          label={"Fast"}
+          switchChecked={isPovingTypeRemote}
+          onSwitchChange={handleProvingTypeChanged}
+          checkedLabel={"Fast"}
+          uncheckedLabel={"Private"}
+          helperText={PROVING_TYPE_TOOLTIP}
         />
       </TitleCenteredRow>
 
@@ -144,6 +165,9 @@ export const OffRamperProof: React.FC<OffRamperProofProps> = ({
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
+              checkedLabel={"Drag"}
+              uncheckedLabel={"Paste"}
+              helperText={INPUT_MODE_TOOLTIP}
             />
           </HeaderContainer>
           {isEmailInputSettingDrag ? (
@@ -312,6 +336,7 @@ const ButtonContainer = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  padding-left: 8px;
 `;
 
 const Title = styled.h4`

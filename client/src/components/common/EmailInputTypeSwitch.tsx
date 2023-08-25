@@ -8,14 +8,16 @@ import QuestionHelper from './QuestionHelper';
 interface EmailInputTypeSwitchProps {
   switchChecked: boolean;
   onSwitchChange: (checked: boolean) => void;
-  label?: string;
+  checkedLabel?: string;
+  uncheckedLabel?: string;
   helperText?: string;
 }
 
 export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
   switchChecked = true,
   onSwitchChange,
-  label = 'Input Mode',
+  checkedLabel = 'Checked Label',
+  uncheckedLabel = 'Unchecked Label',
   helperText = 'Fill me out'
 }) => {
   const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +27,7 @@ export const EmailInputTypeSwitch: React.FC<EmailInputTypeSwitchProps> = ({
   return (
     <Container>
       <SwitchLabel>
-        {label}
+        {switchChecked ? checkedLabel :uncheckedLabel}
       </SwitchLabel>
       
       <QuestionHelper

@@ -17,6 +17,10 @@ import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
 // import { packedNBytesToString } from "../helpers/binaryFormat";
 import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
+import {
+  INPUT_MODE_TOOLTIP,
+  PROVING_TYPE_TOOLTIP
+} from "../../helpers/tooltips";
 
 const generate_input = require("../../scripts/generate_input");
 
@@ -34,9 +38,17 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   setSubmitOrderPublicSignals,
   handleBackClick
 }) => {
-  const storedValue = localStorage.getItem('isEmailInputPreferenceDrag');
+  /*
+   * State
+   */
+  const storedProvingTypeSetting = localStorage.getItem('isPovingTypeRemote');
+  const [isPovingTypeRemote, setIsPovingTypeRemote] = useState<boolean>(
+      storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
+  );
+  
+  const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
-      storedValue !== null ? JSON.parse(storedValue) : true
+      storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : true
   );
   
   const [emailFull, setEmailFull] = useState<string>(localStorage.emailFull || "");
@@ -104,12 +116,20 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   const circuitInputs = value || {};
   // console.log("Circuit inputs:", circuitInputs);
 
+
+  /*
+   * Handlers
+   */
   const handleEmailInputTypeChanged = (checked: boolean) => {
-    // Update state maintained in parent component
     setIsEmailInputSettingDrag(checked);
 
-    // Store preference in local storage
     localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(checked));
+  };
+
+  const handleProvingTypeChanged = (checked: boolean) => {
+    setIsPovingTypeRemote(checked);
+
+    localStorage.setItem('isPovingTypeRemote', JSON.stringify(checked));
   };
 
   return (
@@ -127,9 +147,11 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
         </ThemedText.HeadlineSmall>
 
         <EmailInputTypeSwitch
-          switchChecked={isEmailInputSettingDrag}
-          onSwitchChange={handleEmailInputTypeChanged}
-          label={"Fast"}
+          switchChecked={isPovingTypeRemote}
+          onSwitchChange={handleProvingTypeChanged}
+          checkedLabel={"Fast"}
+          uncheckedLabel={"Private"}
+          helperText={PROVING_TYPE_TOOLTIP}
         />
       </TitleCenteredRow>
 
@@ -144,6 +166,9 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
             <EmailInputTypeSwitch
               switchChecked={isEmailInputSettingDrag}
               onSwitchChange={handleEmailInputTypeChanged}
+              checkedLabel={"Drag"}
+              uncheckedLabel={"Paste"}
+              helperText={INPUT_MODE_TOOLTIP}
             />
           </HeaderContainer>
           {isEmailInputSettingDrag ? (
@@ -312,6 +337,7 @@ const ButtonContainer = styled.div`
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  padding-left: 8px;
 `;
 
 const Title = styled.h4`
