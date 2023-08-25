@@ -82,7 +82,7 @@ export const NewRegistrationSubmit: React.FC<NewRegistrationSubmitProps> = ({
             writeCompleteOrder?.();
           }}
         >
-          Submit Registration Transaction
+          Submit
         </Button>
       </Body>
     </Container>
