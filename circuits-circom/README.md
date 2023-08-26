@@ -81,7 +81,7 @@ Main circuit that both onramper and offramper must generate a proof prior to usi
 
 | Regex Config       | Description                                                      |
 | ------------------ | ---------------------------------------------------------------- |
-| Actor ID Regex | Extracts the Venmo actor ID which is the same for any of the 4 Venmo confirmation emails (send, receive, request, complete payment)  |
+| Actor ID Regex | Extracts the Venmo actor ID which is the same for the 3 Venmo payment confirmation emails (send, receive,complete payment). NOTE: request payment is excluded from the list because regex is different (and less sybil resistant due to not needing to complete a payment to generate this email)  |
 
 ## Regexes
 
@@ -94,7 +94,7 @@ They both contain the Venmo payer ID and the payee ID. Hence we have abstracted 
 |----------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | VenmoPayerID   | `\r\ntps://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+`                         | Extracts the Venmo payer ID from both send and receive emails                                                                |
 | VenmoPayeeID   | `href=3D\"https://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9\|\r\|\n\|=)+`       | Extracts the Venmo payee ID from both send and receive emails                                                                |
-| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
+| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received and payment request completed received emails |
 
 Circuits that use the Venmo regexes:
 
@@ -102,7 +102,7 @@ Circuits that use the Venmo regexes:
 | ------------ | -------------- | ----------- |
 | VenmoSend    | VenmoPayeeID   | Extracts the Venmo payee ID from the payment sent email body |
 | VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
-| VenmoRegistration | VenmoActorID   | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed sent and payment request completed received emails |
+| VenmoRegistration | VenmoActorID   | Extracts the actor ID (my ID) from payment sent, payment received and payment request completed received emails |
 
 ## Usage
 
@@ -131,7 +131,9 @@ RAPIDSNARK_PATH="./../../rapidsnark/build/prover"
 ### Generate witness
 
 1. Copy an eml file into `circuits-circom/emls` for a given email type. Venmo send and receive emails are different. Make sure you are downloading the original email file. For example you can follow the following steps in [Gmail](https://support.google.com/mail/answer/29436?hl=en#zippy=%2Cgmail). Name your Venmo receive email `venmo_receive.eml` and Venmo send email `venmo_send.eml`.
-2. In `circuits-circom` directory, run `yarn gen-input EML_FILE_NAME EMAIL_TYPE` where EML_FILE_NAME is the name of the eml file in `circuits-circom/emls` and EMAIL_TYPE is the type of the email. This will generate an input file with the name `input_EML_FILE_NAME.json`. Example: `yarn gen-input venmo_receive EMAIL_VENMO_RECEIVE`
+2. In `circuits-circom` directory, run `yarn gen-input EML_FILE_NAME EMAIL_TYPE` where EML_FILE_NAME is the name of the eml file in `circuits-circom/emls` and `EMAIL_TYPE` is the type of the email. This will generate an input file with the name `input_EML_FILE_NAME.json`.
+  a. Example: `yarn gen-input venmo_receive EMAIL_VENMO_RECEIVE`
+  b. NOTE: for registration, all 3 types of Venmo emails above work. Example: `yarn gen-input venmo_complete EMAIL_VENMO_REGISTRATION`
 3. `cd` into `scripts` and run `./2_gen_witness.sh` which will generate the witness needed to generate the proof
 4. For development purposes, you only need to run up to this step
 
