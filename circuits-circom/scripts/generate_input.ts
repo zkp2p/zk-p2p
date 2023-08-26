@@ -356,7 +356,6 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
 }
 
 // Only called when the whole function is called from the command line, to read inputs
-// Will generate a test proof with the empty Ethereum address, that cannot be proven by anybody else
 async function test_generate(writeToFile: boolean = true, email_file_name: string, type: CircuitType) {
   const { email_file, nonce } = await getArgs(email_file_name);
   const email = fs.readFileSync(email_file.trim());
