@@ -1,0 +1,13 @@
+node_modules/
+
+.env
+
+.DS_Store
+
+regex_to_circom/
+build/
+inputs/*.json
+emls/*
+*.env
+.yarn
+test/
