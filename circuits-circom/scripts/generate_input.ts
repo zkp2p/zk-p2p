@@ -43,10 +43,6 @@ export interface ICircuitInputs {
   in_body_hash?: string[];
   precomputed_sha?: string[];
   body_hash_idx?: string;
-  addressParts?: string[];
-  address?: string;
-  address_plus_one?: string;
-  twitter_username_idx?: string;
   venmo_payer_id_idx?: string;
   email_from_idx?: string;
   email_timestamp_idx?: string;
@@ -54,7 +50,6 @@ export interface ICircuitInputs {
   venmo_amount_idx?: string;
   venmo_actor_id_idx?: string;
   order_id?: string;
-  claim_id?: string;
 
   // subject commands only
   command_idx?: string;
@@ -72,11 +67,9 @@ export enum CircuitType {
   RSA = "rsa",
   SHA = "sha",
   TEST = "test",
-  EMAIL_TWITTER = "twitter",
   EMAIL_VENMO_RECEIVE = "venmo_receive",
   EMAIL_VENMO_SEND = "venmo_send",
-  EMAIL_VENMO_REGISTRATION = "venmo_registration",
-  EMAIL_SUBJECT = "email_subject",
+  EMAIL_VENMO_REGISTRATION = "venmo_registration"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -121,8 +114,6 @@ export async function getCircuitInputs(
   body: Buffer,
   body_hash: string,
   order_id: string,
-  claim_id: string,
-  eth_address: string,
   circuit: CircuitType
 ): Promise<{
   valid: {
@@ -144,6 +135,8 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 5952;  // 5652 length + 300 chars long custom message
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
+    // IMPORTANT: Venmo completed request, send payment, and receive payment emails can be used to register
+    // since they share similar formats to extract actor ID
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6400;  // 6200 length + 200 chars long custom message
   }
@@ -201,11 +194,6 @@ export async function getCircuitInputs(
   const base_message = toCircomBigIntBytes(postShaBigintUnpadded);
   const precomputed_sha = await Uint8ArrayToCharArray(bodyShaPrecompute);
   const body_hash_idx = bufferToString(message).indexOf(body_hash).toString();
-
-  const address = bytesToBigInt(fromHex(eth_address)).toString();
-  const nullifier = signature[0];
-  // bytesToBigInt(fromHex()).toString();
-  const address_plus_one = (bytesToBigInt(fromHex(eth_address)) + 1n).toString();
 
   let raw_header = Buffer.from(prehash_message_string).toString();
   const email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "from:"), "<").length;
@@ -265,25 +253,6 @@ export async function getCircuitInputs(
       // IDs
       order_id,
     };
-  } else if (circuit === CircuitType.EMAIL_TWITTER) {
-    const USERNAME_SELECTOR = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
-    const twitter_username_idx = (Buffer.from(bodyRemaining).indexOf(USERNAME_SELECTOR) + USERNAME_SELECTOR.length).toString();
-    console.log("Indexes into header string are: ", email_from_idx, twitter_username_idx);
-
-    circuitInputs = {
-      in_padded,
-      modulus,
-      signature,
-      in_len_padded_bytes,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-      twitter_username_idx,
-      address,
-      address_plus_one,
-      body_hash_idx,
-      // email_from_idx,
-    };
   } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
     const actor_id_selector = Buffer.from('&actor_id=3D');
     const venmo_actor_id_idx = (Buffer.from(bodyRemaining).indexOf(actor_id_selector) + actor_id_selector.length).toString();
@@ -303,40 +272,6 @@ export async function getCircuitInputs(
       venmo_actor_id_idx,
       email_from_idx,
     };
-  } else if (circuit === CircuitType.EMAIL_SUBJECT) {
-    // First word after "subject:" (usually send/Send)
-    const command = email_subject.split(" ")[0];
-    const command_idx = raw_header.length - email_subject.length;
-    // Index of first word after command
-    const amount_idx = raw_header.length - trimStrByStr(email_subject, command).length;
-    // Index of second word after command
-    const currency_idx = raw_header.length - trimStrByStr(trimStrByStr(email_subject, command), " ").length;
-    // Index of first word after subject and "to"
-    const recipient_idx = raw_header.length - trimStrByStr(email_subject, " to ").length;
-    // Used to get the private message-id
-    const message_id_idx = raw_header.length - trimStrByStr(raw_header, "\r\nmessage-id:<").length;
-    const message_id = raw_header.slice(message_id_idx).split(">\r\n")[0];
-    const MAX_MESSAGE_ID_LEN = 128;
-    const message_id_array = await Uint8ArrayToCharArray(padWithZero(stringToBytes(message_id), MAX_MESSAGE_ID_LEN));
-    console.log("Indexes into header string are: ", email_from_idx, amount_idx, currency_idx, recipient_idx);
-
-    circuitInputs = {
-      in_padded,
-      modulus,
-      signature,
-      in_len_padded_bytes,
-      address: address,
-      nullifier: nullifier,
-      body_hash_idx,
-      email_from_idx: email_from_idx.toString(),
-      command_idx: command_idx.toString(),
-      message_id_idx: message_id_idx.toString(),
-      amount_idx: amount_idx.toString(),
-      currency_idx: currency_idx.toString(),
-      recipient_idx: recipient_idx.toString(),
-      custom_message_id_from: message_id_array,
-      custom_message_id_recipient: message_id_array,
-    };
   } else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
     circuitInputs = {
@@ -354,11 +289,9 @@ export async function getCircuitInputs(
 // Nonce is useful to disambiguate files for input/output when calling from the command line, it is usually null or hash(email)
 export async function generate_inputs(
   raw_email: Buffer | string,
-  eth_address: string,
-  type: CircuitType = CircuitType.EMAIL_SUBJECT,
+  type: CircuitType,
   nonce_raw: number | null | string = null,
-  order_id: string,
-  claim_id: string
+  order_id: string
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
 
@@ -402,7 +335,7 @@ export async function generate_inputs(
   const pubKeyData = pki.publicKeyFromPem(pubkey.toString());
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
-  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, order_id, claim_id, eth_address, type);
+  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, order_id, type);
   return fin_result.circuitInputs;
 }
 
@@ -423,12 +356,11 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
 }
 
 // Only called when the whole function is called from the command line, to read inputs
-// Will generate a test proof with the empty Ethereum address, that cannot be proven by anybody else
 async function test_generate(writeToFile: boolean = true, email_file_name: string, type: CircuitType) {
   const { email_file, nonce } = await getArgs(email_file_name);
   const email = fs.readFileSync(email_file.trim());
   console.log(email);
-  const gen_inputs = await generate_inputs(email, "0x0000000000000000000000000000000000000000", type, nonce, "1", "0");
+  const gen_inputs = await generate_inputs(email, type, nonce, "1");
   console.log(JSON.stringify(gen_inputs));
   if (writeToFile) {
     const file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);

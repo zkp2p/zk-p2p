@@ -1,6 +1,13 @@
 {
-  "name": "circuits-circom",
+  "name": "@zkp2p/circuits-circom",
   "packageManager": "yarn@3.2.3",
+  "description": "Circom circuits for ZKP2P",
+  "version": "0.0.1",
+  "contributors": [
+    "richardliang",
+    "0xSachinK"
+  ],
+  "license": "MIT",
   "dependencies": {
     "@zk-email/circuits": "^1.1.0",
     "@zk-email/helpers": "^1.0.3",
