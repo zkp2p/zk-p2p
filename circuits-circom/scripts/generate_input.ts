@@ -44,7 +44,7 @@ export interface ICircuitInputs {
   precomputed_sha?: string[];
   body_hash_idx?: string;
   venmo_payer_id_idx?: string;
-  email_from_idx?: string;
+  email_from_idx?: string | number;
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
@@ -290,11 +290,8 @@ export async function getCircuitInputs(
 export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
-  nonce_raw: number | null | string = null,
   order_id: string
 ): Promise<ICircuitInputs> {
-  const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
-
   var result, email: Buffer;
   if (typeof raw_email === "string") {
     email = Buffer.from(raw_email);
@@ -357,14 +354,13 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
 
 // Only called when the whole function is called from the command line, to read inputs
 async function test_generate(writeToFile: boolean = true, email_file_name: string, type: CircuitType) {
-  const { email_file, nonce } = await getArgs(email_file_name);
+  const { email_file } = await getArgs(email_file_name);
   const email = fs.readFileSync(email_file.trim());
   console.log(email);
-  const gen_inputs = await generate_inputs(email, type, nonce, "1");
+  const gen_inputs = await generate_inputs(email, type, "1");
   console.log(JSON.stringify(gen_inputs));
   if (writeToFile) {
-    const file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
-    const filename = nonce ? `${file_dir}/input_${nonce}.json` : `./inputs/input_${type}.json`;
+    const filename = `./inputs/input_${type}.json`;
     console.log(`Writing to default file ${filename}`);
     fs.writeFileSync(filename, JSON.stringify(gen_inputs), { flag: "w" });
   }

@@ -1,25 +1,25 @@
 {
-    "compilerOptions": {
-      "target": "es2020",
-      "module": "esnext",
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "allowJs": true,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "allowSyntheticDefaultImports": true,
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,
-      "noFallthroughCasesInSwitch": true,
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "noEmit": true,
-      "jsx": "react-jsx",
-      "typeRoots": ["./node_modules/@types", "./types"],
-      "types": ["node", "jest"],
-      "incremental": true
-    },
-    "include": ["src", "circuits/scripts/"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "./dist",
+    "target": "es2020",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react-jsx",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node", "jest"],
+    "incremental": true
+  },
+  "include": ["scripts/*.ts"],
+  "exclude": ["node_modules"]
+}
