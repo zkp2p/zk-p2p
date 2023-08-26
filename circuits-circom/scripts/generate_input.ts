@@ -43,9 +43,6 @@ export interface ICircuitInputs {
   in_body_hash?: string[];
   precomputed_sha?: string[];
   body_hash_idx?: string;
-  addressParts?: string[];
-  address?: string;
-  address_plus_one?: string;
   venmo_payer_id_idx?: string;
   email_from_idx?: string;
   email_timestamp_idx?: string;
