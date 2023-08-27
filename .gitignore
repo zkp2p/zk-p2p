@@ -11,5 +11,6 @@ build/
 */emls/*
 *.env
 */.yarn
+*/dist
 
 .vscode
