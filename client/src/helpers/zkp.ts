@@ -4,7 +4,8 @@ import { uncompressGz as uncompress } from "./uncompress";
 
 const snarkjs = require("snarkjs");
 
-export const loadURL = "https://zk-p2p-onramp.s3.amazonaws.com/";
+// TODO: update this to be passed into downloadProofFiles
+export const loadURL = "https://s3.amazonaws.com/zk-p2p-onramp/v2/v0.0.1/";
 const compressed = true;
 // const loadURL = "/zkemail-zkey-chunks/";
 

@@ -23,6 +23,8 @@ export const STRING_PRESELECTOR = "<!-- recipient name -->";
 
 export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
+export const ZERO_ADDRESS= "0x0000000000000000000000000000000000000000000000000000000000000000"
+
 
 
 

@@ -1,6 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { useAsync, useUpdateEffect } from "react-use";
 import styled from 'styled-components';
+import {
+  CircuitType,
+  generate_inputs,
+  ICircuitInputs
+} from '@zkp2p/circuits-circom/scripts/generate_input';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
@@ -13,11 +17,8 @@ import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSet
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { insert13Before10 } from "../../scripts/generate_input";
-// import { packedNBytesToString } from "../helpers/binaryFormat";
 import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
-
-const generate_input = require("../../scripts/generate_input");
 
 
 interface NewRegistrationProofProps {
@@ -74,38 +75,9 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     }));
   };
 
-  const filename = "circuit";
+  const filename = "venmo_registration";
 
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
-
-  // computed state
-  const { value, error } = useAsync(async () => {
-    try {
-      const circuitInputs = await generate_input.generate_inputs(
-        Buffer.from(atob(emailFull)),
-        "1",                                                        // TODO: Update me
-        "1"                                                         // TODO: Update me
-      );
-      return circuitInputs;
-    } catch (e) {
-      return {};
-    }
-  }, [emailFull, loggedInWalletAddress]);
-
-  // local storage stuff
-  useUpdateEffect(() => {
-    if (value) {
-      if (localStorage.emailFull !== emailFull) {
-        console.info("Wrote email to localStorage");
-        localStorage.emailFull = emailFull;
-      }
-    }
-  }, [value]);
-
-  if (error) console.error(error);
-  
-  const circuitInputs = value || {};
-  // console.log("Circuit inputs:", circuitInputs);
 
   const isProofGenerationStarted = () => {
     return status !== "not-started";
@@ -132,12 +104,12 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     console.log("buffFormArray", Buffer.from(formattedArray.buffer));
     console.log("buffFormArray", formattedArray.toString());
 
-    let input = "";
+    let input: ICircuitInputs;
     try {
-      input = await generate_input.generate_inputs(
+      input = await generate_inputs(
         Buffer.from(formattedArray.buffer),
-        "1",                                                        // TODO: Update me
-        "1"                                                         // TODO: Update me
+        CircuitType.EMAIL_VENMO_REGISTRATION,
+        "1",
       );
     } catch (e) {
       console.log("Error generating input", e);
@@ -174,7 +146,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     console.log("Starting proof generation");
     // alert("Generating proof, will fail due to input");
 
-    const { proof, publicSignals } = await generateProof(input, "circuit"); 
+    const { proof, publicSignals } = await generateProof(input, "venmo_registration"); 
     console.log("Finished proof generation");
     console.timeEnd("zk-gen");
     recordTimeForActivity("finishedProving");
@@ -183,29 +155,20 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
       Set proof
     */
     setSubmitOrderProof(JSON.stringify(proof));
-
-    /*
-      Retrieve public signals
-    */
-    // let kek = publicSignals.map((x: string) => BigInt(x));
-    // let soln = packedNBytesToString(kek.slice(0, 12));
-    // let soln2 = packedNBytesToString(kek.slice(12, 147));
-    // let soln3 = packedNBytesToString(kek.slice(147, 150));
-    // setPublicSignals(`From: ${soln}\nTo: ${soln2}\nUsername: ${soln3}`);
     
     /*
       Set public signals
     */
     setSubmitOrderPublicSignals(JSON.stringify(publicSignals));
 
-    if (!circuitInputs) {
+    if (!input) {
       setStatus("error-failed-to-prove");
       return;
     }
     setDisplayMessage("Finished computing ZK proof");
     setStatus("done");
     try {
-      (window as any).cJson = JSON.stringify(circuitInputs);
+      (window as any).cJson = JSON.stringify(input);
       console.log("wrote circuit input to window.cJson. Run copy(cJson)");
     } catch (e) {
       console.error(e);
@@ -213,8 +176,8 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   };
 
   /*
-    * Components
-    */
+    Components
+  */
   function ProofGenerationStatus() {
     return (
       <>
