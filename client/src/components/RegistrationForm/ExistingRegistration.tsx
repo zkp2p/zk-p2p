@@ -13,6 +13,7 @@ import { RowBetween } from '../layouts/Row'
 import { SingleLineInput } from "../common/SingleLineInput";
 import { ThemedText } from '../../theme/text'
 import useRampRegistration from '../../hooks/useRampRegistration'
+import { ZERO_ADDRESS } from '../../helpers/constants'
 
 
 interface ExistingRegistrationProps {
@@ -27,7 +28,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
     Contexts
   */
-  const { registrationHash } = useRampRegistration();
+  const { registrationHash, deposits } = useRampRegistration();
 
   /*
     State
@@ -60,6 +61,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   
     updateVenmoId();
   }, [venmoIdInput]);
+
+  /*
+    Helpers
+  */
+  const isRegistered = registrationHash && registrationHash !== ZERO_ADDRESS;
 
   /*
     Component
@@ -99,7 +105,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               </NumberedInputContainer>
               <ReadOnlyInput
                 label="Registration Status"
-                value={ registrationHash ? "Registered" : "Not Registered" }
+                value={ isRegistered ? "Registered" : "Not Registered" }
               />
               <SingleLineInput
                 label="Verify Venmo ID"
