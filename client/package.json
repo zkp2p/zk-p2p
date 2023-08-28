@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/core": "7.12.3",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
-    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.3",
@@ -23,6 +20,7 @@
     "@types/styled-components": "^5.1.24",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
+    "@zkp2p/circuits-circom": "^0.0.2-rc1",
     "addressparser": "^1.0.1",
     "atob": "^2.1.2",
     "babel-eslint": "^10.1.0",
@@ -155,6 +153,12 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "7.12.3",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-typescript": "^7.22.11",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@types/atob": "^2.1.2",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.15.11",

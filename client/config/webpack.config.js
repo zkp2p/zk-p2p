@@ -436,7 +436,7 @@ module.exports = function (webpackEnv) {
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.
             {
-              test: /\.(js|mjs)$/,
+              test: /\.(js|mjs|ts)$/,
               exclude: /@babel(?:\/|\\{1,2})runtime/,
               loader: require.resolve('babel-loader'),
               options: {
@@ -444,12 +444,18 @@ module.exports = function (webpackEnv) {
                 configFile: false,
                 compact: false,
                 presets: [
+                  [require.resolve('@babel/preset-env')],
+                  [require.resolve('@babel/preset-typescript')],
                   [
                     require.resolve('babel-preset-react-app/dependencies'),
                     { helpers: true },
                   ],
                 ],
-                plugins: ['@babel/plugin-proposal-optional-chaining', '@babel/plugin-proposal-nullish-coalescing-operator'],
+                plugins: [
+                  '@babel/plugin-proposal-class-properties',
+                  '@babel/plugin-proposal-optional-chaining',
+                  '@babel/plugin-proposal-nullish-coalescing-operator'
+                ],
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
