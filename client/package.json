@@ -140,13 +140,11 @@
   },
   "browserslist": {
     "production": [
-      "chrome > 52",
-      "opera > 39",
-      "edge > 14",
-      "firefox > 52",
-      "safari > 10.1",
-      "not dead",
-      "not op_mini all"
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
     ],
     "development": [
       "last 1 chrome version",
