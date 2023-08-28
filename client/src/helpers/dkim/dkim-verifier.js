@@ -191,7 +191,43 @@ class DkimVerifier extends MessageParser {
           status.comment = `body hash did not verify`;
         } else {
           try {
-            let res = await getPublicKey(signatureHeader.type, `${signatureHeader.selector}._domainkey.${signatureHeader.signingDomain}`, this.minBitLength, this.resolver);
+            // let res = {
+            //   "Status": 0,
+            //   "TC": false,
+            //   "RD": true,
+            //   "RA": true,
+            //   "AD": false,
+            //   "CD": false,
+            //   "Question": [
+            //       {
+            //           "name": "yzlavq3ml4jl4lt6dltbgmnoftxftkly._domainkey.venmo.com.",
+            //           "type": 16
+            //       }
+            //   ],
+            //   "Answer": [
+            //       {
+            //           "name": "yzlavq3ml4jl4lt6dltbgmnoftxftkly._domainkey.venmo.com.",
+            //           "type": 5,
+            //           "TTL": 269,
+            //           "data": "yzlavq3ml4jl4lt6dltbgmnoftxftkly.dkim.amazonses.com."
+            //       },
+            //       {
+            //           "name": "yzlavq3ml4jl4lt6dltbgmnoftxftkly.dkim.amazonses.com.",
+            //           "type": 16,
+            //           "TTL": 2277,
+            //           "data": "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoecgrbF4KMhqGMZK02Dv2vZgGnSAo9CDpYEZCpNDRBLXkfp/0Yzp3rgngm4nuiQWbhHO457vQ37nvc88I9ANuJKa3LIodD+QtOLCjwlzH+li2A81duY4fKLHcHYO3XKw+uYXKWd+bABQqps3AQP5KxoOgQ/P1EssOnvtQYBHjWQIDAQAB"
+            //       }
+            //   ]
+            // }
+
+            // let res = { publicKey: "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoecgrbF4KMhqGMZK02Dv2vZgGnSAo9CDpYEZCpNDRBLXkfp/0Yzp3rgngm4nuiQWbhHO457vQ37nvc88I9ANuJKa3LIodD+QtOLCjwlzH+li2A81duY4fKLHcHYO3XKw+uYXKWd+bABQqps3AQP5KxoOgQ/P1EssOnvtQYBHjWQIDAQAB" };
+
+            let res = await getPublicKey(
+              signatureHeader.type,
+              `${signatureHeader.selector}._domainkey.${signatureHeader.signingDomain}`,
+              this.minBitLength,
+              this.resolver
+            );
 
             publicKey = res?.publicKey;
             rr = res?.rr;
