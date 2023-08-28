@@ -38,7 +38,11 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
         venmoMailserverKeys = _venmoMailserverKeys;
     }
 
-    // Set emailFromAddress
+    function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
+        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
+
+        emailFromAddress = bytes(_emailFromAddress);
+    }
     
     /* ============ External View Functions ============ */
     function processProof(
