@@ -920,5 +920,195 @@ describe("Ramp", () => {
         });
       });
     });
+
+    describe("#setConvenienceRewardTimePeriod", async () => {
+      let subjectConvenienceRewardTimePeriod: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectConvenienceRewardTimePeriod = ONE_DAY_IN_SECONDS;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setConvenienceRewardTimePeriod(subjectConvenienceRewardTimePeriod);
+      }
+
+      it("should set the correct reward time period", async () => {
+        await subject();
+
+        const rewardTimePeriod = await ramp.convenienceRewardTimePeriod();
+
+        expect(rewardTimePeriod).to.eq(subjectConvenienceRewardTimePeriod);
+      });
+
+      it("should emit a ConvenienceRewardTimePeriodSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "ConvenienceRewardTimePeriodSet").withArgs(subjectConvenienceRewardTimePeriod);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setMinDepositAmount", async () => {
+      let subjectMinDepositAmount: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectMinDepositAmount = usdc(10);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setMinDepositAmount(subjectMinDepositAmount);
+      }
+
+      it("should set the correct min deposit amount", async () => {
+        await subject();
+
+        const depositAmount = await ramp.minDepositAmount();
+
+        expect(depositAmount).to.eq(subjectMinDepositAmount);
+      });
+
+      it("should emit a MinDepositAmountSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "MinDepositAmountSet").withArgs(subjectMinDepositAmount);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setSendProcessor", async () => {
+      let subjectSendProcessor: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectSendProcessor = owner.address;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setSendProcessor(subjectSendProcessor);
+      }
+
+      it("should set the correct min deposit amount", async () => {
+        await subject();
+
+        const newSendProcessor = await ramp.sendProcessor();
+
+        expect(newSendProcessor).to.eq(subjectSendProcessor);
+      });
+
+      it("should emit a NewSendProcessorSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "NewSendProcessorSet").withArgs(subjectSendProcessor);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setReceiveProcessor", async () => {
+      let subjectReceiveProcessor: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectReceiveProcessor = owner.address;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setReceiveProcessor(subjectReceiveProcessor);
+      }
+
+      it("should set the correct min deposit amount", async () => {
+        await subject();
+
+        const newReceiveProcessor = await ramp.receiveProcessor();
+
+        expect(newReceiveProcessor).to.eq(subjectReceiveProcessor);
+      });
+
+      it("should emit a NewReceiveProcessorSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "NewReceiveProcessorSet").withArgs(subjectReceiveProcessor);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setRegistrationProcessor", async () => {
+      let subjectRegistrationProcessor: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectRegistrationProcessor = owner.address;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setRegistrationProcessor(subjectRegistrationProcessor);
+      }
+
+      it("should set the correct min deposit amount", async () => {
+        await subject();
+
+        const newRegistrationProcessor = await ramp.registrationProcessor();
+
+        expect(newRegistrationProcessor).to.eq(subjectRegistrationProcessor);
+      });
+
+      it("should emit a NewRegistrationProcessorSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "NewRegistrationProcessorSet").withArgs(subjectRegistrationProcessor);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
   });
 });

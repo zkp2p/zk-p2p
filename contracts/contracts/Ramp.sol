@@ -51,6 +51,12 @@ contract Ramp is Ownable {
         uint256 amount
     );
 
+    event ConvenienceRewardTimePeriodSet(uint256 convenienceRewardTimePeriod);
+    event MinDepositAmountSet(uint256 minDepositAmount);
+    event NewSendProcessorSet(address sendProcessor);
+    event NewRegistrationProcessorSet(address registrationProcessor);
+    event NewReceiveProcessorSet(address receiveProcessor);
+
     /* ============ Structs ============ */
 
     struct AccountInfo {
@@ -313,17 +319,35 @@ contract Ramp is Ownable {
     /* ============ Governance Functions ============ */
 
     // Set new SendProcessor
+    function setSendProcessor(ISendProcessor _sendProcessor) external onlyOwner {
+        sendProcessor = _sendProcessor;
+        emit NewSendProcessorSet(address(_sendProcessor));
+    }
+
     // Set new ReceiveProcessor
+    function setReceiveProcessor(IReceiveProcessor _receiveProcessor) external onlyOwner {
+        receiveProcessor = _receiveProcessor;
+        emit NewReceiveProcessorSet(address(_receiveProcessor));
+    }
+
     // Set new RegistrationProcessor
+    function setRegistrationProcessor(IRegistrationProcessor _registrationProcessor) external onlyOwner {
+        registrationProcessor = _registrationProcessor;
+        emit NewRegistrationProcessorSet(address(_registrationProcessor));
+    }
 
     function setConvenienceRewardTimePeriod(uint256 _convenienceRewardTimePeriod) external onlyOwner {
         require(_convenienceRewardTimePeriod != 0, "Convenience reward time period cannot be zero");
+
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
+        emit ConvenienceRewardTimePeriodSet(_convenienceRewardTimePeriod);
     }
 
     function setMinDepositAmount(uint256 _minDepositAmount) external onlyOwner {
         require(_minDepositAmount != 0, "Minimum deposit cannot be zero");
+
         minDepositAmount = _minDepositAmount;
+        emit MinDepositAmountSet(_minDepositAmount);
     }
 
     /* ============ External View Functions ============ */
