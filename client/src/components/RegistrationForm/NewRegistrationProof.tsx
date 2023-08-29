@@ -16,6 +16,7 @@ import { LabeledSwitch } from "../common/LabeledSwitch";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
+import { processEMLContent } from "../../hooks/useDragAndDrop";
 import { insert13Before10 } from "../../scripts/generate_input";
 import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
@@ -43,7 +44,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
   /*
    * State
    */
-  const [emailFull, setEmailFull] = useState<string>(localStorage.emailFull || "");
+  const [emailFull, setEmailFull] = useState<string>("");
 
   const [displayMessage, setDisplayMessage] = useState<string>("Generate Proof");
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
@@ -229,7 +230,14 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
                 const reader = new FileReader();
                 reader.onload = (e) => {
                   if (e.target) {
-                    setEmailFull(e.target.result as string);
+                    const rawContent = e.target.result as string;
+                    const processedContent = processEMLContent(rawContent);
+                    
+                    setEmailFull(processedContent);
+
+                    if (setIsInputModeDrag) {
+                      setIsInputModeDrag(false);
+                    }
                   }
                 };
                 reader.readAsText(file);

@@ -33,8 +33,15 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   } = useContext(ProofGenSettingsContext);
 
   // ----- transaction state -----
-  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
   const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
+  // const [submitOrderProof, setSubmitOrderProof] = useState<string>(
+  //   JSON.stringify()
+  // );
+  
+  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
+  // const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>(
+  //   JSON.stringify()
+  // );
 
   /*
    * Handlers
