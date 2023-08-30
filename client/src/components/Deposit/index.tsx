@@ -58,11 +58,9 @@ export default function Deposit() {
   
     if (selectedIntent) {
       return (
-        <OffRampContainer>
-          <OffRamp
-            handleBackClick={handleBackClickOnProof}
-          />
-        </OffRampContainer>
+        <OffRamp
+          handleBackClick={handleBackClickOnProof}
+        />
       );
     }
   
@@ -111,15 +109,4 @@ const NewPositionContainer = styled.div`
   background-color: #0D111C;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-
-const OffRampContainer = styled.div`
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);  
-  background-color: #0D111C;
-  gap: 1rem;
-  padding: 1.5rem;
-  align-self: flex-start;
-  justify-content: center;
 `;

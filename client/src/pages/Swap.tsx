@@ -40,11 +40,9 @@ export const Swap: React.FC<{}> = (props) => {
         />
         ) : (
         <OnRampContainer>
-          <Column>
-            <OnRamp
-              handleBackClick={handleBackClick}
-            />
-          </Column>
+          <OnRamp
+            handleBackClick={handleBackClick}
+          />
         </OnRampContainer>
       )}
     </PageWrapper>
@@ -62,14 +60,4 @@ const PageWrapper = styled.div`
 const OnRampContainer = styled.div`
   max-width: 660px;
   padding-top: 1.5rem;
-`;
-  
-const Column = styled.div`
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);  
-  background-color: #0D111C;
-  gap: 1rem;
-  padding: 1.5rem;
-  align-self: flex-start;
-  justify-content: center;
 `;
