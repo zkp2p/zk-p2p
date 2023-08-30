@@ -6,7 +6,7 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
-import { SubmitRegistration } from "./SubmitRegistration";
+import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
@@ -14,11 +14,11 @@ import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 
-interface NewRegistrationProps {
+interface OnRampProps {
   handleBackClick: () => void;
 }
  
-export const NewRegistration: React.FC<NewRegistrationProps> = ({
+export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick
 }) => {
   /*
@@ -63,7 +63,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         </button>
 
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          Update Registration
+          Complete On-Ramp
         </ThemedText.HeadlineSmall>
 
         <LabeledSwitch
@@ -77,15 +77,15 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
       <Body>
         <ProofGenerationForm
-          circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
-          circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
-          proofOrderId={"1"} // Arbitrary value, unused for registration
+          circuitType={CircuitType.EMAIL_VENMO_SEND}
+          circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME} // TODO: Update me
+          proofOrderId={"1"} // TODO: Update me
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />
 
         {!isProvingTypeFast && (
-          <SubmitRegistration
+          <SubmitOnRamp
             proof={proof}
             publicSignals={publicSignals}
           />

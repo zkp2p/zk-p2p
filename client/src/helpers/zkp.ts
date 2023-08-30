@@ -4,10 +4,7 @@ import { uncompressGz as uncompress } from "./uncompress";
 
 const snarkjs = require("snarkjs");
 
-// TODO: update this to be passed into downloadProofFiles
-export const loadURL = "https://s3.amazonaws.com/zk-p2p-onramp/v2/v0.0.1/";
-const compressed = true;
-// const loadURL = "/zkemail-zkey-chunks/";
+const IS_FILE_COMPRESSED = true;
 
 const zkeyExtension = ".gz"
 const zkeyExtensionRegEx = new RegExp(`\\b${zkeyExtension}$\\b`, 'i') // = /.gz$/i
@@ -22,7 +19,7 @@ async function storeArrayBuffer(keyname: string, buffer: ArrayBuffer) {
 // GET the compressed file from the remote server, then store it with localforage
 // Note that it must be stored as an uncompressed ArrayBuffer
 // and named such that filename===`${name}.zkey${a}` in order for it to be found by snarkjs.
-export async function downloadFromFilename(filename: string, compressed = false) {
+export async function downloadFromFilename(loadURL: string, filename: string, compressed = false) {
   const link = loadURL + filename;
   try {
     const zkeyResp = await fetch(link, {
@@ -48,7 +45,7 @@ export async function downloadFromFilename(filename: string, compressed = false)
   }
 }
 
-export const downloadProofFiles = async function (filename: string, onFileDownloaded: () => void) {
+export const downloadProofFiles = async function (loadURL: string, filename: string, onFileDownloaded: () => void) {
   const filePromises = [];
   for (const c of zkeySuffix) {
     const targzFilename = `${filename}.zkey${c}${zkeyExtension}`;
@@ -61,14 +58,14 @@ export const downloadProofFiles = async function (filename: string, onFileDownlo
     }
     filePromises.push(
       // downloadFromFilename(targzFilename, true).then(
-      downloadFromFilename(targzFilename, compressed).then(() => onFileDownloaded())
+      downloadFromFilename(loadURL, targzFilename, IS_FILE_COMPRESSED).then(() => onFileDownloaded())
     );
   }
   console.log(filePromises);
   await Promise.all(filePromises);
 };
 
-export const uncompressProofFiles = async function (filename: string) {
+export const uncompressProofFiles = async function (loadURL: string, filename: string) {
   const filePromises = [];
   for (const c of zkeySuffix) {
     const targzFilename = `${filename}.zkey${c}${zkeyExtension}`;
@@ -80,13 +77,13 @@ export const uncompressProofFiles = async function (filename: string) {
       console.log(`${filename}.zkey${c}${item ? "" : zkeyExtension} already found in localstorage!`);
       continue;
     }
-    filePromises.push(downloadFromFilename(targzFilename));
+    filePromises.push(downloadFromFilename(loadURL, targzFilename));
   }
   console.log(filePromises);
   await Promise.all(filePromises);
 };
 
-export async function generateProof(input: any, filename: string) {
+export async function generateProof(input: any, filename: string, loadURL: string) {
   // TODO: figure out how to generate this s.t. it passes build
   console.log("generating proof for input");
   console.log(input);

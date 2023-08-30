@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import styled from "styled-components";
 
 import SwapModal from "../components/Swap"
-import { OnRamperProof } from '../components/Swap/OnRamperProof'
-import { OnRamperSubmit } from '../components/Swap/OnRamperSubmit'
+import { OnRamp } from '../components/Swap/OnRamp'
 import { Intent } from "../helpers/types";
 import AccountContext from '../contexts/Account/AccountContext';
 
@@ -18,9 +17,6 @@ export const Swap: React.FC<{}> = (props) => {
    * State
    */
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
-
-  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
-  const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
 
   /*
    * Handlers
@@ -43,20 +39,11 @@ export const Swap: React.FC<{}> = (props) => {
           onIntentTableRowClick={handleIntentClick}
         />
         ) : (
-        <OnRampProofContainer>
-          <Column>
-            <OnRamperProof
-              loggedInWalletAddress={ethereumAddress}
-              setSubmitOrderProof={setSubmitOrderProof}
-              setSubmitOrderPublicSignals={setSubmitOrderPublicSignals}
-              handleBackClick={handleBackClick}
-            />
-            <OnRamperSubmit
-              proof={submitOrderProof}
-              publicSignals={submitOrderPublicSignals}
-            />
-          </Column>
-        </OnRampProofContainer>
+        <OnRampContainer>
+          <OnRamp
+            handleBackClick={handleBackClick}
+          />
+        </OnRampContainer>
       )}
     </PageWrapper>
   );
@@ -70,17 +57,7 @@ const PageWrapper = styled.div`
   justify-content: center;
 `;
 
-const OnRampProofContainer = styled.div`
+const OnRampContainer = styled.div`
   max-width: 660px;
   padding-top: 1.5rem;
-`;
-  
-const Column = styled.div`
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);  
-  background-color: #0D111C;
-  gap: 1rem;
-  padding: 1.5rem;
-  align-self: flex-start;
-  justify-content: center;
 `;

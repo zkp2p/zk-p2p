@@ -10,18 +10,23 @@ import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import { abi } from "../../helpers/abi/ramp.abi";
-import { contractAddresses } from "../../helpers/deployed_addresses";
+import useAccount from '../../hooks/useAccount'
 
 
-interface OnRamperSubmitProps {
+interface SubmitOnRampProps {
   proof: string;
   publicSignals: string;
 }
  
-export const OnRamperSubmit: React.FC<OnRamperSubmitProps> = ({
+export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   proof,
   publicSignals,
 }) => {
+  /*
+   * Contexts
+   */
+  const { rampAddress } = useAccount()
+
   /*
     Contract Writes
   */
@@ -43,8 +48,8 @@ export const OnRamperSubmit: React.FC<OnRamperSubmitProps> = ({
   };
 
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
-    addressOrName: contractAddresses['goerli'].ramp,
-    contractInterface: abi,
+    address: rampAddress as `0x${string}`,
+    abi: abi,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),

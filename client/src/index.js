@@ -22,7 +22,7 @@ import "./index.css";
 import App from "./App";
 
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+const { chains, publicClient } = configureChains(
   [
     hardhat,
     goerli,

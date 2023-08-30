@@ -40,7 +40,6 @@ export const RegistrationForm: React.FC = () => {
         />
       ) : (
         <NewRegistration
-          loggedInWalletAddress={ethereumAddress}
           handleBackClick={handleBackClick}
         />
       )}

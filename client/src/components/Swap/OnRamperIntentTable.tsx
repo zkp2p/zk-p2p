@@ -6,13 +6,6 @@ import { IntentRow } from "./OnRamperIntentRow";
 import { Intent } from "../../helpers/types";
 
 
-// export interface Intent {
-//   onRamper: string;
-//   deposit: string;
-//   amount: number;
-//   timestamp: number;
-// }
-
 interface IntentTableProps {
   onRowClick?: (rowData: any[]) => void;
   selectedRow?: number;
