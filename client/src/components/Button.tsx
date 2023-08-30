@@ -1,10 +1,13 @@
 import React from "react";
 import styled, { css } from 'styled-components';
 
+import Spinner from "./common/Spinner";
+
 
 interface ButtonProps {
   height?: number;
   disabled?: boolean;
+  loading?: boolean;
   onClick?: () => void;
   children?: React.ReactNode;
 }
@@ -12,15 +15,16 @@ interface ButtonProps {
 export const Button: React.FC<ButtonProps> = ({
   height = 48,
   disabled = false,
+  loading = false,
   onClick,
   children
 }) => (
   <BaseButton
     height={height}
-    disabled={disabled}
+    disabled={disabled || loading}
     onClick={onClick}
   >
-    {children}
+    {loading ? <Spinner /> : children}
   </BaseButton>
 );
 
@@ -37,29 +41,33 @@ const BaseButton = styled.button<ButtonProps>`
   font-family: 'Graphik';
   cursor: pointer;
   display: inline-block;
-  transition: all 0.2s ease-in-out;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   border: none;
 
-  &:hover {
-    background: linear-gradient(90.46deg, #eb382d 4.07%, #bc3035 98.55%);
+  &:hover:not([disabled]) {
+    background: #ca2221;
   }
 
-  &:active {
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-        linear-gradient(90.46deg, #eb382d 4.07%, #bc3035 98.55%);
+  &:active:not([disabled]) {
+    background: #bc3035;
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
 
   ${({ disabled }) => 
-    disabled 
-    ? css`
-        opacity: 0.5;
-        cursor: not-allowed;
-      `
-    : css`
-      &:not(:disabled):hover {
-        background: #ca2221;
+    disabled && css`
+      opacity: 0.5;
+      cursor: not-allowed;
+      &:hover, &:active {
+        background: #df2e2d; // Reset hover and active states for disabled buttons
+        box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
       }
+    `
+  }
+
+  ${({ loading }) => 
+    loading && css`
+      cursor: wait;
+      background: #dedede;
     `
   }
 `;
