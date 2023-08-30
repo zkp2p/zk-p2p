@@ -6,7 +6,7 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
-import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
+import { SubmitRegistration } from "./SubmitRegistration";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
@@ -85,7 +85,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         />
 
         {!isProvingTypeFast && (
-          <NewRegistrationSubmit
+          <SubmitRegistration
             proof={proof}
             publicSignals={publicSignals}
           />

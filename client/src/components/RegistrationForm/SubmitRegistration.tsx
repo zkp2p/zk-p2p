@@ -9,12 +9,12 @@ import { abi } from "../../helpers/abi/ramp.abi";
 import useAccount from '../../hooks/useAccount'
 
 
-interface ProofGenerationFormSubmitProps {
+interface SubmitRegistrationProps {
   proof: string;
   publicSignals: string;
 }
  
-export const ProofGenerationFormSubmit: React.FC<ProofGenerationFormSubmitProps> = ({
+export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   proof,
   publicSignals,
 }) => {
