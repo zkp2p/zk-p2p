@@ -5,6 +5,7 @@ import useAccount from '../../hooks/useAccount'
 import RampRegistrationContext from './RampRegistrationContext'
 import { Deposit } from './types'
 import { abi } from "../../helpers/abi/ramp.abi";
+import { ZERO_ADDRESS } from '../../helpers/constants'
 
 
 interface ProvidersProps {
@@ -23,6 +24,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   const [registrationHash, setRegistrationHash] = useState<string>("");
   const [registeredVenmoId, setRegisteredVenmoId] = useState<string>("");
   const [deposits, setDeposits] = useState<Deposit[]>([]);
+
+  /*
+    Helpers
+  */
+  // The !! operator will convert any truthy value to true and any falsy value to false.
+  const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
 
   /*
    * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
@@ -139,6 +146,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   return (
     <RampRegistrationContext.Provider
       value={{
+        isRegistered,
         registrationHash,
         registeredVenmoId,
         deposits,

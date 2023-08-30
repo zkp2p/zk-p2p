@@ -10,7 +10,6 @@ import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import useRampRegistration from '../../hooks/useRampRegistration'
-import { ZERO_ADDRESS } from '../../helpers/constants'
 
 
 interface ExistingRegistrationProps {
@@ -25,12 +24,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
     Contexts
   */
-  const { registrationHash, registeredVenmoId } = useRampRegistration();
-
-  /*
-    Helpers
-  */
-  const isRegistered = registrationHash && registrationHash !== ZERO_ADDRESS;
+  const { registrationHash, registeredVenmoId, isRegistered } = useRampRegistration();
 
   /*
     Component
