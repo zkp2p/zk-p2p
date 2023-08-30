@@ -21,6 +21,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * State
    */
   const [registrationHash, setRegistrationHash] = useState<string>("");
+  const [registeredVenmoId, setRegisteredVenmoId] = useState<string>("");
   const [deposits, setDeposits] = useState<Deposit[]>([]);
 
   /*
@@ -29,7 +30,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
 
   // function getAccountVenmoId(address _account) external view returns (bytes32) {
   const {
-    data: venmoIdHashRaw,
+    data: rampAccountRaw,
     // isLoading: isFetchVenmoIdHashLoading,
     // isError: isRegistrationDataError,
     // refetch: refetchVenmoIdHash,
@@ -71,6 +72,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
 
   // mapping(address => AccountInfo) public accounts;
+  // mapping(address => AccountInfo) public accounts;
   // mapping(bytes32 => bytes32) public venmoIdIntent;
 
   // function getDeposit(uint256 _depositId) external view returns (Deposit memory) {
@@ -80,20 +82,17 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * Hooks
    */
   useEffect(() => {
-    console.log('venmoIdHash_1');
-    console.log(venmoIdHashRaw);
-
-    if (venmoIdHashRaw) {
-      console.log('venmoIdHash_2');
-      console.log(venmoIdHashRaw);
+    console.log('rampAccountRaw_1');
+    console.log(rampAccountRaw);
   
-      if (ethereumAddress && venmoIdHashRaw) {
-        setRegistrationHash(venmoIdHashRaw as string);
-      } else {
-        setRegistrationHash("");
-      }
+    if (ethereumAddress && rampAccountRaw) {
+      setRegistrationHash(rampAccountRaw as string);
+      // setRegisteredVenmoId(rampAccountRaw[1] as string);
+    } else {
+      setRegistrationHash("");
+      // setRegisteredVenmoId("");
     }
-  }, [ethereumAddress, venmoIdHashRaw]);
+  }, [ethereumAddress, rampAccountRaw]);
 
   // useEffect(() => {
   //   console.log('refetchVenmoIdHash');
@@ -141,6 +140,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     <RampRegistrationContext.Provider
       value={{
         registrationHash,
+        registeredVenmoId,
         deposits,
       }}
     >

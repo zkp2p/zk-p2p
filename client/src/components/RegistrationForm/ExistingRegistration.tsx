@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import { CheckCircle } from 'react-feather'
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { CustomConnectButton } from "../common/ConnectButton"
-import { encryptMessage } from "../../helpers/messagEncryption";
-import { generateVenmoIdHash } from "../../helpers/venmoHash";
 import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
-import { SingleLineInput } from "../common/SingleLineInput";
 import { ThemedText } from '../../theme/text'
 import useRampRegistration from '../../hooks/useRampRegistration'
 import { ZERO_ADDRESS } from '../../helpers/constants'
@@ -28,39 +25,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
     Contexts
   */
-  const { registrationHash, deposits } = useRampRegistration();
-
-  /*
-    State
-  */
-  const persistedVenmoIdKey = `persistedVenmoId_${loggedInWalletAddress}`;
-  const [venmoIdInput, setVenmoIdInput] = useState<string>(localStorage.getItem(persistedVenmoIdKey) || "");
-  
-  const [hashedVenmoId, setHashedVenmoId] = useState<string>('');
-
-  /*
-    Hooks
-  */
-
-  useEffect(() => {
-    setVenmoIdInput('');
-  }, [loggedInWalletAddress]);
-
-  useEffect(() => {
-    // create an async function inside the effect
-    const updateVenmoId = async () => {
-      if(venmoIdInput && venmoIdInput.length > 15) {
-  
-        const hashedVenmoId = await generateVenmoIdHash(venmoIdInput);
-        setHashedVenmoId(hashedVenmoId);
-  
-        // Persist venmo id input so user doesn't have to paste it again in the future
-        localStorage.setItem(persistedVenmoIdKey, venmoIdInput);
-      }
-    }
-  
-    updateVenmoId();
-  }, [venmoIdInput]);
+  const { registrationHash, registeredVenmoId } = useRampRegistration();
 
   /*
     Helpers
@@ -107,21 +72,10 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 label="Registration Status"
                 value={ isRegistered ? "Registered" : "Not Registered" }
               />
-              <SingleLineInput
-                label="Verify Venmo ID"
-                value="645716473020416186"
-                placeholder={'1234567891011121314'}
-                onChange={(e) => {
-                  setVenmoIdInput(e.currentTarget.value);
-                }}
-              />
-              <Button
-                onClick={async () => {
-                  // TODO: Poseidon hash venmoIDInput and give feedback if it matches the existing registration
-                }}
-                >
-                Verify
-              </Button>
+              {isRegistered && <ReadOnlyInput
+                label="Venmo Profile"
+                value={registrationHash}
+              />}
             </Body>
           )}
         </Content>
