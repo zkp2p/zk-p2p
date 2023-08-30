@@ -6,8 +6,7 @@ import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../helpers/types";
-import { OffRamperProof } from './OffRamperProof'
-import { OffRamperSubmit } from './OffRamperSubmit'
+import { OffRamp } from './OffRamp'
 import AccountContext from '../../contexts/Account/AccountContext';
 
 
@@ -23,9 +22,6 @@ export default function Deposit() {
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
-
-  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
-  const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
 
   /*
     Handlers
@@ -62,18 +58,11 @@ export default function Deposit() {
   
     if (selectedIntent) {
       return (
-        <OffRampProofContainer>
-          <OffRamperProof
-            loggedInWalletAddress={ethereumAddress}
-            setSubmitOrderProof={setSubmitOrderProof}
-            setSubmitOrderPublicSignals={setSubmitOrderPublicSignals}
+        <OffRampContainer>
+          <OffRamp
             handleBackClick={handleBackClickOnProof}
           />
-          <OffRamperSubmit
-            proof={submitOrderProof}
-            publicSignals={submitOrderPublicSignals}
-          />
-        </OffRampProofContainer>
+        </OffRampContainer>
       );
     }
   
@@ -125,7 +114,7 @@ const NewPositionContainer = styled.div`
 `;
 
 
-const OffRampProofContainer = styled.div`
+const OffRampContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);  
   background-color: #0D111C;
