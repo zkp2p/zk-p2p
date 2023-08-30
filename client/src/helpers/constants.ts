@@ -10,6 +10,7 @@ export const CIRCOM_FIELD_MODULUS = 21888242871839275222246405745257275088548364
 export const MAX_HEADER_PADDED_BYTES = 1024; // NOTE: this must be the same as the first arg in the email in main args circom
 export const MAX_BODY_PADDED_BYTES = 6400; // NOTE: this must be the same as the arg to sha the remainder number of bytes in the email in main args circom
 
+
 // circom constants from main.circom / https://zkrepl.dev/?gist=30d21c7a7285b1b14f608325f172417b
 // template RSAGroupSigVerify(n, k, levels) {
 // component main { public [ modulus ] } = RSAVerify(121, 17);
@@ -18,17 +19,21 @@ export const CIRCOM_BIGINT_N = 121;
 export const CIRCOM_BIGINT_K = 17;
 export const CIRCOM_LEVELS = 30;
 
+
 // This is the string that comes right before the target string in the email. Ideally as close to the end of the email as possible.
 export const STRING_PRESELECTOR = "<!-- recipient name -->";
 
-export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
+// Misc smart contract values
+export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 export const ZERO_ADDRESS= "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 
-
-
-
+// Proving key paths
+export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p-onramp/v2/v0.0.1/";
+export const REGISTRATION_KEY_FILE_NAME = "venmo_registration";
+export const SEND_KEY_FILE_NAME = "venmo_send";
+export const RECEIVE_KEY_FILE_NAME = "venmo_receive";
 
 
 // Placeholder in proof gen text area for example

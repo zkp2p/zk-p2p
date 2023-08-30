@@ -10,28 +10,35 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
-import { NumberedStep } from "../common/NumberedStep";
-import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
-import { LabeledSwitch } from "../common/LabeledSwitch";
+import { NumberedStep } from "./NumberedStep";
+import { DragAndDropTextBox } from "./DragAndDropTextBox";
+import { LabeledSwitch } from "./LabeledSwitch";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { processEMLContent } from "../../hooks/useDragAndDrop";
 import { insert13Before10 } from "../../scripts/generate_input";
-import { PLACEHOLDER_EMAIL_BODY } from "../../helpers/constants";
+import {
+  PLACEHOLDER_EMAIL_BODY,
+  HOSTED_FILES_PATH,
+} from "../../helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
 
 
-interface NewRegistrationProofProps {
-  loggedInWalletAddress: string;
-  setSubmitOrderProof: (proof: string) => void;
-  setSubmitOrderPublicSignals: (publicSignals: string) => void;
+interface ProofGenerationFormProps {
+  circuitType: CircuitType;
+  circuitRemoteFilePath: string;
+  proofOrderId: string;
+  setProof: (proof: string) => void;
+  setPublicSignals: (publicSignals: string) => void;
 }
  
-export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
-  loggedInWalletAddress,
-  setSubmitOrderProof,
-  setSubmitOrderPublicSignals,
+export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
+  circuitType,
+  circuitRemoteFilePath,
+  proofOrderId,
+  setProof,
+  setPublicSignals,
 }) => {
   /*
    * Contexts
@@ -76,8 +83,6 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     }));
   };
 
-  const filename = "venmo_registration";
-
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
 
   const isProofGenerationStarted = () => {
@@ -98,7 +103,9 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     setDisplayMessage("Generating proof...");
     setStatus("generating-input");
 
+    console.log("emailFull at handleGenerateProofClick", emailFull);
     const formattedArray = await insert13Before10(Uint8Array.from(Buffer.from(emailFull)));
+    console.log('formattedArray', formattedArray);
 
     // Due to a quirk in carriage return parsing in JS, we need to manually edit carriage returns to match DKIM parsing
     console.log("formattedArray", formattedArray);
@@ -109,8 +116,8 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     try {
       input = await generate_inputs(
         Buffer.from(formattedArray.buffer),
-        CircuitType.EMAIL_VENMO_REGISTRATION,
-        "1",
+        circuitType,
+        proofOrderId,
       );
     } catch (e) {
       console.log("Error generating input", e);
@@ -120,10 +127,6 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     }
     console.log("Generated input:", JSON.stringify(input));
 
-    // Insert input structuring code here
-    // const input = buildInput(pubkey, msghash, sig);
-    // console.log(JSON.stringify(input, (k, v) => (typeof v == "bigint" ? v.toString() : v), 2));
-
     /*
       Download proving files
     */
@@ -131,7 +134,7 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     recordTimeForActivity("startedDownloading");
     setDisplayMessage("Downloading compressed proving files... (this may take a few minutes)");
     setStatus("downloading-proof-files");
-    await downloadProofFiles(filename, () => {
+    await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {
       setDownloadProgress((p) => p + 1);
     });
     console.timeEnd("zk-dl");
@@ -142,12 +145,12 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     */
     console.time("zk-gen");
     recordTimeForActivity("startedProving");
-    setDisplayMessage("Starting proof generation... (this will take 6-10 minutes and ~5GB RAM)");
+    setDisplayMessage("Generating Proof (this will take 6-10 minutes. Don't close this window)");
     setStatus("generating-proof");
     console.log("Starting proof generation");
-    // alert("Generating proof, will fail due to input");
+    alert("Generating proof, will fail due to input");
 
-    const { proof, publicSignals } = await generateProof(input, "venmo_registration"); 
+    const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath, HOSTED_FILES_PATH);
     console.log("Finished proof generation");
     console.timeEnd("zk-gen");
     recordTimeForActivity("finishedProving");
@@ -155,13 +158,16 @@ export const NewRegistrationProof: React.FC<NewRegistrationProofProps> = ({
     /*
       Set proof
     */
-    setSubmitOrderProof(JSON.stringify(proof));
+    setProof(JSON.stringify(proof));
     
     /*
       Set public signals
     */
-    setSubmitOrderPublicSignals(JSON.stringify(publicSignals));
+    setPublicSignals(JSON.stringify(publicSignals));
 
+    /*
+      Update status and rendering
+    */
     if (!input) {
       setStatus("error-failed-to-prove");
       return;

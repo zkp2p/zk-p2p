@@ -1,27 +1,24 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
+import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { NewRegistrationProof } from "./NewRegistrationProof";
+import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { NewRegistrationSubmit } from "./NewRegistrationSubmit";
 import { LabeledSwitch } from "../common/LabeledSwitch";
+import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
+import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
 
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
-import {
-  PROVING_TYPE_TOOLTIP
-} from "../../helpers/tooltips";
-
 
 interface NewRegistrationProps {
-  loggedInWalletAddress: string;
   handleBackClick: () => void;
 }
  
 export const NewRegistration: React.FC<NewRegistrationProps> = ({
-  loggedInWalletAddress,
   handleBackClick
 }) => {
   /*
@@ -33,13 +30,13 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   } = useContext(ProofGenSettingsContext);
 
   // ----- transaction state -----
-  const [submitOrderProof, setSubmitOrderProof] = useState<string>('');
-  // const [submitOrderProof, setSubmitOrderProof] = useState<string>(
+  const [proof, setProof] = useState<string>('');
+  // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
   
-  const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>('');
-  // const [submitOrderPublicSignals, setSubmitOrderPublicSignals] = useState<string>(
+  const [publicSignals, setPublicSignals] = useState<string>('');
+  // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
   // );
 
@@ -79,16 +76,18 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       </TitleCenteredRow>
 
       <Body>
-        <NewRegistrationProof
-          loggedInWalletAddress={loggedInWalletAddress}
-          setSubmitOrderProof={setSubmitOrderProof}
-          setSubmitOrderPublicSignals={setSubmitOrderPublicSignals}
+        <ProofGenerationForm
+          circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
+          circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
+          proofOrderId={"1"} // Arbitrary value, unused for registration
+          setProof={setProof}
+          setPublicSignals={setPublicSignals}
         />
 
         {!isProvingTypeFast && (
           <NewRegistrationSubmit
-            proof={submitOrderProof}
-            publicSignals={submitOrderPublicSignals}
+            proof={proof}
+            publicSignals={publicSignals}
           />
         )}
       </Body>
