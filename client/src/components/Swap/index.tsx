@@ -5,6 +5,8 @@ import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
 import { IntentTable } from './OnRamperIntentTable'
+import { Button } from '../Button'
+import { CustomConnectButton } from "../common/ConnectButton"
 
 
 export type SwapQuote = {
@@ -13,13 +15,17 @@ export type SwapQuote = {
 };
 
 interface SwapModalProps {
+  loggedInWalletAddress: string;
   onIntentTableRowClick?: (rowData: any[]) => void;
 }
 
 const SwapModal: React.FC<SwapModalProps> = ({
+  loggedInWalletAddress,
   onIntentTableRowClick
 }: SwapModalProps) => {
-
+  /*
+    State
+  */
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ fiatIn: '', tokenOut: '' });
 
   /*
@@ -86,15 +92,17 @@ const SwapModal: React.FC<SwapModalProps> = ({
             placeholder="0"
             readOnly={true}
           />
-          <ButtonContainer>
-            <MainButton
-              type="button"
-              onClick={(event) => handleAdd(event)}
-              disabled={!isFormComplete()}
+          {!loggedInWalletAddress ? (
+            <CustomConnectButton
+              fullWidth={true}
+            />
+          ) : (
+            <CTAButton
+              disabled={false}
             >
-              Connect Wallet
-            </MainButton>
-          </ButtonContainer>
+              Create Order
+            </CTAButton>
+          )}
         </MainContentWrapper>
       </SwapModalContainer>
 
@@ -138,34 +146,15 @@ const MainContentWrapper = styled.div`
   justify-content: center;
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const MainButton = styled.button`
+const CTAButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
+  border-radius: 16px !important;
   padding: 1rem;
-  width: 100%;
   font-size: 20px;
   font-weight: 550;
   transition: all 75ms;
-
-  background-color: #212529;
-  color: #F8F9FA;
-  
-  &:hover {
-    background-color: #343A40;
-    color: #E9ECEF;
-  }
-
-  &:disabled {
-    background-color: #df2e2d;
-    color: #F8F9FA;
-  }
 `;
 
 export default SwapModal;

@@ -59,7 +59,7 @@ const AddressContainer = styled.div`
 
 const AddressLabel = styled.label`
   display: flex;
-  font-size: 16px;
+  font-size: 15px;
   color: #FFFFFF;
   align-items: center;
 `;

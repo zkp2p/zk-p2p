@@ -5,10 +5,12 @@ import { Button } from '../Button';
 
 
 interface CustomConnectButtonProps {
+  fullWidth?: boolean;
   height?: number;
 }
 
 export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
+  fullWidth = false,
   height = 48
 }) => {
 
@@ -37,6 +39,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
           <div
             {...(!ready && {
               'style': {
+                width: '100%',
                 opacity: 0,
                 pointerEvents: 'none',
                 userSelect: 'none',
@@ -46,7 +49,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
             {(() => {
               if (!connected) {
                 return (
-                  <Button onClick={openConnectModal} height={height}>
+                  <Button
+                    fullWidth={fullWidth}
+                    onClick={openConnectModal}
+                    height={height}
+                  >
                     Connect Wallet
                   </Button>
                 );

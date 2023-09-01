@@ -5,6 +5,7 @@ import Spinner from "./common/Spinner";
 
 
 interface ButtonProps {
+  fullWidth?: boolean;
   height?: number;
   disabled?: boolean;
   loading?: boolean;
@@ -13,6 +14,7 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({
+  fullWidth = false,
   height = 48,
   disabled = false,
   loading = false,
@@ -20,6 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
   children
 }) => (
   <BaseButton
+    fullWidth={fullWidth}
     height={height}
     disabled={disabled || loading}
     onClick={onClick}
@@ -29,11 +32,12 @@ export const Button: React.FC<ButtonProps> = ({
 );
 
 const BaseButton = styled.button<ButtonProps>`
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   background: #df2e2d;
   box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
   border-radius: 24px;
-  padding: 8px 24px;
+  padding: 8px ${({ fullWidth }) => (fullWidth ? '0' : '24px')};
   text-align: center;
   color: white;
   font-weight: 700;

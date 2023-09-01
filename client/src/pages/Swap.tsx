@@ -36,6 +36,7 @@ export const Swap: React.FC<{}> = (props) => {
     <PageWrapper>
       {!selectedIntent ? (
         <SwapModal
+          loggedInWalletAddress={ethereumAddress}
           onIntentTableRowClick={handleIntentClick}
         />
         ) : (
