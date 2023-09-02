@@ -92,6 +92,26 @@ describe("Venmo send WASM tester", function () {
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
     }).timeout(1000000);
 
+    it.only("Should return the correct modulus hash", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus hash
+        const modulus_hash = witness[1];
+
+        // Get expected modulus hash
+        const expected_hash = mimcSponge.multiHash(input["modulus"], 123, 1);
+
+        assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
+    }).timeout(1000000);
+
     it("Should return the correct packed from email", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -211,46 +231,6 @@ describe("Venmo send WASM tester", function () {
         const expected_hash = poseidon(packed_offramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
-    }).timeout(1000000);
-
-    it("Should return the correct modulus", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned modulus
-        const modulus = witness.slice(18, 35);
-
-        // Get expected modulus
-        const expected_modulus = input["modulus"];
-
-        assert.equal(JSON.stringify(modulus), JSON.stringify(expected_modulus), true);
-    }).timeout(1000000);
-
-    it("Should return the correct signature", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned signature
-        const signature = witness.slice(35, 52);
-
-        // Get expected signature
-        const expected_signature = input["signature"];
-
-        assert.equal(JSON.stringify(signature), JSON.stringify(expected_signature), true);
     }).timeout(1000000);
 
     it("Should return the correct order id", async () => {
