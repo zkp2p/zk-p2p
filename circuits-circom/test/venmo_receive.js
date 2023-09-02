@@ -16,21 +16,21 @@ const fs = require('fs');
 // TODO: move helpers into utils, update to use TS
 function buffer2bitArray(b) {
     const res = [];
-    for (let i=0; i<b.length; i++) {
-        for (let j=0; j<8; j++) {
-            res.push((b[i] >> (7-j) &1));
+    for (let i = 0; i < b.length; i++) {
+        for (let j = 0; j < 8; j++) {
+            res.push((b[i] >> (7 - j) & 1));
         }
     }
     return res;
 }
 
 function bitArray2buffer(a) {
-    const len = Math.floor((a.length -1 )/8)+1;
+    const len = Math.floor((a.length - 1) / 8) + 1;
     const b = new Buffer.alloc(len);
 
-    for (let i=0; i<a.length; i++) {
-        const p = Math.floor(i/8);
-        b[p] = b[p] | (Number(a[i]) << ( 7 - (i%8)  ));
+    for (let i = 0; i < a.length; i++) {
+        const p = Math.floor(i / 8);
+        b[p] = b[p] | (Number(a[i]) << (7 - (i % 8)));
     }
     return b;
 }
@@ -64,7 +64,7 @@ describe("Venmo receive WASM tester", function () {
     let cir;
     let poseidon;
 
-    before( async() => {
+    before(async () => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_receive.circom"),
             {
@@ -104,15 +104,15 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed from email
-        // Indexes 1 to 6 represent the packed from email (30 bytes \ 7)
-        const packed_from_email = witness.slice(1, 6);
+        // Indexes 2 to 7 represent the packed from email (30 bytes \ 7)
+        const packed_from_email = witness.slice(2, 7);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
         const regex_start_sub_array = input["in_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
-        
+
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(from_email_array, 7, 30);
 
@@ -137,15 +137,15 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed timestamp
-        // Indexes 6 to 11 represent the packed timestamp (30 bytes \ 7)
-        const packed_timestamp = witness.slice(6, 11);
+        // Indexes 7 to 12 represent the packed timestamp (30 bytes \ 7)
+        const packed_timestamp = witness.slice(7, 12);
 
         // Get expected packed timestamp
         const regex_start = Number(input["email_timestamp_idx"]);
         const regex_start_sub_array = input["in_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("59"); // Look for `;` to end the timestamp which is 59 in ascii
         const timestamp_array = regex_start_sub_array.slice(0, regex_end);
-        
+
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(timestamp_array, 7, 30);
 
@@ -170,15 +170,15 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed onramper_id
-        // Indexes 11 to 16 represent the packed onramper_id (30 bytes \ 7)
-        const packed_onramper_id = witness.slice(11, 16);
+        // Indexes 12 to 17 represent the packed onramper_id (30 bytes \ 7)
+        const packed_onramper_id = witness.slice(12, 17);
 
         // Get expected packed onramper_id
         const regex_start = Number(input["venmo_payer_id_idx"]);
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the onramper_id which is 38 in ascii
         const onramper_id_array = regex_start_sub_array.slice(0, regex_end);
-        
+
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(onramper_id_array, 7, 30);
 
@@ -203,11 +203,11 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned hashed onramper_id
-        // Indexes 16 represents the hashed onramper_id
-        const hashed_onramper_id = witness[16];
+        // Indexes 17 represents the hashed onramper_id
+        const hashed_onramper_id = witness[17];
 
         // Get expected hashed onramper_id
-        const packed_onramper_id = witness.slice(11, 16);
+        const packed_onramper_id = witness.slice(12, 17);
         const expected_hash = poseidon(packed_onramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
@@ -225,8 +225,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned modulus
-        const modulus = witness.slice(17, 34);
-        
+        const modulus = witness.slice(18, 35);
+
         // Get expected modulus
         const expected_modulus = input["modulus"];
 
@@ -245,8 +245,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned signature
-        const signature = witness.slice(34, 51);
-        
+        const signature = witness.slice(35, 52);
+
         // Get expected signature
         const expected_signature = input["signature"];
 
@@ -265,8 +265,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[51];
-        
+        const order_id = witness[52];
+
         // Get expected modulus
         const expected_order_id = input["order_id"];
 
