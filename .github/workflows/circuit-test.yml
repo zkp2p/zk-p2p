@@ -26,6 +26,4 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
-    - run: cd circuits-circom
-    - run: yarn install
-    - run: yarn test
+    - run: cd circuits-circom && yarn install && yarn test
