@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
+        cache: 'npm'
     - run: cd circuits-circom
-    - run: yarn ci
-    - run: yarn test
+    - run: npm ci
+    - run: npm test
