@@ -7,10 +7,7 @@ include "./regexes/venmo_payee_id.circom";
 include "./regexes/venmo_amount.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
-    assert(max_header_bytes % 64 == 0);
-    assert(max_body_bytes % 64 == 0);
     assert(n * k > 1024); // constraints for 1024 bit RSA
-    assert(n < (255 \ 2)); // we want a multiplication to fit into a circom signal
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -26,7 +23,19 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Length of the body after precomputed SHA
     signal input in_body_len_padded_bytes;
 
-    EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0)(in_padded, modulus, signature, in_len_padded_bytes, body_hash_idx, precomputed_sha, in_body_padded, in_body_len_padded_bytes);
+    signal output modulus_hash;
+
+    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
+    EV.in_padded <== in_padded;
+    EV.pubkey <== modulus;
+    EV.signature <== signature;
+    EV.in_len_padded_bytes <== in_len_padded_bytes;
+    EV.body_hash_idx <== body_hash_idx;
+    EV.precomputed_sha <== precomputed_sha;
+    EV.in_body_padded <== in_body_padded;
+    EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
+
+    modulus_hash <== EV.pubkey_hash;
 
     // FROM HEADER REGEX: 736,553 constraints
     // TODO: we set max len to 30 for all public outputs below for ease of use in the verifier contract for now
