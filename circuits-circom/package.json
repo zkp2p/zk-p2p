@@ -21,7 +21,10 @@
   "scripts": {
     "gen-input": "npx tsx ./scripts/generate_input.ts",
     "test": "mocha",
-    "build": "tsc"
+    "build": "tsc",
+    "compile-receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
+    "compile-send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
+    "compile-registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
