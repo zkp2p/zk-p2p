@@ -182,7 +182,7 @@ describe("Venmo receive WASM tester", function () {
         });
     }).timeout(1000000);
 
-    it.only("Should return the correct hashed onramper id", async () => {
+    it("Should return the correct hashed onramper id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
@@ -200,13 +200,10 @@ describe("Venmo receive WASM tester", function () {
         // Get expected hashed onramper_id
         const packed_onramper_id = witness.slice(12, 17);
         const expected_hash = poseidon(packed_onramper_id);
-
-        const res = await poseidonContract["poseidon(uint256[5])"](packed_onramper_id);
-        console.log(poseidon.F.e(res.toString()))
-        console.log(expected_hash)
-        console.log(poseidon.F.e(hashed_onramper_id))
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_onramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     }).timeout(1000000);
 
     it("Should return the correct order id", async () => {

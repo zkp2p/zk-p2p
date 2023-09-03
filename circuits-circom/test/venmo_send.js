@@ -5,7 +5,10 @@ const Scalar = require("ffjavascript").Scalar;
 exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(exports.p);
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
+const { createCode, generateABI } = require("circomlibjs").poseidonContract;
 const { chunkArray, bytesToPacked } = require("./utils.js");
+const { ethers } = require("ethers");
+const ganache = require("ganache");
 
 const assert = chai.assert;
 
@@ -18,6 +21,8 @@ describe("Venmo send WASM tester", function () {
 
     let cir;
     let poseidon;
+    let account;
+    let poseidonContract;
 
     before(async () => {
         cir = await wasm_tester(
@@ -31,6 +36,15 @@ describe("Venmo send WASM tester", function () {
         );
 
         poseidon = await buildPoseidon();
+        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(5),
+            createCode(5),
+            account
+          );
+    
+        poseidonContract = await C6.deploy();
     });
 
     it("Should generate witnesses", async () => {
@@ -184,8 +198,10 @@ describe("Venmo send WASM tester", function () {
         // Get expected hashed offramper_id
         const packed_offramper_id = witness.slice(12, 17);
         const expected_hash = poseidon(packed_offramper_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_offramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     }).timeout(1000000);
 
     it("Should return the correct order id", async () => {

@@ -5,7 +5,10 @@ const Scalar = require("ffjavascript").Scalar;
 exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(exports.p);
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
+const { createCode, generateABI } = require("circomlibjs").poseidonContract;
 const { chunkArray, bytesToPacked } = require("./utils.js");
+const { ethers } = require("ethers");
+const ganache = require("ganache");
 
 const assert = chai.assert;
 
@@ -18,8 +21,10 @@ describe("Venmo Registration", function () {
 
     let cir;
     let poseidon;
+    let account;
+    let poseidonContract;
 
-    before(async () => {
+    before( async() => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_registration.circom"),
             {
@@ -31,6 +36,15 @@ describe("Venmo Registration", function () {
         );
 
         poseidon = await buildPoseidon();
+        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(5),
+            createCode(5),
+            account
+          );
+    
+        poseidonContract = await C6.deploy();
     });
 
 
@@ -152,7 +166,9 @@ describe("Venmo Registration", function () {
         // Get expected hashed actor_id
         const packed_actor_id = witness.slice(7, 12);
         const expected_hash = poseidon(packed_actor_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_actor_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     }).timeout(1000000);
 });
