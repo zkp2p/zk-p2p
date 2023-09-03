@@ -94,7 +94,7 @@ describe("Venmo receive WASM tester", function () {
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
     }).timeout(1000000);
 
-    it.only("Should return the correct modulus hash", async () => {
+    it("Should return the correct modulus hash", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
