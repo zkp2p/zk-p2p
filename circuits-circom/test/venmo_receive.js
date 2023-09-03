@@ -6,7 +6,10 @@ exports.p = Scalar.fromString("2188824287183927522224640574525727508854836440041
 const Fr = new F1Field(exports.p);
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
 const buildMimcSponge = require("circomlibjs").buildMimcSponge;
+const { createCode, generateABI } = require("circomlibjs").poseidonContract;
 const { chunkArray, bytesToPacked } = require("./utils.js");
+const { ethers } = require("ethers");
+const ganache = require("ganache");
 
 const assert = chai.assert;
 
@@ -19,6 +22,8 @@ describe("Venmo receive WASM tester", function () {
 
     let cir;
     let poseidon;
+    let account;
+    let poseidonContract;
 
     before(async () => {
         cir = await wasm_tester(
@@ -33,6 +38,15 @@ describe("Venmo receive WASM tester", function () {
 
         poseidon = await buildPoseidon();
         mimcSponge = await buildMimcSponge();
+        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(5),
+            createCode(5),
+            account
+          );
+    
+        poseidonContract = await C6.deploy();
     });
 
     it("Should generate witnesses", async () => {
@@ -168,7 +182,7 @@ describe("Venmo receive WASM tester", function () {
         });
     }).timeout(1000000);
 
-    it("Should return the correct hashed onramper id", async () => {
+    it.only("Should return the correct hashed onramper id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
@@ -186,6 +200,11 @@ describe("Venmo receive WASM tester", function () {
         // Get expected hashed onramper_id
         const packed_onramper_id = witness.slice(12, 17);
         const expected_hash = poseidon(packed_onramper_id);
+
+        const res = await poseidonContract["poseidon(uint256[5])"](packed_onramper_id);
+        console.log(poseidon.F.e(res.toString()))
+        console.log(expected_hash)
+        console.log(poseidon.F.e(hashed_onramper_id))
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     }).timeout(1000000);
