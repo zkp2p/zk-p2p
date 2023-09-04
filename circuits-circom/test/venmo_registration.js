@@ -94,6 +94,26 @@ describe("Venmo Registration", function () {
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
     }).timeout(1000000);
 
+    it("Should return the correct modulus hash", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned modulus hash
+        const modulus_hash = witness[1];
+
+        // Get expected modulus hash
+        const expected_hash = mimcSponge.multiHash(input["modulus"], 123, 1);
+
+        assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
+    }).timeout(1000000);
+
     it("Should return the correct packed from email", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -106,8 +126,8 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned packed from email
-        // Indexes 1 to 6 represent the packed from email (30 bytes \ 7)
-        const packed_from_email = witness.slice(1, 6);
+        // Indexes 2 to 7 represent the packed from email (30 bytes \ 7)
+        const packed_from_email = witness.slice(2, 7);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
@@ -139,8 +159,8 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned packed offramper_id
-        // Indexes 6 to 11 represent the packed actor_id (30 bytes \ 7)
-        const packed_actor_id = witness.slice(6, 11);
+        // Indexes 7 to 12 represent the packed actor_id (30 bytes \ 7)
+        const packed_actor_id = witness.slice(7, 12);
 
         // Get expected packed offramper_id
         const regex_start = Number(input["venmo_actor_id_idx"]);
@@ -172,53 +192,13 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned hashed actor_id
-        // Indexes 11 represents the hashed actor_id
-        const hashed_actor_id = witness[11];
+        // Indexes 12 represents the hashed actor_id
+        const hashed_actor_id = witness[12];
 
         // Get expected hashed actor_id
-        const packed_actor_id = witness.slice(6, 11);
+        const packed_actor_id = witness.slice(7, 12);
         const expected_hash = poseidon(packed_actor_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
-    }).timeout(1000000);
-
-    it("Should return the correct modulus", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned modulus
-        const modulus = witness.slice(12, 29);
-
-        // Get expected modulus
-        const expected_modulus = input["modulus"];
-
-        assert.equal(JSON.stringify(modulus), JSON.stringify(expected_modulus), true);
-    }).timeout(1000000);
-
-    it("Should return the correct signature", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned signature
-        const signature = witness.slice(29, 46);
-
-        // Get expected signature
-        const expected_signature = input["signature"];
-
-        assert.equal(JSON.stringify(signature), JSON.stringify(expected_signature), true);
     }).timeout(1000000);
 });

@@ -1,7 +1,7 @@
 {
   "name": "@zkp2p/circuits-circom",
   "version": "0.0.2-rc1",
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@3.6.3",
   "description": "Circom circuits for ZKP2P",
   "contributors": [
     "richardliang",
@@ -11,7 +11,7 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@zk-email/circuits": "^1.1.0",
+    "@zk-email/circuits": "^2.0.0",
     "@zk-email/helpers": "^1.0.3",
     "buffer": "^6.0.3",
     "circomlib": "^2.0.5",
@@ -21,7 +21,10 @@
   "scripts": {
     "gen-input": "npx tsx ./scripts/generate_input.ts",
     "test": "mocha",
-    "build": "tsc"
+    "build": "tsc",
+    "compile-receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
+    "compile-send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
+    "compile-registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
@@ -55,8 +58,8 @@
     "puppeteer": "18.1",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "selenium-webdriver": "^4.8.1",
-    "ts-node-dev": "^2.0.0",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6",
     "util": "^0.12.5",
     "vite-plugin-commonjs": "^0.7.1",

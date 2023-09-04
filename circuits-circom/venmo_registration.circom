@@ -6,10 +6,7 @@ include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
 
 template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
-    assert(max_header_bytes % 64 == 0);
-    assert(max_body_bytes % 64 == 0);
     assert(n * k > 1024); // constraints for 1024 bit RSA
-    assert(n < (255 \ 2)); // we want a multiplication to fit into a circom signal
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -25,7 +22,19 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Length of the body after precomputed SHA
     signal input in_body_len_padded_bytes;
 
-    EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0)(in_padded, modulus, signature, in_len_padded_bytes, body_hash_idx, precomputed_sha, in_body_padded, in_body_len_padded_bytes);
+    signal output modulus_hash;
+
+    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
+    EV.in_padded <== in_padded;
+    EV.pubkey <== modulus;
+    EV.signature <== signature;
+    EV.in_len_padded_bytes <== in_len_padded_bytes;
+    EV.body_hash_idx <== body_hash_idx;
+    EV.precomputed_sha <== precomputed_sha;
+    EV.in_body_padded <== in_body_padded;
+    EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
+
+    modulus_hash <== EV.pubkey_hash;
 
     // FROM HEADER REGEX: 736,553 constraints
     // TODO: we set max len to 30 for all public outputs below for ease of use in the verifier contract for now
@@ -66,13 +75,10 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output packed_actor_id_hashed <== hash.out;
 }
 
-// In circom, all output signals of the main component are public (and cannot be made private), the input signals of the main component are private if not stated otherwise using the keyword public as above. The rest of signals are all private and cannot be made public.
-// This makes modulus, order_id and signature public. Signature being public means it allows the mailserver to trace who the offender is.
-
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
 // * max_body_bytes = 6400 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ modulus, signature ] } = VenmoRegistration(1024, 6400, 121, 17, 7);
+component main { public [] } = VenmoRegistration(1024, 6400, 121, 17, 7);
