@@ -5,6 +5,7 @@ const Scalar = require("ffjavascript").Scalar;
 exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(exports.p);
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
+const buildMimcSponge = require("circomlibjs").buildMimcSponge;
 const { createCode, generateABI } = require("circomlibjs").poseidonContract;
 const { chunkArray, bytesToPacked } = require("./utils.js");
 const { ethers } = require("ethers");
@@ -21,6 +22,7 @@ describe("Venmo send WASM tester", function () {
 
     let cir;
     let poseidon;
+    let mimcSponge;
     let account;
     let poseidonContract;
 
@@ -36,15 +38,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         poseidon = await buildPoseidon();
-        const provider = new ethers.providers.Web3Provider(ganache.provider());
-        account = provider.getSigner(0);
-        const C6 = new ethers.ContractFactory(
-            generateABI(5),
-            createCode(5),
-            account
-          );
-    
-        poseidonContract = await C6.deploy();
+        mimcSponge = await buildMimcSponge();
     });
 
     it("Should generate witnesses", async () => {
@@ -181,6 +175,16 @@ describe("Venmo send WASM tester", function () {
     }).timeout(1000000);
 
     it("Should return the correct hashed offramper id", async () => {
+        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(5),
+            createCode(5),
+            account
+        );
+    
+        poseidonContract = await C6.deploy();
+
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
@@ -216,7 +220,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[52];
+        const order_id = witness[18];
 
         // Get expected modulus
         const expected_order_id = input["order_id"];
