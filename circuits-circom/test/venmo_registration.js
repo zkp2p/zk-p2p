@@ -1,11 +1,15 @@
 const chai = require("chai");
 const path = require("path");
-const crypto = require("crypto");
 const F1Field = require("ffjavascript").F1Field;
 const Scalar = require("ffjavascript").Scalar;
 exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(exports.p);
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
+const buildMimcSponge = require("circomlibjs").buildMimcSponge;
+const { createCode, generateABI } = require("circomlibjs").poseidonContract;
+const { chunkArray, bytesToPacked } = require("./utils.js");
+const { ethers } = require("ethers");
+const ganache = require("ganache");
 
 const assert = chai.assert;
 
@@ -13,59 +17,16 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-
-// TODO: move helpers into utils, update to use TS
-function buffer2bitArray(b) {
-    const res = [];
-    for (let i = 0; i < b.length; i++) {
-        for (let j = 0; j < 8; j++) {
-            res.push((b[i] >> (7 - j) & 1));
-        }
-    }
-    return res;
-}
-
-function bitArray2buffer(a) {
-    const len = Math.floor((a.length - 1) / 8) + 1;
-    const b = new Buffer.alloc(len);
-
-    for (let i = 0; i < a.length; i++) {
-        const p = Math.floor(i / 8);
-        b[p] = b[p] | (Number(a[i]) << (7 - (i % 8)));
-    }
-    return b;
-}
-
-function bytesToPacked(arr) {
-    // Convert into bigint from string
-    let arrInt = arr.map(BigInt);
-    let n = arrInt.length;
-    let out = BigInt(0);
-    for (let k = 0; k < n; k++) {
-        out += arrInt[k] * BigInt(2 ** (8 * k));  // little endian
-    }
-    return out;
-}
-
-function chunkArray(arr, chunkSize, length) {
-    let chunks = [];
-    for (let i = 0; i < length; i += chunkSize) {
-        let chunk = arr.slice(i, i + chunkSize);
-        if (chunk.length < chunkSize) {
-            chunk = chunk.concat(new Array(chunkSize - chunk.length).fill('0'));
-        }
-        chunks.push(chunk);
-    }
-    return chunks;
-}
-
 describe("Venmo Registration", function () {
     this.timeout(100000);
 
     let cir;
     let poseidon;
+    let mimcSponge;
+    let account;
+    let poseidonContract;
 
-    before(async () => {
+    before( async() => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_registration.circom"),
             {
@@ -77,6 +38,7 @@ describe("Venmo Registration", function () {
         );
 
         poseidon = await buildPoseidon();
+        mimcSponge = await buildMimcSponge();
     });
 
 
@@ -181,6 +143,16 @@ describe("Venmo Registration", function () {
     }).timeout(1000000);
 
     it("Should return the correct hashed actor id", async () => {
+        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(5),
+            createCode(5),
+            account
+          );
+    
+        poseidonContract = await C6.deploy();
+        
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
@@ -198,7 +170,9 @@ describe("Venmo Registration", function () {
         // Get expected hashed actor_id
         const packed_actor_id = witness.slice(7, 12);
         const expected_hash = poseidon(packed_actor_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_actor_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     }).timeout(1000000);
 });

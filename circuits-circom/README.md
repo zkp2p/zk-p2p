@@ -116,30 +116,18 @@ Circuits that use the Venmo regexes:
 ### Compilation
 
 1. Create circuit.env `cp circuit.env.example circuit.env`
-2. Edit circuit.env to point to the correct paths. Example:
-
-```
-CIRCUIT_NAME=venmo_receive
-BUILD_DIR="../build/$CIRCUIT_NAME"
-PTAU_DIR="../.."
-PTAU=23
-RAPIDSNARK_PATH="./../../rapidsnark/build/prover"
-```
-
-3. `cd` into `scripts` and run `./1_compile.sh`. This will generate the R1CS SYM and WASM files
+2. Run `yarn compile:TYPE` where `TYPE` is `send`, `receive`, `registration`. This will generate the R1CS SYM and WASM files.
 
 ### Generate witness
 
 1. Copy an eml file into `circuits-circom/emls` for a given email type. Venmo send and receive emails are different. Make sure you are downloading the original email file. For example you can follow the following steps in [Gmail](https://support.google.com/mail/answer/29436?hl=en#zippy=%2Cgmail). Name your Venmo receive email `venmo_receive.eml` and Venmo send email `venmo_send.eml`.
-2. In `circuits-circom` directory, run `yarn gen-input EML_FILE_NAME EMAIL_TYPE` where EML_FILE_NAME is the name of the eml file in `circuits-circom/emls` and `EMAIL_TYPE` is the type of the email. This will generate an input file with the name `input_EML_FILE_NAME.json`.
-  a. Example: `yarn gen-input venmo_receive EMAIL_VENMO_RECEIVE`
-  b. NOTE: for registration, all 3 types of Venmo emails above work. Example: `yarn gen-input venmo_complete EMAIL_VENMO_REGISTRATION`
-3. `cd` into `scripts` and run `./2_gen_witness.sh` which will generate the witness needed to generate the proof
-4. For development purposes, you only need to run up to this step
+2. In `circuits-circom` directory, run `yarn gen-input:TYPE` where `TYPE` is either `send`, `receive` or one of three registration emails. This will generate an input file with the name `input_EML_FILE_NAME.json`.
+  a. NOTE: for registration, all 3 types of Venmo emails above work: `reg-complete` (registration using a Complete Payment email), `reg-send` (registration using a Send Payment email), `reg-receive` (registration using a Receive Payment email). 
+3. For development purposes, you only need to run up to this step
 
 ### Run tests
-1. Inside the `circuits-circom` directory, first complete the `Compilation` and `Generate Witness` steps above for all the circuits. Tests will use the `input_EML_FILE_NAME.json`, `.wasm`, and `.r1cs` files.
-2. Run `yarn test`
+1. Inside the `circuits-circom` directory, first complete the `Compilation` and generate input steps above for all the circuits. Tests will use the `input_EML_FILE_NAME.json`, `.wasm`, and `.r1cs` files.
+2. Run `yarn test`. This will generate witnesses in the `wtns` files prior to running tests.
 
 ### Proving Key Generation
 

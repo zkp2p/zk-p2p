@@ -15,16 +15,22 @@
     "@zk-email/helpers": "^1.0.3",
     "buffer": "^6.0.3",
     "circomlib": "^2.0.5",
+    "ethers": "^5.5.1",
     "process": "^0.11.10",
     "snarkjs": "git+https://github.com/vb7401/snarkjs.git#24981febe8826b6ab76ae4d76cf7f9142919d2b8"
   },
   "scripts": {
     "gen-input": "npx tsx ./scripts/generate_input.ts",
+    "gen-input:receive": "npx tsx ./scripts/generate_input.ts venmo_receive EMAIL_VENMO_RECEIVE",
+    "gen-input:send": "npx tsx ./scripts/generate_input.ts venmo_send EMAIL_VENMO_SEND",
+    "gen-input:reg-complete": "npx tsx ./scripts/generate_input.ts venmo_complete EMAIL_VENMO_REGISTRATION",
+    "gen-input:reg-send": "npx tsx ./scripts/generate_input.ts venmo_send EMAIL_VENMO_REGISTRATION",
+    "gen-input:reg-receive": "npx tsx ./scripts/generate_input.ts venmo_receive EMAIL_VENMO_REGISTRATION",
     "test": "mocha",
     "build": "tsc",
-    "compile-receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
-    "compile-send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
-    "compile-registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd .."
+    "compile:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
+    "compile:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
+    "compile:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
@@ -45,6 +51,7 @@
     "browserstack-node-sdk": "^1.6.1",
     "chai": "^4.3.7",
     "circom_tester": "^0.0.19",
+    "ganache": "^7.3.0",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
