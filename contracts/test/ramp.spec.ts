@@ -23,7 +23,7 @@ import {
 import { Blockchain, ether, usdc } from "@utils/common";
 import { BigNumber } from "ethers";
 import { ZERO, ZERO_BYTES32, ADDRESS_ZERO, ONE } from "@utils/constants";
-import { calculateIntentHash } from "@utils/protocolUtils";
+import { calculateIntentHash, calculatePackedVenmoId, calculateVenmoIdHash } from "@utils/protocolUtils";
 import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
 const expect = getWaffleExpect();
@@ -56,6 +56,8 @@ describe("Ramp", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
+    const poseidonContract = await deployer.deployPoseidon();
+
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
     receiveProcessor = await deployer.deployVenmoReceiveProcessorMock();
     registrationProcessor = await deployer.deployVenmoRegistrationProcessorMock();
@@ -66,6 +68,7 @@ describe("Ramp", () => {
     ramp = await deployer.deployRamp(
       owner.address,
       usdcToken.address,
+      poseidonContract.address,
       receiveProcessor.address,
       registrationProcessor.address,
       sendProcessor.address,
@@ -120,7 +123,7 @@ describe("Ramp", () => {
     beforeEach(async () => {
       subjectSignals = new Array<BigNumber>(45).fill(ZERO);
       subjectSignals[0] = BigNumber.from(1);
-      subjectSignals[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+      subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
       subjectA = [ZERO, ZERO];
       subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
@@ -135,19 +138,22 @@ describe("Ramp", () => {
     it("should register the caller", async () => {
       await subject();
 
-      const offRamperVenmoId = await ramp.accounts(subjectCaller.address);
-      expect(offRamperVenmoId).to.eq(subjectSignals[1]);
+      const offRamperVenmoIdHash = await ramp.accounts(subjectCaller.address);
+      expect(offRamperVenmoIdHash).to.eq(subjectSignals[1]);
     });
 
     it("should emit an AccountRegistered event", async () => {
-      await expect(subject()).to.emit(ramp, "AccountRegistered").withArgs(subjectCaller.address, ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+      await expect(subject()).to.emit(ramp, "AccountRegistered").withArgs(
+        subjectCaller.address, 
+        subjectSignals[1]
+      );
     });
 
     describe("when the caller is already registered", async () => {
       beforeEach(async () => {
         await subject();
 
-        subjectSignals[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoThree"));
+        subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("3"));
       });
 
       it("should revert", async () => {
@@ -164,19 +170,19 @@ describe("Ramp", () => {
 
       const signalsOffRamp = new Array<BigNumber>(45).fill(ZERO);
       signalsOffRamp[0] = ZERO;
-      signalsOffRamp[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+      signalsOffRamp[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
       const signalsOnRamp = new Array<BigNumber>(45).fill(ZERO);
       signalsOnRamp[0] = ZERO;
-      signalsOnRamp[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+      signalsOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
       const signalsOnRampTwo = new Array<BigNumber>(45).fill(ZERO);
       signalsOnRampTwo[0] = ZERO;
-      signalsOnRampTwo[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoThree"));
+      signalsOnRampTwo[1] = BigNumber.from(await calculateVenmoIdHash("3"));
 
       const signalsMaliciousOnRamp = new Array<BigNumber>(45).fill(ZERO);
       signalsMaliciousOnRamp[0] = ZERO;
-      signalsMaliciousOnRamp[1] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+      signalsMaliciousOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
       await ramp.connect(offRamper.wallet).register(
         _a,
@@ -209,14 +215,14 @@ describe("Ramp", () => {
     });
 
     describe("#offRamp", async () => {
-      let subjectVenmoId: string;
+      let subjectVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectConvenienceFee: BigNumber;
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        subjectVenmoId = ethers.utils.formatBytes32String("proofOfVenmo");
+        subjectVenmoId = calculatePackedVenmoId("1");
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(101);
         subjectConvenienceFee = usdc(2);
@@ -244,6 +250,7 @@ describe("Ramp", () => {
         const deposit = await ramp.getDeposit(ZERO);
 
         expect(deposit.depositor).to.eq(subjectCaller.address);
+        expect(JSON.stringify(deposit.packedVenmoId)).to.eq(JSON.stringify(subjectVenmoId));
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
         expect(deposit.conversionRate).to.eq(conversionRate);
@@ -263,7 +270,7 @@ describe("Ramp", () => {
 
         await expect(subject()).to.emit(ramp, "DepositReceived").withArgs(
           ZERO,
-          subjectVenmoId,
+          await calculateVenmoIdHash("1"),
           subjectDepositAmount,
           conversionRate,
           subjectConvenienceFee
@@ -309,7 +316,7 @@ describe("Ramp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          ethers.utils.formatBytes32String("proofOfVenmo"),
+          await calculatePackedVenmoId("1"),
           usdc(100),
           usdc(101),
           usdc(2)
@@ -317,7 +324,7 @@ describe("Ramp", () => {
 
         const conversionRate = usdc(100).mul(ether(1)).div(usdc(101));
 
-        subjectVenmoId = ethers.utils.formatBytes32String("proofOfVenmoTwo");
+        subjectVenmoId = await calculateVenmoIdHash("2");
         subjectDepositId = ZERO;
         subjectAmount = usdc(50);
         subjectCaller = onRamper;
@@ -386,7 +393,7 @@ describe("Ramp", () => {
 
           await blockchain.increaseTimeAsync(timeJump);
 
-          subjectVenmoId = ethers.utils.formatBytes32String("proofOfVenmoThree");
+          subjectVenmoId = await calculateVenmoIdHash("3");
           subjectAmount = usdc(60);
           subjectCaller = onRamperTwo;
         });
@@ -475,7 +482,7 @@ describe("Ramp", () => {
         beforeEach(async () => {
           await subject();
 
-          subjectVenmoId = ethers.utils.formatBytes32String("proofOfVenmoTwo");
+          subjectVenmoId = await calculateVenmoIdHash("2");
           subjectCaller = maliciousOnRamper;
         });
 
@@ -507,13 +514,13 @@ describe("Ramp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          ethers.utils.formatBytes32String("proofOfVenmo"),
+          await calculatePackedVenmoId("1"),
           usdc(100),
           usdc(101),
           usdc(2)
         );
 
-        const venmoId = ethers.utils.formatBytes32String("proofOfVenmoTwo");
+        const venmoId = await calculateVenmoIdHash("2");
         depositHash = ZERO;
 
         await ramp.connect(onRamper.wallet).signalIntent(venmoId, depositHash, usdc(50));
@@ -524,7 +531,7 @@ describe("Ramp", () => {
         subjectSignals = new Array<BigNumber>(51).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
         subjectSignals[1] = BigNumber.from(1);
-        subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+        subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("2"));
         subjectSignals[3] = BigNumber.from(intentHash);
 
         subjectA = [ZERO, ZERO];
@@ -620,7 +627,7 @@ describe("Ramp", () => {
 
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+          subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
         });
 
         it("should revert", async () => {
@@ -651,7 +658,7 @@ describe("Ramp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          ethers.utils.formatBytes32String("proofOfVenmo"),
+          await calculatePackedVenmoId("1"),
           usdc(100),
           usdc(101),
           usdc(2)
@@ -659,7 +666,7 @@ describe("Ramp", () => {
         
         depositId = (await ramp.depositCounter()).sub(1);
 
-        const venmoId = ethers.utils.formatBytes32String("proofOfVenmoTwo");
+        const venmoId = await calculateVenmoIdHash("2");
         await ramp.connect(onRamper.wallet).signalIntent(venmoId, depositId, usdc(50));
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
@@ -668,7 +675,7 @@ describe("Ramp", () => {
         subjectSignals = new Array<BigNumber>(51).fill(ZERO);
         subjectSignals[0] = usdc(50);
         subjectSignals[1] = BigNumber.from(1);
-        subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmo"));
+        subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
         subjectSignals[3] = BigNumber.from(intentHash);
 
         subjectA = [ZERO, ZERO];
@@ -739,7 +746,7 @@ describe("Ramp", () => {
 
       describe("when the offRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectSignals[2] = BigNumber.from(ethers.utils.formatBytes32String("proofOfVenmoTwo"));
+          subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("2"));
         });
 
         it("should revert", async () => {
@@ -754,14 +761,14 @@ describe("Ramp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          ethers.utils.formatBytes32String("proofOfVenmo"),
+          await calculatePackedVenmoId("1"),
           usdc(100),
           usdc(101),
           usdc(2)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
-          ethers.utils.formatBytes32String("proofOfVenmo"),
+          await calculatePackedVenmoId("1"),
           usdc(50),
           usdc(51),
           usdc(2)
@@ -826,7 +833,7 @@ describe("Ramp", () => {
       describe("when there is an outstanding intent", async () => {
         beforeEach(async () => {
           await ramp.connect(onRamper.wallet).signalIntent(
-            ethers.utils.formatBytes32String("proofOfVenmoTwo"),
+            await calculateVenmoIdHash("2"),
             subjectDepositIds[0],
             usdc(50)
           );

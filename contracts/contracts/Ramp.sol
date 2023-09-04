@@ -5,6 +5,7 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
 
+import { IPoseidon } from "./interfaces/IPoseidon.sol";
 import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
@@ -66,6 +67,7 @@ contract Ramp is Ownable {
 
     struct Deposit {
         address depositor;
+        uint256[5] packedVenmoId;
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
         uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
@@ -86,6 +88,7 @@ contract Ramp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
+    IPoseidon public immutable poseidon;
     IReceiveProcessor public receiveProcessor;
     IRegistrationProcessor public registrationProcessor;
     ISendProcessor public sendProcessor;
@@ -103,6 +106,7 @@ contract Ramp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
+        IPoseidon _poseidon,
         IReceiveProcessor _receiveProcessor,
         IRegistrationProcessor _registrationProcessor,
         ISendProcessor _sendProcessor,
@@ -112,11 +116,13 @@ contract Ramp is Ownable {
         Ownable()
     {
         usdc = _usdc;
+        poseidon = _poseidon;
         receiveProcessor = _receiveProcessor;
         registrationProcessor = _registrationProcessor;
         sendProcessor = _sendProcessor;
         minDepositAmount = _minDepositAmount;
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
+
         transferOwnership(_owner);
     }
 
@@ -150,18 +156,20 @@ contract Ramp is Ownable {
      * previous deposits. Every deposit has it's own unique identifier. Usermust approve the contract to transfer the deposit amount
      * of USDC.
      *
-     * @param _venmoId          The venmo id of the account owner
+     * @param _packedVenmoId    The packed venmo id of the account owner (we pack for easy use with poseidon)
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
     function offRamp(
-        bytes32 _venmoId,
+        uint256[5] memory _packedVenmoId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
         uint256 _convenienceFee
     ) external {
-        require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
+        bytes32 _venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
+
+        require(accounts[msg.sender].venmoIdHash == _venmoIdHash, "Sender must be the account owner");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
 
@@ -173,6 +181,7 @@ contract Ramp is Ownable {
 
         deposits[depositId] = Deposit({
             depositor: msg.sender,
+            packedVenmoId: _packedVenmoId,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
@@ -180,7 +189,7 @@ contract Ramp is Ownable {
             intentHashes: new bytes32[](0)
         });
 
-        emit DepositReceived(depositId, _venmoId, _depositAmount, conversionRate, _convenienceFee);
+        emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate, _convenienceFee);
     }
 
     // Do we need to pass in venmoId here??

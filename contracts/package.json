@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2",
+    "circomlibjs": "^0.1.7",
     "ethereum-waffle": "^4.0.10"
   },
   "_moduleAliases": {
