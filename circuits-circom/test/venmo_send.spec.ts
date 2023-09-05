@@ -1,15 +1,15 @@
-const chai = require("chai");
-const path = require("path");
-const F1Field = require("ffjavascript").F1Field;
-const Scalar = require("ffjavascript").Scalar;
-exports.p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
-const Fr = new F1Field(exports.p);
-const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
-const buildMimcSponge = require("circomlibjs").buildMimcSponge;
-const { createCode, generateABI } = require("circomlibjs").poseidonContract;
-const { chunkArray, bytesToPacked } = require("./utils.js");
-const { ethers } = require("ethers");
-const ganache = require("ganache");
+import chai from "chai";
+import path from "path";
+import { F1Field, Scalar } from "ffjavascript";
+import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
+import { chunkArray, bytesToPacked, packNullifier } from "./utils";
+import { ethers } from "ethers";
+import ganache from "ganache";
+import { partialSha } from "@zk-email/helpers/src/shaHash";
+
+const { createCode, generateABI } = poseidonContract;
+export const p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+const Fr = new F1Field(p);
 
 const assert = chai.assert;
 
@@ -18,7 +18,7 @@ const wasm_tester = require("circom_tester").wasm;
 const fs = require('fs');
 
 describe("Venmo send WASM tester", function () {
-    this.timeout(100000);
+    jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
     let poseidon;
@@ -26,7 +26,7 @@ describe("Venmo send WASM tester", function () {
     let account;
     let poseidonContract;
 
-    before(async () => {
+    beforeAll(async () => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_send.circom"),
             {
@@ -53,7 +53,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
-    }).timeout(1000000);
+    });
 
     it("Should return the correct modulus hash", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
@@ -73,7 +73,7 @@ describe("Venmo send WASM tester", function () {
         const expected_hash = mimcSponge.multiHash(input["modulus"], 123, 1);
 
         assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
-    }).timeout(1000000);
+    });
 
     it("Should return the correct packed from email", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
@@ -106,7 +106,7 @@ describe("Venmo send WASM tester", function () {
             // Check packed email is the same
             assert.equal(expectedValue, packed_from_email[i], true);
         });
-    }).timeout(1000000);
+    });
 
     it("Should return the correct packed amount", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
@@ -139,7 +139,7 @@ describe("Venmo send WASM tester", function () {
             // Check packed amount is the same
             assert.equal(expectedValue, packed_amount[i], true);
         });
-    }).timeout(1000000);
+    });
 
     it("Should return the correct packed offramper id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
@@ -172,7 +172,7 @@ describe("Venmo send WASM tester", function () {
             // Check packed offramper_id is the same
             assert.equal(expectedValue, packed_offramper_id[i], true);
         });
-    }).timeout(1000000);
+    });
 
     it("Should return the correct hashed offramper id", async () => {
         const provider = new ethers.providers.Web3Provider(ganache.provider());
@@ -206,7 +206,27 @@ describe("Venmo send WASM tester", function () {
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
-    }).timeout(1000000);
+    });
+
+    it("Should return the correct nullifier", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned nullifier
+        const nullifier = witness[18];
+
+        // Get expected nullifier
+        const shaOut = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
+        const expected_nullifier = packNullifier(shaOut);
+        assert.equal(JSON.stringify(nullifier), JSON.stringify(expected_nullifier), true);
+    });
 
     it("Should return the correct order id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
@@ -220,11 +240,11 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[18];
+        const order_id = witness[19];
 
         // Get expected modulus
         const expected_order_id = input["order_id"];
 
         assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
-    }).timeout(1000000);
+    });
 });

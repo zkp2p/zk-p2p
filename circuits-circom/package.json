@@ -26,7 +26,7 @@
     "gen-input:reg-complete": "npx tsx ./scripts/generate_input.ts venmo_complete EMAIL_VENMO_REGISTRATION",
     "gen-input:reg-send": "npx tsx ./scripts/generate_input.ts venmo_send EMAIL_VENMO_REGISTRATION",
     "gen-input:reg-receive": "npx tsx ./scripts/generate_input.ts venmo_receive EMAIL_VENMO_REGISTRATION",
-    "test": "mocha",
+    "test": "jest",
     "build": "tsc",
     "compile:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
     "compile:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
@@ -65,6 +65,7 @@
     "puppeteer": "18.1",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "selenium-webdriver": "^4.8.1",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6",
@@ -72,5 +73,22 @@
     "vite-plugin-commonjs": "^0.7.1",
     "vite-plugin-ngmi-polyfill": "^0.0.2",
     "vite-plugin-node-polyfills": "^0.8.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "testEnvironment": "node",
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@zk-email)/)"
+    ]
   }
 }
