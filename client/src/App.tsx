@@ -13,6 +13,7 @@ import { TopNav } from "./components/layouts/TopNav";
 import { BottomNav } from "./components/layouts/BottomNav";
 
 import AccountProvider from "./contexts/Account/AccountProvider";
+import BalancesProvider from "./contexts/Balances/BalancesProvider";
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
 import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
 
@@ -54,11 +55,13 @@ interface ProvidersProps {
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <AccountProvider>
-      <RampRegistrationProvider>
-        <ProofGenSettingsProvider>
-          { children }
-        </ProofGenSettingsProvider>
-      </RampRegistrationProvider>
+      <BalancesProvider>
+        <RampRegistrationProvider>
+          <ProofGenSettingsProvider>
+            { children }
+          </ProofGenSettingsProvider>
+        </RampRegistrationProvider>
+      </BalancesProvider>
     </AccountProvider>
   )
 }
