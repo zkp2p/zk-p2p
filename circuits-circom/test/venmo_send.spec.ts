@@ -175,7 +175,15 @@ describe("Venmo send WASM tester", function () {
     });
 
     it("Should return the correct hashed offramper id", async () => {
-        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        const provider = new ethers.providers.Web3Provider(
+            ganache.provider({ 
+                logging: {
+                logger: {
+                    log: () => {} // Turn off logging
+                }
+                }
+            })
+        );
         account = provider.getSigner(0);
         const C6 = new ethers.ContractFactory(
             generateABI(5),
@@ -221,11 +229,13 @@ describe("Venmo send WASM tester", function () {
 
         // Get returned nullifier
         const nullifier = witness[18];
+        const modulus_hash = witness[1];
 
         // Get expected nullifier
-        const shaOut = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
-        const expected_nullifier = packNullifier(shaOut);
-        assert.equal(JSON.stringify(nullifier), JSON.stringify(expected_nullifier), true);
+        const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
+        const packed_nullifier = packNullifier(sha_out);
+        const expected_nullifier = poseidon([modulus_hash, packed_nullifier])
+        assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
     it("Should return the correct order id", async () => {

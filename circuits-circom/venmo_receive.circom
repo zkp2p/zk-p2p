@@ -93,8 +93,9 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output packed_onramper_id_hashed <== hash.out;
 
     // NULLIFIER
+    // Use modulus_hash as commitment to a random value
     signal output email_nullifier;
-    email_nullifier <== EmailNullifier()(header_hash);
+    email_nullifier <== EmailNullifier()(header_hash, modulus_hash);
 
     // The following signals do not take part in any computation, but tie the proof to a specific order_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability

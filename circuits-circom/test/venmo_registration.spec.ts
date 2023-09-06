@@ -142,7 +142,15 @@ describe("Venmo Registration", function () {
     });
 
     it("Should return the correct hashed actor id", async () => {
-        const provider = new ethers.providers.Web3Provider(ganache.provider());
+        const provider = new ethers.providers.Web3Provider(
+            ganache.provider({ 
+                logging: {
+                logger: {
+                    log: () => {} // Turn off logging
+                }
+                }
+            })
+        );
         account = provider.getSigner(0);
         const C6 = new ethers.ContractFactory(
             generateABI(5),
