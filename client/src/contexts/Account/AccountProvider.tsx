@@ -37,10 +37,18 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     if (chain) {
       setNetwork(chain.network);
-      setRampAddress(contractAddresses[chain.network].ramp);
-      setUsdcAddress(contractAddresses[chain.network].fusdc);
+
+      let contractsForNetwork = contractAddresses[chain.network];
+      if (contractsForNetwork) {
+        setRampAddress(contractsForNetwork.ramp);
+        setUsdcAddress(contractsForNetwork.fusdc);
+      } else {
+        setRampAddress("");
+        setUsdcAddress("");
+      }
     } else {
       setNetwork("");
+
       setRampAddress("");
       setUsdcAddress("");
     }
