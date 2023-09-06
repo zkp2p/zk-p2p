@@ -93,6 +93,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output packed_offramper_id_hashed <== hash.out;
 
     // NULLIFIER
+    // Use modulus_hash as commitment to a random value
     signal output email_nullifier;
     signal cm_rand <== HashSignGenRand(n, k)(signature);
     email_nullifier <== EmailNullifier()(header_hash, cm_rand);
