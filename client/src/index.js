@@ -29,14 +29,14 @@ const { chains, publicClient } = configureChains(
     optimism
   ],
   [
-    alchemyProvider({ apiKey: '7OLNUah9mWjItVi7QiJWrlc6xVVdSGn3' }), // { apiKey: process.env.REACT_APP_ALCHEMY_API_KEY }
+    alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
     publicProvider()
   ]
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'ZK P2P On-Ramp',
-  projectId: '90b743df4b69334a4d02e3245fa7b79b',
+  projectId: process.env.WALLET_CONNECT_PROJECT_ID,
   chains
 });
 
