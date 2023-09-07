@@ -6,6 +6,7 @@ import RampRegistrationContext from './RampRegistrationContext'
 import { Deposit } from './types'
 import { abi } from "../../helpers/abi/ramp.abi";
 import { ZERO_ADDRESS } from '../../helpers/constants'
+import { fromUsdc } from '../../helpers/units'
 
 
 interface ProvidersProps {
@@ -23,6 +24,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
   const [registrationHash, setRegistrationHash] = useState<string>("");
   const [registeredVenmoId, setRegisteredVenmoId] = useState<string>("");
+  const [minimumDepositAmount, setMinimumDepositAmount] = useState<number>(0);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
 
   /*
@@ -38,9 +40,9 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   // function getAccountVenmoId(address _account) external view returns (bytes32) {
   const {
     data: rampAccountRaw,
-    // isLoading: isFetchVenmoIdHashLoading,
+    // isLoading: isFetchRampAccountLoading,
     // isError: isRegistrationDataError,
-    // refetch: refetchVenmoIdHash,
+    // refetch: refetchRampAccount,
   } = useContractRead({
     address: rampAddress as `0x${string}`,
     abi: abi,
@@ -61,6 +63,18 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     args: [ethereumAddress],
   })
 
+  // uint256 public minDepositAmount;
+  const {
+    data: minimumDepositAmountRaw,
+    // isLoading: isMinimumDepositAmountLoading,
+    // isError: isMinimumDepositAmountError,
+    // refetch: refetchDeposits,
+  } = useContractRead({
+    address: rampAddress as `0x${string}`,
+    abi: abi,
+    functionName: 'minDepositAmount',
+  })
+
   // mapping(bytes32 => Intent) public intents;
   // const {
   //   data: intentRaw,
@@ -79,7 +93,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
 
   // mapping(address => AccountInfo) public accounts;
-  // mapping(address => AccountInfo) public accounts;
   // mapping(bytes32 => bytes32) public venmoIdIntent;
 
   // function getDeposit(uint256 _depositId) external view returns (Deposit memory) {
@@ -93,11 +106,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     console.log(rampAccountRaw);
   
     if (ethereumAddress && rampAccountRaw) {
-      setRegistrationHash(rampAccountRaw as string);
-      // setRegisteredVenmoId(rampAccountRaw[1] as string);
+      const rampAccountProcessed = rampAccountRaw as string;
+      console.log('rampAccountProcessed');
+      console.log(rampAccountProcessed);
+      setRegistrationHash(rampAccountProcessed);
     } else {
       setRegistrationHash("");
-      // setRegisteredVenmoId("");
     }
   }, [ethereumAddress, rampAccountRaw]);
 
@@ -143,12 +157,27 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     }
   }, [ethereumAddress, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
 
+  useEffect(() => {
+    console.log('minDepositAmountRaw_1');
+    console.log(minimumDepositAmountRaw);
+  
+    if (ethereumAddress && minimumDepositAmountRaw) {
+      const minimumDepositAmountProcessed = fromUsdc(minimumDepositAmountRaw.toString()).toNumber();
+      console.log('minimumDepositAmountProcessed');
+      console.log(minimumDepositAmountProcessed);
+      setMinimumDepositAmount(minimumDepositAmountProcessed);
+    } else {
+      setMinimumDepositAmount(0);
+    }
+  }, [ethereumAddress, minimumDepositAmountRaw]);
+
   return (
     <RampRegistrationContext.Provider
       value={{
         isRegistered,
         registrationHash,
         registeredVenmoId,
+        minimumDepositAmount,
         deposits,
       }}
     >

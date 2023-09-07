@@ -28,8 +28,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   */
 
   //
-  // legacy: onRamp(uint256 _orderId, uint256 _offRamper, VenmoId, bytes calldata _proof)
-  // new:    onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
+  // register(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
   //
   const reformatProofForChain = (proof: string) => {
     return [
@@ -43,7 +42,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
     ];
   };
 
-  const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
+  const { config: writeSubmitRegistrationConfig } = usePrepareContractWrite({
     address: rampAddress as `0x${string}`,
     abi: abi,
     functionName: 'register',
@@ -57,9 +56,9 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   });
 
   const {
-    isLoading: isWriteCompleteOrderLoading,
-    write: writeCompleteOrder
-  } = useContractWrite(writeCompleteOrderConfig);
+    isLoading: isSubmitRegistrationLoading,
+    write: writeSubmitRegistration
+  } = useContractWrite(writeSubmitRegistrationConfig);
 
   return (
     <Container>
@@ -78,12 +77,13 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
         />
         
         <Button
-          disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
+          disabled={proof.length === 0 || publicSignals.length === 0 || isSubmitRegistrationLoading}
+          loading={isSubmitRegistrationLoading}
           onClick={async () => {
-            writeCompleteOrder?.();
+            writeSubmitRegistration?.();
           }}
         >
-          Submit
+          Submit Registration
         </Button>
       </Body>
     </Container>

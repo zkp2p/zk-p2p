@@ -4,6 +4,7 @@ import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 import useAccount from '../../hooks/useAccount'
 import BalancesContext from './BalancesContext'
 import BigNumber from '../../helpers/bignumber'
+import { fromUsdc } from '../../helpers/units'
 
 
 interface ProvidersProps {
@@ -84,7 +85,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(ethBalanceRaw);
   
     if (ethereumAddress && ethBalanceRaw) {
-      setEthBalance(new BigNumber(ethBalanceRaw.formatted));
+      const ethBalanceProcessed = ethBalanceRaw.formatted;
+      console.log('ethBalanceProcessed');
+      console.log(ethBalanceProcessed);
+      setEthBalance(new BigNumber(ethBalanceProcessed));
     } else {
       setEthBalance(new BigNumber(0));
     }
@@ -95,7 +99,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(usdcBalanceRaw);
   
     if (ethereumAddress && usdcBalanceRaw) {
-      setUsdcBalance(new BigNumber(usdcBalanceRaw.formatted));
+      const usdcBalanceRawProcessed = usdcBalanceRaw.formatted;
+      console.log('usdcBalanceRawProcessed');
+      console.log(usdcBalanceRawProcessed);
+      setUsdcBalance(new BigNumber(usdcBalanceRawProcessed));
     } else {
       setUsdcBalance(new BigNumber(0));
     }
@@ -106,7 +113,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(usdcApprovalToRampRaw);
   
     if (ethereumAddress && usdcApprovalToRampRaw) {
-      setUsdcApprovalToRamp(new BigNumber(usdcApprovalToRampRaw.toString()));
+      const usdcApprovalToRampProcessed = fromUsdc(usdcApprovalToRampRaw.toString());
+      console.log('usdcApprovalToRampProcessed');
+      console.log(usdcApprovalToRampProcessed);
+      setUsdcApprovalToRamp(new BigNumber(usdcApprovalToRampProcessed));
     } else {
       setUsdcApprovalToRamp(new BigNumber(0));
     }
