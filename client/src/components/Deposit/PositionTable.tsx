@@ -102,8 +102,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
             </ErrorContainer>
-          // ) : !isRegistered ? (
-          ) : true ? (
+          ) : !isRegistered ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -114,7 +113,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               <Button
                 onClick={navigateToRegistrationHandler}
               >
-                Go to Registration
+                Complete Registration
               </Button>
             </ErrorContainer>
           ) : positions.length === 0 ? (
