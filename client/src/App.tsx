@@ -15,8 +15,9 @@ import { BottomNav } from "@components/layouts/BottomNav";
 import AccountProvider from "./contexts/Account/AccountProvider";
 import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
 import BalancesProvider from "./contexts/Balances/BalancesProvider";
-import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
+import RampProvider  from './contexts/Ramp/RampProvider';
 import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
+import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
 
 import "./App.css";
 import "./styles.css";
@@ -58,11 +59,13 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
     <AccountProvider>
       <SmartContractsProvider>
         <BalancesProvider>
-          <RampRegistrationProvider>
-            <ProofGenSettingsProvider>
-              { children }
-            </ProofGenSettingsProvider>
-          </RampRegistrationProvider>
+          <RampProvider>
+            <RampRegistrationProvider>
+              <ProofGenSettingsProvider>
+                { children }
+              </ProofGenSettingsProvider>
+            </RampRegistrationProvider>
+          </RampProvider>
         </BalancesProvider>
       </SmartContractsProvider>
     </AccountProvider>

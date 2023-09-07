@@ -5,7 +5,6 @@ import RampRegistrationContext from './RampRegistrationContext'
 import { Deposit } from './types'
 import { abi } from "../../helpers/abi/ramp.abi";
 import { ZERO_ADDRESS } from '../../helpers/constants'
-import { fromUsdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -26,7 +25,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
   const [registrationHash, setRegistrationHash] = useState<string>("");
   const [registeredVenmoId, setRegisteredVenmoId] = useState<string>("");
-  const [minimumDepositAmount, setMinimumDepositAmount] = useState<number>(0);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
 
   /*
@@ -63,18 +61,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     abi: abi,
     functionName: 'getAccountDeposits',
     args: [loggedInEthereumAddress],
-  })
-
-  // uint256 public minDepositAmount;
-  const {
-    data: minimumDepositAmountRaw,
-    // isLoading: isMinimumDepositAmountLoading,
-    // isError: isMinimumDepositAmountError,
-    // refetch: refetchDeposits,
-  } = useContractRead({
-    address: rampAddress,
-    abi: abi,
-    functionName: 'minDepositAmount',
   })
 
   // mapping(bytes32 => Intent) public intents;
@@ -159,27 +145,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     }
   }, [isLoggedIn, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
 
-  useEffect(() => {
-    console.log('minDepositAmountRaw_1');
-    console.log(minimumDepositAmountRaw);
-  
-    if (isLoggedIn && minimumDepositAmountRaw) {
-      const minimumDepositAmountProcessed = fromUsdc(minimumDepositAmountRaw.toString()).toNumber();
-      console.log('minimumDepositAmountProcessed');
-      console.log(minimumDepositAmountProcessed);
-      setMinimumDepositAmount(minimumDepositAmountProcessed);
-    } else {
-      setMinimumDepositAmount(0);
-    }
-  }, [isLoggedIn, minimumDepositAmountRaw]);
-
   return (
     <RampRegistrationContext.Provider
       value={{
         isRegistered,
         registrationHash,
         registeredVenmoId,
-        minimumDepositAmount,
         deposits,
       }}
     >
