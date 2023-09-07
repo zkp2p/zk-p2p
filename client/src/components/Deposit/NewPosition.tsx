@@ -92,6 +92,18 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     return '';
   }
 
+  const convenienceFeeInputErrorString = (): string => {
+    if (!depositAmount || !convenienceFee) {
+      return '';
+    }
+
+    if (convenienceFee > depositAmount) {
+      return `Convenience fee cannot be greater than deposit amount`;
+    }
+
+    return '';
+  }
+
   return (
     <Container>
       <Column>
@@ -132,6 +144,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             label="Convenience Fee"
             value={convenienceFee === 0 ? '' : convenienceFee.toString()}
             placeholder={'5'}
+            error={convenienceFeeInputErrorString()}
             onChange={(e) => {
               setConvenienceFee(e.currentTarget.value);
             }}
