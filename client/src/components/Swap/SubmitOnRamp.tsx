@@ -9,7 +9,6 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
-import { abi } from "../../helpers/abi/ramp.abi";
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -25,7 +24,7 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress } = useSmartContracts()
+  const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
     Contract Writes
@@ -49,7 +48,7 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
 
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
     address: rampAddress,
-    abi: abi,
+    abi: rampAbi,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),

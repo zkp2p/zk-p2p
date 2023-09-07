@@ -1,7 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { abi } from "../../helpers/abi/ramp.abi";
 import { fromUsdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -18,7 +17,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
   const { isLoggedIn } = useAccount()
-  const { rampAddress } = useSmartContracts()
+  const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
    * State
@@ -33,7 +32,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     // refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
-    abi: abi,
+    abi: rampAbi,
     functionName: 'minDepositAmount',
   })
 

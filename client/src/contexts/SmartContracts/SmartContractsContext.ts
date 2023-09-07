@@ -6,11 +6,13 @@ import { ZERO_ADDRESS } from '../../helpers/constants'
 
 interface SmartContractsValues {
   rampAddress: Address;
+  rampAbi: any;
   usdcAddress: Address;
 }
 
 const defaultValues: SmartContractsValues = {
   rampAddress: ZERO_ADDRESS,
+  rampAbi: {},
   usdcAddress: ZERO_ADDRESS
 };
 

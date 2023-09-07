@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address } from 'wagmi';
 
+import { abi } from "../../helpers/abi/ramp.abi";
 import { contractAddresses } from "../../helpers/deployed_addresses";
 import { ZERO_ADDRESS } from '../../helpers/constants'
 import useAccount from '@hooks/useAccount'
@@ -49,6 +50,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     <SmartContractsContext.Provider
       value={{
         rampAddress,
+        rampAbi: abi,
         usdcAddress
       }}
     >

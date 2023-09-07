@@ -1,12 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import RampRegistrationContext from './RampRegistrationContext'
 import { Deposit } from './types'
-import { abi } from "../../helpers/abi/ramp.abi";
 import { ZERO_ADDRESS } from '../../helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
+
+import RampRegistrationContext from './RampRegistrationContext'
 
 
 interface ProvidersProps {
@@ -18,7 +18,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress } = useSmartContracts()
+  const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
    * State
@@ -45,7 +45,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     // refetch: refetchRampAccount,
   } = useContractRead({
     address: rampAddress,
-    abi: abi,
+    abi: rampAbi,
     functionName: 'getAccountVenmoId',
     args: [loggedInEthereumAddress],
   })
@@ -58,7 +58,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     // refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
-    abi: abi,
+    abi: rampAbi,
     functionName: 'getAccountDeposits',
     args: [loggedInEthereumAddress],
   })
@@ -71,7 +71,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   //   // refetch: refetchVenmoIdHash,
   // } = useContractRead({
   //   address: rampAddress,
-  //   abi: abi,
+  //   abi: rampAbi,
   //   functionName: 'intents',
   //   args: [registrationHash],
   // })

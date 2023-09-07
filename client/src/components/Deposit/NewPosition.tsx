@@ -8,7 +8,6 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
-import { abi } from "../../helpers/abi/ramp.abi";
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
 import useRampRegistration from '@hooks/useRampRegistration'
@@ -25,7 +24,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress } = useSmartContracts()
+  const { rampAddress, rampAbi } = useSmartContracts()
   const { registrationHash } = useRampRegistration()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
@@ -46,7 +45,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
     address: rampAddress,
-    abi: abi,
+    abi: rampAbi,
     functionName: 'offRamp',
     args: [
       registrationHash,
