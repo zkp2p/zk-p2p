@@ -7,7 +7,7 @@ import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../helpers/types";
 import { OffRamp } from './OffRamp'
-import useAccount from '../../hooks/useAccount'
+import useAccount from '@hooks/useAccount'
 
 
 export default function Deposit() {

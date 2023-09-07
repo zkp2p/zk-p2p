@@ -9,7 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { Deposit, DepositPrime } from "../../helpers/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
-import useRampRegistration from '../../hooks/useRampRegistration'
+import useRampRegistration from '@hooks/useRampRegistration'
 
 
 interface PositionTableProps {

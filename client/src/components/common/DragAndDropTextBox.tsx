@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 
-import { useDragAndDrop } from '../../hooks/useDragAndDrop';
+import { useDragAndDrop } from '@hooks/useDragAndDrop';
 import { Col } from "../legacy/Layout";
 
 

@@ -3,7 +3,7 @@ import { Address } from 'wagmi';
 
 import { contractAddresses } from "../../helpers/deployed_addresses";
 import { ZERO_ADDRESS } from '../../helpers/constants'
-import useAccount from '../../hooks/useAccount'
+import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'
 
