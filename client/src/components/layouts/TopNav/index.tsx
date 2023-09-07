@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import { CustomConnectButton } from "../../common/ConnectButton";
@@ -7,8 +7,13 @@ import { NavItem } from "./NavItem";
 
 
 export const TopNav: React.FC = () => {
-
+  const location = useLocation();
   const [selectedItem, setSelectedItem] = useState<string>('Swap');
+
+  useEffect(() => {
+    const routeName = location.pathname.split('/')[1];
+    setSelectedItem(routeName || 'Swap');
+  }, [location]);
 
   return (
     <NavBar>

@@ -2,14 +2,14 @@ import { createContext } from 'react'
 
 
 interface AccountValues {
-  ethereumAddress: string;
+  loggedInEthereumAddress: string;
   network: string;
   rampAddress: string;
   usdcAddress: string;
 }
 
 const defaultValues: AccountValues = {
-  ethereumAddress: '',
+  loggedInEthereumAddress: '',
   network: '',
   rampAddress: '',
   usdcAddress: ''

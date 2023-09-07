@@ -15,12 +15,10 @@ import useBalances from '../../hooks/useBalance'
 
 
 interface NewPositionProps {
-  loggedInWalletAddress: string;
   handleBackClick: () => void;
 }
  
 export const NewPosition: React.FC<NewPositionProps> = ({
-  loggedInWalletAddress,
   handleBackClick
 }) => {
   /*

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Inbox } from 'react-feather'
+import { Inbox, FileText } from 'react-feather'
 import styled, { css } from 'styled-components/macro'
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
@@ -8,6 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { Deposit, DepositPrime } from "../../helpers/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
+import useRampRegistration from '../../hooks/useRampRegistration'
 
 
 interface PositionTableProps {
@@ -19,6 +21,13 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   loggedInWalletAddress,
   handleNewPositionClick
 }) => {
+  const navigate = useNavigate();
+
+  /*
+   * Contexts
+   */
+  const { isRegistered } = useRampRegistration()
+
   const [positions, setPositions] = useState<DepositPrime[]>([]);
 
   useEffect(() => {
@@ -43,6 +52,18 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       }
     ]);
   }, []);
+
+  /*
+    Handlers
+  */
+
+  const navigateToRegistrationHandler = () => {
+    navigate('/register');
+  };
+  
+  /*
+    Helpers
+  */
 
   function convertDepositAmountToUSD(depositAmount: number) {
     return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -71,7 +92,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         </TitleRow>
 
         <Content>
-          {!loggedInWalletAddress ? (
+        {!loggedInWalletAddress ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -80,6 +101,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
+            </ErrorContainer>
+          ) : !isRegistered ? (
+            <ErrorContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+                <div>
+                  You must register to create a deposit.
+                </div>
+              </ThemedText.DeprecatedBody>
+              <Button
+                onClick={navigateToRegistrationHandler}
+              >
+                Complete Registration
+              </Button>
             </ErrorContainer>
           ) : positions.length === 0 ? (
             <ErrorContainer>
@@ -177,6 +212,10 @@ const IconStyle = css`
 `
 
 const InboxIcon = styled(Inbox)`
+  ${IconStyle}
+`
+
+const FileTextIcon = styled(FileText)`
   ${IconStyle}
 `
 
