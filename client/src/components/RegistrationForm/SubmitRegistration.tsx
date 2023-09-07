@@ -78,11 +78,12 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
         
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isSubmitRegistrationLoading}
+          loading={isSubmitRegistrationLoading}
           onClick={async () => {
             writeSubmitRegistration?.();
           }}
         >
-          Submit
+          Submit Registration
         </Button>
       </Body>
     </Container>
