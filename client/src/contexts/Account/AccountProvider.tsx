@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { useAccount, useNetwork } from 'wagmi';
+import { Address, useAccount, useNetwork } from 'wagmi';
 
-import { contractAddresses } from "../../helpers/deployed_addresses";
+import { ZERO_ADDRESS } from '../../helpers/constants'
 
 import AccountContext from './AccountContext'
 
@@ -17,11 +17,9 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [ethereumAddress, setEthereumAddress] = useState<Address>(ZERO_ADDRESS);
   const [network, setNetwork] = useState<string>(chain?.network ?? "");
-
-  const [rampAddress, setRampAddress] = useState<string>("");
-  const [usdcAddress, setUsdcAddress] = useState<string>("");
 
   /*
    * Hooks
@@ -29,38 +27,27 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     if (address) {
       setEthereumAddress(address);
+      setIsLoggedIn(true);
     } else {
-      setEthereumAddress("");
+      setEthereumAddress(ZERO_ADDRESS);
+      setIsLoggedIn(false);
     }
   }, [address]);
 
   useEffect(() => {
     if (chain) {
       setNetwork(chain.network);
-
-      let contractsForNetwork = contractAddresses[chain.network];
-      if (contractsForNetwork) {
-        setRampAddress(contractsForNetwork.ramp);
-        setUsdcAddress(contractsForNetwork.fusdc);
-      } else {
-        setRampAddress("");
-        setUsdcAddress("");
-      }
     } else {
       setNetwork("");
-
-      setRampAddress("");
-      setUsdcAddress("");
     }
   }, [chain]);
 
   return (
     <AccountContext.Provider
       value={{
+        isLoggedIn,
         loggedInEthereumAddress: ethereumAddress,
         network,
-        rampAddress,
-        usdcAddress
       }}
     >
       {children}

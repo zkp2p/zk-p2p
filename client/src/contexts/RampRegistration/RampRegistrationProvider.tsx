@@ -1,12 +1,13 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import useAccount from '../../hooks/useAccount'
 import RampRegistrationContext from './RampRegistrationContext'
 import { Deposit } from './types'
 import { abi } from "../../helpers/abi/ramp.abi";
 import { ZERO_ADDRESS } from '../../helpers/constants'
 import { fromUsdc } from '../../helpers/units'
+import useAccount from '@hooks/useAccount'
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface ProvidersProps {
@@ -17,7 +18,8 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { loggedInEthereumAddress, rampAddress } = useAccount()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
+  const { rampAddress } = useSmartContracts()
 
   /*
    * State
@@ -44,7 +46,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     // isError: isRegistrationDataError,
     // refetch: refetchRampAccount,
   } = useContractRead({
-    address: rampAddress as `0x${string}`,
+    address: rampAddress,
     abi: abi,
     functionName: 'getAccountVenmoId',
     args: [loggedInEthereumAddress],
@@ -57,7 +59,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     isError: isFetchDepositsError,
     // refetch: refetchDeposits,
   } = useContractRead({
-    address: rampAddress as `0x${string}`,
+    address: rampAddress,
     abi: abi,
     functionName: 'getAccountDeposits',
     args: [loggedInEthereumAddress],
@@ -70,7 +72,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     // isError: isMinimumDepositAmountError,
     // refetch: refetchDeposits,
   } = useContractRead({
-    address: rampAddress as `0x${string}`,
+    address: rampAddress,
     abi: abi,
     functionName: 'minDepositAmount',
   })
@@ -82,7 +84,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   //   // isError: isRegistrationDataError,
   //   // refetch: refetchVenmoIdHash,
   // } = useContractRead({
-  //   address: rampAddress as `0x${string}`,
+  //   address: rampAddress,
   //   abi: abi,
   //   functionName: 'intents',
   //   args: [registrationHash],
@@ -105,7 +107,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     console.log('rampAccountRaw_1');
     console.log(rampAccountRaw);
   
-    if (loggedInEthereumAddress && rampAccountRaw) {
+    if (isLoggedIn && rampAccountRaw) {
       const rampAccountProcessed = rampAccountRaw as string;
       console.log('rampAccountProcessed');
       console.log(rampAccountProcessed);
@@ -113,12 +115,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       setRegistrationHash("");
     }
-  }, [loggedInEthereumAddress, rampAccountRaw]);
+  }, [isLoggedIn, rampAccountRaw]);
 
   // useEffect(() => {
   //   console.log('refetchVenmoIdHash');
 
-  //   if (loggedInEthereumAddress) {
+  //   if (isLoggedIn) {
   //     const intervalId = setInterval(() => {
   //       refetchVenmoIdHash();
   //     }, 15000); // Refetch every 15 seconds
@@ -127,7 +129,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   //       clearInterval(intervalId);
   //     };
   //   }
-  // }, [loggedInEthereumAddress, refetchVenmoIdHash]);
+  // }, [isLoggedIn, refetchVenmoIdHash]);
 
   useEffect(() => {
     if (!isFetchDepositsLoading && !isFetchDepositsError && depositsRaw) {
@@ -148,20 +150,20 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         sanitizedDeposits.push(deposit);
       }
 
-      if (loggedInEthereumAddress && depositsRaw) {
+      if (isLoggedIn && depositsRaw) {
         setDeposits(sanitizedDeposits);
         console.log(sanitizedDeposits);
       } else {
         setDeposits([]);
       }
     }
-  }, [loggedInEthereumAddress, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
+  }, [isLoggedIn, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
 
   useEffect(() => {
     console.log('minDepositAmountRaw_1');
     console.log(minimumDepositAmountRaw);
   
-    if (loggedInEthereumAddress && minimumDepositAmountRaw) {
+    if (isLoggedIn && minimumDepositAmountRaw) {
       const minimumDepositAmountProcessed = fromUsdc(minimumDepositAmountRaw.toString()).toNumber();
       console.log('minimumDepositAmountProcessed');
       console.log(minimumDepositAmountProcessed);
@@ -169,7 +171,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       setMinimumDepositAmount(0);
     }
-  }, [loggedInEthereumAddress, minimumDepositAmountRaw]);
+  }, [isLoggedIn, minimumDepositAmountRaw]);
 
   return (
     <RampRegistrationContext.Provider

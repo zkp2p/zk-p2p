@@ -10,7 +10,7 @@ import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import { abi } from "../../helpers/abi/ramp.abi";
-import useAccount from '../../hooks/useAccount'
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface SubmitOffRampProps {
@@ -25,7 +25,7 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress } = useAccount()
+  const { rampAddress } = useSmartContracts()
 
   /*
     Contract Writes
@@ -48,7 +48,7 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   };
 
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
-    address: rampAddress as `0x${string}`,
+    address: rampAddress,
     abi: abi,
     functionName: 'onRamp',
     args: [
