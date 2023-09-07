@@ -17,7 +17,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { ethereumAddress, rampAddress } = useAccount()
+  const { loggedInEthereumAddress, rampAddress } = useAccount()
 
   /*
    * State
@@ -47,7 +47,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     address: rampAddress as `0x${string}`,
     abi: abi,
     functionName: 'getAccountVenmoId',
-    args: [ethereumAddress],
+    args: [loggedInEthereumAddress],
   })
 
   // function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
@@ -60,7 +60,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     address: rampAddress as `0x${string}`,
     abi: abi,
     functionName: 'getAccountDeposits',
-    args: [ethereumAddress],
+    args: [loggedInEthereumAddress],
   })
 
   // uint256 public minDepositAmount;
@@ -105,7 +105,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     console.log('rampAccountRaw_1');
     console.log(rampAccountRaw);
   
-    if (ethereumAddress && rampAccountRaw) {
+    if (loggedInEthereumAddress && rampAccountRaw) {
       const rampAccountProcessed = rampAccountRaw as string;
       console.log('rampAccountProcessed');
       console.log(rampAccountProcessed);
@@ -113,12 +113,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       setRegistrationHash("");
     }
-  }, [ethereumAddress, rampAccountRaw]);
+  }, [loggedInEthereumAddress, rampAccountRaw]);
 
   // useEffect(() => {
   //   console.log('refetchVenmoIdHash');
 
-  //   if (ethereumAddress) {
+  //   if (loggedInEthereumAddress) {
   //     const intervalId = setInterval(() => {
   //       refetchVenmoIdHash();
   //     }, 15000); // Refetch every 15 seconds
@@ -127,7 +127,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   //       clearInterval(intervalId);
   //     };
   //   }
-  // }, [ethereumAddress, refetchVenmoIdHash]);
+  // }, [loggedInEthereumAddress, refetchVenmoIdHash]);
 
   useEffect(() => {
     if (!isFetchDepositsLoading && !isFetchDepositsError && depositsRaw) {
@@ -148,20 +148,20 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         sanitizedDeposits.push(deposit);
       }
 
-      if (ethereumAddress && depositsRaw) {
+      if (loggedInEthereumAddress && depositsRaw) {
         setDeposits(sanitizedDeposits);
         console.log(sanitizedDeposits);
       } else {
         setDeposits([]);
       }
     }
-  }, [ethereumAddress, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
+  }, [loggedInEthereumAddress, depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
 
   useEffect(() => {
     console.log('minDepositAmountRaw_1');
     console.log(minimumDepositAmountRaw);
   
-    if (ethereumAddress && minimumDepositAmountRaw) {
+    if (loggedInEthereumAddress && minimumDepositAmountRaw) {
       const minimumDepositAmountProcessed = fromUsdc(minimumDepositAmountRaw.toString()).toNumber();
       console.log('minimumDepositAmountProcessed');
       console.log(minimumDepositAmountProcessed);
@@ -169,7 +169,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       setMinimumDepositAmount(0);
     }
-  }, [ethereumAddress, minimumDepositAmountRaw]);
+  }, [loggedInEthereumAddress, minimumDepositAmountRaw]);
 
   return (
     <RampRegistrationContext.Provider

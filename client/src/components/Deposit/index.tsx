@@ -7,14 +7,14 @@ import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../helpers/types";
 import { OffRamp } from './OffRamp'
-import AccountContext from '../../contexts/Account/AccountContext';
+import useAccount from '../../hooks/useAccount'
 
 
 export default function Deposit() {
   /*
-   * Context
+   * Contexts
    */
-  const { ethereumAddress } = React.useContext(AccountContext);
+  const { loggedInEthereumAddress } = useAccount()
 
   /*
     State
@@ -49,7 +49,6 @@ export default function Deposit() {
       return (
         <NewPositionContainer>
           <NewPosition
-            loggedInWalletAddress={'0x123'}
             handleBackClick={handleBackClickOnNewDeposit}
           />
         </NewPositionContainer>
@@ -67,7 +66,7 @@ export default function Deposit() {
     return (
       <DepositAndIntentContainer>
         <PositionTable
-          loggedInWalletAddress={ethereumAddress}
+          loggedInWalletAddress={loggedInEthereumAddress}
           handleNewPositionClick={handleUpdateClick}
         />
         <IntentTable

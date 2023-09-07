@@ -15,7 +15,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { ethereumAddress, rampAddress, usdcAddress } = useAccount()
+  const { loggedInEthereumAddress, rampAddress, usdcAddress } = useAccount()
 
   /*
    * State
@@ -34,7 +34,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // isError: isFetchUsdcBalanceError,
     // refetch: refetchUsdcBalance,
   } = useBalance({
-    address: ethereumAddress as `0x${string}`,
+    address: loggedInEthereumAddress as `0x${string}`,
     token: usdcAddress as `0x${string}`,
     watch: true,
     // cacheTime: 20_000,
@@ -53,7 +53,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     address: usdcAddress as `0x${string}`,
     abi: erc20ABI,
     functionName: "allowance",
-    args: [ethereumAddress as `0x${string}`, rampAddress as `0x${string}`],
+    args: [loggedInEthereumAddress as `0x${string}`, rampAddress as `0x${string}`],
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
@@ -68,7 +68,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // isError: isFetchEthBalanceError,
     // refetch: refetchEthBalance,
   } = useBalance({
-    address: ethereumAddress as `0x${string}`,
+    address: loggedInEthereumAddress as `0x${string}`,
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
@@ -84,7 +84,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log('ethBalanceRaw_1');
     console.log(ethBalanceRaw);
   
-    if (ethereumAddress && ethBalanceRaw) {
+    if (loggedInEthereumAddress && ethBalanceRaw) {
       const ethBalanceProcessed = ethBalanceRaw.formatted;
       console.log('ethBalanceProcessed');
       console.log(ethBalanceProcessed);
@@ -92,13 +92,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setEthBalance(new BigNumber(0));
     }
-  }, [ethereumAddress, ethBalanceRaw]);
+  }, [loggedInEthereumAddress, ethBalanceRaw]);
 
   useEffect(() => {
     console.log('usdcBalanceRaw_1');
     console.log(usdcBalanceRaw);
   
-    if (ethereumAddress && usdcBalanceRaw) {
+    if (loggedInEthereumAddress && usdcBalanceRaw) {
       const usdcBalanceRawProcessed = usdcBalanceRaw.formatted;
       console.log('usdcBalanceRawProcessed');
       console.log(usdcBalanceRawProcessed);
@@ -106,13 +106,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setUsdcBalance(new BigNumber(0));
     }
-  }, [ethereumAddress, usdcBalanceRaw]);
+  }, [loggedInEthereumAddress, usdcBalanceRaw]);
 
   useEffect(() => {
     console.log('usdcApprovalToRampRaw_1');
     console.log(usdcApprovalToRampRaw);
   
-    if (ethereumAddress && usdcApprovalToRampRaw) {
+    if (loggedInEthereumAddress && usdcApprovalToRampRaw) {
       const usdcApprovalToRampProcessed = fromUsdc(usdcApprovalToRampRaw.toString());
       console.log('usdcApprovalToRampProcessed');
       console.log(usdcApprovalToRampProcessed);
@@ -120,7 +120,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setUsdcApprovalToRamp(new BigNumber(0));
     }
-  }, [ethereumAddress, usdcApprovalToRampRaw]);
+  }, [loggedInEthereumAddress, usdcApprovalToRampRaw]);
 
   return (
     <BalancesContext.Provider

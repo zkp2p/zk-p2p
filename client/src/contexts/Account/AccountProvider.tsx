@@ -57,7 +57,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   return (
     <AccountContext.Provider
       value={{
-        ethereumAddress,
+        loggedInEthereumAddress: ethereumAddress,
         network,
         rampAddress,
         usdcAddress
