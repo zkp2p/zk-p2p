@@ -4,6 +4,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
+import { Uint256ArrayUtils } from "./lib/Uint256ArrayUtils.sol";
 
 import { IPoseidon } from "./interfaces/IPoseidon.sol";
 import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
@@ -15,6 +16,7 @@ pragma solidity ^0.8.18;
 contract Ramp is Ownable {
 
     using Bytes32ArrayUtils for bytes32[];
+    using Uint256ArrayUtils for uint256[];
 
     /* ============ Events ============ */
     event AccountRegistered(address indexed accountOwner, bytes32 indexed venmoIdHash);
@@ -192,53 +194,36 @@ contract Ramp is Ownable {
         emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate, _convenienceFee);
     }
 
-    // Do we need to pass in venmoId here??
-    function signalIntent(bytes32 _venmoId, uint256 _depositId, uint256 _amount) external {
-        require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
+    function signalIntent(uint256 _depositId, uint256 _amount) external {
+        bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
+
         require(_amount > 0, "Signaled amount must be greater than 0");
-        require(venmoIdIntent[_venmoId] == bytes32(0), "Intent still outstanding");
+        require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
-        bytes32 intentHash = _calculateIntentHash(_venmoId, _depositId);
-
-        Deposit storage deposit = deposits[_depositId];
-        if (deposit.remainingDeposits < _amount) {
-            (
-                bytes32[] memory prunableIntents,
-                uint256 reclaimableAmount
-            ) = _getPrunableIntents(_depositId);
-
-            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
-
-            _pruneIntents(deposit, prunableIntents);
-            deposit.remainingDeposits += reclaimableAmount;
-            deposit.outstandingIntentAmount -= reclaimableAmount;
-        }
-
-        intents[intentHash] = Intent({
-            onramper: msg.sender,
-            deposit: _depositId,
-            amount: _amount,
-            intentTimestamp: block.timestamp
-        });
-
-        venmoIdIntent[_venmoId] = intentHash;
-
-        deposit.remainingDeposits -= _amount;
-        deposit.outstandingIntentAmount += _amount;
-        deposit.intentHashes.push(intentHash);
-
-        emit IntentSignaled(intentHash, _depositId, _venmoId, _amount, block.timestamp);
+        _addNewIntent(venmoIdHash, _depositId, _amount);
     }
 
-    // function replaceIntent(bytes32 _venmoId, bytes32 _depositId, uint256 _amount) external {
-    //     require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
-    //     require(_amount > 0, "Signaled amount must be greater than 0");
-    //     require(venmoIdIntent[_venmoId] != bytes32(0), "Intent must be outstanding to call");
+    function replaceIntent(uint256 _depositId, uint256 _amount) external {
+        bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
 
-    //     bytes32 pendingIntentHash = accounts[msg.sender].pendingIntentHash;
-    //     Intent storage currentIntent = intents[pendingIntentHash];
-    //     _pruneIntent(deposits[currentIntent.deposit], pendingIntentHash);
-    // }
+        require(_amount > 0, "Signaled amount must be greater than 0");
+        require(venmoIdIntent[venmoIdHash] != bytes32(0), "Intent must be outstanding to call");
+
+        bytes32 pendingIntentHash = venmoIdIntent[venmoIdHash];
+        Deposit storage deposit = deposits[intents[pendingIntentHash].deposit];
+        Intent memory intent = intents[pendingIntentHash];
+
+        // Intent hash is removed from deposit in prune intent function
+        deposit.outstandingIntentAmount -= intent.amount;
+        deposit.remainingDeposits += intent.amount;
+        _pruneIntent(
+            deposit,
+            pendingIntentHash
+        );
+
+        // Add new intent
+        _addNewIntent(venmoIdHash, _depositId, _amount);
+    }
 
     // DO we need to prune deposits now? In order to not pass blank deposits
     function onRampWithConvenience(
@@ -319,6 +304,7 @@ contract Ramp is Ownable {
             delete deposit.remainingDeposits;
             if (deposit.outstandingIntentAmount == 0) {
                 delete deposits[depositId];
+                accounts[msg.sender].deposits.removeStorage(depositId);
             }
         }
 
@@ -365,6 +351,10 @@ contract Ramp is Ownable {
         return deposits[_depositId];
     }
 
+    function getAccountInfo(address _account) external view returns (AccountInfo memory) {
+        return accounts[_account];
+    }
+
     function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
         uint256[] memory accountDepositIds = accounts[_account].deposits;
         accountDeposits = new Deposit[](accountDepositIds.length);
@@ -401,6 +391,39 @@ contract Ramp is Ownable {
     {
         intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
         require(intents[intentHash].amount == 0, "Intent already exists");
+    }
+
+    function _addNewIntent(bytes32 _venmoIdHash, uint256 _depositId, uint256 _amount) internal {
+        bytes32 intentHash = _calculateIntentHash(_venmoIdHash, _depositId);
+
+        Deposit storage deposit = deposits[_depositId];
+        if (deposit.remainingDeposits < _amount) {
+            (
+                bytes32[] memory prunableIntents,
+                uint256 reclaimableAmount
+            ) = _getPrunableIntents(_depositId);
+
+            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
+
+            _pruneIntents(deposit, prunableIntents);
+            deposit.remainingDeposits += reclaimableAmount;
+            deposit.outstandingIntentAmount -= reclaimableAmount;
+        }
+
+        intents[intentHash] = Intent({
+            onramper: msg.sender,
+            deposit: _depositId,
+            amount: _amount,
+            intentTimestamp: block.timestamp
+        });
+
+        venmoIdIntent[_venmoIdHash] = intentHash;
+
+        deposit.remainingDeposits -= _amount;
+        deposit.outstandingIntentAmount += _amount;
+        deposit.intentHashes.push(intentHash);
+
+        emit IntentSignaled(intentHash, _depositId, _venmoIdHash, _amount, block.timestamp);
     }
 
     function _getPrunableIntents(
