@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 
 type Nav = {
   name: string;
+  routeName: string;
   href: string;
   children?: Nav[];
 }
@@ -23,28 +24,22 @@ export const NavItem: React.FC<NavItemProps> = ({
   const [navigationItems, setNavigationItems] = useState<Nav[]>([
     {
       name: 'Swap',
+      routeName: 'swap',
       href: '/swap',
-      children: [
-        {
-          name: 'On-ramp',
-          href: '/',
-        },
-        {
-          name: 'Off-ramp',
-          href: '/',
-        },
-      ],
     },
     {
       name: 'Deposit',
+      routeName: 'deposit',
       href: '/deposit',
     },
     {
       name: 'Registration',
+      routeName: 'register',
       href: '/register',
     },
     {
       name: 'Permission',
+      routeName: 'permissions',
       href: '/permissions',
     },
   ]);
@@ -56,7 +51,7 @@ export const NavItem: React.FC<NavItemProps> = ({
           key={item.name}
           to={item.href}
           onClick={() => setSelectedItem(item.name)}
-          selected={selectedItem === item.name}
+          selected={selectedItem === item.routeName}
         >
           {item.name}
         </StyledLink>
