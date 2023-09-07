@@ -7,6 +7,7 @@ interface RampRegistrationValues {
   isRegistered: boolean;
   registrationHash: string;
   registeredVenmoId: string;
+  minimumDepositAmount: number;
   deposits: Deposit[];
 }
 
@@ -14,6 +15,7 @@ const defaultValues: RampRegistrationValues = {
   isRegistered: false,
   registrationHash: '',
   registeredVenmoId: '',
+  minimumDepositAmount: 0,
   deposits: [],
 };
 
