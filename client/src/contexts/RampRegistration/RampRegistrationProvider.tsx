@@ -38,9 +38,9 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   // function getAccountVenmoId(address _account) external view returns (bytes32) {
   const {
     data: rampAccountRaw,
-    // isLoading: isFetchVenmoIdHashLoading,
+    // isLoading: isFetchRampAccountLoading,
     // isError: isRegistrationDataError,
-    // refetch: refetchVenmoIdHash,
+    // refetch: refetchRampAccount,
   } = useContractRead({
     address: rampAddress as `0x${string}`,
     abi: abi,
