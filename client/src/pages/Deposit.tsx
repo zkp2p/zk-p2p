@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from "styled-components";
 
-import DepositTable from "../components/Deposit"
+import DepositTable from "@components/Deposit"
 
 
 export const Deposit: React.FC<{}> = (props) => {

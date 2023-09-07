@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import PermissionsForm from "../components/PermissionsForm"
+import PermissionsForm from "@components/PermissionsForm"
 
 
 export const Permissions: React.FC<{}> = (props) => {
