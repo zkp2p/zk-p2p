@@ -10,7 +10,7 @@ import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
-import useRampRegistration from '@hooks/useRampRegistration'
+import useRampRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

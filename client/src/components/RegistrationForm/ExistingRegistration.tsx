@@ -9,7 +9,7 @@ import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import useRampRegistration from '@hooks/useRampRegistration'
+import useRampRegistration from '@hooks/useRegistration'
 
 
 interface ExistingRegistrationProps {

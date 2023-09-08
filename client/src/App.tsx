@@ -16,7 +16,7 @@ import AccountProvider from "./contexts/Account/AccountProvider";
 import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
 import BalancesProvider from "./contexts/Balances/BalancesProvider";
 import RampProvider  from './contexts/Ramp/RampProvider';
-import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
+import RampRegistrationProvider  from './contexts/Registration/RampRegistrationProvider';
 import DepositsProvider  from './contexts/Deposits/DepositsProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
 
