@@ -2,8 +2,8 @@ import { useContext } from 'react'
 
 import { RegistrationContext } from '../contexts/Registration'
 
-const useRampRegistration = () => {
+const useRegistration = () => {
   return { ...useContext(RegistrationContext) }
 }
 
-export default useRampRegistration
+export default useRegistration

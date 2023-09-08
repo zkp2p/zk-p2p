@@ -5,14 +5,14 @@ import { ZERO_ADDRESS } from '../../helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
-import RampRegistrationContext from './RampRegistrationContext'
+import RegistrationContext from './RegistrationContext'
 
 
 interface ProvidersProps {
   children: ReactNode;
 }
 
-const RampRegistrationProvider = ({ children }: ProvidersProps) => {
+const RegistrationProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
@@ -100,7 +100,7 @@ const RampRegistrationProvider = ({ children }: ProvidersProps) => {
   // }, [isLoggedIn, refetchVenmoIdHash]);
 
   return (
-    <RampRegistrationContext.Provider
+    <RegistrationContext.Provider
       value={{
         isRegistered,
         registrationHash,
@@ -108,8 +108,8 @@ const RampRegistrationProvider = ({ children }: ProvidersProps) => {
       }}
     >
       {children}
-    </RampRegistrationContext.Provider>
+    </RegistrationContext.Provider>
   );
 };
 
-export default RampRegistrationProvider
+export default RegistrationProvider

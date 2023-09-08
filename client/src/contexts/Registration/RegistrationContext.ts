@@ -1,20 +1,18 @@
 import { createContext } from 'react'
 
-import { Deposit } from '../Deposits/types'
 
-
-interface RampRegistrationValues {
+interface RegistrationValues {
   isRegistered: boolean;
   registrationHash: string;
   registeredVenmoId: string;
 }
 
-const defaultValues: RampRegistrationValues = {
+const defaultValues: RegistrationValues = {
   isRegistered: false,
   registrationHash: '',
   registeredVenmoId: '',
 };
 
-const RampRegistrationContext = createContext<RampRegistrationValues>(defaultValues)
+const RegistrationContext = createContext<RegistrationValues>(defaultValues)
 
-export default RampRegistrationContext
+export default RegistrationContext

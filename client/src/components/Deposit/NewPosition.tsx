@@ -10,7 +10,7 @@ import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
-import useRampRegistration from '@hooks/useRegistration'
+import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -25,7 +25,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Contexts
    */
   const { rampAddress, rampAbi } = useSmartContracts()
-  const { registrationHash } = useRampRegistration()
+  const { registrationHash } = useRegistration()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
 

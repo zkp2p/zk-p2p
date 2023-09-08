@@ -3,14 +3,14 @@ import { createContext } from 'react'
 import { Deposit } from './types'
 
 
-interface RampRegistrationValues {
+interface RegistrationValues {
   deposits: Deposit[];
 }
 
-const defaultValues: RampRegistrationValues = {
+const defaultValues: RegistrationValues = {
   deposits: [],
 };
 
-const RampRegistrationContext = createContext<RampRegistrationValues>(defaultValues)
+const RegistrationContext = createContext<RegistrationValues>(defaultValues)
 
-export default RampRegistrationContext
+export default RegistrationContext
