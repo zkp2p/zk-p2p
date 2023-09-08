@@ -6,11 +6,21 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { Deposit, DepositPrime } from "../../helpers/types";
+import { Deposit } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
 import useRegistration from '@hooks/useRegistration'
 
+
+export interface DepositPrime {
+  depositor: string;
+  remainingDepositAmount: number;
+  totalDepositAmount: number;
+  outstandingIntentAmount: number;
+  intentCount: number;
+  conversionRate: number;
+  convenienceFee: number;
+}
 
 interface PositionTableProps {
   loggedInWalletAddress: string;

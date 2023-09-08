@@ -12,4 +12,18 @@ export interface Deposit {
   outstandingIntentAmount: number;
   conversionRate: number;
   convenienceFee: number;
+  intentHashes: string[];
+}
+
+// struct Intent {
+//   address onramper;
+//   uint256 deposit;
+//   uint256 amount;
+//   uint256 intentTimestamp;
+// }
+export interface Intent {
+  onRamper: string;
+  deposit: string;
+  amount: number;
+  timestamp: number;
 }
