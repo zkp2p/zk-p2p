@@ -1,8 +1,9 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useState, ReactNode, useMemo } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Deposit } from '../Deposits/types'
 import useSmartContracts from '@hooks/useSmartContracts';
+import useRampState from '@hooks/useRampState';
 
 import LiquidityContext from './LiquidityContext'
 
@@ -16,6 +17,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
   const { rampAddress, rampAbi } = useSmartContracts()
+  const { depositCounter } = useRampState();
 
   /*
    * State
@@ -27,6 +29,21 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
+  const depositIdsToFetch = useMemo(() => {
+    const depositIds = [];
+    for (let i = 0; i < depositCounter; i++) {
+      depositIds.push(i);
+    }
+
+    /*
+     * TODO:
+     * Compare the depositCounter against list of ids stored in local storage to ignore
+     * that list should only contain Deposits that have no remaining liquidity
+     */
+
+    return depositIds;
+  }, [depositCounter]);
+
   const {
     data: depositsRaw,
     isLoading: isFetchDepositsLoading,
@@ -36,7 +53,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'getDepositFromIds',
-    args: [0, 1, 2, 3, 4], // TODO: replace with returned depositCounter
+    args: [depositIdsToFetch],
   })
 
   /*
