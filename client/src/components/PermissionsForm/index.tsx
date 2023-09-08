@@ -9,11 +9,6 @@ import useAccount from '@hooks/useAccount'
 
 export default function PermissionsForm() {
   /*
-   * Context
-   */
-  const { loggedInEthereumAddress } = useAccount()
-
-  /*
    * State
    */
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
@@ -35,14 +30,12 @@ export default function PermissionsForm() {
         <Content>
           {!isAddPosition ? (
             <PermissionTable
-              loggedInWalletAddress={loggedInEthereumAddress}
               handleNewPositionClick={handleUpdateClick}
             />
           ) : (
             <NewPositionContainer>
               <Column>
                 <NewPermission
-                  loggedInWalletAddress={'0x123'}
                   handleBackClick={handleBackClick}
                 />
               </Column>

@@ -9,6 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { Deposit } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
+import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 
 
@@ -23,12 +24,10 @@ export interface DepositPrime {
 }
 
 interface PositionTableProps {
-  loggedInWalletAddress: string;
   handleNewPositionClick: () => void;
 }
 
 export const PositionTable: React.FC<PositionTableProps> = ({
-  loggedInWalletAddress,
   handleNewPositionClick
 }) => {
   const navigate = useNavigate();
@@ -37,6 +36,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    * Contexts
    */
   const { isRegistered } = useRegistration()
+  const { isLoggedIn } = useAccount()
 
   const [positions, setPositions] = useState<DepositPrime[]>([]);
 
@@ -94,7 +94,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           <ThemedText.HeadlineMedium>
             Deposit
           </ThemedText.HeadlineMedium>
-          {loggedInWalletAddress ? (
+          {isLoggedIn ? (
             <Button onClick={handleNewPositionClick} height={40}>
                 + New Position
             </Button>
@@ -102,7 +102,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         </TitleRow>
 
         <Content>
-        {!loggedInWalletAddress ? (
+        {!isLoggedIn ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />

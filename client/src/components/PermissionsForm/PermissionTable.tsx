@@ -8,6 +8,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { PermissionRow } from "./PermissionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
+import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 
 
@@ -16,12 +17,10 @@ interface Permission {
 }
 
 interface PermissionTableProps {
-  loggedInWalletAddress: string;
   handleNewPositionClick: () => void;
 }
 
 export const PermissionTable: React.FC<PermissionTableProps> = ({
-  loggedInWalletAddress,
   handleNewPositionClick
 }) => {
   const navigate = useNavigate();
@@ -30,6 +29,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
    * Contexts
    */
   const { isRegistered } = useRegistration()
+  const { isLoggedIn } = useAccount()
 
   const [permissions, setPermissions] = useState<Permission[]>([]);
 
@@ -55,7 +55,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
           <ThemedText.HeadlineMedium>
             Permissions
           </ThemedText.HeadlineMedium>
-          {loggedInWalletAddress ? (
+          {isLoggedIn ? (
             <Button onClick={handleNewPositionClick} height={40}>
                 + New Entry
             </Button>
@@ -63,7 +63,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
         </TitleRow>
 
         <Content>
-          {!loggedInWalletAddress ? (
+          {!isLoggedIn ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <FilterIcon strokeWidth={1} style={{ marginTop: '2em' }} />

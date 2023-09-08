@@ -7,6 +7,7 @@ import { ThemedText } from '../../theme/text'
 import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
+import useAccount from '@hooks/useAccount';
 
 
 export type SwapQuote = {
@@ -15,14 +16,18 @@ export type SwapQuote = {
 };
 
 interface SwapModalProps {
-  loggedInWalletAddress: string;
   onIntentTableRowClick?: (rowData: any[]) => void;
 }
 
 const SwapModal: React.FC<SwapModalProps> = ({
-  loggedInWalletAddress,
   onIntentTableRowClick
 }: SwapModalProps) => {
+  /*
+    Contexts
+  */
+
+    const { isLoggedIn } = useAccount();
+  
   /*
     State
   */
@@ -92,7 +97,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             placeholder="0"
             readOnly={true}
           />
-          {!loggedInWalletAddress ? (
+          {!isLoggedIn ? (
             <CustomConnectButton
               fullWidth={true}
             />

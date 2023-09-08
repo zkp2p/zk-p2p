@@ -10,12 +10,10 @@ import { SingleLineInput } from "../common/SingleLineInput";
 
 
 interface NewPermissionProps {
-  loggedInWalletAddress: string;
   handleBackClick: () => void;
 }
  
 export const NewPermission: React.FC<NewPermissionProps> = ({
-  loggedInWalletAddress,
   handleBackClick
 }) => {
   const [userHash, setUserHash] = useState<string>('');

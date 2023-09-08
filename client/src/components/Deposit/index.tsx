@@ -7,15 +7,9 @@ import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../contexts/Deposits/types";
 import { OffRamp } from './OffRamp'
-import useAccount from '@hooks/useAccount'
 
 
 export default function Deposit() {
-  /*
-   * Contexts
-   */
-  const { loggedInEthereumAddress } = useAccount()
-
   /*
     State
   */
@@ -66,7 +60,6 @@ export default function Deposit() {
     return (
       <DepositAndIntentContainer>
         <PositionTable
-          loggedInWalletAddress={loggedInEthereumAddress}
           handleNewPositionClick={handleUpdateClick}
         />
         <IntentTable

@@ -9,21 +9,22 @@ import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
+import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/useRegistration'
 
 
 interface ExistingRegistrationProps {
-  loggedInWalletAddress: string;
   handleNewRegistrationClick: () => void;
 }
  
 export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
-  loggedInWalletAddress,
   handleNewRegistrationClick
 }) => {
   /*
     Contexts
   */
+
+  const { isLoggedIn } = useAccount();
   const { registrationHash, registeredVenmoId, isRegistered } = useRegistration();
 
   /*
@@ -36,7 +37,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          {loggedInWalletAddress ? (
+          {isLoggedIn ? (
             <Button onClick={handleNewRegistrationClick} height={40}>
                 + Update
             </Button>
@@ -44,7 +45,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
         </TitleRow>
 
         <Content>
-          {!loggedInWalletAddress ? (
+          {!isLoggedIn ? (
                 <ErrorContainer>
                   <ThemedText.DeprecatedBody textAlign="center">
                     <CheckCircleIcon strokeWidth={1} style={{ marginTop: '2em' }} />
