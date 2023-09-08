@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { useAccount, useNetwork } from 'wagmi';
+import { Address, useAccount, useNetwork } from 'wagmi';
 
-import { contractAddresses } from "../../helpers/deployed_addresses";
+import { ZERO_ADDRESS } from '../../helpers/constants'
 
 import AccountContext from './AccountContext'
 
@@ -17,50 +17,43 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  const [ethereumAddress, setEthereumAddress] = useState<string>(address ?? "");
-  const [network, setNetwork] = useState<string>(chain?.network ?? "");
-
-  const [rampAddress, setRampAddress] = useState<string>("");
-  const [usdcAddress, setUsdcAddress] = useState<string>("");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<Address>(ZERO_ADDRESS);
+  const [network, setNetwork] = useState<string>("");
 
   /*
    * Hooks
    */
   useEffect(() => {
+    console.log('addressRaw_1');
+    console.log(address);
+
     if (address) {
-      setEthereumAddress(address);
+      setLoggedInEthereumAddress(address);
+      setIsLoggedIn(true);
     } else {
-      setEthereumAddress("");
+      setLoggedInEthereumAddress(ZERO_ADDRESS);
+      setIsLoggedIn(false);
     }
   }, [address]);
 
   useEffect(() => {
+    console.log('networkRaw_1');
+    console.log(chain);
+
     if (chain) {
       setNetwork(chain.network);
-
-      let contractsForNetwork = contractAddresses[chain.network];
-      if (contractsForNetwork) {
-        setRampAddress(contractsForNetwork.ramp);
-        setUsdcAddress(contractsForNetwork.fusdc);
-      } else {
-        setRampAddress("");
-        setUsdcAddress("");
-      }
     } else {
       setNetwork("");
-
-      setRampAddress("");
-      setUsdcAddress("");
     }
   }, [chain]);
 
   return (
     <AccountContext.Provider
       value={{
-        loggedInEthereumAddress: ethereumAddress,
+        isLoggedIn,
+        loggedInEthereumAddress,
         network,
-        rampAddress,
-        usdcAddress
       }}
     >
       {children}

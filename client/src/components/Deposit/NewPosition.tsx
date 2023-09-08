@@ -8,10 +8,10 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
-import { abi } from "../../helpers/abi/ramp.abi";
-import useAccount from '../../hooks/useAccount'
-import useRampRegistration from '../../hooks/useRampRegistration'
-import useBalances from '../../hooks/useBalance'
+import useBalances from '@hooks/useBalance'
+import useRampState from '@hooks/useRampState'
+import useRegistration from '@hooks/useRegistration'
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface NewPositionProps {
@@ -24,8 +24,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress } = useAccount()
-  const { registrationHash, minimumDepositAmount } = useRampRegistration()
+  const { rampAddress, rampAbi } = useSmartContracts()
+  const { registrationHash } = useRegistration()
+  const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
 
   /*
@@ -43,8 +44,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount, uint256 _convenienceFee)
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
-    address: rampAddress as `0x${string}`,
-    abi: abi,
+    address: rampAddress,
+    abi: rampAbi,
     functionName: 'offRamp',
     args: [
       registrationHash,

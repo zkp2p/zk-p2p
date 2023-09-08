@@ -1,18 +1,19 @@
 import { createContext } from 'react'
+import { Address } from 'wagmi';
+
+import { ZERO_ADDRESS } from '../../helpers/constants'
 
 
 interface AccountValues {
-  loggedInEthereumAddress: string;
+  isLoggedIn: boolean;
+  loggedInEthereumAddress: Address;
   network: string;
-  rampAddress: string;
-  usdcAddress: string;
 }
 
 const defaultValues: AccountValues = {
-  loggedInEthereumAddress: '',
+  isLoggedIn: false,
+  loggedInEthereumAddress: ZERO_ADDRESS,
   network: '',
-  rampAddress: '',
-  usdcAddress: ''
 };
 
 const AccountContext = createContext<AccountValues>(defaultValues)

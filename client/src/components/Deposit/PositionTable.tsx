@@ -9,7 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { Deposit, DepositPrime } from "../../helpers/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
-import useRampRegistration from '../../hooks/useRampRegistration'
+import useRegistration from '@hooks/useRegistration'
 
 
 interface PositionTableProps {
@@ -26,7 +26,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   /*
    * Contexts
    */
-  const { isRegistered } = useRampRegistration()
+  const { isRegistered } = useRegistration()
 
   const [positions, setPositions] = useState<DepositPrime[]>([]);
 

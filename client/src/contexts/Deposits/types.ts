@@ -1,12 +1,3 @@
-// struct AccountInfo {
-//   bytes32 venmoIdHash;
-//   uint256[] deposits;
-// }
-export interface AccountInfo {
-  venmoIdHash: string;
-  deposits: Deposit[];
-}
-
 // struct Deposit {
 //   address depositor;
 //   uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -21,17 +12,4 @@ export interface Deposit {
   outstandingIntentAmount: number;
   conversionRate: number;
   convenienceFee: number;
-}
-
-// struct Intent {
-//   address onramper;
-//   uint256 deposit;
-//   uint256 amount;
-//   uint256 intentTimestamp;
-// }
-export interface Intent {
-  onRamper: string;
-  deposit: string;
-  amount: number;
-  timestamp: number;
 }

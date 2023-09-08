@@ -1,10 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
-import useAccount from '../../hooks/useAccount'
-import BalancesContext from './BalancesContext'
 import BigNumber from '../../helpers/bignumber'
+import useAccount from '@hooks/useAccount'
+import useSmartContracts from '@hooks/useSmartContracts'
 import { fromUsdc } from '../../helpers/units'
+
+import BalancesContext from './BalancesContext'
 
 
 interface ProvidersProps {
@@ -15,7 +17,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { loggedInEthereumAddress, rampAddress, usdcAddress } = useAccount()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
+  const { rampAddress, usdcAddress } = useSmartContracts()
 
   /*
    * State
@@ -34,8 +37,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // isError: isFetchUsdcBalanceError,
     // refetch: refetchUsdcBalance,
   } = useBalance({
-    address: loggedInEthereumAddress as `0x${string}`,
-    token: usdcAddress as `0x${string}`,
+    address: loggedInEthereumAddress,
+    token: usdcAddress,
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
@@ -50,10 +53,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // isError: isFetchUsdcApprovalToRampError,
     // refetch: refetchUsdcApprovalToRamp,
   } = useContractRead({
-    address: usdcAddress as `0x${string}`,
+    address: usdcAddress,
     abi: erc20ABI,
     functionName: "allowance",
-    args: [loggedInEthereumAddress as `0x${string}`, rampAddress as `0x${string}`],
+    args: [loggedInEthereumAddress, rampAddress],
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
@@ -68,7 +71,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // isError: isFetchEthBalanceError,
     // refetch: refetchEthBalance,
   } = useBalance({
-    address: loggedInEthereumAddress as `0x${string}`,
+    address: loggedInEthereumAddress,
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
@@ -84,7 +87,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log('ethBalanceRaw_1');
     console.log(ethBalanceRaw);
   
-    if (loggedInEthereumAddress && ethBalanceRaw) {
+    if (isLoggedIn && ethBalanceRaw) {
       const ethBalanceProcessed = ethBalanceRaw.formatted;
       console.log('ethBalanceProcessed');
       console.log(ethBalanceProcessed);
@@ -92,13 +95,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setEthBalance(new BigNumber(0));
     }
-  }, [loggedInEthereumAddress, ethBalanceRaw]);
+  }, [isLoggedIn, ethBalanceRaw]);
 
   useEffect(() => {
     console.log('usdcBalanceRaw_1');
     console.log(usdcBalanceRaw);
   
-    if (loggedInEthereumAddress && usdcBalanceRaw) {
+    if (isLoggedIn && usdcBalanceRaw) {
       const usdcBalanceRawProcessed = usdcBalanceRaw.formatted;
       console.log('usdcBalanceRawProcessed');
       console.log(usdcBalanceRawProcessed);
@@ -106,13 +109,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setUsdcBalance(new BigNumber(0));
     }
-  }, [loggedInEthereumAddress, usdcBalanceRaw]);
+  }, [isLoggedIn, usdcBalanceRaw]);
 
   useEffect(() => {
     console.log('usdcApprovalToRampRaw_1');
     console.log(usdcApprovalToRampRaw);
   
-    if (loggedInEthereumAddress && usdcApprovalToRampRaw) {
+    if (isLoggedIn && usdcApprovalToRampRaw) {
       const usdcApprovalToRampProcessed = fromUsdc(usdcApprovalToRampRaw.toString());
       console.log('usdcApprovalToRampProcessed');
       console.log(usdcApprovalToRampProcessed);
@@ -120,7 +123,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     } else {
       setUsdcApprovalToRamp(new BigNumber(0));
     }
-  }, [loggedInEthereumAddress, usdcApprovalToRampRaw]);
+  }, [isLoggedIn, usdcApprovalToRampRaw]);
 
   return (
     <BalancesContext.Provider

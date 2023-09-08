@@ -3,14 +3,14 @@ import styled from 'styled-components/macro'
 
 import { ExistingRegistration } from "./ExistingRegistration";
 import { NewRegistration } from "./NewRegistration";
-import AccountContext from '../../contexts/Account/AccountContext';
+import useAccount from '@hooks/useAccount'
 
  
 export const RegistrationForm: React.FC = () => {
   /*
    * Context
    */
-  const { ethereumAddress } = React.useContext(AccountContext);
+  const { loggedInEthereumAddress } = useAccount()
 
   /*
    * State
@@ -35,7 +35,7 @@ export const RegistrationForm: React.FC = () => {
     <Wrapper>
       {!isNewRegistration ? (
         <ExistingRegistration
-          loggedInWalletAddress={ethereumAddress}
+          loggedInWalletAddress={loggedInEthereumAddress}
           handleNewRegistrationClick={handleUpdateClick}
         />
       ) : (

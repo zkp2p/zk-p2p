@@ -9,7 +9,7 @@ import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../common/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import useRampRegistration from '../../hooks/useRampRegistration'
+import useRegistration from '@hooks/useRegistration'
 
 
 interface ExistingRegistrationProps {
@@ -24,7 +24,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
     Contexts
   */
-  const { registrationHash, registeredVenmoId, isRegistered } = useRampRegistration();
+  const { registrationHash, registeredVenmoId, isRegistered } = useRegistration();
 
   /*
     Component

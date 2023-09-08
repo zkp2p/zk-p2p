@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Filter } from 'react-feather'
+import { Filter, FileText } from 'react-feather'
+import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro'
 
 import { Button } from '../Button'
@@ -7,6 +8,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { PermissionRow } from "./PermissionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
+import useRegistration from '@hooks/useRegistration'
 
 
 interface Permission {
@@ -22,6 +24,13 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
   loggedInWalletAddress,
   handleNewPositionClick
 }) => {
+  const navigate = useNavigate();
+  
+  /*
+   * Contexts
+   */
+  const { isRegistered } = useRegistration()
+
   const [permissions, setPermissions] = useState<Permission[]>([]);
 
   useEffect(() => {
@@ -30,6 +39,14 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
       { address: '0x24506DC1918183960Ac04dB859EB293B115952af' }
     ]);
   }, []);
+
+  /*
+    Handlers
+  */
+
+  const navigateToRegistrationHandler = () => {
+    navigate('/register');
+  };
 
   return (
     <Container>
@@ -55,6 +72,20 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
+            </ErrorContainer>
+          ) : !isRegistered ? (
+            <ErrorContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+                <div>
+                  You must register to create a deposit.
+                </div>
+              </ThemedText.DeprecatedBody>
+              <Button
+                onClick={navigateToRegistrationHandler}
+              >
+                Complete Registration
+              </Button>
             </ErrorContainer>
           ) : permissions.length === 0 ? (
             <ErrorContainer>
@@ -146,6 +177,10 @@ const IconStyle = css`
 `
 
 const FilterIcon = styled(Filter)`
+  ${IconStyle}
+`
+
+const FileTextIcon = styled(FileText)`
   ${IconStyle}
 `
 

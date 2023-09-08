@@ -5,8 +5,7 @@ import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
-import { abi } from "../../helpers/abi/ramp.abi";
-import useAccount from '../../hooks/useAccount'
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface SubmitRegistrationProps {
@@ -21,7 +20,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress } = useAccount()
+  const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
     Contract Writes
@@ -43,8 +42,8 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   };
 
   const { config: writeSubmitRegistrationConfig } = usePrepareContractWrite({
-    address: rampAddress as `0x${string}`,
-    abi: abi,
+    address: rampAddress,
+    abi: rampAbi,
     functionName: 'register',
     args: [
       ...reformatProofForChain(proof),

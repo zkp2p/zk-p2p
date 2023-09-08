@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
 
-import SwapModal from "../components/Swap"
-import { OnRamp } from '../components/Swap/OnRamp'
+import SwapModal from "@components/Swap"
+import { OnRamp } from '@components/Swap/OnRamp'
 import { Intent } from "../helpers/types";
-import AccountContext from '../contexts/Account/AccountContext';
+import useAccount from '@hooks/useAccount'
 
 
 export const Swap: React.FC<{}> = (props) => {
   /*
    * Context
    */
-  const { ethereumAddress } = React.useContext(AccountContext);
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State
@@ -36,7 +36,7 @@ export const Swap: React.FC<{}> = (props) => {
     <PageWrapper>
       {!selectedIntent ? (
         <SwapModal
-          loggedInWalletAddress={ethereumAddress}
+          loggedInWalletAddress={loggedInEthereumAddress}
           onIntentTableRowClick={handleIntentClick}
         />
         ) : (

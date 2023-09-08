@@ -16,7 +16,7 @@ import { LabeledSwitch } from "./LabeledSwitch";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
-import { processEMLContent } from "../../hooks/useDragAndDrop";
+import { processEMLContent } from "@hooks/useDragAndDrop";
 import { insert13Before10 } from "../../scripts/generate_input";
 import {
   PLACEHOLDER_EMAIL_BODY,

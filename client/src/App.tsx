@@ -9,13 +9,16 @@ import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Deposit } from "./pages/Deposit";
-import { TopNav } from "./components/layouts/TopNav";
-import { BottomNav } from "./components/layouts/BottomNav";
+import { TopNav } from "@components/layouts/TopNav";
+import { BottomNav } from "@components/layouts/BottomNav";
 
 import AccountProvider from "./contexts/Account/AccountProvider";
+import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
 import BalancesProvider from "./contexts/Balances/BalancesProvider";
+import RampProvider  from './contexts/Ramp/RampProvider';
+import RegistrationProvider  from './contexts/Registration/RegistrationProvider';
+import DepositsProvider  from './contexts/Deposits/DepositsProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
-import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -55,13 +58,19 @@ interface ProvidersProps {
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <AccountProvider>
-      <BalancesProvider>
-        <RampRegistrationProvider>
-          <ProofGenSettingsProvider>
-            { children }
-          </ProofGenSettingsProvider>
-        </RampRegistrationProvider>
-      </BalancesProvider>
+      <SmartContractsProvider>
+        <BalancesProvider>
+          <RampProvider>
+            <RegistrationProvider>
+              <DepositsProvider>
+                <ProofGenSettingsProvider>
+                  { children }
+                </ProofGenSettingsProvider>
+              </DepositsProvider>
+            </RegistrationProvider>
+          </RampProvider>
+        </BalancesProvider>
+      </SmartContractsProvider>
     </AccountProvider>
   )
 }
