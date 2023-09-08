@@ -75,12 +75,10 @@ contract Ramp is Ownable {
     }
 
     /* ============ Constants ============ */
-
     uint256 public constant PRECISE_UNIT = 1e18;
     uint256 public constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
     
     /* ============ State Variables ============ */
-    
     IERC20 public immutable usdc;
     IReceiveProcessor public receiveProcessor;
     IRegistrationProcessor public registrationProcessor;
@@ -96,7 +94,6 @@ contract Ramp is Ownable {
     uint256 public depositCounter;
 
     /* ============ Constructor ============ */
-
     constructor(
         address _owner,
         IERC20 _usdc,
@@ -152,9 +149,12 @@ contract Ramp is Ownable {
      * @param _receiveAmount    The amount of USD to receive
      * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
-    function offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount, uint256 _convenienceFee)
-        external
-    {
+    function offRamp(
+        bytes32 _venmoId,
+        uint256 _depositAmount,
+        uint256 _receiveAmount,
+        uint256 _convenienceFee
+    ) external {
         require(accounts[msg.sender].venmoIdHash == _venmoId, "Sender must be the account owner");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
