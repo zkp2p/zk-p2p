@@ -3,7 +3,7 @@ import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow } from "./OffRamperIntentRow";
-import { Intent } from "../../helpers/types";
+import { Intent } from "../../contexts/Deposits/types";
 
 
 // export interface Intent {

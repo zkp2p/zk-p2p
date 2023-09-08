@@ -1,16 +1,18 @@
 import { createContext } from 'react'
 
-import { Deposit } from './types'
+import { Deposit, Intent } from './types'
 
 
-interface RegistrationValues {
+interface DepositsValues {
   deposits: Deposit[];
+  depositIntents: Intent[];
 }
 
-const defaultValues: RegistrationValues = {
+const defaultValues: DepositsValues = {
   deposits: [],
+  depositIntents: [],
 };
 
-const RegistrationContext = createContext<RegistrationValues>(defaultValues)
+const DepositsContext = createContext<DepositsValues>(defaultValues)
 
-export default RegistrationContext
+export default DepositsContext

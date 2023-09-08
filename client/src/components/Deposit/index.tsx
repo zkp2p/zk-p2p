@@ -5,7 +5,7 @@ import { AutoColumn } from '../layouts/Column'
 import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
-import { Intent } from "../../helpers/types";
+import { Intent } from "../../contexts/Deposits/types";
 import { OffRamp } from './OffRamp'
 import useAccount from '@hooks/useAccount'
 
