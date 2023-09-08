@@ -18,23 +18,29 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * State
    */
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [ethereumAddress, setEthereumAddress] = useState<Address>(ZERO_ADDRESS);
-  const [network, setNetwork] = useState<string>(chain?.network ?? "");
+  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<Address>(ZERO_ADDRESS);
+  const [network, setNetwork] = useState<string>("");
 
   /*
    * Hooks
    */
   useEffect(() => {
+    console.log('addressRaw_1');
+    console.log(address);
+
     if (address) {
-      setEthereumAddress(address);
+      setLoggedInEthereumAddress(address);
       setIsLoggedIn(true);
     } else {
-      setEthereumAddress(ZERO_ADDRESS);
+      setLoggedInEthereumAddress(ZERO_ADDRESS);
       setIsLoggedIn(false);
     }
   }, [address]);
 
   useEffect(() => {
+    console.log('networkRaw_1');
+    console.log(chain);
+
     if (chain) {
       setNetwork(chain.network);
     } else {
@@ -46,7 +52,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     <AccountContext.Provider
       value={{
         isLoggedIn,
-        loggedInEthereumAddress: ethereumAddress,
+        loggedInEthereumAddress,
         network,
       }}
     >

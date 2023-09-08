@@ -4,14 +4,14 @@ import styled from 'styled-components/macro'
 import { AutoColumn } from '../layouts/Column'
 import { NewPermission } from './NewPermission'
 import { PermissionTable } from './PermissionTable'
-import AccountContext from '../../contexts/Account/AccountContext';
+import useAccount from '@hooks/useAccount'
 
 
 export default function PermissionsForm() {
   /*
    * Context
    */
-  const { ethereumAddress } = React.useContext(AccountContext);
+  const { loggedInEthereumAddress } = useAccount()
 
   /*
    * State
@@ -35,7 +35,7 @@ export default function PermissionsForm() {
         <Content>
           {!isAddPosition ? (
             <PermissionTable
-              loggedInWalletAddress={ethereumAddress}
+              loggedInWalletAddress={loggedInEthereumAddress}
               handleNewPositionClick={handleUpdateClick}
             />
           ) : (
