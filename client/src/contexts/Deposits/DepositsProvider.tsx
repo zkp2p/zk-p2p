@@ -69,13 +69,6 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   });
 
   /*
-   * Additional Reads:
-   */
-
-  // function getDeposit(uint256 _depositId) external view returns (Deposit memory) {
-  // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray) {
-
-  /*
    * Hooks
    */
   useEffect(() => {
