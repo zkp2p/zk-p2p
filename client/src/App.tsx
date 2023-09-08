@@ -17,6 +17,7 @@ import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProv
 import BalancesProvider from "./contexts/Balances/BalancesProvider";
 import RampProvider  from './contexts/Ramp/RampProvider';
 import RampRegistrationProvider  from './contexts/RampRegistration/RampRegistrationProvider';
+import DepositsProvider  from './contexts/Deposits/DepositsProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
 
 import "./App.css";
@@ -61,9 +62,11 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
         <BalancesProvider>
           <RampProvider>
             <RampRegistrationProvider>
-              <ProofGenSettingsProvider>
-                { children }
-              </ProofGenSettingsProvider>
+              <DepositsProvider>
+                <ProofGenSettingsProvider>
+                  { children }
+                </ProofGenSettingsProvider>
+              </DepositsProvider>
             </RampRegistrationProvider>
           </RampProvider>
         </BalancesProvider>

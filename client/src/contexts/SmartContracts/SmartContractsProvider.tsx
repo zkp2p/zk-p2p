@@ -7,6 +7,7 @@ import { ZERO_ADDRESS } from '../../helpers/constants'
 import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'
+import { Abi } from './types'
 
 
 interface ProvidersProps {
@@ -50,7 +51,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     <SmartContractsContext.Provider
       value={{
         rampAddress,
-        rampAbi: abi,
+        rampAbi: abi as Abi,
         usdcAddress
       }}
     >

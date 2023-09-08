@@ -2,17 +2,18 @@ import { createContext } from 'react'
 import { Address } from 'wagmi';
 
 import { ZERO_ADDRESS } from '../../helpers/constants'
+import { Abi } from './types'
 
 
 interface SmartContractsValues {
   rampAddress: Address;
-  rampAbi: any;
+  rampAbi: Abi;
   usdcAddress: Address;
 }
 
 const defaultValues: SmartContractsValues = {
   rampAddress: ZERO_ADDRESS,
-  rampAbi: {},
+  rampAbi: [],
   usdcAddress: ZERO_ADDRESS
 };
 
