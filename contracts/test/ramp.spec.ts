@@ -30,7 +30,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("Ramp", () => {
+describe.only("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -214,7 +214,7 @@ describe("Ramp", () => {
       await usdcToken.connect(offRamper.wallet).approve(ramp.address, usdc(10000));
     });
 
-    describe("#offRamp", async () => {
+    describe.only("#offRamp", async () => {
       let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
@@ -294,6 +294,20 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Deposit amount must be greater than min deposit amount");
+        });
+      });
+
+      describe("when the depositor has reached their max amount of deposits", async () => {
+        beforeEach(async () => {
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(102), subjectConvenienceFee);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(103), subjectConvenienceFee);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(104), subjectConvenienceFee);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(105), subjectConvenienceFee);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(106), subjectConvenienceFee);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Maximum deposit amount reached");
         });
       });
 
@@ -842,7 +856,7 @@ describe("Ramp", () => {
       let subjectSignals: BigNumber[];
       let subjectCaller: Account;
 
-      let depositHash: BigNumber;
+      let depositId: BigNumber;
       let intentHash: string;
 
       beforeEach(async () => {
@@ -854,12 +868,12 @@ describe("Ramp", () => {
         );
 
         const venmoId = await calculateVenmoIdHash("2");
-        depositHash = ZERO;
+        depositId = ZERO;
 
-        await ramp.connect(onRamper.wallet).signalIntent(depositHash, usdc(50));
+        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        intentHash = calculateIntentHash(venmoId, depositHash, currentTimestamp);
+        intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
         
         subjectSignals = new Array<BigNumber>(51).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
@@ -905,11 +919,11 @@ describe("Ramp", () => {
       });
 
       it("should correctly update state in the deposit mapping", async () => {
-        const preDeposit = await ramp.getDeposit(depositHash);
+        const preDeposit = await ramp.getDeposit(depositId);
 
         await subject();
 
-        const postDeposit = await ramp.getDeposit(depositHash);
+        const postDeposit = await ramp.getDeposit(depositId);
 
         expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
         expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
@@ -919,11 +933,39 @@ describe("Ramp", () => {
       it("should emit an IntentFulfilled event", async () => {
         await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
           intentHash,
-          depositHash,
+          depositId,
           onRamper.address,
           usdc(50),
           usdc(2)
         );
+      });
+
+      describe("when the intent zeroes out the deposit", async () => {
+        beforeEach(async () => {
+          await subject();
+          
+          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+          const currentTimestamp = await blockchain.getCurrentTimestamp();
+          intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
+
+          subjectSignals[3] = BigNumber.from(intentHash);
+        });
+
+        it("should prune the deposit", async () => {
+          await subject();
+
+          const accountInfo = await ramp.getAccountInfo(offRamper.address);
+          const deposit = await ramp.getDeposit(depositId);
+
+          expect(accountInfo.deposits).to.not.include(depositId);
+          expect(deposit.remainingDeposits).to.eq(ZERO);
+          expect(deposit.outstandingIntentAmount).to.eq(ZERO);
+          expect(deposit.intentHashes).to.not.include(intentHash);
+        });
+
+        it("should emit a DepositClosed event", async () => {
+          await expect(subject()).to.emit(ramp, "DepositClosed").withArgs(depositId, offRamper.address);
+        });
       });
 
       describe("when the proof wasn't submitted in time to get the convenience reward", async () => {
@@ -950,7 +992,7 @@ describe("Ramp", () => {
         it("should emit an IntentFulfilled event", async () => {
           await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
             intentHash,
-            depositHash,
+            depositId,
             onRamper.address,
             usdc(50),
             0
@@ -1006,7 +1048,7 @@ describe("Ramp", () => {
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
         subjectSignals = new Array<BigNumber>(51).fill(ZERO);
-        subjectSignals[0] = usdc(50);
+        subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
         subjectSignals[3] = BigNumber.from(intentHash);
@@ -1067,9 +1109,37 @@ describe("Ramp", () => {
         );
       });
 
+      describe("when the intent zeroes out the deposit", async () => {
+        beforeEach(async () => {
+          await subject();
+          
+          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+          const currentTimestamp = await blockchain.getCurrentTimestamp();
+          intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
+
+          subjectSignals[3] = BigNumber.from(intentHash);
+        });
+
+        it("should prune the deposit", async () => {
+          await subject();
+
+          const accountInfo = await ramp.getAccountInfo(offRamper.address);
+          const deposit = await ramp.getDeposit(depositId);
+
+          expect(accountInfo.deposits).to.not.include(depositId);
+          expect(deposit.remainingDeposits).to.eq(ZERO);
+          expect(deposit.outstandingIntentAmount).to.eq(ZERO);
+          expect(deposit.intentHashes).to.not.include(intentHash);
+        });
+
+        it("should emit a DepositClosed event", async () => {
+          await expect(subject()).to.emit(ramp, "DepositClosed").withArgs(depositId, offRamper.address);
+        });
+      });
+
       describe("when the amount paid was not enough", async () => {
         beforeEach(async () => {
-          subjectSignals[0] = usdc(49.99);
+          subjectSignals[0] = usdc(50);
         });
 
         it("should revert", async () => {
@@ -1176,6 +1246,13 @@ describe("Ramp", () => {
         );
       });
 
+      it("should emit DepositClosed events for both deposits", async () => {
+        const tx = await subject();
+
+        await expect(tx).to.emit(ramp, "DepositClosed").withArgs(subjectDepositIds[1], offRamper.address);
+        await expect(tx).to.emit(ramp, "DepositClosed").withArgs(subjectDepositIds[1], offRamper.address);
+      });
+
       describe("when there is an outstanding intent", async () => {
         beforeEach(async () => {
           await ramp.connect(onRamper.wallet).signalIntent(subjectDepositIds[0], usdc(50));
@@ -1205,12 +1282,18 @@ describe("Ramp", () => {
           expect(depositOne.outstandingIntentAmount).to.eq(usdc(50));
         });
 
-        it("should delete deposit two", async () => {
+        it("should delete deposit two from deposits and account info", async () => {
           await subject();
   
           const depositTwo = await ramp.getDeposit(subjectDepositIds[1]);
-  
+          const accountInfo = await ramp.getAccountInfo(offRamper.address);
+
+          expect(accountInfo.deposits).to.not.include(subjectDepositIds[1]);
           expect(depositTwo.depositor).to.eq(ADDRESS_ZERO);
+        });
+
+        it("should emit a DepositClosed event for deposit two", async () => {
+          await expect(subject()).to.emit(ramp, "DepositClosed").withArgs(subjectDepositIds[1], offRamper.address);
         });
 
         describe("but the intent is expired", async () => {

@@ -54,6 +54,7 @@ contract Ramp is Ownable {
         uint256 amount
     );
 
+    event DepositClosed(uint256 depositId, address depositor);
     event ConvenienceRewardTimePeriodSet(uint256 convenienceRewardTimePeriod);
     event MinDepositAmountSet(uint256 minDepositAmount);
     event NewSendProcessorSet(address sendProcessor);
@@ -171,6 +172,7 @@ contract Ramp is Ownable {
     ) external {
         bytes32 _venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
 
+        require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(accounts[msg.sender].venmoIdHash == _venmoIdHash, "Sender must be the account owner");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -247,6 +249,7 @@ contract Ramp is Ownable {
         _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
+        _closeDepositIfNecessary(intent.deposit, deposit);
 
         uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
         usdc.transfer(intent.onramper, intent.amount - convenienceFee);
@@ -273,6 +276,7 @@ contract Ramp is Ownable {
         _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
+        _closeDepositIfNecessary(intent.deposit, deposit);
 
         usdc.transfer(intent.onramper, intent.amount);
         
@@ -302,10 +306,7 @@ contract Ramp is Ownable {
             emit DepositWithdrawn(depositId, deposit.depositor, deposit.remainingDeposits + reclaimableAmount);
             
             delete deposit.remainingDeposits;
-            if (deposit.outstandingIntentAmount == 0) {
-                delete deposits[depositId];
-                accounts[msg.sender].deposits.removeStorage(depositId);
-            }
+            _closeDepositIfNecessary(depositId, deposit);
         }
 
         usdc.transfer(msg.sender, returnAmount);
@@ -463,6 +464,15 @@ contract Ramp is Ownable {
         emit IntentPruned(_intent, depositId);
     }
 
+    function _closeDepositIfNecessary(uint256 _depositId, Deposit storage _deposit) internal {
+        uint256 openDepositAmount = _deposit.outstandingIntentAmount + _deposit.remainingDeposits;
+        if (openDepositAmount == 0) {
+            accounts[_deposit.depositor].deposits.removeStorage(_depositId);
+            emit DepositClosed(_depositId, _deposit.depositor);
+            delete deposits[_depositId];
+        }
+    }
+
     function _verifyOnRampWithConvenienceProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
@@ -508,7 +518,7 @@ contract Ramp is Ownable {
         Deposit storage deposit = deposits[intent.deposit];
 
         require(accounts[deposit.depositor].venmoIdHash == offRamperIdHash, "Offramper id does not match");
-        require(amount >= intent.amount, "Payment was not enough");
+        require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);
     }
