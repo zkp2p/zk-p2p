@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Address } from 'wagmi';
+import { Address, erc20ABI } from 'wagmi';
 
 import { abi } from "../../helpers/abi/ramp.abi";
 import { contractAddresses } from "../../helpers/deployed_addresses";
@@ -52,7 +52,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       value={{
         rampAddress,
         rampAbi: abi as Abi,
-        usdcAddress
+        usdcAddress,
+        usdcAbi: erc20ABI as any,
       }}
     >
       {children}

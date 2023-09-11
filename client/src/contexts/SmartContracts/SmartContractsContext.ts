@@ -9,12 +9,14 @@ interface SmartContractsValues {
   rampAddress: Address;
   rampAbi: Abi;
   usdcAddress: Address;
+  usdcAbi?: Abi;
 }
 
 const defaultValues: SmartContractsValues = {
   rampAddress: ZERO_ADDRESS,
   rampAbi: [],
-  usdcAddress: ZERO_ADDRESS
+  usdcAddress: ZERO_ADDRESS,
+  usdcAbi: [],
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

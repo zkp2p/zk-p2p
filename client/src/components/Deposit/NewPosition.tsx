@@ -8,6 +8,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
+import { usdc, ether } from '../../helpers/units'
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
 import useRegistration from '@hooks/useRegistration'
@@ -17,6 +18,16 @@ import useSmartContracts from '@hooks/useSmartContracts';
 interface NewPositionProps {
   handleBackClick: () => void;
 }
+
+const NewPositionState = {
+  INCOMPLETE: 'incomplete',
+  INSUFFICIENT_BALANCE: 'insufficient_balance',
+  APPROVAL_REQUIRED: 'approval_required',
+  CONVENIENCE_FEE_INVALID: 'convenience_fee_invalid',
+  MAX_INTENTS_REACHED: 'max_intents_reached',
+  MIN_DEPOSIT_THRESHOLD_NOT_MET: 'min_deposit_threshold_not_met',
+  VALID: 'valid'
+};
  
 export const NewPosition: React.FC<NewPositionProps> = ({
   handleBackClick
@@ -24,7 +35,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress, rampAbi } = useSmartContracts()
+  const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { registrationHash } = useRegistration()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
@@ -32,9 +43,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * State
    */
+  const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
   const [depositAmount, setDepositAmount] = useState<number>(0);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [convenienceFee, setConvenienceFee] = useState<number>(0);
+
+  const [amountToApprove, setAmountToApprove] = useState<number>(0);
 
   /*
     Contract Writes
@@ -49,9 +63,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       registrationHash,
-      depositAmount,
-      receiveAmount,
-      convenienceFee,
+      usdc(depositAmount),
+      usdc(receiveAmount),
+      ether(convenienceFee),
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -63,44 +77,165 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     write: writeSubmitDeposit
   } = useContractWrite(writeDepositConfig);
 
+  //
+  // approve(address spender, uint256 value)
+  //
+  const { config: writeApproveConfig } = usePrepareContractWrite({
+    address: usdcAddress,
+    abi: usdcAbi,
+    functionName: "approve",
+    args: [rampAddress, usdc(amountToApprove)],
+  });
+
+  const {
+    isLoading: isSubmitApproveLoading,
+    write: writeSubmitApprove
+  } = useContractWrite(writeApproveConfig);
+
+  /*
+    Hooks
+  */
+
+  useEffect(() => {
+    if (depositAmount && usdcBalance && usdcApprovalToRamp && minimumDepositAmount) {
+      if (depositAmount > usdcBalance.toNumber()) {
+        setFormState(NewPositionState.INSUFFICIENT_BALANCE);
+      } else if (depositAmount < minimumDepositAmount) {
+        setFormState(NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+      } else if (depositAmount > usdcApprovalToRamp.toNumber()) {
+        setFormState(NewPositionState.APPROVAL_REQUIRED);
+      } else {
+        if (receiveAmount && convenienceFee) {
+          if (convenienceFee > depositAmount) {
+            setFormState(NewPositionState.CONVENIENCE_FEE_INVALID);
+          } else {
+            setFormState(NewPositionState.VALID);
+          }
+        } else {
+          setFormState(NewPositionState.INCOMPLETE);
+        }
+      }
+    } else {
+      setFormState(NewPositionState.INCOMPLETE);
+    }
+  }, [
+      depositAmount,
+      receiveAmount,
+      convenienceFee,
+      minimumDepositAmount,
+      usdcBalance,
+      usdcApprovalToRamp
+    ]
+  );
+
+  useEffect(() => {
+    if (!depositAmount || !usdcApprovalToRamp) {
+      setAmountToApprove(0);
+    } else {
+      const approvalDifference = depositAmount - usdcApprovalToRamp.toNumber();
+      if (approvalDifference > 0) {
+        setAmountToApprove(approvalDifference);
+      } else {
+        setAmountToApprove(0);
+      }
+    }
+    
+  }, [depositAmount, usdcApprovalToRamp]);
+
   /*
     Helpers
   */
 
   const depositAmountInputErrorString = (): string => {
-    if (!depositAmount) {
+    if (depositAmount) {
+      switch (formState) {
+        case NewPositionState.INSUFFICIENT_BALANCE:
+          return `Current USDC balance: ${usdcBalance}`;
+        
+        case NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+          return `Minimum deposit amount is ${minimumDepositAmount}`;
+
+        case NewPositionState.APPROVAL_REQUIRED:
+          return `Current approved transfer amount: ${usdcApprovalToRamp}`;
+
+        default:
+          return '';
+      }
+    } else {
       return '';
     }
-
-    if (depositAmount < minimumDepositAmount) {
-      return `Minimum deposit amount is ${minimumDepositAmount}`;
-    }
-
-    if (usdcApprovalToRamp) {
-      if (depositAmount > usdcApprovalToRamp.toNumber()) {
-        return `Current approved transfer amount: ${usdcApprovalToRamp}`;
-      }
-    }
-
-    if (usdcBalance) {
-      if (depositAmount > usdcBalance.toNumber()) {
-        return `Current USDC balance: ${usdcBalance}`;
-      }
-    }
-
-    return '';
   }
 
   const convenienceFeeInputErrorString = (): string => {
-    if (!depositAmount || !convenienceFee) {
+    if (depositAmount && convenienceFee) {
+      if (convenienceFee > depositAmount) {
+        return `Convenience fee cannot be greater than deposit amount`;
+      } else {
+        return '';
+      }
+    } else {
       return '';
     }
+  }
 
-    if (convenienceFee > depositAmount) {
-      return `Convenience fee cannot be greater than deposit amount`;
+  const ctaDisabled = (): boolean => {
+    switch (formState) {
+      case NewPositionState.INCOMPLETE:
+      case NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewPositionState.CONVENIENCE_FEE_INVALID:
+      case NewPositionState.INSUFFICIENT_BALANCE:
+      case NewPositionState.MAX_INTENTS_REACHED:
+        return true;
+
+      case NewPositionState.APPROVAL_REQUIRED:
+        return false;
+
+      case NewPositionState.VALID:
+      default:
+        return false;
     }
+  }
 
-    return '';
+  const ctaText = (): string => {
+    switch (formState) {
+      case NewPositionState.APPROVAL_REQUIRED:
+        return 'Approve USDC Transfer';
+
+      case NewPositionState.INSUFFICIENT_BALANCE:
+        return 'Insufficient USDC Balance';
+
+      case NewPositionState.VALID:
+      default:
+        return 'Submit Deposit';
+    }
+  }
+
+  const ctaLoading = (): boolean => {
+    switch (formState) {
+      case NewPositionState.APPROVAL_REQUIRED:
+        return isSubmitApproveLoading;
+
+      case NewPositionState.VALID:
+        return isSubmitDepositLoading;
+
+      default:
+        return false;
+    }
+  }
+
+  const ctaOnClick = async () => {
+    switch (formState) {
+      case NewPositionState.APPROVAL_REQUIRED:
+        writeSubmitApprove?.();
+        break;
+
+      case NewPositionState.VALID:
+        writeSubmitDeposit?.();
+        break;
+
+      default:
+        break;
+    }
   }
 
   return (
@@ -150,13 +285,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
           <ButtonContainer>
             <Button
-              disabled={depositAmount === 0 || receiveAmount === 0 || convenienceFee === 0}
-              loading={isSubmitDepositLoading}
+              disabled={ctaDisabled()}
+              loading={ctaLoading()}
               onClick={async () => {
-                writeSubmitDeposit?.();
+                ctaOnClick();
               }}
             >
-              Submit Deposit
+              {ctaText()}
             </Button>
           </ButtonContainer>
         </Body>
