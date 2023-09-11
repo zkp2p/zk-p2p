@@ -38,7 +38,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   */
   const { isRegistered } = useRegistration()
   const { isLoggedIn } = useAccount()
-  const { deposits, depositIntents } = useDeposits()
+  const { deposits } = useDeposits()
 
   /*
     State

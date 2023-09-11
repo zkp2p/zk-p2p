@@ -9,6 +9,7 @@ import { useContractRead } from 'wagmi'
 
 import { Deposit, StoredDeposit } from '../Deposits/types'
 import { fetchBestDepositForAmount, createDepositsStore } from './helper'
+import { fromUsdc, fromEther } from '../../helpers/units'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
 
@@ -78,10 +79,10 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
-          remainingDepositAmount: depositData.remainingDeposits.toString(),
-          outstandingIntentAmount: depositData.outstandingIntentAmount.toString(),
-          conversionRate: depositData.conversionRate.toString(),
-          convenienceFee: depositData.convenienceFee.toString(),
+          remainingDepositAmount: fromUsdc(depositData.remainingDeposits).toNumber(),
+          outstandingIntentAmount: fromUsdc(depositData.outstandingIntentAmount).toNumber(),
+          conversionRate: fromEther(depositData.conversionRate).toNumber(),
+          convenienceFee: fromEther(depositData.convenienceFee).toNumber(),
           intentHashes: depositData.intentHashes,
         };
 
