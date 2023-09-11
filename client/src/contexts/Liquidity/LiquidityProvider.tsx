@@ -1,7 +1,14 @@
-import React, { useEffect, useState, ReactNode, useMemo } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  ReactNode,
+  useMemo
+} from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit } from '../Deposits/types'
+import { Deposit, StoredDeposit } from '../Deposits/types'
+import { fetchBestDepositForAmount, createDepositsStore } from './helper'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
 
@@ -23,6 +30,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * State
    */
   const [deposits, setDeposits] = useState<Deposit[]>([]);
+  const [depositStore, setDepositStore] = useState<StoredDeposit[]>([]);
 
   /*
    * Contract Reads
@@ -59,6 +67,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   /*
    * Hooks
    */
+
   useEffect(() => {
     if (!isFetchDepositsLoading && !isFetchDepositsError && depositsRaw) {
       const depositsArrayRaw = depositsRaw as any[];
@@ -85,10 +94,21 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
 
+  useEffect(() => {
+    const newStore = createDepositsStore(depositIdsToFetch, deposits); // Assume depositIdsToFetch is correct
+    setDepositStore(newStore);
+  }, [deposits, depositIdsToFetch]);
+
+  const getBestDepositForAmount = useCallback((amount: number) => {
+    return fetchBestDepositForAmount(amount, depositStore);
+  }, [depositStore]);
+
   return (
     <LiquidityContext.Provider
       value={{
         deposits,
+        depositStore,
+        getBestDepositForAmount,
       }}
     >
       {children}
