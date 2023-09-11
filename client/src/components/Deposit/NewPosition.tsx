@@ -263,7 +263,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             placeholder={'1000'}
             error={depositAmountInputErrorString()}
             onChange={(e) => {
-              setDepositAmount(e.currentTarget.value);
+              const value = e.currentTarget.value;
+              if (value === "") {
+                setDepositAmount(0);
+              } else if (!isNaN(value) && parseFloat(value) >= 0) {
+                setDepositAmount(parseFloat(value));
+              }
             }}
           />
           <SingleLineInput
@@ -271,7 +276,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={receiveAmount === 0 ? '' : receiveAmount.toString()}
             placeholder={'1050'}
             onChange={(e) => {
-              setReceiveAmount(e.currentTarget.value);
+              const value = e.currentTarget.value;
+              if (value === "") {
+                setReceiveAmount(0);
+              } else if (!isNaN(value) && parseFloat(value) >= 0) {
+                setReceiveAmount(parseFloat(value));
+              }
             }}
           />
           <SingleLineInput
@@ -280,7 +290,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             placeholder={'5'}
             error={convenienceFeeInputErrorString()}
             onChange={(e) => {
-              setConvenienceFee(e.currentTarget.value);
+              const value = e.currentTarget.value;
+              if (value === "") {
+                setConvenienceFee(0);
+              } else if (!isNaN(value) && parseFloat(value) >= 0) {
+                setConvenienceFee(parseFloat(value));
+              }
             }}
           />
           <ButtonContainer>
