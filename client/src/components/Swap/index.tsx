@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
@@ -8,8 +9,11 @@ import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { StoredDeposit } from '../../contexts/Deposits/types'
+import { usdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/useRegistration'
 import useLiquidity from '@hooks/useLiquidity';
 
 
@@ -31,7 +35,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
   */
   const { isLoggedIn } = useAccount();
   const { currentIntentHash } = useOnRamperIntents();
+  const { registrationHash } = useRegistration()
   const { getBestDepositForAmount } = useLiquidity();
+  const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
     State
@@ -70,6 +76,32 @@ const SwapModal: React.FC<SwapModalProps> = ({
     // Reset form fields
     setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: 0 });
   };
+
+  /*
+    Contract Writes
+  */
+
+  //
+  // signalIntent(bytes32 _venmoId, uint256 _depositId, uint256 _amount)
+  //
+  const { config: writeIntentConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'signalIntent',
+    args: [
+      registrationHash,
+      currentQuote.depositId,
+      usdc(parseFloat(currentQuote.requestedUSDC)),
+    ],
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+  });
+
+  const {
+    isLoading: isSubmitIntentLoading,
+    write: writeSubmitIntent
+  } = useContractWrite(writeIntentConfig);
 
   /*
     Hooks
@@ -141,7 +173,11 @@ const SwapModal: React.FC<SwapModalProps> = ({
             />
           ) : (
             <CTAButton
-              disabled={false}
+              disabled={currentQuote.depositId === 0 && currentQuote.fiatToSend === ''}
+              loading={isSubmitIntentLoading}
+              onClick={async () => {
+                writeSubmitIntent?.();
+              }}
             >
               Start Order
             </CTAButton>
