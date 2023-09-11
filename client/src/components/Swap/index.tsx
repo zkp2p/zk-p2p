@@ -8,6 +8,8 @@ import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import useAccount from '@hooks/useAccount';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useLiquidity from '@hooks/useLiquidity';
 
 
 export type SwapQuote = {
@@ -25,8 +27,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
     Contexts
   */
-
-    const { isLoggedIn } = useAccount();
+  const { isLoggedIn } = useAccount();
+  const { currentIntentHash } = useOnRamperIntents();
+  const { getBestDepositForAmount } = useLiquidity();
   
   /*
     State
@@ -111,9 +114,13 @@ const SwapModal: React.FC<SwapModalProps> = ({
         </MainContentWrapper>
       </SwapModalContainer>
 
-      <IntentTable
-        onRowClick={onIntentTableRowClick}
-      />
+      {
+        currentIntentHash && currentIntentHash !== '' && (
+          <IntentTable
+            onRowClick={onIntentTableRowClick}
+          />
+        )
+      }
     </Wrapper>
   );
 };
