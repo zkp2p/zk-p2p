@@ -214,7 +214,7 @@ describe.only("Ramp", () => {
       await usdcToken.connect(offRamper.wallet).approve(ramp.address, usdc(10000));
     });
 
-    describe.only("#offRamp", async () => {
+    describe("#offRamp", async () => {
       let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
@@ -492,6 +492,16 @@ describe.only("Ramp", () => {
           it("should revert", async () => {
             await expect(subject()).to.be.revertedWith("Not enough liquidity");
           });
+        });
+      });
+
+      describe("when the caller is on the depositor's denylist", async () => {
+        beforeEach(async () => {
+          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateVenmoIdHash("2"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper on depositor's denylist");
         });
       });
 
@@ -835,6 +845,16 @@ describe.only("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Signaled amount must be greater than 0");
+        });
+      });
+
+      describe("when the caller is on the depositor's denylist", async () => {
+        beforeEach(async () => {
+          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateVenmoIdHash("2"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper on depositor's denylist");
         });
       });
 
@@ -1353,6 +1373,37 @@ describe.only("Ramp", () => {
       });
     });
 
+    describe("#addAccountToDenylist", async () => {
+      let subjectDeniedUser: string;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectDeniedUser = await calculateVenmoIdHash("2");
+        subjectCaller = offRamper;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).addAccountToDenylist(subjectDeniedUser);
+      }
+
+      it("should set the denied user to true in the denied user mapping", async () => {
+        await subject();
+
+        const isDenied = await ramp.userDenylist(await calculateVenmoIdHash("1"), await calculateVenmoIdHash("2"));
+
+        expect(isDenied).to.be.true;
+      });
+
+      it("should emit a UserAddedToDenylist event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "UserAddedToDenylist").withArgs(
+          await calculateVenmoIdHash("1"),
+          await calculateVenmoIdHash("2")
+        );
+      });      
+    });
+
     describe("#setConvenienceRewardTimePeriod", async () => {
       let subjectConvenienceRewardTimePeriod: BigNumber;
       let subjectCaller: Account;
@@ -1540,6 +1591,93 @@ describe.only("Ramp", () => {
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
         });
+      });
+    });
+
+    describe("#getAccountDeposits", async () => {
+      let subjectAccount: Address;
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(101),
+          usdc(2)
+        );
+
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(102),
+          usdc(2)
+        );
+
+        subjectAccount = offRamper.address;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.getAccountDeposits(subjectAccount);
+      }
+
+      it("should return the expected deposits", async () => {
+        const deposits = await subject();
+
+        const conversionRateOne = usdc(100).mul(ether(1)).div(usdc(101));
+        const conversionRateTwo = usdc(100).mul(ether(1)).div(usdc(102));
+
+        expect(deposits[0].depositor).to.eq(offRamper.address);
+        expect(deposits[1].depositor).to.eq(offRamper.address);
+        expect(deposits[0].remainingDeposits).to.eq(usdc(100));
+        expect(deposits[1].remainingDeposits).to.eq(usdc(100));
+        expect(deposits[0].conversionRate).to.eq(conversionRateOne);
+        expect(deposits[1].conversionRate).to.eq(conversionRateTwo);
+      });
+    });
+
+    describe("#getDepositFromIds", async () => {
+      let subjectDepositIds: BigNumber[];
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(101),
+          usdc(2)
+        );
+
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(102),
+          usdc(2)
+        );
+
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(103),
+          usdc(2)
+        );
+
+        subjectDepositIds = [ZERO, BigNumber.from(2)];
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.getDepositFromIds(subjectDepositIds);
+      }
+
+      it("should return the expected deposits", async () => {
+        const deposits = await subject();
+
+        const conversionRateOne = usdc(100).mul(ether(1)).div(usdc(101));
+        const conversionRateTwo = usdc(100).mul(ether(1)).div(usdc(103));
+
+        expect(deposits[0].depositor).to.eq(offRamper.address);
+        expect(deposits[1].depositor).to.eq(offRamper.address);
+        expect(deposits[0].remainingDeposits).to.eq(usdc(100));
+        expect(deposits[1].remainingDeposits).to.eq(usdc(100));
+        expect(deposits[0].conversionRate).to.eq(conversionRateOne);
+        expect(deposits[1].conversionRate).to.eq(conversionRateTwo);
       });
     });
   });

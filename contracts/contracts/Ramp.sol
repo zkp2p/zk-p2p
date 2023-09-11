@@ -55,6 +55,7 @@ contract Ramp is Ownable {
     );
 
     event DepositClosed(uint256 depositId, address depositor);
+    event UserAddedToDenylist(bytes32 denyingUser, bytes32 deniedUser);
     event ConvenienceRewardTimePeriodSet(uint256 convenienceRewardTimePeriod);
     event MinDepositAmountSet(uint256 minDepositAmount);
     event NewSendProcessorSet(address sendProcessor);
@@ -97,7 +98,9 @@ contract Ramp is Ownable {
     ISendProcessor public sendProcessor;
 
     mapping(address => AccountInfo) public accounts;
-    mapping(bytes32 => bytes32) public venmoIdIntent;   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
+    mapping(bytes32 => bytes32) public venmoIdIntent;                   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
+    mapping(bytes32 => mapping(bytes32=>bool)) public userDenylist;     // Mapping of venmoIdHash to user's deny list. Users on another users deny
+                                                                        // list cannot signal and intent on their deposit
     mapping(uint256 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
@@ -198,7 +201,10 @@ contract Ramp is Ownable {
 
     function signalIntent(uint256 _depositId, uint256 _amount) external {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
+        Deposit storage deposit = deposits[_depositId];
+        bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
 
+        require(!userDenylist[depositorVenmoIdHash][venmoIdHash], "Onramper on depositor's denylist");
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
@@ -207,19 +213,22 @@ contract Ramp is Ownable {
 
     function replaceIntent(uint256 _depositId, uint256 _amount) external {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
+        Deposit storage newDeposit = deposits[_depositId];
+        bytes32 depositorVenmoIdHash = accounts[newDeposit.depositor].venmoIdHash;
 
+        require(!userDenylist[depositorVenmoIdHash][venmoIdHash], "Onramper on depositor's denylist");
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] != bytes32(0), "Intent must be outstanding to call");
 
         bytes32 pendingIntentHash = venmoIdIntent[venmoIdHash];
-        Deposit storage deposit = deposits[intents[pendingIntentHash].deposit];
+        Deposit storage oldDeposit = deposits[intents[pendingIntentHash].deposit];
         Intent memory intent = intents[pendingIntentHash];
 
         // Intent hash is removed from deposit in prune intent function
-        deposit.outstandingIntentAmount -= intent.amount;
-        deposit.remainingDeposits += intent.amount;
+        oldDeposit.outstandingIntentAmount -= intent.amount;
+        oldDeposit.remainingDeposits += intent.amount;
         _pruneIntent(
-            deposit,
+            oldDeposit,
             pendingIntentHash
         );
 
@@ -310,6 +319,13 @@ contract Ramp is Ownable {
         }
 
         usdc.transfer(msg.sender, returnAmount);
+    }
+
+    function addAccountToDenylist(bytes32 _deniedUser) external {
+        bytes32 denyingUser = accounts[msg.sender].venmoIdHash;
+        userDenylist[denyingUser][_deniedUser] = true;
+
+        emit UserAddedToDenylist(denyingUser, _deniedUser);
     }
 
     /* ============ Governance Functions ============ */
