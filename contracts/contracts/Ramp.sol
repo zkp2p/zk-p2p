@@ -72,6 +72,7 @@ contract Ramp is Ownable {
     struct Deposit {
         address depositor;
         uint256[5] packedVenmoId;
+        uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
         uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
@@ -80,15 +81,15 @@ contract Ramp is Ownable {
     }
 
     struct Intent {
-        address onramper;
+        address onRamper;
         uint256 deposit;
         uint256 amount;
         uint256 intentTimestamp;
     }
 
     /* ============ Constants ============ */
-    uint256 public constant PRECISE_UNIT = 1e18;
-    uint256 public constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
+    uint256 internal constant PRECISE_UNIT = 1e18;
+    uint256 internal constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
@@ -97,7 +98,7 @@ contract Ramp is Ownable {
     IRegistrationProcessor public registrationProcessor;
     ISendProcessor public sendProcessor;
 
-    mapping(address => AccountInfo) public accounts;
+    mapping(address => AccountInfo) internal accounts;
     mapping(bytes32 => bytes32) public venmoIdIntent;                   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
     mapping(bytes32 => mapping(bytes32=>bool)) public userDenylist;     // Mapping of venmoIdHash to user's deny list. Users on another users deny
                                                                         // list cannot signal and intent on their deposit
@@ -189,6 +190,7 @@ contract Ramp is Ownable {
         deposits[depositId] = Deposit({
             depositor: msg.sender,
             packedVenmoId: _packedVenmoId,
+            depositAmount: _depositAmount,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
@@ -261,10 +263,10 @@ contract Ramp is Ownable {
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
-        usdc.transfer(intent.onramper, intent.amount - convenienceFee);
+        usdc.transfer(intent.onRamper, intent.amount - convenienceFee);
         usdc.transfer(msg.sender, convenienceFee);
 
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, convenienceFee);
     }
 
     // DO we need to prune deposits now? In order to not pass blank deposits
@@ -287,9 +289,9 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        usdc.transfer(intent.onramper, intent.amount);
+        usdc.transfer(intent.onRamper, intent.amount);
         
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onramper, intent.amount, 0);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, 0);
     }
 
     function withdrawDeposit(uint256[] memory _depositIds) external {
@@ -395,6 +397,16 @@ contract Ramp is Ownable {
         return depositArray;
     }
 
+    function getIntentFromIds(bytes32[] memory _intentIds) external view returns (Intent[] memory intentArray) {
+        intentArray = new Intent[](_intentIds.length);
+
+        for (uint256 i = 0; i < _intentIds.length; ++i) {
+            intentArray[i] = intents[_intentIds[i]];
+        }
+
+        return intentArray;
+    }
+
     /* ============ Internal Functions ============ */
 
     function _calculateIntentHash(
@@ -428,7 +440,7 @@ contract Ramp is Ownable {
         }
 
         intents[intentHash] = Intent({
-            onramper: msg.sender,
+            onRamper: msg.sender,
             deposit: _depositId,
             amount: _amount,
             intentTimestamp: block.timestamp
@@ -473,7 +485,7 @@ contract Ramp is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intent) internal {
         uint256 depositId = intents[_intent].deposit;
 
-        delete venmoIdIntent[accounts[intents[_intent].onramper].venmoIdHash];
+        delete venmoIdIntent[accounts[intents[_intent].onRamper].venmoIdHash];
         delete intents[_intent];
         _deposit.intentHashes.removeStorage(_intent);
 
@@ -507,7 +519,7 @@ contract Ramp is Ownable {
         ) = receiveProcessor.processProof(_a, _b, _c, _signals);
 
         Intent memory intent = intents[intentHash];
-        require(accounts[intent.onramper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
+        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
 
         bool distributeConvenienceReward = block.timestamp - timestamp < convenienceRewardTimePeriod;
         return (intent, intentHash, distributeConvenienceReward);

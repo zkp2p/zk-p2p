@@ -138,7 +138,7 @@ describe.only("Ramp", () => {
     it("should register the caller", async () => {
       await subject();
 
-      const offRamperVenmoIdHash = await ramp.accounts(subjectCaller.address);
+      const offRamperVenmoIdHash = (await ramp.getAccountInfo(subjectCaller.address)).venmoIdHash;
       expect(offRamperVenmoIdHash).to.eq(subjectSignals[1]);
     });
 
@@ -251,6 +251,7 @@ describe.only("Ramp", () => {
 
         expect(deposit.depositor).to.eq(subjectCaller.address);
         expect(JSON.stringify(deposit.packedVenmoId)).to.eq(JSON.stringify(subjectPackedVenmoId));
+        expect(deposit.depositAmount).to.eq(subjectDepositAmount);
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
         expect(deposit.conversionRate).to.eq(conversionRate);
@@ -352,7 +353,7 @@ describe.only("Ramp", () => {
 
         const intent = await ramp.intents(intentHash);
 
-        expect(intent.onramper).to.eq(subjectCaller.address);
+        expect(intent.onRamper).to.eq(subjectCaller.address);
         expect(intent.deposit).to.eq(subjectDepositId);
         expect(intent.amount).to.eq(subjectAmount);
         expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -442,7 +443,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(oldIntentHash);
   
-          expect(intent.onramper).to.eq(ADDRESS_ZERO);
+          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
           expect(intent.deposit).to.eq(ZERO_BYTES32);
           expect(intent.amount).to.eq(ZERO);
           expect(intent.intentTimestamp).to.eq(ZERO);
@@ -456,7 +457,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(intentHash);
   
-          expect(intent.onramper).to.eq(subjectCaller.address);
+          expect(intent.onRamper).to.eq(subjectCaller.address);
           expect(intent.deposit).to.eq(subjectDepositId);
           expect(intent.amount).to.eq(subjectAmount);
           expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -579,7 +580,7 @@ describe.only("Ramp", () => {
 
         const intent = await ramp.intents(intentHash);
 
-        expect(intent.onramper).to.eq(subjectCaller.address);
+        expect(intent.onRamper).to.eq(subjectCaller.address);
         expect(intent.deposit).to.eq(subjectDepositId);
         expect(intent.amount).to.eq(subjectAmount);
         expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -590,7 +591,7 @@ describe.only("Ramp", () => {
 
         const intent = await ramp.intents(originalIntentHash);
 
-        expect(intent.onramper).to.eq(ADDRESS_ZERO);
+        expect(intent.onRamper).to.eq(ADDRESS_ZERO);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
         expect(intent.amount).to.eq(ZERO);
         expect(intent.intentTimestamp).to.eq(ZERO);
@@ -666,7 +667,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(intentHash);
   
-          expect(intent.onramper).to.eq(subjectCaller.address);
+          expect(intent.onRamper).to.eq(subjectCaller.address);
           expect(intent.deposit).to.eq(subjectDepositId);
           expect(intent.amount).to.eq(subjectAmount);
           expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -677,7 +678,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(originalIntentHash);
   
-          expect(intent.onramper).to.eq(ADDRESS_ZERO);
+          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
           expect(intent.deposit).to.eq(ZERO_BYTES32);
           expect(intent.amount).to.eq(ZERO);
           expect(intent.intentTimestamp).to.eq(ZERO);
@@ -781,7 +782,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(oldIntentHash);
   
-          expect(intent.onramper).to.eq(ADDRESS_ZERO);
+          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
           expect(intent.deposit).to.eq(ZERO_BYTES32);
           expect(intent.amount).to.eq(ZERO);
           expect(intent.intentTimestamp).to.eq(ZERO);
@@ -795,7 +796,7 @@ describe.only("Ramp", () => {
   
           const intent = await ramp.intents(intentHash);
   
-          expect(intent.onramper).to.eq(subjectCaller.address);
+          expect(intent.onRamper).to.eq(subjectCaller.address);
           expect(intent.deposit).to.eq(subjectDepositId);
           expect(intent.amount).to.eq(subjectAmount);
           expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -932,7 +933,7 @@ describe.only("Ramp", () => {
 
         const intent = await ramp.intents(intentHash);
 
-        expect(intent.onramper).to.eq(ADDRESS_ZERO);
+        expect(intent.onRamper).to.eq(ADDRESS_ZERO);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
         expect(intent.amount).to.eq(ZERO);
         expect(intent.intentTimestamp).to.eq(ZERO);
@@ -1101,7 +1102,7 @@ describe.only("Ramp", () => {
 
         const intent = await ramp.intents(intentHash);
 
-        expect(intent.onramper).to.eq(ADDRESS_ZERO);
+        expect(intent.onRamper).to.eq(ADDRESS_ZERO);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
         expect(intent.amount).to.eq(ZERO);
         expect(intent.intentTimestamp).to.eq(ZERO);
@@ -1354,7 +1355,7 @@ describe.only("Ramp", () => {
     
             const postIntent = await ramp.intents(intentHash);
     
-            expect(postIntent.onramper).to.eq(ADDRESS_ZERO);
+            expect(postIntent.onRamper).to.eq(ADDRESS_ZERO);
             expect(postIntent.deposit).to.eq(ZERO_BYTES32);
             expect(postIntent.amount).to.eq(ZERO);
             expect(postIntent.intentTimestamp).to.eq(ZERO);
@@ -1627,6 +1628,8 @@ describe.only("Ramp", () => {
 
         expect(deposits[0].depositor).to.eq(offRamper.address);
         expect(deposits[1].depositor).to.eq(offRamper.address);
+        expect(deposits[0].depositAmount).to.eq(usdc(100));
+        expect(deposits[1].depositAmount).to.eq(usdc(100));
         expect(deposits[0].remainingDeposits).to.eq(usdc(100));
         expect(deposits[1].remainingDeposits).to.eq(usdc(100));
         expect(deposits[0].conversionRate).to.eq(conversionRateOne);
@@ -1674,10 +1677,47 @@ describe.only("Ramp", () => {
 
         expect(deposits[0].depositor).to.eq(offRamper.address);
         expect(deposits[1].depositor).to.eq(offRamper.address);
+        expect(deposits[0].depositAmount).to.eq(usdc(100));
+        expect(deposits[1].depositAmount).to.eq(usdc(100));
         expect(deposits[0].remainingDeposits).to.eq(usdc(100));
         expect(deposits[1].remainingDeposits).to.eq(usdc(100));
         expect(deposits[0].conversionRate).to.eq(conversionRateOne);
         expect(deposits[1].conversionRate).to.eq(conversionRateTwo);
+      });
+    });
+
+    describe("#getIntentFromIds", async () => {
+      let subjectIntentIds: string[];
+  
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(101),
+          usdc(2)
+        );
+  
+        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50));
+        const intentHashOne = calculateIntentHash(await calculateVenmoIdHash("2"), ZERO, await blockchain.getCurrentTimestamp());
+        await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40));
+        const intentHashTwo = calculateIntentHash(await calculateVenmoIdHash("3"), ZERO, await blockchain.getCurrentTimestamp());
+  
+        subjectIntentIds = [intentHashOne, intentHashTwo];
+      });
+  
+      async function subject(): Promise<any> {
+        return ramp.getIntentFromIds(subjectIntentIds);
+      }
+  
+      it("should return the expected intents", async () => {
+        const intents = await subject();
+
+        expect(intents[0].onRamper).to.eq(onRamper.address);
+        expect(intents[1].onRamper).to.eq(onRamperTwo.address);
+        expect(intents[0].deposit).to.eq(ZERO);
+        expect(intents[1].deposit).to.eq(ZERO);
+        expect(intents[0].amount).to.eq(usdc(50));
+        expect(intents[1].amount).to.eq(usdc(40));
       });
     });
   });
