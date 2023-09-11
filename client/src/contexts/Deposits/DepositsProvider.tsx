@@ -115,13 +115,14 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       const sanitizedIntents: Intent[] = [];
       for (let i = depositIntentsArray.length - 1; i >= 0; i--) {
-        const intentData = depositIntentsArray[i];
+        const intentRequest = depositIntentsArray[i];
+        const intentData = intentRequest.result;
         
         const intent: Intent = {
-          onRamper: intentData.onramper,
-          deposit: intentData.deposit,
-          amount: intentData.amount,
-          timestamp: intentData.intentTimestamp,
+          onRamper: intentData[0],
+          deposit: intentData[1],
+          amount: intentData[2],
+          timestamp: intentData[3],
         };
 
         sanitizedIntents.push(intent);

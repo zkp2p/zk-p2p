@@ -20,7 +20,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   IntentRow.displayName = "IntentRow";
 
   const depositAmountLabel = `${amount} USDC`;
-  const timeRemainingLabel = `Time Remaining: ${timestamp}`;
+  const timeRemainingLabel = `Expires: ${timestamp}`;
 
   return (
     <Container>
