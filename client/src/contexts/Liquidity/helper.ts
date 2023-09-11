@@ -1,12 +1,7 @@
-import { Deposit } from "../Deposits/types";
+import { Deposit, StoredDeposit } from "../Deposits/types";
 
 
-interface StoredDeposit {
-  depositId: number;
-  deposit: Deposit;
-}
-
-export const depositsStore = (depositIds: number[], deposits: Deposit[]): StoredDeposit[] => {
+export const createDepositsStore = (depositIds: number[], deposits: Deposit[]): StoredDeposit[] => {
   const zippedDeposits = depositIds.map((id, index) => ({ depositId: id, deposit: deposits[index] }));
   
   const sortedDeposits = zippedDeposits.sort((a, b) => {
@@ -27,7 +22,7 @@ export const depositsStore = (depositIds: number[], deposits: Deposit[]): Stored
   return sortedDeposits;
 };
 
-export const bestDepositForAmount = (onRampAmount: number, depositStore: StoredDeposit[]): StoredDeposit | null => {
+export const fetchBestDepositForAmount = (onRampAmount: number, depositStore: StoredDeposit[]): StoredDeposit | null => {
   // Filter deposits that can fulfill the onRampAmount
   const eligibleDeposits = depositStore.filter(deposit => deposit.deposit.remainingDepositAmount >= onRampAmount);
   if (eligibleDeposits.length === 0) {
