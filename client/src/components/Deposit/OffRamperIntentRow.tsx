@@ -5,17 +5,17 @@ import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 
 interface IntentRowProps {
-  address: string;
+  venmoHash: string;
   amount: string;
   timestamp: string;
-  rowIndex: number;
 }
 
+export type IntentRowData = IntentRowProps;
+
 export const IntentRow: React.FC<IntentRowProps> = ({
-  address,
+  venmoHash,
   amount,
   timestamp,
-  rowIndex,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
@@ -24,13 +24,13 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
-      <AddressContainer>
+      <VenmoHashContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
           <AmountLabel> {depositAmountLabel} </AmountLabel>
           <AmountLabel> {timeRemainingLabel} </AmountLabel>
         </AmountLabelsContainer>
-      </AddressContainer>
+      </VenmoHashContainer>
     </Container>
   );
 };
@@ -47,7 +47,7 @@ const Container = styled.div`
   }
 `;
 
-const AddressContainer = styled.div`
+const VenmoHashContainer = styled.div`
   width: 100%; 
   display: flex;
   flex-direction: row;

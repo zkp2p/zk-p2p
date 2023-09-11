@@ -2,16 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
-import { IntentRow } from "./OffRamperIntentRow";
+import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { Intent } from "../../contexts/Deposits/types";
+import useDeposits from '@hooks/useDeposits';
 
-
-// export interface Intent {
-//   onRamper: string;
-//   deposit: string;
-//   amount: number;
-//   timestamp: number;
-// }
 
 interface IntentTableProps {
   onRowClick?: (rowData: any[]) => void;
@@ -24,29 +18,50 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   selectedRow,
   rowsPerPage = 10
 }) => {
-  const [intents, setIntents] = useState<Intent[]>([]);
+  /*
+    Contexts
+  */
+  const { depositIntents } = useDeposits()
+
+  /*
+    State
+  */
+  const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
+
+  /*
+    Hooks
+  */
 
   useEffect(() => {
-    setIntents([
-      {
-        onRamper: '0x1234...5678',
-        deposit: '0xdepositHash',
-        amount: 1_000_000,          // 1 USDC
-        timestamp: 1692540957
-      },
-      {
-        onRamper: '0x1234...5678',
-        deposit: '0xdepositHash',
-        amount: 4_000_000,          // 4 USDC
-        timestamp: 1629784800
-      }
-    ]);
-  }, []);
+    if (!depositIntents) {
+      setIntentsRowData([]);
+    } else {
+      var sanitizedIntents: IntentRowData[] = [];
+      sanitizedIntents = depositIntents.map((intent: Intent) => {
+        const onRamper = intent.onRamper;
+        const amount = convertDepositAmountToUSD(intent.amount);
+        const timestamp = formattedExpiration(intent.timestamp);
+        
+        return {
+          venmoHash: onRamper,
+          amount,
+          timestamp
+        };
+      });
+
+      setIntentsRowData(sanitizedIntents);
+    }
+  }, [depositIntents]);
+
+  /*
+    Helpers
+  */
 
   function convertDepositAmountToUSD(depositAmount: number) {
     return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
+  // TODO: move this to OffRamperIntentRow
   function formattedExpiration(unixTimestamp: number): string {
     const currentTimestamp = Math.floor(Date.now() / 1000);
   
@@ -70,7 +85,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
               </ThemedText.LabelSmall>
             </IntentCountTitle>
             <Table>
-              {intents.map((intent, rowIndex) => (
+              {intentsRowData.map((intentsRow, rowIndex) => (
                 <PermissionRowStyled
                   key={rowIndex}
                   onClick={() => {
@@ -78,10 +93,9 @@ export const IntentTable: React.FC<IntentTableProps> = ({
                   }
                 >
                   <IntentRow
-                    address={intent.onRamper}
-                    amount={convertDepositAmountToUSD(intent.amount)}
-                    timestamp={formattedExpiration(intent.timestamp)}
-                    rowIndex={rowIndex}
+                    venmoHash={intentsRow.venmoHash}
+                    amount={intentsRow.amount}
+                    timestamp={intentsRow.timestamp}
                   />
                 </PermissionRowStyled>
               ))}
