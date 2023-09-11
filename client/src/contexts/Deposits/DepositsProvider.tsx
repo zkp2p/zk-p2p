@@ -2,6 +2,7 @@ import React, { useEffect, useState, ReactNode, useMemo } from 'react'
 import { useContractRead, useContractReads } from 'wagmi'
 
 import { Deposit, Intent } from './types'
+import { fromUsdc, fromEther } from '../../helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -73,6 +74,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
   useEffect(() => {
     if (!isFetchDepositsLoading && !isFetchDepositsError && depositsRaw) {
+      console.log('depositsRaw');
+      console.log(depositsRaw);
+
       const depositsArrayRaw = depositsRaw as any[];
 
       const sanitizedDeposits: Deposit[] = [];
@@ -81,10 +85,10 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
-          remainingDepositAmount: depositData.remainingDeposits.toString(),
-          outstandingIntentAmount: depositData.outstandingIntentAmount.toString(),
-          conversionRate: depositData.conversionRate.toString(),
-          convenienceFee: depositData.convenienceFee.toString(),
+          remainingDepositAmount: fromUsdc(depositData.remainingDeposits).toNumber(),
+          outstandingIntentAmount: fromUsdc(depositData.outstandingIntentAmount).toNumber(),
+          conversionRate: fromEther(depositData.conversionRate).toNumber(),
+          convenienceFee: fromEther(depositData.convenienceFee).toNumber(),
           intentHashes: depositData.intentHashes,
         };
 
@@ -92,8 +96,10 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       }
 
       if (isLoggedIn) {
-        setDeposits(sanitizedDeposits);
+        console.log('depositsProcessed');
         console.log(sanitizedDeposits);
+
+        setDeposits(sanitizedDeposits);
       } else {
         setDeposits([]);
       }
@@ -102,6 +108,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     if (!isFetchDepositIntentsLoading && !isFetchDepositIntentsError && depositIntentsRaw) {
+      console.log('depositIntentsRaw');
+      console.log(depositIntentsRaw);
+
       const depositIntentsArray = depositIntentsRaw as any[];
 
       const sanitizedIntents: Intent[] = [];
@@ -119,8 +128,10 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       }
 
       if (isLoggedIn) {
-        setDepositIntents(sanitizedIntents);
+        console.log('depositIntentsProcessed');
         console.log(sanitizedIntents);
+        
+        setDepositIntents(sanitizedIntents);
       } else {
         setDepositIntents([]);
       }
