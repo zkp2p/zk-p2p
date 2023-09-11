@@ -102,7 +102,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     console.log(depositCounterRaw);
   
     if (isLoggedIn && depositCounterRaw) {
-      const depositCounterProcessed = fromUsdc(depositCounterRaw.toString()).toNumber();
+      const depositCounterProcessed = depositCounterRaw as number;
       console.log('depositCounterProcessed');
       console.log(depositCounterProcessed);
       setDepositCounter(depositCounterProcessed);

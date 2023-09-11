@@ -2,9 +2,9 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
 import BigNumber from '../../helpers/bignumber'
+import { fromUsdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
-import { fromUsdc } from '../../helpers/units'
 
 import BalancesContext from './BalancesContext'
 
@@ -89,8 +89,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   
     if (isLoggedIn && ethBalanceRaw) {
       const ethBalanceProcessed = ethBalanceRaw.formatted;
+      
       console.log('ethBalanceProcessed');
       console.log(ethBalanceProcessed);
+      
       setEthBalance(new BigNumber(ethBalanceProcessed));
     } else {
       setEthBalance(new BigNumber(0));
@@ -103,8 +105,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   
     if (isLoggedIn && usdcBalanceRaw) {
       const usdcBalanceRawProcessed = usdcBalanceRaw.formatted;
+
       console.log('usdcBalanceRawProcessed');
       console.log(usdcBalanceRawProcessed);
+
       setUsdcBalance(new BigNumber(usdcBalanceRawProcessed));
     } else {
       setUsdcBalance(new BigNumber(0));
@@ -117,8 +121,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   
     if (isLoggedIn && usdcApprovalToRampRaw) {
       const usdcApprovalToRampProcessed = fromUsdc(usdcApprovalToRampRaw.toString());
+      
       console.log('usdcApprovalToRampProcessed');
       console.log(usdcApprovalToRampProcessed);
+
       setUsdcApprovalToRamp(new BigNumber(usdcApprovalToRampProcessed));
     } else {
       setUsdcApprovalToRamp(new BigNumber(0));

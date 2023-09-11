@@ -10,6 +10,7 @@ import { Deposit } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
 import useAccount from '@hooks/useAccount'
+import useDeposits from '@hooks/useDeposits';
 import useRegistration from '@hooks/useRegistration'
 
 
@@ -33,35 +34,49 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const navigate = useNavigate();
 
   /*
-   * Contexts
-   */
+    Contexts
+  */
   const { isRegistered } = useRegistration()
   const { isLoggedIn } = useAccount()
+  const { deposits, depositIntents } = useDeposits()
 
-  const [positions, setPositions] = useState<DepositPrime[]>([]);
+  /*
+    State
+  */
+  const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
+
+  /*
+    Hooks
+  */
 
   useEffect(() => {
-    setPositions([
-      {
-        depositor: '0x1234...5678',
-        remainingDepositAmount: 4_000_100_000,  // 4_000
-        totalDepositAmount: 10_000_000_000,     // 10_000
-        outstandingIntentAmount: 200_000_000,   // 200
-        intentCount: 2,                         // 2
-        conversionRate: 500_000,                // 0.5%
-        convenienceFee: 5_000_000               // 5
-      },
-      {
-        depositor: '0x1234...5678',
-        remainingDepositAmount: 5_500_000_000,
-        totalDepositAmount: 7_500_000_000,
-        outstandingIntentAmount: 300_000_000,
-        intentCount: 1,
-        conversionRate: 1_000_000,
-        convenienceFee: 2_000_000
-      }
-    ]);
-  }, []);
+    if (!deposits) {
+      setPositionsRowData([]);  
+    } else {
+      var sanitizedPositions: DepositPrime[] = [];
+      sanitizedPositions = deposits.map((deposit: Deposit) => {
+        const depositor = deposit.depositor;
+        const remainingDepositAmount = deposit.remainingDepositAmount;
+        const totalDepositAmount = deposit.remainingDepositAmount; // TODO: Fetch this from the contract
+        const intentCount = deposit.intentHashes.length;
+        const outstandingIntentAmount = deposit.outstandingIntentAmount;
+        const conversionRate = deposit.conversionRate;
+        const convenienceFee = deposit.convenienceFee;
+
+        return {
+          depositor,
+          remainingDepositAmount,
+          totalDepositAmount,
+          outstandingIntentAmount,
+          intentCount,
+          conversionRate,
+          convenienceFee
+        };
+      });
+
+      setPositionsRowData(sanitizedPositions);
+    }
+  }, [deposits]);
 
   /*
     Handlers
@@ -75,16 +90,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     Helpers
   */
 
-  function convertDepositAmountToUSD(depositAmount: number) {
-    return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  }
-
   function convertRatesToPercentage(rate: number) {
-    return (rate / 1_000_000).toFixed(2) + '%';
+    return parseFloat(rate.toFixed(2)) + '%';
   }
 
-  function convertFeeToFlatAmount(rate: number) {
-    return (rate / 1_000_000).toFixed(0) + ' USDC';
+  function feeAmountString(usdcAmount: number) {
+    return usdcAmount + ' USDC';
   }
 
   return (
@@ -126,7 +137,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 Complete Registration
               </Button>
             </ErrorContainer>
-          ) : positions.length === 0 ? (
+          ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -139,20 +150,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             <PositionsContainer>
               <PositionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your positions ({positions.length})
+                  Your positions ({positionsRowData.length})
                 </ThemedText.LabelSmall>
               </PositionCountTitle>
               <Table>
-                {positions.map((position, rowIndex) => (
+                {positionsRowData.map((position, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
                       depositorHash={position.depositor}
-                      remainingDepositAmount={convertDepositAmountToUSD(position.remainingDepositAmount)}
-                      totalDepositAmount={convertDepositAmountToUSD(position.totalDepositAmount)}
-                      outstandingIntentAmount={convertDepositAmountToUSD(position.outstandingIntentAmount)}
+                      remainingDepositAmount={position.remainingDepositAmount.toString()}
+                      totalDepositAmount={position.totalDepositAmount.toString()}
+                      outstandingIntentAmount={position.outstandingIntentAmount.toString()}
                       intentCount={position.intentCount.toString()}
                       conversionRate={convertRatesToPercentage(position.conversionRate)}
-                      convenienceFee={convertFeeToFlatAmount(position.convenienceFee)}
+                      convenienceFee={feeAmountString(position.convenienceFee)}
                       rowIndex={rowIndex}
                     />
                   </PositionRowStyled>

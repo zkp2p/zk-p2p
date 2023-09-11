@@ -7,9 +7,15 @@ import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { Intent } from "../../contexts/Deposits/types";
 import { OffRamp } from './OffRamp'
+import useDeposits from '@hooks/useDeposits';
 
 
 export default function Deposit() {
+  /*
+    Contexts
+  */
+  const { depositIntents } = useDeposits()
+
   /*
     State
   */
@@ -62,9 +68,11 @@ export default function Deposit() {
         <PositionTable
           handleNewPositionClick={handleUpdateClick}
         />
-        <IntentTable
-          onRowClick={handleIntentClick}
-        />
+        {depositIntents && depositIntents.length > 0 ? (
+          <IntentTable
+            onRowClick={handleIntentClick}
+          />
+        ) : null}
       </DepositAndIntentContainer>
     );
   }

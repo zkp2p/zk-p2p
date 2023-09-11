@@ -33,16 +33,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   handleBackClick
 }) => {
   /*
-   * Contexts
-   */
+    Contexts
+  */
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { registrationHash } = useRegistration()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
 
   /*
-   * State
-   */
+    State
+  */
   const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
   const [depositAmount, setDepositAmount] = useState<number>(0);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
@@ -257,6 +257,20 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           <NumberedStep>
             Create a new deposit by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
           </NumberedStep>
+          {/* <SingleLineInput
+            label="Vennmo ID"
+            value={depositAmount === 0 ? '' : depositAmount.toString()}
+            placeholder={'1000'}
+            error={depositAmountInputErrorString()}
+            onChange={(e) => {
+              const value = e.currentTarget.value;
+              if (value === "") {
+                setDepositAmount(0);
+              } else if (!isNaN(value) && parseFloat(value) >= 0) {
+                setDepositAmount(parseFloat(value));
+              }
+            }}
+          /> */}
           <SingleLineInput
             label="Deposit Amount"
             value={depositAmount === 0 ? '' : depositAmount.toString()}
