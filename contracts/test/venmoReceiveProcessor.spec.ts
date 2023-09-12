@@ -96,12 +96,48 @@ describe("VenmoReceiveProcessor", () => {
     }
 
     it("should process the proof", async () => {
-      // const {
-      //   timestamp,
-      //   onRamperId,
-      //   onRamperIdHash,
-      //   intentHash
-      // } = await subject();
+      const {
+        timestamp,
+        onRamperId,
+        onRamperIdHash,
+        intentHash
+      } = await subject();
+
+      expect(timestamp).to.eq(BigNumber.from(1686119551));
+      expect(onRamperIdHash).to.eq("0x1206de2703dac2f42de80b586fffe70b07f0e06a04914a97350c69887be43ca3");
+      expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
+    });
+
+    describe("when the proof is invalid", async () => {
+      beforeEach(async () => {
+        subjectSignals[0] = BigNumber.from("0x0000000000000000000000000000000000000000000000000076406f6d6e6476");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid Proof");
+      });
+    });
+
+    describe("when the email is from an invalid venmo address", async () => {
+      beforeEach(async () => {
+        await receiveProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(35, "\0"));
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid email from address");
+      });
+    });
+
+    describe("when the rsa modulus doesn't match", async () => {
+      beforeEach(async () => {
+        await receiveProcessor.setVenmoMailserverKeys(
+          rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1))
+        );
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid: RSA modulus not matched");
+      });
     });
   });
 });

@@ -1,6 +1,8 @@
-import { BigNumber, Signer } from "ethers";
+import { BigNumber, Signer, ethers } from "ethers";
 
 import { Address } from "@utils/types";
+
+const circom = require("circomlibjs");
 
 import { 
   Ramp,
@@ -35,6 +37,7 @@ export default class DeployHelper {
   public async deployRamp(
     owner: Address,
     usdc: Address,
+    poseidon: Address,
     receiveVerifier: Address,
     registrationVerifier: Address,
     sendVerifier: Address,
@@ -44,6 +47,7 @@ export default class DeployHelper {
     return await new Ramp__factory(this._deployerSigner).deploy(
       owner,
       usdc,
+      poseidon,
       receiveVerifier,
       registrationVerifier,
       sendVerifier,
@@ -87,5 +91,15 @@ export default class DeployHelper {
 
   public async deployVenmoRegistrationProcessorMock(): Promise<VenmoRegistrationProcessorMock> {
     return await new VenmoRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployPoseidon(): Promise<any> {
+    const contract = new ethers.ContractFactory(
+      circom.poseidonContract.generateABI(5),
+      circom.poseidonContract.createCode(5),
+      this._deployerSigner
+    );
+
+    return await contract.deploy();
   }
 }

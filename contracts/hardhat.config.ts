@@ -7,7 +7,19 @@ import '@nomicfoundation/hardhat-chai-matchers'
 import { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.18",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.18",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
+  },
   networks: {
     hardhat: {
       allowBlocksWithSameTimestamp: true,

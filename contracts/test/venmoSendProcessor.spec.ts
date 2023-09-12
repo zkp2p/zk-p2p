@@ -11,6 +11,7 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
+import { usdc } from "@utils/common";
 
 const expect = getWaffleExpect();
 
@@ -98,10 +99,46 @@ describe("VenmoSendProcessor", () => {
     it("should process the proof", async () => {
       const {
         amount,
-        onRamperId,
-        onRamperIdHash,
+        offRamperId,
+        offRamperIdHash,
         intentHash
       } = await subject();
+
+      expect(amount).to.eq(usdc(30));
+      expect(offRamperIdHash).to.eq("0x16b0c8e8bd4352f8b062923976cc0e51e26162dec17f12d353feac4d5f7ca27d");
+      expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
+    });
+
+    describe("when the proof is invalid", async () => {
+      beforeEach(async () => {
+        subjectSignals[0] = BigNumber.from("0x0000000000000000000000000000000000000000000000000076406f6d6e6476");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid Proof");
+      });
+    });
+
+    describe("when the email is from an invalid venmo address", async () => {
+      beforeEach(async () => {
+        await sendProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(35, "\0"));
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid email from address");
+      });
+    });
+
+    describe("when the rsa modulus doesn't match", async () => {
+      beforeEach(async () => {
+        await sendProcessor.setVenmoMailserverKeys(
+          rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1))
+        );
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid: RSA modulus not matched");
+      });
     });
   });
 });
