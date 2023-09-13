@@ -380,10 +380,6 @@ contract Ramp is Ownable {
         }
     }
 
-    function getAccountVenmoId(address _account) external view returns (bytes32) {
-        return accounts[_account].venmoIdHash;
-    }
-
     function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray) {
         depositArray = new Deposit[](_depositIds.length);
 
@@ -416,7 +412,6 @@ contract Ramp is Ownable {
         returns (bytes32 intentHash)
     {
         intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
-        require(intents[intentHash].amount == 0, "Intent already exists");
     }
 
     function _addNewIntent(bytes32 _venmoIdHash, uint256 _depositId, uint256 _amount) internal {
@@ -480,13 +475,13 @@ contract Ramp is Ownable {
     }
 
     function _pruneIntent(Deposit storage _deposit, bytes32 _intent) internal {
-        uint256 depositId = intents[_intent].deposit;
+        Intent memory intent = intents[_intent];
 
-        delete venmoIdIntent[accounts[intents[_intent].onRamper].venmoIdHash];
+        delete venmoIdIntent[accounts[intent.onRamper].venmoIdHash];
         delete intents[_intent];
         _deposit.intentHashes.removeStorage(_intent);
 
-        emit IntentPruned(_intent, depositId);
+        emit IntentPruned(_intent, intent.deposit);
     }
 
     function _closeDepositIfNecessary(uint256 _depositId, Deposit storage _deposit) internal {

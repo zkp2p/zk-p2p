@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IReceiveProcessor } from "../interfaces/IReceiveProcessor.sol";

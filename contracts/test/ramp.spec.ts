@@ -1432,6 +1432,16 @@ describe("Ramp", () => {
         expect(tx).to.emit(ramp, "ConvenienceRewardTimePeriodSet").withArgs(subjectConvenienceRewardTimePeriod);
       });
 
+      describe("when the time period is 0", async () => {
+        beforeEach(async () => {
+          subjectConvenienceRewardTimePeriod = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Convenience reward time period cannot be zero");
+        });
+      });
+
       describe("when the caller is not the owner", async () => {
         beforeEach(async () => {
           subjectCaller = onRamper;
@@ -1468,6 +1478,16 @@ describe("Ramp", () => {
         const tx = await subject();
         
         expect(tx).to.emit(ramp, "MinDepositAmountSet").withArgs(subjectMinDepositAmount);
+      });
+
+      describe("when the min deposit amount is 0", async () => {
+        beforeEach(async () => {
+          subjectMinDepositAmount = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Minimum deposit cannot be zero");
+        });
       });
 
       describe("when the caller is not the owner", async () => {

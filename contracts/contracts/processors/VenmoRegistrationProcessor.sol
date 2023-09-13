@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";

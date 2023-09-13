@@ -20,6 +20,7 @@ const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555
 
 describe("VenmoRegistrationProcessor", () => {
   let owner: Account;
+  let attacker: Account;
 
   let registrationProcessor: VenmoRegistrationProcessor;
 
@@ -27,7 +28,8 @@ describe("VenmoRegistrationProcessor", () => {
 
   beforeEach(async () => {
     [
-      owner
+      owner,
+      attacker,
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -136,5 +138,80 @@ describe("VenmoRegistrationProcessor", () => {
         await expect(subject()).to.be.revertedWith("Invalid mailserver key hash");
       });
     });    
+  });
+
+  describe("#setVenmoMailserverKeys", async () => {
+    let subjectVenmoMailserverKeys: BigNumber[];
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectVenmoMailserverKeys = rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1));
+    });
+
+    async function subject(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeys(subjectVenmoMailserverKeys);
+    }
+
+    it("should set the correct venmo keys", async () => {
+      await subject();
+
+      const venmoKeys = await registrationProcessor.getVenmoMailserverKeys();
+      expect(venmoKeys).to.deep.equal(rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1)));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setEmailFromAddress", async () => {
+    let subjectEmailFromAddress: string;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectEmailFromAddress = "new-venmo@venmo.com".padEnd(35, "\0");
+    });
+
+    async function subject(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).setEmailFromAddress(subjectEmailFromAddress);
+    }
+
+    it("should set the correct venmo address", async () => {
+      await subject();
+
+      const emailFromAddress = await registrationProcessor.getEmailFromAddress();
+
+      expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(35, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the email address is not properly padded", async () => {
+      beforeEach(async () => {
+        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
   });
 });
