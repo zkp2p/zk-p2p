@@ -79,7 +79,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         <ProofGenerationForm
           circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
           circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
-          proofOrderId={"1"} // Arbitrary value, unused for registration
+          circuitInputs={"1"} // Arbitrary value, unused for registration
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />

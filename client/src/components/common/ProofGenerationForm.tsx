@@ -28,7 +28,7 @@ import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
 interface ProofGenerationFormProps {
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
-  proofOrderId: string;
+  circuitInputs: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
 }
@@ -36,7 +36,7 @@ interface ProofGenerationFormProps {
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   circuitType,
   circuitRemoteFilePath,
-  proofOrderId,
+  circuitInputs,
   setProof,
   setPublicSignals,
 }) => {
@@ -117,7 +117,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       input = await generate_inputs(
         Buffer.from(formattedArray.buffer),
         circuitType,
-        proofOrderId,
+        circuitInputs,
       );
     } catch (e) {
       console.log("Error generating input", e);

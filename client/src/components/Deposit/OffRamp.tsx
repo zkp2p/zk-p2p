@@ -8,18 +8,22 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOffRamp } from "./SubmitOffRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
+import { RECEIVE_KEY_FILE_NAME } from "../../helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
 
+
+// TODO: use hook
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 
 interface OffRampProps {
   handleBackClick: () => void;
+  selectedIntentHash: string;
 }
  
 export const OffRamp: React.FC<OffRampProps> = ({
-  handleBackClick
+  handleBackClick,
+  selectedIntentHash
 }) => {
   /*
    * Context
@@ -77,9 +81,9 @@ export const OffRamp: React.FC<OffRampProps> = ({
 
       <Body>
         <ProofGenerationForm
-          circuitType={CircuitType.EMAIL_VENMO_SEND}
-          circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME} // TODO: Update me
-          proofOrderId={"1"} // TODO: Update me
+          circuitType={CircuitType.EMAIL_VENMO_RECEIVE}
+          circuitRemoteFilePath={RECEIVE_KEY_FILE_NAME}
+          circuitInputs={selectedIntentHash}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />

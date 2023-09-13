@@ -55,10 +55,11 @@ export default function Deposit() {
       );
     }
   
-    if (selectedIntent) {
+    if (selectedIntentHash) {
       return (
         <OffRamp
           handleBackClick={handleBackClickOnProof}
+          selectedIntentHash={selectedIntentHash}
         />
       );
     }
