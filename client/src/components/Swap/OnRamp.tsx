@@ -79,7 +79,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <ProofGenerationForm
           circuitType={CircuitType.EMAIL_VENMO_SEND}
           circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME} // TODO: Update me
-          proofOrderId={"1"} // TODO: Update me
+          circuitInputs={"1"} // TODO: Update me
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />

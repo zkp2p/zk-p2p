@@ -15,6 +15,11 @@ export interface Deposit {
   intentHashes: string[];
 }
 
+export interface StoredDeposit {
+  depositId: number;
+  deposit: Deposit;
+}
+
 // struct Intent {
 //   address onramper;
 //   uint256 deposit;

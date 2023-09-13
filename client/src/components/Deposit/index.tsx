@@ -14,14 +14,14 @@ export default function Deposit() {
   /*
     Contexts
   */
-  const { depositIntents } = useDeposits()
+  const { deposits, depositIntents } = useDeposits()
 
   /*
     State
   */
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
-  const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
+  const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
 
   /*
     Handlers
@@ -34,14 +34,17 @@ export default function Deposit() {
     setIsAddPosition(false);
   }
   const handleBackClickOnProof = () => {
-    setSelectedIntent(null);
+    setSelectedIntentHash(null);
   }
 
   const handleIntentClick = (rowData: any[]) => {
-    // No-op
-    console.log('row data: ', rowData);
+    const selectedIntentIndex = rowData[0];
+    const intentHashes = [...new Set((deposits).flatMap((deposit: any) => deposit.intentHashes))]
 
-    setSelectedIntent(rowData[0]);
+    const selectedIntentHash = intentHashes[selectedIntentIndex];
+    console.log('selectedIntentHash', selectedIntentHash);
+
+    setSelectedIntentHash(selectedIntentHash);
   };
 
   function renderContent() {
@@ -55,10 +58,11 @@ export default function Deposit() {
       );
     }
   
-    if (selectedIntent) {
+    if (selectedIntentHash) {
       return (
         <OffRamp
           handleBackClick={handleBackClickOnProof}
+          selectedIntentHash={selectedIntentHash}
         />
       );
     }

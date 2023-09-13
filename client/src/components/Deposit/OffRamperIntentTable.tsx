@@ -4,6 +4,7 @@ import styled from 'styled-components/macro'
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { Intent } from "../../contexts/Deposits/types";
+import { fromUsdc } from '../../helpers/units'
 import useDeposits from '@hooks/useDeposits';
 
 
@@ -40,7 +41,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
       sanitizedIntents = depositIntents.map((intent: Intent) => {
         const onRamper = intent.onRamper;
         const amount = convertDepositAmountToUSD(intent.amount);
-        const timestamp = formattedExpiration(intent.timestamp);
+        const timestamp = calculateAndFormatExpiration(intent.timestamp);
         
         return {
           venmoHash: onRamper,
@@ -58,18 +59,30 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
 
   function convertDepositAmountToUSD(depositAmount: number) {
-    return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    const depositAmountInUSD = fromUsdc(depositAmount.toString());
+    const localizedDepositAmount = depositAmountInUSD.toLocaleString(
+      'en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+    );
+
+    return localizedDepositAmount;
   }
 
   // TODO: move this to OffRamperIntentRow
-  function formattedExpiration(unixTimestamp: number): string {
-    const currentTimestamp = Math.floor(Date.now() / 1000);
+  function calculateAndFormatExpiration(unixTimestamp: number): string {
+    console.log("unixTimestamp");
+    console.log(unixTimestamp);
+
+    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
+
+    const unixTimestampPlusOneDay = unixTimestamp + BigInt(86400);
   
-    if (currentTimestamp > unixTimestamp) {
+    if (currentTimestamp > unixTimestampPlusOneDay) {
       return "Expired";
     } else {
-      const date = new Date(unixTimestamp * 1000);
+      // Convert BigInt to number before creating a Date object
+      const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
       const formattedDate = date.toLocaleString();
+      
       return formattedDate;
     }
   }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
@@ -7,12 +8,19 @@ import { ThemedText } from '../../theme/text'
 import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
+import { StoredDeposit } from '../../contexts/Deposits/types'
+import { usdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/useRegistration'
+import useLiquidity from '@hooks/useLiquidity';
 
 
 export type SwapQuote = {
-  fiatIn: string;
-  tokenOut: string;
+  requestedUSDC: string;
+  fiatToSend: string;
+  depositId: number;
 };
 
 interface SwapModalProps {
@@ -25,21 +33,29 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
     Contexts
   */
-
-    const { isLoggedIn } = useAccount();
+  const { isLoggedIn } = useAccount();
+  const { currentIntentHash } = useOnRamperIntents();
+  const { registrationHash } = useRegistration()
+  const { getBestDepositForAmount } = useLiquidity();
+  const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
     State
   */
-  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ fiatIn: '', tokenOut: '' });
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: 0 });
 
   /*
     Event Handlers
   */
-
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
     const quoteCopy = {...currentQuote}
+
     quoteCopy[field] = event.target.value;
+
+    if (field !== 'requestedUSDC') {
+      quoteCopy.depositId = 0;
+    }
+
     setCurrentQuote(quoteCopy);
   };
 
@@ -58,14 +74,68 @@ const SwapModal: React.FC<SwapModalProps> = ({
     event.preventDefault();
 
     // Reset form fields
-    setCurrentQuote({ fiatIn: '', tokenOut: ''});
+    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: 0 });
   };
 
-  const isFormComplete = () => {
-    const formComplete = currentQuote.fiatIn !== ''
-    
-    return formComplete;
-  };
+  /*
+    Contract Writes
+  */
+
+  //
+  // signalIntent(bytes32 _venmoId, uint256 _depositId, uint256 _amount)
+  //
+  const { config: writeIntentConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'signalIntent',
+    args: [
+      registrationHash,
+      currentQuote.depositId,
+      usdc(parseFloat(currentQuote.requestedUSDC)),
+    ],
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+  });
+
+  const {
+    isLoading: isSubmitIntentLoading,
+    write: writeSubmitIntent
+  } = useContractWrite(writeIntentConfig);
+
+  /*
+    Hooks
+  */
+  useEffect(() => {
+    const fetchBestDepositForAmount = async () => {
+      if (currentQuote.requestedUSDC) {
+        const amountInNumber = parseFloat(currentQuote.requestedUSDC);
+
+        console.log('amountInNumber: ', amountInNumber);
+
+        if (!isNaN(amountInNumber)) {
+          const storedDeposit: StoredDeposit | null = await getBestDepositForAmount(amountInNumber);
+          if (storedDeposit) {
+            const usdcAmount = amountInNumber * storedDeposit.deposit.conversionRate;
+            const fiatToSend = parseFloat(usdcAmount.toFixed(2));
+            const depositId = storedDeposit.depositId;
+  
+            setCurrentQuote(prevState => (
+              {
+                ...prevState,
+                fiatToSend: fiatToSend.toString(),
+                depositId,
+              })
+            );
+          } else {
+            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: 0 }));
+          }
+        }
+      }
+    };
+  
+    fetchBestDepositForAmount();
+  }, [currentQuote.requestedUSDC, getBestDepositForAmount]);
 
   return (
     <Wrapper>
@@ -78,23 +148,23 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
         <MainContentWrapper>
           <Input
-            label="U.S. Dollars"
-            name={`amountIn`}
-            value={currentQuote.fiatIn}
-            onChange={event => handleInputChange(event, 'fiatIn')}
-            type="number"
-            inputLabel="$"
-            placeholder="0.00"
-          />
-          <Input
-            label="USDC"
-            name={`amountOut`}
-            value={currentQuote.tokenOut}
-            onChange={event => handleInputChange(event, 'tokenOut')}
-            onKeyDown={handleEnterPress}
+            label="Receive"
+            name={`requestedUSDC`}
+            value={currentQuote.requestedUSDC}
+            onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
             inputLabel="USDC"
             placeholder="0"
+          />
+          <Input
+            label="Send (via Venmo)"
+            name={`fiatToSend`}
+            value={currentQuote.fiatToSend}
+            onChange={event => handleInputChange(event, 'fiatToSend')}
+            onKeyDown={handleEnterPress}
+            type="number"
+            inputLabel="$"
+            placeholder="0.00"
             readOnly={true}
           />
           {!isLoggedIn ? (
@@ -103,17 +173,25 @@ const SwapModal: React.FC<SwapModalProps> = ({
             />
           ) : (
             <CTAButton
-              disabled={false}
+              disabled={currentQuote.depositId === 0 && currentQuote.fiatToSend === ''}
+              loading={isSubmitIntentLoading}
+              onClick={async () => {
+                writeSubmitIntent?.();
+              }}
             >
-              Create Order
+              Start Order
             </CTAButton>
           )}
         </MainContentWrapper>
       </SwapModalContainer>
 
-      <IntentTable
-        onRowClick={onIntentTableRowClick}
-      />
+      {
+        currentIntentHash && currentIntentHash === '' && (
+          <IntentTable
+            onRowClick={onIntentTableRowClick}
+          />
+        )
+      }
     </Wrapper>
   );
 };
