@@ -11,8 +11,6 @@
 # These might become incompatible at some point in future. Although works right now.
 
 SWAP_SIZE=$1
-AWS_ACCESS_KEY_ID=$2
-AWS_SECRET_ACCESS_KEY=$3
 AWS_REGION=$4
 
 
@@ -110,12 +108,6 @@ sudo ./aws/install
 
 echo -e "\n\n********** Configuring aws cli **********"
 mkdir -p ~/.aws
-touch ~/.aws/credentials
-echo "[default]
-aws_access_key_id=$AWS_ACCESS_KEY_ID
-aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-" > ~/.aws/credentials
-
 touch ~/.aws/config
 echo "[default]
 region=$AWS_REGION
