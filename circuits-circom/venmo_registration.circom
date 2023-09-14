@@ -56,7 +56,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_actor_id_idx;
-    signal output reveal_actor_packed[max_actor_id_packed_bytes];
+    signal reveal_actor_packed[max_actor_id_packed_bytes];
 
     signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes]) <== VenmoActorId(max_body_bytes)(in_body_padded);
 
@@ -73,6 +73,8 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
         hash.inputs[i] <== reveal_actor_packed[i];
     }
     signal output packed_actor_id_hashed <== hash.out;
+
+    // TOTAL CONSTRAINTS: 5561394
 }
 
 // Args:

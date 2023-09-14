@@ -145,39 +145,6 @@ describe("Venmo receive WASM tester", function () {
         });
     });
 
-    it("Should return the correct packed onramper id", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned packed onramper_id
-        // Indexes 12 to 17 represent the packed onramper_id (30 bytes \ 7)
-        const packed_onramper_id = witness.slice(12, 17);
-
-        // Get expected packed onramper_id
-        const regex_start = Number(input["venmo_payer_id_idx"]);
-        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the onramper_id which is 38 in ascii
-        const onramper_id_array = regex_start_sub_array.slice(0, regex_end);
-
-        // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(onramper_id_array, 7, 30);
-
-        chunkedArrays.map((arr, i) => {
-            // Pack each chunk
-            let expectedValue = bytesToPacked(arr);
-
-            // Check packed onramper_id is the same
-            assert.equal(expectedValue, packed_onramper_id[i], true);
-        });
-    });
-
     it("Should return the correct hashed onramper id", async () => {
         const provider = new ethers.providers.Web3Provider(
             ganache.provider({
@@ -209,10 +176,19 @@ describe("Venmo receive WASM tester", function () {
 
         // Get returned hashed onramper_id
         // Indexes 17 represents the hashed onramper_id
-        const hashed_onramper_id = witness[17];
+        const hashed_onramper_id = witness[12];
 
-        // Get expected hashed onramper_id
-        const packed_onramper_id = witness.slice(12, 17);
+        // Get expected packed onramper_id
+        const regex_start = Number(input["venmo_payer_id_idx"]);
+        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the onramper_id which is 38 in ascii
+        const onramper_id_array = regex_start_sub_array.slice(0, regex_end);
+        
+        // Chunk bytes into 7 and pack
+        const chunkedArrays = chunkArray(onramper_id_array, 7, 30);
+
+        const packed_onramper_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
+
         const expected_hash = poseidon(packed_onramper_id);
         const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_onramper_id);
 
@@ -232,7 +208,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[18];
+        const nullifier = witness[13];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -254,7 +230,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[19];
+        const order_id = witness[14];
 
         // Get expected modulus
         const expected_order_id = input["order_id"];

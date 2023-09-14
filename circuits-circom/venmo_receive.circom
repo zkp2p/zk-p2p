@@ -76,7 +76,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_payer_packed_bytes = count_packed(max_payer_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payer_id_idx;
-    signal output reveal_payer_packed[max_payer_packed_bytes];
+    signal reveal_payer_packed[max_payer_packed_bytes];
 
     signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
     signal is_found_payer <== IsZero()(payer_regex_out);
@@ -104,7 +104,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal order_id_squared;
     order_id_squared <== order_id * order_id;
 
-    // TOTAL CONSTRAINTS: 5996052
+    // TOTAL CONSTRAINTS: 5996709
 }
 
 // Args:
