@@ -6,6 +6,7 @@ include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
 include "./utils/email_nullifier.circom";
+include "./utils/hash_sign_gen_rand.circom";
 
 template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -93,9 +94,9 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output packed_onramper_id_hashed <== hash.out;
 
     // NULLIFIER
-    // Use modulus_hash as commitment to a random value
     signal output email_nullifier;
-    email_nullifier <== EmailNullifier()(header_hash, modulus_hash);
+    signal cm_rand <== HashSignGenRand(n, k)(signature);
+    email_nullifier <== EmailNullifier()(header_hash, cm_rand);
 
     // The following signals do not take part in any computation, but tie the proof to a specific order_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability

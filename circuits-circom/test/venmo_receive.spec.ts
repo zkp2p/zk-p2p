@@ -2,7 +2,7 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, packNullifier } from "./utils";
+import { chunkArray, bytesToPacked, packNullifier, hashSignatureGenRand } from "./utils";
 import { ethers } from "ethers";
 import ganache from "ganache";
 import { partialSha } from "@zk-email/helpers/src/shaHash";
@@ -16,6 +16,10 @@ const assert = chai.assert;
 const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
+
+// Constants used in the circuit
+const N = 121;
+const K = 17;
 
 describe("Venmo receive WASM tester", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
@@ -176,11 +180,11 @@ describe("Venmo receive WASM tester", function () {
 
     it("Should return the correct hashed onramper id", async () => {
         const provider = new ethers.providers.Web3Provider(
-            ganache.provider({ 
+            ganache.provider({
                 logging: {
-                logger: {
-                    log: () => {} // Turn off logging
-                }
+                    logger: {
+                        log: () => { } // Turn off logging
+                    }
                 }
             })
         );
@@ -189,10 +193,10 @@ describe("Venmo receive WASM tester", function () {
             generateABI(5),
             createCode(5),
             account
-          );
-    
+        );
+
         poseidonContract = await C6.deploy();
-        
+
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
@@ -229,12 +233,12 @@ describe("Venmo receive WASM tester", function () {
 
         // Get returned nullifier
         const nullifier = witness[18];
-        const modulus_hash = witness[1];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
         const packed_nullifier = packNullifier(sha_out);
-        const expected_nullifier = poseidon([modulus_hash, packed_nullifier])
+        const cm_rand = hashSignatureGenRand(input["signature"], N, K, poseidon);
+        const expected_nullifier = poseidon([cm_rand, packed_nullifier]);
         assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
