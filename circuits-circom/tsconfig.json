@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["scripts/*.ts"],
+  "include": ["test/*.spec.ts", "test/utils/*.ts", "test/types/declaration.d.ts"],
   "exclude": ["node_modules"]
 }

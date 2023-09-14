@@ -5,6 +5,8 @@ include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_payee_id.circom";
 include "./regexes/venmo_amount.circom";
+include "./utils/email_nullifier.circom";
+include "./utils/hash_sign_gen_rand.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -34,6 +36,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     EV.precomputed_sha <== precomputed_sha;
     EV.in_body_padded <== in_body_padded;
     EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
+    signal header_hash[256] <== EV.sha;
 
     modulus_hash <== EV.pubkey_hash;
 
@@ -72,7 +75,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payee_id_idx;
-    signal output reveal_payee_packed[max_payee_packed_bytes];
+    signal reveal_payee_packed[max_payee_packed_bytes];
 
     signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== VenmoPayeeId(max_body_bytes)(in_body_padded);
     signal is_found_payee <== IsZero()(payee_regex_out);
@@ -89,11 +92,18 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_offramper_id_hashed <== hash.out;
 
+    // NULLIFIER
+    signal output email_nullifier;
+    signal cm_rand <== HashSignGenRand(n, k)(signature);
+    email_nullifier <== EmailNullifier()(header_hash, cm_rand);
+
     // The following signals do not take part in any computation, but tie the proof to a specific order_id & claim_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
     signal input order_id;
     signal order_id_squared;
     order_id_squared <== order_id * order_id;
+
+    // TOTAL CONSTRAINTS: 5959500
 }
 
 // Args:
