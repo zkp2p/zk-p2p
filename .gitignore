@@ -1,6 +1,5 @@
 node_modules/
 */node_modules/
-.yarn
 
 .env
 yarn-error.log
@@ -11,7 +10,8 @@ build/
 */inputs/*.json
 */emls/*
 *.env
-*/.yarn
+*/.yarn/cache/
+*/.yarn/install-state.gz
 */dist
 
 .vscode
