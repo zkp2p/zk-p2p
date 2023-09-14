@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# UPLOAD_FOLDER=$1
+source circuit.env
 echo $UPLOAD_FOLDER
 
 echo "Uploading partial keys to s3..."
