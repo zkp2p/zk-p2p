@@ -52,9 +52,9 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
     )
         public
         override
-        returns(uint256 amount, uint256 offRamperId, bytes32 offRamperIdHash, bytes32 intentHash)
+        returns(uint256 amount, bytes32 offRamperIdHash, bytes32 intentHash)
     {
-        require(verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
         require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
 
@@ -65,19 +65,16 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
         // Signals [6:11] are the packed timestamp, multiply by 1e4 since venmo only gives us two decimals instead of 6
         amount = _parseSignalArray(_proof.signals, 6).stringToUint256() * 1e4;
 
-        // Signals [11:16] is the packed offRamperId
-        offRamperId = _parseSignalArray(_proof.signals, 11).stringToUint256();
-
-        // Signals [16] is the packed offRamperIdHsdh
-        offRamperIdHash = bytes32(_proof.signals[16]);
+        // Signals [11] is the packed offRamperIdHsdh
+        offRamperIdHash = bytes32(_proof.signals[11]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        bytes32 nullifier = bytes32(_proof.signals[17]);
+        bytes32 nullifier = bytes32(_proof.signals[12]);
         require(!isEmailNullified[nullifier], "Email has already been used");
         isEmailNullified[nullifier] = true;
 
-        // Signals [18] is intentHash
-        intentHash = bytes32(_proof.signals[17]);
+        // Signals [13] is intentHash
+        intentHash = bytes32(_proof.signals[13]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {

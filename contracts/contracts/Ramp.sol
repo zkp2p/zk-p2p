@@ -148,10 +148,7 @@ contract Ramp is Ownable {
         external
     {
         require(accounts[msg.sender].venmoIdHash == bytes32(0), "Account already associated with venmoId");
-        (
-            uint256 venmoId,
-            bytes32 venmoIdHash
-        ) = _verifyRegistrationProof(_a, _b, _c, _signals);
+        bytes32 venmoIdHash = _verifyRegistrationProof(_a, _b, _c, _signals);
 
         accounts[msg.sender].venmoIdHash = venmoIdHash;
 
@@ -512,7 +509,6 @@ contract Ramp is Ownable {
     {
         (
             uint256 timestamp,
-            uint256 onRamperId,
             bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = receiveProcessor.processProof(
@@ -542,7 +538,6 @@ contract Ramp is Ownable {
     {
         (
             uint256 amount,
-            uint256 offRamperId,
             bytes32 offRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
@@ -571,12 +566,9 @@ contract Ramp is Ownable {
     )
         internal
         view
-        returns(uint256, bytes32)
+        returns(bytes32)
     {
-        (
-            uint256 venmoId,
-            bytes32 venmoIdHash
-        ) = registrationProcessor.processProof(
+        bytes32 venmoIdHash = registrationProcessor.processProof(
             IRegistrationProcessor.RegistrationProof({
                 a: _a,
                 b: _b,
@@ -585,6 +577,6 @@ contract Ramp is Ownable {
             })
         );
 
-        return (venmoId, venmoIdHash);
+        return venmoIdHash;
     }
 }

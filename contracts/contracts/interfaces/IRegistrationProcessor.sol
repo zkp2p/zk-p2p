@@ -14,5 +14,5 @@ interface IRegistrationProcessor {
     )
         external
         view
-    returns(uint256, bytes32);
+    returns (bytes32);
 }

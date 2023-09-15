@@ -48,9 +48,9 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
         public
         view
         override
-        returns(uint256 onRamperId, bytes32 onRamperIdHash)
+        returns(bytes32 onRamperIdHash)
     {
-        require(verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
         require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
 
@@ -58,11 +58,8 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
         string memory fromEmail = _parseSignalArray(_proof.signals, 1);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [6:11] is the packed venmoId
-        onRamperId = _parseSignalArray(_proof.signals, 6).stringToUint256();
-
-        // Signals [11] is the packed onRamperIdHash
-        onRamperIdHash = bytes32(_proof.signals[11]);
+        // Signals [6] is the packed onRamperIdHash
+        onRamperIdHash = bytes32(_proof.signals[6]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {

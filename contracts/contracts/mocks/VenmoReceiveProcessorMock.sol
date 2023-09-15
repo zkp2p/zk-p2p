@@ -14,8 +14,8 @@ contract VenmoReceiveProcessorMock is IReceiveProcessor {
         public
         pure
         override
-        returns(uint256 timestamp, uint256 onRamperId, bytes32 onRamperIdHash, bytes32 intentHash)
+        returns(uint256 timestamp, bytes32 onRamperIdHash, bytes32 intentHash)
     {
-        return(_proof.signals[0], _proof.signals[1], bytes32(_proof.signals[2]), bytes32(_proof.signals[3]));
+        return(_proof.signals[0], bytes32(_proof.signals[2]), bytes32(_proof.signals[3]));
     }
 }

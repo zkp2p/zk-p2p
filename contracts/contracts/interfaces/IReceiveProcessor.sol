@@ -13,5 +13,5 @@ interface IReceiveProcessor {
         ReceiveProof calldata _proof
     )
         external
-    returns(uint256, uint256, bytes32, bytes32);
+    returns(uint256, bytes32, bytes32);
 }

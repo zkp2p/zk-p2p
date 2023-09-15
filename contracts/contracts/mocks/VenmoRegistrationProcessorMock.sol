@@ -14,8 +14,8 @@ contract VenmoRegistrationProcessorMock is IRegistrationProcessor {
         public
         pure
         override
-        returns(uint256 onRamperId, bytes32 onRamperIdHash)
+        returns(bytes32 onRamperIdHash)
     {
-        return(_proof.signals[0], bytes32(_proof.signals[1]));
+        return(bytes32(_proof.signals[1]));
     }
 }

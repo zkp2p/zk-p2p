@@ -61,21 +61,21 @@ export default class DeployHelper {
   }
 
   public async deployVenmoRegistrationProcessor(
-    venmoKeys: BigNumber[],
+    venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoRegistrationProcessor> {
     return await new VenmoRegistrationProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoReceiveProcessor(
-    venmoKeys: BigNumber[],
+    venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoReceiveProcessor> {
     return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoSendProcessor(
-    venmoKeys: BigNumber[],
+    venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
     return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
