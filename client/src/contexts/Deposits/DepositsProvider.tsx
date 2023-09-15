@@ -1,8 +1,9 @@
 import React, { useEffect, useState, ReactNode, useMemo } from 'react'
-import { useContractRead, useContractReads } from 'wagmi'
+import { useContractRead } from 'wagmi'
 
 import { Deposit, Intent } from './types'
 import { fromUsdc, fromEther } from '../../helpers/units'
+import { unpackPackedVenmoId } from '../../helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -79,6 +80,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
+          venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
+          depositAmount: fromUsdc(depositData.depositAmount).toNumber(),
           remainingDepositAmount: fromUsdc(depositData.remainingDeposits).toNumber(),
           outstandingIntentAmount: fromUsdc(depositData.outstandingIntentAmount).toNumber(),
           conversionRate: fromEther(depositData.conversionRate).toNumber(),

@@ -57,7 +57,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       sanitizedPositions = deposits.map((deposit: Deposit) => {
         const depositor = deposit.depositor;
         const remainingDepositAmount = deposit.remainingDepositAmount;
-        const totalDepositAmount = deposit.remainingDepositAmount; // TODO: Fetch this from the contract
+        const totalDepositAmount = deposit.depositAmount;
         const intentCount = deposit.intentHashes.length;
         const outstandingIntentAmount = deposit.outstandingIntentAmount;
         const conversionRate = deposit.conversionRate;
