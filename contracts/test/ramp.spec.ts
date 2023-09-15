@@ -121,7 +121,7 @@ describe.only("Ramp", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectSignals = new Array<BigNumber>(45).fill(ZERO);
+      subjectSignals = new Array<BigNumber>(12).fill(ZERO);
       subjectSignals[0] = BigNumber.from(1);
       subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
@@ -168,19 +168,19 @@ describe.only("Ramp", () => {
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-      const signalsOffRamp = new Array<BigNumber>(45).fill(ZERO);
+      const signalsOffRamp = new Array<BigNumber>(12).fill(ZERO);
       signalsOffRamp[0] = ZERO;
       signalsOffRamp[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
-      const signalsOnRamp = new Array<BigNumber>(45).fill(ZERO);
+      const signalsOnRamp = new Array<BigNumber>(12).fill(ZERO);
       signalsOnRamp[0] = ZERO;
       signalsOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
-      const signalsOnRampTwo = new Array<BigNumber>(45).fill(ZERO);
+      const signalsOnRampTwo = new Array<BigNumber>(12).fill(ZERO);
       signalsOnRampTwo[0] = ZERO;
       signalsOnRampTwo[1] = BigNumber.from(await calculateVenmoIdHash("3"));
 
-      const signalsMaliciousOnRamp = new Array<BigNumber>(45).fill(ZERO);
+      const signalsMaliciousOnRamp = new Array<BigNumber>(12).fill(ZERO);
       signalsMaliciousOnRamp[0] = ZERO;
       signalsMaliciousOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
