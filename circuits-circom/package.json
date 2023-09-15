@@ -1,6 +1,6 @@
 {
   "name": "@zkp2p/circuits-circom",
-  "version": "0.0.2-rc1",
+  "version": "0.0.3",
   "packageManager": "yarn@3.6.3",
   "description": "Circom circuits for ZKP2P",
   "contributors": [
@@ -29,8 +29,26 @@
     "test": "jest",
     "build": "tsc",
     "compile:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile.sh && cd ..",
+    "compile:receive:unsafe": "CIRCUIT_NAME=venmo_receive && cd scripts && ./1_compile_unsafe.sh && cd ..",
     "compile:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
-    "compile:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd .."
+    "compile:send:unsafe": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile_unsafe.sh && cd ..",
+    "compile:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd ..",
+    "compile:registration:unsafe": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile_unsafe.sh && cd ..",
+    "genkey:both:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./3_gen_both_zkeys.sh && cd ..",
+    "genkey:chunked:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./3_gen_chunk_zkey.sh && cd ..",
+    "genkey:chunked:unsafe:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./3_gen_chunk_zkey_unsafe.sh && cd ..",
+    "genkey:non-chunked:unsafe:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./3_gen_zkey_unsafe.sh && cd ..",
+    "genkey:both:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./3_gen_both_zkeys.sh && cd ..",
+    "genkey:chunked:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./3_gen_chunk_zkey.sh && cd ..",
+    "genkey:chunked:unsafe:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./3_gen_chunk_zkey_unsafe.sh && cd ..",
+    "genkey:non-chunked:unsafe:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./3_gen_zkey_unsafe.sh && cd ..",
+    "genkey:both:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_both_zkeys.sh && cd ..",
+    "genkey:chunked:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_chunk_zkey.sh && cd ..",
+    "genkey:chunked:unsafe:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_chunk_zkey_unsafe.sh && cd ..",
+    "genkey:non-chunked:unsafe:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_zkey_unsafe.sh && cd ..",
+    "uploadkeys:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd ..",
+    "uploadkeys:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd ..",
+    "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",

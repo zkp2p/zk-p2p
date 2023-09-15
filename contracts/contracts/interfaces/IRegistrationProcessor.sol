@@ -1,13 +1,18 @@
 pragma solidity ^0.8.18;
 
 interface IRegistrationProcessor {
+
+    struct RegistrationProof {
+        uint256[2] a;
+        uint256[2][2] b;
+        uint256[2] c;
+        uint256[7] signals;
+    }
+
     function processProof(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[45] memory _signals
+        RegistrationProof calldata _proof
     )
         external
         view
-    returns(uint256, bytes32);
+    returns (bytes32);
 }

@@ -1,13 +1,17 @@
 pragma solidity ^0.8.18;
 
 interface ISendProcessor {
+
+    struct SendProof {
+        uint256[2] a;
+        uint256[2][2] b;
+        uint256[2] c;
+        uint256[14] signals;
+    }
+
     function processProof(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[51] memory _signals
+        SendProof calldata _proof
     )
         external
-        view
-    returns(uint256, uint256, bytes32, bytes32);
+    returns(uint256, bytes32, bytes32);
 }

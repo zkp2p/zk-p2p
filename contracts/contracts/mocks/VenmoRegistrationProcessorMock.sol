@@ -9,16 +9,13 @@ contract VenmoRegistrationProcessorMock is IRegistrationProcessor {
 
     /* ============ External View Functions ============ */
     function processProof(
-        uint[2] memory /*a*/,
-        uint[2][2] memory /*b*/,
-        uint[2] memory /*c*/,
-        uint[45] memory signals
+        RegistrationProof calldata _proof
     )
         public
         pure
         override
-        returns(uint256 onRamperId, bytes32 onRamperIdHash)
+        returns(bytes32 onRamperIdHash)
     {
-        return(signals[0], bytes32(signals[1]));
+        return(bytes32(_proof.signals[1]));
     }
 }

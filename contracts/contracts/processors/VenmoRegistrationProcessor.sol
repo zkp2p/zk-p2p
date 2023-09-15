@@ -12,12 +12,12 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
     using ProofParsingUtils for uint256[5];
 
     /* ============ State Variables ============ */
-    uint256[17] public venmoMailserverKeys;
+    bytes32 public venmoMailserverKeyHash;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
-        uint256[17] memory _venmoMailserverKeys,
+        bytes32 _venmoMailserverKeyHash,
         string memory _emailFromAddress
     )
         VenmoRegistrationVerifier()
@@ -25,14 +25,14 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
     {
         require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
 
-        venmoMailserverKeys = _venmoMailserverKeys;
+        venmoMailserverKeyHash = _venmoMailserverKeyHash;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeys(uint256[17] memory _venmoMailserverKeys) external onlyOwner {
-        venmoMailserverKeys = _venmoMailserverKeys;
+    function setVenmoMailserverKeyHash(bytes32 _venmoMailserverKeyHash) external onlyOwner {
+        venmoMailserverKeyHash = _venmoMailserverKeyHash;
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
@@ -43,36 +43,23 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
 
     /* ============ External View Functions ============ */
     function processProof(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[45] memory _signals
+        IRegistrationProcessor.RegistrationProof calldata _proof
     )
         public
         view
         override
-        returns(uint256 onRamperId, bytes32 onRamperIdHash)
+        returns(bytes32 onRamperIdHash)
     {
-        require(verifyProof(_a, _b, _c, _signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        // Signals [0:5] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_signals, 0);
+        require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
+
+        // Signals [1:6] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [5:10] is the packed onRamperId
-        onRamperId = _parseSignalArray(_signals, 5).stringToUint256();
-
-        // Signals [10] is the packed onRamperIdHsdh
-        onRamperIdHash = bytes32(_signals[10]);
-
-        // Signals [11:28] are modulus.
-        for (uint256 i = 11; i < 28; i++) {
-            require(_signals[i] == venmoMailserverKeys[i - 11], "Invalid: RSA modulus not matched");
-        }
-    }
-
-    function getVenmoMailserverKeys() external view returns (uint256[17] memory) {
-        return venmoMailserverKeys;
+        // Signals [6] is the packed onRamperIdHash
+        onRamperIdHash = bytes32(_proof.signals[6]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {
@@ -81,7 +68,7 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[45] memory _signals, uint8 _from) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[7] calldata _signals, uint8 _from) internal pure returns (string memory) {
         uint256[5] memory signalArray;
         for (uint256 i = _from; i < _from + 5; i++) {
             signalArray[i - _from] = _signals[i];

@@ -12,12 +12,14 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
     using ProofParsingUtils for uint256[5];
 
     /* ============ State Variables ============ */
-    uint256[17] public venmoMailserverKeys;
+    bytes32 public venmoMailserverKeyHash;
     bytes public emailFromAddress;
+
+    mapping(bytes32 => bool) public isEmailNullified;
 
     /* ============ Constructor ============ */
     constructor(
-        uint256[17] memory _venmoMailserverKeys,
+        bytes32 _venmoMailserverKeyHash,
         string memory _emailFromAddress
     )
         VenmoReceiveVerifier()
@@ -25,14 +27,14 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
     {
         require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
 
-        venmoMailserverKeys = _venmoMailserverKeys;
+        venmoMailserverKeyHash = _venmoMailserverKeyHash;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeys(uint256[17] memory _venmoMailserverKeys) external onlyOwner {
-        venmoMailserverKeys = _venmoMailserverKeys;
+    function setVenmoMailserverKeyHash(bytes32 _venmoMailserverKeyHash) external onlyOwner {
+        venmoMailserverKeyHash = _venmoMailserverKeyHash;
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
@@ -43,42 +45,33 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
     
     /* ============ External View Functions ============ */
     function processProof(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[51] memory _signals
+        IReceiveProcessor.ReceiveProof calldata _proof
     )
         public
-        view
         override
-        returns(uint256 timestamp, uint256 onRamperId, bytes32 onRamperIdHash, bytes32 intentHash)
+        returns(uint256 timestamp, bytes32 onRamperIdHash, bytes32 intentHash)
     {
-        require(verifyProof(_a, _b, _c, _signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        // Signals [0:5] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_signals, 0);
+        require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
+
+        // Signals [1:6] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [5:10] are the packed timestamp
-        timestamp = _parseSignalArray(_signals, 5).stringToUint256();
+        // Signals [6:11] are the packed timestamp
+        timestamp = _parseSignalArray(_proof.signals, 6).stringToUint256();
 
-        // Signals [10:15] is the packed onRamperId
-        onRamperId = _parseSignalArray(_signals, 10).stringToUint256();
+        // Signals [11] is the packed onRamperIdHsdh
+        onRamperIdHash = bytes32(_proof.signals[11]);
 
-        // Signals [15] is the packed onRamperIdHsdh
-        onRamperIdHash = bytes32(_signals[15]);
+        // Check if email has been used previously, if not nullify it so it can't be used again
+        bytes32 nullifier = bytes32(_proof.signals[12]);
+        require(!isEmailNullified[nullifier], "Email has already been used");
+        isEmailNullified[nullifier] = true;
 
-        // Signals [16:33] are modulus.
-        for (uint256 i = 16; i < 33; i++) {
-            require(_signals[i] == venmoMailserverKeys[i - 16], "Invalid: RSA modulus not matched");
-        }
-
-        // Signals [50] is intentHash
-        intentHash = bytes32(_signals[50]);
-    }
-
-    function getVenmoMailserverKeys() external view returns (uint256[17] memory) {
-        return venmoMailserverKeys;
+        // Signals [13] is intentHash
+        intentHash = bytes32(_proof.signals[13]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {
@@ -87,7 +80,7 @@ contract VenmoReceiveProcessor is VenmoReceiveVerifier, IReceiveProcessor, Ownab
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[51] memory _signals, uint8 _from) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[14] calldata _signals, uint8 _from) internal pure returns (string memory) {
         uint256[5] memory signalArray;
         for (uint256 i = _from; i < _from + 5; i++) {
             signalArray[i - _from] = _signals[i];

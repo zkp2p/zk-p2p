@@ -9,16 +9,13 @@ contract VenmoReceiveProcessorMock is IReceiveProcessor {
 
     /* ============ External View Functions ============ */
     function processProof(
-        uint[2] memory /*a*/,
-        uint[2][2] memory /*b*/,
-        uint[2] memory /*c*/,
-        uint[51] memory signals
+        ReceiveProof calldata _proof
     )
         public
         pure
         override
-        returns(uint256 timestamp, uint256 onRamperId, bytes32 onRamperIdHash, bytes32 intentHash)
+        returns(uint256 timestamp, bytes32 onRamperIdHash, bytes32 intentHash)
     {
-        return(signals[0], signals[1], bytes32(signals[2]), bytes32(signals[3]));
+        return(_proof.signals[0], bytes32(_proof.signals[2]), bytes32(_proof.signals[3]));
     }
 }

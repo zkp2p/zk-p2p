@@ -143,15 +143,12 @@ contract Ramp is Ownable {
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[45] memory _signals
+        uint[7] memory _signals
     )
         external
     {
         require(accounts[msg.sender].venmoIdHash == bytes32(0), "Account already associated with venmoId");
-        (
-            uint256 venmoId,
-            bytes32 venmoIdHash
-        ) = _verifyRegistrationProof(_a, _b, _c, _signals);
+        bytes32 venmoIdHash = _verifyRegistrationProof(_a, _b, _c, _signals);
 
         accounts[msg.sender].venmoIdHash = venmoIdHash;
 
@@ -243,7 +240,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[51] memory _signals
+        uint256[14] memory _signals
     )
         external
     {
@@ -274,7 +271,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[51] memory _signals
+        uint256[14] memory _signals
     )
         external
     {
@@ -505,18 +502,23 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[51] memory _signals
+        uint256[14] memory _signals
     )
         internal
-        view
         returns(Intent memory, bytes32, bool)
     {
         (
             uint256 timestamp,
-            uint256 onRamperId,
             bytes32 onRamperIdHash,
             bytes32 intentHash
-        ) = receiveProcessor.processProof(_a, _b, _c, _signals);
+        ) = receiveProcessor.processProof(
+            IReceiveProcessor.ReceiveProof({
+                a: _a,
+                b: _b,
+                c: _c,
+                signals: _signals
+            })
+        );
 
         Intent memory intent = intents[intentHash];
         require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
@@ -529,18 +531,23 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[51] memory _signals
+        uint256[14] memory _signals
     )
         internal
-        view
         returns(Intent memory, Deposit storage, bytes32)
     {
         (
             uint256 amount,
-            uint256 offRamperId,
             bytes32 offRamperIdHash,
             bytes32 intentHash
-        ) = receiveProcessor.processProof(_a, _b, _c, _signals);
+        ) = sendProcessor.processProof(
+            ISendProcessor.SendProof({
+                a: _a,
+                b: _b,
+                c: _c,
+                signals: _signals
+            })
+        );
 
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
@@ -555,17 +562,21 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[45] memory _signals
+        uint256[7] memory _signals
     )
         internal
         view
-        returns(uint256, bytes32)
+        returns(bytes32)
     {
-        (
-            uint256 venmoId,
-            bytes32 venmoIdHash
-        ) = registrationProcessor.processProof(_a, _b, _c, _signals);
+        bytes32 venmoIdHash = registrationProcessor.processProof(
+            IRegistrationProcessor.RegistrationProof({
+                a: _a,
+                b: _b,
+                c: _c,
+                signals: _signals
+            })
+        );
 
-        return (venmoId, venmoIdHash);
+        return venmoIdHash;
     }
 }
