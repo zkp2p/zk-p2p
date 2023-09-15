@@ -12,6 +12,11 @@ export const abi = [
         "type": "address"
       },
       {
+        "internalType": "contract IPoseidon",
+        "name": "_poseidon",
+        "type": "address"
+      },
+      {
         "internalType": "contract IReceiveProcessor",
         "name": "_receiveProcessor",
         "type": "address"
@@ -57,6 +62,38 @@ export const abi = [
       }
     ],
     "name": "AccountRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "convenienceRewardTimePeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "ConvenienceRewardTimePeriodSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "depositId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "depositor",
+        "type": "address"
+      }
+    ],
+    "name": "DepositClosed",
     "type": "event"
   },
   {
@@ -218,6 +255,58 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "minDepositAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MinDepositAmountSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "receiveProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "NewReceiveProcessorSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "registrationProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "NewRegistrationProcessorSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sendProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "NewSendProcessorSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -234,48 +323,35 @@ export const abi = [
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "MAX_DEPOSITS",
-    "outputs": [
+    "anonymous": false,
+    "inputs": [
       {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "denyingUser",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "deniedUser",
+        "type": "bytes32"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PRECISE_UNIT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "UserAddedToDenylist",
+    "type": "event"
   },
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "accounts",
-    "outputs": [
-      {
         "internalType": "bytes32",
-        "name": "venmoIdHash",
+        "name": "_deniedUser",
         "type": "bytes32"
       }
     ],
-    "stateMutability": "view",
+    "name": "addAccountToDenylist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -321,6 +397,11 @@ export const abi = [
       },
       {
         "internalType": "uint256",
+        "name": "depositAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "remainingDeposits",
         "type": "uint256"
       },
@@ -359,6 +440,16 @@ export const abi = [
             "internalType": "address",
             "name": "depositor",
             "type": "address"
+          },
+          {
+            "internalType": "uint256[5]",
+            "name": "packedVenmoId",
+            "type": "uint256[5]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "depositAmount",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -402,6 +493,37 @@ export const abi = [
         "type": "address"
       }
     ],
+    "name": "getAccountInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "venmoIdHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "deposits",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct Ramp.AccountInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
     "name": "getAccountVenmoId",
     "outputs": [
       {
@@ -429,6 +551,16 @@ export const abi = [
             "internalType": "address",
             "name": "depositor",
             "type": "address"
+          },
+          {
+            "internalType": "uint256[5]",
+            "name": "packedVenmoId",
+            "type": "uint256[5]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "depositAmount",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -482,6 +614,16 @@ export const abi = [
             "type": "address"
           },
           {
+            "internalType": "uint256[5]",
+            "name": "packedVenmoId",
+            "type": "uint256[5]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "depositAmount",
+            "type": "uint256"
+          },
+          {
             "internalType": "uint256",
             "name": "remainingDeposits",
             "type": "uint256"
@@ -518,6 +660,47 @@ export const abi = [
   {
     "inputs": [
       {
+        "internalType": "bytes32[]",
+        "name": "_intentIds",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "getIntentFromIds",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "onRamper",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deposit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "intentTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct Ramp.Intent[]",
+        "name": "intentArray",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
@@ -527,7 +710,7 @@ export const abi = [
     "outputs": [
       {
         "internalType": "address",
-        "name": "onramper",
+        "name": "onRamper",
         "type": "address"
       },
       {
@@ -565,9 +748,9 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_venmoId",
-        "type": "bytes32"
+        "internalType": "uint256[5]",
+        "name": "_packedVenmoId",
+        "type": "uint256[5]"
       },
       {
         "internalType": "uint256",
@@ -608,9 +791,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[51]",
+        "internalType": "uint256[14]",
         "name": "_signals",
-        "type": "uint256[51]"
+        "type": "uint256[14]"
       }
     ],
     "name": "onRamp",
@@ -636,9 +819,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[51]",
+        "internalType": "uint256[14]",
         "name": "_signals",
-        "type": "uint256[51]"
+        "type": "uint256[14]"
       }
     ],
     "name": "onRampWithConvenience",
@@ -652,6 +835,19 @@ export const abi = [
     "outputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poseidon",
+    "outputs": [
+      {
+        "internalType": "contract IPoseidon",
         "name": "",
         "type": "address"
       }
@@ -690,9 +886,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[45]",
+        "internalType": "uint256[7]",
         "name": "_signals",
-        "type": "uint256[45]"
+        "type": "uint256[7]"
       }
     ],
     "name": "register",
@@ -716,6 +912,24 @@ export const abi = [
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_depositId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "replaceIntent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -762,10 +976,44 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_venmoId",
-        "type": "bytes32"
-      },
+        "internalType": "contract IReceiveProcessor",
+        "name": "_receiveProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "setReceiveProcessor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IRegistrationProcessor",
+        "name": "_registrationProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "setRegistrationProcessor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ISendProcessor",
+        "name": "_sendProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "setSendProcessor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "uint256",
         "name": "_depositId",
@@ -803,6 +1051,30 @@ export const abi = [
         "internalType": "contract IERC20",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "userDenylist",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
