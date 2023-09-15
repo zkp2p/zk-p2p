@@ -257,5 +257,5 @@ contract VenmoSendVerifier {
             mstore(0, isValid)
              return(0, 0x20)
          }
-     }
- }
+    }
+}

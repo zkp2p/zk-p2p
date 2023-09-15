@@ -3,27 +3,11 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
+const circom = require("circomlibjs");
+
 import { usdc } from "../utils/common/units";
 
-const SERVER_KEYS = [
-  BigNumber.from("683441457792668103047675496834917209"),
-  BigNumber.from("1011953822609495209329257792734700899"),
-  BigNumber.from("1263501452160533074361275552572837806"),
-  BigNumber.from("2083482795601873989011209904125056704"),
-  BigNumber.from("642486996853901942772546774764252018"),
-  BigNumber.from("1463330014555221455251438998802111943"),
-  BigNumber.from("2411895850618892594706497264082911185"),
-  BigNumber.from("520305634984671803945830034917965905"),
-  BigNumber.from("47421696716332554"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0"),
-  BigNumber.from("0")
-];
+const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
 const FROM_EMAIL = "venmo@venmo.com".padEnd(35, "\0");
 
@@ -37,17 +21,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
-    args: [SERVER_KEYS, FROM_EMAIL],
+    args: [SERVER_KEY_HASH, FROM_EMAIL],
   });
 
   const receiveProcessor = await deploy("VenmoReceiveProcessor", {
     from: deployer,
-    args: [SERVER_KEYS, FROM_EMAIL],
+    args: [SERVER_KEY_HASH, FROM_EMAIL],
   });
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
-    args: [SERVER_KEYS, FROM_EMAIL],
+    args: [SERVER_KEY_HASH, FROM_EMAIL],
   });
 
   const usdcToken = await deploy("USDCMock", {
@@ -55,11 +39,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [usdc(1000000), "USDC", "USDC"],
   });
 
+  const poseidon = await deploy("Poseidon", {
+    from: deployer,
+    contract: {
+      abi: circom.poseidonContract.generateABI(5),
+      bytecode: circom.poseidonContract.createCode(5),
+    }
+  });
+
   const ramp = await deploy("Ramp", {
     from: deployer,
     args: [
       deployer,
       usdcToken.address,
+      poseidon.address,
       receiveProcessor.address,
       registrationProcessor.address,
       sendProcessor.address,
