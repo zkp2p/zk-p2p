@@ -43,12 +43,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     args: [loggedInEthereumAddress],
   })
 
-  // mapping(bytes32 => Intent) public intents;
-  const rampContract = {
-    address: rampAddress,
-    abi: rampAbi as any,
-  }
-
+  // getIntentFromIds(bytes32[] memory _intentIds) external view returns (Intent[] memory intentArray)
   const uniqueIntentHashes = useMemo(() => {
     if (depositsRaw) {
       return [...new Set((depositsRaw as Deposit[]).flatMap((deposit: any) => deposit.intentHashes))];
@@ -61,12 +56,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     isLoading: isFetchDepositIntentsLoading,
     isError: isFetchDepositIntentsError,
     // refetch: refetchDepositIntents,
-  } = useContractReads({
-    contracts: uniqueIntentHashes.map((hash) => ({
-      ...rampContract,
-      functionName: 'intents',
-      args: [hash],
-    })),
+  } = useContractRead({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'getIntentFromIds',
+    args: [uniqueIntentHashes],
   });
 
   /*
@@ -115,8 +109,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       const sanitizedIntents: Intent[] = [];
       for (let i = depositIntentsArray.length - 1; i >= 0; i--) {
-        const intentRequest = depositIntentsArray[i];
-        const intentData = intentRequest.result;
+        const intentData = depositIntentsArray[i];
         
         const intent: Intent = {
           onRamper: intentData[0],
