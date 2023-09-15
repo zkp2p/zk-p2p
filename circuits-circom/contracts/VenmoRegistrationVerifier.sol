@@ -20,7 +20,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Groth16Verifier {
+contract VenmoRegistrationVerifier {
     // Scalar field size
     uint256 constant r    = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
     // Base field size
@@ -42,54 +42,39 @@ contract Groth16Verifier {
     uint256 constant deltay1 = 4082367875863433681332203403145435568316851327593401208105741076214120093531;
     uint256 constant deltay2 = 8495653923123431417604973247489272438418190587263600148770280649306958101930;
 
-
+    
     uint256 constant IC0x = 11750181356451675965224274100706777313939982157764257214472408814427439791152;
     uint256 constant IC0y = 1435602652918882039731387444441216666497172653193953047441895427459167787569;
-
+    
     uint256 constant IC1x = 12934612531203224052526912892203951543225472363689528988033110035057216919386;
     uint256 constant IC1y = 20096576928409303074910266258053734209677104811269103487532569823462393990501;
-
+    
     uint256 constant IC2x = 18387080581085017460540876786074842616079072723167668666433094702356955438527;
     uint256 constant IC2y = 18582444858775188797001263915322751737594288456150422766630787036526827341797;
-
+    
     uint256 constant IC3x = 11350038992883382883097058285861877223190668174193589251232532404140131403255;
     uint256 constant IC3y = 5488189518052638418125135734673001238162446327942746810752938029638440529599;
-
+    
     uint256 constant IC4x = 4729087062224093395931588780151127988641602617489330257105832903917216797436;
     uint256 constant IC4y = 10970333913427407424380772333464236443434874490987169166166950792507503090223;
-
+    
     uint256 constant IC5x = 18486814317059807417164420795736383807502391412384012771468955214562601512548;
     uint256 constant IC5y = 8572275770603764628576474008562830198587659059197953720715701102529870814882;
-
+    
     uint256 constant IC6x = 10142382508531136155918690594676754966195149542189538097533884271140074913317;
     uint256 constant IC6y = 13009422431523955860874096157326036388148781615074986139892204907639029885407;
-
-    uint256 constant IC7x = 18567453795499802946663094874033915131161752949497006952784208883450211645729;
-    uint256 constant IC7y = 7809527628971686346664392965019030306179779424244269942800510822624662910414;
-
-    uint256 constant IC8x = 5609000360647099231938472348791573569976629078266602458136371880564345807504;
-    uint256 constant IC8y = 20571568050634604059161179156794568237180627614527420521642024169619735180792;
-
-    uint256 constant IC9x = 6185503621642649043007732033627516850059935379206472503374993572805675210369;
-    uint256 constant IC9y = 21445720531374913985897514567491460858746715692908648610482826256304014457764;
-
-    uint256 constant IC10x = 7429538241700018510433520262751256991617971042681615351608722423798610476283;
-    uint256 constant IC10y = 13552965068004883451101884973064490316578127463680124713857804777718694255596;
-
-    uint256 constant IC11x = 627782944005514235826176164340757832384219792314396026478387008412965237240;
-    uint256 constant IC11y = 3993381719439720605526729215558102316305943228369799906685899312688919138034;
-
-    uint256 constant IC12x = 7160445196329904862116743642608594904766896208667700426236363678722428843865;
-    uint256 constant IC12y = 8874915899993031979365205198146142303416481913848206522168661898034053386243;
-
-
+    
+    uint256 constant IC7x = 4346005437150370806855468769460096877395362673157304126938941733797976884824;
+    uint256 constant IC7y = 4074905809785432817581566358754531040195428219826719897508356551537038608804;
+    
+ 
     // Memory data
     uint16 constant pVk = 0;
     uint16 constant pPairing = 128;
 
     uint16 constant pLastMem = 896;
 
-    function verifyProof(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[12] calldata _pubSignals) public view returns (bool) {
+    function verifyProof(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[7] calldata _pubSignals) public view returns (bool) {
         assembly {
             function checkField(v) {
                 if iszero(lt(v, q)) {
@@ -97,7 +82,7 @@ contract Groth16Verifier {
                     return(0, 0x20)
                 }
             }
-
+            
             // G1 function to multiply a G1 value(x,y) to value in an address
             function g1_mulAccC(pR, x, y, s) {
                 let success
@@ -132,31 +117,21 @@ contract Groth16Verifier {
                 mstore(add(_pVk, 32), IC0y)
 
                 // Compute the linear combination vk_x
-
+                
                 g1_mulAccC(_pVk, IC1x, IC1y, calldataload(add(pubSignals, 0)))
-
+                
                 g1_mulAccC(_pVk, IC2x, IC2y, calldataload(add(pubSignals, 32)))
-
+                
                 g1_mulAccC(_pVk, IC3x, IC3y, calldataload(add(pubSignals, 64)))
-
+                
                 g1_mulAccC(_pVk, IC4x, IC4y, calldataload(add(pubSignals, 96)))
-
+                
                 g1_mulAccC(_pVk, IC5x, IC5y, calldataload(add(pubSignals, 128)))
-
+                
                 g1_mulAccC(_pVk, IC6x, IC6y, calldataload(add(pubSignals, 160)))
-
+                
                 g1_mulAccC(_pVk, IC7x, IC7y, calldataload(add(pubSignals, 192)))
-
-                g1_mulAccC(_pVk, IC8x, IC8y, calldataload(add(pubSignals, 224)))
-
-                g1_mulAccC(_pVk, IC9x, IC9y, calldataload(add(pubSignals, 256)))
-
-                g1_mulAccC(_pVk, IC10x, IC10y, calldataload(add(pubSignals, 288)))
-
-                g1_mulAccC(_pVk, IC11x, IC11y, calldataload(add(pubSignals, 320)))
-
-                g1_mulAccC(_pVk, IC12x, IC12y, calldataload(add(pubSignals, 352)))
-
+                
 
                 // -A
                 mstore(_pPairing, calldataload(pA))
@@ -209,33 +184,23 @@ contract Groth16Verifier {
             mstore(0x40, add(pMem, pLastMem))
 
             // Validate that all evaluations ∈ F
-
+            
             checkField(calldataload(add(_pubSignals, 0)))
-
+            
             checkField(calldataload(add(_pubSignals, 32)))
-
+            
             checkField(calldataload(add(_pubSignals, 64)))
-
+            
             checkField(calldataload(add(_pubSignals, 96)))
-
+            
             checkField(calldataload(add(_pubSignals, 128)))
-
+            
             checkField(calldataload(add(_pubSignals, 160)))
-
+            
             checkField(calldataload(add(_pubSignals, 192)))
-
+            
             checkField(calldataload(add(_pubSignals, 224)))
-
-            checkField(calldataload(add(_pubSignals, 256)))
-
-            checkField(calldataload(add(_pubSignals, 288)))
-
-            checkField(calldataload(add(_pubSignals, 320)))
-
-            checkField(calldataload(add(_pubSignals, 352)))
-
-            checkField(calldataload(add(_pubSignals, 384)))
-
+            
 
             // Validate all evaluations
             let isValid := checkPairing(_pA, _pB, _pC, _pubSignals, pMem)
