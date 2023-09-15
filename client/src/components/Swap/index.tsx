@@ -13,7 +13,6 @@ import { usdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration'
 import useLiquidity from '@hooks/useLiquidity';
 
 
@@ -35,7 +34,6 @@ const SwapModal: React.FC<SwapModalProps> = ({
   */
   const { isLoggedIn } = useAccount();
   const { currentIntentHash } = useOnRamperIntents();
-  const { registrationHash } = useRegistration()
   const { getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
   
@@ -89,7 +87,6 @@ const SwapModal: React.FC<SwapModalProps> = ({
     abi: rampAbi,
     functionName: 'signalIntent',
     args: [
-      registrationHash,
       currentQuote.depositId,
       usdc(parseFloat(currentQuote.requestedUSDC)),
     ],
