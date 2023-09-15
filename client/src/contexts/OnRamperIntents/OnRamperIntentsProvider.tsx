@@ -83,7 +83,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     if (isLoggedIn && registrationHash && intentRaw) {
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
-        onRamper: intentData.onramper,
+        onRamper: intentData.onRamper,
         deposit: intentData.deposit,
         amount: intentData.amount,
         timestamp: intentData.intentTimestamp,
