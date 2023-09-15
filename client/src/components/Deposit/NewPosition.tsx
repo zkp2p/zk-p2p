@@ -269,7 +269,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             label="Vennmo ID"
             value={venmoId}
             placeholder={'215524379021315184'}
-            error={depositAmountInputErrorString()}
+            error={venmoInputErrorString()}
             onChange={(e) => {
               const value = e.currentTarget.value;
               setVenmoId(value);
