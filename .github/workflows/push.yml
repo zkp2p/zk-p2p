@@ -12,8 +12,10 @@ jobs:
           node-version: '18.15.0'
       - name: Install Dependencies
         run: yarn install
+        working-directory: ./contracts
       - name: Building...
         run: yarn build
+        working-directory: ./contracts
       - name: Set up env variables...
         run: cp .env.default .env
       - name: Set-up chain...
