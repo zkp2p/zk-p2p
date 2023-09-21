@@ -1,7 +1,12 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+// To remove stub uncomment the following lines
+// include "@zk-email/circuits/email-verifier.circom";
+// And comment out the following lines
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
+
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
