@@ -221,7 +221,35 @@ contract Ramp is Ownable {
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
-        _addNewIntent(venmoIdHash, _depositId, _amount);
+        bytes32 intentHash = _calculateIntentHash(depositorVenmoIdHash, _depositId);
+
+        if (deposit.remainingDeposits < _amount) {
+            (
+                bytes32[] memory prunableIntents,
+                uint256 reclaimableAmount
+            ) = _getPrunableIntents(_depositId);
+
+            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
+
+            _pruneIntents(deposit, prunableIntents);
+            deposit.remainingDeposits += reclaimableAmount;
+            deposit.outstandingIntentAmount -= reclaimableAmount;
+        }
+
+        intents[intentHash] = Intent({
+            onRamper: msg.sender,
+            deposit: _depositId,
+            amount: _amount,
+            intentTimestamp: block.timestamp
+        });
+
+        venmoIdIntent[depositorVenmoIdHash] = intentHash;
+
+        deposit.remainingDeposits -= _amount;
+        deposit.outstandingIntentAmount += _amount;
+        deposit.intentHashes.push(intentHash);
+
+        emit IntentSignaled(intentHash, _depositId, depositorVenmoIdHash, _amount, block.timestamp);
     }
 
     /**
@@ -459,43 +487,6 @@ contract Ramp is Ownable {
         returns (bytes32 intentHash)
     {
         intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
-    }
-
-    /**
-     * @notice Finds any prunable intents and validates if there is enough liquidity to fulfill intent. If enough liquidity,
-     * intents are pruned, deposits updated, and intent added.
-     */
-    function _addNewIntent(bytes32 _venmoIdHash, uint256 _depositId, uint256 _amount) internal {
-        bytes32 intentHash = _calculateIntentHash(_venmoIdHash, _depositId);
-
-        Deposit storage deposit = deposits[_depositId];
-        if (deposit.remainingDeposits < _amount) {
-            (
-                bytes32[] memory prunableIntents,
-                uint256 reclaimableAmount
-            ) = _getPrunableIntents(_depositId);
-
-            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
-
-            _pruneIntents(deposit, prunableIntents);
-            deposit.remainingDeposits += reclaimableAmount;
-            deposit.outstandingIntentAmount -= reclaimableAmount;
-        }
-
-        intents[intentHash] = Intent({
-            onRamper: msg.sender,
-            deposit: _depositId,
-            amount: _amount,
-            intentTimestamp: block.timestamp
-        });
-
-        venmoIdIntent[_venmoIdHash] = intentHash;
-
-        deposit.remainingDeposits -= _amount;
-        deposit.outstandingIntentAmount += _amount;
-        deposit.intentHashes.push(intentHash);
-
-        emit IntentSignaled(intentHash, _depositId, _venmoIdHash, _amount, block.timestamp);
     }
 
     /**
