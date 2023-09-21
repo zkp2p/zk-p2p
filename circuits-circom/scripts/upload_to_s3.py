@@ -9,7 +9,7 @@ import argparse
 s3 = boto3.client('s3')
 
 parser = argparse.ArgumentParser(description='Upload files to S3 bucket')
-parser.add_argument('--bucket_name', type=str, default='zk-p2p-onramp', help='Name of the S3 bucket')
+parser.add_argument('--bucket_name', type=str, default='zk-p2p', help='Name of the S3 bucket')
 # parser.add_argument('--build_dir', type=str, default='build', help='Name of the build directory directory with the circuitname/ folder')
 # parser.add_argument('--circuit_name', type=str, default='venmo_send', help='Name of the circuit (i.e. the foldername in build_dir/)')
 parser.add_argument('--prefix_to_tar', type=str, default='venmo_receive.zkey,venmo_send.zkey,venmo_registration.zkey', help='Prefix to match for files in order to compress to a .tar.gz and upload')
