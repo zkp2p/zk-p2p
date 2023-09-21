@@ -140,25 +140,25 @@ describe("VenmoRegistrationProcessor", () => {
     });    
   });
 
-  describe("#setVenmoMailserverKeys", async () => {
-    let subjectVenmoMailserverKeys: BigNumber[];
+  describe("#setVenmoMailserverKeyHash", async () => {
+    let subjectVenmoMailserverKeyHash: string;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectVenmoMailserverKeys = rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1));
+      subjectVenmoMailserverKeyHash = BigNumber.from(rawSignals[0]).add(1).toHexString();
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeys(subjectVenmoMailserverKeys);
+      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeys = await registrationProcessor.getVenmoMailserverKeys();
-      expect(venmoKeys).to.deep.equal(rawSignals.slice(16,33).map((signal) => BigNumber.from(signal).add(1)));
+      const venmoKeyHash = await registrationProcessor.venmoMailserverKeyHash();
+      expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
     });
 
     describe("when the caller is not the owner", async () => {
