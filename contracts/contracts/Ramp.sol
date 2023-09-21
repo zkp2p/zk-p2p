@@ -221,7 +221,7 @@ contract Ramp is Ownable {
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
-        bytes32 intentHash = _calculateIntentHash(depositorVenmoIdHash, _depositId);
+        bytes32 intentHash = _calculateIntentHash(venmoIdHash, _depositId);
 
         if (deposit.remainingDeposits < _amount) {
             (
@@ -243,13 +243,13 @@ contract Ramp is Ownable {
             intentTimestamp: block.timestamp
         });
 
-        venmoIdIntent[depositorVenmoIdHash] = intentHash;
+        venmoIdIntent[venmoIdHash] = intentHash;
 
         deposit.remainingDeposits -= _amount;
         deposit.outstandingIntentAmount += _amount;
         deposit.intentHashes.push(intentHash);
 
-        emit IntentSignaled(intentHash, _depositId, depositorVenmoIdHash, _amount, block.timestamp);
+        emit IntentSignaled(intentHash, _depositId, venmoIdHash, _amount, block.timestamp);
     }
 
     /**
