@@ -31,6 +31,7 @@ contract Ramp is Ownable {
         bytes32 indexed intentHash,
         uint256 indexed depositId,
         bytes32 indexed venmoId,
+        address to,
         uint256 amount,
         uint256 timestamp
     );
@@ -44,6 +45,7 @@ contract Ramp is Ownable {
         bytes32 indexed intentHash,
         uint256 indexed depositId,
         address indexed onRamper,
+        address to,
         uint256 amount,
         uint256 convenienceFee
     );
@@ -82,6 +84,7 @@ contract Ramp is Ownable {
 
     struct Intent {
         address onRamper;
+        address to;
         uint256 deposit;
         uint256 amount;
         uint256 intentTimestamp;
@@ -212,7 +215,7 @@ contract Ramp is Ownable {
      * @param _depositId    The ID of the deposit the on-ramper intends to use for 
      * @param _amount       The amount of USDC the user wants to on-ramp
      */
-    function signalIntent(uint256 _depositId, uint256 _amount) external {
+    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
         Deposit storage deposit = deposits[_depositId];
         bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
@@ -238,6 +241,7 @@ contract Ramp is Ownable {
 
         intents[intentHash] = Intent({
             onRamper: msg.sender,
+            to: _to,
             deposit: _depositId,
             amount: _amount,
             intentTimestamp: block.timestamp
@@ -249,7 +253,7 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount += _amount;
         deposit.intentHashes.push(intentHash);
 
-        emit IntentSignaled(intentHash, _depositId, venmoIdHash, _amount, block.timestamp);
+        emit IntentSignaled(intentHash, _depositId, venmoIdHash, _to, _amount, block.timestamp);
     }
 
     /**
@@ -287,10 +291,10 @@ contract Ramp is Ownable {
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
-        usdc.transfer(intent.onRamper, intent.amount - convenienceFee);
+        usdc.transfer(intent.to, intent.amount - convenienceFee);
         usdc.transfer(msg.sender, convenienceFee);
 
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, convenienceFee);
     }
 
     /**
@@ -322,9 +326,9 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        usdc.transfer(intent.onRamper, intent.amount);
+        usdc.transfer(intent.to, intent.amount);
         
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, 0);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, 0);
     }
 
     /**
