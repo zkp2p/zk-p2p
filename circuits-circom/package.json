@@ -53,7 +53,7 @@
     "test:send": "yarn test ./test/venmo_send.spec.ts",
     "test:registration": "yarn test ./test/venmo_registration.spec.ts",
     "genverifier:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
-    "genverifeir:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
+    "genverifier:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "genverifier:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_sol_verifier.sh && cd .."
   },
   "devDependencies": {
