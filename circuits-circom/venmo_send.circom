@@ -13,14 +13,15 @@ include "./regexes/venmo_payee_id.circom";
 include "./regexes/venmo_amount.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/hash_sign_gen_rand.circom";
+include "./utils/ceil.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
 
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
-    var max_email_from_len = (35 \ pack_size + 1) * pack_size;        // Should be 254, but we limit to 35 for now
-    var max_email_amount_len = (10 \ pack_size + 1) * pack_size;      // Allowing max 7 fig amount + one decimal point + 2 decimal places
-    var max_payee_len = (21 \ pack_size + 1) * pack_size;             // 21 digits, 21 + pack_size is safe if Venmo adds more users
+    var max_email_from_len = ceil(35, pack_size); // Should be 254, but we limit to 35 for now
+    var max_email_amount_len = ceil(10, pack_size); // Allowing max 7 fig amount + one decimal point + 2 decimal places
+    var max_payee_len = ceil(21, pack_size); // 21 digits, 21 + pack_size is safe if Venmo adds more users
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
