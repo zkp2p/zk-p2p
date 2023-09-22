@@ -157,8 +157,8 @@ describe("Venmo receive WASM tester", function () {
         );
         account = provider.getSigner(0);
         const C6 = new ethers.ContractFactory(
-            generateABI(5),
-            createCode(5),
+            generateABI(4),
+            createCode(4),
             account
         );
 
@@ -190,7 +190,7 @@ describe("Venmo receive WASM tester", function () {
         const packed_onramper_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
 
         const expected_hash = poseidon(packed_onramper_id);
-        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_onramper_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[4])"](packed_onramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);

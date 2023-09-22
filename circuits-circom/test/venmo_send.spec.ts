@@ -124,8 +124,8 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned packed amount
-        // Indexes 7 represent the packed amount
-        const packed_amount = witness[8];
+        // Indexes 8 to 9 represent the packed amount
+        const packed_amount = witness.slice(8, 9);
 
         // Get expected packed amount
         const regex_start = Number(input["venmo_amount_idx"]);
@@ -157,8 +157,8 @@ describe("Venmo send WASM tester", function () {
         );
         account = provider.getSigner(0);
         const C6 = new ethers.ContractFactory(
-            generateABI(5),
-            createCode(5),
+            generateABI(4),
+            createCode(4),
             account
         );
 
@@ -189,7 +189,7 @@ describe("Venmo send WASM tester", function () {
 
         const packed_offramper_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
         const expected_hash = poseidon(packed_offramper_id);
-        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_offramper_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[4])"](packed_offramper_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
