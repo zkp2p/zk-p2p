@@ -20,7 +20,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
     var max_email_from_len = ceil(35, pack_size); // Should be 254, but we limit to 35 for now
-    var max_email_amount_len = ceil(10, pack_size); // Allowing max 7 fig amount + one decimal point + 2 decimal places
+    var max_email_amount_len = 7; // Allowing max 4 fig amount + one decimal point + 2 decimal places
     var max_payee_len = ceil(21, pack_size); // 21 digits, 21 + pack_size is safe if Venmo adds more users
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
