@@ -1,4 +1,4 @@
-
+#!/bin/bash
 source circuit.env
 
 # Then, nonchunked snarkjs
