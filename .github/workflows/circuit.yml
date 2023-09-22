@@ -1,0 +1,59 @@
+name: circuit
+on: [pull_request]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Specify node version...
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.0'
+      - name: Install Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom
+      - name: Install rust...
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
+        working-directory: ./circuits-circom
+      - name: Install circom...
+        run: git clone https://github.com/iden3/circom.git && cd circom && cargo build --release && cargo install --path circom
+        working-directory: ../
+      - name: Create env...
+        run: cp scripts/circuit.env.example scripts/circuit.env
+        working-directory: ./circuits-circom
+      - name: Compile registration...
+        run: yarn compile:registration:unsafe
+        working-directory: ./circuits-circom
+      - name: Compile receive...
+        run: yarn compile:receive:unsafe
+        working-directory: ./circuits-circom
+      - name: Compile send...
+        run: yarn compile:send:unsafe
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a RECEIVE email...
+        run: yarn gen-input:reg-receive
+        working-directory: ./circuits-circom
+      - name: Testing registration using a RECEIVE email...
+        run: yarn test:registration
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a SEND email...
+        run: yarn gen-input:reg-send
+        working-directory: ./circuits-circom
+      - name: Testing registration using a SEND email...
+        run: yarn test:registration
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a COMPLETE email...
+        run: yarn gen-input:reg-complete
+        working-directory: ./circuits-circom
+      - name: Gen inputs for onramping with convenience using a RECEIVE email...
+        run: yarn gen-input:receive
+        working-directory: ./circuits-circom
+      - name: Gen inputs for onramping using a SEND payment email...
+        run: yarn gen-input:send
+        working-directory: ./circuits-circom
+      - name: Testing...
+        run: yarn test
+        working-directory: ./circuits-circom
+
+
