@@ -1,4 +1,4 @@
-name: push
+name: circuit
 on: [push]
 jobs:
   run-tests:
@@ -12,6 +12,12 @@ jobs:
           node-version: '18.15.0'
       - name: Install Dependencies
         run: yarn install
+        working-directory: ./circuits-circom
+      - name: Install rust...
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+        working-directory: ./circuits-circom
+      - name: Install circom...
+        run: git clone https://github.com/iden3/circom.git && cargo build --release && cargo install --path circom
         working-directory: ./circuits-circom
       - name: Compile Registration...
         run: yarn compile:registration
