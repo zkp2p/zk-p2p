@@ -30,6 +30,10 @@ end=$(date +%s)
 echo "DONE ($((end - start))s)"
 echo
 
+# Export the verification key to JSON
+echo "Exporting verification key to JSON..."
+node ../node_modules/.bin/snarkjs zkey export verificationkey "$BUILD_DIR"/"$CIRCUIT_NAME".zkey "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json
+
 yarn remove snarkjs
 # mv ../yarn.lock ../yarn.lock_old3
 # rm -rf ../node_modules_old3

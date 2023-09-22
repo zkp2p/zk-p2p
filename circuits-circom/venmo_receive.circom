@@ -12,9 +12,15 @@ include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/hash_sign_gen_rand.circom";
+include "./utils/ceil.circom";
 
 template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
+
+    // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
+    var max_email_from_len = ceil(35, pack_size); // Should be 254, but we limit to 35 + pack_size for now
+    var max_email_timestamp_len = 10; // 10 digits till year 2286
+    var max_payer_len = ceil(21, pack_size); // 19 digits, 21 + pack_size is safe if Venmo adds more users
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -46,9 +52,6 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     modulus_hash <== EV.pubkey_hash;
 
     // FROM HEADER REGEX: 736,553 constraints
-    // TODO: we set max len to 30 for all public outputs below for ease of use in the verifier contract for now
-    // This extracts the from email, and the precise regex format can be viewed in the README
-    var max_email_from_len = 30;
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
     assert(max_email_from_packed_bytes < max_header_bytes);
 
@@ -60,8 +63,6 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_from_packed <== ShiftAndPack(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // TIMESTAMP REGEX: [x]
-    // We will optimize the size later on
-    var max_email_timestamp_len = 30;
     var max_email_timestamp_packed_bytes = count_packed(max_email_timestamp_len, pack_size);
     assert(max_email_timestamp_packed_bytes < max_header_bytes);
 
@@ -76,8 +77,6 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_timestamp_packed <== ShiftAndPack(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
 
     // VENMO RECEIVE ONRAMPER ID REGEX: [x]
-    // We will optimize the size later on
-    var max_payer_len = 30;
     var max_payer_packed_bytes = count_packed(max_payer_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payer_id_idx;

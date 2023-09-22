@@ -13,7 +13,7 @@ parser.add_argument('--bucket_name', type=str, default='zk-p2p', help='Name of t
 # parser.add_argument('--build_dir', type=str, default='build', help='Name of the build directory directory with the circuitname/ folder')
 # parser.add_argument('--circuit_name', type=str, default='venmo_send', help='Name of the circuit (i.e. the foldername in build_dir/)')
 parser.add_argument('--prefix_to_tar', type=str, default='venmo_receive.zkey,venmo_send.zkey,venmo_registration.zkey', help='Prefix to match for files in order to compress to a .tar.gz and upload')
-parser.add_argument('--prefix', type=str, default='venmo_receive.wasm,venmo_send.wasm,venmo_registration.wasm', help='Comma-seperated prefixes to upload without compression')
+parser.add_argument('--prefix', type=str, default='venmo_receive.wasm,venmo_send.wasm,venmo_registration.wasm,venmo_receive_vkey.json,venmo_send_vkey.json,venmo_registration_vkey.json', help='Comma-seperated prefixes to upload without compression')
 parser.add_argument('--dirs', type=str, default='', help='Comma-separated list of directories to upload from')
 parser.add_argument('--upload_dir', type=str, default='', help='Directory to upload to')
 args = parser.parse_args()
@@ -38,7 +38,7 @@ upload_dir = args.upload_dir
 
 def upload_to_s3(filename, dir=""):
     with open(dir + filename, 'rb') as file:
-        print("Starting upload...")
+        print("Starting upload of ", filename, "...")
         s3.upload_fileobj(file, bucket_name, f"{upload_dir}/{filename}", ExtraArgs={
                           'ACL': 'public-read', 'ContentType': 'binary/octet-stream'})
         print("Done uploading ", filename, "!")

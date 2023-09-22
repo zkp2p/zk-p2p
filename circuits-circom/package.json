@@ -46,9 +46,15 @@
     "genkey:chunked:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_chunk_zkey.sh && cd ..",
     "genkey:chunked:unsafe:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_chunk_zkey_unsafe.sh && cd ..",
     "genkey:non-chunked:unsafe:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./3_gen_zkey_unsafe.sh && cd ..",
-    "uploadkeys:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd ..",
-    "uploadkeys:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd ..",
-    "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh $UPLOAD_FOLDER && cd .."
+    "uploadkeys:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./7_upload_to_s3.sh && cd ..",
+    "uploadkeys:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./7_upload_to_s3.sh && cd ..",
+    "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh && cd ..",
+    "test:receive": "yarn test ./test/venmo_receive.spec.ts",
+    "test:send": "yarn test ./test/venmo_send.spec.ts",
+    "test:registration": "yarn test ./test/venmo_registration.spec.ts",
+    "genverifier:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
+    "genverifier:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
+    "genverifier:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_sol_verifier.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",

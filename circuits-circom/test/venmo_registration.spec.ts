@@ -25,7 +25,7 @@ describe("Venmo Registration", function () {
     let account;
     let poseidonContract;
 
-    beforeAll( async() => {
+    beforeAll(async () => {
         cir = await wasm_tester(
             path.join(__dirname, "../venmo_registration.circom"),
             {
@@ -87,8 +87,8 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned packed from email
-        // Indexes 2 to 7 represent the packed from email (30 bytes \ 7)
-        const packed_from_email = witness.slice(2, 7);
+        // Indexes 2 to 8 represent the packed from email (42 \ 7)
+        const packed_from_email = witness.slice(2, 8);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
@@ -97,7 +97,7 @@ describe("Venmo Registration", function () {
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(from_email_array, 7, 30);
+        let chunkedArrays = chunkArray(from_email_array, 7, 42);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -110,23 +110,23 @@ describe("Venmo Registration", function () {
 
     it("Should return the correct hashed actor id", async () => {
         const provider = new ethers.providers.Web3Provider(
-            ganache.provider({ 
+            ganache.provider({
                 logging: {
-                logger: {
-                    log: () => {} // Turn off logging
-                }
+                    logger: {
+                        log: () => { } // Turn off logging
+                    }
                 }
             })
         );
         account = provider.getSigner(0);
         const C6 = new ethers.ContractFactory(
-            generateABI(5),
-            createCode(5),
+            generateABI(4),
+            createCode(4),
             account
-          );
-    
+        );
+
         poseidonContract = await C6.deploy();
-        
+
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
@@ -139,7 +139,7 @@ describe("Venmo Registration", function () {
 
         // Get returned hashed actor_id
         // Indexes 7 represents the hashed actor_id
-        const hashed_actor_id = witness[7];
+        const hashed_actor_id = witness[8];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["venmo_actor_id_idx"]);
@@ -148,11 +148,11 @@ describe("Venmo Registration", function () {
         const actor_id_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        const chunkedArrays = chunkArray(actor_id_array, 7, 30);
+        const chunkedArrays = chunkArray(actor_id_array, 7, 28);
 
         const packed_actor_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
         const expected_hash = poseidon(packed_actor_id);
-        const expected_hash_contract = await poseidonContract["poseidon(uint256[5])"](packed_actor_id);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[4])"](packed_actor_id);
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
