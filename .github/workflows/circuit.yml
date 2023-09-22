@@ -17,8 +17,8 @@ jobs:
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
         working-directory: ./circuits-circom
       - name: Install circom...
-        run: git clone https://github.com/iden3/circom.git && cargo build --release && cargo install --path circom
-        working-directory: ./circuits-circom
+        run: git clone https://github.com/iden3/circom.git && cd circom && cargo build --release && cargo install --path circom
+        working-directory: ../
       - name: Compile Registration...
         run: yarn compile:registration
         working-directory: ./circuits-circom
