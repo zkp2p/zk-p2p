@@ -51,7 +51,10 @@
     "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh && cd ..",
     "test:receive": "yarn test ./test/venmo_receive.spec.ts",
     "test:send": "yarn test ./test/venmo_send.spec.ts",
-    "test:registration": "yarn test ./test/venmo_registration.spec.ts"
+    "test:registration": "yarn test ./test/venmo_registration.spec.ts",
+    "genverifier:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_verifier.sh && cd ..",
+    "genverifeir:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./8_gen_verifier.sh && cd ..",
+    "genverifier:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_verifier.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
