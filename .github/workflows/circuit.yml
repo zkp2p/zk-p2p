@@ -1,0 +1,50 @@
+name: push
+on: [push]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Specify node version...
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.0'
+      - name: Install Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom
+      - name: Compile Registration...
+        run: yarn compile:registration
+        working-directory: ./circuits-circom
+      - name: Compile receive...
+        run: yarn compile:receive
+        working-directory: ./circuits-circom
+      - name: Compile send...
+        run: yarn compile:send
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a RECEIVE email...
+        run: yarn gen-input:reg-receive
+        working-directory: ./circuits-circom
+      - name: Testing registration using a RECEIVE email...
+        run: yarn test:registration
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a SEND email...
+        run: yarn gen-input:reg-send
+        working-directory: ./circuits-circom
+      - name: Testing registration using a SEND email...
+        run: yarn test:registration
+        working-directory: ./circuits-circom
+      - name: Gen inputs for registration using a COMPLETE email...
+        run: yarn gen-input:reg-complete
+        working-directory: ./circuits-circom
+      - name: Gen inputs for onramping with convenience using a RECEIVE email...
+        run: yarn gen-input:receive
+        working-directory: ./circuits-circom
+      - name: Gen inputs for onramping using a SEND payment email...
+        run: yarn gen-input:send
+        working-directory: ./circuits-circom
+      - name: Testing...
+        run: yarn test
+        working-directory: ./circuits-circom
+
+
