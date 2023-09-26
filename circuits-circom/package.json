@@ -57,7 +57,13 @@
     "genverifier:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "gencalldata:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./9_gen_sol_calldata.sh && cd ..",
     "gencalldata:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./9_gen_sol_calldata.sh && cd ..",
-    "gencalldata:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./9_gen_sol_calldata.sh && cd .."
+    "gencalldata:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./9_gen_sol_calldata.sh && cd ..",
+    "genwitness:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./2_gen_witness.sh && cd ..",
+    "genwitness:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./2_gen_witness.sh && cd ..",
+    "genwitness:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./2_gen_witness.sh && cd ..",
+    "genproof:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./5_gen_proof_rapidsnark.sh && cd ..",
+    "genproof:receive": "CIRCUIT_NAME=venmo_receive && cd scripts && ./5_gen_proof_rapidsnark.sh && cd ..",
+    "genproof:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./5_gen_proof_rapidsnark.sh && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
