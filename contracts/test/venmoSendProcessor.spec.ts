@@ -17,10 +17,11 @@ import { ZERO_BYTES32 } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x00000000000000000000000000000000000000000000000000000030302e3033","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x16b0c8e8bd4352f8b062923976cc0e51e26162dec17f12d353feac4d5f7ca27d","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000000001"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x00000000000000000000000000000000000000000000000000000030302e3033","0x24cc36a3178903ff4a3ba5984e48950918a9c1cc76b3633c539194efe0d6ad4f","0x0228e20fc2bc01b0f9ed78a9de64191215d3830bd01602b313b68eb55ae8e4a6","0x0000000000000000000000000000000000000000000000000000000000000001"];
 
 describe("VenmoSendProcessor", () => {
   let owner: Account;
+  let attacker: Account;
 
   let sendProcessor: VenmoSendProcessor;
 
@@ -28,14 +29,15 @@ describe("VenmoSendProcessor", () => {
 
   beforeEach(async () => {
     [
-      owner
+      owner,
+      attacker
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
 
     sendProcessor = await deployer.deployVenmoSendProcessor(
       rawSignals[0],
-      "venmo@venmo.com".padEnd(35, "\0")
+      "venmo@venmo.com".padEnd(42, "\0")
     );
   });
 
@@ -45,7 +47,7 @@ describe("VenmoSendProcessor", () => {
 
     beforeEach(async () => {
       subjectVenmoKeys = rawSignals[0];
-      subjectEmailFromAddress = "venmo@venmo.com".padEnd(35, "\0"); // Pad the address to match length returned by circuit
+      subjectEmailFromAddress = "venmo@venmo.com".padEnd(42, "\0"); // Pad the address to match length returned by circuit
     });
 
     async function subject(): Promise<any> {
@@ -64,7 +66,7 @@ describe("VenmoSendProcessor", () => {
 
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
-      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(35, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(42, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
     describe("when the email address is not properly padded", async () => {
@@ -82,12 +84,12 @@ describe("VenmoSendProcessor", () => {
     let subjectProof: GrothProof;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0eaa19c3bf74c3f121b91b71ffa29e4fbea1a340760fc44ae9f1e9d055183e60"), BigNumber.from("0x2abb0d3b5f78a32d6aca1597fcb9729edc3a3a97da3b7cd589daa1e2ad81e5fd")]
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0a6d00374c60d01c15a09c9961746250b737a75616a24ea2485e781aaf6a354b"), BigNumber.from("0x28999d4a677b8828b956da892cfd49a6fc90d3031e6af3b0c532c7f5e63591e9")]
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x29f45a9e4a9b3164a05ca0464daf917cd4bf15f94fe6d7dabf69b744e0330003"), BigNumber.from("0x2efbd77ae9447485a6c9419aa1f3a9d78342020b5d6635f4487f407f5673ca88")],
-        [BigNumber.from("0x19d35344d9c6dd57b07bc4f341a7367378fd4437d70de454af137c79091ea55c"), BigNumber.from("0x0ca01729ed20a49c2e4b08e85d8a56ab7f03699fcc040e1bd8e232a0eb96bd4c")]
+        [BigNumber.from("0x1d87213b862615f7d3c2a33dd93985daefbfcb00095222bb972646afab449855"), BigNumber.from("0x1525e9f531c6d857e32ce0e2099b4f1bec75bc804e2647e766acfff8d3df904e")],
+        [BigNumber.from("0x114b200136a2d467a73c56d769b52d8d8c8a66a1ada0a5d4f2ae359eddd1c726"), BigNumber.from("0x197d788c19f63804e6ed9a4d565a2a636fa5065cca9a96c9cbe2764e31ad4194")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x1811ec3c2fd0394afb654498bd7e666714335029827dfa7f811ee18b9a6be8f3"), BigNumber.from("0x2694c29e35126dd20d27d05c8e8394af42f96e8033b4b0e6face2e82ac1e3741")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x290cf56e30d79c27bb6ecd9ebed2d1e7e7cfecdac5547716fcdde73d29e89ded"), BigNumber.from("0x204aa54d8731d0ba7be5ca2cb75b6e7d8a556e09b40bc674e75fde3e3adcd923")];
       const signals: BigNumber[] = rawSignals.map((signal) => BigNumber.from(signal));
 
       subjectProof = {
@@ -102,22 +104,26 @@ describe("VenmoSendProcessor", () => {
       return await sendProcessor.processProof(subjectProof);
     }
 
+    async function subjectCallStatic(): Promise<any> {
+      return await sendProcessor.callStatic.processProof(subjectProof);
+    }
+
     it("should process the proof", async () => {
       const {
         amount,
         offRamperIdHash,
         intentHash
-      } = await subject();
+      } = await subjectCallStatic();
 
-      // expect(amount).to.eq(usdc(30));
-      // expect(offRamperIdHash).to.eq("0x16b0c8e8bd4352f8b062923976cc0e51e26162dec17f12d353feac4d5f7ca27d");
-      // expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
+      expect(amount).to.eq(usdc(30));
+      expect(offRamperIdHash).to.eq(rawSignals[8]);
+      expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
     });
 
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await sendProcessor.isEmailNullified(subjectProof.signals[12].toHexString());
+      const isNullified = await sendProcessor.isEmailNullified(subjectProof.signals[9].toHexString());
 
       expect(isNullified).to.be.true;
     });
@@ -134,7 +140,7 @@ describe("VenmoSendProcessor", () => {
 
     describe("when the email is from an invalid venmo address", async () => {
       beforeEach(async () => {
-        await sendProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(35, "\0"));
+        await sendProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(42, "\0"));
       });
 
       it("should revert", async () => {
@@ -149,6 +155,81 @@ describe("VenmoSendProcessor", () => {
 
       it("should revert", async () => {
         await expect(subject()).to.be.revertedWith("Invalid mailserver key hash");
+      });
+    });
+  });
+
+  describe("#setVenmoMailserverKeyHash", async () => {
+    let subjectVenmoMailserverKeyHash: string;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectVenmoMailserverKeyHash = BigNumber.from(rawSignals[0]).add(1).toHexString();
+    });
+
+    async function subject(): Promise<any> {
+      return await sendProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+    }
+
+    it("should set the correct venmo keys", async () => {
+      await subject();
+
+      const venmoKeyHash = await sendProcessor.venmoMailserverKeyHash();
+      expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setEmailFromAddress", async () => {
+    let subjectEmailFromAddress: string;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectEmailFromAddress = "new-venmo@venmo.com".padEnd(42, "\0");
+    });
+
+    async function subject(): Promise<any> {
+      return await sendProcessor.connect(subjectCaller.wallet).setEmailFromAddress(subjectEmailFromAddress);
+    }
+
+    it("should set the correct venmo address", async () => {
+      await subject();
+
+      const emailFromAddress = await sendProcessor.getEmailFromAddress();
+
+      expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(42, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the email address is not properly padded", async () => {
+      beforeEach(async () => {
+        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
       });
     });
   });

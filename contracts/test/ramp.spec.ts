@@ -30,11 +30,12 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("Ramp", () => {
+describe.only("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
   let onRamperTwo: Account;
+  let receiver: Account;
   let maliciousOnRamper: Account;
 
   let ramp: Ramp;
@@ -51,6 +52,7 @@ describe("Ramp", () => {
       offRamper,
       onRamper,
       onRamperTwo,
+      receiver,
       maliciousOnRamper
     ] = await getAccounts();
 
@@ -121,7 +123,7 @@ describe("Ramp", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectSignals = new Array<BigNumber>(7).fill(ZERO);
+      subjectSignals = new Array<BigNumber>(8).fill(ZERO);
       subjectSignals[0] = BigNumber.from(1);
       subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
@@ -168,19 +170,19 @@ describe("Ramp", () => {
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-      const signalsOffRamp = new Array<BigNumber>(7).fill(ZERO);
+      const signalsOffRamp = new Array<BigNumber>(8).fill(ZERO);
       signalsOffRamp[0] = ZERO;
       signalsOffRamp[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
-      const signalsOnRamp = new Array<BigNumber>(7).fill(ZERO);
+      const signalsOnRamp = new Array<BigNumber>(8).fill(ZERO);
       signalsOnRamp[0] = ZERO;
       signalsOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
-      const signalsOnRampTwo = new Array<BigNumber>(7).fill(ZERO);
+      const signalsOnRampTwo = new Array<BigNumber>(8).fill(ZERO);
       signalsOnRampTwo[0] = ZERO;
       signalsOnRampTwo[1] = BigNumber.from(await calculateVenmoIdHash("3"));
 
-      const signalsMaliciousOnRamp = new Array<BigNumber>(7).fill(ZERO);
+      const signalsMaliciousOnRamp = new Array<BigNumber>(8).fill(ZERO);
       signalsMaliciousOnRamp[0] = ZERO;
       signalsMaliciousOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
 
@@ -326,6 +328,7 @@ describe("Ramp", () => {
     describe("#signalIntent", async () => {
       let subjectDepositId: BigNumber;
       let subjectAmount: BigNumber;
+      let subjectTo: Address;
       let subjectCaller: Account;
 
       beforeEach(async () => {
@@ -338,11 +341,12 @@ describe("Ramp", () => {
 
         subjectDepositId = ZERO;
         subjectAmount = usdc(50);
+        subjectTo = receiver.address;
         subjectCaller = onRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).signalIntent(subjectDepositId, subjectAmount);
+        return ramp.connect(subjectCaller.wallet).signalIntent(subjectDepositId, subjectAmount, subjectTo);
       }
 
       it("should create the correct entry in the intents mapping", async () => {
@@ -354,6 +358,7 @@ describe("Ramp", () => {
         const intent = await ramp.intents(intentHash);
 
         expect(intent.onRamper).to.eq(subjectCaller.address);
+        expect(intent.to).to.eq(subjectTo);
         expect(intent.deposit).to.eq(subjectDepositId);
         expect(intent.amount).to.eq(subjectAmount);
         expect(intent.intentTimestamp).to.eq(currentTimestamp);
@@ -397,6 +402,7 @@ describe("Ramp", () => {
           intentHash,
           subjectDepositId,
           await calculateVenmoIdHash("2"),
+          subjectTo,
           subjectAmount,
           currentTimestamp
         );
@@ -539,337 +545,6 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#replaceIntent", async () => {
-      let subjectDepositId: BigNumber;
-      let subjectAmount: BigNumber;
-      let subjectCaller: Account;
-
-      let originalIntentHash: string;
-      beforeEach(async () => {
-        await ramp.connect(offRamper.wallet).offRamp(
-          await calculatePackedVenmoId("1"),
-          usdc(100),
-          usdc(101),
-          usdc(2)
-        );
-
-        await ramp.connect(offRamper.wallet).offRamp(
-          await calculatePackedVenmoId("1"),
-          usdc(200),
-          usdc(201),
-          usdc(2)
-        );
-
-        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(40));
-        originalIntentHash = calculateIntentHash(await calculateVenmoIdHash("2"), ZERO, await blockchain.getCurrentTimestamp());
-
-        subjectDepositId = ONE;
-        subjectAmount = usdc(50);
-        subjectCaller = onRamper;
-      });
-
-      async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).replaceIntent(subjectDepositId, subjectAmount);
-      }
-
-      it("should create the correct entry in the intents mapping", async () => {
-        await subject();
-
-        const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
-
-        const intent = await ramp.intents(intentHash);
-
-        expect(intent.onRamper).to.eq(subjectCaller.address);
-        expect(intent.deposit).to.eq(subjectDepositId);
-        expect(intent.amount).to.eq(subjectAmount);
-        expect(intent.intentTimestamp).to.eq(currentTimestamp);
-      });
-
-      it("should delete the correct entry in the intents mapping", async () => {
-        await subject();
-
-        const intent = await ramp.intents(originalIntentHash);
-
-        expect(intent.onRamper).to.eq(ADDRESS_ZERO);
-        expect(intent.deposit).to.eq(ZERO_BYTES32);
-        expect(intent.amount).to.eq(ZERO);
-        expect(intent.intentTimestamp).to.eq(ZERO);
-      });
-
-      it("should update the deposit mapping correctly for deposit ONE", async () => {
-        const preDeposit = await ramp.getDeposit(subjectDepositId);
-
-        await subject();
-
-        const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, await blockchain.getCurrentTimestamp());
-
-        const postDeposit = await ramp.getDeposit(subjectDepositId);
-
-        expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.add(subjectAmount));
-        expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits.sub(subjectAmount));
-        expect(postDeposit.intentHashes).to.include(intentHash);
-      });
-
-      it("should update the deposit mapping correctly for deposit ZERO", async () => {
-        await subject();
-
-        const postDeposit = await ramp.getDeposit(ZERO);
-
-        expect(postDeposit.outstandingIntentAmount).to.eq(ZERO);
-        expect(postDeposit.remainingDeposits).to.eq(usdc(100));
-        expect(postDeposit.intentHashes).to.not.include(originalIntentHash);
-      });
-
-      it("should update the venmoIdIntent mapping correctly", async () => {
-        await subject();
-
-        const expectedIntentHash = calculateIntentHash(
-          await calculateVenmoIdHash("2"),
-          subjectDepositId,
-          await blockchain.getCurrentTimestamp()
-        );
-
-        const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("2"));
-
-        expect(expectedIntentHash).to.eq(intentHash);
-      });
-
-      it("should emit an IntentSignaled event", async () => {
-        const txn = await subject();
-
-        const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
-
-        expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
-          intentHash,
-          subjectDepositId,
-          await calculateVenmoIdHash("2"),
-          subjectAmount,
-          currentTimestamp
-        );
-      });
-
-      it("should emit an IntentPruned event", async () => {
-        await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(originalIntentHash, ZERO);
-      });
-
-      describe("when the caller is a different address but shares the same venmoId", async () => {
-        beforeEach(async () => {
-          subjectCaller = maliciousOnRamper;    // In this case not malicious just calling from a diff account which is allowed here
-        });
-
-        it("should create the correct entry in the intents mapping", async () => {
-          await subject();
-  
-          const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
-  
-          const intent = await ramp.intents(intentHash);
-  
-          expect(intent.onRamper).to.eq(subjectCaller.address);
-          expect(intent.deposit).to.eq(subjectDepositId);
-          expect(intent.amount).to.eq(subjectAmount);
-          expect(intent.intentTimestamp).to.eq(currentTimestamp);
-        });
-
-        it("should delete the correct entry in the intents mapping", async () => {
-          await subject();
-  
-          const intent = await ramp.intents(originalIntentHash);
-  
-          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
-          expect(intent.deposit).to.eq(ZERO_BYTES32);
-          expect(intent.amount).to.eq(ZERO);
-          expect(intent.intentTimestamp).to.eq(ZERO);
-        });
-  
-        it("should update the deposit mapping correctly for deposit ONE", async () => {
-          const preDeposit = await ramp.getDeposit(subjectDepositId);
-  
-          await subject();
-  
-          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, await blockchain.getCurrentTimestamp());
-  
-          const postDeposit = await ramp.getDeposit(subjectDepositId);
-  
-          expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.add(subjectAmount));
-          expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits.sub(subjectAmount));
-          expect(postDeposit.intentHashes).to.include(intentHash);
-        });
-
-        it("should update the deposit mapping correctly for deposit ZERO", async () => {  
-          await subject();
-  
-          const postDeposit = await ramp.getDeposit(ZERO);
-  
-          expect(postDeposit.outstandingIntentAmount).to.eq(ZERO);
-          expect(postDeposit.remainingDeposits).to.eq(usdc(100));
-          expect(postDeposit.intentHashes).to.not.include(originalIntentHash);
-        });
-  
-        it("should update the venmoIdIntent mapping correctly", async () => {
-          await subject();
-  
-          const expectedIntentHash = calculateIntentHash(
-            await calculateVenmoIdHash("2"),
-            subjectDepositId,
-            await blockchain.getCurrentTimestamp()
-          );
-  
-          const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("2"));
-  
-          expect(expectedIntentHash).to.eq(intentHash);
-        });
-  
-        it("should emit an IntentSignaled event", async () => {
-          const txn = await subject();
-  
-          const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
-  
-          expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
-            intentHash,
-            subjectDepositId,
-            await calculateVenmoIdHash("2"),
-            subjectAmount,
-            currentTimestamp
-          );
-        });
-  
-        it("should emit an IntentPruned event", async () => {
-          await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(originalIntentHash, ZERO);
-        });
-      });
-
-      describe("when there aren't enough deposits to cover requested amount but there are prunable intents", async () => {
-        let timeJump: number;
-        let oldIntentHash: string;
-
-        before(async () => {
-          timeJump = ONE_DAY_IN_SECONDS.add(1).toNumber();
-        });
-
-        beforeEach(async () => {
-          await ramp.connect(onRamperTwo.wallet).signalIntent(subjectDepositId, usdc(60));
-
-          const currentTimestamp = await blockchain.getCurrentTimestamp();
-          oldIntentHash = calculateIntentHash(await calculateVenmoIdHash("3"), subjectDepositId, currentTimestamp);
-
-          await blockchain.increaseTimeAsync(timeJump);
-
-          subjectAmount = usdc(170);
-        });
-
-        it("should prune the intent and update the rest of the deposit mapping correctly", async () => {
-          const preDeposit = await ramp.getDeposit(subjectDepositId);
-
-          expect(preDeposit.intentHashes).to.include(oldIntentHash);
-
-          await subject();
-
-          const newIntentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, await blockchain.getCurrentTimestamp());
-          const postDeposit = await ramp.getDeposit(subjectDepositId);
-
-          expect(postDeposit.outstandingIntentAmount).to.eq(subjectAmount);
-          expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits.sub(usdc(110))); // 110 usdc difference between old and new intent
-          expect(postDeposit.intentHashes).to.include(newIntentHash);
-          expect(postDeposit.intentHashes).to.not.include(oldIntentHash);
-        });
-
-        it("should delete the original intent from the intents mapping", async () => {
-          await subject();
-  
-          const intent = await ramp.intents(oldIntentHash);
-  
-          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
-          expect(intent.deposit).to.eq(ZERO_BYTES32);
-          expect(intent.amount).to.eq(ZERO);
-          expect(intent.intentTimestamp).to.eq(ZERO);
-        });
-
-        it("should correctly add a new intent to the intents mapping", async () => {
-          await subject();
-
-          const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
-  
-          const intent = await ramp.intents(intentHash);
-  
-          expect(intent.onRamper).to.eq(subjectCaller.address);
-          expect(intent.deposit).to.eq(subjectDepositId);
-          expect(intent.amount).to.eq(subjectAmount);
-          expect(intent.intentTimestamp).to.eq(currentTimestamp);
-        });
-
-        it("should update the venmoIdIntent mapping correctly", async () => {
-          await subject();
-  
-          const expectedIntentHash = calculateIntentHash(
-            await calculateVenmoIdHash("2"),
-            subjectDepositId,
-            await blockchain.getCurrentTimestamp()
-          );
-  
-          const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("2"));
-  
-          expect(expectedIntentHash).to.eq(intentHash);
-        });
-
-        it("should emit an IntentPruned event", async () => {
-          await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(oldIntentHash, subjectDepositId);
-        });
-
-        it("should emit an IntentPruned event", async () => {
-          await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(originalIntentHash, ZERO);
-        });
-
-        describe("when the reclaimable amount can't cover the new intent", async () => {
-          before(async () => {
-            timeJump = ONE_DAY_IN_SECONDS.div(2).toNumber();
-          });
-
-          after(async () => {
-            timeJump = ONE_DAY_IN_SECONDS.add(1).toNumber();
-          });
-
-          it("should revert", async () => {
-            await expect(subject()).to.be.revertedWith("Not enough liquidity");
-          });
-        });
-      });
-
-      describe("when the amount is zero", async () => {
-        beforeEach(async () => {
-          subjectAmount = ZERO;
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Signaled amount must be greater than 0");
-        });
-      });
-
-      describe("when the caller is on the depositor's denylist", async () => {
-        beforeEach(async () => {
-          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateVenmoIdHash("2"));
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Onramper on depositor's denylist");
-        });
-      });
-
-      describe("when the caller doesn't have an outstanding intent", async () => {
-        beforeEach(async () => {
-          subjectCaller = onRamperTwo;
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Intent must be outstanding to call");
-        });
-      });
-    });
-
     describe("#onRampWithConvenience", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
@@ -891,12 +566,12 @@ describe("Ramp", () => {
         const venmoId = await calculateVenmoIdHash("2");
         depositId = ZERO;
 
-        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
         
-        subjectSignals = new Array<BigNumber>(14).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(12).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("2"));
@@ -913,17 +588,17 @@ describe("Ramp", () => {
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
-        const onRamperPreBalance = await usdcToken.balanceOf(onRamper.address);
+        const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
         const offRamperPreBalance = await usdcToken.balanceOf(offRamper.address);
         const rampPreBalance = await usdcToken.balanceOf(ramp.address);
         
         await subject();
 
-        const onRamperPostBalance = await usdcToken.balanceOf(onRamper.address);
+        const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
         const offRamperPostBalance = await usdcToken.balanceOf(offRamper.address);
         const rampPostBalance = await usdcToken.balanceOf(ramp.address);
 
-        expect(onRamperPostBalance).to.eq(onRamperPreBalance.add(usdc(48)));
+        expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(48)));
         expect(offRamperPostBalance).to.eq(offRamperPreBalance.add(usdc(2)));
         expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
       });
@@ -956,6 +631,7 @@ describe("Ramp", () => {
           intentHash,
           depositId,
           onRamper.address,
+          receiver.address,
           usdc(50),
           usdc(2)
         );
@@ -965,7 +641,7 @@ describe("Ramp", () => {
         beforeEach(async () => {
           await subject();
           
-          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
 
@@ -995,17 +671,17 @@ describe("Ramp", () => {
         });
 
         it("should transfer the usdc correctly to all parties", async () => {
-          const onRamperPreBalance = await usdcToken.balanceOf(onRamper.address);
+          const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
           const offRamperPreBalance = await usdcToken.balanceOf(offRamper.address);
           const rampPreBalance = await usdcToken.balanceOf(ramp.address);
           
           await subject();
   
-          const onRamperPostBalance = await usdcToken.balanceOf(onRamper.address);
+          const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
           const offRamperPostBalance = await usdcToken.balanceOf(offRamper.address);
           const rampPostBalance = await usdcToken.balanceOf(ramp.address);
   
-          expect(onRamperPostBalance).to.eq(onRamperPreBalance.add(usdc(50)));
+          expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(50)));
           expect(offRamperPostBalance).to.eq(offRamperPreBalance.add(usdc(0)));
           expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
         });
@@ -1015,6 +691,7 @@ describe("Ramp", () => {
             intentHash,
             depositId,
             onRamper.address,
+            receiver.address,
             usdc(50),
             0
           );
@@ -1063,12 +740,12 @@ describe("Ramp", () => {
         depositId = (await ramp.depositCounter()).sub(1);
 
         const venmoId = await calculateVenmoIdHash("2");
-        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(14).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(11).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
@@ -1085,15 +762,15 @@ describe("Ramp", () => {
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
-        const onRamperPreBalance = await usdcToken.balanceOf(onRamper.address);
+        const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
         const rampPreBalance = await usdcToken.balanceOf(ramp.address);
         
         await subject();
 
-        const onRamperPostBalance = await usdcToken.balanceOf(onRamper.address);
+        const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
         const rampPostBalance = await usdcToken.balanceOf(ramp.address);
 
-        expect(onRamperPostBalance).to.eq(onRamperPreBalance.add(usdc(50)));
+        expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(50)));
         expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
       });
 
@@ -1103,6 +780,7 @@ describe("Ramp", () => {
         const intent = await ramp.intents(intentHash);
 
         expect(intent.onRamper).to.eq(ADDRESS_ZERO);
+        expect(intent.to).to.eq(ADDRESS_ZERO);
         expect(intent.deposit).to.eq(ZERO_BYTES32);
         expect(intent.amount).to.eq(ZERO);
         expect(intent.intentTimestamp).to.eq(ZERO);
@@ -1125,6 +803,7 @@ describe("Ramp", () => {
           intentHash,
           depositId,
           onRamper.address,
+          receiver.address,
           usdc(50),
           ZERO
         );
@@ -1134,7 +813,7 @@ describe("Ramp", () => {
         beforeEach(async () => {
           await subject();
           
-          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50));
+          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
 
@@ -1276,7 +955,7 @@ describe("Ramp", () => {
 
       describe("when there is an outstanding intent", async () => {
         beforeEach(async () => {
-          await ramp.connect(onRamper.wallet).signalIntent(subjectDepositIds[0], usdc(50));
+          await ramp.connect(onRamper.wallet).signalIntent(subjectDepositIds[0], usdc(50), receiver.address);
         });
 
         it("should transfer the correct amount of usdc to the caller", async () => {
@@ -1432,6 +1111,16 @@ describe("Ramp", () => {
         expect(tx).to.emit(ramp, "ConvenienceRewardTimePeriodSet").withArgs(subjectConvenienceRewardTimePeriod);
       });
 
+      describe("when the time period is 0", async () => {
+        beforeEach(async () => {
+          subjectConvenienceRewardTimePeriod = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Convenience reward time period cannot be zero");
+        });
+      });
+
       describe("when the caller is not the owner", async () => {
         beforeEach(async () => {
           subjectCaller = onRamper;
@@ -1468,6 +1157,16 @@ describe("Ramp", () => {
         const tx = await subject();
         
         expect(tx).to.emit(ramp, "MinDepositAmountSet").withArgs(subjectMinDepositAmount);
+      });
+
+      describe("when the min deposit amount is 0", async () => {
+        beforeEach(async () => {
+          subjectMinDepositAmount = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Minimum deposit cannot be zero");
+        });
       });
 
       describe("when the caller is not the owner", async () => {
@@ -1697,9 +1396,9 @@ describe("Ramp", () => {
           usdc(2)
         );
   
-        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50));
+        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
         const intentHashOne = calculateIntentHash(await calculateVenmoIdHash("2"), ZERO, await blockchain.getCurrentTimestamp());
-        await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40));
+        await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40), receiver.address);
         const intentHashTwo = calculateIntentHash(await calculateVenmoIdHash("3"), ZERO, await blockchain.getCurrentTimestamp());
   
         subjectIntentIds = [intentHashOne, intentHashTwo];

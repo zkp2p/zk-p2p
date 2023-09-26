@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
 
 pragma solidity ^0.8.18;

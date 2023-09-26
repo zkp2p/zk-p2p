@@ -31,6 +31,7 @@ contract Ramp is Ownable {
         bytes32 indexed intentHash,
         uint256 indexed depositId,
         bytes32 indexed venmoId,
+        address to,
         uint256 amount,
         uint256 timestamp
     );
@@ -44,6 +45,7 @@ contract Ramp is Ownable {
         bytes32 indexed intentHash,
         uint256 indexed depositId,
         address indexed onRamper,
+        address to,
         uint256 amount,
         uint256 convenienceFee
     );
@@ -82,6 +84,7 @@ contract Ramp is Ownable {
 
     struct Intent {
         address onRamper;
+        address to;
         uint256 deposit;
         uint256 amount;
         uint256 intentTimestamp;
@@ -138,12 +141,17 @@ contract Ramp is Ownable {
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
      * sender of the transaction.
+     *
+     * @param _a        Parameter of zk proof
+     * @param _b        Parameter of zk proof
+     * @param _c        Parameter of zk proof
+     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, userIdHash
      */
     function register(
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[7] memory _signals
+        uint[8] memory _signals
     )
         external
     {
@@ -157,7 +165,7 @@ contract Ramp is Ownable {
 
     /**
      * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to
-     * previous deposits. Every deposit has it's own unique identifier. Usermust approve the contract to transfer the deposit amount
+     * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
      * of USDC.
      *
      * @param _packedVenmoId    The packed venmo id of the account owner (we pack for easy use with poseidon)
@@ -198,7 +206,16 @@ contract Ramp is Ownable {
         emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate, _convenienceFee);
     }
 
-    function signalIntent(uint256 _depositId, uint256 _amount) external {
+    /**
+     * @notice Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain
+     * in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of
+     * address (tracked using venmoId). Caller must not be on the depositor's deny list. If there are prunable intents then
+     * they will be deleted from the deposit to be able to maintain state hygiene.
+     *
+     * @param _depositId    The ID of the deposit the on-ramper intends to use for 
+     * @param _amount       The amount of USDC the user wants to on-ramp
+     */
+    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
         Deposit storage deposit = deposits[_depositId];
         bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
@@ -207,40 +224,54 @@ contract Ramp is Ownable {
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
-        _addNewIntent(venmoIdHash, _depositId, _amount);
+        bytes32 intentHash = _calculateIntentHash(venmoIdHash, _depositId);
+
+        if (deposit.remainingDeposits < _amount) {
+            (
+                bytes32[] memory prunableIntents,
+                uint256 reclaimableAmount
+            ) = _getPrunableIntents(_depositId);
+
+            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
+
+            _pruneIntents(deposit, prunableIntents);
+            deposit.remainingDeposits += reclaimableAmount;
+            deposit.outstandingIntentAmount -= reclaimableAmount;
+        }
+
+        intents[intentHash] = Intent({
+            onRamper: msg.sender,
+            to: _to,
+            deposit: _depositId,
+            amount: _amount,
+            intentTimestamp: block.timestamp
+        });
+
+        venmoIdIntent[venmoIdHash] = intentHash;
+
+        deposit.remainingDeposits -= _amount;
+        deposit.outstandingIntentAmount += _amount;
+        deposit.intentHashes.push(intentHash);
+
+        emit IntentSignaled(intentHash, _depositId, venmoIdHash, _to, _amount, block.timestamp);
     }
 
-    function replaceIntent(uint256 _depositId, uint256 _amount) external {
-        bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
-        Deposit storage newDeposit = deposits[_depositId];
-        bytes32 depositorVenmoIdHash = accounts[newDeposit.depositor].venmoIdHash;
-
-        require(!userDenylist[depositorVenmoIdHash][venmoIdHash], "Onramper on depositor's denylist");
-        require(_amount > 0, "Signaled amount must be greater than 0");
-        require(venmoIdIntent[venmoIdHash] != bytes32(0), "Intent must be outstanding to call");
-
-        bytes32 pendingIntentHash = venmoIdIntent[venmoIdHash];
-        Deposit storage oldDeposit = deposits[intents[pendingIntentHash].deposit];
-        Intent memory intent = intents[pendingIntentHash];
-
-        // Intent hash is removed from deposit in prune intent function
-        oldDeposit.outstandingIntentAmount -= intent.amount;
-        oldDeposit.remainingDeposits += intent.amount;
-        _pruneIntent(
-            oldDeposit,
-            pendingIntentHash
-        );
-
-        // Add new intent
-        _addNewIntent(venmoIdHash, _depositId, _amount);
-    }
-
-    // DO we need to prune deposits now? In order to not pass blank deposits
+    /**
+     * @notice ONLY OFF-RAMPER: Must be submitted by off-ramper. Upon submission the proof is validated, intent is removed,
+     * and deposit state is updated. USDC is transferred to the on-ramper and the defined convenience fee is sent to the off-
+     * ramper.
+     *
+     * @param _a        Parameter of zk proof
+     * @param _b        Parameter of zk proof
+     * @param _c        Parameter of zk proof
+     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
+     *                  nullifier, intentHash
+     */
     function onRampWithConvenience(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[12] memory _signals
     )
         external
     {
@@ -260,18 +291,27 @@ contract Ramp is Ownable {
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
-        usdc.transfer(intent.onRamper, intent.amount - convenienceFee);
+        usdc.transfer(intent.to, intent.amount - convenienceFee);
         usdc.transfer(msg.sender, convenienceFee);
 
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, convenienceFee);
     }
 
-    // DO we need to prune deposits now? In order to not pass blank deposits
+    /**
+     * @notice Upon submission the proof is validated, intent is removed, and deposit state is updated. USDC is transferred
+     * to the on-ramper.
+     *
+     * @param _a        Parameter of zk proof
+     * @param _b        Parameter of zk proof
+     * @param _c        Parameter of zk proof
+     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
+     *                  nullifier, intentHash
+     */
     function onRamp(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[11] memory _signals
     )
         external
     {
@@ -286,11 +326,18 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        usdc.transfer(intent.onRamper, intent.amount);
+        usdc.transfer(intent.to, intent.amount);
         
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.amount, 0);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, 0);
     }
 
+    /**
+     * @notice Caller must be the depositor for each depositId in the array. Depositor is returned all remaining deposits
+     * and any outstanding intents that are expired. If an intent is not expired then those funds will not be returned. Deposit
+     * will be deleted as long as there are no more outstanding intents.
+     *
+     * @param _depositIds   Array of depositIds the depositor is attempting to withdraw
+     */
     function withdrawDeposit(uint256[] memory _depositIds) external {
         uint256 returnAmount;
 
@@ -320,6 +367,12 @@ contract Ramp is Ownable {
         usdc.transfer(msg.sender, returnAmount);
     }
 
+    /**
+     * @notice Adds a venmoId to a depositor's deny list. If an address associated with the banned venmoId attempts to
+     * signal an intent on the user's deposit they will be denied.
+     *
+     * @param _deniedUser   Poseidon hash of the venmoId being banned
+     */
     function addAccountToDenylist(bytes32 _deniedUser) external {
         bytes32 denyingUser = accounts[msg.sender].venmoIdHash;
         userDenylist[denyingUser][_deniedUser] = true;
@@ -329,24 +382,42 @@ contract Ramp is Ownable {
 
     /* ============ Governance Functions ============ */
 
-    // Set new SendProcessor
+    /**
+     * @notice GOVERNANCE ONLY: Updates the send processor address used for validating and interpreting zk proofs.
+     *
+     * @param _sendProcessor   New send proccesor address
+     */
     function setSendProcessor(ISendProcessor _sendProcessor) external onlyOwner {
         sendProcessor = _sendProcessor;
         emit NewSendProcessorSet(address(_sendProcessor));
     }
 
-    // Set new ReceiveProcessor
+    /**
+     * @notice GOVERNANCE ONLY: Updates the receive processor address used for validating and interpreting zk proofs.
+     *
+     * @param _receiveProcessor   New receive proccesor address
+     */
     function setReceiveProcessor(IReceiveProcessor _receiveProcessor) external onlyOwner {
         receiveProcessor = _receiveProcessor;
         emit NewReceiveProcessorSet(address(_receiveProcessor));
     }
 
-    // Set new RegistrationProcessor
+    /**
+     * @notice GOVERNANCE ONLY: Updates the registration processor address used for validating and interpreting zk proofs.
+     *
+     * @param _registrationProcessor   New registration proccesor address
+     */
     function setRegistrationProcessor(IRegistrationProcessor _registrationProcessor) external onlyOwner {
         registrationProcessor = _registrationProcessor;
         emit NewRegistrationProcessorSet(address(_registrationProcessor));
     }
 
+    /**
+     * @notice GOVERNANCE ONLY: Updates the convenience reward time period after which convenience rewards are no longer distributed
+     * to off rampers that submit proofs for on-rampers.
+     *
+     * @param _convenienceRewardTimePeriod   The new convenience reward time period
+     */
     function setConvenienceRewardTimePeriod(uint256 _convenienceRewardTimePeriod) external onlyOwner {
         require(_convenienceRewardTimePeriod != 0, "Convenience reward time period cannot be zero");
 
@@ -354,6 +425,11 @@ contract Ramp is Ownable {
         emit ConvenienceRewardTimePeriodSet(_convenienceRewardTimePeriod);
     }
 
+    /**
+     * @notice GOVERNANCE ONLY: Updates the minimum deposit amount a user can specify for off-ramping.
+     *
+     * @param _minDepositAmount   The new minimum deposit amount
+     */
     function setMinDepositAmount(uint256 _minDepositAmount) external onlyOwner {
         require(_minDepositAmount != 0, "Minimum deposit cannot be zero");
 
@@ -380,10 +456,6 @@ contract Ramp is Ownable {
         }
     }
 
-    function getAccountVenmoId(address _account) external view returns (bytes32) {
-        return accounts[_account].venmoIdHash;
-    }
-
     function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray) {
         depositArray = new Deposit[](_depositIds.length);
 
@@ -406,6 +478,9 @@ contract Ramp is Ownable {
 
     /* ============ Internal Functions ============ */
 
+    /**
+     * @notice Calculates the intentHash of new intent
+     */
     function _calculateIntentHash(
         bytes32 _venmoId,
         uint256 _depositId
@@ -416,42 +491,12 @@ contract Ramp is Ownable {
         returns (bytes32 intentHash)
     {
         intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
-        require(intents[intentHash].amount == 0, "Intent already exists");
     }
 
-    function _addNewIntent(bytes32 _venmoIdHash, uint256 _depositId, uint256 _amount) internal {
-        bytes32 intentHash = _calculateIntentHash(_venmoIdHash, _depositId);
-
-        Deposit storage deposit = deposits[_depositId];
-        if (deposit.remainingDeposits < _amount) {
-            (
-                bytes32[] memory prunableIntents,
-                uint256 reclaimableAmount
-            ) = _getPrunableIntents(_depositId);
-
-            require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
-
-            _pruneIntents(deposit, prunableIntents);
-            deposit.remainingDeposits += reclaimableAmount;
-            deposit.outstandingIntentAmount -= reclaimableAmount;
-        }
-
-        intents[intentHash] = Intent({
-            onRamper: msg.sender,
-            deposit: _depositId,
-            amount: _amount,
-            intentTimestamp: block.timestamp
-        });
-
-        venmoIdIntent[_venmoIdHash] = intentHash;
-
-        deposit.remainingDeposits -= _amount;
-        deposit.outstandingIntentAmount += _amount;
-        deposit.intentHashes.push(intentHash);
-
-        emit IntentSignaled(intentHash, _depositId, _venmoIdHash, _amount, block.timestamp);
-    }
-
+    /**
+     * @notice Cycles through all intents currently open on a deposit and sees if any have expired. If they have expired
+     * the outstanding amounts are summed and returned alongside the intentHashes
+     */
     function _getPrunableIntents(
         uint256 _depositId
     )
@@ -479,16 +524,24 @@ contract Ramp is Ownable {
         }
     }
 
+    /**
+     * @notice Pruning an intent involves deleting its state from the intents mapping, zeroing out the intendee's venmoIdIntent
+     * mapping, and deleting the intentHash from the deposit's intentHashes array.
+     */
     function _pruneIntent(Deposit storage _deposit, bytes32 _intent) internal {
-        uint256 depositId = intents[_intent].deposit;
+        Intent memory intent = intents[_intent];
 
-        delete venmoIdIntent[accounts[intents[_intent].onRamper].venmoIdHash];
+        delete venmoIdIntent[accounts[intent.onRamper].venmoIdHash];
         delete intents[_intent];
         _deposit.intentHashes.removeStorage(_intent);
 
-        emit IntentPruned(_intent, depositId);
+        emit IntentPruned(_intent, intent.deposit);
     }
 
+    /**
+     * @notice Removes a deposit if no outstanding intents AND no remaining deposits. Deleting a deposit deletes it from the
+     * deposits mapping and removes tracking it in the user's accounts mapping.
+     */
     function _closeDepositIfNecessary(uint256 _depositId, Deposit storage _deposit) internal {
         uint256 openDepositAmount = _deposit.outstandingIntentAmount + _deposit.remainingDeposits;
         if (openDepositAmount == 0) {
@@ -498,11 +551,16 @@ contract Ramp is Ownable {
         }
     }
 
+    /**
+     * @notice Validate venmo receive payment email and check that it hasn't already been used (done on ReciveProcessor).
+     * Additionally, we validate that the onRamperIdHash matches the one from the specified intent and indicate if the 
+     * convenience reward should be distributed.
+     */
     function _verifyOnRampWithConvenienceProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[12] memory _signals
     )
         internal
         returns(Intent memory, bytes32, bool)
@@ -527,11 +585,16 @@ contract Ramp is Ownable {
         return (intent, intentHash, distributeConvenienceReward);
     }
 
+    /**
+     * @notice Validate venmo send payment email and check that it hasn't already been used (done on SendProcessor).
+     * Additionally, we validate that the offRamperIdHash matches the one from the specified intent and that enough
+     * was paid off-chain inclusive of the conversionRate.
+     */
     function _verifyOnRampProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[11] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -558,11 +621,15 @@ contract Ramp is Ownable {
         return (intent, deposit, intentHash);
     }
 
+    /**
+     * @notice Validate the user has a venmo account, we do not nullify this email since it can be reused to register under
+     * different addresses.
+     */
     function _verifyRegistrationProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[7] memory _signals
+        uint256[8] memory _signals
     )
         internal
         view

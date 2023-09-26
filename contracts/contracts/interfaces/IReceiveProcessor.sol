@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.18;
 
 interface IReceiveProcessor {
@@ -6,7 +8,7 @@ interface IReceiveProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[14] signals;
+        uint256[12] signals;
     }
 
     function processProof(

@@ -1,18 +1,20 @@
+//SPDX-License-Identifier: MIT
+
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
-import { VenmoSendVerifier } from "../verifiers/VenmoSendVerifier.sol";
+import { Groth16Verifier } from "../verifiers/venmo_send_verifier.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
+contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, Ownable {
 
     using ProofParsingUtils for string;
-    using ProofParsingUtils for uint256[5];
+    using ProofParsingUtils for uint256[];
 
     /* ============ Constants ============ */
-    uint16 private constant BYTES_IN_PACKED_BYTES = 7;  // 7 bytes in a packed item returned from circom
+    uint8 private constant EMAIL_ADDRESS_LENGTH = 42;   // 42 bytes in an email address
     
     /* ============ State Variables ============ */
     bytes32 public venmoMailserverKeyHash;
@@ -25,10 +27,10 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
         bytes32 _venmoMailserverKeyHash,
         string memory _emailFromAddress
     )
-        VenmoSendVerifier()
+        Groth16Verifier()
         Ownable()
     {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
+        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         venmoMailserverKeyHash = _venmoMailserverKeyHash;
         emailFromAddress = bytes(_emailFromAddress);
@@ -41,7 +43,7 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
+        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         emailFromAddress = bytes(_emailFromAddress);
     }
@@ -58,23 +60,23 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
 
         require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
 
-        // Signals [1:6] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_proof.signals, 1);
+        // Signals [1:7] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 7);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [6:11] are the packed timestamp, multiply by 1e4 since venmo only gives us two decimals instead of 6
-        amount = _parseSignalArray(_proof.signals, 6).stringToUint256() * 1e4;
+        // Signals [6:11] is the packed amount, multiply by 1e4 since venmo only gives us two decimals instead of 6
+        amount = _parseSignalArray(_proof.signals, 7, 8).stringToUint256() * 1e4;
 
         // Signals [11] is the packed offRamperIdHsdh
-        offRamperIdHash = bytes32(_proof.signals[11]);
+        offRamperIdHash = bytes32(_proof.signals[8]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        bytes32 nullifier = bytes32(_proof.signals[12]);
+        bytes32 nullifier = bytes32(_proof.signals[9]);
         require(!isEmailNullified[nullifier], "Email has already been used");
         isEmailNullified[nullifier] = true;
 
         // Signals [13] is intentHash
-        intentHash = bytes32(_proof.signals[13]);
+        intentHash = bytes32(_proof.signals[10]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {
@@ -83,12 +85,12 @@ contract VenmoSendProcessor is VenmoSendVerifier, ISendProcessor, Ownable {
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[14] calldata _signals, uint8 _from) internal pure returns (string memory) {
-        uint256[5] memory signalArray;
-        for (uint256 i = _from; i < _from + 5; i++) {
+    function _parseSignalArray(uint256[11] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+        uint256[] memory signalArray = new uint256[](_to - _from);
+        for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToBytes(5);
+        return signalArray.convertPackedBytesToBytes(_to - _from);
     }
 }

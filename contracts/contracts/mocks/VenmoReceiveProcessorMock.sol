@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 import { IReceiveProcessor } from "../interfaces/IReceiveProcessor.sol";
 
 pragma solidity ^0.8.18;

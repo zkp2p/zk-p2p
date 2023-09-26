@@ -1,15 +1,20 @@
+//SPDX-License-Identifier: MIT
+
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
-import { VenmoRegistrationVerifier } from "../verifiers/VenmoRegistrationVerifier.sol";
+import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationProcessor, Ownable {
+contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, Ownable {
 
     using ProofParsingUtils for string;
-    using ProofParsingUtils for uint256[5];
+    using ProofParsingUtils for uint256[];
+
+    /* ============ Constants ============ */
+    uint8 private constant EMAIL_ADDRESS_LENGTH = 42;   // 42 bytes in an email address
 
     /* ============ State Variables ============ */
     bytes32 public venmoMailserverKeyHash;
@@ -20,10 +25,10 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
         bytes32 _venmoMailserverKeyHash,
         string memory _emailFromAddress
     )
-        VenmoRegistrationVerifier()
+        Groth16Verifier()
         Ownable()
     {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
+        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         venmoMailserverKeyHash = _venmoMailserverKeyHash;
         emailFromAddress = bytes(_emailFromAddress);
@@ -36,7 +41,7 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
+        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         emailFromAddress = bytes(_emailFromAddress);
     }
@@ -48,18 +53,18 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
         public
         view
         override
-        returns(bytes32 onRamperIdHash)
+        returns(bytes32 userIdHash)
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
         require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
 
-        // Signals [1:6] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_proof.signals, 1);
+        // Signals [1:7] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 7);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [6] is the packed onRamperIdHash
-        onRamperIdHash = bytes32(_proof.signals[6]);
+        // Signals [7] is the packed onRamperIdHash
+        userIdHash = bytes32(_proof.signals[7]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {
@@ -68,12 +73,12 @@ contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationP
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[7] calldata _signals, uint8 _from) internal pure returns (string memory) {
-        uint256[5] memory signalArray;
-        for (uint256 i = _from; i < _from + 5; i++) {
+    function _parseSignalArray(uint256[8] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+        uint256[] memory signalArray = new uint256[](_to - _from);
+        for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToBytes(5);
+        return signalArray.convertPackedBytesToBytes(_to - _from);
     }
 }

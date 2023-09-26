@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 
 pragma solidity ^0.8.18;

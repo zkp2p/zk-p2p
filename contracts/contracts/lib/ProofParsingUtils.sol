@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.18;
 
 library ProofParsingUtils {
@@ -9,7 +11,7 @@ library ProofParsingUtils {
     // Only extracts contiguous non-zero characters and ensures theres only 1 such state
     // Note that unpackedLen may be more than packedBytes.length * 8 since there may be 0s
     // TODO: Remove console.logs and define this as a pure function instead of a view
-    function convertPackedBytesToBytes(uint256[5] memory packedBytes, uint256 signals) internal pure returns (string memory extractedString) {
+    function convertPackedBytesToBytes(uint256[] memory packedBytes, uint256 signals) internal pure returns (string memory extractedString) {
         // Calculate max bytes as the amount of signals * 7 bytes per signal
         uint256 maxBytes = signals * BYTES_IN_PACKED_BYTES;
         uint8 state = 0;
