@@ -151,7 +151,7 @@ contract Ramp is Ownable {
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[7] memory _signals
+        uint[8] memory _signals
     )
         external
     {
@@ -271,7 +271,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[12] memory _signals
     )
         external
     {
@@ -311,7 +311,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[11] memory _signals
     )
         external
     {
@@ -560,7 +560,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[12] memory _signals
     )
         internal
         returns(Intent memory, bytes32, bool)
@@ -594,7 +594,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[11] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -629,7 +629,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[7] memory _signals
+        uint256[8] memory _signals
     )
         internal
         view
