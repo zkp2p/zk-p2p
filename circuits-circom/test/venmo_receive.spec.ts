@@ -91,8 +91,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed from email
-        // Indexes 2 to 7 represent the packed from email; (35 / 7) + 1
-        const packed_from_email = witness.slice(2, 8);
+        // Indexes 2 to 6 represent the packed from email; (21 / 7) + 1
+        const packed_from_email = witness.slice(2, 6);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
@@ -101,7 +101,7 @@ describe("Venmo receive WASM tester", function () {
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(from_email_array, 7, 42);
+        let chunkedArrays = chunkArray(from_email_array, 7, 15);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -124,8 +124,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed timestamp
-        // Indexes 8 to 9 represent the packed timestamp; (10 \ 7)
-        const packed_timestamp = witness.slice(8, 10);
+        // Indexes 6 to 8 represent the packed timestamp; (10 \ 7)
+        const packed_timestamp = witness.slice(6, 8);
 
         // Get expected packed timestamp
         const regex_start = Number(input["email_timestamp_idx"]);
@@ -175,8 +175,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned hashed onramper_id
-        // Indexes 10 represents the hashed onramper_id
-        const hashed_onramper_id = witness[10];
+        // Indexes 8 represents the hashed onramper_id
+        const hashed_onramper_id = witness[8];
 
         // Get expected packed onramper_id
         const regex_start = Number(input["venmo_payer_id_idx"]);
@@ -208,7 +208,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[11];
+        const nullifier = witness[9];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -230,7 +230,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[12];
+        const order_id = witness[10];
 
         // Get expected modulus
         const expected_order_id = input["order_id"];

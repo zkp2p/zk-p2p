@@ -87,8 +87,8 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned packed from email
-        // Indexes 2 to 8 represent the packed from email (42 \ 7)
-        const packed_from_email = witness.slice(2, 8);
+        // Indexes 2 to 6 represent the packed from email (42 \ 7)
+        const packed_from_email = witness.slice(2, 6);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
@@ -97,7 +97,7 @@ describe("Venmo Registration", function () {
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(from_email_array, 7, 42);
+        let chunkedArrays = chunkArray(from_email_array, 7, 15);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -138,8 +138,8 @@ describe("Venmo Registration", function () {
         );
 
         // Get returned hashed actor_id
-        // Indexes 7 represents the hashed actor_id
-        const hashed_actor_id = witness[8];
+        // Indexes 6 represents the hashed actor_id
+        const hashed_actor_id = witness[6];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["venmo_actor_id_idx"]);

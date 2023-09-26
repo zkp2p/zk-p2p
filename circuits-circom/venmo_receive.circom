@@ -18,7 +18,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
 
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
-    var max_email_from_len = ceil(35, pack_size); // Should be 254, but we limit to 35 + pack_size for now
+    var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_email_timestamp_len = 10; // 10 digits till year 2286
     var max_payer_len = ceil(21, pack_size); // 19 digits, 21 + pack_size is safe if Venmo adds more users
 
