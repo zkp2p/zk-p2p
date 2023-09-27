@@ -17,4 +17,6 @@ For any circuit changes, complete the following steps to ensure faster integrati
 - [ ] Ran `yarn:genwitness:XXX` to generate witnesses for proof generation
 - [ ] Ran `yarn:genproof:XXX` to generate proof for test solidity calldata
 - [ ] Ran `yarn:gencalldata:XXX` to generate solidity calldata
+- [ ] Ensured files are public through ACL in `zk-p2p` S3 bucket
+- [ ] Updated `package.json` in circuits to correct version and ran `npm publish`
 - [ ] Paste test calldata below
