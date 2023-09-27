@@ -30,7 +30,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("Ramp", () => {
+describe("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -1066,12 +1066,12 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).addAccountToDenylist(subjectDeniedUser);
       }
 
-      it("should set the denied user to true in the denied user mapping", async () => {
+      it("should add the denied user to the denier's array", async () => {
         await subject();
 
-        const isDenied = await ramp.userDenylist(await calculateVenmoIdHash("1"), await calculateVenmoIdHash("2"));
+        const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
 
-        expect(isDenied).to.be.true;
+        expect(deniedUsers).to.include(subjectDeniedUser);
       });
 
       it("should emit a UserAddedToDenylist event", async () => {
@@ -1081,7 +1081,64 @@ describe.only("Ramp", () => {
           await calculateVenmoIdHash("1"),
           await calculateVenmoIdHash("2")
         );
-      });      
+      });
+      
+      describe("when the denied user is already on the denylist", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("User already on denylist");
+        });
+      });
+    });
+
+    describe("#removeAccountFromDenylist", async () => {
+      let subjectApprovedUser: string;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).addAccountToDenylist(await calculateVenmoIdHash("2"));
+
+        subjectApprovedUser = await calculateVenmoIdHash("2");
+        subjectCaller = offRamper;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).removeAccountFromDenylist(subjectApprovedUser);
+      }
+
+      it("should add the denied user to the denier's array", async () => {
+        const preDeniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+
+        expect(preDeniedUsers).to.include(subjectApprovedUser);
+
+        await subject();
+
+        const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+
+        expect(deniedUsers).to.not.include(subjectApprovedUser);
+      });
+
+      it("should emit a UserRemovedFromDenylist event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "UserRemovedFromDenylist").withArgs(
+          await calculateVenmoIdHash("1"),
+          await calculateVenmoIdHash("2")
+        );
+      });
+      
+      describe("when the denied user is not already on the denylist", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("User not on denylist");
+        });
+      });
     });
 
     describe("#setConvenienceRewardTimePeriod", async () => {
