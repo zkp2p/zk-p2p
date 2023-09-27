@@ -30,7 +30,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("Ramp", () => {
+describe("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -1090,7 +1090,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe.only("#removeAccountFromDenylist", async () => {
+    describe("#removeAccountFromDenylist", async () => {
       let subjectApprovedUser: string;
       let subjectCaller: Account;
 
@@ -1105,7 +1105,7 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).removeAccountFromDenylist(subjectApprovedUser);
       }
 
-      it("should add remove the denied user from the denier's array and update mapping", async () => {
+      it("should remove the denied user from the denier's array and update mapping", async () => {
         const preDeniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
 
         expect(preDeniedUsers).to.include(subjectApprovedUser);
