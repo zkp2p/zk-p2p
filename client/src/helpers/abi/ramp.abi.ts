@@ -181,6 +181,12 @@ export const abi = [
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -234,6 +240,12 @@ export const abi = [
         "internalType": "bytes32",
         "name": "venmoId",
         "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -519,25 +531,6 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "getAccountVenmoId",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_depositId",
         "type": "uint256"
@@ -675,6 +668,11 @@ export const abi = [
             "type": "address"
           },
           {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
             "internalType": "uint256",
             "name": "deposit",
             "type": "uint256"
@@ -711,6 +709,11 @@ export const abi = [
       {
         "internalType": "address",
         "name": "onRamper",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
         "type": "address"
       },
       {
@@ -791,9 +794,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[14]",
+        "internalType": "uint256[11]",
         "name": "_signals",
-        "type": "uint256[14]"
+        "type": "uint256[11]"
       }
     ],
     "name": "onRamp",
@@ -819,9 +822,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[14]",
+        "internalType": "uint256[12]",
         "name": "_signals",
-        "type": "uint256[14]"
+        "type": "uint256[12]"
       }
     ],
     "name": "onRampWithConvenience",
@@ -886,9 +889,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[7]",
+        "internalType": "uint256[8]",
         "name": "_signals",
-        "type": "uint256[7]"
+        "type": "uint256[8]"
       }
     ],
     "name": "register",
@@ -912,24 +915,6 @@ export const abi = [
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_depositId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "replaceIntent",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1023,6 +1008,11 @@ export const abi = [
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
       }
     ],
     "name": "signalIntent",
