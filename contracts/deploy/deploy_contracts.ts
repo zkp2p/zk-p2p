@@ -9,7 +9,7 @@ import { usdc } from "../utils/common/units";
 
 const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-const FROM_EMAIL = "venmo@venmo.com".padEnd(35, "\0");
+const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 
 const CONVENIENCE_TIME_PERIOD = BigNumber.from(60);
 const MIN_DEPOSIT_AMOUNT = usdc(20);
@@ -42,8 +42,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const poseidon = await deploy("Poseidon", {
     from: deployer,
     contract: {
-      abi: circom.poseidonContract.generateABI(5),
-      bytecode: circom.poseidonContract.createCode(5),
+      abi: circom.poseidonContract.generateABI(3),
+      bytecode: circom.poseidonContract.createCode(3),
     }
   });
 

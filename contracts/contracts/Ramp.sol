@@ -57,7 +57,8 @@ contract Ramp is Ownable {
     );
 
     event DepositClosed(uint256 depositId, address depositor);
-    event UserAddedToDenylist(bytes32 denyingUser, bytes32 deniedUser);
+    event UserAddedToDenylist(bytes32 listOwner, bytes32 deniedUser);
+    event UserRemovedFromDenylist(bytes32 listOwner, bytes32 approvedUser);
     event ConvenienceRewardTimePeriodSet(uint256 convenienceRewardTimePeriod);
     event MinDepositAmountSet(uint256 minDepositAmount);
     event NewSendProcessorSet(address sendProcessor);
@@ -73,7 +74,7 @@ contract Ramp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[5] packedVenmoId;
+        uint256[3] packedVenmoId;
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -90,6 +91,11 @@ contract Ramp is Ownable {
         uint256 intentTimestamp;
     }
 
+    struct DenyList {
+        bytes32[] deniedUsers;
+        mapping(bytes32 => bool) isDenied;
+    }
+
     /* ============ Constants ============ */
     uint256 internal constant PRECISE_UNIT = 1e18;
     uint256 internal constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
@@ -101,10 +107,10 @@ contract Ramp is Ownable {
     IRegistrationProcessor public registrationProcessor;
     ISendProcessor public sendProcessor;
 
+    mapping(bytes32 => DenyList) internal userDenylist;                 // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
+                                                                        // signal an intent on their deposit
     mapping(address => AccountInfo) internal accounts;
     mapping(bytes32 => bytes32) public venmoIdIntent;                   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
-    mapping(bytes32 => mapping(bytes32=>bool)) public userDenylist;     // Mapping of venmoIdHash to user's deny list. Users on another users deny
-                                                                        // list cannot signal and intent on their deposit
     mapping(uint256 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
@@ -151,7 +157,7 @@ contract Ramp is Ownable {
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[8] memory _signals
+        uint[5] memory _signals
     )
         external
     {
@@ -174,7 +180,7 @@ contract Ramp is Ownable {
      * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
     function offRamp(
-        uint256[5] memory _packedVenmoId,
+        uint256[3] memory _packedVenmoId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
         uint256 _convenienceFee
@@ -220,7 +226,7 @@ contract Ramp is Ownable {
         Deposit storage deposit = deposits[_depositId];
         bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
 
-        require(!userDenylist[depositorVenmoIdHash][venmoIdHash], "Onramper on depositor's denylist");
+        require(!userDenylist[depositorVenmoIdHash].isDenied[venmoIdHash], "Onramper on depositor's denylist");
         require(_amount > 0, "Signaled amount must be greater than 0");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
@@ -271,7 +277,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[9] memory _signals
     )
         external
     {
@@ -311,7 +317,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[11] memory _signals
+        uint256[8] memory _signals
     )
         external
     {
@@ -375,9 +381,29 @@ contract Ramp is Ownable {
      */
     function addAccountToDenylist(bytes32 _deniedUser) external {
         bytes32 denyingUser = accounts[msg.sender].venmoIdHash;
-        userDenylist[denyingUser][_deniedUser] = true;
+
+        require(!userDenylist[denyingUser].isDenied[_deniedUser], "User already on denylist");
+
+        userDenylist[denyingUser].isDenied[_deniedUser] = true;
+        userDenylist[denyingUser].deniedUsers.push(_deniedUser);
 
         emit UserAddedToDenylist(denyingUser, _deniedUser);
+    }
+
+    /**
+     * @notice Removes a venmoId from a depositor's deny list.
+     *
+     * @param _approvedUser   Poseidon hash of the venmoId being approved
+     */
+    function removeAccountFromDenylist(bytes32 _approvedUser) external {
+        bytes32 approvingUser = accounts[msg.sender].venmoIdHash;
+
+        require(userDenylist[approvingUser].isDenied[_approvedUser], "User not on denylist");
+
+        userDenylist[approvingUser].isDenied[_approvedUser] = false;
+        userDenylist[approvingUser].deniedUsers.removeStorage(_approvedUser);
+
+        emit UserRemovedFromDenylist(approvingUser, _approvedUser);
     }
 
     /* ============ Governance Functions ============ */
@@ -445,6 +471,14 @@ contract Ramp is Ownable {
 
     function getAccountInfo(address _account) external view returns (AccountInfo memory) {
         return accounts[_account];
+    }
+
+    function getDeniedUsers(address _account) external view returns (bytes32[] memory) {
+        return userDenylist[accounts[_account].venmoIdHash].deniedUsers;
+    }
+
+    function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {
+        return userDenylist[accounts[_account].venmoIdHash].isDenied[_deniedUser];
     }
 
     function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
@@ -560,7 +594,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[9] memory _signals
     )
         internal
         returns(Intent memory, bytes32, bool)
@@ -594,7 +628,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[11] memory _signals
+        uint256[8] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -629,7 +663,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[8] memory _signals
+        uint256[5] memory _signals
     )
         internal
         view

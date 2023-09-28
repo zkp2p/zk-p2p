@@ -16,7 +16,7 @@ import { GrothProof } from "@utils/types";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0f176a538d8c9a4bcea381f5711c7dc92a87f8a3e6a790e1a13d92e1b2617798"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x11f8b26b3d9857141566c7a7f2bb8cae1f7bc353c242be0aa87937cb89de5914"];
 
 describe("VenmoRegistrationProcessor", () => {
   let owner: Account;
@@ -36,7 +36,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     registrationProcessor = await deployer.deployVenmoRegistrationProcessor(
       rawSignals[0],
-      "venmo@venmo.com".padEnd(42, "\0")
+      "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
@@ -46,7 +46,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     beforeEach(async () => {
       subjectVenmoKeys = rawSignals[0];
-      subjectEmailFromAddress = "venmo@venmo.com".padEnd(42, "\0"); // Pad the address to match length returned by circuit
+      subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
     });
 
     async function subject(): Promise<any> {
@@ -65,7 +65,7 @@ describe("VenmoRegistrationProcessor", () => {
 
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
-      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(42, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
     describe("when the email address is not properly padded", async () => {
@@ -80,16 +80,16 @@ describe("VenmoRegistrationProcessor", () => {
   });
 
   describe("#processProof", async () => {
-    let subjectProof: GrothProof;
+    let subjectProof: any;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0c797f42dd6924f80d56ba7fe265b3ef92ac2638d55d5467393e968c9d7b8bac"), BigNumber.from("0x24ebff79876e5c0a5b414fc457ab8ecbed5edeb004418f84a3aeaee61c31e102")];
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x217bb9de7a38bebfcbbbe3d2f84266c15b64f1c95ebeec19275f4dc6a89a0785"), BigNumber.from("0x29dda564672b889fa8a5680145621f9c4af96984d45463663ed791c2df1080c9")];
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x041186fb4637f1978fc39e8b54977d145565822f0b10837eea242bc347dc0c52"), BigNumber.from("0x18a636ce289824c1b5e0f0df21eba51609bc52ec9e01913912bcac5cb4ddf9cd")],
-        [BigNumber.from("0x1a12e6683af60ef49bc366b38d64cf45f39577c880554f87da3d1cba49c134a6"), BigNumber.from("0x1d1e2457b5d55612c40924613553bc0751c671e91f04b2236efbbbbc9db75be3")]
+        [BigNumber.from("0x06a1bac01f3ebedb2c39e11177e96599e4195fff327332f16066c67b0069efb6"), BigNumber.from("0x26cc43627beffec13a1cbed928aeb6fa89f50f0b6b55ab2def1f51ba9a6fa16d")],
+        [BigNumber.from("0x1673ac5dbfa34d81d423e3370758a463ca1fd82a73343f97c202ef4fddcd3a24"), BigNumber.from("0x046e687de5da15bdcdd811696ad7b3a325aef6aa75bc4a24da669049b76fd9f6")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x04f4638d6d80d269807e3ff739dc81910e86dd2c17cbbd72fe23449609b5a4f5"), BigNumber.from("0x191b8672ecf45f38b11f233d239cb32887af779dd39cb0c7f163d0da18636608")];
-      const signals: BigNumber[] = rawSignals.map((signal) => BigNumber.from(signal));
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x02e0b990f7916d89e3fa082f8ccfadc8d59f0ea81e711e11eec5123036daafc6"), BigNumber.from("0x25afb839ba1f670c536ebf70ca7636435f4ac9f853add3d1364e50802d2e8820")];
+      const signals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [BigNumber.from(rawSignals[0]), BigNumber.from(rawSignals[1]), BigNumber.from(rawSignals[2]), BigNumber.from(rawSignals[3]), BigNumber.from(rawSignals[4])];
 
       subjectProof = {
         a,
@@ -106,7 +106,7 @@ describe("VenmoRegistrationProcessor", () => {
     it("should process the proof", async () => {
       const onRamperIdHash = await subject();
 
-      expect(onRamperIdHash).to.eq(subjectProof.signals[7]);
+      expect(onRamperIdHash).to.eq(subjectProof.signals[4]);
     });
 
     describe("when the proof is invalid", async () => {
@@ -121,7 +121,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     describe("when the email is from an invalid venmo address", async () => {
       beforeEach(async () => {
-        await registrationProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(42, "\0"));
+        await registrationProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(21, "\0"));
       });
 
       it("should revert", async () => {
@@ -179,7 +179,7 @@ describe("VenmoRegistrationProcessor", () => {
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectEmailFromAddress = "new-venmo@venmo.com".padEnd(42, "\0");
+      subjectEmailFromAddress = "new-venmo@venmo.com".padEnd(21, "\0");
     });
 
     async function subject(): Promise<any> {
@@ -191,7 +191,7 @@ describe("VenmoRegistrationProcessor", () => {
 
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
-      expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(42, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
     describe("when the email address is not properly padded", async () => {

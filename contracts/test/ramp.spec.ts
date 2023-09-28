@@ -119,11 +119,11 @@ describe.only("Ramp", () => {
     let subjectA: [BigNumber, BigNumber];
     let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
     let subjectC: [BigNumber, BigNumber];
-    let subjectSignals: BigNumber[];
+    let subjectSignals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectSignals = new Array<BigNumber>(8).fill(ZERO);
+      subjectSignals = [ZERO, ZERO, ZERO, ZERO, ZERO];
       subjectSignals[0] = BigNumber.from(1);
       subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
@@ -165,26 +165,20 @@ describe.only("Ramp", () => {
   });
 
   context("when the on and off ramper are registered", async () => {
+    let signalsOffRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsOnRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsOnRampTwo: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsMaliciousOnRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+
     beforeEach(async () => {
       const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-      const signalsOffRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsOffRamp[0] = ZERO;
-      signalsOffRamp[1] = BigNumber.from(await calculateVenmoIdHash("1"));
-
-      const signalsOnRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsOnRamp[0] = ZERO;
-      signalsOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
-
-      const signalsOnRampTwo = new Array<BigNumber>(8).fill(ZERO);
-      signalsOnRampTwo[0] = ZERO;
-      signalsOnRampTwo[1] = BigNumber.from(await calculateVenmoIdHash("3"));
-
-      const signalsMaliciousOnRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsMaliciousOnRamp[0] = ZERO;
-      signalsMaliciousOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
+      signalsOffRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("1")), ZERO, ZERO, ZERO];
+      signalsOnRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("2")), ZERO, ZERO, ZERO];
+      signalsOnRampTwo = [ZERO, BigNumber.from(await calculateVenmoIdHash("3")), ZERO, ZERO, ZERO];
+      signalsMaliciousOnRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("2")), ZERO, ZERO, ZERO];
 
       await ramp.connect(offRamper.wallet).register(
         _a,
@@ -217,7 +211,7 @@ describe.only("Ramp", () => {
     });
 
     describe("#offRamp", async () => {
-      let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+      let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectConvenienceFee: BigNumber;
@@ -571,7 +565,7 @@ describe.only("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
         
-        subjectSignals = new Array<BigNumber>(12).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(9).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("2"));
@@ -745,7 +739,7 @@ describe.only("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(11).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(8).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
@@ -1053,7 +1047,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe("#addAccountToDenylist", async () => {
+    describe.only("#addAccountToDenylist", async () => {
       let subjectDeniedUser: string;
       let subjectCaller: Account;
 
@@ -1066,11 +1060,13 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).addAccountToDenylist(subjectDeniedUser);
       }
 
-      it("should set the denied user to true in the denied user mapping", async () => {
+      it("should add the denied user to the denier's array and update mapping", async () => {
         await subject();
 
-        const isDenied = await ramp.userDenylist(await calculateVenmoIdHash("1"), await calculateVenmoIdHash("2"));
+        const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+        const isDenied = await ramp.isDeniedUser(subjectCaller.address, subjectDeniedUser);
 
+        expect(deniedUsers).to.include(subjectDeniedUser);
         expect(isDenied).to.be.true;
       });
 
@@ -1081,7 +1077,66 @@ describe.only("Ramp", () => {
           await calculateVenmoIdHash("1"),
           await calculateVenmoIdHash("2")
         );
-      });      
+      });
+      
+      describe("when the denied user is already on the denylist", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("User already on denylist");
+        });
+      });
+    });
+
+    describe.only("#removeAccountFromDenylist", async () => {
+      let subjectApprovedUser: string;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).addAccountToDenylist(await calculateVenmoIdHash("2"));
+
+        subjectApprovedUser = await calculateVenmoIdHash("2");
+        subjectCaller = offRamper;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).removeAccountFromDenylist(subjectApprovedUser);
+      }
+
+      it("should add remove the denied user from the denier's array and update mapping", async () => {
+        const preDeniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+
+        expect(preDeniedUsers).to.include(subjectApprovedUser);
+
+        await subject();
+
+        const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+        const isDenied = await ramp.isDeniedUser(subjectCaller.address, subjectApprovedUser);
+
+        expect(deniedUsers).to.not.include(subjectApprovedUser);
+        expect(isDenied).to.be.false;
+      });
+
+      it("should emit a UserRemovedFromDenylist event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "UserRemovedFromDenylist").withArgs(
+          await calculateVenmoIdHash("1"),
+          await calculateVenmoIdHash("2")
+        );
+      });
+      
+      describe("when the denied user is not already on the denylist", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("User not on denylist");
+        });
+      });
     });
 
     describe("#setConvenienceRewardTimePeriod", async () => {
