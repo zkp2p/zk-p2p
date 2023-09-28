@@ -477,6 +477,10 @@ contract Ramp is Ownable {
         return userDenylist[accounts[_account].venmoIdHash].deniedUsers;
     }
 
+    function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {
+        return userDenylist[accounts[_account].venmoIdHash].isDenied[_deniedUser];
+    }
+
     function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
         uint256[] memory accountDepositIds = accounts[_account].deposits;
         accountDeposits = new Deposit[](accountDepositIds.length);

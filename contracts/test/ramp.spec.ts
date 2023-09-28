@@ -1047,7 +1047,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe("#addAccountToDenylist", async () => {
+    describe.only("#addAccountToDenylist", async () => {
       let subjectDeniedUser: string;
       let subjectCaller: Account;
 
@@ -1060,12 +1060,14 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).addAccountToDenylist(subjectDeniedUser);
       }
 
-      it("should add the denied user to the denier's array", async () => {
+      it("should add the denied user to the denier's array and update mapping", async () => {
         await subject();
 
         const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+        const isDenied = await ramp.isDeniedUser(subjectCaller.address, subjectDeniedUser);
 
         expect(deniedUsers).to.include(subjectDeniedUser);
+        expect(isDenied).to.be.true;
       });
 
       it("should emit a UserAddedToDenylist event", async () => {
@@ -1088,7 +1090,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe("#removeAccountFromDenylist", async () => {
+    describe.only("#removeAccountFromDenylist", async () => {
       let subjectApprovedUser: string;
       let subjectCaller: Account;
 
@@ -1103,7 +1105,7 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).removeAccountFromDenylist(subjectApprovedUser);
       }
 
-      it("should add the denied user to the denier's array", async () => {
+      it("should add remove the denied user from the denier's array and update mapping", async () => {
         const preDeniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
 
         expect(preDeniedUsers).to.include(subjectApprovedUser);
@@ -1111,8 +1113,10 @@ describe.only("Ramp", () => {
         await subject();
 
         const deniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
+        const isDenied = await ramp.isDeniedUser(subjectCaller.address, subjectApprovedUser);
 
         expect(deniedUsers).to.not.include(subjectApprovedUser);
+        expect(isDenied).to.be.false;
       });
 
       it("should emit a UserRemovedFromDenylist event", async () => {
