@@ -95,8 +95,8 @@ export default class DeployHelper {
 
   public async deployPoseidon(): Promise<any> {
     const contract = new ethers.ContractFactory(
-      circom.poseidonContract.generateABI(5),
-      circom.poseidonContract.createCode(5),
+      circom.poseidonContract.generateABI(3),
+      circom.poseidonContract.createCode(3),
       this._deployerSigner
     );
 

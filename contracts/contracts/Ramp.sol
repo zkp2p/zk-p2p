@@ -74,7 +74,7 @@ contract Ramp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[5] packedVenmoId;
+        uint256[3] packedVenmoId;
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -157,7 +157,7 @@ contract Ramp is Ownable {
         uint[2] memory _a,
         uint[2][2] memory _b,
         uint[2] memory _c,
-        uint[8] memory _signals
+        uint[5] memory _signals
     )
         external
     {
@@ -180,7 +180,7 @@ contract Ramp is Ownable {
      * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
     function offRamp(
-        uint256[5] memory _packedVenmoId,
+        uint256[3] memory _packedVenmoId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
         uint256 _convenienceFee
@@ -277,7 +277,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[9] memory _signals
     )
         external
     {
@@ -317,7 +317,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[11] memory _signals
+        uint256[8] memory _signals
     )
         external
     {
@@ -590,7 +590,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[9] memory _signals
     )
         internal
         returns(Intent memory, bytes32, bool)
@@ -624,7 +624,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[11] memory _signals
+        uint256[8] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -659,7 +659,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[8] memory _signals
+        uint256[5] memory _signals
     )
         internal
         view

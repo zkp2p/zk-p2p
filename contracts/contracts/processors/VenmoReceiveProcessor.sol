@@ -14,7 +14,7 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, Ownable {
     using ProofParsingUtils for uint256[];
 
     /* ============ Constants ============ */
-    uint8 private constant EMAIL_ADDRESS_LENGTH = 42;   // 42 bytes in an email address
+    uint8 private constant EMAIL_ADDRESS_LENGTH = 21;   // 21 bytes in an email address
 
     /* ============ State Variables ============ */
     bytes32 public venmoMailserverKeyHash;
@@ -60,23 +60,23 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, Ownable {
 
         require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
 
-        // Signals [1:7] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 7);
+        // Signals [1:4] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [7:9] are the packed timestamp
-        timestamp = _parseSignalArray(_proof.signals, 7, 9).stringToUint256();
+        // Signals [4:6] are the packed timestamp
+        timestamp = _parseSignalArray(_proof.signals, 4, 6).stringToUint256();
 
-        // Signals [9] is the packed onRamperIdHsdh
-        onRamperIdHash = bytes32(_proof.signals[9]);
+        // Signals [6] is the packed onRamperIdHsdh
+        onRamperIdHash = bytes32(_proof.signals[6]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        bytes32 nullifier = bytes32(_proof.signals[10]);
+        bytes32 nullifier = bytes32(_proof.signals[7]);
         require(!isEmailNullified[nullifier], "Email has already been used");
         isEmailNullified[nullifier] = true;
 
-        // Signals [11] is intentHash
-        intentHash = bytes32(_proof.signals[11]);
+        // Signals [8] is intentHash
+        intentHash = bytes32(_proof.signals[8]);
     }
 
     function getEmailFromAddress() external view returns (bytes memory) {
@@ -85,7 +85,7 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, Ownable {
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[12] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[9] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
         uint256[] memory signalArray = new uint256[](_to - _from);
         for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];

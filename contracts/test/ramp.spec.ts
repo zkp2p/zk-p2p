@@ -30,7 +30,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("Ramp", () => {
+describe.only("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -119,11 +119,11 @@ describe("Ramp", () => {
     let subjectA: [BigNumber, BigNumber];
     let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
     let subjectC: [BigNumber, BigNumber];
-    let subjectSignals: BigNumber[];
+    let subjectSignals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectSignals = new Array<BigNumber>(8).fill(ZERO);
+      subjectSignals = [ZERO, ZERO, ZERO, ZERO, ZERO];
       subjectSignals[0] = BigNumber.from(1);
       subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
 
@@ -165,26 +165,20 @@ describe("Ramp", () => {
   });
 
   context("when the on and off ramper are registered", async () => {
+    let signalsOffRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsOnRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsOnRampTwo: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+    let signalsMaliciousOnRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+
     beforeEach(async () => {
       const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-      const signalsOffRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsOffRamp[0] = ZERO;
-      signalsOffRamp[1] = BigNumber.from(await calculateVenmoIdHash("1"));
-
-      const signalsOnRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsOnRamp[0] = ZERO;
-      signalsOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
-
-      const signalsOnRampTwo = new Array<BigNumber>(8).fill(ZERO);
-      signalsOnRampTwo[0] = ZERO;
-      signalsOnRampTwo[1] = BigNumber.from(await calculateVenmoIdHash("3"));
-
-      const signalsMaliciousOnRamp = new Array<BigNumber>(8).fill(ZERO);
-      signalsMaliciousOnRamp[0] = ZERO;
-      signalsMaliciousOnRamp[1] = BigNumber.from(await calculateVenmoIdHash("2"));
+      signalsOffRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("1")), ZERO, ZERO, ZERO];
+      signalsOnRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("2")), ZERO, ZERO, ZERO];
+      signalsOnRampTwo = [ZERO, BigNumber.from(await calculateVenmoIdHash("3")), ZERO, ZERO, ZERO];
+      signalsMaliciousOnRamp = [ZERO, BigNumber.from(await calculateVenmoIdHash("2")), ZERO, ZERO, ZERO];
 
       await ramp.connect(offRamper.wallet).register(
         _a,
@@ -217,7 +211,7 @@ describe("Ramp", () => {
     });
 
     describe("#offRamp", async () => {
-      let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+      let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectConvenienceFee: BigNumber;
@@ -571,7 +565,7 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
         
-        subjectSignals = new Array<BigNumber>(12).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(9).fill(ZERO);
         subjectSignals[0] = currentTimestamp;
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("2"));
@@ -745,7 +739,7 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(11).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(8).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = BigNumber.from(1);
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));

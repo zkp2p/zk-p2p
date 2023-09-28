@@ -8,7 +8,7 @@ interface IReceiveProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[12] signals;
+        uint256[9] signals;
     }
 
     function processProof(
