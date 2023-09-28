@@ -1090,7 +1090,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe("#removeAccountFromDenylist", async () => {
+    describe.only("#removeAccountFromDenylist", async () => {
       let subjectApprovedUser: string;
       let subjectCaller: Account;
 
