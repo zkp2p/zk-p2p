@@ -9,7 +9,7 @@ import { usdc } from "../utils/common/units";
 
 const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-const FROM_EMAIL = "venmo@venmo.com".padEnd(42, "\0");
+const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 
 const CONVENIENCE_TIME_PERIOD = BigNumber.from(60);
 const MIN_DEPOSIT_AMOUNT = usdc(20);
