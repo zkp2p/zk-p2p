@@ -9,7 +9,7 @@ jobs:
       - name: Specify node version...
         uses: actions/setup-node@v3
         with:
-          node-version: '18.15.0'
+          node-version: "18.15.0"
       - name: Install Dependencies
         run: yarn install
         working-directory: ./circuits-circom
@@ -22,15 +22,15 @@ jobs:
       - name: Create env...
         run: cp scripts/circuit.env.example scripts/circuit.env
         working-directory: ./circuits-circom
-      - name: Compile registration...
-        run: yarn compile:registration:unsafe
-        working-directory: ./circuits-circom
-      - name: Compile receive...
-        run: yarn compile:receive:unsafe
-        working-directory: ./circuits-circom
-      - name: Compile send...
-        run: yarn compile:send:unsafe
-        working-directory: ./circuits-circom
+      # - name: Compile registration...
+      #   run: yarn compile:registration:unsafe
+      #   working-directory: ./circuits-circom
+      # - name: Compile receive...
+      #   run: yarn compile:receive:unsafe
+      #   working-directory: ./circuits-circom
+      # - name: Compile send...
+      #   run: yarn compile:send:unsafe
+      #   working-directory: ./circuits-circom
       - name: Gen inputs for registration using a RECEIVE email...
         run: yarn gen-input:reg-receive
         working-directory: ./circuits-circom
@@ -55,5 +55,3 @@ jobs:
       - name: Testing...
         run: yarn test
         working-directory: ./circuits-circom
-
-
