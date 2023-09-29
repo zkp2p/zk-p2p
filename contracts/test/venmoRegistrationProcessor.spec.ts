@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { VenmoRegistrationProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, VenmoRegistrationProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -23,6 +23,7 @@ describe("VenmoRegistrationProcessor", () => {
   let attacker: Account;
   let ramp: Account;
 
+  let keyHashAdapter: ManagedKeyHashAdapter;
   let registrationProcessor: VenmoRegistrationProcessor;
 
   let deployer: DeployHelper;
@@ -36,37 +37,38 @@ describe("VenmoRegistrationProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
     registrationProcessor = await deployer.deployVenmoRegistrationProcessor(
       ramp.address,
-      rawSignals[0],
+      keyHashAdapter.address,
       "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
   describe("#constructor", async () => {
     let subjectRamp: Address;
-    let subjectVenmoKeys: string;
+    let subjectVenmoKeyHashAdapter: Address;
     let subjectEmailFromAddress: string;
 
     beforeEach(async () => {
       subjectRamp = ramp.address;
-      subjectVenmoKeys = rawSignals[0];
+      subjectVenmoKeyHashAdapter = keyHashAdapter.address;
       subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
     });
 
     async function subject(): Promise<any> {
-      return await deployer.deployVenmoRegistrationProcessor(subjectRamp, subjectVenmoKeys, subjectEmailFromAddress);
+      return await deployer.deployVenmoRegistrationProcessor(subjectRamp, subjectVenmoKeyHashAdapter, subjectEmailFromAddress);
     }
 
     it("should set the correct state", async () => {
       await subject();
 
       const rampAddress = await registrationProcessor.ramp();
-      const venmoKeys = await registrationProcessor.venmoMailserverKeyHash();
+      const venmoMailserverKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(subjectRamp);
-      expect(venmoKeys).to.deep.equal(rawSignals[0]);
+      expect(venmoMailserverKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
@@ -135,7 +137,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await registrationProcessor.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -154,25 +156,25 @@ describe("VenmoRegistrationProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHash", async () => {
-    let subjectVenmoMailserverKeyHash: string;
+  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+    let subjectVenmoMailserverKeyHashAdapter: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectVenmoMailserverKeyHash = BigNumber.from(rawSignals[0]).add(1).toHexString();
+      subjectVenmoMailserverKeyHashAdapter = attacker.address;
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHash = await registrationProcessor.venmoMailserverKeyHash();
-      expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
+      const venmoKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
+      expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 
     describe("when the caller is not the owner", async () => {

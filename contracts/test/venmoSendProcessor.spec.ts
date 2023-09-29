@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { VenmoSendProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, VenmoSendProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 import { Address, GrothProof } from "@utils/types";
 
@@ -24,6 +24,7 @@ describe("VenmoSendProcessor", () => {
   let attacker: Account;
   let ramp: Account;
 
+  let keyHashAdapter: ManagedKeyHashAdapter;
   let sendProcessor: VenmoSendProcessor;
 
   let deployer: DeployHelper;
@@ -37,37 +38,38 @@ describe("VenmoSendProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
     sendProcessor = await deployer.deployVenmoSendProcessor(
       ramp.address,
-      rawSignals[0],
+      keyHashAdapter.address,
       "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
   describe("#constructor", async () => {
     let subjectRamp: Address;
-    let subjectVenmoKeys: string;
+    let subjectVenmoKeyHashAdapter: Address;
     let subjectEmailFromAddress: string;
 
     beforeEach(async () => {
       subjectRamp = ramp.address;
-      subjectVenmoKeys = rawSignals[0];
+      subjectVenmoKeyHashAdapter = keyHashAdapter.address;
       subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
     });
 
     async function subject(): Promise<any> {
-      return await deployer.deployVenmoSendProcessor(subjectRamp, subjectVenmoKeys, subjectEmailFromAddress);
+      return await deployer.deployVenmoSendProcessor(subjectRamp, subjectVenmoKeyHashAdapter, subjectEmailFromAddress);
     }
 
     it("should set the correct state", async () => {
       await subject();
 
       const rampAddress = await sendProcessor.ramp();
-      const venmoKeys = await sendProcessor.venmoMailserverKeyHash();
+      const venmoKeyHashAdapter = await sendProcessor.venmoMailserverKeyHashAdapter();
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(subjectRamp);
-      expect(venmoKeys).to.deep.equal(rawSignals[0]);
+      expect(venmoKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
@@ -155,7 +157,7 @@ describe("VenmoSendProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await sendProcessor.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -174,25 +176,25 @@ describe("VenmoSendProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHash", async () => {
-    let subjectVenmoMailserverKeyHash: string;
+  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+    let subjectVenmoMailserverKeyHashAdapter: string;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectVenmoMailserverKeyHash = BigNumber.from(rawSignals[0]).add(1).toHexString();
+      subjectVenmoMailserverKeyHashAdapter = attacker.address;
     });
 
     async function subject(): Promise<any> {
-      return await sendProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+      return await sendProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHash = await sendProcessor.venmoMailserverKeyHash();
-      expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
+      const venmoKeyHashAdapter = await sendProcessor.venmoMailserverKeyHashAdapter();
+      expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 
     describe("when the caller is not the owner", async () => {

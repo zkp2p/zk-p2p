@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { VenmoReceiveProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, VenmoReceiveProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 import { Address, GrothProof } from "@utils/types";
 
@@ -23,6 +23,7 @@ describe("VenmoReceiveProcessor", () => {
   let attacker: Account;
   let ramp: Account;
 
+  let keyHashAdapter: ManagedKeyHashAdapter;
   let receiveProcessor: VenmoReceiveProcessor;
 
   let deployer: DeployHelper;
@@ -36,21 +37,22 @@ describe("VenmoReceiveProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
     receiveProcessor = await deployer.deployVenmoReceiveProcessor(
       ramp.address,
-      rawSignals[0],
+      keyHashAdapter.address,
       "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
   describe("#constructor", async () => {
     let subjectRamp: Address;
-    let subjectVenmoKeys: string;
+    let subjectVenmoKeys: Address;
     let subjectEmailFromAddress: string;
 
     beforeEach(async () => {
       subjectRamp = ramp.address;
-      subjectVenmoKeys = rawSignals[0];
+      subjectVenmoKeys = keyHashAdapter.address;
       subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
     });
 
@@ -62,11 +64,11 @@ describe("VenmoReceiveProcessor", () => {
       await subject();
 
       const rampAddress = await receiveProcessor.ramp();
-      const venmoKeys = await receiveProcessor.venmoMailserverKeyHash();
+      const venmoKeyHashAdapter = await receiveProcessor.venmoMailserverKeyHashAdapter();
       const emailFromAddress = await receiveProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(subjectRamp);
-      expect(venmoKeys).to.deep.equal(rawSignals[0]);
+      expect(venmoKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
@@ -154,7 +156,7 @@ describe("VenmoReceiveProcessor", () => {
 
     describe("when the mailserver key hash doesn't match", async () => {
       beforeEach(async () => {
-        await receiveProcessor.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -173,25 +175,25 @@ describe("VenmoReceiveProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHash", async () => {
-    let subjectVenmoMailserverKeyHash: string;
+  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+    let subjectVenmoMailserverKeyHashAdapter: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectVenmoMailserverKeyHash = BigNumber.from(rawSignals[0]).add(1).toHexString();
+      subjectVenmoMailserverKeyHashAdapter = attacker.address;
     });
 
     async function subject(): Promise<any> {
-      return await receiveProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+      return await receiveProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHash = await receiveProcessor.venmoMailserverKeyHash();
-      expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
+      const venmoKeyHashAdapter = await receiveProcessor.venmoMailserverKeyHashAdapter();
+      expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 
     describe("when the caller is not the owner", async () => {

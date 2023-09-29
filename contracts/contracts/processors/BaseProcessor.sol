@@ -2,6 +2,8 @@
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
+import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+
 pragma solidity ^0.8.18;
 
 contract BaseProcessor is Ownable {
@@ -17,13 +19,13 @@ contract BaseProcessor is Ownable {
 
     /* ============ State Variables ============ */
     address public immutable ramp;
-    bytes32 public venmoMailserverKeyHash;
+    IKeyHashAdapter public venmoMailserverKeyHashAdapter;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        bytes32 _venmoMailserverKeyHash,
+        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
         string memory _emailFromAddress
     )
         Ownable()
@@ -31,14 +33,14 @@ contract BaseProcessor is Ownable {
         require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         ramp = _ramp;
-        venmoMailserverKeyHash = _venmoMailserverKeyHash;
+        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeyHash(bytes32 _venmoMailserverKeyHash) external onlyOwner {
-        venmoMailserverKeyHash = _venmoMailserverKeyHash;
+    function setVenmoMailserverKeyHashAdapter(IKeyHashAdapter _venmoMailserverKeyHashAdapter) external onlyOwner {
+        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
@@ -51,5 +53,9 @@ contract BaseProcessor is Ownable {
 
     function getEmailFromAddress() external view returns (bytes memory) {
         return emailFromAddress;
+    }
+
+    function getVenmoMailserverKeyHash() public view returns (bytes32) {
+        return IKeyHashAdapter(venmoMailserverKeyHashAdapter).venmoMailserverKeyHash();
     }
 }

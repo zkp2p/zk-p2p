@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: MIT
 
 import { BaseProcessor } from "./BaseProcessor.sol";
+import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
 import { IReceiveProcessor } from "../interfaces/IReceiveProcessor.sol";
 import { Groth16Verifier } from "../verifiers/venmo_receive_verifier.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
@@ -19,10 +20,10 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, BaseProces
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        bytes32 _venmoMailserverKeyHash,
+        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
         string memory _emailFromAddress
     )
-        BaseProcessor(_ramp, _venmoMailserverKeyHash, _emailFromAddress)
+        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _emailFromAddress)
         Groth16Verifier()
     {}
     
@@ -37,7 +38,7 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, BaseProces
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
+        require(bytes32(_proof.signals[0]) == getVenmoMailserverKeyHash(), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
