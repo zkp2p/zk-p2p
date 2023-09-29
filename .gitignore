@@ -8,6 +8,7 @@ yarn-error.log
 
 build/
 */inputs/*.json
+*/eml/*.eml
 *.env
 */.yarn/cache/
 */.yarn/install-state.gz
@@ -15,13 +16,3 @@ build/
 
 .vscode
 ptau_files/
-
-
-!build/venmo_receive/venmo_receive_js/venmo_receive.wasm
-!build/venmo_receive/venmo_receive_js/*.js
-
-!build/venmo_send/venmo_send_js/venmo_send.wasm
-!build/venmo_receive/venmo_send_js/*.js
-
-!build/venmo_registration/venmo_registration_js/venmo_registration.wasm
-!build/venmo_receive/venmo_registration_js/*.js
