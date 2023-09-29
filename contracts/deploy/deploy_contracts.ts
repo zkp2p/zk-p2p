@@ -44,19 +44,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ],
   });
 
+  const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
+    from: deployer,
+    args: [SERVER_KEY_HASH],
+  });
+
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
-    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
   });
 
   const receiveProcessor = await deploy("VenmoReceiveProcessor", {
     from: deployer,
-    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
   });
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
-    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
   });
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
