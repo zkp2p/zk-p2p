@@ -1,7 +1,6 @@
 import "module-alias/register";
 
 import { ethers } from "hardhat";
-import { time } from "@nomicfoundation/hardhat-network-helpers";
 
 import {
   Address,
@@ -30,7 +29,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("Ramp", () => {
+describe("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let onRamper: Account;
@@ -71,9 +70,6 @@ describe.only("Ramp", () => {
       owner.address,
       usdcToken.address,
       poseidonContract.address,
-      receiveProcessor.address,
-      registrationProcessor.address,
-      sendProcessor.address,
       usdc(20)                          // $20 min deposit amount
     );
   });
@@ -89,21 +85,6 @@ describe.only("Ramp", () => {
       expect(usdcAddress).to.eq(usdcToken.address);
     });
 
-    it("should set the correct receiveProcessor", async () => {
-      const receiveProcessorAddress: Address = await ramp.receiveProcessor();
-      expect(receiveProcessorAddress).to.eq(receiveProcessor.address);
-    });
-
-    it("should set the correct registrationProcessor", async () => {
-      const registrationProcessorAddress: Address = await ramp.registrationProcessor();
-      expect(registrationProcessorAddress).to.eq(registrationProcessor.address);
-    });
-
-    it("should set the correct sendProcessor", async () => {
-      const sendProcessorAddress: Address = await ramp.sendProcessor();
-      expect(sendProcessorAddress).to.eq(sendProcessor.address);
-    });
-
     it("should set the correct min deposit amount", async () => {
       const minDepositAmount: BigNumber = await ramp.minDepositAmount();
       expect(minDepositAmount).to.eq(usdc(20));
@@ -115,6 +96,60 @@ describe.only("Ramp", () => {
     });
   });
 
+  describe("#initialize", async () => {
+    let subjectReceiveProcessor: Address;
+    let subjectRegistrationProcessor: Address;
+    let subjectSendProcessor: Address;
+    let subjectCaller: Account;
+    
+    beforeEach(async () => {
+      subjectReceiveProcessor = receiveProcessor.address;
+      subjectRegistrationProcessor = registrationProcessor.address;
+      subjectSendProcessor = sendProcessor.address;
+      subjectCaller = owner;
+    });
+
+    async function subject(): Promise<any> {
+      return ramp.connect(subjectCaller.wallet).initialize(
+        subjectReceiveProcessor,
+        subjectRegistrationProcessor,
+        subjectSendProcessor
+      );
+    }
+
+    it("should set the correct processor addresses", async () => {
+      await subject();
+
+      const receiveProcessorAddress: Address = await ramp.receiveProcessor();
+      const registrationProcessorAddress: Address = await ramp.registrationProcessor();
+      const sendProcessorAddress: Address = await ramp.sendProcessor();
+
+      expect(receiveProcessorAddress).to.eq(receiveProcessor.address);
+      expect(registrationProcessorAddress).to.eq(registrationProcessor.address);
+      expect(sendProcessorAddress).to.eq(sendProcessor.address);
+    });
+
+    describe("when the contract has already been initialized", async () => {
+      beforeEach(async () => {
+        await subject();
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Already initialized");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = onRamper;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
   describe("#register", async () => {
     let subjectA: [BigNumber, BigNumber];
     let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
@@ -123,6 +158,8 @@ describe.only("Ramp", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
+      await ramp.initialize(receiveProcessor.address, registrationProcessor.address, sendProcessor.address);
+
       subjectSignals = [ZERO, ZERO, ZERO, ZERO, ZERO];
       subjectSignals[0] = BigNumber.from(1);
       subjectSignals[1] = BigNumber.from(await calculateVenmoIdHash("1"));
@@ -171,6 +208,8 @@ describe.only("Ramp", () => {
     let signalsMaliciousOnRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
 
     beforeEach(async () => {
+      await ramp.initialize(receiveProcessor.address, registrationProcessor.address, sendProcessor.address);
+
       const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
@@ -1047,7 +1086,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe.only("#addAccountToDenylist", async () => {
+    describe("#addAccountToDenylist", async () => {
       let subjectDeniedUser: string;
       let subjectCaller: Account;
 
@@ -1090,7 +1129,7 @@ describe.only("Ramp", () => {
       });
     });
 
-    describe.only("#removeAccountFromDenylist", async () => {
+    describe("#removeAccountFromDenylist", async () => {
       let subjectApprovedUser: string;
       let subjectCaller: Account;
 
@@ -1105,7 +1144,7 @@ describe.only("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).removeAccountFromDenylist(subjectApprovedUser);
       }
 
-      it("should add remove the denied user from the denier's array and update mapping", async () => {
+      it("should remove the denied user from the denier's array and update mapping", async () => {
         const preDeniedUsers = await ramp.getDeniedUsers(subjectCaller.address);
 
         expect(preDeniedUsers).to.include(subjectApprovedUser);

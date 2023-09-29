@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
+
 import { BigNumber } from "ethers";
 
 const circom = require("circomlibjs");
@@ -18,21 +19,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
 
   const [ deployer ] = await hre.getUnnamedAccounts();
-
-  const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
-    from: deployer,
-    args: [SERVER_KEY_HASH, FROM_EMAIL],
-  });
-
-  const receiveProcessor = await deploy("VenmoReceiveProcessor", {
-    from: deployer,
-    args: [SERVER_KEY_HASH, FROM_EMAIL],
-  });
-
-  const sendProcessor = await deploy("VenmoSendProcessor", {
-    from: deployer,
-    args: [SERVER_KEY_HASH, FROM_EMAIL],
-  });
 
   const usdcToken = await deploy("USDCMock", {
     from: deployer,
@@ -53,13 +39,32 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcToken.address,
       poseidon.address,
-      receiveProcessor.address,
-      registrationProcessor.address,
-      sendProcessor.address,
       MIN_DEPOSIT_AMOUNT,
       CONVENIENCE_TIME_PERIOD
     ],
   });
+
+  const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
+    from: deployer,
+    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+  });
+
+  const receiveProcessor = await deploy("VenmoReceiveProcessor", {
+    from: deployer,
+    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+  });
+
+  const sendProcessor = await deploy("VenmoSendProcessor", {
+    from: deployer,
+    args: [ramp.address, SERVER_KEY_HASH, FROM_EMAIL],
+  });
+
+  const rampContract = await ethers.getContractAt("Ramp", ramp.address);
+  await rampContract.initialize(
+    receiveProcessor.address,
+    registrationProcessor.address,
+    sendProcessor.address
+  );
 };
 
 export default func;
