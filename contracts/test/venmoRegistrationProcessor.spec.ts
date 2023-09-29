@@ -12,7 +12,7 @@ import {
   getAccounts
 } from "@utils/test/index";
 import { ZERO_BYTES32 } from "@utils/constants";
-import { GrothProof } from "@utils/types";
+import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
 
@@ -21,6 +21,7 @@ const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555
 describe("VenmoRegistrationProcessor", () => {
   let owner: Account;
   let attacker: Account;
+  let ramp: Account;
 
   let registrationProcessor: VenmoRegistrationProcessor;
 
@@ -30,41 +31,42 @@ describe("VenmoRegistrationProcessor", () => {
     [
       owner,
       attacker,
+      ramp
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
 
     registrationProcessor = await deployer.deployVenmoRegistrationProcessor(
+      ramp.address,
       rawSignals[0],
       "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
   describe("#constructor", async () => {
+    let subjectRamp: Address;
     let subjectVenmoKeys: string;
     let subjectEmailFromAddress: string;
 
     beforeEach(async () => {
+      subjectRamp = ramp.address;
       subjectVenmoKeys = rawSignals[0];
       subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
     });
 
     async function subject(): Promise<any> {
-      return await deployer.deployVenmoRegistrationProcessor(subjectVenmoKeys, subjectEmailFromAddress);
+      return await deployer.deployVenmoRegistrationProcessor(subjectRamp, subjectVenmoKeys, subjectEmailFromAddress);
     }
 
-    it("should set the correct venmo keys", async () => {
+    it("should set the correct state", async () => {
       await subject();
 
+      const rampAddress = await registrationProcessor.ramp();
       const venmoKeys = await registrationProcessor.venmoMailserverKeyHash();
-      expect(venmoKeys).to.deep.equal(rawSignals[0]);
-    });
-
-    it("should set the correct email from address", async () => {
-      await subject();
-
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
+      expect(rampAddress).to.eq(subjectRamp);
+      expect(venmoKeys).to.deep.equal(rawSignals[0]);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
@@ -81,6 +83,7 @@ describe("VenmoRegistrationProcessor", () => {
 
   describe("#processProof", async () => {
     let subjectProof: any;
+    let subjectCaller: Account;
 
     beforeEach(async () => {
       const a: [BigNumber, BigNumber] = [BigNumber.from("0x217bb9de7a38bebfcbbbe3d2f84266c15b64f1c95ebeec19275f4dc6a89a0785"), BigNumber.from("0x29dda564672b889fa8a5680145621f9c4af96984d45463663ed791c2df1080c9")];
@@ -97,10 +100,11 @@ describe("VenmoRegistrationProcessor", () => {
         c,
         signals
       };
+      subjectCaller = ramp;
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.processProof(subjectProof);
+      return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
     it("should process the proof", async () => {
@@ -137,7 +141,17 @@ describe("VenmoRegistrationProcessor", () => {
       it("should revert", async () => {
         await expect(subject()).to.be.revertedWith("Invalid mailserver key hash");
       });
-    });    
+    });
+
+    describe("when the caller is not the Ramp", async () => {
+      beforeEach(async () => {
+        subjectCaller = owner;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Only Ramp can call this function");
+      });
+    });
   });
 
   describe("#setVenmoMailserverKeyHash", async () => {

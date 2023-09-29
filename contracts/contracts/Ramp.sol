@@ -107,6 +107,8 @@ contract Ramp is Ownable {
     IRegistrationProcessor public registrationProcessor;
     ISendProcessor public sendProcessor;
 
+    bool internal isInitialized;
+
     mapping(bytes32 => DenyList) internal userDenylist;                 // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
                                                                         // signal an intent on their deposit
     mapping(address => AccountInfo) internal accounts;
@@ -123,9 +125,6 @@ contract Ramp is Ownable {
         address _owner,
         IERC20 _usdc,
         IPoseidon _poseidon,
-        IReceiveProcessor _receiveProcessor,
-        IRegistrationProcessor _registrationProcessor,
-        ISendProcessor _sendProcessor,
         uint256 _minDepositAmount,
         uint256 _convenienceRewardTimePeriod
     )
@@ -133,9 +132,6 @@ contract Ramp is Ownable {
     {
         usdc = _usdc;
         poseidon = _poseidon;
-        receiveProcessor = _receiveProcessor;
-        registrationProcessor = _registrationProcessor;
-        sendProcessor = _sendProcessor;
         minDepositAmount = _minDepositAmount;
         convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
 
@@ -143,6 +139,30 @@ contract Ramp is Ownable {
     }
 
     /* ============ External Functions ============ */
+
+    /**
+     * @notice Initialize Ramp with the addresses of the Processors
+     *
+     * @param _receiveProcessor         Receive processor address
+     * @param _registrationProcessor    Registration processor address
+     * @param _sendProcessor            Send processor address
+     */
+    function initialize(
+        IReceiveProcessor _receiveProcessor,
+        IRegistrationProcessor _registrationProcessor,
+        ISendProcessor _sendProcessor
+    )
+        external
+        onlyOwner
+    {
+        require(!isInitialized, "Already initialized");
+
+        receiveProcessor = _receiveProcessor;
+        registrationProcessor = _registrationProcessor;
+        sendProcessor = _sendProcessor;
+
+        isInitialized = true;
+    }
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
@@ -562,14 +582,14 @@ contract Ramp is Ownable {
      * @notice Pruning an intent involves deleting its state from the intents mapping, zeroing out the intendee's venmoIdIntent
      * mapping, and deleting the intentHash from the deposit's intentHashes array.
      */
-    function _pruneIntent(Deposit storage _deposit, bytes32 _intent) internal {
-        Intent memory intent = intents[_intent];
+    function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
+        Intent memory intent = intents[_intentHash];
 
         delete venmoIdIntent[accounts[intent.onRamper].venmoIdHash];
-        delete intents[_intent];
-        _deposit.intentHashes.removeStorage(_intent);
+        delete intents[_intentHash];
+        _deposit.intentHashes.removeStorage(_intentHash);
 
-        emit IntentPruned(_intent, intent.deposit);
+        emit IntentPruned(_intentHash, intent.deposit);
     }
 
     /**

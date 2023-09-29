@@ -38,9 +38,6 @@ export default class DeployHelper {
     owner: Address,
     usdc: Address,
     poseidon: Address,
-    receiveVerifier: Address,
-    registrationVerifier: Address,
-    sendVerifier: Address,
     minDepositAmount: BigNumber,
     convenienceRewardTimePeriod: BigNumber = BigNumber.from(10),
   ): Promise<Ramp> {
@@ -48,9 +45,6 @@ export default class DeployHelper {
       owner,
       usdc,
       poseidon,
-      receiveVerifier,
-      registrationVerifier,
-      sendVerifier,
       minDepositAmount,
       convenienceRewardTimePeriod
     );
@@ -61,24 +55,27 @@ export default class DeployHelper {
   }
 
   public async deployVenmoRegistrationProcessor(
+    ramp: Address,
     venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoRegistrationProcessor> {
-    return await new VenmoRegistrationProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
+    return await new VenmoRegistrationProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoReceiveProcessor(
+    ramp: Address,
     venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoReceiveProcessor> {
-    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
+    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoSendProcessor(
+    ramp: Address,
     venmoKeys: string,
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
-    return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(venmoKeys, emailFromAddress);
+    return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
   }
 
   public async deployVenmoReceiveProcessorMock(): Promise<VenmoReceiveProcessorMock> {
