@@ -340,7 +340,7 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "bytes32",
-        "name": "denyingUser",
+        "name": "listOwner",
         "type": "bytes32"
       },
       {
@@ -351,6 +351,25 @@ export const abi = [
       }
     ],
     "name": "UserAddedToDenylist",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "listOwner",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "approvedUser",
+        "type": "bytes32"
+      }
+    ],
+    "name": "UserRemovedFromDenylist",
     "type": "event"
   },
   {
@@ -454,9 +473,9 @@ export const abi = [
             "type": "address"
           },
           {
-            "internalType": "uint256[5]",
+            "internalType": "uint256[3]",
             "name": "packedVenmoId",
-            "type": "uint256[5]"
+            "type": "uint256[3]"
           },
           {
             "internalType": "uint256",
@@ -531,6 +550,25 @@ export const abi = [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "getDeniedUsers",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_depositId",
         "type": "uint256"
@@ -546,9 +584,9 @@ export const abi = [
             "type": "address"
           },
           {
-            "internalType": "uint256[5]",
+            "internalType": "uint256[3]",
             "name": "packedVenmoId",
-            "type": "uint256[5]"
+            "type": "uint256[3]"
           },
           {
             "internalType": "uint256",
@@ -607,9 +645,9 @@ export const abi = [
             "type": "address"
           },
           {
-            "internalType": "uint256[5]",
+            "internalType": "uint256[3]",
             "name": "packedVenmoId",
-            "type": "uint256[5]"
+            "type": "uint256[3]"
           },
           {
             "internalType": "uint256",
@@ -736,6 +774,30 @@ export const abi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_deniedUser",
+        "type": "bytes32"
+      }
+    ],
+    "name": "isDeniedUser",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "minDepositAmount",
     "outputs": [
@@ -751,9 +813,9 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "uint256[5]",
+        "internalType": "uint256[3]",
         "name": "_packedVenmoId",
-        "type": "uint256[5]"
+        "type": "uint256[3]"
       },
       {
         "internalType": "uint256",
@@ -794,9 +856,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[11]",
+        "internalType": "uint256[8]",
         "name": "_signals",
-        "type": "uint256[11]"
+        "type": "uint256[8]"
       }
     ],
     "name": "onRamp",
@@ -822,9 +884,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[12]",
+        "internalType": "uint256[9]",
         "name": "_signals",
-        "type": "uint256[12]"
+        "type": "uint256[9]"
       }
     ],
     "name": "onRampWithConvenience",
@@ -889,9 +951,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[8]",
+        "internalType": "uint256[5]",
         "name": "_signals",
-        "type": "uint256[8]"
+        "type": "uint256[5]"
       }
     ],
     "name": "register",
@@ -910,6 +972,19 @@ export const abi = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_approvedUser",
+        "type": "bytes32"
+      }
+    ],
+    "name": "removeAccountFromDenylist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1041,30 +1116,6 @@ export const abi = [
         "internalType": "contract IERC20",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "userDenylist",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
