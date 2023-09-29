@@ -15,3 +15,8 @@ build/
 
 .vscode
 ptau_files/
+
+
+!build/venmo_receive/venmo_receive_js/venmo_receive.wasm
+!build/venmo_send/venmo_send_js/venmo_send.wasm
+!build/venmo_registration/venmo_registration_js/venmo_registration.wasm
