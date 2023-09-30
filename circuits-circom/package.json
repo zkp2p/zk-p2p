@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@zk-email/circuits": "^2.0.0",
-    "@zk-email/helpers": "^1.0.3",
+    "@zk-email/helpers": "^2.0.0",
     "buffer": "^6.0.3",
     "circomlib": "^2.0.5",
     "ethers": "^5.5.1",

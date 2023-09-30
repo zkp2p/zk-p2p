@@ -2963,9 +2963,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zk-email/helpers@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@zk-email/helpers@npm:1.0.3"
+"@zk-email/helpers@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@zk-email/helpers@npm:2.0.0"
   dependencies:
     addressparser: ^1.0.1
     atob: ^2.1.2
@@ -2977,7 +2977,7 @@ __metadata:
     pako: ^2.1.0
     psl: ^1.9.0
     snarkjs: "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
-  checksum: 994518fb3aa4654e253779f198e52c609006efe9461822e7a51d5d0a347d56f3e5812296c3188b4023efb576b0464bfe170d8c6bbe186a5313e76683cf3eee32
+  checksum: c5defc6b2fdfe78702217bf46a84bca1fd2cc5e0adec10fce7d8413f1abf5cd67191c06cf1ea834a0100efce858acb436a4148e9bd1ac82f102d4692f20a5f62
   languageName: node
   linkType: hard
 
@@ -2998,7 +2998,7 @@ __metadata:
     "@types/node-forge": ^1.3.2
     "@types/tar-stream": ^2.2.2
     "@zk-email/circuits": ^2.0.0
-    "@zk-email/helpers": ^1.0.3
+    "@zk-email/helpers": ^2.0.0
     babel-preset-jest: ^29.5.0
     browserify-fs: ^1.0.0
     browserstack-local: ^1.5.1
