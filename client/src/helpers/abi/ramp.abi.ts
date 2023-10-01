@@ -17,21 +17,6 @@ export const abi = [
         "type": "address"
       },
       {
-        "internalType": "contract IReceiveProcessor",
-        "name": "_receiveProcessor",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IRegistrationProcessor",
-        "name": "_registrationProcessor",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ISendProcessor",
-        "name": "_sendProcessor",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "_minDepositAmount",
         "type": "uint256"
@@ -732,6 +717,29 @@ export const abi = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IReceiveProcessor",
+        "name": "_receiveProcessor",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IRegistrationProcessor",
+        "name": "_registrationProcessor",
+        "type": "address"
+      },
+      {
+        "internalType": "contract ISendProcessor",
+        "name": "_sendProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
