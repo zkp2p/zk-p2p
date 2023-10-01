@@ -1,4 +1,4 @@
-import { vkey } from "./vkey";
+import { vkey } from "./verifiers/receive_vkey";
 import localforage from "localforage";
 import { uncompressGz as uncompress } from "./uncompress";
 
