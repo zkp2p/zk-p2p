@@ -3,7 +3,7 @@ pragma circom 2.1.5;
 include "@zk-email/circuits/regexes/regex_helpers.circom";
 
 // `$(0|1|2|3|4|5|6|7|8|9|.)+\r\n`
-// NOTE: this regex only works for values <$1000 due to comma e.g. $2,000.00
+// NOTE: this regex only works for values <$1000 due to comma e.g. $1,000.00
 template VenmoAmountRegex (msg_bytes) {
     signal input msg[msg_bytes];
     signal output out;
