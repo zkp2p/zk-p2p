@@ -4369,10 +4369,10 @@
   resolved "https://registry.yarnpkg.com/@zeit/schemas/-/schemas-2.29.0.tgz#a59ae6ebfdf4ddc66a876872dd736baa58b6696c"
   integrity sha512-g5QiLIfbg3pLuYUJPlisNKY+epQJTcMDsOnVNkscrDP1oi7vmJnzOANYJI/1pZcVJ6umUkBv3aFtlg1UvUHGzA==
 
-"@zk-email/circuits@^1.1.0":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@zk-email/circuits/-/circuits-1.1.2.tgz#a3228cb3a23cb08791a736e8bf365fa639d65981"
-  integrity sha512-Yzkb9On1dkHll3SQdCvIPyygcWPbG+kUtoEMg5k608E86yWwtw9uJuK1CEh4qBaEPx77omq5/ezJnNuQhKvJbw==
+"@zk-email/circuits@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@zk-email/circuits/-/circuits-2.0.0.tgz#541905c35fe7e87e7e93ca6fc4ed1e28e9a25e36"
+  integrity sha512-ehdwGix2ShGHW+Ah/E+VMUs8CnLCn+UmmO2rhQEt3Jmnm8nWbeC94ocsJ5oWZB/jJBop5pxDtL0IkhnwgDD/cw==
 
 "@zk-email/helpers@^1.0.3":
   version "1.0.3"
@@ -4390,15 +4390,16 @@
     psl "^1.9.0"
     snarkjs "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
 
-"@zkp2p/circuits-circom@^0.0.2-rc1":
-  version "0.0.2-rc1"
-  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.2-rc1.tgz#1c11bf1a407c02a9d110724f04936c681aa48df9"
-  integrity sha512-nExvAWU/jRUicekseC/azoFzHzm8B5v7Ngy5YRTvRq9MtGuNQI6Jt/jG2Bf4NaIPczuMYQMpuLYtr0Qk2GD+uA==
+"@zkp2p/circuits-circom@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.6.tgz#83d0e9125ee3c5a55619a9c84041f86215b1cf2c"
+  integrity sha512-j463nRaD65RB2IUA435x3qNqAdxTyUScem6bH09rumoQGc6bUe4+BCtJA+OxvmQRQeWeWac9/cX9h0gag3ChYQ==
   dependencies:
-    "@zk-email/circuits" "^1.1.0"
+    "@zk-email/circuits" "^2.0.0"
     "@zk-email/helpers" "^1.0.3"
     buffer "^6.0.3"
     circomlib "^2.0.5"
+    ethers "^5.5.1"
     process "^0.11.10"
     snarkjs "git+https://github.com/vb7401/snarkjs.git#24981febe8826b6ab76ae4d76cf7f9142919d2b8"
 

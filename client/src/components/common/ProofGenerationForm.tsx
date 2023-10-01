@@ -103,14 +103,14 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setDisplayMessage("Generating proof...");
     setStatus("generating-input");
 
-    console.log("emailFull at handleGenerateProofClick", emailFull);
+    // console.log("emailFull at handleGenerateProofClick", emailFull);
     const formattedArray = await insert13Before10(Uint8Array.from(Buffer.from(emailFull)));
-    console.log('formattedArray', formattedArray);
+    // console.log('formattedArray', formattedArray);
 
     // Due to a quirk in carriage return parsing in JS, we need to manually edit carriage returns to match DKIM parsing
-    console.log("formattedArray", formattedArray);
-    console.log("buffFormArray", Buffer.from(formattedArray.buffer));
-    console.log("buffFormArray", formattedArray.toString());
+    // console.log("formattedArray", formattedArray);
+    // console.log("buffFormArray", Buffer.from(formattedArray.buffer));
+    // console.log("buffFormArray", formattedArray.toString());
 
     let input: ICircuitInputs;
     try {
@@ -148,7 +148,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setDisplayMessage("Generating Proof (this will take 6-10 minutes. Don't close this window)");
     setStatus("generating-proof");
     console.log("Starting proof generation");
-    alert("Generating proof, will fail due to input");
 
     const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath, HOSTED_FILES_PATH);
     console.log("Finished proof generation");

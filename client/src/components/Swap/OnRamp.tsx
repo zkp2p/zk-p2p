@@ -8,7 +8,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
+import { SEND_KEY_FILE_NAME } from "../../helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
 
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
@@ -78,7 +78,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
       <Body>
         <ProofGenerationForm
           circuitType={CircuitType.EMAIL_VENMO_SEND}
-          circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME} // TODO: Update me
+          circuitRemoteFilePath={SEND_KEY_FILE_NAME}
           circuitInputs={"1"} // TODO: Update me
           setProof={setProof}
           setPublicSignals={setPublicSignals}

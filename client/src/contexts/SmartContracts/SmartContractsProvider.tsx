@@ -1,7 +1,8 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, erc20ABI } from 'wagmi';
 
-import { abi } from "../../helpers/abi/ramp.abi";
+import { abi as rampAbi } from "../../helpers/abi/ramp.abi";
+import { abi as receiveProcessorAbi } from "../../helpers/abi/receive.abi";
 import { contractAddresses } from "../../helpers/deployed_addresses";
 import { ZERO_ADDRESS } from '../../helpers/constants'
 import useAccount from '@hooks/useAccount'
@@ -24,6 +25,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    * State
    */
   const [rampAddress, setRampAddress] = useState<Address>(ZERO_ADDRESS);
+  const [sendProcessorAddress, setSendProcessorAddress] = useState<Address>(ZERO_ADDRESS);
+  const [receiveProcessorAddress, setReceiveProcessorAddress] = useState<Address>(ZERO_ADDRESS);
+  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address>(ZERO_ADDRESS);
   const [usdcAddress, setUsdcAddress] = useState<Address>(ZERO_ADDRESS);
 
   /*
@@ -37,13 +41,22 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       if (contractsForNetwork) {
         setRampAddress(contractsForNetwork.ramp as Address);
         setUsdcAddress(contractsForNetwork.fusdc as Address);
+        setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
+        setReceiveProcessorAddress(contractsForNetwork.receiveProcessor as Address);
+        setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
       } else {
         setRampAddress(ZERO_ADDRESS);
         setUsdcAddress(ZERO_ADDRESS);
+        setSendProcessorAddress(ZERO_ADDRESS);
+        setReceiveProcessorAddress(ZERO_ADDRESS);
+        setRegistrationProcessorAddress(ZERO_ADDRESS);
       }
     } else {
       setRampAddress(ZERO_ADDRESS);
       setUsdcAddress(ZERO_ADDRESS);
+      setSendProcessorAddress(ZERO_ADDRESS);
+      setReceiveProcessorAddress(ZERO_ADDRESS);
+      setRegistrationProcessorAddress(ZERO_ADDRESS);
     }
   }, [network]);
 
@@ -51,7 +64,11 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     <SmartContractsContext.Provider
       value={{
         rampAddress,
-        rampAbi: abi as Abi,
+        rampAbi: rampAbi as Abi,
+        receiveProcessorAddress,
+        receiveProcessorAbi: receiveProcessorAbi as Abi,
+        registrationProcessorAddress,
+        sendProcessorAddress,
         usdcAddress,
         usdcAbi: erc20ABI as any,
       }}

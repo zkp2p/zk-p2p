@@ -44,7 +44,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
-    functionName: 'getAccountVenmoId',
+    functionName: 'getAccountInfo',
     args: [loggedInEthereumAddress],
   })
 
@@ -76,7 +76,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     console.log(rampAccountRaw);
   
     if (isLoggedIn && rampAccountRaw) {
-      const rampAccountProcessed = rampAccountRaw as string;
+      const rampAccountData = rampAccountRaw as any;
+      const rampAccountProcessed = rampAccountData.venmoIdHash;
       console.log('rampAccountProcessed');
       console.log(rampAccountProcessed);
       setRegistrationHash(rampAccountProcessed);

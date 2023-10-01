@@ -30,10 +30,10 @@ export const ZERO_ADDRESS= "0x00000000000000000000000000000000000000000000000000
 
 
 // Proving key paths
-export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p-onramp/v2/v0.0.1/";
-export const REGISTRATION_KEY_FILE_NAME = "venmo_registration";
-export const SEND_KEY_FILE_NAME = "venmo_send";
-export const RECEIVE_KEY_FILE_NAME = "venmo_receive";
+export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p/v2/v0.0.6/";
+export const REGISTRATION_KEY_FILE_NAME = "venmo_registration/venmo_registration";
+export const SEND_KEY_FILE_NAME = "venmo_send/venmo_send";
+export const RECEIVE_KEY_FILE_NAME = "venmo_receive/venmo_receive";
 
 
 // Placeholder in proof gen text area for example
