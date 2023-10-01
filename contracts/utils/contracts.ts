@@ -1,5 +1,6 @@
 export {
   Ramp,
+  ManagedKeyHashAdapter,
   USDCMock,
   VenmoReceiveProcessor,
   VenmoReceiveProcessorMock,

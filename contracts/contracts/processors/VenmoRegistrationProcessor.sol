@@ -1,79 +1,59 @@
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+//SPDX-License-Identifier: MIT
 
+import { BaseProcessor } from "./BaseProcessor.sol";
+import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
+import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
-import { VenmoRegistrationVerifier } from "../verifiers/VenmoRegistrationVerifier.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoRegistrationProcessor is VenmoRegistrationVerifier, IRegistrationProcessor, Ownable {
+contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, BaseProcessor {
 
     using ProofParsingUtils for string;
-    using ProofParsingUtils for uint256[5];
-
-    /* ============ State Variables ============ */
-    bytes32 public venmoMailserverKeyHash;
-    bytes public emailFromAddress;
+    using ProofParsingUtils for uint256[];
 
     /* ============ Constructor ============ */
     constructor(
-        bytes32 _venmoMailserverKeyHash,
+        address _ramp,
+        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
         string memory _emailFromAddress
     )
-        VenmoRegistrationVerifier()
-        Ownable()
-    {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
-
-        venmoMailserverKeyHash = _venmoMailserverKeyHash;
-        emailFromAddress = bytes(_emailFromAddress);
-    }
+        Groth16Verifier()
+        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _emailFromAddress)
+    {}
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeyHash(bytes32 _venmoMailserverKeyHash) external onlyOwner {
-        venmoMailserverKeyHash = _venmoMailserverKeyHash;
-    }
-
-    function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
-        require(bytes(_emailFromAddress).length == 35, "Email from address not properly padded");
-
-        emailFromAddress = bytes(_emailFromAddress);
-    }
-
-    /* ============ External View Functions ============ */
     function processProof(
         IRegistrationProcessor.RegistrationProof calldata _proof
     )
         public
         view
         override
-        returns(bytes32 onRamperIdHash)
+        onlyRamp
+        returns(bytes32 userIdHash)
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == venmoMailserverKeyHash, "Invalid mailserver key hash");
+        require(bytes32(_proof.signals[0]) == getVenmoMailserverKeyHash(), "Invalid mailserver key hash");
 
-        // Signals [1:6] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_proof.signals, 1);
+        // Signals [1:4] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [6] is the packed onRamperIdHash
-        onRamperIdHash = bytes32(_proof.signals[6]);
-    }
-
-    function getEmailFromAddress() external view returns (bytes memory) {
-        return emailFromAddress;
+        // Signals [4] is the packed onRamperIdHash
+        userIdHash = bytes32(_proof.signals[4]);
     }
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[7] calldata _signals, uint8 _from) internal pure returns (string memory) {
-        uint256[5] memory signalArray;
-        for (uint256 i = _from; i < _from + 5; i++) {
+    function _parseSignalArray(uint256[5] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+        uint256[] memory signalArray = new uint256[](_to - _from);
+        for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToBytes(5);
+        return signalArray.convertPackedBytesToBytes(_to - _from);
     }
 }

@@ -46,10 +46,17 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
     ];
   };
 
+  /*
+    Contract Writes
+  */
+
+  //
+  // new: onRampWithConvenience(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[9] memory _signals)
+  //
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
     address: rampAddress,
     abi: rampAbi,
-    functionName: 'onRamp',
+    functionName: 'onRampWithConvenience',
     args: [
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,

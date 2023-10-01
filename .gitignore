@@ -8,10 +8,11 @@ yarn-error.log
 
 build/
 */inputs/*.json
-*/emls/*
+*/emls/*.eml
 *.env
 */.yarn/cache/
 */.yarn/install-state.gz
 */dist
 
 .vscode
+ptau_files/

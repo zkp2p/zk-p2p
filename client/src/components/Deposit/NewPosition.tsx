@@ -9,6 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
 import { usdc, ether } from '../../helpers/units'
+import { unpackPackedVenmoId, calculatePackedVenmoId } from '../../helpers/poseidonHash'
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
 import useRegistration from '@hooks/useRegistration'
@@ -44,6 +45,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     State
   */
   const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
+  const [venmoId, setVenmoId] = useState<string>("645716473020416186");
   const [depositAmount, setDepositAmount] = useState<number>(0);
   const [receiveAmount, setReceiveAmount] = useState<number>(0);
   const [convenienceFee, setConvenienceFee] = useState<number>(0);
@@ -62,7 +64,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: rampAbi,
     functionName: 'offRamp',
     args: [
-      registrationHash,
+      calculatePackedVenmoId(venmoId),
       usdc(depositAmount),
       usdc(receiveAmount),
       ether(convenienceFee),
@@ -145,6 +147,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
     Helpers
   */
+
+  const venmoInputErrorString = (): string => {
+    // TODO: check that the input venmo ID matches the user's registration hash
+
+    return ''
+  }
 
   const depositAmountInputErrorString = (): string => {
     if (depositAmount) {
@@ -257,20 +265,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           <NumberedStep>
             Create a new deposit by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
           </NumberedStep>
-          {/* <SingleLineInput
+          <SingleLineInput
             label="Vennmo ID"
-            value={depositAmount === 0 ? '' : depositAmount.toString()}
-            placeholder={'1000'}
-            error={depositAmountInputErrorString()}
+            value={venmoId}
+            placeholder={'215524379021315184'}
+            error={venmoInputErrorString()}
             onChange={(e) => {
               const value = e.currentTarget.value;
-              if (value === "") {
-                setDepositAmount(0);
-              } else if (!isNaN(value) && parseFloat(value) >= 0) {
-                setDepositAmount(parseFloat(value));
-              }
+              setVenmoId(value);
             }}
-          /> */}
+          />
           <SingleLineInput
             label="Deposit Amount"
             value={depositAmount === 0 ? '' : depositAmount.toString()}

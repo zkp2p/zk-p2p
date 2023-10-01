@@ -1,20 +1,8 @@
 #!/bin/bash
-# This script is used to setup the server for ZK app development.
-# Required: OS: Ubuntu 20.04 LTS, Architecture: x86_64
-
-# Time:
-# Takes about 20 minutes to run on a 16 core machine with 128 GB RAM.
-# Installing patched node takes about 15 minutes. Rest of the script takes about 5 minutes.
-
-# Todo:
-# This script uses node 14.8.0 but latest snarkjs and rapidsnark packages.
-# These might become incompatible at some point in future. Although works right now.
-
 SWAP_SIZE=$1
-AWS_REGION=$4
+AWS_REGION=$(2, "us-east-1")
 
-
-if [ ! $# -eq 5 ]; # Check if there are 5 arguments
+if [ ! $# -eq 2 ]; # Check if there are 2 arguments
 then
     echo "Wrong number of arguments"
     exit 1
