@@ -8,6 +8,7 @@ yarn-error.log
 
 build/
 */inputs/*.json
+*/emls/*.eml
 *.env
 */.yarn/cache/
 */.yarn/install-state.gz

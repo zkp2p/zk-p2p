@@ -1,13 +1,7 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "circomlib/circuits/poseidon.circom";
-// To remove stub uncomment the following lines
-// include "@zk-email/circuits/email-verifier.circom";
-// And comment out the following lines
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
-
+include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
 include "./utils/ceil.circom";
@@ -35,6 +29,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     signal output modulus_hash;
 
+    // DKIM VERIFICATION
     component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
@@ -47,7 +42,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     modulus_hash <== EV.pubkey_hash;
 
-    // FROM HEADER REGEX: 736,553 constraints
+    // FROM HEADER REGEX
     // This extracts the from email, and the precise regex format can be viewed in the README
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
     assert(max_email_from_packed_bytes < max_header_bytes);
@@ -59,7 +54,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     from_regex_out === 1;
     reveal_email_from_packed <== ShiftAndPack(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
-    // VENMO EMAIL RECEIVER ID REGEX: [x]
+    // VENMO EMAIL RECEIVER ID REGEX
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_actor_id_idx;
@@ -70,10 +65,10 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal is_found_actor_id <== IsZero()(actor_id_regex_out);
     is_found_actor_id === 0;
 
-    // PACKING: 16,800 constraints (Total: [x])
+    // PACKING
     reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_id_len, pack_size)(actor_id_regex_reveal, venmo_actor_id_idx);
 
-    // Hash email receiver ID
+    // HASH ACTOR ID
     component hash = Poseidon(max_actor_id_packed_bytes);
     assert(max_actor_id_packed_bytes < 16);
     for (var i = 0; i < max_actor_id_packed_bytes; i++) {
@@ -81,7 +76,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 5561394
+    // TOTAL CONSTRAINTS: 5560886
 }
 
 // Args:

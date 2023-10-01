@@ -1,12 +1,7 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// To remove stub uncomment the following lines
-// include "@zk-email/circuits/email-verifier.circom";
-// And comment out the following lines
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
-
+include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
@@ -38,6 +33,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     signal output modulus_hash;
 
+    // DKIM VERIFICATION
     component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
@@ -51,7 +47,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     modulus_hash <== EV.pubkey_hash;
 
-    // FROM HEADER REGEX: 736,553 constraints
+    // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
     assert(max_email_from_packed_bytes < max_header_bytes);
 
@@ -62,7 +58,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     from_regex_out === 1;
     reveal_email_from_packed <== ShiftAndPack(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
-    // TIMESTAMP REGEX: [x]
+    // TIMESTAMP REGEX
     var max_email_timestamp_packed_bytes = count_packed(max_email_timestamp_len, pack_size);
     assert(max_email_timestamp_packed_bytes < max_header_bytes);
 
@@ -73,10 +69,10 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     (timestamp_regex_out, timestamp_regex_reveal) <== VenmoTimestampRegex(max_header_bytes)(in_padded);
     timestamp_regex_out === 1;
 
-    // PACKING: 16,800 constraints (Total: [x])
+    // PACKING
     reveal_email_timestamp_packed <== ShiftAndPack(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
 
-    // VENMO RECEIVE ONRAMPER ID REGEX: [x]
+    // VENMO RECEIVE ONRAMPER ID REGEX
     var max_payer_packed_bytes = count_packed(max_payer_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payer_id_idx;
@@ -86,7 +82,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal is_found_payer <== IsZero()(payer_regex_out);
     is_found_payer === 0;
 
-    // PACKING: 16,800 constraints (Total: [x])
+    // PACKING
     reveal_payer_packed <== ShiftAndPack(max_body_bytes, max_payer_len, pack_size)(payer_regex_reveal, venmo_payer_id_idx);
 
     // Hash onramper ID
@@ -108,7 +104,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal order_id_squared;
     order_id_squared <== order_id * order_id;
 
-    // TOTAL CONSTRAINTS: 5996709
+    // TOTAL CONSTRAINTS: 5995865
 }
 
 // Args:

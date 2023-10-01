@@ -138,10 +138,10 @@ Circuits that use the Venmo regexes:
 ### Proving Key Generation
 
 1. `cd` into `scripts` and run `cp entropy.env.example entropy.env`. Open the file and input your randomness. Entropy is needed to generate the proving key successfully
-2. For production, run `./3_gen_both_zkeys.sh` which will generate both the chunked and nonchunked proving keys for the circuit
-3. For dev, run `./3_gen_zkey_unsafe.sh`, which will skip phase2 contribution and save keygen time (DO NOT USE IN PRODUCTION)
+2. For production, run `yarn genkey:both:TYPE` which will generate both the chunked and nonchunked proving keys for the circuit
+3. For dev, run `yarn genkey:chunked:unsafe` for chunked keys or `yarn genkey:non-chunked:unsafe`, which will skip phase2 contribution and save keygen time (DO NOT USE IN PRODUCTION)
 
 ### Generating Proofs
 
-1. To generate proofs on your local machine, `cd` into `scripts` and run `./5_gen_proof.sh`
-2. To generate proofs using RapidSnark serverside, `cd` into `scripts` and run `./6_gen_proof_rapidsnark.sh`
+1. To generate proofs on your local machine, `cd` into `scripts` and run `CIRCUIT_NAME=YOUR_EMAIL_TYPE ./5_gen_proof.sh`
+2. To generate proofs using RapidSnark serverside, `cd` into `scripts` and run `yarn:genproof:TYPE`
