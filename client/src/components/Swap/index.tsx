@@ -32,7 +32,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
     Contexts
   */
-  const { isLoggedIn } = useAccount();
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { currentIntentHash } = useOnRamperIntents();
   const { getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
@@ -80,7 +80,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   */
 
   //
-  // signalIntent(bytes32 _venmoId, uint256 _depositId, uint256 _amount)
+  // function signalIntent(uint256 _depositId, uint256 _amount, address _to)
   //
   const { config: writeIntentConfig } = usePrepareContractWrite({
     address: rampAddress,
@@ -89,6 +89,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     args: [
       currentQuote.depositId,
       usdc(parseFloat(currentQuote.requestedUSDC)),
+      loggedInEthereumAddress
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
