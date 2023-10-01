@@ -4390,10 +4390,10 @@
     psl "^1.9.0"
     snarkjs "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
 
-"@zkp2p/circuits-circom@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.3.tgz#c60b56726f25a9749652201ab4f8b64b4915b4ae"
-  integrity sha512-8VkSX+dcgBChai24lzvDLKR8OZcRRLmD54nKWc/7ly7g8+B4xZG785W9qmvGloYWjc1n3+/AH3uHyOAao7JVIg==
+"@zkp2p/circuits-circom@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.6.tgz#83d0e9125ee3c5a55619a9c84041f86215b1cf2c"
+  integrity sha512-j463nRaD65RB2IUA435x3qNqAdxTyUScem6bH09rumoQGc6bUe4+BCtJA+OxvmQRQeWeWac9/cX9h0gag3ChYQ==
   dependencies:
     "@zk-email/circuits" "^2.0.0"
     "@zk-email/helpers" "^1.0.3"
