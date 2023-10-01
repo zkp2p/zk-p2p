@@ -20,15 +20,17 @@ import { dkimVerify } from "@zk-email/helpers/src/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
 
-async function getArgs(email_file_name: string) {
+async function getArgs() {
   const args = process.argv.slice(2);
   const emailFileArg = args.find((arg) => arg.startsWith("--email_file="));
+  const emailTypeArg = args.find((arg) => arg.startsWith("--email_type="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
 
-  const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/${email_file_name}.eml`;
+  const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/test.eml`;
+  const email_type = emailTypeArg ? emailTypeArg.split("=")[1] : "test";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
 
-  return { email_file, nonce };
+  return { email_file, email_type, nonce };
 }
 
 export interface ICircuitInputs {
@@ -67,9 +69,9 @@ export enum CircuitType {
   RSA = "rsa",
   SHA = "sha",
   TEST = "test",
-  EMAIL_VENMO_RECEIVE = "venmo_receive",
-  EMAIL_VENMO_SEND = "venmo_send",
-  EMAIL_VENMO_REGISTRATION = "venmo_registration"
+  EMAIL_VENMO_RECEIVE = "receive",
+  EMAIL_VENMO_SEND = "send",
+  EMAIL_VENMO_REGISTRATION = "registration"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -161,7 +163,7 @@ export async function getCircuitInputs(
   const [bodyPadded, bodyPaddedLen] = await sha256Pad(body, Math.max(MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE, calc_length));
 
   // Convet messagePadded to string to print the specific header data that is signed
-  console.log(JSON.stringify(message).toString());
+  // console.log(JSON.stringify(message).toString());
 
   // Ensure SHA manual unpadded is running the correct function
   const shaOut = await partialSha(messagePadded, messagePaddedLen);
@@ -290,8 +292,11 @@ export async function getCircuitInputs(
 export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
-  order_id: string
+  order_id: string,
+  nonce_raw: number | string | null = null
 ): Promise<ICircuitInputs> {
+  const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
+
   var result, email: Buffer;
   if (typeof raw_email === "string") {
     email = Buffer.from(raw_email);
@@ -299,7 +304,7 @@ export async function generate_inputs(
 
   console.log("DKIM verification starting");
   result = await dkimVerify(email);
-  console.log(result.results[0])
+  // console.log(result.results[0])
   // console.log("From:", result.headerFrom);
   // console.log("Results:", result.results[0]);
   if (!result.results[0]) {
@@ -354,14 +359,18 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
 }
 
 // Only called when the whole function is called from the command line, to read inputs
-async function test_generate(writeToFile: boolean = true, email_file_name: string, type: CircuitType) {
-  const { email_file } = await getArgs(email_file_name);
-  const email = fs.readFileSync(email_file.trim());
-  console.log(email);
-  const gen_inputs = await generate_inputs(email, type, "1");
-  console.log(JSON.stringify(gen_inputs));
+async function test_generate(writeToFile: boolean = true) {
+  const args = await getArgs();
+  const email = fs.readFileSync(args.email_file.trim());
+  console.log("Email file read");
+  const type = args.email_type as keyof typeof CircuitType;
+  console.log("Email file type:", args.email_type)
+  const gen_inputs = await generate_inputs(email, type, "1", args.nonce);
+  console.log("Input generation successful");
   if (writeToFile) {
-    const filename = `./inputs/input_${type}.json`;
+    const email_file_dir = args.email_file.substring(0, args.email_file.lastIndexOf("/") + 1);
+    // const email_file = args.email_file.substring(args.email_file.lastIndexOf("/") + 1, args.email_file.lastIndexOf("."));
+    const filename = args.nonce ? `${email_file_dir}/../inputs/input_venmo_${args.email_type}_${args.nonce}.json` : `${email_file_dir}/../inputs/input_venmo_${args.email_type}.json`;
     console.log(`Writing to default file ${filename}`);
     fs.writeFileSync(filename, JSON.stringify(gen_inputs), { flag: "w" });
   }
@@ -370,6 +379,5 @@ async function test_generate(writeToFile: boolean = true, email_file_name: strin
 
 // If file called directly with `npx tsx generate_inputs.ts`
 if (typeof require !== "undefined" && require.main === module) {
-  // Example usage: yarn gen-input venmo_receive EMAIL_VENMO_RECEIVE
-  test_generate(true, process.argv[2], CircuitType[process.argv[3] as keyof typeof CircuitType]);
+  test_generate(true);
 }
