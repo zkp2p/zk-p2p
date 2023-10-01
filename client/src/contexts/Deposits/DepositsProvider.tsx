@@ -115,10 +115,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         const intentData = depositIntentsArray[i];
         
         const intent: Intent = {
-          onRamper: intentData[0],
-          deposit: intentData[1],
-          amount: intentData[2],
-          timestamp: intentData[3],
+          onRamper: intentData.onRamper,
+          to: intentData.to,
+          deposit: intentData.deposit,
+          amount: intentData.amount,
+          timestamp: intentData.intentTimestamp,
         };
 
         sanitizedIntents.push(intent);

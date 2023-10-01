@@ -29,10 +29,12 @@ export interface StoredDeposit {
 //   uint256 deposit;
 //   uint256 amount;
 //   uint256 intentTimestamp;
+//   address to;
 // }
 export interface Intent {
   onRamper: string;
   deposit: string;
   amount: number;
   timestamp: number;
+  to: string;
 }

@@ -23,12 +23,14 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     setIntents([
       {
         onRamper: '0x1234...5678',
+        to: '0x1234...5678',
         deposit: '0xdepositHash',
         amount: 1_000_000,          // 1 USDC
         timestamp: 1692540957
       },
       {
         onRamper: '0x1234...5678',
+        to: '0x1234...5678',
         deposit: '0xdepositHash',
         amount: 4_000_000,          // 4 USDC
         timestamp: 1629784800
