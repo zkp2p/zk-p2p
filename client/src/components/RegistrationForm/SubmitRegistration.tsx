@@ -6,6 +6,7 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import useSmartContracts from '@hooks/useSmartContracts';
+import { reformatProofForChain } from "../../helpers/submitProof";
 
 
 interface SubmitRegistrationProps {
@@ -29,18 +30,6 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   //
   // register(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
   //
-  const reformatProofForChain = (proof: string) => {
-    return [
-      proof ? JSON.parse(proof)["pi_a"].slice(0, 2) : null,
-      proof
-        ? JSON.parse(proof)
-            ["pi_b"].slice(0, 2)
-            .map((g2point: any[]) => g2point.reverse())
-        : null,
-      proof ? JSON.parse(proof)["pi_c"].slice(0, 2) : null,
-    ];
-  };
-
   const { config: writeSubmitRegistrationConfig } = usePrepareContractWrite({
     address: rampAddress,
     abi: rampAbi,
