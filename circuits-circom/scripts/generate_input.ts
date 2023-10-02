@@ -369,7 +369,10 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Input generation successful");
   if (writeToFile) {
     const email_file_dir = args.email_file.substring(0, args.email_file.lastIndexOf("/") + 1);
-    // const email_file = args.email_file.substring(args.email_file.lastIndexOf("/") + 1, args.email_file.lastIndexOf("."));
+    // Create inputs directory if it doesn't exist
+    if (!fs.existsSync(`${email_file_dir}/../inputs`)) {
+      fs.mkdirSync(`${email_file_dir}/../inputs`);
+    }
     const filename = args.nonce ? `${email_file_dir}/../inputs/input_venmo_${args.email_type}_${args.nonce}.json` : `${email_file_dir}/../inputs/input_venmo_${args.email_type}.json`;
     console.log(`Writing to default file ${filename}`);
     fs.writeFileSync(filename, JSON.stringify(gen_inputs), { flag: "w" });
