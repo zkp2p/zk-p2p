@@ -112,12 +112,17 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     // console.log("buffFormArray", Buffer.from(formattedArray.buffer));
     // console.log("buffFormArray", formattedArray.toString());
 
+    console.log("formattedArray", formattedArray)
+    console.log("circuitType", circuitType)
+    console.log("circuitInputs", circuitInputs)
+
     let input: ICircuitInputs;
     try {
       input = await generate_inputs(
         Buffer.from(formattedArray.buffer),
         circuitType,
         circuitInputs,
+        "1", // Nonce, used for server side proving
       );
     } catch (e) {
       console.log("Error generating input", e);
@@ -125,6 +130,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setStatus("error-bad-input");
       return;
     }
+
     console.log("Generated input:", JSON.stringify(input));
 
     /*

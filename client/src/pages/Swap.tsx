@@ -4,31 +4,36 @@ import styled from "styled-components";
 import SwapModal from "@components/Swap"
 import { OnRamp } from '@components/Swap/OnRamp'
 import { Intent } from "../contexts/Deposits/types";
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
 
 
 export const Swap: React.FC<{}> = (props) => {
   /*
+    Contexts
+  */
+  const { currentIntentHash } = useOnRamperIntents()
+
+  /*
    * State
    */
-  const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
+  const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
 
   /*
    * Handlers
    */
   const handleBackClick = () => {
-    setSelectedIntent(null);
+    setSelectedIntentHash(null);
   }
 
   const handleIntentClick = (rowData: any[]) => {
-    // No-op
-    console.log('row data: ', rowData);
+    console.log('selectedIntentHash', currentIntentHash);
 
-    setSelectedIntent(rowData[0]);
+    setSelectedIntentHash(currentIntentHash);
   };
 
   return (
     <PageWrapper>
-      {!selectedIntent ? (
+      {!selectedIntentHash ? (
         <SwapModal
           onIntentTableRowClick={handleIntentClick}
         />
@@ -36,6 +41,7 @@ export const Swap: React.FC<{}> = (props) => {
         <OnRampContainer>
           <OnRamp
             handleBackClick={handleBackClick}
+            selectedIntentHash={selectedIntentHash}
           />
         </OnRampContainer>
       )}

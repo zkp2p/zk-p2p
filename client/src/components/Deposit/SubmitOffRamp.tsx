@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
+  useContractRead,
   useContractWrite,
   usePrepareContractWrite,
 } from 'wagmi'
@@ -11,6 +12,10 @@ import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import useSmartContracts from '@hooks/useSmartContracts';
 
+import { vkey } from "../../helpers/verifiers/receive_vkey";
+import { reformatProofForChain } from "../../helpers/submitProof";
+// @ts-ignore
+import * as snarkjs from "snarkjs";
 
 interface SubmitOffRampProps {
   proof: string;
@@ -24,27 +29,31 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress, rampAbi } = useSmartContracts()
+
+  const {
+    rampAddress,
+    rampAbi,
+    receiveProcessorAddress,
+    receiveProcessorAbi,
+  } = useSmartContracts()
 
   /*
-    Contract Writes
+    Contract Reads
   */
 
-  //
-  // legacy: onRamp(uint256 _orderId, uint256 _offRamper, VenmoId, bytes calldata _proof)
-  // new:    onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
-  //
-  const reformatProofForChain = (proof: string) => {
-    return [
-      proof ? JSON.parse(proof)["pi_a"].slice(0, 2) : null,
-      proof
-        ? JSON.parse(proof)
-            ["pi_b"].slice(0, 2)
-            .map((g2point: any[]) => g2point.reverse())
-        : null,
-      proof ? JSON.parse(proof)["pi_c"].slice(0, 2) : null,
-    ];
-  };
+  const {
+    data: verifyProofRaw,
+  } = useContractRead({
+    address: receiveProcessorAddress,
+    abi: receiveProcessorAbi,
+    functionName: "verifyProof",
+    args: [
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
+    ],
+    watch: true,
+    enabled: true,
+  });
 
   /*
     Contract Writes
@@ -93,6 +102,16 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
+
+            console.log("proof", proof);
+            console.log("public signals", publicSignals);
+            console.log("vkey", vkey);
+
+            const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
+            console.log("proofVerified", proofVerified);
+
+            console.log("verifyProofRaw", verifyProofRaw);
+
             writeCompleteOrder?.();
           }}
         >

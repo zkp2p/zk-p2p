@@ -11,7 +11,7 @@ interface SmartContractsValues {
   registrationProcessorAddress: Address;
   // registrationProcessorAbi: Abi;
   sendProcessorAddress: Address;
-  // sendProcessorAbi: Abi;
+  sendProcessorAbi: Abi;
   receiveProcessorAddress: Address;
   receiveProcessorAbi: Abi;
   usdcAddress: Address;
@@ -24,7 +24,7 @@ const defaultValues: SmartContractsValues = {
   registrationProcessorAddress: ZERO_ADDRESS,
   // registrationProcessorAbi: [],
   sendProcessorAddress: ZERO_ADDRESS,
-  // sendProcessorAbi: [],
+  sendProcessorAbi: [],
   receiveProcessorAddress: ZERO_ADDRESS,
   receiveProcessorAbi: [],
   usdcAddress: ZERO_ADDRESS,

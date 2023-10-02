@@ -184,7 +184,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
       </SwapModalContainer>
 
       {
-        currentIntentHash && currentIntentHash === '' && (
+        currentIntentHash && currentIntentHash !== '' && (
           <IntentTable
             onRowClick={onIntentTableRowClick}
           />
