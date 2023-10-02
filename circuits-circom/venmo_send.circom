@@ -8,6 +8,7 @@ include "./regexes/venmo_amount.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./utils/ceil.circom";
+include "./utils/shift_and_pack_venmo_payee_id.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -83,8 +84,9 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     is_found_payee === 0;
 
     // PACKING
-    reveal_payee_packed <== ShiftAndPack(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
-
+    // Special packing to skip over `=\r\n` only for Venmo payee ids
+    reveal_payee_packed <== ShiftAndPackVenmoPayeeId(max_body_bytes, max_payee_len, pack_size, 14)(payee_regex_reveal, venmo_payee_id_idx);
+    
     // HASH ONRAMPER ID
     component hash = Poseidon(max_payee_packed_bytes);
     assert(max_payee_packed_bytes < 16);
