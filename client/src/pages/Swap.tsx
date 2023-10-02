@@ -26,6 +26,8 @@ export const Swap: React.FC<{}> = (props) => {
   }
 
   const handleIntentClick = (rowData: any[]) => {
+    console.log('selectedIntentHash', currentIntentHash);
+
     setSelectedIntentHash(currentIntentHash);
   };
 
