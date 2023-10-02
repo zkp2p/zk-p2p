@@ -16,3 +16,8 @@ build/
 
 .vscode
 ptau_files/
+
+
+!build/venmo_*/venmo_*_js/*.js
+!build/venmo_*/venmo_*_js/*.wasm
+# !build/venmo_*/venmo_*_cpp/*      Uncomment when we add support for cpp witness generation
