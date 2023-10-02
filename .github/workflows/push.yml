@@ -24,7 +24,7 @@ jobs:
       - name: Run smart contract tests...
         run: yarn test:clean --network localhost
         working-directory: ./contracts
-      -name: Run coverage
+      - name: Run coverage
         run: yarn coverage
         working-directory: ./contracts
 
