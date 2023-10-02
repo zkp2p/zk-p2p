@@ -4374,10 +4374,10 @@
   resolved "https://registry.yarnpkg.com/@zk-email/circuits/-/circuits-2.0.0.tgz#541905c35fe7e87e7e93ca6fc4ed1e28e9a25e36"
   integrity sha512-ehdwGix2ShGHW+Ah/E+VMUs8CnLCn+UmmO2rhQEt3Jmnm8nWbeC94ocsJ5oWZB/jJBop5pxDtL0IkhnwgDD/cw==
 
-"@zk-email/helpers@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@zk-email/helpers/-/helpers-1.0.3.tgz#eda6de352c785e0378a06acbb185f852bfa7e7b1"
-  integrity sha512-lpNBG6NsTOd6qVW0yeFr2T4mrGVbGaXPslCiXs22biARRHsE2HPG/pA2AC+eePEMyDpeFOE8GTP1YQduYFIfAQ==
+"@zk-email/helpers@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@zk-email/helpers/-/helpers-2.0.0.tgz#2643764745306e0e73d2b0b45d54ad7a1f7fcd30"
+  integrity sha512-03SJu5XnSwJCZ9mNTdWhze9Zp9NvJvye3XoH7WutjUzbT9jScyU+qNLuHKg/C9EEXoeNRPgbjn/4BNFol+e0bw==
   dependencies:
     addressparser "^1.0.1"
     atob "^2.1.2"
@@ -4390,13 +4390,13 @@
     psl "^1.9.0"
     snarkjs "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
 
-"@zkp2p/circuits-circom@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.6.tgz#83d0e9125ee3c5a55619a9c84041f86215b1cf2c"
-  integrity sha512-j463nRaD65RB2IUA435x3qNqAdxTyUScem6bH09rumoQGc6bUe4+BCtJA+OxvmQRQeWeWac9/cX9h0gag3ChYQ==
+"@zkp2p/circuits-circom@^0.0.7-rc1":
+  version "0.0.7-rc1"
+  resolved "https://registry.yarnpkg.com/@zkp2p/circuits-circom/-/circuits-circom-0.0.7-rc1.tgz#e9a7ca18f74056c61fe5b4d6ad3b9ae712fab2c5"
+  integrity sha512-RmBUUthAr1lQ+u4G3Q8Iuhc52cwPTktjV+w6jzH6FqGAVQm4M3zswec4l3tX8HsiG7q4XQGVw3jjnfE58Rlu/g==
   dependencies:
     "@zk-email/circuits" "^2.0.0"
-    "@zk-email/helpers" "^1.0.3"
+    "@zk-email/helpers" "^2.0.0"
     buffer "^6.0.3"
     circomlib "^2.0.5"
     ethers "^5.5.1"

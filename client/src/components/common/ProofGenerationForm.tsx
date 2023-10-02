@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   CircuitType,
   generate_inputs,
+  insert13Before10,
   ICircuitInputs
 } from '@zkp2p/circuits-circom/scripts/generate_input';
 
@@ -17,7 +18,6 @@ import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSet
 
 import { downloadProofFiles, generateProof } from "../../helpers/zkp";
 import { processEMLContent } from "@hooks/useDragAndDrop";
-import { insert13Before10 } from "../../scripts/generate_input";
 import {
   PLACEHOLDER_EMAIL_BODY,
   HOSTED_FILES_PATH,
