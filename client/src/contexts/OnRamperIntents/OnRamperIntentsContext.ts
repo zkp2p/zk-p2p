@@ -15,6 +15,7 @@ const defaultValues: OnRamperIntentsValues = {
     deposit: '',
     amount: 0,
     timestamp: 0,
+    to: '',
   },
 };
 

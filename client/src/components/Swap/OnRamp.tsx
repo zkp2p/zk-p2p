@@ -16,10 +16,12 @@ import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSet
 
 interface OnRampProps {
   handleBackClick: () => void;
+  selectedIntentHash: string;
 }
  
 export const OnRamp: React.FC<OnRampProps> = ({
-  handleBackClick
+  handleBackClick,
+  selectedIntentHash
 }) => {
   /*
    * Context
@@ -79,7 +81,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <ProofGenerationForm
           circuitType={CircuitType.EMAIL_VENMO_SEND}
           circuitRemoteFilePath={SEND_KEY_FILE_NAME}
-          circuitInputs={"1"} // TODO: Update me
+          circuitInputs={selectedIntentHash}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />

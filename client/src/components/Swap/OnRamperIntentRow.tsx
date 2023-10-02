@@ -5,17 +5,17 @@ import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 
 interface IntentRowProps {
-  address: string;
+  venmoHash: string;
   amount: string;
   timestamp: string;
-  rowIndex: number;
 }
 
+export type IntentRowData = IntentRowProps;
+
 export const IntentRow: React.FC<IntentRowProps> = ({
-  address,
+  venmoHash,
   amount,
   timestamp,
-  rowIndex,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
