@@ -339,6 +339,7 @@ module.exports = function (webpackEnv) {
         }),
         ...(modules.webpackAliases || {}),
         '@hooks': path.resolve(__dirname, '../src/hooks/'),
+        '@helpers': path.resolve(__dirname, '../src/helpers/'),
         '@components': path.resolve(__dirname, '../src/components/'),
       },
       plugins: [
