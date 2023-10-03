@@ -85,7 +85,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // PACKING
     // Special packing to skip over `=\r\n` only for Venmo payee ids
-    reveal_payee_packed <== ShiftAndPackVenmoPayeeId(max_body_bytes, max_payee_len, pack_size, 14)(payee_regex_reveal, venmo_payee_id_idx);
+    reveal_payee_packed <== ShiftAndPackVenmoPayeeId(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
     
     // HASH ONRAMPER ID
     component hash = Poseidon(max_payee_packed_bytes);

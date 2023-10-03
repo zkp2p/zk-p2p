@@ -2,12 +2,13 @@ pragma circom 2.1.5;
 
 include "@zk-email/circuits/helpers/extract.circom";
 
-// Adapted from ShiftAndPack function in zkemail
+// Adapted from ShiftAndPack function in zkemail to shift, remove line break, and pack.
 // https://github.com/zkemail/zk-email-verify/blob/main/packages/circuits/helpers/extract.circom
-template ShiftAndPackVenmoPayeeId(in_array_len, max_substr_len, pack_size, line_break_idx) {
+template ShiftAndPackVenmoPayeeId(in_array_len, max_substr_len, pack_size) {
     var max_substr_len_packed = ((max_substr_len - 1) \ pack_size + 1);
 
-    component shifter = VarShiftLeft(in_array_len, max_substr_len);
+    // Include unrevealed 3 0s at the end, which we will remove prior to packing
+    component shifter = VarShiftLeft(in_array_len, max_substr_len + 3);
     component packer = PackBytes(max_substr_len, max_substr_len_packed, pack_size);
 
     signal input in[in_array_len];
@@ -19,27 +20,39 @@ template ShiftAndPackVenmoPayeeId(in_array_len, max_substr_len, pack_size, line_
     }
     shifter.shift <== shift;
 
+    // Find index where `=\r\n` starts
+    signal find_equals_idx[max_substr_len];
+    component eq[max_substr_len];
+    for (var i = 0; i < max_substr_len; i++) {
+        eq[i] = IsEqual();
+        eq[i].in[0] <== 61;
+        eq[i].in[1] <== shifter.out[i];
+        if (i == 0) {
+            find_equals_idx[i] <== eq[i].out * i;
+        } else {
+            find_equals_idx[i] <== find_equals_idx[i - 1] + eq[i].out * i;
+        }
+    } 
 
-    signal skip_line_break[max_substr_len];
-    for (var i = 0; i < line_break_idx; i++) {
-        skip_line_break[i] <== shifter.out[i];
-    }
-    for (var i = line_break_idx; i < max_substr_len - 3; i++) {
-        skip_line_break[i] <== shifter.out[i + 3];
-    }
-    for (var i = max_substr_len - 3; i < max_substr_len; i++) {
-        skip_line_break[i] <== 0;
+    // Since shifter.out is max_substr_len + 3 and padded with 0s at the end, we can skip `=\r\n` without worrying about out of bounds
+    signal skip_equals[max_substr_len];
+    var max_substr_len_bits = log2(max_substr_len);
+    component lt[max_substr_len];
+    for (var i = 0; i < max_substr_len; i++) {
+        lt[i] = LessThan(max_substr_len_bits);
+        lt[i].in[0] <== i;
+        lt[i].in[1] <== find_equals_idx[max_substr_len - 1];
+        // If current index < index of `=`, then return original, otherwise skip 3 chars and return value
+        skip_equals[i] <== (shifter.out[i] - shifter.out[i + 3]) * lt[i].out + shifter.out[i + 3];
     }
 
     // Note that this technically doesn't constrain the rest øf the bits after the max_substr_len to be 0/unmatched/unrevealed
     // Because of the constraints on signed inputs, it seems this should be OK security wise
     // But still, TODO unconstrained assert to double check they are 0
     for (var i = 0; i < max_substr_len; i++) {
-        packer.in[i] <== skip_line_break[i];
-        log(packer.in[i], "packer.in[i]");
+        packer.in[i] <== skip_equals[i];
     }
     for (var i = 0; i < max_substr_len_packed; i++) {
         out[i] <== packer.out[i];
-        log(out[i], "out[i]");
     }
 }
