@@ -8,6 +8,7 @@ template ShiftAndPackVenmoPayeeId(in_array_len, max_substr_len, pack_size) {
     var max_substr_len_packed = ((max_substr_len - 1) \ pack_size + 1);
 
     // Include unrevealed 3 0s at the end, which we will remove prior to packing
+    // e.g. [67,64,65,65,48,61,13,10,48,44] => [67,64,65,65,48,61,13,10,48,44,0,0,0]
     component shifter = VarShiftLeft(in_array_len, max_substr_len + 3);
     component packer = PackBytes(max_substr_len, max_substr_len_packed, pack_size);
 
