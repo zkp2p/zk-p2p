@@ -10,8 +10,7 @@ import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { SEND_KEY_FILE_NAME } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
-
-import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
+import useProofGenSettings from '@hooks/useProofGenSettings';
 
 
 interface OnRampProps {
@@ -26,10 +25,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Context
    */
-  const {
-    isProvingTypeFast,
-    setIsProvingTypeFast,
-  } = useContext(ProofGenSettingsContext);
+  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
