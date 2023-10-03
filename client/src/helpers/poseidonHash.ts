@@ -1,6 +1,6 @@
 // @ts-ignore
 import { buildPoseidon } from "circomlibjs";
-import { BigNumber, constants } from "ethers";
+import { ZERO } from '@helpers/constants'
 
 
 let poseidonHasher: any;
@@ -30,10 +30,11 @@ export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
 
   const packedVenmoId = calculatePackedVenmoId(venmoId);
 
-  return BigNumber.from(poseidon.F.toString(poseidon(packedVenmoId))).toHexString();
+  const bigIntResult = BigInt(poseidon.F.toString(poseidon(packedVenmoId)));
+  return "0x" + bigIntResult.toString(16);
 }
 
-export const calculatePackedVenmoId = (venmoId: string): [BigNumber, BigNumber, BigNumber] => {
+export const calculatePackedVenmoId = (venmoId: string): [bigint, bigint, bigint] => {
   const venmoIdArray: number[] = venmoId.split('').map(char => char.charCodeAt(0));
 
   // Pad with zeros until length is 30
@@ -46,10 +47,10 @@ export const calculatePackedVenmoId = (venmoId: string): [BigNumber, BigNumber, 
 
 function Bytes2Packed(n: number, inArr: number[]) {
   let index = 0;
-  const out: [BigNumber, BigNumber, BigNumber] = [
-    constants.Zero,
-    constants.Zero,
-    constants.Zero,
+  const out: [bigint, bigint, bigint] = [
+    ZERO,
+    ZERO,
+    ZERO,
   ];
 
   for (let i = 0; i < inArr.length; i += n) {
@@ -60,14 +61,14 @@ function Bytes2Packed(n: number, inArr: number[]) {
       }
     }
 
-    out[index] = BigNumber.from(packedValue);
+    out[index] = BigInt(packedValue);
     index++
   }
 
   return out;
 }
 
-export const unpackPackedVenmoId = (packedVenmoId: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber]): string => {
+export const unpackPackedVenmoId = (packedVenmoId: [bigint, bigint, bigint, bigint, bigint]): string => {
   const n = 7;
   let venmoIdArray: number[] = [];
   

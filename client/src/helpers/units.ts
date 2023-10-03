@@ -1,31 +1,28 @@
 import { ethers } from "ethers";
 
-import BigNumber from "./bignumber";
 
-
-export const ether = (amount: number | string): BigNumber => {
-  if (typeof amount === 'number' && amount > Number.MAX_SAFE_INTEGER) {
-    throw new Error('Amount is too large to be represented safely.');
-  }
-  
-  const weiString = ethers.utils.parseEther(amount.toString());
-  return new BigNumber(weiString.toString());
+// Converts human readable Wei to BigInt for smart contract arguments or math
+export const ether = (amount: string): bigint => {
+  const weiString = ethers.utils.parseEther(amount);
+  return BigInt(weiString.toString());
 };
 
-export const usdc = (amount: number): BigNumber => {
-  if (amount > Number.MAX_SAFE_INTEGER / 1000000) {
-    throw new Error('Amount is too large for safe USDC conversion.');
-  }
-
-  const usdcUnits = new BigNumber(amount).multipliedBy(1000000);
-  return usdcUnits;
+// Converts human readable USDC to BigInt for smart contract arguments or math
+export const usdc = (amount: string): bigint => {
+  const usdcUnits = BigInt(amount) * BigInt(1000000);
+  return BigInt(usdcUnits);
 };
 
-export const fromEther = (wei: BigNumber | string): BigNumber => {
+export const fromEtherToNaturalString = (wei: bigint): string => {
   const etherString = ethers.utils.formatEther(wei.toString());
-  return new BigNumber(etherString);
+  return etherString;
 };
 
-export const fromUsdc = (usdcUnits: BigNumber | string): BigNumber => {
-  return new BigNumber(usdcUnits.toString()).dividedBy(1000000);
+export const fromUsdcToNaturalBigInt = (usdcUnits: bigint): bigint => {
+  const convertedUSDC = BigInt(usdcUnits.toString()) / BigInt(1000000);
+  return convertedUSDC;
+}
+
+export const fromUsdcToNaturalString = (usdcUnits: bigint): string => {
+  return fromUsdcToNaturalBigInt(usdcUnits).toString();
 };

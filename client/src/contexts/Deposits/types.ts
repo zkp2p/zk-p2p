@@ -8,19 +8,19 @@
 //   uint256 convenienceFee;             // Amount of USDC per on-ramp transaction available to be claimed by off-ramper
 //   bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
 // }
-export interface Deposit { // TODO: these should all be big numbers at some point
+export interface Deposit {
   depositor: string;
   venmoId: string;
-  depositAmount: number;
-  remainingDepositAmount: number;
-  outstandingIntentAmount: number;
-  conversionRate: number;
-  convenienceFee: number;
+  depositAmount: bigint;
+  remainingDepositAmount: bigint;
+  outstandingIntentAmount: bigint;
+  conversionRate: bigint;
+  convenienceFee: bigint;
   intentHashes: string[];
 }
 
 export interface StoredDeposit {
-  depositId: number;
+  depositId: bigint;
   deposit: Deposit;
 }
 
@@ -34,7 +34,7 @@ export interface StoredDeposit {
 export interface Intent {
   onRamper: string;
   deposit: string;
-  amount: number;
-  timestamp: number;
+  amount: bigint;
+  timestamp: bigint;
   to: string;
 }

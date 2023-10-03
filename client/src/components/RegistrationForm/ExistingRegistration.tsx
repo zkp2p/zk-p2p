@@ -25,7 +25,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   */
 
   const { isLoggedIn } = useAccount();
-  const { registrationHash, registeredVenmoId, isRegistered } = useRegistration();
+  const { registrationHash, isRegistered } = useRegistration();
 
   /*
     Component

@@ -1,8 +1,5 @@
-import BigNumber from '../../helpers/bignumber'
-
-
 export interface ContextValues {
-  ethBalance?: BigNumber
-  usdcBalance?: BigNumber
-  usdcApprovalToRamp?: BigNumber
+  ethBalance?: bigint
+  usdcBalance?: bigint
+  usdcApprovalToRamp?: bigint
 }

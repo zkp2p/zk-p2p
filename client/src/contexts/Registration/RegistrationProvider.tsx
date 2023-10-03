@@ -78,8 +78,10 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     if (isLoggedIn && rampAccountRaw) {
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
+
       console.log('rampAccountProcessed');
       console.log(rampAccountProcessed);
+      
       setRegistrationHash(rampAccountProcessed);
     } else {
       setRegistrationHash("");

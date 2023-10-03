@@ -1,3 +1,6 @@
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
+export const ZERO = BigInt(0);
+
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:
 // echo "E PLURIBUS UNUM; DO NOT SHARE" | ssh-keygen -Y sign -n double-blind.xyz -f ~/.ssh/id_rsa | pbcopy

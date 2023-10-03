@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 
 import { Intent } from '../Deposits/types'
-import { ZERO } from '@helpers/bigNumber';
+import { ZERO } from '@helpers/constants'
 
 
 interface OnRamperIntentsValues {
