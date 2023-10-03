@@ -46,6 +46,11 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   });
 
   /*
+   * Other deny list functions:
+   * isDeniedUser(address _account, bytes32 _deniedUser)
+   */
+
+  /*
    * Hooks
    */
   useEffect(() => {
