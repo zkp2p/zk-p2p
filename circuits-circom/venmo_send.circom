@@ -106,7 +106,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal order_id_squared;
     order_id_squared <== order_id * order_id;
 
-    // TOTAL CONSTRAINTS: 5958754
+    // TOTAL CONSTRAINTS: 6182074
 }
 
 // Args:
