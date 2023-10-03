@@ -3,15 +3,19 @@ import { BigNumber } from "ethers";
 import { ZERO } from "./constants";
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
 
+const CIRCOM_FIELD = BigNumber.from("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+
 export const calculateIntentHash = (
   venmoId: string,
   depositId: BigNumber,
   timestamp: BigNumber
 ): string => {
-  return ethers.utils.solidityKeccak256(
+  const intermediateHash = ethers.utils.solidityKeccak256(
     ["bytes32", "uint256", "uint256"],
     [venmoId, depositId, timestamp]
   );
+  
+  return ethers.utils.hexZeroPad(BigNumber.from(intermediateHash).mod(CIRCOM_FIELD).toHexString(), 32);
 };
 
 export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {

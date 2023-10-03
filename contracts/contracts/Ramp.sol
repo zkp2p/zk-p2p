@@ -99,6 +99,7 @@ contract Ramp is Ownable {
     /* ============ Constants ============ */
     uint256 internal constant PRECISE_UNIT = 1e18;
     uint256 internal constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
+    uint256 constant CIRCOM_PRIME_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;
@@ -544,7 +545,9 @@ contract Ramp is Ownable {
         virtual
         returns (bytes32 intentHash)
     {
-        intentHash = keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp));
+        // Mod with circom prime field to make sure it fits in a 254-bit field
+        uint256 intermediateHash = uint256(keccak256(abi.encodePacked(_venmoId, _depositId, block.timestamp)));
+        intentHash = bytes32(intermediateHash % CIRCOM_PRIME_FIELD);
     }
 
     /**
