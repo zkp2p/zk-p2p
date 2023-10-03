@@ -14,8 +14,8 @@ export const calculateIntentHash = (
     ["bytes32", "uint256", "uint256"],
     [venmoId, depositId, timestamp]
   );
-
-  return BigNumber.from(intermediateHash).mod(CIRCOM_FIELD).toHexString();
+  
+  return ethers.utils.hexZeroPad(BigNumber.from(intermediateHash).mod(CIRCOM_FIELD).toHexString(), 32);
 };
 
 export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
