@@ -183,7 +183,9 @@ describe("Venmo send WASM tester", function () {
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("38"); // Look for `&` to end the offramper_id which is 38 in ascii
         const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
-
+        const index_of_equals = offramper_id_array.indexOf("61"); // Look for `=` to end the offramper_id which is 61 in ascii
+        // Skip `=\r\n`
+        offramper_id_array.splice(index_of_equals, 3);
         // Chunk bytes into 7 and pack
         const chunkedArrays = chunkArray(offramper_id_array, 7, 21);
 
