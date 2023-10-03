@@ -18,10 +18,7 @@ import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSet
 
 import { downloadProofFiles, generateProof } from "@helpers/zkp";
 import { processEMLContent } from "@hooks/useDragAndDrop";
-import {
-  PLACEHOLDER_EMAIL_BODY,
-  HOSTED_FILES_PATH,
-} from "@helpers/constants";
+import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 
 
