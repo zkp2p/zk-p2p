@@ -81,8 +81,8 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 6400 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 6528 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main = VenmoRegistration(1024, 6400, 121, 17, 7);
+component main = VenmoRegistration(1024, 6528, 121, 17, 7);
