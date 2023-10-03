@@ -9,7 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
 import { calculatePackedVenmoId } from '@helpers/poseidonHash'
-import { usdc, ether, fromUsdcToNaturalString } from '@helpers/units'
+import { usdc, ether } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'

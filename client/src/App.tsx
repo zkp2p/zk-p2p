@@ -18,6 +18,7 @@ import BalancesProvider from "./contexts/Balances/BalancesProvider";
 import RampProvider  from './contexts/Ramp/RampProvider';
 import RegistrationProvider  from './contexts/Registration/RegistrationProvider';
 import DepositsProvider  from './contexts/Deposits/DepositsProvider';
+import PermissionsProvider from './contexts/Permissions/PermissionsProvider';
 import OnRamperIntentsProvider  from './contexts/OnRamperIntents/OnRamperIntentsProvider';
 import LiquidityProvider from './contexts/Liquidity/LiquidityProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
@@ -65,13 +66,15 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
           <RampProvider>
             <RegistrationProvider>
               <DepositsProvider>
-                <OnRamperIntentsProvider>
-                  <LiquidityProvider>
-                    <ProofGenSettingsProvider>
-                      { children }
-                    </ProofGenSettingsProvider>
-                  </LiquidityProvider>
-                </OnRamperIntentsProvider>
+                <PermissionsProvider>
+                  <OnRamperIntentsProvider>
+                    <LiquidityProvider>
+                      <ProofGenSettingsProvider>
+                        { children }
+                      </ProofGenSettingsProvider>
+                    </LiquidityProvider>
+                  </OnRamperIntentsProvider>
+                </PermissionsProvider>
               </DepositsProvider>
             </RegistrationProvider>
           </RampProvider>

@@ -10,6 +10,7 @@ import { PermissionRow } from "./PermissionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
 import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
+import usePermissions from '@hooks/usePermissions';
 
 
 interface Permission {
@@ -30,15 +31,28 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
    */
   const { isRegistered } = useRegistration()
   const { isLoggedIn } = useAccount()
+  const { deniedUsers } = usePermissions()
 
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+  /*
+   * State
+   */
+  const [permissionsRowData, setPermissionsRowData] = useState<Permission[]>([]);
 
+  /*
+   * Hooks
+   */
   useEffect(() => {
-    setPermissions([
-      { address: '0x24506DC1918183960Ac04dB859EB293B115952af' },
-      { address: '0x24506DC1918183960Ac04dB859EB293B115952af' }
-    ]);
-  }, []);
+    if (deniedUsers !== undefined) {
+      const transformedData = deniedUsers.map(hash => ({ address: hash }));
+      setPermissionsRowData(transformedData);
+    }
+  }, [isLoggedIn, deniedUsers]);
+
+  /*
+   * Deny list functions:
+   * addAccountToDenylist(bytes32 _deniedUser)
+   * removeAccountFromDenylist(bytes32 _approvedUser)
+   */
 
   /*
     Handlers
@@ -87,7 +101,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
                 Complete Registration
               </Button>
             </ErrorContainer>
-          ) : permissions.length === 0 ? (
+          ) : permissionsRowData.length === 0 ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
               <FilterIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -100,11 +114,11 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
             <PermissionsContainer>
               <PermissionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your restricted users ({permissions.length})
+                  Your restricted users ({permissionsRowData.length})
                 </ThemedText.LabelSmall>
               </PermissionCountTitle>
               <Table>
-                {permissions.map((permission, rowIndex) => (
+                {permissionsRowData.map((permission, rowIndex) => (
                   <PermissionRowStyled key={rowIndex}>
                     <PermissionRow
                       address={permission.address}
