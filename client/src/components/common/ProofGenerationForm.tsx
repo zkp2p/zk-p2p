@@ -16,13 +16,13 @@ import { DragAndDropTextBox } from "./DragAndDropTextBox";
 import { LabeledSwitch } from "./LabeledSwitch";
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
-import { downloadProofFiles, generateProof } from "../../helpers/zkp";
+import { downloadProofFiles, generateProof } from "@helpers/zkp";
 import { processEMLContent } from "@hooks/useDragAndDrop";
 import {
   PLACEHOLDER_EMAIL_BODY,
   HOSTED_FILES_PATH,
-} from "../../helpers/constants";
-import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
+} from "@helpers/constants";
+import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 
 
 interface ProofGenerationFormProps {

@@ -1,8 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
-import BigNumber from '../../helpers/bignumber'
-import { fromUsdc } from '../../helpers/units'
+import {
+  BigNumber,
+  BigNumberType,
+  ZERO,
+} from '@helpers/bigNumber'
+import { fromUsdc } from '@helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
 

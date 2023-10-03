@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { ZERO_ADDRESS } from '../../helpers/constants'
+import { ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 

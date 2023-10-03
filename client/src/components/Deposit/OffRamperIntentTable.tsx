@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { Intent } from "../../contexts/Deposits/types";
-import { fromUsdc } from '../../helpers/units'
+import { fromUsdc } from '@helpers/units'
 import useDeposits from '@hooks/useDeposits';
 
 

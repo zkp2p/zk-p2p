@@ -8,8 +8,8 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
-import { usdc, ether } from '../../helpers/units'
-import { unpackPackedVenmoId, calculatePackedVenmoId } from '../../helpers/poseidonHash'
+import { usdc, ether } from '@helpers/units'
+import { unpackPackedVenmoId, calculatePackedVenmoId } from '@helpers/poseidonHash'
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
 import useRegistration from '@hooks/useRegistration'

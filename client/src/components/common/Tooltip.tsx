@@ -2,7 +2,7 @@
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import styled from 'styled-components/macro'
 
-import noop from '../../helpers/noop'
+import noop from '@helpers/noop'
 import Popover, { PopoverProps } from './Popover'
 
 

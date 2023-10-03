@@ -2,8 +2,8 @@ import React, { useEffect, useState, ReactNode, useMemo } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Deposit, Intent } from './types'
-import { fromUsdc, fromEther } from '../../helpers/units'
-import { unpackPackedVenmoId } from '../../helpers/poseidonHash'
+import { fromUsdc, fromEther } from '@helpers/units'
+import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 

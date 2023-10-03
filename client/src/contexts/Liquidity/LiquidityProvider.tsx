@@ -9,8 +9,8 @@ import { useContractRead } from 'wagmi'
 
 import { Deposit, StoredDeposit } from '../Deposits/types'
 import { fetchBestDepositForAmount, createDepositsStore } from './helper'
-import { fromUsdc, fromEther } from '../../helpers/units'
-import { unpackPackedVenmoId } from '../../helpers/poseidonHash'
+import { fromUsdc, fromEther } from '@helpers/units'
+import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
 

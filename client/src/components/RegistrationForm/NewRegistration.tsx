@@ -8,8 +8,8 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitRegistration } from "./SubmitRegistration";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
-import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
+import { REGISTRATION_KEY_FILE_NAME } from "@helpers/constants";
+import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 
 import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 

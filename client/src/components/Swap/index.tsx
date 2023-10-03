@@ -9,7 +9,7 @@ import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { StoredDeposit } from '../../contexts/Deposits/types'
-import { usdc } from '../../helpers/units'
+import { usdc } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';

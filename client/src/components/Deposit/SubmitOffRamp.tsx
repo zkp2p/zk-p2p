@@ -12,8 +12,8 @@ import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import useSmartContracts from '@hooks/useSmartContracts';
 
-import { vkey } from "../../helpers/verifiers/receive_vkey";
-import { reformatProofForChain } from "../../helpers/submitProof";
+import { vkey } from "@helpers/verifiers/receive_vkey";
+import { reformatProofForChain } from "@helpers/submitProof";
 // @ts-ignore
 import * as snarkjs from "snarkjs";
 
