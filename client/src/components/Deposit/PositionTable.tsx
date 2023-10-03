@@ -9,6 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { Deposit } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
+import { fromUsdcToNaturalString, fromEtherToNaturalString } from '@helpers/units'
 import useAccount from '@hooks/useAccount'
 import useDeposits from '@hooks/useDeposits';
 import useRegistration from '@hooks/useRegistration'
@@ -16,12 +17,12 @@ import useRegistration from '@hooks/useRegistration'
 
 export interface DepositPrime {
   depositor: string;
-  remainingDepositAmount: number;
-  totalDepositAmount: number;
-  outstandingIntentAmount: number;
-  intentCount: number;
-  conversionRate: number;
-  convenienceFee: number;
+  remainingDepositAmount: bigint;
+  totalDepositAmount: bigint;
+  outstandingIntentAmount: bigint;
+  intentCount: bigint;
+  conversionRate: bigint;
+  convenienceFee: bigint;
 }
 
 interface PositionTableProps {
@@ -158,12 +159,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
                       depositorHash={position.depositor}
-                      remainingDepositAmount={position.remainingDepositAmount.toString()}
-                      totalDepositAmount={position.totalDepositAmount.toString()}
-                      outstandingIntentAmount={position.outstandingIntentAmount.toString()}
+                      remainingDepositAmount={fromUsdcToNaturalString(position.remainingDepositAmount)}
+                      totalDepositAmount={fromUsdcToNaturalString(position.totalDepositAmount)}
+                      outstandingIntentAmount={fromUsdcToNaturalString(position.outstandingIntentAmount)}
                       intentCount={position.intentCount.toString()}
-                      conversionRate={convertRatesToPercentage(position.conversionRate)}
-                      convenienceFee={feeAmountString(position.convenienceFee)}
+                      conversionRate={convertRatesToPercentage(Number(fromEtherToNaturalString(position.conversionRate)))}
+                      convenienceFee={feeAmountString(Number(fromEtherToNaturalString(position.convenienceFee)))}
                       rowIndex={rowIndex}
                     />
                   </PositionRowStyled>

@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 
 import { Intent } from '../Deposits/types'
+import { ZERO } from '@helpers/constants'
 
 
 interface OnRamperIntentsValues {
@@ -13,8 +14,8 @@ const defaultValues: OnRamperIntentsValues = {
   currentIntent: {
     onRamper: '',
     deposit: '',
-    amount: 0,
-    timestamp: 0,
+    amount: ZERO,
+    timestamp: ZERO,
     to: '',
   },
 };

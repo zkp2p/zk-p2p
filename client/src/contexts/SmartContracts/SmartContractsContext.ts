@@ -1,7 +1,7 @@
 import { createContext } from 'react'
 import { Address } from 'wagmi';
 
-import { ZERO_ADDRESS } from '../../helpers/constants'
+import { ZERO_ADDRESS } from '@helpers/constants'
 import { Abi } from './types'
 
 

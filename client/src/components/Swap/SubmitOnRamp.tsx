@@ -11,9 +11,9 @@ import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import useSmartContracts from '@hooks/useSmartContracts';
-import { reformatProofForChain } from "../../helpers/submitProof";
+import { reformatProofForChain } from "@helpers/submitProof";
 
-import { vkey } from "../../helpers/verifiers/send_vkey";
+import { vkey } from "@helpers/verifiers/send_vkey";
 // @ts-ignore
 import * as snarkjs from "snarkjs";
 

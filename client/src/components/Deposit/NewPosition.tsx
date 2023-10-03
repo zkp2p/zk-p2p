@@ -8,11 +8,11 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
-import { usdc, ether } from '../../helpers/units'
-import { unpackPackedVenmoId, calculatePackedVenmoId } from '../../helpers/poseidonHash'
+import { calculatePackedVenmoId } from '@helpers/poseidonHash'
+import { usdc, ether, fromUsdcToNaturalString } from '@helpers/units'
+import { ZERO } from '@helpers/constants'
 import useBalances from '@hooks/useBalance'
 import useRampState from '@hooks/useRampState'
-import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -37,7 +37,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     Contexts
   */
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
-  const { registrationHash } = useRegistration()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance } = useBalances()
 
@@ -46,11 +45,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   */
   const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
   const [venmoId, setVenmoId] = useState<string>("645716473020416186");
-  const [depositAmount, setDepositAmount] = useState<number>(0);
-  const [receiveAmount, setReceiveAmount] = useState<number>(0);
-  const [convenienceFee, setConvenienceFee] = useState<number>(0);
+  const [depositAmountInput, setDepositAmountInput] = useState<number>(0);
+  const [receiveAmountInput, setReceiveAmountInput] = useState<number>(0);
+  const [convenienceFeeInput, setConvenienceFeeInput] = useState<number>(0);
 
-  const [amountToApprove, setAmountToApprove] = useState<number>(0);
+  const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   /*
     Contract Writes
@@ -65,9 +64,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       calculatePackedVenmoId(venmoId),
-      usdc(depositAmount),
-      usdc(receiveAmount),
-      ether(convenienceFee),
+      usdc(depositAmountInput.toString()),
+      usdc(receiveAmountInput.toString()),
+      ether(convenienceFeeInput.toString()),
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -86,7 +85,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     address: usdcAddress,
     abi: usdcAbi,
     functionName: "approve",
-    args: [rampAddress, usdc(amountToApprove)],
+    args: [
+      rampAddress,
+      usdc(amountToApprove.toString())
+    ],
   });
 
   const {
@@ -99,16 +101,22 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   */
 
   useEffect(() => {
-    if (depositAmount && usdcBalance && usdcApprovalToRamp && minimumDepositAmount) {
-      if (depositAmount > usdcBalance.toNumber()) {
+    const usdcBalanceLoaded = usdcBalance !== null && usdcBalance !== undefined;
+    const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
+    const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
+
+    if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+      const depositAmountForComparison = BigInt(depositAmountInput);
+
+      if (depositAmountForComparison > usdcBalance) {
         setFormState(NewPositionState.INSUFFICIENT_BALANCE);
-      } else if (depositAmount < minimumDepositAmount) {
+      } else if (depositAmountForComparison < minimumDepositAmount) {
         setFormState(NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-      } else if (depositAmount > usdcApprovalToRamp.toNumber()) {
+      } else if (depositAmountForComparison > usdcApprovalToRamp) {
         setFormState(NewPositionState.APPROVAL_REQUIRED);
       } else {
-        if (receiveAmount && convenienceFee) {
-          if (convenienceFee > depositAmount) {
+        if (receiveAmountInput && convenienceFeeInput) {
+          if (convenienceFeeInput > depositAmountInput) {
             setFormState(NewPositionState.CONVENIENCE_FEE_INVALID);
           } else {
             setFormState(NewPositionState.VALID);
@@ -121,9 +129,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       setFormState(NewPositionState.INCOMPLETE);
     }
   }, [
-      depositAmount,
-      receiveAmount,
-      convenienceFee,
+      depositAmountInput,
+      receiveAmountInput,
+      convenienceFeeInput,
       minimumDepositAmount,
       usdcBalance,
       usdcApprovalToRamp
@@ -131,18 +139,20 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   );
 
   useEffect(() => {
-    if (!depositAmount || !usdcApprovalToRamp) {
-      setAmountToApprove(0);
+    const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
+
+    if (!depositAmountInput || !usdcApprovalToRampLoaded) {
+      setAmountToApprove(ZERO);
     } else {
-      const approvalDifference = depositAmount - usdcApprovalToRamp.toNumber();
-      if (approvalDifference > 0) {
+      const approvalDifference = usdc(depositAmountInput.toString()) - usdcApprovalToRamp;
+      if (approvalDifference > ZERO) {
         setAmountToApprove(approvalDifference);
       } else {
-        setAmountToApprove(0);
+        setAmountToApprove(ZERO);
       }
     }
     
-  }, [depositAmount, usdcApprovalToRamp]);
+  }, [depositAmountInput, usdcApprovalToRamp]);
 
   /*
     Helpers
@@ -155,7 +165,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }
 
   const depositAmountInputErrorString = (): string => {
-    if (depositAmount) {
+    if (depositAmountInput) {
       switch (formState) {
         case NewPositionState.INSUFFICIENT_BALANCE:
           return `Current USDC balance: ${usdcBalance}`;
@@ -175,8 +185,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }
 
   const convenienceFeeInputErrorString = (): string => {
-    if (depositAmount && convenienceFee) {
-      if (convenienceFee > depositAmount) {
+    if (depositAmountInput && convenienceFeeInput) {
+      if (convenienceFeeInput > depositAmountInput) {
         return `Convenience fee cannot be greater than deposit amount`;
       } else {
         return '';
@@ -277,42 +287,42 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
           <SingleLineInput
             label="Deposit Amount"
-            value={depositAmount === 0 ? '' : depositAmount.toString()}
+            value={depositAmountInput === 0 ? '' : depositAmountInput.toString()}
             placeholder={'1000'}
             error={depositAmountInputErrorString()}
             onChange={(e) => {
               const value = e.currentTarget.value;
               if (value === "") {
-                setDepositAmount(0);
+                setDepositAmountInput(0);
               } else if (!isNaN(value) && parseFloat(value) >= 0) {
-                setDepositAmount(parseFloat(value));
+                setDepositAmountInput(parseFloat(value));
               }
             }}
           />
           <SingleLineInput
             label="Receive Amount"
-            value={receiveAmount === 0 ? '' : receiveAmount.toString()}
+            value={receiveAmountInput === 0 ? '' : receiveAmountInput.toString()}
             placeholder={'1050'}
             onChange={(e) => {
               const value = e.currentTarget.value;
               if (value === "") {
-                setReceiveAmount(0);
+                setReceiveAmountInput(0);
               } else if (!isNaN(value) && parseFloat(value) >= 0) {
-                setReceiveAmount(parseFloat(value));
+                setReceiveAmountInput(parseFloat(value));
               }
             }}
           />
           <SingleLineInput
             label="Convenience Fee"
-            value={convenienceFee === 0 ? '' : convenienceFee.toString()}
+            value={convenienceFeeInput === 0 ? '' : convenienceFeeInput.toString()}
             placeholder={'5'}
             error={convenienceFeeInputErrorString()}
             onChange={(e) => {
               const value = e.currentTarget.value;
               if (value === "") {
-                setConvenienceFee(0);
+                setConvenienceFeeInput(0);
               } else if (!isNaN(value) && parseFloat(value) >= 0) {
-                setConvenienceFee(parseFloat(value));
+                setConvenienceFeeInput(parseFloat(value));
               }
             }}
           />

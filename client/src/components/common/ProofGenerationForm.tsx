@@ -14,15 +14,12 @@ import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "./NumberedStep";
 import { DragAndDropTextBox } from "./DragAndDropTextBox";
 import { LabeledSwitch } from "./LabeledSwitch";
-import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
-import { downloadProofFiles, generateProof } from "../../helpers/zkp";
+import { downloadProofFiles, generateProof } from "@helpers/zkp";
+import useProofGenSettings from '@hooks/useProofGenSettings';
 import { processEMLContent } from "@hooks/useDragAndDrop";
-import {
-  PLACEHOLDER_EMAIL_BODY,
-  HOSTED_FILES_PATH,
-} from "../../helpers/constants";
-import { INPUT_MODE_TOOLTIP } from "../../helpers/tooltips";
+import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
+import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 
 
 interface ProofGenerationFormProps {
@@ -41,12 +38,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   setPublicSignals,
 }) => {
   /*
-   * Contexts
+   * Context
    */
-  const {
-    isInputModeDrag,
-    setIsInputModeDrag
-  } = useContext(ProofGenSettingsContext);
+  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
   
   /*
    * State

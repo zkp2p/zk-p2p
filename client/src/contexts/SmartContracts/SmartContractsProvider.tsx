@@ -1,11 +1,11 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, erc20ABI } from 'wagmi';
 
-import { abi as rampAbi } from "../../helpers/abi/ramp.abi";
-import { abi as receiveProcessorAbi } from "../../helpers/abi/receive.abi";
-import { abi as sendProcessorAbi } from "../../helpers/abi/send.abi";
-import { contractAddresses } from "../../helpers/deployed_addresses";
-import { ZERO_ADDRESS } from '../../helpers/constants'
+import { abi as rampAbi } from "@helpers/abi/ramp.abi";
+import { abi as receiveProcessorAbi } from "@helpers/abi/receive.abi";
+import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
+import { contractAddresses } from "@helpers/deployed_addresses";
+import { ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'

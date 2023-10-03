@@ -12,6 +12,7 @@
     "paths": {
       "@components/*": ["components/*"],
       "@hooks/*": ["hooks/*"],
+      "@helpers/*": ["helpers/*"],
     },
     "allowJs": true,
     "skipLibCheck": true,

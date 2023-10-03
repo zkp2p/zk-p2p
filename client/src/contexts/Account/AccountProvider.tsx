@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, useAccount, useNetwork } from 'wagmi';
 
-import { ZERO_ADDRESS } from '../../helpers/constants'
+import { ZERO_ADDRESS } from '@helpers/constants'
 
 import AccountContext from './AccountContext'
 

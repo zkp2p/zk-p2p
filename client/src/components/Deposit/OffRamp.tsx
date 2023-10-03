@@ -8,8 +8,8 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOffRamp } from "./SubmitOffRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { RECEIVE_KEY_FILE_NAME } from "../../helpers/constants";
-import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
+import { RECEIVE_KEY_FILE_NAME } from "@helpers/constants";
+import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 
 
 // TODO: use hook

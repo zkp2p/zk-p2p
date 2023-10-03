@@ -1,8 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
-import BigNumber from '../../helpers/bignumber'
-import { fromUsdc } from '../../helpers/units'
+import { ZERO } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
 
@@ -23,9 +22,9 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  const [ethBalance, setEthBalance] = useState<BigNumber>();
-  const [usdcBalance, setUsdcBalance] = useState<BigNumber>();
-  const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<BigNumber>();
+  const [ethBalance, setEthBalance] = useState<bigint>();
+  const [usdcBalance, setUsdcBalance] = useState<bigint>();
+  const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint>();
 
   /*
    * Contract Reads
@@ -42,9 +41,6 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
-    onSettled(data, error) {
-      console.log('USDC Balance', { data, error })
-    },
   })
 
   const {
@@ -60,9 +56,6 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
-    onSettled(data, error) {
-      console.log('USDC Approval to Ramp', { data, error })
-    },
   });
 
   const {
@@ -75,9 +68,6 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     watch: true,
     // cacheTime: 20_000,
     enabled: true,
-    onSettled(data, error) {
-      console.log('ETH Balance', { data, error })
-    },
   })
 
   /*
@@ -88,14 +78,14 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(ethBalanceRaw);
   
     if (isLoggedIn && ethBalanceRaw) {
-      const ethBalanceProcessed = ethBalanceRaw.formatted;
+      const ethBalanceProcessed = ethBalanceRaw.value;
       
-      console.log('ethBalanceProcessed');
-      console.log(ethBalanceProcessed);
-      
-      setEthBalance(new BigNumber(ethBalanceProcessed));
+      // console.log('ethBalanceProcessed');
+      // console.log(ethBalanceProcessed);
+
+      setEthBalance(ethBalanceProcessed);
     } else {
-      setEthBalance(new BigNumber(0));
+      setEthBalance(ZERO);
     }
   }, [isLoggedIn, ethBalanceRaw]);
 
@@ -104,14 +94,14 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(usdcBalanceRaw);
   
     if (isLoggedIn && usdcBalanceRaw) {
-      const usdcBalanceRawProcessed = usdcBalanceRaw.formatted;
+      const usdcBalanceRawProcessed = usdcBalanceRaw.value;
 
-      console.log('usdcBalanceRawProcessed');
-      console.log(usdcBalanceRawProcessed);
+      // console.log('usdcBalanceRawProcessed');
+      // console.log(usdcBalanceRawProcessed);
 
-      setUsdcBalance(new BigNumber(usdcBalanceRawProcessed));
+      setUsdcBalance(usdcBalanceRawProcessed);
     } else {
-      setUsdcBalance(new BigNumber(0));
+      setUsdcBalance(ZERO);
     }
   }, [isLoggedIn, usdcBalanceRaw]);
 
@@ -120,14 +110,9 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     console.log(usdcApprovalToRampRaw);
   
     if (isLoggedIn && usdcApprovalToRampRaw) {
-      const usdcApprovalToRampProcessed = fromUsdc(usdcApprovalToRampRaw.toString());
-      
-      console.log('usdcApprovalToRampProcessed');
-      console.log(usdcApprovalToRampProcessed);
-
-      setUsdcApprovalToRamp(new BigNumber(usdcApprovalToRampProcessed));
+      setUsdcApprovalToRamp(usdcApprovalToRampRaw);
     } else {
-      setUsdcApprovalToRamp(new BigNumber(0));
+      setUsdcApprovalToRamp(ZERO);
     }
   }, [isLoggedIn, usdcApprovalToRampRaw]);
 

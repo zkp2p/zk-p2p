@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { ZERO_ADDRESS } from '../../helpers/constants'
+import { ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -78,8 +78,10 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     if (isLoggedIn && rampAccountRaw) {
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
+
       console.log('rampAccountProcessed');
       console.log(rampAccountProcessed);
+      
       setRegistrationHash(rampAccountProcessed);
     } else {
       setRegistrationHash("");

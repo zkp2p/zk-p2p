@@ -1,16 +1,18 @@
 import { createContext } from 'react'
 
+import { ZERO } from '@helpers/constants'
+
 
 interface RampValues {
-  minimumDepositAmount: number;
-  convenienceRewardTimePeriod: number;
-  depositCounter: number;
+  minimumDepositAmount: bigint | null;
+  convenienceRewardTimePeriod: bigint | null;
+  depositCounter: bigint | null;
 }
 
 const defaultValues: RampValues = {
-  minimumDepositAmount: 0,
-  convenienceRewardTimePeriod: 0,
-  depositCounter: 0,
+  minimumDepositAmount: null,
+  convenienceRewardTimePeriod: null,
+  depositCounter: null,
 };
 
 const RampContext = createContext<RampValues>(defaultValues)

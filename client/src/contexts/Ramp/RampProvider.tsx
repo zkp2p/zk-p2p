@@ -1,7 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { fromUsdc } from '../../helpers/units'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -22,9 +21,9 @@ const RampProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  const [minimumDepositAmount, setMinimumDepositAmount] = useState<number>(0);
-  const [convenienceRewardTimePeriod, setConvenienceRewardTimePeriod] = useState<number>(0);
-  const [depositCounter, setDepositCounter] = useState<number>(0);
+  const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
+  const [convenienceRewardTimePeriod, setConvenienceRewardTimePeriod] = useState<bigint | null>(null);
+  const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
 
   /*
    * Contract Reads
@@ -74,12 +73,14 @@ const RampProvider = ({ children }: ProvidersProps) => {
     console.log(minimumDepositAmountRaw);
   
     if (isLoggedIn && minimumDepositAmountRaw) {
-      const minimumDepositAmountProcessed = fromUsdc(minimumDepositAmountRaw.toString()).toNumber();
+      const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
+
       console.log('minimumDepositAmountProcessed');
       console.log(minimumDepositAmountProcessed);
+      
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      setMinimumDepositAmount(0);
+      setMinimumDepositAmount(null);
     }
   }, [isLoggedIn, minimumDepositAmountRaw]);
 
@@ -88,12 +89,14 @@ const RampProvider = ({ children }: ProvidersProps) => {
     console.log(convenienceRewardTimePeriodRaw);
   
     if (isLoggedIn && convenienceRewardTimePeriodRaw) {
-      const convenienceRewardTimePerioProcessed = fromUsdc(convenienceRewardTimePeriodRaw.toString()).toNumber();
+      const convenienceRewardTimePerioProcessed = convenienceRewardTimePeriodRaw as bigint;
+
       console.log('convenienceRewardTimePerioProcessed');
       console.log(convenienceRewardTimePerioProcessed);
+
       setConvenienceRewardTimePeriod(convenienceRewardTimePerioProcessed);
     } else {
-      setConvenienceRewardTimePeriod(0);
+      setConvenienceRewardTimePeriod(null);
     }
   }, [isLoggedIn, convenienceRewardTimePeriodRaw]);
 
@@ -102,12 +105,9 @@ const RampProvider = ({ children }: ProvidersProps) => {
     console.log(depositCounterRaw);
   
     if (isLoggedIn && depositCounterRaw) {
-      const depositCounterProcessed = depositCounterRaw as number;
-      console.log('depositCounterProcessed');
-      console.log(depositCounterProcessed);
-      setDepositCounter(depositCounterProcessed);
+      setDepositCounter(depositCounterRaw as bigint);
     } else {
-      setDepositCounter(0);
+      setDepositCounter(null);
     }
   }, [isLoggedIn, depositCounterRaw]);
 

@@ -8,10 +8,10 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitRegistration } from "./SubmitRegistration";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { REGISTRATION_KEY_FILE_NAME } from "../../helpers/constants";
-import { PROVING_TYPE_TOOLTIP } from "../../helpers/tooltips";
+import { REGISTRATION_KEY_FILE_NAME } from "@helpers/constants";
+import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import useProofGenSettings from '@hooks/useProofGenSettings';
 
-import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
 
 
 interface NewRegistrationProps {
@@ -24,10 +24,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   /*
    * Context
    */
-  const {
-    isProvingTypeFast,
-    setIsProvingTypeFast,
-  } = useContext(ProofGenSettingsContext);
+  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');

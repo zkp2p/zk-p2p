@@ -9,8 +9,7 @@ import { useContractRead } from 'wagmi'
 
 import { Deposit, StoredDeposit } from '../Deposits/types'
 import { fetchBestDepositForAmount, createDepositsStore } from './helper'
-import { fromUsdc, fromEther } from '../../helpers/units'
-import { unpackPackedVenmoId } from '../../helpers/poseidonHash'
+import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
 
@@ -40,18 +39,22 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
   const depositIdsToFetch = useMemo(() => {
-    const depositIds = [];
-    for (let i = 0; i < depositCounter; i++) {
-      depositIds.push(i);
+    if (depositCounter) {
+      const depositIds = [];
+      for (let i = 0; i < depositCounter; i++) {
+        depositIds.push(i);
+      }
+
+      /*
+      * TODO:
+      * Compare the depositCounter against list of ids stored in local storage to ignore
+      * that list should only contain Deposits that have no remaining liquidity
+      */
+
+      return depositIds;
+    } else {
+      return [];
     }
-
-    /*
-     * TODO:
-     * Compare the depositCounter against list of ids stored in local storage to ignore
-     * that list should only contain Deposits that have no remaining liquidity
-     */
-
-    return depositIds;
   }, [depositCounter]);
 
   const {
@@ -81,11 +84,11 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
-          depositAmount: fromUsdc(depositData.depositAmount).toNumber(),
-          remainingDepositAmount: fromUsdc(depositData.remainingDeposits).toNumber(),
-          outstandingIntentAmount: fromUsdc(depositData.outstandingIntentAmount).toNumber(),
-          conversionRate: fromEther(depositData.conversionRate).toNumber(),
-          convenienceFee: fromEther(depositData.convenienceFee).toNumber(),
+          depositAmount: depositData.depositAmount,
+          remainingDepositAmount: depositData.remainingDeposits,
+          outstandingIntentAmount: depositData.outstandingIntentAmount,
+          conversionRate: depositData.conversionRate,
+          convenienceFee: depositData.convenienceFee,
           intentHashes: depositData.intentHashes,
         };
 

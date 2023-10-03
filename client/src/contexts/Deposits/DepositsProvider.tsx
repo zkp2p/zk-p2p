@@ -2,8 +2,7 @@ import React, { useEffect, useState, ReactNode, useMemo } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Deposit, Intent } from './types'
-import { fromUsdc, fromEther } from '../../helpers/units'
-import { unpackPackedVenmoId } from '../../helpers/poseidonHash'
+import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -77,15 +76,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       const sanitizedDeposits: Deposit[] = [];
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
         const depositData = depositsArrayRaw[i];
-        
+
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
-          depositAmount: fromUsdc(depositData.depositAmount).toNumber(),
-          remainingDepositAmount: fromUsdc(depositData.remainingDeposits).toNumber(),
-          outstandingIntentAmount: fromUsdc(depositData.outstandingIntentAmount).toNumber(),
-          conversionRate: fromEther(depositData.conversionRate).toNumber(),
-          convenienceFee: fromEther(depositData.convenienceFee).toNumber(),
+          depositAmount: depositData.depositAmount,
+          remainingDepositAmount: depositData.remainingDeposits,
+          outstandingIntentAmount: depositData.outstandingIntentAmount,
+          conversionRate: depositData.conversionRate,
+          convenienceFee: depositData.convenienceFee,
           intentHashes: depositData.intentHashes,
         };
 

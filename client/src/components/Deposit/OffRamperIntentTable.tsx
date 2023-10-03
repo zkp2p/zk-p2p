@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { Intent } from "../../contexts/Deposits/types";
-import { fromUsdc } from '../../helpers/units'
+import { fromUsdcToNaturalString } from '@helpers/units'
 import useDeposits from '@hooks/useDeposits';
 
 
@@ -58,17 +58,18 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     Helpers
   */
 
-  function convertDepositAmountToUSD(depositAmount: number) {
-    const depositAmountInUSD = fromUsdc(depositAmount.toString());
+  function convertDepositAmountToUSD(depositAmount: bigint) {
+    const depositAmountInUSD = fromUsdcToNaturalString(depositAmount);
     const localizedDepositAmount = depositAmountInUSD.toLocaleString(
-      'en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+      'en-US',
+      { minimumFractionDigits: 0, maximumFractionDigits: 2 }
     );
 
     return localizedDepositAmount;
   }
 
   // TODO: move this to OffRamperIntentRow
-  function calculateAndFormatExpiration(unixTimestamp: number): string {
+  function calculateAndFormatExpiration(unixTimestamp: bigint): string {
     console.log("unixTimestamp");
     console.log(unixTimestamp);
 

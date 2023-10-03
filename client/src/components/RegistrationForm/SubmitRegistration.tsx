@@ -6,7 +6,7 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import useSmartContracts from '@hooks/useSmartContracts';
-import { reformatProofForChain } from "../../helpers/submitProof";
+import { reformatProofForChain } from "@helpers/submitProof";
 
 
 interface SubmitRegistrationProps {
