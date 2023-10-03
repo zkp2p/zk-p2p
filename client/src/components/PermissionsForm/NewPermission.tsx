@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
+import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface NewPermissionProps {
@@ -16,7 +18,39 @@ interface NewPermissionProps {
 export const NewPermission: React.FC<NewPermissionProps> = ({
   handleBackClick
 }) => {
-  const [userHash, setUserHash] = useState<string>('');
+  /*
+    Contexts
+  */
+  const { rampAddress, rampAbi } = useSmartContracts()
+  
+  /*
+   * State
+   */
+  const [userHashInput, setUserHashInput] = useState<string>('');
+
+  /*
+    Contract Writes
+  */
+
+  //
+  // addAccountToDenylist(bytes32 _deniedUser)
+  //
+  const { config: writePermissionConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'addAccountToDenylist',
+    args: [
+      userHashInput,
+    ],
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+  });
+
+  const {
+    isLoading: isSubmitPermissionLoading,
+    write: writeSubmitPermission
+  } = useContractWrite(writePermissionConfig);
 
   return (
     <Container>
@@ -39,16 +73,18 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
           </NumberedStep>
           <SingleLineInput
             label="Venmo Hash"
-            value={userHash}
+            value={userHashInput}
             placeholder={'0x12345678910'}
             onChange={(e) => {
-              setUserHash(e.currentTarget.value);
+              setUserHashInput(e.currentTarget.value);
             }}
           />
           <ButtonContainer>
             <Button
+              disabled={isSubmitPermissionLoading}
+              loading={isSubmitPermissionLoading}
               onClick={async () => {
-                console.log("Do something...");
+                writeSubmitPermission?.();
               }}
             >
               Submit

@@ -87,8 +87,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    * Handlers
    */
   const handleEmailInputTypeChanged = (checked: boolean) => {
-    if (setIsInputModeDrag) {
-      setIsInputModeDrag(checked);
+    if (setIsProvingTypeFast) {
+      setIsProvingTypeFast(checked);
     }
   };
 
@@ -221,7 +221,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           <TitleAndEmailSwitchRowContainer>
             Email
             <LabeledSwitch
-              switchChecked={isInputModeDrag ?? true}
+              switchChecked={isProvingTypeFast ?? true}
               onSwitchChange={handleEmailInputTypeChanged}
               checkedLabel={"Drag"}
               uncheckedLabel={"Paste"}
@@ -229,7 +229,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             />
           </TitleAndEmailSwitchRowContainer>
 
-          {isInputModeDrag ? (
+          {isProvingTypeFast ? (
             <DragAndDropTextBox
               onFileDrop={(file: File) => {
                 const reader = new FileReader();
@@ -240,8 +240,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
                     
                     setEmailFull(processedContent);
 
-                    if (setIsInputModeDrag) {
-                      setIsInputModeDrag(false);
+                    if (setIsProvingTypeFast) {
+                      setIsProvingTypeFast(false);
                     }
                   }
                 };
