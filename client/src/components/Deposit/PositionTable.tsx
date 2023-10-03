@@ -20,7 +20,7 @@ export interface DepositPrime {
   remainingDepositAmount: bigint;
   totalDepositAmount: bigint;
   outstandingIntentAmount: bigint;
-  intentCount: bigint;
+  intentCount: number;
   conversionRate: bigint;
   convenienceFee: bigint;
 }
