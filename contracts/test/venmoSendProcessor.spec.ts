@@ -165,6 +165,16 @@ describe("VenmoSendProcessor", () => {
       });
     });
 
+    describe("when the e-mail was used previously", async () => {
+      beforeEach(async () => {
+        await subject();
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Email has already been used");
+      });
+    });
+
     describe("when the caller is not the Ramp", async () => {
       beforeEach(async () => {
         subjectCaller = owner;
