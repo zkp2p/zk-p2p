@@ -16,7 +16,9 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_email_amount_len = 7; // Allowing max 4 fig amount + one decimal point + 2 decimal places
-    var max_payee_len = ceil(21, pack_size); // 21 digits includes 3 chars `=\r\n` extracted from regex. It is safe if Venmo adds more users
+    // 21 digits includes 3 chars `=\r\n` extracted from regex. It is safe if Venmo adds more users
+    // NOTE: thus length of Venmo ID is dictated by this SEND email to account for the 3 extra characters. 21 == max venmo ID of 18
+    var max_payee_len = ceil(21, pack_size);
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
