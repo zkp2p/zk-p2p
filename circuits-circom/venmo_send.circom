@@ -8,6 +8,7 @@ include "./regexes/venmo_amount.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./utils/ceil.circom";
+include "./utils/shift_and_pack_venmo_payee_id.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -15,7 +16,9 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_email_amount_len = 7; // Allowing max 4 fig amount + one decimal point + 2 decimal places
-    var max_payee_len = ceil(21, pack_size); // 21 digits, 21 + pack_size is safe if Venmo adds more users
+    // 21 digits includes 3 chars `=\r\n` extracted from regex. It is safe if Venmo adds more users
+    // NOTE: thus length of Venmo ID is dictated by this SEND email to account for the 3 extra characters. 21 == max venmo ID of 18
+    var max_payee_len = ceil(21, pack_size);
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -83,8 +86,9 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     is_found_payee === 0;
 
     // PACKING
-    reveal_payee_packed <== ShiftAndPack(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
-
+    // Special packing to skip over `=\r\n` only for Venmo payee ids
+    reveal_payee_packed <== ShiftAndPackVenmoPayeeId(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
+    
     // HASH ONRAMPER ID
     component hash = Poseidon(max_payee_packed_bytes);
     assert(max_payee_packed_bytes < 16);
@@ -104,13 +108,13 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal order_id_squared;
     order_id_squared <== order_id * order_id;
 
-    // TOTAL CONSTRAINTS: 5958544
+    // TOTAL CONSTRAINTS: 6182074
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 5952 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 6272 is the max number of bytes in the body after precomputed slice (Need to leave room for >280 char custom message)
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ order_id ] } = VenmoSendEmail(1024, 5952, 121, 17, 7);
+component main { public [ order_id ] } = VenmoSendEmail(1024, 6272, 121, 17, 7);

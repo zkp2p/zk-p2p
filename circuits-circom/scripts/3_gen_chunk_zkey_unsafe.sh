@@ -15,7 +15,7 @@ fi
 echo "****GENERATING ZKEY NONCHUNKED FINAL****"
 start=$(date +%s)
 set -x
-NODE_OPTIONS='--max-old-space-size=56000' node ../node_modules/.bin/snarkjs zkey new "$BUILD_DIR"/"$CIRCUIT_NAME".r1cs "$PHASE1" "$PARTIAL_ZKEYS"/"$CIRCUIT_NAME".zkey -v
+NODE_OPTIONS='--max-old-space-size=112000' node ../node_modules/.bin/snarkjs zkey new "$BUILD_DIR"/"$CIRCUIT_NAME".r1cs "$PHASE1" "$PARTIAL_ZKEYS"/"$CIRCUIT_NAME".zkey -v
 { set +x; } 2>/dev/null
 end=$(date +%s)
 echo "DONE ($((end - start))s)"
