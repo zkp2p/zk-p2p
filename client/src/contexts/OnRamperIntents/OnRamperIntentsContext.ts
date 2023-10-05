@@ -1,11 +1,11 @@
 import { createContext } from 'react'
 
-import { Intent } from '../Deposits/types'
+import { OnRamperIntent, Intent } from '../Deposits/types'
 
 
 interface OnRamperIntentsValues {
   currentIntentHash: string | null;
-  currentIntent: Intent | null;
+  currentIntent: OnRamperIntent | null;
   refetchIntentHash: (() => void) | null;
 }
 
