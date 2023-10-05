@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi'
 
@@ -24,6 +24,12 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
+    State
+  */
+
+  const [shouldConfigureRegistrationWrite, setShouldConfigureRegistrationWrite] = useState<boolean>(false);
+
+  /*
     Contract Writes
   */
 
@@ -41,12 +47,27 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigureRegistrationWrite
   });
 
   const {
     isLoading: isSubmitRegistrationLoading,
     write: writeSubmitRegistration
   } = useContractWrite(writeSubmitRegistrationConfig);
+
+  /*
+    Hooks
+  */
+
+  useEffect(() => {
+    if (proof && publicSignals) {
+      // TODO: perform local verification
+
+      setShouldConfigureRegistrationWrite(true);
+    } else {
+      setShouldConfigureRegistrationWrite(false);
+    }
+  }, [proof, publicSignals]);
 
   return (
     <Container>

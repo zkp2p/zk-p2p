@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi'
@@ -21,12 +21,16 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   /*
     Contexts
   */
+
   const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
    * State
    */
+  
   const [userHashInput, setUserHashInput] = useState<string>('');
+
+  const [shouldConfigurePermissionWrite, setShouldConfigurePermissionWrite] = useState<boolean>(false); 
 
   /*
     Contract Writes
@@ -45,12 +49,26 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigurePermissionWrite
   });
 
   const {
     isLoading: isSubmitPermissionLoading,
     write: writeSubmitPermission
   } = useContractWrite(writePermissionConfig);
+
+  /*
+    Hooks
+  */
+
+  useEffect(() => {
+    if (userHashInput) {
+      const isValidBytes32 = userHashInput.length === 66;
+      setShouldConfigurePermissionWrite(isValidBytes32);
+    } else {
+      setShouldConfigurePermissionWrite(false);
+    }
+  }, [userHashInput]);
 
   return (
     <Container>

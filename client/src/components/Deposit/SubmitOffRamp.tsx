@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   useContractRead,
@@ -38,6 +38,13 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   } = useSmartContracts()
 
   /*
+    State
+  */
+
+  const [shouldConfigureOnRampWrite, setShouldConfigureOnRampWrite] = useState<boolean>(false);
+  const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
+
+  /*
     Contract Reads
   */
 
@@ -51,8 +58,7 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,
     ],
-    watch: true,
-    enabled: true,
+    enabled: shouldFetchVerifyProof
   });
 
   /*
@@ -73,12 +79,40 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigureOnRampWrite
   });
 
   const {
     isLoading: isWriteCompleteOrderLoading,
     write: writeCompleteOrder
   } = useContractWrite(writeCompleteOrderConfig);
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (proof && publicSignals) {
+      // console.log("proof", proof);
+      // console.log("public signals", publicSignals);
+      // console.log("vkey", vkey);
+
+      // const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
+      // console.log("proofVerified", proofVerified);
+
+      setShouldFetchVerifyProof(true);
+    } else {
+      setShouldFetchVerifyProof(false);
+    }
+  }, [proof, publicSignals]);
+
+  useEffect(() => {
+    if (verifyProofRaw) {
+      setShouldConfigureOnRampWrite(true);
+    } else {
+      setShouldConfigureOnRampWrite(false);
+    }
+  }, [verifyProofRaw]);
 
   return (
     <Container>
@@ -102,16 +136,6 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
-
-            console.log("proof", proof);
-            console.log("public signals", publicSignals);
-            console.log("vkey", vkey);
-
-            const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
-            console.log("proofVerified", proofVerified);
-
-            console.log("verifyProofRaw", verifyProofRaw);
-
             writeCompleteOrder?.();
           }}
         >
