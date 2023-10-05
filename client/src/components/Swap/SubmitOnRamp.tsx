@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   useContractRead,
@@ -29,6 +29,7 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   /*
    * Contexts
    */
+
   const {
     rampAddress,
     rampAbi,
@@ -37,22 +38,28 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   } = useSmartContracts()
 
   /*
+    State
+  */
+
+  const [shouldConfigureOffRampWrite, setShouldConfigureOffRampWrite] = useState<boolean>(false);
+  const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
+
+  /*
     Contract Reads
   */
 
-    const {
-      data: verifyProofRaw,
-    } = useContractRead({
-      address: sendProcessorAddress,
-      abi: sendProcessorAbi,
-      functionName: "verifyProof",
-      args: [
-        ...reformatProofForChain(proof),
-        publicSignals ? JSON.parse(publicSignals) : null,
-      ],
-      watch: true,
-      enabled: true,
-    });
+  const {
+    data: verifyProofRaw,
+  } = useContractRead({
+    address: sendProcessorAddress,
+    abi: sendProcessorAbi,
+    functionName: "verifyProof",
+    args: [
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
+    ],
+    enabled: shouldFetchVerifyProof,
+  });
 
   /*
     Contract Writes
@@ -72,12 +79,40 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigureOffRampWrite
   });
 
   const {
     isLoading: isWriteCompleteOrderLoading,
     write: writeCompleteOrder
   } = useContractWrite(writeCompleteOrderConfig);
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (proof && publicSignals) {
+      // console.log("proof", proof);
+      // console.log("public signals", publicSignals);
+      // console.log("vkey", vkey);
+
+      // const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
+      // console.log("proofVerified", proofVerified);
+
+      setShouldFetchVerifyProof(true);
+    } else {
+      setShouldFetchVerifyProof(false);
+    }
+  }, [proof, publicSignals]);
+
+  useEffect(() => {
+    if (verifyProofRaw) {
+      setShouldConfigureOffRampWrite(true);
+    } else {
+      setShouldConfigureOffRampWrite(false);
+    }
+  }, [verifyProofRaw]);
 
   return (
     <Container>
@@ -101,15 +136,6 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
-            console.log("proof", proof);
-            console.log("public signals", publicSignals);
-            console.log("vkey", vkey);
-
-            const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
-            console.log("proofVerified", proofVerified);
-
-            console.log("verifyProofRaw", verifyProofRaw);
-
             writeCompleteOrder?.();
           }}
         >

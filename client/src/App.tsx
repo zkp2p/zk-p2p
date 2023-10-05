@@ -67,13 +67,13 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
             <RegistrationProvider>
               <DepositsProvider>
                 <PermissionsProvider>
-                  <OnRamperIntentsProvider>
-                    <LiquidityProvider>
+                  <LiquidityProvider>
+                    <OnRamperIntentsProvider>
                       <ProofGenSettingsProvider>
                         { children }
                       </ProofGenSettingsProvider>
-                    </LiquidityProvider>
-                  </OnRamperIntentsProvider>
+                    </OnRamperIntentsProvider>
+                  </LiquidityProvider>
                 </PermissionsProvider>
               </DepositsProvider>
             </RegistrationProvider>

@@ -51,6 +51,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
+  const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
+  const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
+
   /*
     Contract Writes
   */
@@ -71,6 +74,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigureSignalIntentWrite
   });
 
   const {
@@ -89,6 +93,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       rampAddress,
       amountToApprove
     ],
+    enabled: shouldConfigureApprovalWrite
   });
 
   const {
@@ -137,6 +142,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       usdcApprovalToRamp
     ]
   );
+
+  useEffect(() => {
+    const isApprovalRequired = formState === NewPositionState.APPROVAL_REQUIRED;
+    setShouldConfigureApprovalWrite(isApprovalRequired);
+    
+    setShouldConfigureSignalIntentWrite(formState === NewPositionState.VALID);
+  }, [formState]);
 
   useEffect(() => {
     const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;

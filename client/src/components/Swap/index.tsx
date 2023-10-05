@@ -43,6 +43,8 @@ const SwapModal: React.FC<SwapModalProps> = ({
   */
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
+  const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
+
   /*
     Event Handlers
   */
@@ -98,6 +100,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
+    enabled: shouldConfigureSignalIntentWrite
   });
 
   const {
@@ -132,9 +135,11 @@ const SwapModal: React.FC<SwapModalProps> = ({
             const depositId = storedDeposit.depositId;
   
             setCurrentQuote(prevState => ({ ...prevState, fiatToSend: fiatToSend.toString(), depositId }));
+            setShouldConfigureSignalIntentWrite(true);
           } else {
             // TODO: Show error message, with max available liquidity
             setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: ZERO }));
+            setShouldConfigureSignalIntentWrite(false);
           }
         }
       }
