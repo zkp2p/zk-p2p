@@ -84,9 +84,11 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     // console.log('shouldFetchDeposits_1');
     if (rampAddress && depositCounter) {
       // console.log('shouldFetchDeposits_2');
+
       setShouldFetchDeposits(true);
     } else {
       // console.log('shouldFetchDeposits_3');
+
       setShouldFetchDeposits(false);
 
       setDeposits(null);
@@ -98,6 +100,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     // console.log('liquidityDepositsRaw_1');
     if (depositsRaw) {
       // console.log('liquidityDepositsRaw_2');
+
       const depositsArrayRaw = depositsRaw as any[];
 
       const sanitizedDeposits: Deposit[] = [];
@@ -126,11 +129,18 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [depositsRaw]);
 
   useEffect(() => {
-    if (deposits && depositIdsToFetch.length > 0) {
-      // This assumes depositIdsToFetch is correctly ordered
-      const newStore = createDepositsStore(depositIdsToFetch, deposits);
+    // console.log('depositStore_1');
+
+    if (deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
+      // console.log('depositStore_2');
+
+      const newStore = createDepositsStore(depositIdsToFetch, deposits); // This assumes depositIdsToFetch is correctly ordered
+
+      // console.log(newStore);
+
       setDepositStore(newStore);
     } else {
+      // console.log('depositStore_3');
       setDepositStore(null);
     }
   }, [deposits, depositIdsToFetch]);

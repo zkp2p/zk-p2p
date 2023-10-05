@@ -3,9 +3,10 @@ import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
-import { Intent } from "../../contexts/Deposits/types";
 import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import { SECONDS_IN_DAY  } from '@helpers/constants'
+import useOnRamperIntents from '@hooks/useOnRamperIntents'
+import useRampState from '@hooks/useRampState';
 
 
 
@@ -23,28 +24,35 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   /*
     Contexts
   */
+
  const { currentIntent } = useOnRamperIntents()
+ const { convenienceRewardTimePeriod } = useRampState()
+
   
   /*
     State
   */
+
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
   /*
     Hooks
   */
+ 
   useEffect(() => {
     if (!currentIntent) {
       setIntentsRowData([]);
     } else {
-      const onRamper = currentIntent.onRamper;
-      const amount = convertDepositAmountToUSD(currentIntent.amount);
-      const timestamp = calculateAndFormatExpiration(currentIntent.timestamp);
+      const amountUSDCToReceive = convertDepositAmountToUSD(currentIntent.intent.amount);
+      const amountUSDToSend = "$1.05"; // TODO: calculate this
+      const expirationTimestamp = calculateAndFormatExpiration(currentIntent.intent.timestamp);
+      const venmoIdString = currentIntent.depositorVenmoId.toString();
       
       const sanitizedIntent: IntentRowData = {
-        venmoHash: onRamper,
-        amount,
-        timestamp
+        amountUSDCToReceive,
+        amountUSDToSend,
+        expirationTimestamp,
+        depositorVenmoId: venmoIdString
       };
 
       setIntentsRowData([sanitizedIntent]);
@@ -56,33 +64,27 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
 
   function convertDepositAmountToUSD(depositAmount: bigint): string {
-    // const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
+    const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
 
-    // return humanReadableDepositAmount.toLocaleString(
-    //   'en-US',
-    //   { minimumFractionDigits: 0, maximumFractionDigits: 2 }
-    // );
-    return "$1";
+    return humanReadableDepositAmount.toLocaleString(
+      'en-US',
+      { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+    );
   }
 
   function calculateAndFormatExpiration(unixTimestamp: bigint): string {
-    // console.log("unixTimestamp");
-    // console.log(unixTimestamp);
-
-    // const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
-    // const unixTimestampPlusOneDay = unixTimestamp + BigInt(86400);
+    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
+    const unixTimestampPlusOneDay = unixTimestamp + SECONDS_IN_DAY;
   
-    // if (currentTimestamp > unixTimestampPlusOneDay) {
-    //   return "Expired";
-    // } else {
-    //   // Convert BigInt to number before creating a Date object
-    //   const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
-    //   const formattedDate = date.toLocaleString();
-      
-    //   return formattedDate;
-    // }
+    if (currentTimestamp > unixTimestampPlusOneDay) {
+      return "Expired";
+    } else {
+      const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
+      const formattedTime = date.toLocaleTimeString();
+      const formattedDate = date.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' }).split('/').slice(0, 2).join('/');
 
-    return "Expired";
+      return `${formattedTime} on ${formattedDate}`;
+    }
   }
 
   return (
@@ -104,9 +106,10 @@ export const IntentTable: React.FC<IntentTableProps> = ({
                   }
                 >
                   <IntentRow
-                    venmoHash={intentsRow.venmoHash}
-                    amount={intentsRow.amount}
-                    timestamp={intentsRow.timestamp}
+                    amountUSDCToReceive={intentsRow.amountUSDCToReceive}
+                    amountUSDToSend={intentsRow.amountUSDToSend}
+                    expirationTimestamp={intentsRow.expirationTimestamp}
+                    depositorVenmoId={intentsRow.depositorVenmoId}
                   />
                 </PermissionRowStyled>
               ))}

@@ -33,8 +33,13 @@ export interface StoredDeposit {
 // }
 export interface Intent {
   onRamper: string;
-  deposit: string;
+  deposit: bigint;
   amount: bigint;
   timestamp: bigint;
   to: string;
+}
+
+export interface OnRamperIntent {
+  depositorVenmoId: string;
+  intent: Intent;
 }

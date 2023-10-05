@@ -3,8 +3,9 @@ import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
+import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
+import { SECONDS_IN_DAY  } from '@helpers/constants'
 import { Intent } from "../../contexts/Deposits/types";
-import { fromUsdcToNaturalString } from '@helpers/units'
 import useDeposits from '@hooks/useDeposits';
 
 
@@ -22,11 +23,13 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   /*
     Contexts
   */
+
   const { depositIntents } = useDeposits()
 
   /*
     State
   */
+ 
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
   /*
@@ -39,14 +42,16 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     } else {
       var sanitizedIntents: IntentRowData[] = [];
       sanitizedIntents = depositIntents.map((intent: Intent) => {
-        const onRamper = intent.onRamper;
-        const amount = convertDepositAmountToUSD(intent.amount);
-        const timestamp = calculateAndFormatExpiration(intent.timestamp);
+        const onRamper = truncateAddress(intent.onRamper);
+        const amountUSDToReceive = "$2";
+        const amountUSDCToSend = convertDepositAmountToUSD(intent.amount);
+        const expirationTimestamp = calculateAndFormatExpiration(intent.timestamp);
         
         return {
-          venmoHash: onRamper,
-          amount,
-          timestamp
+          onRamper,
+          amountUSDToReceive,
+          amountUSDCToSend,
+          expirationTimestamp
         };
       });
 
@@ -58,33 +63,31 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     Helpers
   */
 
-  function convertDepositAmountToUSD(depositAmount: bigint) {
-    const depositAmountInUSD = fromUsdcToNaturalString(depositAmount);
-    const localizedDepositAmount = depositAmountInUSD.toLocaleString(
+  function truncateAddress(onRamperAddress: string): string {
+    return `${onRamperAddress.slice(0, 4)}...${onRamperAddress.slice(-4)}`;
+  }
+
+  function convertDepositAmountToUSD(depositAmount: bigint): string {
+    const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
+
+    return humanReadableDepositAmount.toLocaleString(
       'en-US',
       { minimumFractionDigits: 0, maximumFractionDigits: 2 }
     );
-
-    return localizedDepositAmount;
   }
 
-  // TODO: move this to OffRamperIntentRow
   function calculateAndFormatExpiration(unixTimestamp: bigint): string {
-    console.log("unixTimestamp");
-    console.log(unixTimestamp);
-
     const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
-
-    const unixTimestampPlusOneDay = unixTimestamp + BigInt(86400);
+    const unixTimestampPlusOneDay = unixTimestamp + SECONDS_IN_DAY;
   
     if (currentTimestamp > unixTimestampPlusOneDay) {
       return "Expired";
     } else {
-      // Convert BigInt to number before creating a Date object
       const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
-      const formattedDate = date.toLocaleString();
-      
-      return formattedDate;
+      const formattedTime = date.toLocaleTimeString();
+      const formattedDate = date.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' }).split('/').slice(0, 2).join('/');
+
+      return `${formattedTime} on ${formattedDate}`;
     }
   }
 
@@ -107,9 +110,10 @@ export const IntentTable: React.FC<IntentTableProps> = ({
                   }
                 >
                   <IntentRow
-                    venmoHash={intentsRow.venmoHash}
-                    amount={intentsRow.amount}
-                    timestamp={intentsRow.timestamp}
+                    amountUSDToReceive={intentsRow.amountUSDToReceive}
+                    amountUSDCToSend={intentsRow.amountUSDCToSend}
+                    expirationTimestamp={intentsRow.expirationTimestamp}
+                    onRamper={intentsRow.onRamper}
                   />
                 </PermissionRowStyled>
               ))}
