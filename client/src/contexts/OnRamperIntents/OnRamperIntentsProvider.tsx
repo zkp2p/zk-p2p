@@ -1,11 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Intent } from '../Deposits/types'
+import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
 import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
-import { ZERO, ZERO_ADDRESS } from '@helpers/constants'
+import useLiquidity from '@hooks/useLiquidity'
+import { ZERO_ADDRESS } from '@helpers/constants'
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -22,13 +23,14 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
   const { registrationHash } = useRegistration()
   const { rampAddress, rampAbi } = useSmartContracts()
+  const { depositStore } = useLiquidity()
 
   /*
    * State
    */
 
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
-  const [currentIntent, setCurrentIntent] = useState<Intent | null>(null);
+  const [currentIntent, setCurrentIntent] = useState<OnRamperIntent | null>(null);
 
   const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
   const [shouldFetchIntent, setShouldFetchIntent] = useState<boolean>(false);
@@ -70,6 +72,21 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   })
 
   /*
+   * Helpers
+   */
+
+  function getVenmoIdByDepositId(storedDeposits: StoredDeposit[], depositId: bigint): string | null {
+    // Find the StoredDeposit object with the matching depositId
+    const matchingDeposit = storedDeposits.find(storedDeposit => storedDeposit.depositId === depositId);
+    
+    // console.log('matchingDeposit');
+    // console.log(matchingDeposit);
+
+    // If a matching deposit is found, return the venmoId, otherwise return null
+    return matchingDeposit ? matchingDeposit.deposit.venmoId : null;
+  }
+
+  /*
    * Hooks
    */
 
@@ -77,9 +94,11 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     // console.log('shouldFetchIntentHash_1');
     if (isLoggedIn && loggedInEthereumAddress && registrationHash) {
       // console.log('shouldFetchIntentHash_2');
+
       setShouldFetchIntentHash(true);
     } else {
       // console.log('shouldFetchIntentHash_3');
+
       setShouldFetchIntentHash(false);
 
       setCurrentIntentHash(null);
@@ -95,6 +114,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       setShouldFetchIntent(true);
     } else {
       // console.log('shouldFetchIntent_3');
+
       setShouldFetchIntent(false);
       
       setCurrentIntent(null);
@@ -113,6 +133,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       setCurrentIntentHash(intentHashProcessed);
     } else {
       // console.log('intentHashRaw_3');
+
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
@@ -120,9 +141,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     // console.log('intentRaw_1');
   
-    if (intentRaw) {
+    if (intentRaw && depositStore && depositStore.length > 0) {
       // console.log('intentRaw_2');
-      // console.log(intentRaw);
 
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
@@ -133,12 +153,25 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         timestamp: intentData[4],
       };
 
-      setCurrentIntent(intentProcessed);
+      const depositorVenmoId = getVenmoIdByDepositId(depositStore, intentProcessed.deposit);
+      if (depositorVenmoId) {
+        const onRampIntentProcessed: OnRamperIntent = {
+          intent: intentProcessed,
+          depositorVenmoId: depositorVenmoId
+        };
+  
+        setCurrentIntent(onRampIntentProcessed);
+      } else {
+        // console.log('intentRaw_3');
+
+        setCurrentIntent(null);
+      }
     } else {
       // console.log('intentRaw_3');
+
       setCurrentIntent(null);
     }
-  }, [intentRaw]);
+  }, [intentRaw, depositStore]);
 
   return (
     <OnRamperIntentsContext.Provider
