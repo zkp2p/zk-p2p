@@ -1600,5 +1600,36 @@ describe("Ramp", () => {
         expect(intents[1].amount).to.eq(usdc(40));
       });
     });
+
+    describe("#getIntentAndOnRamperId", async () => {
+      let subjectIntentHash: string;
+  
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedVenmoId("1"),
+          usdc(100),
+          usdc(101),
+          usdc(2)
+        );
+  
+        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
+        const intentHashOne = calculateIntentHash(await calculateVenmoIdHash("2"), ZERO, await blockchain.getCurrentTimestamp());
+  
+        subjectIntentHash = intentHashOne;
+      });
+  
+      async function subject(): Promise<any> {
+        return ramp.getIntentAndOnRamperId(subjectIntentHash);
+      }
+  
+      it("should return the expected intents", async () => {
+        const [ intent, venmoId ] = await subject();
+
+        expect(intent.onRamper).to.eq(onRamper.address);
+        expect(intent.deposit).to.eq(ZERO);
+        expect(intent.amount).to.eq(usdc(50));
+        expect(venmoId).to.eq(await calculateVenmoIdHash("2"));
+      });
+    });
   });
 });
