@@ -3,14 +3,14 @@ import { createContext } from 'react'
 
 interface RegistrationValues {
   isRegistered: boolean;
-  registrationHash: string;
-  registeredVenmoId: string;
+  registrationHash: string | null;
+  registeredVenmoId: string | null;
 }
 
 const defaultValues: RegistrationValues = {
   isRegistered: false,
-  registrationHash: '',
-  registeredVenmoId: '',
+  registrationHash: null,
+  registeredVenmoId: null,
 };
 
 const RegistrationContext = createContext<RegistrationValues>(defaultValues)

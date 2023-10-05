@@ -5,6 +5,7 @@ import { Intent } from '../Deposits/types'
 import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
+import { ZERO, ZERO_ADDRESS } from '@helpers/constants'
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -17,15 +18,20 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { isLoggedIn } = useAccount()
+
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
   const { registrationHash } = useRegistration()
   const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
    * State
    */
-  const [currentIntentHash, setCurrentIntentHash] = useState<string>('');
-  const [currentIntent, setCurrentIntent] = useState<Intent>({} as Intent);
+
+  const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
+  const [currentIntent, setCurrentIntent] = useState<Intent | null>(null);
+
+  const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
+  const [shouldFetchIntent, setShouldFetchIntent] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -34,27 +40,33 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   // mapping(bytes32 => bytes32) public venmoIdIntent;
   const {
     data: intentHashRaw,
-    isLoading: isFetchIntentHashLoading,
-    isError: isFetchIntentHashError,
-    // refetch: refetchIntentHash,
+    // isLoading: isFetchIntentHashLoading,
+    // isError: isFetchIntentHashError,
+    refetch: refetchIntentHash,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
     functionName: 'venmoIdIntent',
-    args: [registrationHash],
+    args: [
+      registrationHash
+    ],
+    enabled: shouldFetchIntentHash,
   })
 
   // mapping(bytes32 => Intent) public intents;
   const {
     data: intentRaw,
-    isLoading: isFetchIntentLoading,
-    isError: isFetchIntentError,
+    // isLoading: isFetchIntentLoading,
+    // isError: isFetchIntentError,
     // refetch: refetchIntent,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
     functionName: 'intents',
-    args: [currentIntentHash],
+    args: [
+      currentIntentHash
+    ],
+    enabled: shouldFetchIntent,
   })
 
   /*
@@ -62,25 +74,56 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('intentHashRaw_1');
-    console.log(intentHashRaw);
+    // console.log('shouldFetchIntentHash_1');
+    if (isLoggedIn && loggedInEthereumAddress && registrationHash) {
+      // console.log('shouldFetchIntentHash_2');
+      setShouldFetchIntentHash(true);
+    } else {
+      // console.log('shouldFetchIntentHash_3');
+      setShouldFetchIntentHash(false);
+
+      setCurrentIntentHash(null);
+      setCurrentIntent(null)
+    }
+  }, [isLoggedIn, loggedInEthereumAddress, registrationHash]);
+
+  useEffect(() => {
+    // console.log('shouldFetchIntent_1');
+    if (currentIntentHash) {
+      // console.log('shouldFetchIntent_2');
+
+      setShouldFetchIntent(true);
+    } else {
+      // console.log('shouldFetchIntent_3');
+      setShouldFetchIntent(false);
+      
+      setCurrentIntent(null);
+    }
+  }, [currentIntentHash]);
+
+  useEffect(() => {
+    // console.log('intentHashRaw_1');
   
-    if (isLoggedIn && intentHashRaw) {
+    if (intentHashRaw !== ZERO_ADDRESS) {
+      // console.log('intentHashRaw_2');
+      // console.log(intentHashRaw);
+      
       const intentHashProcessed = intentHashRaw as string;
-      console.log('intentHashProcessed');
-      console.log(intentHashProcessed);
 
       setCurrentIntentHash(intentHashProcessed);
     } else {
-      setCurrentIntentHash("");
+      // console.log('intentHashRaw_3');
+      setCurrentIntentHash(null);
     }
-  }, [isLoggedIn, registrationHash, intentHashRaw]);
+  }, [intentHashRaw]);
 
   useEffect(() => {
-    console.log('intentRaw_1');
-    console.log(intentRaw);
+    // console.log('intentRaw_1');
   
-    if (isLoggedIn && registrationHash && intentRaw) {
+    if (intentRaw) {
+      // console.log('intentRaw_2');
+      // console.log(intentRaw);
+
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
         onRamper: intentData[0],
@@ -89,20 +132,20 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         amount: intentData[3],
         timestamp: intentData[4],
       };
-      console.log('intentProcessed');
-      console.log(intentProcessed);
 
       setCurrentIntent(intentProcessed);
     } else {
-      setCurrentIntent({} as Intent);
+      // console.log('intentRaw_3');
+      setCurrentIntent(null);
     }
-  }, [isLoggedIn, registrationHash, intentRaw]);
+  }, [intentRaw]);
 
   return (
     <OnRamperIntentsContext.Provider
       value={{
         currentIntentHash,
         currentIntent,
+        refetchIntentHash
       }}
     >
       {children}

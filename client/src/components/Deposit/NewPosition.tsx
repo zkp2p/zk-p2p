@@ -87,7 +87,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: "approve",
     args: [
       rampAddress,
-      usdc(amountToApprove.toString())
+      amountToApprove
     ],
   });
 
@@ -106,7 +106,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
 
     if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-      const depositAmountForComparison = BigInt(depositAmountInput);
+      const depositAmountForComparison = BigInt(usdc(depositAmountInput.toString()));
 
       if (depositAmountForComparison > usdcBalance) {
         setFormState(NewPositionState.INSUFFICIENT_BALANCE);

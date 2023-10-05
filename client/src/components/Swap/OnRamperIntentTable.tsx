@@ -4,7 +4,9 @@ import styled from 'styled-components/macro'
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { Intent } from "../../contexts/Deposits/types";
+import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
+
 
 
 interface IntentTableProps {
@@ -16,7 +18,7 @@ interface IntentTableProps {
 export const IntentTable: React.FC<IntentTableProps> = ({
   onRowClick,
   selectedRow,
-  rowsPerPage = 10
+  rowsPerPage = 3
 }) => {
   /*
     Contexts
@@ -53,31 +55,34 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     Helpers
   */
 
-  function convertDepositAmountToUSD(depositAmount: number) {
-    // return (depositAmount / 1_000_000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  function convertDepositAmountToUSD(depositAmount: bigint): string {
+    // const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
 
-    return "$1"
+    // return humanReadableDepositAmount.toLocaleString(
+    //   'en-US',
+    //   { minimumFractionDigits: 0, maximumFractionDigits: 2 }
+    // );
+    return "$1";
   }
 
-  // TODO: move this to OffRamperIntentRow
-  function calculateAndFormatExpiration(unixTimestamp: number): string {
-    console.log("unixTimestamp");
-    console.log(unixTimestamp);
+  function calculateAndFormatExpiration(unixTimestamp: bigint): string {
+    // console.log("unixTimestamp");
+    // console.log(unixTimestamp);
 
-    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
-
+    // const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
     // const unixTimestampPlusOneDay = unixTimestamp + BigInt(86400);
-    const unixTimestampPlusOneDay = BigInt(86400);
   
-    if (currentTimestamp > unixTimestampPlusOneDay) {
-      return "Expired";
-    } else {
-      // Convert BigInt to number before creating a Date object
-      const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
-      const formattedDate = date.toLocaleString();
+    // if (currentTimestamp > unixTimestampPlusOneDay) {
+    //   return "Expired";
+    // } else {
+    //   // Convert BigInt to number before creating a Date object
+    //   const date = new Date(Number(unixTimestampPlusOneDay) * 1000);
+    //   const formattedDate = date.toLocaleString();
       
-      return formattedDate;
-    }
+    //   return formattedDate;
+    // }
+
+    return "Expired";
   }
 
   return (

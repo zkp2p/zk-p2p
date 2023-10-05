@@ -15,15 +15,18 @@ const RampProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
-  const { isLoggedIn } = useAccount()
+
   const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
    * State
    */
+
   const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
   const [convenienceRewardTimePeriod, setConvenienceRewardTimePeriod] = useState<bigint | null>(null);
   const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
+
+  const [shouldFetchRampState, setShouldFetchRampState] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -39,6 +42,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'minDepositAmount',
+    enabled: shouldFetchRampState
   })
 
   // uint256 public convenienceRewardTimePeriod;
@@ -51,6 +55,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'convenienceRewardTimePeriod',
+    enabled: shouldFetchRampState
   })
 
   // uint256 public depositCounter;
@@ -63,53 +68,73 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'depositCounter',
+    enabled: shouldFetchRampState
   })
 
   /*
    * Hooks
    */
-  useEffect(() => {
-    console.log('minDepositAmountRaw_1');
-    console.log(minimumDepositAmountRaw);
-  
-    if (isLoggedIn && minimumDepositAmountRaw) {
-      const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
 
-      console.log('minimumDepositAmountProcessed');
-      console.log(minimumDepositAmountProcessed);
+  useEffect(() => {
+    // console.log('shouldFetchRampState_1');
+    if (rampAddress) {
+      // console.log('shouldFetchRampState_2');
+      setShouldFetchRampState(true);
+    } else {
+      // console.log('shouldFetchRampState_3');
+      setShouldFetchRampState(false);
+
+      setMinimumDepositAmount(null);
+      setConvenienceRewardTimePeriod(null);
+      setDepositCounter(null);
+    }
+  }, [rampAddress]);
+
+  useEffect(() => {
+    // console.log('minDepositAmountRaw_1');
+  
+    if (minimumDepositAmountRaw) {
+      // console.log('minDepositAmountRaw_2');
+      // console.log(minimumDepositAmountRaw);
+
+      const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
+      console.log('minDepositAmountRaw_3');
       setMinimumDepositAmount(null);
     }
-  }, [isLoggedIn, minimumDepositAmountRaw]);
+  }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    console.log('convenienceRewardTimePeriodRaw_1');
-    console.log(convenienceRewardTimePeriodRaw);
+    // console.log('convenienceRewardTimePeriodRaw_1');
   
-    if (isLoggedIn && convenienceRewardTimePeriodRaw) {
-      const convenienceRewardTimePerioProcessed = convenienceRewardTimePeriodRaw as bigint;
+    if (convenienceRewardTimePeriodRaw) {
+      // console.log('convenienceRewardTimePeriodRaw_2');
+      // console.log(convenienceRewardTimePeriodRaw);
 
-      console.log('convenienceRewardTimePerioProcessed');
-      console.log(convenienceRewardTimePerioProcessed);
+      const convenienceRewardTimePerioProcessed = convenienceRewardTimePeriodRaw as bigint;
 
       setConvenienceRewardTimePeriod(convenienceRewardTimePerioProcessed);
     } else {
+      // console.log('convenienceRewardTimePeriodRaw_3');
       setConvenienceRewardTimePeriod(null);
     }
-  }, [isLoggedIn, convenienceRewardTimePeriodRaw]);
+  }, [convenienceRewardTimePeriodRaw]);
 
   useEffect(() => {
-    console.log('depositCounterRaw_1');
-    console.log(depositCounterRaw);
+    // console.log('depositCounterRaw_1');
   
-    if (isLoggedIn && depositCounterRaw) {
+    if (depositCounterRaw) {
+      // console.log('depositCounterRaw_2');
+      // console.log(depositCounterRaw);
+      
       setDepositCounter(depositCounterRaw as bigint);
     } else {
+      // console.log('depositCounterRaw_3');
       setDepositCounter(null);
     }
-  }, [isLoggedIn, depositCounterRaw]);
+  }, [depositCounterRaw]);
 
   return (
     <RampContext.Provider

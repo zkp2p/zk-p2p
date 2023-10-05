@@ -1,39 +1,61 @@
 import { Deposit, StoredDeposit } from "../Deposits/types";
 
 
-export const createDepositsStore = (depositIds: number[], deposits: Deposit[]): StoredDeposit[] => {
+export const createDepositsStore = (depositIds: bigint[], deposits: Deposit[]): StoredDeposit[] => {
   const zippedDeposits = depositIds.map((id, index) => ({ depositId: id, deposit: deposits[index] }));
   
   const sortedDeposits = zippedDeposits.sort((a, b) => {
     // Sort by descending order of remaining deposit amount
-    if (b.deposit.remainingDepositAmount - a.deposit.remainingDepositAmount !== 0) {
-      return b.deposit.remainingDepositAmount - a.deposit.remainingDepositAmount;
+    if (b.deposit.remainingDepositAmount > a.deposit.remainingDepositAmount) {
+      return 1;
+    }
+    if (b.deposit.remainingDepositAmount < a.deposit.remainingDepositAmount) {
+      return -1;
     }
 
     // Sort by ascending order of conversion rate
-    if (a.deposit.conversionRate - b.deposit.conversionRate !== 0) {
-      return a.deposit.conversionRate - b.deposit.conversionRate;
+    if (a.deposit.conversionRate < b.deposit.conversionRate) {
+      return -1;
+    }
+    if (a.deposit.conversionRate > b.deposit.conversionRate) {
+      return 1;
     }
 
     // Sort by ascending order of convenience fee
-    return a.deposit.convenienceFee - b.deposit.convenienceFee;
+    if (a.deposit.convenienceFee < b.deposit.convenienceFee) {
+      return -1;
+    }
+    if (a.deposit.convenienceFee > b.deposit.convenienceFee) {
+      return 1;
+    }
+
+    return 0;
   });
 
   return sortedDeposits;
 };
 
-export const fetchBestDepositForAmount = (onRampAmount: number, depositStore: StoredDeposit[]): StoredDeposit | null => {
+export const fetchBestDepositForAmount = (onRampAmount: bigint, depositStore: StoredDeposit[]): StoredDeposit | null => {
   // Filter deposits that can fulfill the onRampAmount
   const eligibleDeposits = depositStore.filter(deposit => deposit.deposit.remainingDepositAmount >= onRampAmount);
   if (eligibleDeposits.length === 0) {
     return null;
   }
 
-  // Calculate total cost for each eligible deposit and find the one with the minimum cost
-  const sortedByCostDeposits = eligibleDeposits.map(deposit => ({
-    ...deposit,
-    totalCost: deposit.deposit.convenienceFee + (deposit.deposit.conversionRate * onRampAmount),
-  })).sort((a, b) => a.totalCost - b.totalCost);
+  // Convert conversionRate to a BigInt, assuming a fixed precision of 2 decimal places
+  const sortedByCostDeposits = eligibleDeposits.map(storedDeposit => {
+    const conversionRateBigInt = BigInt(storedDeposit.deposit.conversionRate * BigInt(100));
+    const totalCost = storedDeposit.deposit.convenienceFee + (conversionRateBigInt * onRampAmount) / BigInt(100);
+
+    return {
+      ...storedDeposit,
+      totalCost,
+    };
+  }).sort((a, b) => {
+    if (a.totalCost < b.totalCost) return -1;
+    if (a.totalCost > b.totalCost) return 1;
+    return 0;
+  });
 
   return sortedByCostDeposits[0];
 };

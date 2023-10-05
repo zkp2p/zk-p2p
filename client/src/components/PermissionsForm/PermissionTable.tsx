@@ -42,7 +42,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
    * Hooks
    */
   useEffect(() => {
-    if (deniedUsers !== undefined) {
+    if (deniedUsers) {
       const transformedData = deniedUsers.map(hash => ({ address: hash }));
       setPermissionsRowData(transformedData);
     }

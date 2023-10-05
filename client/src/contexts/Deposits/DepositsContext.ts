@@ -4,13 +4,13 @@ import { Deposit, Intent } from './types'
 
 
 interface DepositsValues {
-  deposits: Deposit[];
-  depositIntents: Intent[];
+  deposits: Deposit[] | null;
+  depositIntents: Intent[] | null;
 }
 
 const defaultValues: DepositsValues = {
-  deposits: [],
-  depositIntents: [],
+  deposits: null,
+  depositIntents: null,
 };
 
 const DepositsContext = createContext<DepositsValues>(defaultValues)

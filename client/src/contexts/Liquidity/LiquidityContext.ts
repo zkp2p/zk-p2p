@@ -4,14 +4,14 @@ import { Deposit, StoredDeposit } from '../Deposits/types'
 
 
 interface LiquidityValues {
-  deposits: Deposit[];
-  depositStore: StoredDeposit[];
-  getBestDepositForAmount: (amount: number) => StoredDeposit | null;
+  deposits: Deposit[] | null;
+  depositStore: StoredDeposit[] | null;
+  getBestDepositForAmount: (amount: bigint) => StoredDeposit | null;
 }
 
 const defaultValues: LiquidityValues = {
-  deposits: [],
-  depositStore: [],
+  deposits: null,
+  depositStore: null,
   getBestDepositForAmount: () => null,
 };
 
