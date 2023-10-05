@@ -578,7 +578,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#cancelIntent", async () => {
+    describe("#cancelIntent", async () => {
       let subjectIntentHash: string;
       let subjectCaller: Account;
 
