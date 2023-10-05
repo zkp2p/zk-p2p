@@ -1,5 +1,6 @@
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt
 export const ZERO = BigInt(0);
+export const SECONDS_IN_DAY = BigInt(86400);
 
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:
