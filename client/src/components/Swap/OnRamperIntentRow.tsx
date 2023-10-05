@@ -1,33 +1,42 @@
 import React from "react";
 import styled, { css } from 'styled-components/macro'
 
+import { StyledLink } from '../legacy/StyledLink';
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 
 interface IntentRowProps {
-  venmoHash: string;
-  amount: string;
-  timestamp: string;
+  amountUSDCToReceive: string;
+  amountUSDToSend: string;
+  expirationTimestamp: string;
+  depositorVenmoId: string;
 }
 
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
-  venmoHash,
-  amount,
-  timestamp,
+  amountUSDCToReceive,
+  amountUSDToSend,
+  expirationTimestamp,
+  depositorVenmoId,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const depositAmountLabel = `${amount} USDC`;
-  const timeRemainingLabel = `Time Remaining: ${timestamp}`;
+  const requestedAmountLabel = `Open Order: ${amountUSDCToReceive} USDC`;
+  const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
+  const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
 
   return (
     <Container>
       <AddressContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
-          <AmountLabel> {depositAmountLabel} </AmountLabel>
+          <AmountLabel> {requestedAmountLabel} </AmountLabel>
+          <AmountLabel>
+            Complete
+              <StyledLink urlHyperlink={venmoLink} label={' Venmo '}
+            /> payment for {amountUSDToSend}
+          </AmountLabel>
           <AmountLabel> {timeRemainingLabel} </AmountLabel>
         </AmountLabelsContainer>
       </AddressContainer>

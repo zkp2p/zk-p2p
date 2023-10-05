@@ -5,29 +5,33 @@ import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 
 interface IntentRowProps {
-  venmoHash: string;
-  amount: string;
-  timestamp: string;
+  onRamper: string;
+  amountUSDToReceive: string;
+  amountUSDCToSend: string;
+  expirationTimestamp: string;
 }
 
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
-  venmoHash,
-  amount,
-  timestamp,
+  onRamper,
+  amountUSDToReceive,
+  amountUSDCToSend,
+  expirationTimestamp,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const depositAmountLabel = `${amount} USDC`;
-  const timeRemainingLabel = `Expires: ${timestamp}`;
+  const requestedAmountLabel = `${amountUSDCToSend} USDC Pending`;
+  const onRamperHashLabel = `Receive ${amountUSDToReceive} from ${onRamper} on Venmo`;
+  const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
 
   return (
     <Container>
       <VenmoHashContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
-          <AmountLabel> {depositAmountLabel} </AmountLabel>
+          <AmountLabel> {requestedAmountLabel} </AmountLabel>
+          <AmountLabel> {onRamperHashLabel} </AmountLabel>
           <AmountLabel> {timeRemainingLabel} </AmountLabel>
         </AmountLabelsContainer>
       </VenmoHashContainer>
