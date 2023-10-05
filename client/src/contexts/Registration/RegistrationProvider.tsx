@@ -16,18 +16,23 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
+
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
   const { rampAddress, rampAbi } = useSmartContracts()
 
   /*
    * State
    */
-  const [registrationHash, setRegistrationHash] = useState<string>("");
-  const [registeredVenmoId, setRegisteredVenmoId] = useState<string>("");
+
+  const [registrationHash, setRegistrationHash] = useState<string | null>(null);
+  const [registeredVenmoId, setRegisteredVenmoId] = useState<string | null>(null);
+
+  const [shouldFetchRegistration, setShouldFetchRegistration] = useState<boolean>(false);
 
   /*
     Helpers
   */
+
   // The !! operator will convert any truthy value to true and any falsy value to false.
   const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
 
@@ -45,21 +50,11 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'getAccountInfo',
-    args: [loggedInEthereumAddress],
+    args: [
+      loggedInEthereumAddress
+    ],
+    enabled: shouldFetchRegistration,
   })
-
-  // mapping(bytes32 => Intent) public intents;
-  // const {
-  //   data: intentRaw,
-  //   // isLoading: isFetchVenmoIdHashLoading,
-  //   // isError: isRegistrationDataError,
-  //   // refetch: refetchVenmoIdHash,
-  // } = useContractRead({
-  //   address: rampAddress,
-  //   abi: rampAbi,
-  //   functionName: 'intents',
-  //   args: [registrationHash],
-  // })
 
   /*
    * Additional Reads:
@@ -71,36 +66,39 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   /*
    * Hooks
    */
+
   useEffect(() => {
-    console.log('rampAccountRaw_1');
-    console.log(rampAccountRaw);
+    // console.log('shouldFetchRegistration_1');
+    if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
+      // console.log('shouldFetchRegistration_2');
+
+      setShouldFetchRegistration(true);
+    } else {
+      // console.log('shouldFetchRegistration_3');
+      setShouldFetchRegistration(false);
+
+      setRegistrationHash(null);
+      setRegisteredVenmoId(null);
+    }
+  }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
+
+  useEffect(() => {
+    // console.log('rampAccountRaw_1');
   
-    if (isLoggedIn && rampAccountRaw) {
+    if (rampAccountRaw) {
+      // console.log('rampAccountRaw_2');
+      // console.log(rampAccountRaw);
+
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
-
-      console.log('rampAccountProcessed');
-      console.log(rampAccountProcessed);
       
       setRegistrationHash(rampAccountProcessed);
     } else {
-      setRegistrationHash("");
+      // console.log('rampAccountRaw_3');
+      
+      setRegistrationHash(null);
     }
-  }, [isLoggedIn, rampAccountRaw]);
-
-  // useEffect(() => {
-  //   console.log('refetchVenmoIdHash');
-
-  //   if (isLoggedIn) {
-  //     const intervalId = setInterval(() => {
-  //       refetchVenmoIdHash();
-  //     }, 15000); // Refetch every 15 seconds
-  
-  //     return () => {
-  //       clearInterval(intervalId);
-  //     };
-  //   }
-  // }, [isLoggedIn, refetchVenmoIdHash]);
+  }, [rampAccountRaw]);
 
   return (
     <RegistrationContext.Provider

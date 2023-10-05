@@ -3,6 +3,7 @@ import { Address, useContractRead } from 'wagmi';
 
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
+import useRegistration from '@hooks/useRegistration';
 
 import PermissionsContext from './PermissionsContext'
 
@@ -15,13 +16,18 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
+
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
   const { rampAddress, rampAbi } = useSmartContracts()
+  const { isRegistered } = useRegistration()
 
   /*
    * State
    */
-  const [deniedUsers, setDeniedUsers] = useState<Address[] | undefined>(undefined);
+
+  const [deniedUsers, setDeniedUsers] = useState<Address[] | null>(null);
+
+  const [shouldFetchDeniedUsers, setShouldFetchDeniedUsers] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -42,7 +48,7 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     args: [loggedInEthereumAddress],
     watch: true,
     // cacheTime: 20_000,
-    enabled: true,
+    enabled: shouldFetchDeniedUsers
   });
 
   /*
@@ -53,21 +59,35 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   /*
    * Hooks
    */
+
   useEffect(() => {
-    console.log('deniedUsersRaw_1');
-    console.log(deniedUsersRaw);
+    // console.log('shouldFetchDeniedUsers_1');
+    if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
+      // console.log('shouldFetchDeniedUsers_2');
+      setShouldFetchDeniedUsers(true);
+    } else {
+      // console.log('shouldFetchDeniedUsers_3');
+      setShouldFetchDeniedUsers(false);
+
+      setDeniedUsers(null);
+    }
+  }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
+
+  useEffect(() => {
+    // console.log('deniedUsersRaw_1');
   
-    if (isLoggedIn && deniedUsersRaw) {
+    if (deniedUsersRaw) {
+      // console.log('deniedUsersRaw_2');
+      // console.log(deniedUsersRaw);
+
       const deniedUsersProcessed = deniedUsersRaw as Address[];
-      
-      // console.log('deniedUsersProcessed');
-      // console.log(deniedUsersProcessed);
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
-      setDeniedUsers(undefined);
+      // console.log('deniedUsersRaw_3');
+      setDeniedUsers(null);
     }
-  }, [isLoggedIn, deniedUsersRaw]);
+  }, [deniedUsersRaw]);
 
   return (
     <PermissionsContext.Provider

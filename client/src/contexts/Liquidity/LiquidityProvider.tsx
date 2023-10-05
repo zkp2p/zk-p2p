@@ -24,25 +24,28 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   /*
    * Contexts
    */
+
   const { rampAddress, rampAbi } = useSmartContracts()
   const { depositCounter } = useRampState();
 
   /*
    * State
    */
-  const [deposits, setDeposits] = useState<Deposit[]>([]);
-  const [depositStore, setDepositStore] = useState<StoredDeposit[]>([]);
+
+  const [deposits, setDeposits] = useState<Deposit[] | null>(null);
+  const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
+
+  const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
   /*
    * Contract Reads
    */
 
-  // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
   const depositIdsToFetch = useMemo(() => {
     if (depositCounter) {
       const depositIds = [];
       for (let i = 0; i < depositCounter; i++) {
-        depositIds.push(i);
+        depositIds.push(BigInt(i));
       }
 
       /*
@@ -57,16 +60,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter]);
 
+  // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
   const {
     data: depositsRaw,
-    isLoading: isFetchDepositsLoading,
-    isError: isFetchDepositsError,
+    // isLoading: isFetchDepositsLoading,
+    // isError: isFetchDepositsError,
     // refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
     functionName: 'getDepositFromIds',
-    args: [depositIdsToFetch],
+    args: [
+      depositIdsToFetch
+    ],
+    enabled: shouldFetchDeposits
   })
 
   /*
@@ -74,7 +81,23 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    if (!isFetchDepositsLoading && !isFetchDepositsError && depositsRaw) {
+    // console.log('shouldFetchDeposits_1');
+    if (rampAddress && depositCounter) {
+      // console.log('shouldFetchDeposits_2');
+      setShouldFetchDeposits(true);
+    } else {
+      // console.log('shouldFetchDeposits_3');
+      setShouldFetchDeposits(false);
+
+      setDeposits(null);
+      setDepositStore(null);
+    }
+  }, [rampAddress, depositCounter]);
+
+  useEffect(() => {
+    // console.log('liquidityDepositsRaw_1');
+    if (depositsRaw) {
+      // console.log('liquidityDepositsRaw_2');
       const depositsArrayRaw = depositsRaw as any[];
 
       const sanitizedDeposits: Deposit[] = [];
@@ -97,17 +120,28 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       setDeposits(sanitizedDeposits);
     } else {
-      setDeposits([]);
+      // console.log('liquidityDepositsRaw_3');
+      setDeposits(null);
     }
-  }, [depositsRaw, isFetchDepositsLoading, isFetchDepositsError]);
+  }, [depositsRaw]);
 
   useEffect(() => {
-    const newStore = createDepositsStore(depositIdsToFetch, deposits); // Assume depositIdsToFetch is correct
-    setDepositStore(newStore);
+    if (deposits && depositIdsToFetch.length > 0) {
+      // This assumes depositIdsToFetch is correctly ordered
+      const newStore = createDepositsStore(depositIdsToFetch, deposits);
+      setDepositStore(newStore);
+    } else {
+      setDepositStore(null);
+    }
   }, [deposits, depositIdsToFetch]);
 
-  const getBestDepositForAmount = useCallback((amount: number) => {
-    return fetchBestDepositForAmount(amount, depositStore);
+  // TODO: Check that depositor does not signal intent on own deposit
+  const getBestDepositForAmount = useCallback((amount: bigint) => {
+    if (depositStore) {
+      return fetchBestDepositForAmount(amount, depositStore);
+    } else {
+      return null;
+    }
   }, [depositStore]);
 
   return (

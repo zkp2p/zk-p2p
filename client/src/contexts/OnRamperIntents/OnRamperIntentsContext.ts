@@ -1,23 +1,18 @@
 import { createContext } from 'react'
 
 import { Intent } from '../Deposits/types'
-import { ZERO } from '@helpers/constants'
 
 
 interface OnRamperIntentsValues {
-  currentIntentHash: string;
-  currentIntent: Intent;
+  currentIntentHash: string | null;
+  currentIntent: Intent | null;
+  refetchIntentHash: (() => void) | null;
 }
 
 const defaultValues: OnRamperIntentsValues = {
-  currentIntentHash: '',
-  currentIntent: {
-    onRamper: '',
-    deposit: '',
-    amount: ZERO,
-    timestamp: ZERO,
-    to: '',
-  },
+  currentIntentHash: null,
+  currentIntent: null,
+  refetchIntentHash: null
 };
 
 const OnRamperIntentsContext = createContext<OnRamperIntentsValues>(defaultValues)

@@ -3,10 +3,12 @@ import { Address } from 'wagmi';
 
 
 interface PermissionsValues {
-  deniedUsers?: Address[];
+  deniedUsers: Address[] | null;
 }
 
-const defaultValues: PermissionsValues = {};
+const defaultValues: PermissionsValues = {
+  deniedUsers: null,
+};
 
 const PermissionsContext = createContext<PermissionsValues>(defaultValues)
 

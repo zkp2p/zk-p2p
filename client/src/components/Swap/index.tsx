@@ -9,7 +9,8 @@ import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { StoredDeposit } from '../../contexts/Deposits/types'
-import { usdc } from '@helpers/units'
+import { ZERO } from "@helpers/constants";
+import { fromUsdcToNaturalBigInt, usdc } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -19,7 +20,7 @@ import useLiquidity from '@hooks/useLiquidity';
 export type SwapQuote = {
   requestedUSDC: string;
   fiatToSend: string;
-  depositId: number;
+  depositId: bigint;
 };
 
 interface SwapModalProps {
@@ -33,14 +34,14 @@ const SwapModal: React.FC<SwapModalProps> = ({
     Contexts
   */
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { currentIntentHash } = useOnRamperIntents();
+  const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
   const { getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
     State
   */
-  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: 0 });
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
   /*
     Event Handlers
@@ -51,7 +52,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     quoteCopy[field] = event.target.value;
 
     if (field !== 'requestedUSDC') {
-      quoteCopy.depositId = 0;
+      quoteCopy.depositId = ZERO;
     }
 
     setCurrentQuote(quoteCopy);
@@ -72,7 +73,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     event.preventDefault();
 
     // Reset form fields
-    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: 0 });
+    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: ZERO });
   };
 
   /*
@@ -88,9 +89,12 @@ const SwapModal: React.FC<SwapModalProps> = ({
     functionName: 'signalIntent',
     args: [
       currentQuote.depositId,
-      usdc(parseFloat(currentQuote.requestedUSDC)),
+      usdc(currentQuote.requestedUSDC),
       loggedInEthereumAddress
     ],
+    onSuccess(data) {
+      refetchIntentHash?.();
+    },
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
@@ -107,26 +111,30 @@ const SwapModal: React.FC<SwapModalProps> = ({
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
       if (currentQuote.requestedUSDC) {
-        const amountInNumber = parseFloat(currentQuote.requestedUSDC);
+        const requestedUsdcInNativeUnits = usdc(currentQuote.requestedUSDC);
+        if (requestedUsdcInNativeUnits !== ZERO) {
+          const storedDeposit: StoredDeposit | null = await getBestDepositForAmount(requestedUsdcInNativeUnits);
+          console.log('Selected storedDeposit: ', storedDeposit);
 
-        console.log('amountInNumber: ', amountInNumber);
-
-        if (!isNaN(amountInNumber)) {
-          const storedDeposit: StoredDeposit | null = await getBestDepositForAmount(amountInNumber);
           if (storedDeposit) {
-            const usdcAmount = amountInNumber * storedDeposit.deposit.conversionRate;
-            const fiatToSend = parseFloat(usdcAmount.toFixed(2));
+            // Assume conversionRate is a number with up to 18 decimal places
+            const conversionRate = storedDeposit.deposit.conversionRate;
+            const precision = BigInt(10 ** 18);
+            
+            // Multiply requestedUsdcInNativeUnits by conversionRate, assuming requestedUsdcInNativeUnits is a BigInt
+            const usdcAmount = requestedUsdcInNativeUnits * precision / conversionRate;
+            
+            // Convert usdcAmount to a string, then to a number for use with toFixed
+            const usdcAmountNumber = Number(fromUsdcToNaturalBigInt(usdcAmount));
+            const fiatToSend = (usdcAmountNumber % 1 === 0)
+              ? usdcAmountNumber.toString()
+              : usdcAmountNumber.toFixed(2);
             const depositId = storedDeposit.depositId;
   
-            setCurrentQuote(prevState => (
-              {
-                ...prevState,
-                fiatToSend: fiatToSend.toString(),
-                depositId,
-              })
-            );
+            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: fiatToSend.toString(), depositId }));
           } else {
-            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: 0 }));
+            // TODO: Show error message, with max available liquidity
+            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: ZERO }));
           }
         }
       }
@@ -171,7 +179,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             />
           ) : (
             <CTAButton
-              disabled={currentQuote.depositId === 0 && currentQuote.fiatToSend === ''}
+              disabled={currentQuote.depositId === ZERO && currentQuote.fiatToSend === ''}
               loading={isSubmitIntentLoading}
               onClick={async () => {
                 writeSubmitIntent?.();
@@ -184,7 +192,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
       </SwapModalContainer>
 
       {
-        currentIntentHash && currentIntentHash !== '' && (
+        currentIntentHash && (
           <IntentTable
             onRowClick={onIntentTableRowClick}
           />

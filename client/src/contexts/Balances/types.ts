@@ -1,5 +1,5 @@
 export interface ContextValues {
-  ethBalance?: bigint
-  usdcBalance?: bigint
-  usdcApprovalToRamp?: bigint
+  ethBalance: bigint | null
+  usdcBalance: bigint | null
+  usdcApprovalToRamp: bigint | null
 }
