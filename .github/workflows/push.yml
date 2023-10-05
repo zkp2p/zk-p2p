@@ -21,8 +21,11 @@ jobs:
         working-directory: ./contracts
         env:
           PORT: 8545
-      - name: Run smart contract tests tests...
+      - name: Run smart contract tests...
         run: yarn test:clean --network localhost
+        working-directory: ./contracts
+      - name: Run coverage
+        run: yarn coverage
         working-directory: ./contracts
 
 
