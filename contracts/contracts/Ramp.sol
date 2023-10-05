@@ -284,6 +284,26 @@ contract Ramp is Ownable {
     }
 
     /**
+     * @notice Only callable by the originator of the intent. Cancels an outstanding intent thus allowing user to signal a new
+     * intent. Deposit state is updated to reflect the cancelled intent.
+     *
+     * @param _intentHash    Hash of intent being cancelled
+     */
+    function cancelIntent(bytes32 _intentHash) external {
+        Intent memory intent = intents[_intentHash];
+        require(intent.intentTimestamp != 0, "Intent does not exist");
+
+        Deposit storage deposit = deposits[intent.deposit];
+
+        require(intent.onRamper == msg.sender, "Sender must be the on-ramper");
+
+        _pruneIntent(deposit, _intentHash);
+
+        deposit.remainingDeposits += intent.amount;
+        deposit.outstandingIntentAmount -= intent.amount;
+    }
+
+    /**
      * @notice ONLY OFF-RAMPER: Must be submitted by off-ramper. Upon submission the proof is validated, intent is removed,
      * and deposit state is updated. USDC is transferred to the on-ramper and the defined convenience fee is sent to the off-
      * ramper.
@@ -500,6 +520,10 @@ contract Ramp is Ownable {
 
     function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {
         return userDenylist[accounts[_account].venmoIdHash].isDenied[_deniedUser];
+    }
+
+    function getIntentAndOnRamperId(bytes32 _intentHash) external view returns (Intent memory, bytes32) {
+        return (intents[_intentHash], accounts[intents[_intentHash].onRamper].venmoIdHash);
     }
 
     function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
