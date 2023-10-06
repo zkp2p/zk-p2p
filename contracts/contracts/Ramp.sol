@@ -83,12 +83,22 @@ contract Ramp is Ownable {
         bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
     }
 
+    struct DepositWithAvailableLiquidity {
+        Deposit deposit;
+        uint256 availableLiquidity;
+    }
+
     struct Intent {
         address onRamper;
         address to;
         uint256 deposit;
         uint256 amount;
         uint256 intentTimestamp;
+    }
+
+    struct IntentWithOnRamperId {
+        Intent intent;
+        bytes32 onRamperIdHash;
     }
 
     struct DenyList {
@@ -522,37 +532,51 @@ contract Ramp is Ownable {
         return userDenylist[accounts[_account].venmoIdHash].isDenied[_deniedUser];
     }
 
-    function getIntentAndOnRamperId(bytes32 _intentHash) external view returns (Intent memory, bytes32) {
-        return (intents[_intentHash], accounts[intents[_intentHash].onRamper].venmoIdHash);
+    function getIntentsWithOnRamperId(bytes32[] calldata _intentHashes) external view returns (IntentWithOnRamperId[] memory) {
+        IntentWithOnRamperId[] memory intentsWithOnRamperId = new IntentWithOnRamperId[](_intentHashes.length);
+
+        for (uint256 i = 0; i < _intentHashes.length; ++i) {
+            Intent memory intent = intents[_intentHashes[i]];
+            intentsWithOnRamperId[i] = IntentWithOnRamperId({
+                intent: intent,
+                onRamperIdHash: accounts[intent.onRamper].venmoIdHash
+            });
+        }
+
+        return intentsWithOnRamperId;
     }
 
-    function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
+    function getAccountDeposits(address _account) external view returns (DepositWithAvailableLiquidity[] memory accountDeposits) {
         uint256[] memory accountDepositIds = accounts[_account].deposits;
-        accountDeposits = new Deposit[](accountDepositIds.length);
+        accountDeposits = new DepositWithAvailableLiquidity[](accountDepositIds.length);
         
         for (uint256 i = 0; i < accountDepositIds.length; ++i) {
-            accountDeposits[i] = deposits[accountDepositIds[i]];
+            uint256 depositId = accountDepositIds[i];
+            Deposit memory deposit = deposits[depositId];
+            ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);
+
+            accountDeposits[i] = DepositWithAvailableLiquidity({
+                deposit: deposit,
+                availableLiquidity: deposit.remainingDeposits + reclaimableAmount
+            });
         }
     }
 
-    function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray) {
-        depositArray = new Deposit[](_depositIds.length);
+    function getDepositFromIds(uint256[] memory _depositIds) external view returns (DepositWithAvailableLiquidity[] memory depositArray) {
+        depositArray = new DepositWithAvailableLiquidity[](_depositIds.length);
 
         for (uint256 i = 0; i < _depositIds.length; ++i) {
-            depositArray[i] = deposits[_depositIds[i]];
+            uint256 depositId = _depositIds[i];
+            Deposit memory deposit = deposits[depositId];
+            ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);
+
+            depositArray[i] = DepositWithAvailableLiquidity({
+                deposit: deposit,
+                availableLiquidity: deposit.remainingDeposits + reclaimableAmount
+            });
         }
 
         return depositArray;
-    }
-
-    function getIntentFromIds(bytes32[] memory _intentIds) external view returns (Intent[] memory intentArray) {
-        intentArray = new Intent[](_intentIds.length);
-
-        for (uint256 i = 0; i < _intentIds.length; ++i) {
-            intentArray[i] = intents[_intentIds[i]];
-        }
-
-        return intentArray;
     }
 
     /* ============ Internal Functions ============ */
