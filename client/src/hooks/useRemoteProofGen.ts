@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 
-type ProofGenParams = {
-  emailType: string;
-  emailBody: string;
-};
-
-const REMOTE_PROOF_API_URL = process.env.REACT_APP_REMOTE_PROOF_API_URL;
-
+const REMOTE_PROOF_API_URL = process.env.REMOTE_PROOF_API_URL;
 if (!REMOTE_PROOF_API_URL) {
     throw new Error("REMOTE_PROOF_API_URL environment variable is not defined.");
 }
 
+type ProofGenParams = {
+  emailType: string;
+  emailBody: string;
+}
+
+type RemoteProofResponse = {
+  proof: any;
+  public_values: any;
+};
+
 export default function useRemoteProofGen({ emailType, emailBody }: ProofGenParams) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<RemoteProofResponse | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -26,8 +30,8 @@ export default function useRemoteProofGen({ emailType, emailBody }: ProofGenPara
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          emailType,
-          emailBody
+          "email_type": emailType,
+          "email": emailBody
         })
       });
 
