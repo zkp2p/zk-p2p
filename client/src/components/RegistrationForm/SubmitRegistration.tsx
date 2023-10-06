@@ -6,6 +6,7 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/useRegistration';
 import { reformatProofForChain } from "@helpers/submitProof";
 
 
@@ -21,7 +22,14 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   /*
    * Contexts
    */
-  const { rampAddress, rampAbi } = useSmartContracts()
+  const {
+    rampAddress,
+    rampAbi
+  } = useSmartContracts()
+
+  const {
+    refetchRampAccount
+  } = useRegistration()
 
   /*
     State
@@ -44,6 +52,9 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,
     ],
+    onSuccess: () => {
+      refetchRampAccount?.();
+    },
     onError: (error: { message: any }) => {
       console.error(error.message);
     },

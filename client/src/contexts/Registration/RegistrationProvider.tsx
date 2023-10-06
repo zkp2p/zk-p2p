@@ -45,7 +45,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: rampAccountRaw,
     // isLoading: isFetchRampAccountLoading,
     // isError: isRegistrationDataError,
-    // refetch: refetchRampAccount,
+    refetch: refetchRampAccount,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
@@ -106,6 +106,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         isRegistered,
         registrationHash,
         registeredVenmoId,
+        refetchRampAccount
       }}
     >
       {children}
