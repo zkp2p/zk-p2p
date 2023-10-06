@@ -8,7 +8,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOffRamp } from "./SubmitOffRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { RECEIVE_KEY_FILE_NAME } from "@helpers/constants";
+import { RECEIVE_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 
 
@@ -84,16 +84,21 @@ export const OffRamp: React.FC<OffRampProps> = ({
           circuitType={CircuitType.EMAIL_VENMO_RECEIVE}
           circuitRemoteFilePath={RECEIVE_KEY_FILE_NAME}
           circuitInputs={selectedIntentHash}
+          remoteProofGenEmailType={RemoteProofGenEmailTypes.RECEIVE}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />
 
-        {!isProvingTypeFast && (
+        {/* {!isProvingTypeFast && (
           <SubmitOffRamp
             proof={proof}
             publicSignals={publicSignals}
           />
-        )}
+        )} */}
+        <SubmitOffRamp
+            proof={proof}
+            publicSignals={publicSignals}
+          />
       </Body>
     </Container>
   );
