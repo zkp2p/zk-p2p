@@ -68,13 +68,15 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchRegistration_1');
+    console.log('shouldFetchRegistration_1');
+    
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      // console.log('shouldFetchRegistration_2');
+      console.log('shouldFetchRegistration_2');
 
       setShouldFetchRegistration(true);
     } else {
-      // console.log('shouldFetchRegistration_3');
+      console.log('shouldFetchRegistration_3');
+      
       setShouldFetchRegistration(false);
 
       setRegistrationHash(null);
@@ -83,18 +85,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
 
   useEffect(() => {
-    // console.log('rampAccountRaw_1');
+    console.log('rampAccountRaw_1');
   
     if (rampAccountRaw) {
-      // console.log('rampAccountRaw_2');
-      // console.log(rampAccountRaw);
+      console.log('rampAccountRaw_2');
+      console.log(rampAccountRaw);
 
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
       
       setRegistrationHash(rampAccountProcessed);
     } else {
-      // console.log('rampAccountRaw_3');
+      console.log('rampAccountRaw_3');
       
       setRegistrationHash(null);
     }

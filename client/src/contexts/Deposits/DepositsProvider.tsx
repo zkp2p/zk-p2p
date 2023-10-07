@@ -73,13 +73,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchDeposits_1');
+    console.log('shouldFetchDeposits_1');
 
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      // console.log('shouldFetchDeposits_2');
+      console.log('shouldFetchDeposits_2');
+
       setShouldFetchDeposits(true);
     } else {
-      // console.log('shouldFetchDeposits_3');
+      console.log('shouldFetchDeposits_3');
+
       setShouldFetchDeposits(false);
 
       setDeposits(null);
@@ -88,13 +90,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
 
   useEffect(() => {
-    // console.log('shouldFetchDepositIntents_1');
+    console.log('shouldFetchDepositIntents_1');
 
     if (uniqueIntentHashes.length > 0) {
-      // console.log('shouldFetchDepositIntents_2');
+      console.log('shouldFetchDepositIntents_2');
+
       setShouldFetchDepositIntents(true);
     } else {
-      // console.log('shouldFetchDepositIntents_3');
+      console.log('shouldFetchDepositIntents_3');
+
       setShouldFetchDepositIntents(false);
 
       setDepositIntents(null);
@@ -102,11 +106,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [uniqueIntentHashes]);
 
   useEffect(() => {
-    // console.log('depositsRaw_1');
+    console.log('depositsRaw_1');
 
     if (depositsRaw && depositsRaw.length > 0) {
-      // console.log('depositsRaw_2');
-      // console.log(depositsRaw);
+      console.log('depositsRaw_2');
+      console.log(depositsRaw);
 
       const depositsArrayRaw = depositsRaw as any[];
 
@@ -139,18 +143,18 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       setDeposits(sanitizedDeposits);
       setUniqueIntentHashes(depositIntentHashes.flat());
     } else {
-      // console.log('depositsRaw_3');
+      console.log('depositsRaw_3');
       setDeposits(null);
       setUniqueIntentHashes([]);
     }
   }, [depositsRaw]);
 
   useEffect(() => {
-    // console.log('depositsIntentsRaw_1');
+    console.log('depositsIntentsRaw_1');
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      // console.log('depositsIntentsRaw_2');
-      // console.log(depositIntentsRaw);
+      console.log('depositsIntentsRaw_2');
+      console.log(depositIntentsRaw);
 
       const depositIntentsArray = depositIntentsRaw as any[];
 
@@ -178,7 +182,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       setDepositIntents(sanitizedIntents);
     } else {
-      // console.log('depositsIntentsRaw_3');
+      console.log('depositsIntentsRaw_3');
+      
       setDepositIntents([]);
     }
   }, [depositIntentsRaw]);

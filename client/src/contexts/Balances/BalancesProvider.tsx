@@ -82,12 +82,14 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchEthBalance_1');
+    console.log('shouldFetchEthBalance_1');
+
     if (isLoggedIn && loggedInEthereumAddress) {
-      // console.log('shouldFetchEthBalance_2');
+      console.log('shouldFetchEthBalance_2');
+
       setShouldFetchEthBalance(true);
     } else {
-      // console.log('shouldFetchEthBalance_3');
+      console.log('shouldFetchEthBalance_3');
       setShouldFetchEthBalance(false);
 
       setEthBalance(null);
@@ -97,13 +99,16 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress]);
 
   useEffect(() => {
-    // console.log('shouldFetchUsdcBalanceAndApproval_1');
+    console.log('shouldFetchUsdcBalanceAndApproval_1');
+
     if (isLoggedIn && loggedInEthereumAddress && rampAddress && usdcAddress) {
-      // console.log('shouldFetchUsdcBalanceAndApproval_2');
+      console.log('shouldFetchUsdcBalanceAndApproval_2');
+
       setShouldFetchUsdcBalance(true);
       setShouldFetchUsdcApprovalToRamp(true);
     } else {
-      // console.log('shouldFetchUsdcBalanceAndApproval_3');
+      console.log('shouldFetchUsdcBalanceAndApproval_3');
+
       setShouldFetchUsdcBalance(false);
       setShouldFetchUsdcApprovalToRamp(false);
 
@@ -114,45 +119,50 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress, usdcAddress]);
   
   useEffect(() => {
-    // console.log('ethBalanceRaw_1');
+    console.log('ethBalanceRaw_1');
   
     if (ethBalanceRaw) {
-      // console.log('ethBalanceRaw_2');
-      // console.log(ethBalanceRaw);
+      console.log('ethBalanceRaw_2');
+      console.log(ethBalanceRaw);
+
       const ethBalanceProcessed = ethBalanceRaw.value;
 
       setEthBalance(ethBalanceProcessed);
     } else {
-      // console.log('ethBalanceRaw_3');
+      console.log('ethBalanceRaw_3');
+
       setEthBalance(ZERO);
     }
   }, [ethBalanceRaw]);
 
   useEffect(() => {
-    // console.log('usdcBalanceRaw_1');
+    console.log('usdcBalanceRaw_1');
   
     if (usdcBalanceRaw) {
-      // console.log('usdcBalanceRaw_2');
-      // console.log(usdcBalanceRaw);
+      console.log('usdcBalanceRaw_2');
+      console.log(usdcBalanceRaw);
+
       const usdcBalanceRawProcessed = usdcBalanceRaw.value;
 
       setUsdcBalance(usdcBalanceRawProcessed);
     } else {
-      // console.log('usdcBalanceRaw_3');
+      console.log('usdcBalanceRaw_3');
+
       setUsdcBalance(ZERO);
     }
   }, [usdcBalanceRaw]);
 
   useEffect(() => {
-    // console.log('usdcApprovalToRampRaw_1');
+    console.log('usdcApprovalToRampRaw_1');
   
     if (usdcApprovalToRampRaw) {
-      // console.log('usdcApprovalToRampRaw_2');
-      // console.log(usdcApprovalToRampRaw);
+      console.log('usdcApprovalToRampRaw_2');
+      console.log(usdcApprovalToRampRaw);
 
       setUsdcApprovalToRamp(usdcApprovalToRampRaw);
     } else {
-      // console.log('usdcApprovalToRampRaw_3');
+      console.log('usdcApprovalToRampRaw_3');
+      
       setUsdcApprovalToRamp(ZERO);
     }
   }, [usdcApprovalToRampRaw]);

@@ -23,29 +23,29 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * Hooks
    */
   useEffect(() => {
-    // console.log('addressRaw_1');
-    // console.log(address);
+    console.log('addressRaw_1');
+    console.log(address);
 
     if (address) {
-      // console.log('addressRaw_2');
+      console.log('addressRaw_2');
       setLoggedInEthereumAddress(address);
       setIsLoggedIn(true);
     } else {
-      // console.log('addressRaw_3');
+      console.log('addressRaw_3');
       setLoggedInEthereumAddress(null);
       setIsLoggedIn(false);
     }
   }, [address]);
 
   useEffect(() => {
-    // console.log('networkRaw_1');
-    // console.log(chain);
+    console.log('networkRaw_1');
+    console.log(chain);
 
     if (chain) {
-      // console.log('networkRaw_2');
+      console.log('networkRaw_2');
       setNetwork(chain.network);
     } else {
-      // console.log('networkRaw_3');
+      console.log('networkRaw_3');
       setNetwork(null);
     }
   }, [chain]);

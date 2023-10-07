@@ -61,12 +61,14 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchDeniedUsers_1');
+    console.log('shouldFetchDeniedUsers_1');
+
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      // console.log('shouldFetchDeniedUsers_2');
+      console.log('shouldFetchDeniedUsers_2');
+
       setShouldFetchDeniedUsers(true);
     } else {
-      // console.log('shouldFetchDeniedUsers_3');
+      console.log('shouldFetchDeniedUsers_3');
       setShouldFetchDeniedUsers(false);
 
       setDeniedUsers(null);
@@ -74,17 +76,18 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    // console.log('deniedUsersRaw_1');
+    console.log('deniedUsersRaw_1');
   
     if (deniedUsersRaw && deniedUsersRaw.length > 0) {
-      // console.log('deniedUsersRaw_2');
-      // console.log(deniedUsersRaw);
+      console.log('deniedUsersRaw_2');
+      console.log(deniedUsersRaw);
 
       const deniedUsersProcessed = deniedUsersRaw as Address[];
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
-      // console.log('deniedUsersRaw_3');
+      console.log('deniedUsersRaw_3');
+      
       setDeniedUsers(null);
     }
   }, [deniedUsersRaw]);

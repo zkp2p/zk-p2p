@@ -91,13 +91,13 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchIntentHash_1');
+    console.log('shouldFetchIntentHash_1');
     if (isLoggedIn && loggedInEthereumAddress && registrationHash) {
-      // console.log('shouldFetchIntentHash_2');
+      console.log('shouldFetchIntentHash_2');
 
       setShouldFetchIntentHash(true);
     } else {
-      // console.log('shouldFetchIntentHash_3');
+      console.log('shouldFetchIntentHash_3');
 
       setShouldFetchIntentHash(false);
 
@@ -107,15 +107,15 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, registrationHash]);
 
   useEffect(() => {
-    // console.log('shouldFetchIntent_1');
+    console.log('shouldFetchIntent_1');
     
     if (currentIntentHash) {
-      // console.log('shouldFetchIntent_2');
-      // console.log(currentIntentHash);
+      console.log('shouldFetchIntent_2');
+      console.log(currentIntentHash);
 
       setShouldFetchIntent(true);
     } else {
-      // console.log('shouldFetchIntent_3');
+      console.log('shouldFetchIntent_3');
 
       setShouldFetchIntent(false);
       
@@ -124,27 +124,27 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [currentIntentHash]);
 
   useEffect(() => {
-    // console.log('intentHashRaw_1');
+    console.log('intentHashRaw_1');
   
     if (intentHashRaw !== ZERO_ADDRESS) {
-      // console.log('intentHashRaw_2');
-      // console.log(intentHashRaw);
+      console.log('intentHashRaw_2');
+      console.log(intentHashRaw);
       
       const intentHashProcessed = intentHashRaw as string;
 
       setCurrentIntentHash(intentHashProcessed);
     } else {
-      // console.log('intentHashRaw_3');
+      console.log('intentHashRaw_3');
 
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
 
   useEffect(() => {
-    // console.log('intentRaw_1');
+    console.log('intentRaw_1');
   
     if (intentRaw && depositStore && depositStore.length > 0) {
-      // console.log('intentRaw_2');
+      console.log('intentRaw_2');
 
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
@@ -164,12 +164,12 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   
         setCurrentIntent(onRampIntentProcessed);
       } else {
-        // console.log('intentRaw_3');
+        console.log('intentRaw_3');
 
         setCurrentIntent(null);
       }
     } else {
-      // console.log('intentRaw_3');
+      console.log('intentRaw_3');
 
       setCurrentIntent(null);
     }
