@@ -621,6 +621,7 @@ module.exports = function (webpackEnv) {
         'process.env.ALCHEMY_API_KEY': JSON.stringify(process.env.ALCHEMY_API_KEY),
         'process.env.WALLET_CONNECT_PROJECT_ID': JSON.stringify(process.env.WALLET_CONNECT_PROJECT_ID),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
+        'process.env.REMOTE_PROOF_API_URL': JSON.stringify(process.env.REMOTE_PROOF_API_URL),
       }),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),

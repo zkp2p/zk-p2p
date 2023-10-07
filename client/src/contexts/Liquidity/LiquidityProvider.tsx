@@ -7,8 +7,9 @@ import React, {
 } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit, StoredDeposit } from '../Deposits/types'
+import { Deposit, DepositWithAvailableLiquidity, StoredDeposit } from '../Deposits/types'
 import { fetchBestDepositForAmount, createDepositsStore } from './helper'
+import { esl } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
@@ -32,7 +33,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [deposits, setDeposits] = useState<Deposit[] | null>(null);
+  const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
 
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
@@ -81,13 +82,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchDeposits_1');
+    esl && console.log('shouldFetchDeposits_1');
+    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking depositCounter: ', depositCounter);
+
     if (rampAddress && depositCounter) {
-      // console.log('shouldFetchDeposits_2');
+      esl && console.log('shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      // console.log('shouldFetchDeposits_3');
+      esl && console.log('shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
@@ -97,16 +101,19 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [rampAddress, depositCounter]);
 
   useEffect(() => {
-    // console.log('liquidityDepositsRaw_1');
+    esl && console.log('liquidityDepositsRaw_1');
+    esl && console.log('checking depositsRaw: ', depositsRaw);
+
     if (depositsRaw) {
-      // console.log('liquidityDepositsRaw_2');
+      esl && console.log('liquidityDepositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
 
-      const sanitizedDeposits: Deposit[] = [];
+      const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
-        const depositData = depositsArrayRaw[i];
+        const depositWithAvailableLiquidityData = depositsArrayRaw[i];
         
+        const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
@@ -118,29 +125,36 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
           intentHashes: depositData.intentHashes,
         };
 
-        sanitizedDeposits.push(deposit);
+        const depositWithLiquidity: DepositWithAvailableLiquidity = {
+          deposit,
+          availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
+        }
+
+        sanitizedDeposits.push(depositWithLiquidity);
       }
 
       setDeposits(sanitizedDeposits);
     } else {
-      // console.log('liquidityDepositsRaw_3');
+      esl && console.log('liquidityDepositsRaw_3');
+      
       setDeposits(null);
     }
   }, [depositsRaw]);
 
   useEffect(() => {
-    // console.log('depositStore_1');
+    esl && console.log('depositStore_1');
+    esl && console.log('checking deposits: ', deposits);
+    esl && console.log('checking depositIdsToFetch: ', depositIdsToFetch);
 
     if (deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
-      // console.log('depositStore_2');
+      esl && console.log('depositStore_2');
 
       const newStore = createDepositsStore(depositIdsToFetch, deposits); // This assumes depositIdsToFetch is correctly ordered
 
-      // console.log(newStore);
-
       setDepositStore(newStore);
     } else {
-      // console.log('depositStore_3');
+      esl && console.log('depositStore_3');
+
       setDepositStore(null);
     }
   }, [deposits, depositIdsToFetch]);

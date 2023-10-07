@@ -1,34 +1,33 @@
 import { createContext } from 'react'
 import { Address } from 'wagmi';
 
-import { ZERO_ADDRESS } from '@helpers/constants'
 import { Abi } from './types'
 
 
 interface SmartContractsValues {
-  rampAddress: Address;
-  rampAbi: Abi;
-  registrationProcessorAddress: Address;
-  // registrationProcessorAbi: Abi;
-  sendProcessorAddress: Address;
-  sendProcessorAbi: Abi;
-  receiveProcessorAddress: Address;
-  receiveProcessorAbi: Abi;
-  usdcAddress: Address;
-  usdcAbi?: Abi;
+  rampAddress: Address | null;
+  rampAbi: Abi | null;
+  registrationProcessorAddress: Address | null;
+  // registrationProcessorAbi: Abi | null;
+  sendProcessorAddress: Address | null;
+  sendProcessorAbi: Abi | null;
+  receiveProcessorAddress: Address | null;
+  receiveProcessorAbi: Abi | null;
+  usdcAddress: Address | null;
+  usdcAbi?: Abi | null;
 }
 
 const defaultValues: SmartContractsValues = {
-  rampAddress: ZERO_ADDRESS,
-  rampAbi: [],
-  registrationProcessorAddress: ZERO_ADDRESS,
-  // registrationProcessorAbi: [],
-  sendProcessorAddress: ZERO_ADDRESS,
-  sendProcessorAbi: [],
-  receiveProcessorAddress: ZERO_ADDRESS,
-  receiveProcessorAbi: [],
-  usdcAddress: ZERO_ADDRESS,
-  usdcAbi: [],
+  rampAddress: null,
+  rampAbi: null,
+  registrationProcessorAddress: null,
+  // registrationProcessorAbi: null,
+  sendProcessorAddress: null,
+  sendProcessorAbi: null,
+  receiveProcessorAddress: null,
+  receiveProcessorAbi: null,
+  usdcAddress: null,
+  usdcAbi: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

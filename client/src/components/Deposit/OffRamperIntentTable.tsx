@@ -5,7 +5,7 @@ import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
 import { SECONDS_IN_DAY  } from '@helpers/constants'
-import { Intent } from "../../contexts/Deposits/types";
+import { DepositIntent } from "../../contexts/Deposits/types";
 import useDeposits from '@hooks/useDeposits';
 
 
@@ -41,11 +41,15 @@ export const IntentTable: React.FC<IntentTableProps> = ({
       setIntentsRowData([]);
     } else {
       var sanitizedIntents: IntentRowData[] = [];
-      sanitizedIntents = depositIntents.map((intent: Intent) => {
+      sanitizedIntents = depositIntents.map((depositIntent: DepositIntent) => {
+        const intent = depositIntent.intent;
+
         const onRamper = truncateAddress(intent.onRamper);
         const amountUSDToReceive = "$2";
         const amountUSDCToSend = convertDepositAmountToUSD(intent.amount);
         const expirationTimestamp = calculateAndFormatExpiration(intent.timestamp);
+
+        // TODO: Add Venmo hash to the off-ramper intent
         
         return {
           onRamper,

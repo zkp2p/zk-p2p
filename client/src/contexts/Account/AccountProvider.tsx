@@ -1,6 +1,8 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, useAccount, useNetwork } from 'wagmi';
 
+import { esl } from '@helpers/constants'
+
 import AccountContext from './AccountContext'
 
 
@@ -23,29 +25,33 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * Hooks
    */
   useEffect(() => {
-    // console.log('addressRaw_1');
-    // console.log(address);
+    esl && console.log('addressRaw_1');
+    esl && console.log('checking address: ', address);
 
     if (address) {
-      // console.log('addressRaw_2');
+      esl && console.log('addressRaw_2');
+
       setLoggedInEthereumAddress(address);
       setIsLoggedIn(true);
     } else {
-      // console.log('addressRaw_3');
+      esl && console.log('addressRaw_3');
+
       setLoggedInEthereumAddress(null);
       setIsLoggedIn(false);
     }
   }, [address]);
 
   useEffect(() => {
-    // console.log('networkRaw_1');
-    // console.log(chain);
+    esl && console.log('networkRaw_1');
+    esl && console.log('checking chain: ', chain);
 
     if (chain) {
-      // console.log('networkRaw_2');
+      esl && console.log('networkRaw_2');
+
       setNetwork(chain.network);
     } else {
-      // console.log('networkRaw_3');
+      esl && console.log('networkRaw_3');
+
       setNetwork(null);
     }
   }, [chain]);

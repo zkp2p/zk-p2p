@@ -1,15 +1,19 @@
-import { Deposit, StoredDeposit } from "../Deposits/types";
+import { DepositWithAvailableLiquidity, StoredDeposit } from "../Deposits/types";
 
 
-export const createDepositsStore = (depositIds: bigint[], deposits: Deposit[]): StoredDeposit[] => {
-  const zippedDeposits = depositIds.map((id, index) => ({ depositId: id, deposit: deposits[index] }));
+export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
+  const zippedDeposits = depositIds.map((id, index) => ({
+    depositId: id,
+    deposit: deposits[index].deposit,
+    availableLiquidity: deposits[index].availableLiquidity
+  }));
   
   const sortedDeposits = zippedDeposits.sort((a, b) => {
-    // Sort by descending order of remaining deposit amount
-    if (b.deposit.remainingDepositAmount > a.deposit.remainingDepositAmount) {
+    // Sort by descending order of remaining available liquidity
+    if (b.availableLiquidity > a.availableLiquidity) {
       return 1;
     }
-    if (b.deposit.remainingDepositAmount < a.deposit.remainingDepositAmount) {
+    if (b.availableLiquidity < a.availableLiquidity) {
       return -1;
     }
 
@@ -37,7 +41,7 @@ export const createDepositsStore = (depositIds: bigint[], deposits: Deposit[]): 
 
 export const fetchBestDepositForAmount = (onRampAmount: bigint, depositStore: StoredDeposit[]): StoredDeposit | null => {
   // Filter deposits that can fulfill the onRampAmount
-  const eligibleDeposits = depositStore.filter(deposit => deposit.deposit.remainingDepositAmount >= onRampAmount);
+  const eligibleDeposits = depositStore.filter(deposit => deposit.availableLiquidity >= onRampAmount);
   if (eligibleDeposits.length === 0) {
     return null;
   }
@@ -60,7 +64,7 @@ export const fetchBestDepositForAmount = (onRampAmount: bigint, depositStore: St
   return sortedByCostDeposits[0];
 };
 
-export const pruneDeposits = (depositIds: number[], deposits: Deposit[]): number[] => {
+export const pruneDeposits = (depositIds: number[], deposits: DepositWithAvailableLiquidity[]): number[] => {
   /*
     TODO: Fill me out, currently returning no deposit ids to prune. This means that all deposits are being re-fetched continuously
   */

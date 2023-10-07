@@ -39,6 +39,14 @@ export const REGISTRATION_KEY_FILE_NAME = "venmo_registration/venmo_registration
 export const SEND_KEY_FILE_NAME = "venmo_send/venmo_send";
 export const RECEIVE_KEY_FILE_NAME = "venmo_receive/venmo_receive";
 
+export const RemoteProofGenEmailTypes = {
+    REGISTRATION: "registration",
+    SEND: "send",
+    RECEIVE: "receive"
+};
+
+const ENABLE_STATE_LOGGING = false;
+export const esl = ENABLE_STATE_LOGGING;
 
 // Placeholder in proof gen text area for example
 export const PLACEHOLDER_EMAIL_BODY = `Delivered-To: vitalik.buterin@gmail.com

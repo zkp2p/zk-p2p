@@ -2,11 +2,11 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
+import { esl, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity'
-import { ZERO_ADDRESS } from '@helpers/constants'
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -79,8 +79,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     // Find the StoredDeposit object with the matching depositId
     const matchingDeposit = storedDeposits.find(storedDeposit => storedDeposit.depositId === depositId);
     
-    // console.log('matchingDeposit');
-    // console.log(matchingDeposit);
+    // esl && console.log('matchingDeposit');
+    // esl && console.log(matchingDeposit);
 
     // If a matching deposit is found, return the venmoId, otherwise return null
     return matchingDeposit ? matchingDeposit.deposit.venmoId : null;
@@ -91,13 +91,17 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchIntentHash_1');
+    esl && console.log('shouldFetchIntentHash_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking registrationHash: ', registrationHash);
+
     if (isLoggedIn && loggedInEthereumAddress && registrationHash) {
-      // console.log('shouldFetchIntentHash_2');
+      esl && console.log('shouldFetchIntentHash_2');
 
       setShouldFetchIntentHash(true);
     } else {
-      // console.log('shouldFetchIntentHash_3');
+      esl && console.log('shouldFetchIntentHash_3');
 
       setShouldFetchIntentHash(false);
 
@@ -107,13 +111,15 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, registrationHash]);
 
   useEffect(() => {
-    // console.log('shouldFetchIntent_1');
+    esl && console.log('shouldFetchIntent_1');
+    esl && console.log('checking currentIntentHash: ', currentIntentHash);
+    
     if (currentIntentHash) {
-      // console.log('shouldFetchIntent_2');
+      esl && console.log('shouldFetchIntent_2');
 
       setShouldFetchIntent(true);
     } else {
-      // console.log('shouldFetchIntent_3');
+      esl && console.log('shouldFetchIntent_3');
 
       setShouldFetchIntent(false);
       
@@ -122,27 +128,29 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [currentIntentHash]);
 
   useEffect(() => {
-    // console.log('intentHashRaw_1');
+    esl && console.log('intentHashRaw_1');
+    esl && console.log('checking intentHashRaw: ', intentHashRaw);
   
     if (intentHashRaw !== ZERO_ADDRESS) {
-      // console.log('intentHashRaw_2');
-      // console.log(intentHashRaw);
+      esl && console.log('intentHashRaw_2');
       
       const intentHashProcessed = intentHashRaw as string;
 
       setCurrentIntentHash(intentHashProcessed);
     } else {
-      // console.log('intentHashRaw_3');
+      esl && console.log('intentHashRaw_3');
 
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
 
   useEffect(() => {
-    // console.log('intentRaw_1');
+    esl && console.log('intentRaw_1');
+    esl && console.log('checking intentRaw: ', intentRaw);
+    esl && console.log('checking depositStore: ', depositStore);
   
     if (intentRaw && depositStore && depositStore.length > 0) {
-      // console.log('intentRaw_2');
+      esl && console.log('intentRaw_2');
 
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
@@ -162,12 +170,12 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   
         setCurrentIntent(onRampIntentProcessed);
       } else {
-        // console.log('intentRaw_3');
+        esl && console.log('intentRaw_3');
 
         setCurrentIntent(null);
       }
     } else {
-      // console.log('intentRaw_3');
+      esl && console.log('intentRaw_3');
 
       setCurrentIntent(null);
     }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
@@ -8,7 +8,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { SEND_KEY_FILE_NAME } from "@helpers/constants";
+import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 
@@ -78,16 +78,21 @@ export const OnRamp: React.FC<OnRampProps> = ({
           circuitType={CircuitType.EMAIL_VENMO_SEND}
           circuitRemoteFilePath={SEND_KEY_FILE_NAME}
           circuitInputs={selectedIntentHash}
+          remoteProofGenEmailType={RemoteProofGenEmailTypes.SEND}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />
 
-        {!isProvingTypeFast && (
+        {/* {!isProvingTypeFast && (
           <SubmitOnRamp
             proof={proof}
             publicSignals={publicSignals}
           />
-        )}
+        )} */}
+        <SubmitOnRamp
+            proof={proof}
+            publicSignals={publicSignals}
+          />
       </Body>
     </Container>
   );

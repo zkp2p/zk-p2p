@@ -13,9 +13,10 @@ import { NumberedStep } from "../common/NumberedStep";
 import useSmartContracts from '@hooks/useSmartContracts';
 import { reformatProofForChain } from "@helpers/submitProof";
 
-import { vkey } from "@helpers/verifiers/send_vkey";
+// import { vkey } from "@helpers/verifiers/send_vkey";
 // @ts-ignore
-import * as snarkjs from "snarkjs";
+// import * as snarkjs from "snarkjs";
+
 
 interface SubmitOnRampProps {
   proof: string;

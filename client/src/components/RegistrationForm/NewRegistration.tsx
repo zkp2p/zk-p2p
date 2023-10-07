@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
@@ -8,7 +8,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitRegistration } from "./SubmitRegistration";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { REGISTRATION_KEY_FILE_NAME } from "@helpers/constants";
+import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 
@@ -24,6 +24,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   /*
    * Context
    */
+
   const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
 
   // ----- transaction state -----
@@ -40,6 +41,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   /*
    * Handlers
    */
+
   const handleProvingTypeChanged = (checked: boolean) => {
     if (setIsProvingTypeFast) {
       setIsProvingTypeFast(checked);
@@ -49,6 +51,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   /*
     Component
   */
+
   return (
     <Container>
       <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
@@ -77,16 +80,21 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
           circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
           circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
           circuitInputs={"1"} // Arbitrary value, unused for registration
+          remoteProofGenEmailType={RemoteProofGenEmailTypes.REGISTRATION}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />
 
-        {!isProvingTypeFast && (
+        {/* {!isProvingTypeFast && (
           <SubmitRegistration
             proof={proof}
             publicSignals={publicSignals}
           />
-        )}
+        )} */}
+        <SubmitRegistration
+            proof={proof}
+            publicSignals={publicSignals}
+          />
       </Body>
     </Container>
   );

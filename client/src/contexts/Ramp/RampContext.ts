@@ -1,7 +1,5 @@
 import { createContext } from 'react'
 
-import { ZERO } from '@helpers/constants'
-
 
 interface RampValues {
   minimumDepositAmount: bigint | null;

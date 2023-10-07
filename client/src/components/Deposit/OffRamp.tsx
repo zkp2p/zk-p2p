@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
@@ -8,12 +8,9 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../common/ProofGenerationForm";
 import { SubmitOffRamp } from "./SubmitOffRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { RECEIVE_KEY_FILE_NAME } from "@helpers/constants";
+import { RECEIVE_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
-
-
-// TODO: use hook
-import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
+import useProofGenSettings from '@hooks/useProofGenSettings';
 
 
 interface OffRampProps {
@@ -28,10 +25,7 @@ export const OffRamp: React.FC<OffRampProps> = ({
   /*
    * Context
    */
-  const {
-    isProvingTypeFast,
-    setIsProvingTypeFast,
-  } = useContext(ProofGenSettingsContext);
+  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -84,16 +78,21 @@ export const OffRamp: React.FC<OffRampProps> = ({
           circuitType={CircuitType.EMAIL_VENMO_RECEIVE}
           circuitRemoteFilePath={RECEIVE_KEY_FILE_NAME}
           circuitInputs={selectedIntentHash}
+          remoteProofGenEmailType={RemoteProofGenEmailTypes.RECEIVE}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
         />
 
-        {!isProvingTypeFast && (
+        {/* {!isProvingTypeFast && (
           <SubmitOffRamp
             proof={proof}
             publicSignals={publicSignals}
           />
-        )}
+        )} */}
+        <SubmitOffRamp
+            proof={proof}
+            publicSignals={publicSignals}
+          />
       </Body>
     </Container>
   );

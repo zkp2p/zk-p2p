@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   CircuitType,
@@ -15,17 +15,19 @@ import { NumberedStep } from "./NumberedStep";
 import { DragAndDropTextBox } from "./DragAndDropTextBox";
 import { LabeledSwitch } from "./LabeledSwitch";
 
-import { downloadProofFiles, generateProof } from "@helpers/zkp";
-import useProofGenSettings from '@hooks/useProofGenSettings';
-import { processEMLContent } from "@hooks/useDragAndDrop";
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
+import { downloadProofFiles, generateProof } from "@helpers/zkp";
+import { processEMLContent } from "@hooks/useDragAndDrop";
+import useProofGenSettings from '@hooks/useProofGenSettings';
+import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
   circuitInputs: string;
+  remoteProofGenEmailType: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
 }
@@ -34,13 +36,18 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   circuitType,
   circuitRemoteFilePath,
   circuitInputs,
+  remoteProofGenEmailType,
   setProof,
   setPublicSignals,
 }) => {
   /*
    * Context
    */
-  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
+  const {
+    isProvingTypeFast,
+    isInputModeDrag,
+    setIsInputModeDrag,
+  } = useProofGenSettings();
   
   /*
    * State
@@ -84,11 +91,35 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   };
 
   /*
+    Hooks
+  */
+
+  const {
+    data: remoteGenerateProofResponse,
+    loading: isRemoteGenerateProofLoading,
+    // error: remoteGenerateProofError,
+    fetchData: remoteGenerateProof
+  } = useRemoteProofGen({
+    emailType: remoteProofGenEmailType,
+    emailBody: emailFull
+  });
+
+  useEffect(() => {
+    if (remoteGenerateProofResponse) {
+      console.log('Data:', remoteGenerateProofResponse);
+
+      setProof(remoteGenerateProofResponse.proof);
+      setPublicSignals(remoteGenerateProofResponse.public_values);
+    }
+  }, [remoteGenerateProofResponse, setProof, setPublicSignals]);
+
+  /*
    * Handlers
    */
+
   const handleEmailInputTypeChanged = (checked: boolean) => {
-    if (setIsProvingTypeFast) {
-      setIsProvingTypeFast(checked);
+    if (setIsInputModeDrag) {
+      setIsInputModeDrag(checked);
     }
   };
 
@@ -221,7 +252,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           <TitleAndEmailSwitchRowContainer>
             Email
             <LabeledSwitch
-              switchChecked={isProvingTypeFast ?? true}
+              switchChecked={isInputModeDrag ?? true}
               onSwitchChange={handleEmailInputTypeChanged}
               checkedLabel={"Drag"}
               uncheckedLabel={"Paste"}
@@ -229,7 +260,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             />
           </TitleAndEmailSwitchRowContainer>
 
-          {isProvingTypeFast ? (
+          {isInputModeDrag ? (
             <DragAndDropTextBox
               onFileDrop={(file: File) => {
                 const reader = new FileReader();
@@ -240,8 +271,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
                     
                     setEmailFull(processedContent);
 
-                    if (setIsProvingTypeFast) {
-                      setIsProvingTypeFast(false);
+                    if (setIsInputModeDrag) {
+                      setIsInputModeDrag(false);
                     }
                   }
                 };
@@ -263,7 +294,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         <ButtonContainer>
           <Button
             disabled={emailFull.length === 0}
-            onClick={handleGenerateProofClick}
+            loading={isRemoteGenerateProofLoading}
+            onClick={isProvingTypeFast ? remoteGenerateProof : handleGenerateProofClick}
           >
             {displayMessage}
           </Button>

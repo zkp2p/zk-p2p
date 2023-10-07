@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-import { OnRamperIntent, Intent } from '../Deposits/types'
+import { OnRamperIntent } from '../Deposits/types'
 
 
 interface OnRamperIntentsValues {

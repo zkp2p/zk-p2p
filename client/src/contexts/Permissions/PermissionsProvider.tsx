@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, useContractRead } from 'wagmi';
 
+import { esl } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
 import useRegistration from '@hooks/useRegistration';
@@ -61,12 +62,18 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchDeniedUsers_1');
+    esl && console.log('shouldFetchDeniedUsers_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking isRegistered: ', isRegistered);
+
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      // console.log('shouldFetchDeniedUsers_2');
+      esl && console.log('shouldFetchDeniedUsers_2');
+
       setShouldFetchDeniedUsers(true);
     } else {
-      // console.log('shouldFetchDeniedUsers_3');
+      esl && console.log('shouldFetchDeniedUsers_3');
+
       setShouldFetchDeniedUsers(false);
 
       setDeniedUsers(null);
@@ -74,17 +81,18 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    // console.log('deniedUsersRaw_1');
+    esl && console.log('deniedUsersRaw_1');
+    esl && console.log('checking deniedUsersRaw: ', deniedUsersRaw);
   
-    if (deniedUsersRaw) {
-      // console.log('deniedUsersRaw_2');
-      // console.log(deniedUsersRaw);
+    if (deniedUsersRaw && deniedUsersRaw.length > 0) {
+      esl && console.log('deniedUsersRaw_2');
 
       const deniedUsersProcessed = deniedUsersRaw as Address[];
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
-      // console.log('deniedUsersRaw_3');
+      esl && console.log('deniedUsersRaw_3');
+      
       setDeniedUsers(null);
     }
   }, [deniedUsersRaw]);

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { Deposit } from "../../contexts/Deposits/types";
+import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
 import { fromUsdcToNaturalString, fromEtherToNaturalString } from '@helpers/units'
@@ -17,7 +17,7 @@ import useRegistration from '@hooks/useRegistration'
 
 export interface DepositPrime {
   depositor: string;
-  remainingDepositAmount: bigint;
+  availableDepositAmount: bigint;
   totalDepositAmount: bigint;
   outstandingIntentAmount: bigint;
   intentCount: number;
@@ -55,9 +55,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       setPositionsRowData([]);  
     } else {
       var sanitizedPositions: DepositPrime[] = [];
-      sanitizedPositions = deposits.map((deposit: Deposit) => {
+      sanitizedPositions = deposits.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+        const deposit = depositWithLiquidity.deposit
+
         const depositor = deposit.depositor;
-        const remainingDepositAmount = deposit.remainingDepositAmount;
+        const availableDepositAmount = depositWithLiquidity.availableLiquidity;
         const totalDepositAmount = deposit.depositAmount;
         const intentCount = deposit.intentHashes.length;
         const outstandingIntentAmount = deposit.outstandingIntentAmount;
@@ -66,7 +68,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
         return {
           depositor,
-          remainingDepositAmount,
+          availableDepositAmount,
           totalDepositAmount,
           outstandingIntentAmount,
           intentCount,
@@ -159,7 +161,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
                       depositorHash={position.depositor}
-                      remainingDepositAmount={fromUsdcToNaturalString(position.remainingDepositAmount)}
+                      availableDepositAmount={fromUsdcToNaturalString(position.availableDepositAmount)}
                       totalDepositAmount={fromUsdcToNaturalString(position.totalDepositAmount)}
                       outstandingIntentAmount={fromUsdcToNaturalString(position.outstandingIntentAmount)}
                       intentCount={position.intentCount.toString()}

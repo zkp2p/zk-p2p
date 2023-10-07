@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import SwapModal from "@components/Swap"
 import { OnRamp } from '@components/Swap/OnRamp'
-import { Intent } from "../contexts/Deposits/types";
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 
 

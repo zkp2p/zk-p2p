@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import useAccount from '@hooks/useAccount'
+import { esl } from '@helpers/constants'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import RampContext from './RampContext'
@@ -76,12 +76,16 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchRampState_1');
+    esl && console.log('shouldFetchRampState_1');
+    esl && console.log('checking rampAddress: ', rampAddress);
+
     if (rampAddress) {
-      // console.log('shouldFetchRampState_2');
+      esl && console.log('shouldFetchRampState_2');
+
       setShouldFetchRampState(true);
     } else {
-      // console.log('shouldFetchRampState_3');
+      esl && console.log('shouldFetchRampState_3');
+
       setShouldFetchRampState(false);
 
       setMinimumDepositAmount(null);
@@ -91,47 +95,50 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [rampAddress]);
 
   useEffect(() => {
-    // console.log('minDepositAmountRaw_1');
+    esl && console.log('minDepositAmountRaw_1');
+    esl && console.log('checking minimumDepositAmountRaw: ', minimumDepositAmountRaw);
   
     if (minimumDepositAmountRaw) {
-      // console.log('minDepositAmountRaw_2');
-      // console.log(minimumDepositAmountRaw);
+      esl && console.log('minDepositAmountRaw_2');
 
       const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      console.log('minDepositAmountRaw_3');
+      esl && console.log('minDepositAmountRaw_3');
+
       setMinimumDepositAmount(null);
     }
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    // console.log('convenienceRewardTimePeriodRaw_1');
+    esl && console.log('convenienceRewardTimePeriodRaw_1');
+    esl && console.log('checking convenienceRewardTimePeriodRaw: ', convenienceRewardTimePeriodRaw);
   
     if (convenienceRewardTimePeriodRaw) {
-      // console.log('convenienceRewardTimePeriodRaw_2');
-      // console.log(convenienceRewardTimePeriodRaw);
+      esl && console.log('convenienceRewardTimePeriodRaw_2');
 
       const convenienceRewardTimePerioProcessed = convenienceRewardTimePeriodRaw as bigint;
 
       setConvenienceRewardTimePeriod(convenienceRewardTimePerioProcessed);
     } else {
-      // console.log('convenienceRewardTimePeriodRaw_3');
+      esl && console.log('convenienceRewardTimePeriodRaw_3');
+
       setConvenienceRewardTimePeriod(null);
     }
   }, [convenienceRewardTimePeriodRaw]);
 
   useEffect(() => {
-    // console.log('depositCounterRaw_1');
+    esl && console.log('depositCounterRaw_1');
+    esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
     if (depositCounterRaw) {
-      // console.log('depositCounterRaw_2');
-      // console.log(depositCounterRaw);
+      esl && console.log('depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);
     } else {
-      // console.log('depositCounterRaw_3');
+      esl && console.log('depositCounterRaw_3');
+      
       setDepositCounter(null);
     }
   }, [depositCounterRaw]);

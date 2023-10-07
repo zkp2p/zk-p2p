@@ -1,7 +1,8 @@
-import React, { useEffect, useState, ReactNode, useMemo } from 'react'
+import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit, Intent } from './types'
+import { Deposit, DepositWithAvailableLiquidity, Intent, DepositIntent } from './types'
+import { esl } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -25,8 +26,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [deposits, setDeposits] = useState<Deposit[] | null>(null);
-  const [depositIntents, setDepositIntents] = useState<Intent[] | null>(null);
+  const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
+  const [depositIntents, setDepositIntents] = useState<DepositIntent[] | null>(null);
 
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
   const [uniqueIntentHashes, setUniqueIntentHashes] = useState<string[]>([]);
@@ -36,7 +37,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  // function getAccountDeposits(address _account) external view returns (Deposit[] memory accountDeposits) {
+  // function getAccountDeposits(address _account)
   const {
     data: depositsRaw,
     // isLoading: isFetchDepositsLoading,
@@ -52,7 +53,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     enabled: shouldFetchDeposits,
   })
       
-  // getIntentFromIds(bytes32[] memory _intentIds) external view returns (Intent[] memory intentArray)
+  // getIntentsWithOnRamperId(bytes32[] calldata _intentHashes)
   const {
     data: depositIntentsRaw,
     // isLoading: isFetchDepositIntentsLoading,
@@ -61,7 +62,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
-    functionName: 'getIntentFromIds',
+    functionName: 'getIntentsWithOnRamperId',
     args: [
       uniqueIntentHashes
     ],
@@ -73,12 +74,18 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // console.log('shouldFetchDeposits_1');
+    esl && console.log('shouldFetchDeposits_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking rampAddress: ', rampAddress);
+
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      // console.log('shouldFetchDeposits_2');
+      esl && console.log('shouldFetchDeposits_2');
+
       setShouldFetchDeposits(true);
     } else {
-      // console.log('shouldFetchDeposits_3');
+      esl && console.log('shouldFetchDeposits_3');
+
       setShouldFetchDeposits(false);
 
       setDeposits(null);
@@ -87,12 +94,16 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
 
   useEffect(() => {
-    // console.log('shouldFetchDepositIntents_1');
+    esl && console.log('shouldFetchDepositIntents_1');
+    esl && console.log('checking uniqueIntentHashes: ', uniqueIntentHashes);
+
     if (uniqueIntentHashes.length > 0) {
-      // console.log('shouldFetchDepositIntents_2');
+      esl && console.log('shouldFetchDepositIntents_2');
+
       setShouldFetchDepositIntents(true);
     } else {
-      // console.log('shouldFetchDepositIntents_3');
+      esl && console.log('shouldFetchDepositIntents_3');
+
       setShouldFetchDepositIntents(false);
 
       setDepositIntents(null);
@@ -100,19 +111,20 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [uniqueIntentHashes]);
 
   useEffect(() => {
-    // console.log('depositsRaw_1');
+    esl && console.log('depositsRaw_1');
+    esl && console.log('checking depositsRaw: ', depositsRaw);
 
     if (depositsRaw && depositsRaw.length > 0) {
-      // console.log('depositsRaw_2');
-      // console.log(depositsRaw);
+      esl && console.log('depositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
 
-      const sanitizedDeposits: Deposit[] = [];
+      const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
       const depositIntentHashes: string[][] = [];
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
-        const depositData = depositsArrayRaw[i];
+        const depositWithAvailableLiquidityData = depositsArrayRaw[i];
 
+        const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
@@ -124,32 +136,39 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           intentHashes: depositData.intentHashes,
         };
 
-        sanitizedDeposits.push(deposit);
+        const depositWithLiquidity: DepositWithAvailableLiquidity = {
+          deposit,
+          availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
+        }
+
+        sanitizedDeposits.push(depositWithLiquidity);
         depositIntentHashes.push(depositData.intentHashes);
       }
           
       setDeposits(sanitizedDeposits);
       setUniqueIntentHashes(depositIntentHashes.flat());
     } else {
-      // console.log('depositsRaw_3');
+      esl && console.log('depositsRaw_3');
+
       setDeposits(null);
       setUniqueIntentHashes([]);
     }
   }, [depositsRaw]);
 
   useEffect(() => {
-    // console.log('depositsIntentsRaw_1');
+    esl && console.log('depositsIntentsRaw_1');
+    esl && console.log('checking depositIntentsRaw: ', depositIntentsRaw);
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      // console.log('depositsIntentsRaw_2');
-      // console.log(depositIntentsRaw);
+      esl && console.log('depositsIntentsRaw_2');
 
       const depositIntentsArray = depositIntentsRaw as any[];
 
-      const sanitizedIntents: Intent[] = [];
+      const sanitizedIntents: DepositIntent[] = [];
       for (let i = depositIntentsArray.length - 1; i >= 0; i--) {
-        const intentData = depositIntentsArray[i];
+        const intentWithOnRamperId = depositIntentsArray[i];
         
+        const intentData = intentWithOnRamperId.intent;
         const intent: Intent = {
           onRamper: intentData.onRamper,
           to: intentData.to,
@@ -158,12 +177,19 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           timestamp: intentData.intentTimestamp,
         };
 
-        sanitizedIntents.push(intent);
+        const onRamperVenmoHash = intentWithOnRamperId.onRamperIdHash;
+        const depositIntent: DepositIntent = {
+          intent,
+          onRamperVenmoHash
+        }
+
+        sanitizedIntents.push(depositIntent);
       }
 
       setDepositIntents(sanitizedIntents);
     } else {
-      // console.log('depositsIntentsRaw_3');
+      esl && console.log('depositsIntentsRaw_3');
+      
       setDepositIntents([]);
     }
   }, [depositIntentsRaw]);
