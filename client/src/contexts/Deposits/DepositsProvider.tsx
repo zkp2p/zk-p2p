@@ -1,7 +1,7 @@
-import React, { useEffect, useState, ReactNode, useMemo } from 'react'
+import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit, Intent, DepositIntent } from './types'
+import { Deposit, DepositWithAvailableLiquidity, Intent, DepositIntent } from './types'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -25,7 +25,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [deposits, setDeposits] = useState<Deposit[] | null>(null);
+  const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositIntents, setDepositIntents] = useState<DepositIntent[] | null>(null);
 
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
@@ -108,7 +108,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       const depositsArrayRaw = depositsRaw as any[];
 
-      const sanitizedDeposits: Deposit[] = [];
+      const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
       const depositIntentHashes: string[][] = [];
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
         const depositData = depositsArrayRaw[i];
@@ -124,7 +124,12 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           intentHashes: depositData.intentHashes,
         };
 
-        sanitizedDeposits.push(deposit);
+        const depositWithLiquidity: DepositWithAvailableLiquidity = {
+          deposit,
+          availableLiquidity: depositData.availableLiquidity,
+        }
+
+        sanitizedDeposits.push(depositWithLiquidity);
         depositIntentHashes.push(depositData.intentHashes);
       }
           

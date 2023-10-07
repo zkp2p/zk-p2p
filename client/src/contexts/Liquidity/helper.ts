@@ -41,7 +41,7 @@ export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithA
 
 export const fetchBestDepositForAmount = (onRampAmount: bigint, depositStore: StoredDeposit[]): StoredDeposit | null => {
   // Filter deposits that can fulfill the onRampAmount
-  const eligibleDeposits = depositStore.filter(deposit => deposit.deposit.remainingDepositAmount >= onRampAmount);
+  const eligibleDeposits = depositStore.filter(deposit => deposit.availableLiquidity >= onRampAmount);
   if (eligibleDeposits.length === 0) {
     return null;
   }
@@ -64,7 +64,7 @@ export const fetchBestDepositForAmount = (onRampAmount: bigint, depositStore: St
   return sortedByCostDeposits[0];
 };
 
-export const pruneDeposits = (depositIds: number[], deposits: Deposit[]): number[] => {
+export const pruneDeposits = (depositIds: number[], deposits: DepositWithAvailableLiquidity[]): number[] => {
   /*
     TODO: Fill me out, currently returning no deposit ids to prune. This means that all deposits are being re-fetched continuously
   */
