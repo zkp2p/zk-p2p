@@ -1,10 +1,10 @@
 import { createContext } from 'react'
 
-import { Deposit, StoredDeposit } from '../Deposits/types'
+import { DepositWithAvailableLiquidity, StoredDeposit } from '../Deposits/types'
 
 
 interface LiquidityValues {
-  deposits: Deposit[] | null;
+  deposits: DepositWithAvailableLiquidity[] | null;
   depositStore: StoredDeposit[] | null;
   getBestDepositForAmount: (amount: bigint) => StoredDeposit | null;
 }

@@ -1,15 +1,19 @@
-import { Deposit, StoredDeposit } from "../Deposits/types";
+import { DepositWithAvailableLiquidity, StoredDeposit } from "../Deposits/types";
 
 
-export const createDepositsStore = (depositIds: bigint[], deposits: Deposit[]): StoredDeposit[] => {
-  const zippedDeposits = depositIds.map((id, index) => ({ depositId: id, deposit: deposits[index] }));
+export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
+  const zippedDeposits = depositIds.map((id, index) => ({
+    depositId: id,
+    deposit: deposits[index].deposit,
+    availableLiquidity: deposits[index].availableLiquidity
+  }));
   
   const sortedDeposits = zippedDeposits.sort((a, b) => {
-    // Sort by descending order of remaining deposit amount
-    if (b.deposit.remainingDepositAmount > a.deposit.remainingDepositAmount) {
+    // Sort by descending order of remaining available liquidity
+    if (b.availableLiquidity > a.availableLiquidity) {
       return 1;
     }
-    if (b.deposit.remainingDepositAmount < a.deposit.remainingDepositAmount) {
+    if (b.availableLiquidity < a.availableLiquidity) {
       return -1;
     }
 

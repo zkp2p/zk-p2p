@@ -1,11 +1,11 @@
 import { createContext } from 'react'
 
-import { Deposit, Intent } from './types'
+import { Deposit, DepositIntent } from './types'
 
 
 interface DepositsValues {
   deposits: Deposit[] | null;
-  depositIntents: Intent[] | null;
+  depositIntents: DepositIntent[] | null;
 }
 
 const defaultValues: DepositsValues = {

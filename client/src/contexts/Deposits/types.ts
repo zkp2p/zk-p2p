@@ -19,9 +19,13 @@ export interface Deposit {
   intentHashes: string[];
 }
 
-export interface StoredDeposit {
-  depositId: bigint;
+export interface DepositWithAvailableLiquidity {
   deposit: Deposit;
+  availableLiquidity: bigint;
+}
+
+export interface StoredDeposit extends DepositWithAvailableLiquidity {
+  depositId: bigint;
 }
 
 // struct Intent {
@@ -37,6 +41,11 @@ export interface Intent {
   amount: bigint;
   timestamp: bigint;
   to: string;
+}
+
+export interface DepositIntent {
+  onRamperVenmoHash: string;
+  intent: Intent;
 }
 
 export interface OnRamperIntent {
