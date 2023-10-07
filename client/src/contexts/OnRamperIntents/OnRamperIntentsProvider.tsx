@@ -2,6 +2,7 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
+import { ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';

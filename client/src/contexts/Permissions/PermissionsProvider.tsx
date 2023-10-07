@@ -76,7 +76,7 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     // console.log('deniedUsersRaw_1');
   
-    if (deniedUsersRaw) {
+    if (deniedUsersRaw && deniedUsersRaw.length > 0) {
       // console.log('deniedUsersRaw_2');
       // console.log(deniedUsersRaw);
 
