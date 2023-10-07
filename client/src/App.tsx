@@ -1,8 +1,9 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
   Routes,
+  useNavigate
 } from "react-router-dom";
 
 import { Permissions } from "./pages/Permissions";
@@ -27,6 +28,16 @@ import "./App.css";
 import "./styles.css";
 
 
+const RedirectToSwap = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate('/swap');
+  }, [navigate]);
+
+  return null;
+};
+
 const App = () => {
   return (
     <Router>
@@ -36,7 +47,7 @@ const App = () => {
 
           <div className="app-content">
             <Routes>
-              <Route path="/" element={<Swap />} />
+              <Route path="/" element={<RedirectToSwap />} />
               <Route path="/swap" element={<Swap />} />
               <Route path="/deposit" element={<Deposit />} />
               <Route path="/register" element={<Registration />} />
