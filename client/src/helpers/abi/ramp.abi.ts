@@ -371,6 +371,19 @@ export const abi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_intentHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "cancelIntent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "convenienceRewardTimePeriod",
     "outputs": [
@@ -453,47 +466,59 @@ export const abi = [
       {
         "components": [
           {
-            "internalType": "address",
-            "name": "depositor",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[3]",
-            "name": "packedVenmoId",
-            "type": "uint256[3]"
+            "components": [
+              {
+                "internalType": "address",
+                "name": "depositor",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256[3]",
+                "name": "packedVenmoId",
+                "type": "uint256[3]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "depositAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "remainingDeposits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "outstandingIntentAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "conversionRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "convenienceFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes32[]",
+                "name": "intentHashes",
+                "type": "bytes32[]"
+              }
+            ],
+            "internalType": "struct Ramp.Deposit",
+            "name": "deposit",
+            "type": "tuple"
           },
           {
             "internalType": "uint256",
-            "name": "depositAmount",
+            "name": "availableLiquidity",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "remainingDeposits",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "outstandingIntentAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "conversionRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "convenienceFee",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "intentHashes",
-            "type": "bytes32[]"
           }
         ],
-        "internalType": "struct Ramp.Deposit[]",
+        "internalType": "struct Ramp.DepositWithAvailableLiquidity[]",
         "name": "accountDeposits",
         "type": "tuple[]"
       }
@@ -625,47 +650,59 @@ export const abi = [
       {
         "components": [
           {
-            "internalType": "address",
-            "name": "depositor",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256[3]",
-            "name": "packedVenmoId",
-            "type": "uint256[3]"
+            "components": [
+              {
+                "internalType": "address",
+                "name": "depositor",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256[3]",
+                "name": "packedVenmoId",
+                "type": "uint256[3]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "depositAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "remainingDeposits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "outstandingIntentAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "conversionRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "convenienceFee",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes32[]",
+                "name": "intentHashes",
+                "type": "bytes32[]"
+              }
+            ],
+            "internalType": "struct Ramp.Deposit",
+            "name": "deposit",
+            "type": "tuple"
           },
           {
             "internalType": "uint256",
-            "name": "depositAmount",
+            "name": "availableLiquidity",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "remainingDeposits",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "outstandingIntentAmount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "conversionRate",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "convenienceFee",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bytes32[]",
-            "name": "intentHashes",
-            "type": "bytes32[]"
           }
         ],
-        "internalType": "struct Ramp.Deposit[]",
+        "internalType": "struct Ramp.DepositWithAvailableLiquidity[]",
         "name": "depositArray",
         "type": "tuple[]"
       }
@@ -677,42 +714,54 @@ export const abi = [
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "_intentIds",
+        "name": "_intentHashes",
         "type": "bytes32[]"
       }
     ],
-    "name": "getIntentFromIds",
+    "name": "getIntentsWithOnRamperId",
     "outputs": [
       {
         "components": [
           {
-            "internalType": "address",
-            "name": "onRamper",
-            "type": "address"
+            "components": [
+              {
+                "internalType": "address",
+                "name": "onRamper",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "deposit",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "intentTimestamp",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct Ramp.Intent",
+            "name": "intent",
+            "type": "tuple"
           },
           {
-            "internalType": "address",
-            "name": "to",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "deposit",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "intentTimestamp",
-            "type": "uint256"
+            "internalType": "bytes32",
+            "name": "onRamperIdHash",
+            "type": "bytes32"
           }
         ],
-        "internalType": "struct Ramp.Intent[]",
-        "name": "intentArray",
+        "internalType": "struct Ramp.IntentWithOnRamperId[]",
+        "name": "",
         "type": "tuple[]"
       }
     ],
