@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { AutoColumn } from '../layouts/Column'
@@ -6,6 +6,7 @@ import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
 import { IntentTable } from './OffRamperIntentTable'
 import { OffRamp } from './OffRamp'
+import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
 
 
@@ -13,7 +14,7 @@ export default function Deposit() {
   /*
     Contexts
   */
-  const { deposits, depositIntents } = useDeposits()
+  const { deposits, depositIntents, refetchDeposits } = useDeposits()
 
   /*
     State
@@ -21,6 +22,20 @@ export default function Deposit() {
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (refetchDeposits) {
+      const intervalId = setInterval(() => {
+        refetchDeposits();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+  }, [refetchDeposits]);
 
   /*
     Handlers

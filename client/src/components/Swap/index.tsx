@@ -14,7 +14,7 @@ import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { StoredDeposit } from '../../contexts/Deposits/types'
-import { ZERO } from "@helpers/constants";
+import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
 import { fromUsdcToNaturalBigInt, usdc } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
@@ -44,7 +44,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
-  const { getBestDepositForAmount } = useLiquidity();
+  const { refetchDeposits, getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
@@ -129,6 +129,16 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    if (refetchDeposits) {
+      const intervalId = setInterval(() => {
+        refetchDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+  }, [refetchDeposits]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {

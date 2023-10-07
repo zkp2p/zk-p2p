@@ -66,7 +66,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     data: depositsRaw,
     // isLoading: isFetchDepositsLoading,
     // isError: isFetchDepositsError,
-    // refetch: refetchDeposits,
+    refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
@@ -174,6 +174,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposits,
         depositStore,
         getBestDepositForAmount,
+        refetchDeposits,
       }}
     >
       {children}
