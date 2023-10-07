@@ -107,8 +107,10 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     // console.log('shouldFetchIntent_1');
+    
     if (currentIntentHash) {
       // console.log('shouldFetchIntent_2');
+      // console.log(currentIntentHash);
 
       setShouldFetchIntent(true);
     } else {

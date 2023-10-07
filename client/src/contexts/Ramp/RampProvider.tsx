@@ -100,7 +100,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      console.log('minDepositAmountRaw_3');
+      // console.log('minDepositAmountRaw_3');
       setMinimumDepositAmount(null);
     }
   }, [minimumDepositAmountRaw]);

@@ -74,6 +74,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     // console.log('shouldFetchDeposits_1');
+
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
       // console.log('shouldFetchDeposits_2');
       setShouldFetchDeposits(true);
@@ -88,6 +89,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     // console.log('shouldFetchDepositIntents_1');
+
     if (uniqueIntentHashes.length > 0) {
       // console.log('shouldFetchDepositIntents_2');
       setShouldFetchDepositIntents(true);

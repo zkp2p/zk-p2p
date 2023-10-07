@@ -138,7 +138,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
       setUsdcBalance(usdcBalanceRawProcessed);
     } else {
-      console.log('usdcBalanceRaw_3');
+      // console.log('usdcBalanceRaw_3');
       setUsdcBalance(ZERO);
     }
   }, [usdcBalanceRaw]);
