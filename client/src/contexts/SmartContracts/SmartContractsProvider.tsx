@@ -5,7 +5,6 @@ import { abi as rampAbi } from "@helpers/abi/ramp.abi";
 import { abi as receiveProcessorAbi } from "@helpers/abi/receive.abi";
 import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
 import { contractAddresses } from "@helpers/deployed_addresses";
-import { ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'
@@ -25,11 +24,11 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  const [rampAddress, setRampAddress] = useState<Address>(ZERO_ADDRESS);
-  const [sendProcessorAddress, setSendProcessorAddress] = useState<Address>(ZERO_ADDRESS);
-  const [receiveProcessorAddress, setReceiveProcessorAddress] = useState<Address>(ZERO_ADDRESS);
-  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address>(ZERO_ADDRESS);
-  const [usdcAddress, setUsdcAddress] = useState<Address>(ZERO_ADDRESS);
+  const [rampAddress, setRampAddress] = useState<Address | null>(null);
+  const [sendProcessorAddress, setSendProcessorAddress] = useState<Address | null>(null);
+  const [receiveProcessorAddress, setReceiveProcessorAddress] = useState<Address | null>(null);
+  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address | null>(null);
+  const [usdcAddress, setUsdcAddress] = useState<Address | null>(null);
 
   /*
    * Hooks
@@ -46,18 +45,18 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         setReceiveProcessorAddress(contractsForNetwork.receiveProcessor as Address);
         setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
       } else {
-        setRampAddress(ZERO_ADDRESS);
-        setUsdcAddress(ZERO_ADDRESS);
-        setSendProcessorAddress(ZERO_ADDRESS);
-        setReceiveProcessorAddress(ZERO_ADDRESS);
-        setRegistrationProcessorAddress(ZERO_ADDRESS);
+        setRampAddress(null);
+        setUsdcAddress(null);
+        setSendProcessorAddress(null);
+        setReceiveProcessorAddress(null);
+        setRegistrationProcessorAddress(null);
       }
     } else {
-      setRampAddress(ZERO_ADDRESS);
-      setUsdcAddress(ZERO_ADDRESS);
-      setSendProcessorAddress(ZERO_ADDRESS);
-      setReceiveProcessorAddress(ZERO_ADDRESS);
-      setRegistrationProcessorAddress(ZERO_ADDRESS);
+      setRampAddress(null);
+      setUsdcAddress(null);
+      setSendProcessorAddress(null);
+      setReceiveProcessorAddress(null);
+      setRegistrationProcessorAddress(null);
     }
   }, [network]);
 
