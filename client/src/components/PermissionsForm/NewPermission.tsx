@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
-import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 
 import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
@@ -9,6 +13,7 @@ import { ThemedText } from '../../theme/text'
 import { NumberedStep } from "../common/NumberedStep";
 import { SingleLineInput } from "../common/SingleLineInput";
 import useSmartContracts from '@hooks/useSmartContracts';
+import usePermissions from '@hooks/usePermissions';
 
 
 interface NewPermissionProps {
@@ -23,6 +28,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   */
 
   const { rampAddress, rampAbi } = useSmartContracts()
+  const { refetchDeniedUsers } = usePermissions()
   
   /*
    * State
@@ -53,9 +59,21 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   });
 
   const {
+    data: submitPermissionResult,
     isLoading: isSubmitPermissionLoading,
-    write: writeSubmitPermission
+    writeAsync: writeSubmitPermission
   } = useContractWrite(writePermissionConfig);
+
+  const {
+    isLoading: isSubmitPermissionMining
+  } = useWaitForTransaction({
+    hash: submitPermissionResult ? submitPermissionResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitPermission successful: ', data);
+      
+      refetchDeniedUsers?.();
+    },
+  });
 
   /*
     Hooks
@@ -100,7 +118,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
           <ButtonContainer>
             <Button
               disabled={isSubmitPermissionLoading}
-              loading={isSubmitPermissionLoading}
+              loading={isSubmitPermissionLoading || isSubmitPermissionMining}
               onClick={async () => {
                 writeSubmitPermission?.();
               }}

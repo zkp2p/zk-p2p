@@ -39,9 +39,9 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
   const {
     data: deniedUsersRaw,
-    // isLoading: isFetchUsdcApprovalToRampLoading,
-    // isError: isFetchUsdcApprovalToRampError,
-    // refetch: refetchUsdcApprovalToRamp,
+    // isLoading: isFetchDeniedUsersLoading,
+    // isError: isFetchDeniedUsersError,
+    refetch: refetchDeniedUsers,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
@@ -100,7 +100,8 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   return (
     <PermissionsContext.Provider
       value={{
-        deniedUsers
+        deniedUsers,
+        refetchDeniedUsers
       }}
     >
       {children}
