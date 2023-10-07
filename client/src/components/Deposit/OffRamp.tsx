@@ -10,10 +10,7 @@ import { SubmitOffRamp } from "./SubmitOffRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { RECEIVE_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
-
-
-// TODO: use hook
-import ProofGenSettingsContext from '../../contexts/ProofGenSettings/ProofGenSettingsContext';
+import useProofGenSettings from '@hooks/useProofGenSettings';
 
 
 interface OffRampProps {
@@ -28,10 +25,7 @@ export const OffRamp: React.FC<OffRampProps> = ({
   /*
    * Context
    */
-  const {
-    isProvingTypeFast,
-    setIsProvingTypeFast,
-  } = useContext(ProofGenSettingsContext);
+  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');

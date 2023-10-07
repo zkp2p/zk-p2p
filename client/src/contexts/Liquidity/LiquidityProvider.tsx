@@ -105,8 +105,9 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
-        const depositData = depositsArrayRaw[i];
+        const depositWithAvailableLiquidityData = depositsArrayRaw[i];
         
+        const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
@@ -120,7 +121,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
         const depositWithLiquidity: DepositWithAvailableLiquidity = {
           deposit,
-          availableLiquidity: depositData.availableLiquidity,
+          availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
         }
 
         sanitizedDeposits.push(depositWithLiquidity);
