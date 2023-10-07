@@ -161,7 +161,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
                       depositorHash={position.depositor}
-                      remainingDepositAmount={fromUsdcToNaturalString(position.remainingDepositAmount)}
+                      availableDepositAmount={fromUsdcToNaturalString(position.availableDepositAmount)}
                       totalDepositAmount={fromUsdcToNaturalString(position.totalDepositAmount)}
                       outstandingIntentAmount={fromUsdcToNaturalString(position.outstandingIntentAmount)}
                       intentCount={position.intentCount.toString()}
