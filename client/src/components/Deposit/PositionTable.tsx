@@ -35,20 +35,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const navigate = useNavigate();
 
   /*
-    Contexts
-  */
+   * Contexts
+   */
   const { isRegistered } = useRegistration()
   const { isLoggedIn } = useAccount()
   const { deposits } = useDeposits()
 
   /*
-    State
-  */
+   * State
+   */
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
 
   /*
-    Hooks
-  */
+   * Hooks
+   */
 
   useEffect(() => {
     if (!deposits) {
@@ -82,16 +82,16 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   }, [deposits]);
 
   /*
-    Handlers
-  */
+   * Handlers
+   */
 
   const navigateToRegistrationHandler = () => {
     navigate('/register');
   };
   
   /*
-    Helpers
-  */
+   * Helpers
+   */
 
   function convertRatesToPercentage(rate: number) {
     return parseFloat(rate.toFixed(2)) + '%';

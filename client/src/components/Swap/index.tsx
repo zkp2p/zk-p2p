@@ -5,6 +5,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction
 } from 'wagmi'
+import { useNavigate } from 'react-router-dom';
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
@@ -19,6 +20,7 @@ import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity';
+import useRegistration from "@hooks/useRegistration";
 
 
 export type SwapQuote = {
@@ -34,10 +36,13 @@ interface SwapModalProps {
 const SwapModal: React.FC<SwapModalProps> = ({
   onIntentTableRowClick
 }: SwapModalProps) => {
+  const navigate = useNavigate();
+
   /*
    * Contexts
    */
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
   const { getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
@@ -162,6 +167,14 @@ const SwapModal: React.FC<SwapModalProps> = ({
     fetchBestDepositForAmount();
   }, [currentQuote.requestedUSDC, getBestDepositForAmount]);
 
+  /* 
+   * Handlers
+   */ 
+
+  const navigateToRegistrationHandler = () => {
+    navigate('/register');
+  };
+
   return (
     <Wrapper>
       <SwapModalContainer>
@@ -196,6 +209,12 @@ const SwapModal: React.FC<SwapModalProps> = ({
             <CustomConnectButton
               fullWidth={true}
             />
+          ) : (!isRegistered && currentQuote.requestedUSDC) ? (
+            <Button
+              onClick={navigateToRegistrationHandler}
+            >
+              Complete Registration
+            </Button>
           ) : (
             <CTAButton
               disabled={currentQuote.depositId === ZERO && currentQuote.fiatToSend === ''}
