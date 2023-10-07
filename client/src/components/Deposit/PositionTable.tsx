@@ -17,7 +17,7 @@ import useRegistration from '@hooks/useRegistration'
 
 export interface DepositPrime {
   depositor: string;
-  remainingDepositAmount: bigint;
+  availableDepositAmount: bigint;
   totalDepositAmount: bigint;
   outstandingIntentAmount: bigint;
   intentCount: number;
@@ -59,7 +59,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
-        const remainingDepositAmount = depositWithLiquidity.availableLiquidity;
+        const availableDepositAmount = depositWithLiquidity.availableLiquidity;
         const totalDepositAmount = deposit.depositAmount;
         const intentCount = deposit.intentHashes.length;
         const outstandingIntentAmount = deposit.outstandingIntentAmount;
@@ -68,7 +68,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
         return {
           depositor,
-          remainingDepositAmount,
+          availableDepositAmount,
           totalDepositAmount,
           outstandingIntentAmount,
           intentCount,

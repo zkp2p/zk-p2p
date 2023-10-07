@@ -6,7 +6,7 @@ import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
 interface PositionRowProps {
   depositorHash: string;
-  remainingDepositAmount: string;
+  availableDepositAmount: string;
   totalDepositAmount: string;
   outstandingIntentAmount: string;
   intentCount: string;
@@ -17,7 +17,7 @@ interface PositionRowProps {
 
 export const PositionRow: React.FC<PositionRowProps> = ({
   depositorHash,
-  remainingDepositAmount,
+  availableDepositAmount,
   totalDepositAmount,
   outstandingIntentAmount,
   intentCount,
@@ -27,7 +27,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
 
-  const depositRemainingLabel = `Remaining: ${remainingDepositAmount} / ${totalDepositAmount}`;
+  const depositRemainingLabel = `Remaining: ${availableDepositAmount} / ${totalDepositAmount}`;
   const intentAmountLabel = `Outstanding Intents: ${intentCount} (${outstandingIntentAmount})`;
 
   return (
