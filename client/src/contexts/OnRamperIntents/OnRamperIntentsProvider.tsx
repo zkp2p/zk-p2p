@@ -6,7 +6,6 @@ import useAccount from '@hooks/useAccount'
 import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity'
-import { ZERO_ADDRESS } from '@helpers/constants'
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 

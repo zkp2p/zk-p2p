@@ -1,7 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import RampContext from './RampContext'

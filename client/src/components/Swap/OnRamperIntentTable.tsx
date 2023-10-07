@@ -6,7 +6,7 @@ import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
 import { SECONDS_IN_DAY  } from '@helpers/constants'
 import useOnRamperIntents from '@hooks/useOnRamperIntents'
-import useRampState from '@hooks/useRampState';
+// import useRampState from '@hooks/useRampState';
 
 
 
@@ -26,7 +26,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
 
  const { currentIntent } = useOnRamperIntents()
- const { convenienceRewardTimePeriod } = useRampState()
+//  const { convenienceRewardTimePeriod } = useRampState()
 
   
   /*

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';

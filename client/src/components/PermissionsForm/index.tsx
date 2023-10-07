@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { AutoColumn } from '../layouts/Column'
 import { NewPermission } from './NewPermission'
 import { PermissionTable } from './PermissionTable'
-import useAccount from '@hooks/useAccount'
 
 
 export default function PermissionsForm() {

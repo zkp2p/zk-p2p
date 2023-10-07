@@ -10,12 +10,13 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
+import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
 
-import { vkey } from "@helpers/verifiers/receive_vkey";
-import { reformatProofForChain } from "@helpers/submitProof";
+// import { vkey } from "@helpers/verifiers/receive_vkey";
 // @ts-ignore
-import * as snarkjs from "snarkjs";
+// import * as snarkjs from "snarkjs";
+
 
 interface SubmitOffRampProps {
   proof: string;

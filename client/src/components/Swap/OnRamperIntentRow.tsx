@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from 'styled-components/macro'
+import styled from 'styled-components/macro'
 
 import { StyledLink } from '../legacy/StyledLink';
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
