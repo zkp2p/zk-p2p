@@ -2,6 +2,7 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Deposit, DepositWithAvailableLiquidity, Intent, DepositIntent } from './types'
+import { esl } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -73,14 +74,17 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('shouldFetchDeposits_1');
+    esl && console.log('shouldFetchDeposits_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking rampAddress: ', rampAddress);
 
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      console.log('shouldFetchDeposits_2');
+      esl && console.log('shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      console.log('shouldFetchDeposits_3');
+      esl && console.log('shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
@@ -90,14 +94,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
 
   useEffect(() => {
-    console.log('shouldFetchDepositIntents_1');
+    esl && console.log('shouldFetchDepositIntents_1');
+    esl && console.log('checking uniqueIntentHashes: ', uniqueIntentHashes);
 
     if (uniqueIntentHashes.length > 0) {
-      console.log('shouldFetchDepositIntents_2');
+      esl && console.log('shouldFetchDepositIntents_2');
 
       setShouldFetchDepositIntents(true);
     } else {
-      console.log('shouldFetchDepositIntents_3');
+      esl && console.log('shouldFetchDepositIntents_3');
 
       setShouldFetchDepositIntents(false);
 
@@ -106,11 +111,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [uniqueIntentHashes]);
 
   useEffect(() => {
-    console.log('depositsRaw_1');
+    esl && console.log('depositsRaw_1');
+    esl && console.log('checking depositsRaw: ', depositsRaw);
 
     if (depositsRaw && depositsRaw.length > 0) {
-      console.log('depositsRaw_2');
-      console.log(depositsRaw);
+      esl && console.log('depositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
 
@@ -143,18 +148,19 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       setDeposits(sanitizedDeposits);
       setUniqueIntentHashes(depositIntentHashes.flat());
     } else {
-      console.log('depositsRaw_3');
+      esl && console.log('depositsRaw_3');
+
       setDeposits(null);
       setUniqueIntentHashes([]);
     }
   }, [depositsRaw]);
 
   useEffect(() => {
-    console.log('depositsIntentsRaw_1');
+    esl && console.log('depositsIntentsRaw_1');
+    esl && console.log('checking depositIntentsRaw: ', depositIntentsRaw);
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      console.log('depositsIntentsRaw_2');
-      console.log(depositIntentsRaw);
+      esl && console.log('depositsIntentsRaw_2');
 
       const depositIntentsArray = depositIntentsRaw as any[];
 
@@ -182,7 +188,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       setDepositIntents(sanitizedIntents);
     } else {
-      console.log('depositsIntentsRaw_3');
+      esl && console.log('depositsIntentsRaw_3');
       
       setDepositIntents([]);
     }

@@ -45,6 +45,9 @@ export const RemoteProofGenEmailTypes = {
     RECEIVE: "receive"
 };
 
+const ENABLE_STATE_LOGGING = false;
+export const esl = ENABLE_STATE_LOGGING;
+
 // Placeholder in proof gen text area for example
 export const PLACEHOLDER_EMAIL_BODY = `Delivered-To: vitalik.buterin@gmail.com
 Received: by 2002:a05:6022:216:b0:44:1edc:81b1 with SMTP id 12345678910111;

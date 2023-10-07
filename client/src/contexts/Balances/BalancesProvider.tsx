@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
-import { ZERO, ZERO_ADDRESS } from '@helpers/constants'
+import { esl, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
 
@@ -82,14 +82,17 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('shouldFetchEthBalance_1');
+    esl && console.log('shouldFetchEthBalance_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
 
     if (isLoggedIn && loggedInEthereumAddress) {
-      console.log('shouldFetchEthBalance_2');
+      esl && console.log('shouldFetchEthBalance_2');
 
       setShouldFetchEthBalance(true);
     } else {
-      console.log('shouldFetchEthBalance_3');
+      esl && console.log('shouldFetchEthBalance_3');
+
       setShouldFetchEthBalance(false);
 
       setEthBalance(null);
@@ -99,15 +102,19 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress]);
 
   useEffect(() => {
-    console.log('shouldFetchUsdcBalanceAndApproval_1');
+    esl && console.log('shouldFetchUsdcBalanceAndApproval_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking usdcAddress: ', usdcAddress);
 
     if (isLoggedIn && loggedInEthereumAddress && rampAddress && usdcAddress) {
-      console.log('shouldFetchUsdcBalanceAndApproval_2');
+      esl && console.log('shouldFetchUsdcBalanceAndApproval_2');
 
       setShouldFetchUsdcBalance(true);
       setShouldFetchUsdcApprovalToRamp(true);
     } else {
-      console.log('shouldFetchUsdcBalanceAndApproval_3');
+      esl && console.log('shouldFetchUsdcBalanceAndApproval_3');
 
       setShouldFetchUsdcBalance(false);
       setShouldFetchUsdcApprovalToRamp(false);
@@ -119,51 +126,51 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress, usdcAddress]);
   
   useEffect(() => {
-    console.log('ethBalanceRaw_1');
+    esl && console.log('ethBalanceRaw_1');
+    esl && console.log('checking ethBalanceRaw: ', ethBalanceRaw);
   
     if (ethBalanceRaw) {
-      console.log('ethBalanceRaw_2');
-      console.log(ethBalanceRaw);
+      esl && console.log('ethBalanceRaw_2');
 
       const ethBalanceProcessed = ethBalanceRaw.value;
 
       setEthBalance(ethBalanceProcessed);
     } else {
-      console.log('ethBalanceRaw_3');
+      esl && console.log('ethBalanceRaw_3');
 
-      setEthBalance(ZERO);
+      setEthBalance(null);
     }
   }, [ethBalanceRaw]);
 
   useEffect(() => {
-    console.log('usdcBalanceRaw_1');
+    esl && console.log('usdcBalanceRaw_1');
+    esl && console.log('checking usdcBalanceRaw: ', usdcBalanceRaw);
   
     if (usdcBalanceRaw) {
-      console.log('usdcBalanceRaw_2');
-      console.log(usdcBalanceRaw);
+      esl && console.log('usdcBalanceRaw_2');
 
       const usdcBalanceRawProcessed = usdcBalanceRaw.value;
 
       setUsdcBalance(usdcBalanceRawProcessed);
     } else {
-      console.log('usdcBalanceRaw_3');
+      esl && console.log('usdcBalanceRaw_3');
 
-      setUsdcBalance(ZERO);
+      setUsdcBalance(null);
     }
   }, [usdcBalanceRaw]);
 
   useEffect(() => {
-    console.log('usdcApprovalToRampRaw_1');
+    esl && console.log('usdcApprovalToRampRaw_1');
+    esl && console.log('checking usdcApprovalToRampRaw: ', usdcApprovalToRampRaw);
   
     if (usdcApprovalToRampRaw) {
-      console.log('usdcApprovalToRampRaw_2');
-      console.log(usdcApprovalToRampRaw);
+      esl && console.log('usdcApprovalToRampRaw_2');
 
       setUsdcApprovalToRamp(usdcApprovalToRampRaw);
     } else {
-      console.log('usdcApprovalToRampRaw_3');
+      esl && console.log('usdcApprovalToRampRaw_3');
       
-      setUsdcApprovalToRamp(ZERO);
+      setUsdcApprovalToRamp(null);
     }
   }, [usdcApprovalToRampRaw]);
 

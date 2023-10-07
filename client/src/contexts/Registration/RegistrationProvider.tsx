@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { ZERO_ADDRESS } from '@helpers/constants'
+import { esl, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -68,14 +68,17 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('shouldFetchRegistration_1');
+    esl && console.log('shouldFetchRegistration_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking rampAddress: ', rampAddress);
     
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      console.log('shouldFetchRegistration_2');
+      esl && console.log('shouldFetchRegistration_2');
 
       setShouldFetchRegistration(true);
     } else {
-      console.log('shouldFetchRegistration_3');
+      esl && console.log('shouldFetchRegistration_3');
       
       setShouldFetchRegistration(false);
 
@@ -85,18 +88,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
 
   useEffect(() => {
-    console.log('rampAccountRaw_1');
+    esl && console.log('rampAccountRaw_1');
+    esl && console.log('checking rampAccountRaw: ', rampAccountRaw);
   
     if (rampAccountRaw) {
-      console.log('rampAccountRaw_2');
-      console.log(rampAccountRaw);
+      esl && console.log('rampAccountRaw_2');
 
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
       
       setRegistrationHash(rampAccountProcessed);
     } else {
-      console.log('rampAccountRaw_3');
+      esl && console.log('rampAccountRaw_3');
       
       setRegistrationHash(null);
     }
