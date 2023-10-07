@@ -42,7 +42,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     data: depositsRaw,
     // isLoading: isFetchDepositsLoading,
     // isError: isFetchDepositsError,
-    // refetch: refetchDeposits,
+    refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
@@ -199,6 +199,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       value={{
         deposits,
         depositIntents,
+        refetchDeposits,
       }}
     >
       {children}

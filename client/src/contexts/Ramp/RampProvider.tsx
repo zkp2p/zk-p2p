@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { esl } from '@helpers/constants'
+import { esl, ZERO } from '@helpers/constants'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import RampContext from './RampContext'
@@ -132,7 +132,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     esl && console.log('depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
-    if (depositCounterRaw) {
+    if (depositCounterRaw || depositCounterRaw === ZERO) { // BigInt(0) is falsy)
       esl && console.log('depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);

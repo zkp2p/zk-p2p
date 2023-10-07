@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI, useBalance, useContractRead } from 'wagmi'
 
-import { esl, ZERO_ADDRESS } from '@helpers/constants'
+import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
 
@@ -64,7 +64,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     data: usdcApprovalToRampRaw,
     // isLoading: isFetchUsdcApprovalToRampLoading,
     // isError: isFetchUsdcApprovalToRampError,
-    // refetch: refetchUsdcApprovalToRamp,
+    refetch: refetchUsdcApprovalToRamp,
   } = useContractRead({
     address: usdcAddress,
     abi: erc20ABI,
@@ -163,7 +163,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     esl && console.log('usdcApprovalToRampRaw_1');
     esl && console.log('checking usdcApprovalToRampRaw: ', usdcApprovalToRampRaw);
   
-    if (usdcApprovalToRampRaw) {
+    if (usdcApprovalToRampRaw || usdcApprovalToRampRaw === ZERO) { // BigInt(0) is falsy
       esl && console.log('usdcApprovalToRampRaw_2');
 
       setUsdcApprovalToRamp(usdcApprovalToRampRaw);
@@ -180,6 +180,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         ethBalance,
         usdcBalance,
         usdcApprovalToRamp,
+        refetchUsdcApprovalToRamp,
       }}
     >
       {children}

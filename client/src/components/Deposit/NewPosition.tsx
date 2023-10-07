@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
-import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 
 import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
@@ -12,6 +16,7 @@ import { calculatePackedVenmoId } from '@helpers/poseidonHash'
 import { usdc, ether } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
 import useBalances from '@hooks/useBalance'
+import useDeposits from '@hooks/useDeposits';
 import useRampState from '@hooks/useRampState'
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -38,7 +43,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   */
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { minimumDepositAmount } = useRampState()
-  const { usdcApprovalToRamp, usdcBalance } = useBalances()
+  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()
+  const { refetchDeposits } = useDeposits()
 
   /*
     State
@@ -78,9 +84,21 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   });
 
   const {
+    data: submitDepositResult,
     isLoading: isSubmitDepositLoading,
-    write: writeSubmitDeposit
+    writeAsync: writeSubmitDeposit
   } = useContractWrite(writeDepositConfig);
+
+  const {
+    isLoading: isSubmitDepositMining
+  } = useWaitForTransaction({
+    hash: submitDepositResult ? submitDepositResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitDeposit successful: ', data);
+      
+      refetchDeposits?.();
+    },
+  });
 
   //
   // approve(address spender, uint256 value)
@@ -97,9 +115,21 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   });
 
   const {
+    data: submitApproveResult,
     isLoading: isSubmitApproveLoading,
-    write: writeSubmitApprove
+    writeAsync: writeSubmitApprove
   } = useContractWrite(writeApproveConfig);
+
+  const {
+    isLoading: isSubmitApproveMining
+  } = useWaitForTransaction({
+    hash: submitApproveResult ? submitApproveResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitApprove successful: ', data);
+      
+      refetchUsdcApprovalToRamp?.();
+    },
+  });
 
   /*
     Hooks
@@ -243,10 +273,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const ctaLoading = (): boolean => {
     switch (formState) {
       case NewPositionState.APPROVAL_REQUIRED:
-        return isSubmitApproveLoading;
+        return isSubmitApproveLoading || isSubmitApproveMining;
 
       case NewPositionState.VALID:
-        return isSubmitDepositLoading;
+        return isSubmitDepositLoading || isSubmitDepositMining;
 
       default:
         return false;
