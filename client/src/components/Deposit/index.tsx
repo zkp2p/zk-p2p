@@ -38,7 +38,9 @@ export default function Deposit() {
 
   const handleIntentClick = (rowData: any[]) => {
     const selectedIntentIndex = rowData[0];
-    const intentHashes = [...new Set((deposits).flatMap((deposit: any) => deposit.intentHashes))]
+    const intentHashes = [
+      ...new Set((deposits).flatMap((depositWithAvailableLiquidity: any) => depositWithAvailableLiquidity.deposit.intentHashes))
+    ]
 
     const selectedIntentHash = intentHashes[selectedIntentIndex];
     console.log('selectedIntentHash', selectedIntentHash);
