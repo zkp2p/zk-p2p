@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+ } from 'wagmi'
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
@@ -44,7 +48,9 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   //
   // register(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
   //
-  const { config: writeSubmitRegistrationConfig } = usePrepareContractWrite({
+  const {
+    config: writeSubmitRegistrationConfig
+  } = usePrepareContractWrite({
     address: rampAddress,
     abi: rampAbi,
     functionName: 'register',
@@ -52,9 +58,6 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,
     ],
-    onSuccess: () => {
-      refetchRampAccount?.();
-    },
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
@@ -62,9 +65,21 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   });
 
   const {
+    data: submitRegistrationResult,
     isLoading: isSubmitRegistrationLoading,
-    write: writeSubmitRegistration
+    writeAsync: writeSubmitRegistration
   } = useContractWrite(writeSubmitRegistrationConfig);
+
+  const {
+    isLoading: isSubmitRegistrationMining
+  } = useWaitForTransaction({
+    hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitRegistration successful: ', data);
+      
+      refetchRampAccount?.();
+    },
+  });
 
   /*
     Hooks
@@ -98,7 +113,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
         
         <Button
           disabled={proof.length === 0 || publicSignals.length === 0 || isSubmitRegistrationLoading}
-          loading={isSubmitRegistrationLoading}
+          loading={isSubmitRegistrationLoading || isSubmitRegistrationMining}
           onClick={async () => {
             writeSubmitRegistration?.();
           }}
