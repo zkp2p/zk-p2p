@@ -1,6 +1,10 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
-import { useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
@@ -31,23 +35,23 @@ const SwapModal: React.FC<SwapModalProps> = ({
   onIntentTableRowClick
 }: SwapModalProps) => {
   /*
-    Contexts
-  */
+   * Contexts
+   */
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
   const { getBestDepositForAmount } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts()
   
   /*
-    State
-  */
+   * State
+   */
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
   /*
-    Event Handlers
-  */
+   * Event Handlers
+   */
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
     const quoteCopy = {...currentQuote}
 
@@ -79,8 +83,8 @@ const SwapModal: React.FC<SwapModalProps> = ({
   };
 
   /*
-    Contract Writes
-  */
+   * Contract Writes
+   */
 
   //
   // function signalIntent(uint256 _depositId, uint256 _amount, address _to)
@@ -94,9 +98,6 @@ const SwapModal: React.FC<SwapModalProps> = ({
       usdc(currentQuote.requestedUSDC),
       loggedInEthereumAddress
     ],
-    onSuccess(data) {
-      refetchIntentHash?.();
-    },
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
@@ -104,13 +105,26 @@ const SwapModal: React.FC<SwapModalProps> = ({
   });
 
   const {
+    data: submitIntentResult,
     isLoading: isSubmitIntentLoading,
-    write: writeSubmitIntent
+    writeAsync: writeSubmitIntent
   } = useContractWrite(writeIntentConfig);
 
+  const {
+    isLoading: isSubmitIntentMining
+  } = useWaitForTransaction({
+    hash: submitIntentResult ? submitIntentResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitIntent successful: ', data);
+      
+      refetchIntentHash?.();
+    },
+  });
+
   /*
-    Hooks
-  */
+   * Hooks
+   */
+
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
       if (currentQuote.requestedUSDC) {
@@ -185,7 +199,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
           ) : (
             <CTAButton
               disabled={currentQuote.depositId === ZERO && currentQuote.fiatToSend === ''}
-              loading={isSubmitIntentLoading}
+              loading={isSubmitIntentLoading || isSubmitIntentMining}
               onClick={async () => {
                 writeSubmitIntent?.();
               }}
