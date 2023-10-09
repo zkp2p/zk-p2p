@@ -101,7 +101,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     fetchData: remoteGenerateProof
   } = useRemoteProofGen({
     emailType: remoteProofGenEmailType,
-    emailBody: emailFull
+    emailBody: emailFull,
+    orderId: circuitInputs,
   });
 
   useEffect(() => {
