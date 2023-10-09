@@ -18,6 +18,7 @@ import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
 import { fromUsdcToNaturalBigInt, usdc } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useRampState from "@hooks/useRampState";
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity';
 import useRegistration from "@hooks/useRegistration";
@@ -45,7 +46,8 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
   const { refetchDeposits, getBestDepositForAmount } = useLiquidity();
-  const { rampAddress, rampAbi } = useSmartContracts()
+  const { rampAddress, rampAbi } = useSmartContracts();
+  const { refetchDepositCounter } = useRampState();
   
   /*
    * State
@@ -139,6 +141,16 @@ const SwapModal: React.FC<SwapModalProps> = ({
       return () => clearInterval(intervalId);
     }
   }, [refetchDeposits]);
+
+  useEffect(() => {
+    if (refetchDepositCounter) {
+      const intervalId = setInterval(() => {
+        refetchDepositCounter?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+  }, [refetchDepositCounter]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
