@@ -3,6 +3,7 @@ export const ZERO = BigInt(0);
 export const SECONDS_IN_DAY = BigInt(86400);
 
 export const DEPOSIT_REFETCH_INTERVAL = 30000; // 0.5 minutes
+export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:

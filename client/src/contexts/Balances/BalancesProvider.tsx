@@ -43,7 +43,6 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     // refetch: refetchEthBalance,
   } = useBalance({
     address: loggedInEthereumAddress ?? ZERO_ADDRESS,
-    watch: true,
     // cacheTime: 20_000,
     enabled: shouldFetchEthBalance,
   });
