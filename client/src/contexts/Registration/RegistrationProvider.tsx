@@ -111,7 +111,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         isRegistered,
         registrationHash,
         registeredVenmoId,
-        refetchRampAccount
+        refetchRampAccount,
+        shouldFetchRegistration,
       }}
     >
       {children}
