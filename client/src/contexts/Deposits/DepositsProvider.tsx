@@ -200,7 +200,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         deposits,
         depositIntents,
         refetchDeposits,
+        shouldFetchDeposits,
         refetchDepositIntents,
+        shouldFetchDepositIntents,
       }}
     >
       {children}
