@@ -18,7 +18,7 @@ import { LabeledSwitch } from "./LabeledSwitch";
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 import { downloadProofFiles, generateProof } from "@helpers/zkp";
-import { processEMLContent } from "@hooks/useDragAndDrop";
+import { useDragAndDrop } from "@hooks/useDragAndDrop";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
@@ -214,8 +214,25 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   };
 
   /*
-    Components
-  */
+   * Helpers
+   */
+
+  const onFileDrop = async (file: File) => {
+    if (file.name.endsWith(".eml")) {
+      const content = await file.text();
+      setEmailFull(content);
+
+      if (setIsInputModeDrag) {
+        setIsInputModeDrag(false);
+      }
+    } else {
+      alert("Only .eml files are allowed.");
+    }
+  };
+
+  /*
+   * Components
+   */
   function ProofGenerationStatus() {
     return (
       <>
@@ -263,22 +280,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
           {isInputModeDrag ? (
             <DragAndDropTextBox
-              onFileDrop={(file: File) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  if (e.target) {
-                    const rawContent = e.target.result as string;
-                    const processedContent = processEMLContent(rawContent);
-                    
-                    setEmailFull(processedContent);
-
-                    if (setIsInputModeDrag) {
-                      setIsInputModeDrag(false);
-                    }
-                  }
-                };
-                reader.readAsText(file);
-              }}
+              onFileDrop={onFileDrop}
             />
           ) : (
             <LabeledTextArea
