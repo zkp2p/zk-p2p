@@ -5,7 +5,7 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { ProofGenerationForm } from "../common/ProofGenerationForm";
+import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";

@@ -11,9 +11,9 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { ProgressBar } from "../legacy/ProgressBar";
-import { NumberedStep } from "./NumberedStep";
-import { DragAndDropTextBox } from "./DragAndDropTextBox";
-import { LabeledSwitch } from "./LabeledSwitch";
+import { NumberedStep } from "../common/NumberedStep";
+import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
+import { LabeledSwitch } from "../common/LabeledSwitch";
 
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
