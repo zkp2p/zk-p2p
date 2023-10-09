@@ -14,7 +14,12 @@ export default function Deposit() {
   /*
     Contexts
   */
-  const { deposits, depositIntents, refetchDeposits } = useDeposits()
+  const {
+    deposits,
+    depositIntents,
+    refetchDeposits,
+    shouldFetchDeposits
+  } = useDeposits()
 
   /*
     State
@@ -28,14 +33,14 @@ export default function Deposit() {
    */
 
   useEffect(() => {
-    if (refetchDeposits) {
+    if (shouldFetchDeposits) {
       const intervalId = setInterval(() => {
-        refetchDeposits();
+        refetchDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDeposits]);
+  }, [shouldFetchDeposits]);
 
   /*
     Handlers

@@ -45,9 +45,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
-  const { refetchDeposits, getBestDepositForAmount } = useLiquidity();
+  const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts();
-  const { refetchDepositCounter } = useRampState();
+  const { refetchDepositCounter, shouldFetchRampState } = useRampState();
   
   /*
    * State
@@ -133,24 +133,24 @@ const SwapModal: React.FC<SwapModalProps> = ({
    */
 
   useEffect(() => {
-    if (refetchDeposits) {
+    if (shouldFetchDeposits) {
       const intervalId = setInterval(() => {
         refetchDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDeposits]);
+  }, [shouldFetchDeposits]);
 
   useEffect(() => {
-    if (refetchDepositCounter) {
+    if (shouldFetchRampState) {
       const intervalId = setInterval(() => {
         refetchDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDepositCounter]);
+  }, [shouldFetchRampState]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
