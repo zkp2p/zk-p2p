@@ -186,7 +186,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       value={{
         currentIntentHash,
         currentIntent,
-        refetchIntentHash
+        refetchIntentHash,
+        shouldFetchIntentHash
       }}
     >
       {children}

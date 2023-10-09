@@ -149,7 +149,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
         minimumDepositAmount,
         convenienceRewardTimePeriod,
         depositCounter,
-        refetchDepositCounter
+        refetchDepositCounter,
+        shouldFetchRampState
       }}
     >
       {children}

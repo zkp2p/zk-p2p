@@ -25,9 +25,7 @@ export const Deposit: React.FC<{}> = (props) => {
     if (shouldFetchDeposits) {
       refetchDeposits?.();
     }
-  }, []);
 
-  useEffect(() => {
     if (shouldFetchDepositIntents) {
       refetchDepositIntents?.();
     }

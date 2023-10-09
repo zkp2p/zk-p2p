@@ -1,21 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
 import SwapModal from "@components/Swap"
 import { OnRamp } from '@components/Swap/OnRamp'
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useRampState from '@hooks/useRampState';
 
 
 export const Swap: React.FC<{}> = (props) => {
   /*
     Contexts
   */
-  const { currentIntentHash } = useOnRamperIntents()
+  const {
+    currentIntentHash,
+    refetchIntentHash,
+    shouldFetchIntentHash
+  } = useOnRamperIntents();
+
+  const {
+    refetchDepositCounter,
+    shouldFetchRampState
+  } = useRampState();
 
   /*
    * State
    */
   const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (shouldFetchIntentHash) {
+      refetchIntentHash?.();
+    }
+
+    if (shouldFetchRampState) {
+      refetchDepositCounter?.();
+    }
+  }, []);
 
   /*
    * Handlers
