@@ -4,14 +4,16 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction
 } from 'wagmi'
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
-import useSmartContracts from '@hooks/useSmartContracts';
 import { reformatProofForChain } from "@helpers/submitProof";
+import useSmartContracts from '@hooks/useSmartContracts';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
 
 // import { vkey } from "@helpers/verifiers/send_vkey";
 // @ts-ignore
@@ -37,6 +39,10 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
     sendProcessorAddress,
     sendProcessorAbi,
   } = useSmartContracts()
+
+  const {
+    refetchOnRamperIntents
+  } = useOnRamperIntents()
 
   /*
     State
@@ -84,9 +90,21 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   });
 
   const {
+    data: submitOnRampResult,
     isLoading: isWriteCompleteOrderLoading,
-    write: writeCompleteOrder
+    writeAsync: writeCompleteOrder
   } = useContractWrite(writeCompleteOrderConfig);
+
+  const {
+    isLoading: isSubmitOnRampMining
+  } = useWaitForTransaction({
+    hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitOnRamp successful: ', data);
+      
+      refetchOnRamperIntents?.();
+    },
+  });
 
   /*
    * Hooks
@@ -135,6 +153,7 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
           secret
         />
         <Button
+          loading={isWriteCompleteOrderLoading || isSubmitOnRampMining}
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
             writeCompleteOrder?.();
