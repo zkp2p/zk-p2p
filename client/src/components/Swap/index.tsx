@@ -259,7 +259,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
         <MainContentWrapper>
           <Input
-            label="Receive"
+            label="Requesting"
             name={`requestedUSDC`}
             value={currentQuote.requestedUSDC}
             onChange={event => handleInputChange(event, 'requestedUSDC')}
@@ -268,7 +268,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             placeholder="0"
           />
           <Input
-            label="Send (via Venmo)"
+            label="You send (via Venmo)"
             name={`fiatToSend`}
             value={currentQuote.fiatToSend}
             onChange={event => handleInputChange(event, 'fiatToSend')}
