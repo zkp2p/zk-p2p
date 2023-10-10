@@ -9,7 +9,7 @@ import { useContractRead } from 'wagmi'
 
 import { Deposit, DepositWithAvailableLiquidity, StoredDeposit } from '../Deposits/types'
 import { fetchBestDepositForAmount, createDepositsStore } from './helper'
-import { esl } from '@helpers/constants'
+import { esl, CALLER_ACCOUNT } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
@@ -74,7 +74,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     args: [
       depositIdsToFetch
     ],
-    enabled: shouldFetchDeposits
+    enabled: shouldFetchDeposits,
+    account: CALLER_ACCOUNT
   })
 
   /*

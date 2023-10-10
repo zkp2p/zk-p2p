@@ -46,8 +46,9 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: "getDeniedUsers",
-    args: [loggedInEthereumAddress],
-    watch: true,
+    args: [
+      loggedInEthereumAddress
+    ],
     // cacheTime: 20_000,
     enabled: shouldFetchDeniedUsers
   });
@@ -101,7 +102,8 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     <PermissionsContext.Provider
       value={{
         deniedUsers,
-        refetchDeniedUsers
+        refetchDeniedUsers,
+        shouldFetchDeniedUsers,
       }}
     >
       {children}

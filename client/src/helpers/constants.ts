@@ -3,6 +3,7 @@ export const ZERO = BigInt(0);
 export const SECONDS_IN_DAY = BigInt(86400);
 
 export const DEPOSIT_REFETCH_INTERVAL = 30000; // 0.5 minutes
+export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:
@@ -32,7 +33,9 @@ export const STRING_PRESELECTOR = "<!-- recipient name -->";
 
 // Misc smart contract values
 export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-export const ZERO_ADDRESS= "0x0000000000000000000000000000000000000000000000000000000000000000"
+export const ZERO_ADDRESS= "0x0000000000000000000000000000000000000000000000000000000000000000";
+export const CALLER_ACCOUNT = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+export const DEFAULT_NETWORK = "hardhat";
 
 
 // Proving key paths

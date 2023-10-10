@@ -14,7 +14,12 @@ export default function Deposit() {
   /*
     Contexts
   */
-  const { deposits, depositIntents, refetchDeposits } = useDeposits()
+  const {
+    deposits,
+    depositIntents,
+    refetchDeposits,
+    shouldFetchDeposits
+  } = useDeposits()
 
   /*
     State
@@ -28,14 +33,14 @@ export default function Deposit() {
    */
 
   useEffect(() => {
-    if (refetchDeposits) {
+    if (shouldFetchDeposits) {
       const intervalId = setInterval(() => {
-        refetchDeposits();
+        refetchDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDeposits]);
+  }, [shouldFetchDeposits]);
 
   /*
     Handlers
@@ -88,10 +93,14 @@ export default function Deposit() {
         <PositionTable
           handleNewPositionClick={handleUpdateClick}
         />
+
         {depositIntents && depositIntents.length > 0 ? (
-          <IntentTable
-            onRowClick={handleIntentClick}
-          />
+          <>
+            <VerticalDivider />
+            <IntentTable
+              onRowClick={handleIntentClick}
+            />
+          </>
         ) : null}
       </DepositAndIntentContainer>
     );
@@ -129,4 +138,10 @@ const NewPositionContainer = styled.div`
   background-color: #0D111C;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const VerticalDivider = styled.div`
+  height: 40px;
+  border-left: 1.5px solid #98a1c03d;
+  margin: 0 auto;
 `;

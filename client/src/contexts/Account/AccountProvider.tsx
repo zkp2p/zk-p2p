@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { Address, useAccount, useNetwork } from 'wagmi';
 
-import { esl } from '@helpers/constants'
+import { esl, DEFAULT_NETWORK } from '@helpers/constants'
 
 import AccountContext from './AccountContext'
 
@@ -52,7 +52,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       esl && console.log('networkRaw_3');
 
-      setNetwork(null);
+      setNetwork(DEFAULT_NETWORK);
     }
   }, [chain]);
 

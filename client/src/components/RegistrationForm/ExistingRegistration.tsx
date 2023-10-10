@@ -59,8 +59,8 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
             <Body>
               <NumberedInputContainer>
                 <NumberedStep>
-                  Your Venmo ID is hashed on chain to conceal your identity. Verify your existing registered ID by pasting your
-                  Venmo ID below and tapping verify
+                  You must complete the registration in order to participate and will require any payment
+                  transaction receipt email from Venmo. Your ID is encrypted to conceal your identity.
                 </NumberedStep>
               </NumberedInputContainer>
               <ReadOnlyInput

@@ -1,9 +1,27 @@
+import React, { useEffect } from 'react';
 import styled from "styled-components";
 
 import PermissionsForm from "@components/PermissionsForm"
+import usePermissions from "@hooks/usePermissions";
 
 
 export const Permissions: React.FC<{}> = (props) => {
+  /*
+   * Contexts
+   */
+
+  const { refetchDeniedUsers, shouldFetchDeniedUsers } = usePermissions();
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (shouldFetchDeniedUsers) {
+      refetchDeniedUsers?.();
+    }
+  }, []);
+
   return (
     <PageWrapper>
       <Main>

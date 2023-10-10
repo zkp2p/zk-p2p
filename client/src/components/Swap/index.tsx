@@ -44,10 +44,10 @@ const SwapModal: React.FC<SwapModalProps> = ({
    */
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
-  const { currentIntentHash, refetchIntentHash } = useOnRamperIntents();
-  const { refetchDeposits, getBestDepositForAmount } = useLiquidity();
+  const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash } = useOnRamperIntents();
+  const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts();
-  const { refetchDepositCounter } = useRampState();
+  const { refetchDepositCounter, shouldFetchRampState } = useRampState();
   
   /*
    * State
@@ -131,26 +131,35 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Hooks
    */
-
   useEffect(() => {
-    if (refetchDeposits) {
+    if (shouldFetchIntentHash) {
+      const intervalId = setInterval(() => {
+        refetchIntentHash?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchIntentHash]);
+  
+  useEffect(() => {
+    if (shouldFetchDeposits) {
       const intervalId = setInterval(() => {
         refetchDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDeposits]);
+  }, [shouldFetchDeposits]);
 
   useEffect(() => {
-    if (refetchDepositCounter) {
+    if (shouldFetchRampState) {
       const intervalId = setInterval(() => {
         refetchDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
-  }, [refetchDepositCounter]);
+  }, [shouldFetchRampState]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
@@ -253,9 +262,12 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
       {
         currentIntentHash && (
-          <IntentTable
-            onRowClick={onIntentTableRowClick}
-          />
+          <>
+            <VerticalDivider />
+            <IntentTable
+              onRowClick={onIntentTableRowClick}
+            />
+          </>
         )
       }
     </Wrapper>
@@ -304,6 +316,12 @@ const CTAButton = styled(Button)`
   font-size: 20px;
   font-weight: 550;
   transition: all 75ms;
+`;
+
+const VerticalDivider = styled.div`
+  height: 40px;
+  border-left: 1px solid #98a1c03d;
+  margin: 0 auto;
 `;
 
 export default SwapModal;

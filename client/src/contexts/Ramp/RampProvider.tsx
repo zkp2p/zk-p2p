@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { esl, ZERO } from '@helpers/constants'
+import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants'
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import RampContext from './RampContext'
@@ -42,7 +42,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'minDepositAmount',
-    enabled: shouldFetchRampState
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
   })
 
   // uint256 public convenienceRewardTimePeriod;
@@ -55,7 +56,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'convenienceRewardTimePeriod',
-    enabled: shouldFetchRampState
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
   })
 
   // uint256 public depositCounter;
@@ -68,7 +70,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'depositCounter',
-    enabled: shouldFetchRampState
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
   })
 
   /*
@@ -149,7 +152,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
         minimumDepositAmount,
         convenienceRewardTimePeriod,
         depositCounter,
-        refetchDepositCounter
+        refetchDepositCounter,
+        shouldFetchRampState
       }}
     >
       {children}

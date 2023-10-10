@@ -6,6 +6,7 @@ interface RampValues {
   convenienceRewardTimePeriod: bigint | null;
   depositCounter: bigint | null;
   refetchDepositCounter: (() => void) | null;
+  shouldFetchRampState: boolean;
 }
 
 const defaultValues: RampValues = {
@@ -13,6 +14,7 @@ const defaultValues: RampValues = {
   convenienceRewardTimePeriod: null,
   depositCounter: null,
   refetchDepositCounter: null,
+  shouldFetchRampState: false
 };
 
 const RampContext = createContext<RampValues>(defaultValues)

@@ -4,6 +4,7 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from 'wagmi'
 
 import { Button } from "../Button";
@@ -12,6 +13,7 @@ import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import { NumberedStep } from "../common/NumberedStep";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
+import useDeposits from '@hooks/useDeposits';
 
 // import { vkey } from "@helpers/verifiers/receive_vkey";
 // @ts-ignore
@@ -37,6 +39,10 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
     receiveProcessorAddress,
     receiveProcessorAbi,
   } = useSmartContracts()
+
+  const {
+    refetchDepositIntents
+  } = useDeposits()
 
   /*
     State
@@ -84,9 +90,21 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   });
 
   const {
+    data: submitOnRampWithConvenienceResult,
     isLoading: isWriteCompleteOrderLoading,
-    write: writeCompleteOrder
+    writeAsync: writeCompleteOrder
   } = useContractWrite(writeCompleteOrderConfig);
+
+  const {
+    isLoading: isSubmitOnRampWithConvenienceMining
+  } = useWaitForTransaction({
+    hash: submitOnRampWithConvenienceResult ? submitOnRampWithConvenienceResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitOnRampWithConvenience successful: ', data);
+      
+      refetchDepositIntents?.();
+    },
+  });
 
   /*
    * Hooks
@@ -135,6 +153,7 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
           secret
         />
         <Button
+          loading={isSubmitOnRampWithConvenienceMining || isWriteCompleteOrderLoading}
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
             writeCompleteOrder?.();
