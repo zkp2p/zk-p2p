@@ -21,7 +21,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const requestedAmountLabel = `Claiming ${amountUSDCToSend} USDC`;
+  const requestedAmountLabel = `Request ${amountUSDCToSend} USDC`;
   const onRamperHashLabel = `Receive $${amountUSDToReceive} from ${onRamper} on Venmo`;
   const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
 

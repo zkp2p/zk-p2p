@@ -22,10 +22,10 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const requestedAmountLabel = `Requested: ${amountUSDCToReceive} USDC`;
+  const requestedAmountLabel = `Requested ${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
-  const timeRemainingLabel = `Order Expires: ${expirationTimestamp}`;
-  const convenienceLabel = `Convenience Window: ${expirationTimestamp}`
+  const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
+  const convenienceLabel = `Convenience window: ${expirationTimestamp}`
 
   return (
     <Container>
@@ -37,7 +37,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           </AmountLabel>
           
           <AmountLabel>
-            You send {amountUSDToSend} via&nbsp;<StyledLink urlHyperlink={venmoLink} label={'Venmo'}/>
+            Send {amountUSDToSend} via&nbsp;<StyledLink urlHyperlink={venmoLink} label={'Venmo'}/>
           </AmountLabel>
           
           <AmountLabel>
