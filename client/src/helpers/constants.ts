@@ -5,6 +5,9 @@ export const SECONDS_IN_DAY = BigInt(86400);
 export const DEPOSIT_REFETCH_INTERVAL = 30000; // 0.5 minutes
 export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 
+export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
+export const USDC_UNITS = BigInt(1_000_000); // 6
+
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:
 // echo "E PLURIBUS UNUM; DO NOT SHARE" | ssh-keygen -Y sign -n double-blind.xyz -f ~/.ssh/id_rsa | pbcopy

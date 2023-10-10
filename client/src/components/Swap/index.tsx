@@ -13,9 +13,9 @@ import { ThemedText } from '../../theme/text'
 import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
-import { StoredDeposit } from '../../contexts/Deposits/types'
+import { IndicativeQuote } from '../../contexts/Deposits/types'
 import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
-import { fromUsdcToNaturalBigInt, usdc } from '@helpers/units'
+import { toBigInt } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from "@hooks/useRampState";
@@ -102,7 +102,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     functionName: 'signalIntent',
     args: [
       currentQuote.depositId,
-      usdc(currentQuote.requestedUSDC),
+      toBigInt(currentQuote.requestedUSDC),
       loggedInEthereumAddress
     ],
     onError: (error: { message: any }) => {
@@ -163,35 +163,39 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
-      if (currentQuote.requestedUSDC) {
-        const requestedUsdcInNativeUnits = usdc(currentQuote.requestedUSDC);
-        if (requestedUsdcInNativeUnits !== ZERO) {
-          const storedDeposit: StoredDeposit | null = await getBestDepositForAmount(requestedUsdcInNativeUnits);
-          console.log('Selected storedDeposit: ', storedDeposit);
+      const requestedUsdcAmount = currentQuote.requestedUSDC;
 
-          if (storedDeposit) {
-            // Assume conversionRate is a number with up to 18 decimal places
-            const conversionRate = storedDeposit.deposit.conversionRate;
-            const precision = BigInt(10 ** 18);
-            
-            // Multiply requestedUsdcInNativeUnits by conversionRate, assuming requestedUsdcInNativeUnits is a BigInt
-            const usdcAmount = requestedUsdcInNativeUnits * precision / conversionRate;
-            
-            // Convert usdcAmount to a string, then to a number for use with toFixed
-            const usdcAmountNumber = Number(fromUsdcToNaturalBigInt(usdcAmount));
-            const fiatToSend = (usdcAmountNumber % 1 === 0)
-              ? usdcAmountNumber.toString()
-              : usdcAmountNumber.toFixed(2);
-            const depositId = storedDeposit.depositId;
-  
-            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: fiatToSend.toString(), depositId }));
-            setShouldConfigureSignalIntentWrite(true);
-          } else {
-            // TODO: Show error message, with max available liquidity
-            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: ZERO }));
-            setShouldConfigureSignalIntentWrite(false);
-          }
+      if (getBestDepositForAmount && requestedUsdcAmount && requestedUsdcAmount !== '0') {
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
+        const usdAmountToSend = indicativeQuote.usdAmountToSend;
+        const depositId = indicativeQuote.depositId;
+
+        if (usdAmountToSend !== undefined && depositId !== undefined) {
+          setCurrentQuote(prevState => ({
+            ...prevState,
+            fiatToSend: usdAmountToSend,
+            depositId: depositId
+          }));
+
+          setShouldConfigureSignalIntentWrite(true);
+        } else {
+          setCurrentQuote(prevState => ({
+            ...prevState,
+            fiatToSend: '',
+            depositId: ZERO
+          }));
+
+          setShouldConfigureSignalIntentWrite(false);
         }
+      } else {
+        console.log('4');
+        setShouldConfigureSignalIntentWrite(false);
+
+        setCurrentQuote(prevState => ({
+          ...prevState,
+          fiatToSend: '',
+          depositId: ZERO
+        }));
       }
     };
   

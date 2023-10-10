@@ -31,6 +31,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
   const [uniqueIntentHashes, setUniqueIntentHashes] = useState<string[]>([]);
+  const [intentIndexDepositMap, setIntentIndexDepositMap] = useState<Map<number, Deposit>>(new Map<number, Deposit>())
   const [shouldFetchDepositIntents, setShouldFetchDepositIntents] = useState<boolean>(false);
 
   /*
@@ -121,6 +122,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
       const depositIntentHashes: string[][] = [];
+      const intentHashToDepositMap = new Map<string, Deposit>();
+
       for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
         const depositWithAvailableLiquidityData = depositsArrayRaw[i];
 
@@ -143,10 +146,30 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
         sanitizedDeposits.push(depositWithLiquidity);
         depositIntentHashes.push(depositData.intentHashes);
+
+        for (let j = 0; j < depositData.intentHashes.length; j++) {
+          const intentHash = depositData.intentHashes[j];
+          intentHashToDepositMap.set(intentHash, deposit);
+        }
       }
           
       setDeposits(sanitizedDeposits);
-      setUniqueIntentHashes(depositIntentHashes.flat());
+      
+      const flattenedDepositIntentHashes = depositIntentHashes.flat();
+      setUniqueIntentHashes(flattenedDepositIntentHashes);
+
+      const intentIndexDepositMap = new Map<number, Deposit>();
+      for (let i = 0; i < flattenedDepositIntentHashes.length; i++) {
+        const intentHash = flattenedDepositIntentHashes[i];
+        const deposit = intentHashToDepositMap.get(intentHash);
+
+        if (deposit === undefined) {
+          throw new Error('Deposit not found for intent hash: ' + intentHash);
+        } else {
+          intentIndexDepositMap.set(i, deposit);
+        }
+      }
+      setIntentIndexDepositMap(intentIndexDepositMap);
     } else {
       esl && console.log('depositsRaw_3');
 
@@ -177,10 +200,16 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           timestamp: intentData.intentTimestamp,
         };
 
+        const deposit = intentIndexDepositMap.get(i);
+        if (deposit === undefined) {
+          throw new Error('Deposit not found for intent index: ' + i);
+        }
+
         const onRamperVenmoHash = intentWithOnRamperId.onRamperIdHash;
         const depositIntent: DepositIntent = {
           intent,
-          onRamperVenmoHash
+          onRamperVenmoHash,
+          deposit
         }
 
         sanitizedIntents.push(depositIntent);
