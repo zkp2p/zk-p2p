@@ -262,9 +262,12 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
       {
         currentIntentHash && (
-          <IntentTable
-            onRowClick={onIntentTableRowClick}
-          />
+          <>
+            <VerticalDivider />
+            <IntentTable
+              onRowClick={onIntentTableRowClick}
+            />
+          </>
         )
       }
     </Wrapper>
@@ -313,6 +316,12 @@ const CTAButton = styled(Button)`
   font-size: 20px;
   font-weight: 550;
   transition: all 75ms;
+`;
+
+const VerticalDivider = styled.div`
+  height: 40px;
+  border-left: 1px solid #98a1c03d;
+  margin: 0 auto;
 `;
 
 export default SwapModal;
