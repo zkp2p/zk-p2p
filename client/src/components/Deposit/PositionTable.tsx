@@ -153,7 +153,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             <PositionsContainer>
               <PositionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your positions ({positionsRowData.length})
+                  Your deposits ({positionsRowData.length})
                 </ThemedText.LabelSmall>
               </PositionCountTitle>
               <Table>
@@ -279,11 +279,6 @@ const Table = styled.div`
 `;
 
 const PositionRowStyled = styled.div`
-  &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: none;
-  }  
-
   &:last-child {
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;

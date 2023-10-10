@@ -102,12 +102,12 @@ export const IntentTable: React.FC<IntentTableProps> = ({
           <IntentContainer>
             <IntentCountTitle>
               <ThemedText.LabelSmall textAlign="left">
-                Orders on your Deposits
+                Orders on your deposits
               </ThemedText.LabelSmall>
             </IntentCountTitle>
             <Table>
               {intentsRowData.map((intentsRow, rowIndex) => (
-                <PermissionRowStyled
+                <IntentRowStyled
                   key={rowIndex}
                   onClick={() => {
                     onRowClick && onRowClick([rowIndex])}
@@ -119,7 +119,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
                     expirationTimestamp={intentsRow.expirationTimestamp}
                     onRamper={intentsRow.onRamper}
                   />
-                </PermissionRowStyled>
+                </IntentRowStyled>
               ))}
             </Table>
           </IntentContainer>
@@ -187,7 +187,7 @@ const Table = styled.div`
   }
 `;
 
-const PermissionRowStyled = styled.div`
+const IntentRowStyled = styled.div`
   &:hover {
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: none;

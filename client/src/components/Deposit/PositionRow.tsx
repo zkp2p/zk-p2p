@@ -57,11 +57,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 1.5rem;
-
-  &:focus-within {
-    border-color: #CED4DA;
-    border-width: 1px;
-  }
 `;
 
 const AmountContainer = styled.div`
