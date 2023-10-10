@@ -7,8 +7,17 @@ import React, {
 } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit, DepositWithAvailableLiquidity, StoredDeposit } from '../Deposits/types'
-import { fetchBestDepositForAmount, createDepositsStore } from './helper'
+import {
+  Deposit,
+  DepositWithAvailableLiquidity,
+  IndicativeQuote,
+  StoredDeposit
+} from '../Deposits/types'
+import {
+  calculateUsdFromRequestedUSDC,
+  createDepositsStore,
+  fetchBestDepositForAmount,
+ } from './helper'
 import { esl, CALLER_ACCOUNT } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -160,12 +169,13 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [deposits, depositIdsToFetch]);
 
-  // TODO: Check that depositor does not signal intent on own deposit
-  const getBestDepositForAmount = useCallback((amount: bigint) => {
+  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
     if (depositStore) {
-      return fetchBestDepositForAmount(amount, depositStore);
+      return fetchBestDepositForAmount(requestedOnRampInputAmount, depositStore);
     } else {
-      return null;
+      return {
+        error: 'No deposits available'
+      } as IndicativeQuote;
     }
   }, [depositStore]);
 
@@ -176,7 +186,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         depositStore,
         getBestDepositForAmount,
         refetchDeposits,
-        shouldFetchDeposits
+        shouldFetchDeposits,
+        calculateUsdFromRequestedUSDC,
       }}
     >
       {children}

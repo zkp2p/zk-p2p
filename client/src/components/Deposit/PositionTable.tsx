@@ -9,7 +9,8 @@ import { ThemedText } from '../../theme/text'
 import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
-import { fromUsdcToNaturalString, fromEtherToNaturalString } from '@helpers/units'
+import { toUsdcString } from '@helpers/units'
+import { PRECISION } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useDeposits from '@hooks/useDeposits';
 import useRegistration from '@hooks/useRegistration'
@@ -17,12 +18,12 @@ import useRegistration from '@hooks/useRegistration'
 
 export interface DepositPrime {
   depositor: string;
-  availableDepositAmount: bigint;
-  totalDepositAmount: bigint;
-  outstandingIntentAmount: bigint;
-  intentCount: number;
-  conversionRate: bigint;
-  convenienceFee: bigint;
+  availableDepositAmount: string;
+  totalDepositAmount: string;
+  outstandingIntentAmount: string;
+  intentCount: string;
+  conversionRate: string;
+  convenienceFee: string;
 }
 
 interface PositionTableProps {
@@ -59,12 +60,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
-        const availableDepositAmount = depositWithLiquidity.availableLiquidity;
-        const totalDepositAmount = deposit.depositAmount;
-        const intentCount = deposit.intentHashes.length;
-        const outstandingIntentAmount = deposit.outstandingIntentAmount;
-        const conversionRate = deposit.conversionRate;
-        const convenienceFee = deposit.convenienceFee;
+        const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity);
+        const totalDepositAmount = toUsdcString(deposit.depositAmount);
+        const intentCount = deposit.intentHashes.length.toString();
+        const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
+        const conversionRate = conversionRateToString(deposit.conversionRate);
+        const convenienceFee = feeAmountString(toUsdcString(deposit.convenienceFee));
 
         return {
           depositor,
@@ -93,12 +94,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    * Helpers
    */
 
-  function convertRatesToPercentage(rate: number) {
-    return parseFloat(rate.toFixed(2)) + '%';
+  function conversionRateToString(rate: bigint) {
+    const scaledValue = rate * (PRECISION); // 833333333333333333000000000000000000n
+    const reciprocal = (PRECISION * (100n * PRECISION)) / scaledValue; // 120n
+    const difference = reciprocal - 100n;
+  
+    if (difference > 0n) {
+      return difference.toString() + '%';
+    } else {
+      return '1:1';
+    }
   }
 
-  function feeAmountString(usdcAmount: number) {
-    return usdcAmount + ' USDC';
+  function feeAmountString(usdcAmountString: string) {
+    return usdcAmountString + ' USDC';
   }
 
   return (
@@ -153,20 +162,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             <PositionsContainer>
               <PositionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your positions ({positionsRowData.length})
+                  Your deposits ({positionsRowData.length})
                 </ThemedText.LabelSmall>
               </PositionCountTitle>
               <Table>
-                {positionsRowData.map((position, rowIndex) => (
+                {positionsRowData.map((positionRow, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
-                      depositorHash={position.depositor}
-                      availableDepositAmount={fromUsdcToNaturalString(position.availableDepositAmount)}
-                      totalDepositAmount={fromUsdcToNaturalString(position.totalDepositAmount)}
-                      outstandingIntentAmount={fromUsdcToNaturalString(position.outstandingIntentAmount)}
-                      intentCount={position.intentCount.toString()}
-                      conversionRate={convertRatesToPercentage(Number(fromEtherToNaturalString(position.conversionRate)))}
-                      convenienceFee={feeAmountString(Number(fromEtherToNaturalString(position.convenienceFee)))}
+                      depositorHash={positionRow.depositor}
+                      availableDepositAmount={positionRow.availableDepositAmount}
+                      totalDepositAmount={positionRow.totalDepositAmount}
+                      outstandingIntentAmount={positionRow.outstandingIntentAmount}
+                      intentCount={positionRow.intentCount}
+                      conversionRate={positionRow.conversionRate}
+                      convenienceFee={positionRow.convenienceFee}
                       rowIndex={rowIndex}
                     />
                   </PositionRowStyled>
@@ -279,11 +288,6 @@ const Table = styled.div`
 `;
 
 const PositionRowStyled = styled.div`
-  &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: none;
-  }  
-
   &:last-child {
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;

@@ -21,8 +21,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const requestedAmountLabel = `${amountUSDCToSend} USDC Pending`;
-  const onRamperHashLabel = `Receive ${amountUSDToReceive} from ${onRamper} on Venmo`;
+  const requestedAmountLabel = `Request ${amountUSDCToSend} USDC`;
+  const onRamperHashLabel = `Receive $${amountUSDToReceive} from ${onRamper} on Venmo`;
   const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
 
   return (
@@ -30,9 +30,17 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       <VenmoHashContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
-          <AmountLabel> {requestedAmountLabel} </AmountLabel>
-          <AmountLabel> {onRamperHashLabel} </AmountLabel>
-          <AmountLabel> {timeRemainingLabel} </AmountLabel>
+          <AmountLabel>
+            {requestedAmountLabel}
+          </AmountLabel>
+          
+          <AmountLabel>
+            {onRamperHashLabel}
+          </AmountLabel>
+          
+          <AmountLabel>
+            {timeRemainingLabel}
+          </AmountLabel>
         </AmountLabelsContainer>
       </VenmoHashContainer>
     </Container>

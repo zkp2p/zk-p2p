@@ -3,9 +3,10 @@ import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
-import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
-import { SECONDS_IN_DAY  } from '@helpers/constants'
+import { toUsdcString, toUsdString } from '@helpers/units'
+import { PRECISION, SECONDS_IN_DAY  } from '@helpers/constants'
 import useOnRamperIntents from '@hooks/useOnRamperIntents'
+import useLiquidity from '@hooks/useLiquidity';
 // import useRampState from '@hooks/useRampState';
 
 
@@ -25,7 +26,8 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     Contexts
   */
 
- const { currentIntent } = useOnRamperIntents()
+ const { currentIntent } = useOnRamperIntents();
+ const { depositStore } = useLiquidity();
 //  const { convenienceRewardTimePeriod } = useRampState()
 
   
@@ -40,37 +42,40 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
  
   useEffect(() => {
-    if (!currentIntent) {
-      setIntentsRowData([]);
-    } else {
-      const amountUSDCToReceive = convertDepositAmountToUSD(currentIntent.intent.amount);
-      const amountUSDToSend = "$1.05"; // TODO: calculate this
-      const expirationTimestamp = calculateAndFormatExpiration(currentIntent.intent.timestamp);
-      const venmoIdString = currentIntent.depositorVenmoId.toString();
-      
-      const sanitizedIntent: IntentRowData = {
-        amountUSDCToReceive,
-        amountUSDToSend,
-        expirationTimestamp,
-        depositorVenmoId: venmoIdString
-      };
+    if (currentIntent && depositStore) {
+      const storedDeposit = depositStore.find((storedDeposit) => {
+        return storedDeposit.depositId === currentIntent.intent.deposit;
+      });
 
-      setIntentsRowData([sanitizedIntent]);
+      if (storedDeposit !== undefined) {
+        const amountUSDC = currentIntent.intent.amount
+        const conversionRate = storedDeposit.deposit.conversionRate;
+        const usdToSend = amountUSDC * PRECISION / conversionRate;
+        const amountUSDToSend = toUsdString(usdToSend);
+
+        const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);
+        const expirationTimestamp = calculateAndFormatExpiration(currentIntent.intent.timestamp);
+        const venmoIdString = currentIntent.depositorVenmoId.toString();
+
+        const sanitizedIntent: IntentRowData = {
+          amountUSDCToReceive,
+          amountUSDToSend,
+          expirationTimestamp,
+          depositorVenmoId: venmoIdString
+        };
+
+        setIntentsRowData([sanitizedIntent]);
+      } else {
+        setIntentsRowData([]);  
+      }
+    } else {
+      setIntentsRowData([]);
     }
-  }, [currentIntent]);
+  }, [currentIntent, depositStore]);
 
   /*
     Helpers
   */
-
-  function convertDepositAmountToUSD(depositAmount: bigint): string {
-    const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
-
-    return humanReadableDepositAmount.toLocaleString(
-      'en-US',
-      { minimumFractionDigits: 0, maximumFractionDigits: 2 }
-    );
-  }
 
   function calculateAndFormatExpiration(unixTimestamp: bigint): string {
     const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));

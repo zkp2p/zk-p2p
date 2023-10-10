@@ -27,7 +27,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
 
-  const depositRemainingLabel = `Remaining: ${availableDepositAmount} / ${totalDepositAmount}`;
+  const depositRemainingLabel = `Available USDC: ${availableDepositAmount} / ${totalDepositAmount}`;
   const intentAmountLabel = `Outstanding Intents: ${intentCount} (${outstandingIntentAmount})`;
 
   return (
@@ -57,11 +57,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   padding: 1.5rem;
-
-  &:focus-within {
-    border-color: #CED4DA;
-    border-width: 1px;
-  }
 `;
 
 const AmountContainer = styled.div`

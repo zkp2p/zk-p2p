@@ -28,6 +28,12 @@ export interface StoredDeposit extends DepositWithAvailableLiquidity {
   depositId: bigint;
 }
 
+export interface IndicativeQuote {
+  depositId?: bigint;
+  usdAmountToSend?: string;
+  error?: string;
+}
+
 // struct Intent {
 //   address onramper;
 //   uint256 deposit;
@@ -45,6 +51,7 @@ export interface Intent {
 
 export interface DepositIntent {
   onRamperVenmoHash: string;
+  deposit: Deposit;
   intent: Intent;
 }
 

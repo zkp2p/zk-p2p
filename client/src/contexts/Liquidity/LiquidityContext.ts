@@ -1,22 +1,32 @@
 import { createContext } from 'react'
 
-import { DepositWithAvailableLiquidity, StoredDeposit } from '../Deposits/types'
+import {
+  DepositWithAvailableLiquidity,
+  IndicativeQuote,
+  StoredDeposit
+} from '../Deposits/types'
+
+import {
+  calculateUsdFromRequestedUSDC
+} from './helper'
 
 
 interface LiquidityValues {
   deposits: DepositWithAvailableLiquidity[] | null;
   depositStore: StoredDeposit[] | null;
-  getBestDepositForAmount: (amount: bigint) => StoredDeposit | null;
+  getBestDepositForAmount: ((requestedOnRampInputAmount: string) => IndicativeQuote) | null;
   refetchDeposits: (() => void) | null;
   shouldFetchDeposits: boolean;
+  calculateUsdFromRequestedUSDC: (requestedOnRampInputAmount: bigint, conversionRate: bigint) => bigint;
 }
 
 const defaultValues: LiquidityValues = {
   deposits: null,
   depositStore: null,
-  getBestDepositForAmount: () => null,
+  getBestDepositForAmount: null,
   refetchDeposits: null,
-  shouldFetchDeposits: false
+  shouldFetchDeposits: false,
+  calculateUsdFromRequestedUSDC
 };
 
 const LiquidityContext = createContext<LiquidityValues>(defaultValues)

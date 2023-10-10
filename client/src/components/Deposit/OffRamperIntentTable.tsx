@@ -3,10 +3,11 @@ import styled from 'styled-components/macro'
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
-import { fromUsdcToNaturalBigInt,  } from '@helpers/units'
-import { SECONDS_IN_DAY  } from '@helpers/constants'
+import { toUsdString, toUsdcString  } from '@helpers/units'
+import { SECONDS_IN_DAY, PRECISION  } from '@helpers/constants'
 import { DepositIntent } from "../../contexts/Deposits/types";
 import useDeposits from '@hooks/useDeposits';
+import useLiquidity from '@hooks/useLiquidity';
 
 
 interface IntentTableProps {
@@ -24,7 +25,8 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     Contexts
   */
 
-  const { depositIntents } = useDeposits()
+  const { deposits, depositIntents } = useDeposits();
+  const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
   /*
     State
@@ -37,19 +39,19 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
 
   useEffect(() => {
-    if (!depositIntents) {
-      setIntentsRowData([]);
-    } else {
+    if (depositIntents && deposits) {
       var sanitizedIntents: IntentRowData[] = [];
       sanitizedIntents = depositIntents.map((depositIntent: DepositIntent) => {
         const intent = depositIntent.intent;
+        const deposit = depositIntent.deposit;
+
+        const amountUSDC = intent.amount
+        const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
 
         const onRamper = truncateAddress(intent.onRamper);
-        const amountUSDToReceive = "$2";
-        const amountUSDCToSend = convertDepositAmountToUSD(intent.amount);
+        const amountUSDToReceive = toUsdString(usdToSend);
+        const amountUSDCToSend = toUsdcString(amountUSDC);
         const expirationTimestamp = calculateAndFormatExpiration(intent.timestamp);
-
-        // TODO: Add Venmo hash to the off-ramper intent
         
         return {
           onRamper,
@@ -60,8 +62,10 @@ export const IntentTable: React.FC<IntentTableProps> = ({
       });
 
       setIntentsRowData(sanitizedIntents);
+    } else {
+      setIntentsRowData([]);
     }
-  }, [depositIntents]);
+  }, [depositIntents, deposits]);
 
   /*
     Helpers
@@ -69,15 +73,6 @@ export const IntentTable: React.FC<IntentTableProps> = ({
 
   function truncateAddress(onRamperAddress: string): string {
     return `${onRamperAddress.slice(0, 4)}...${onRamperAddress.slice(-4)}`;
-  }
-
-  function convertDepositAmountToUSD(depositAmount: bigint): string {
-    const humanReadableDepositAmount = fromUsdcToNaturalBigInt(depositAmount);
-
-    return humanReadableDepositAmount.toLocaleString(
-      'en-US',
-      { minimumFractionDigits: 0, maximumFractionDigits: 2 }
-    );
   }
 
   function calculateAndFormatExpiration(unixTimestamp: bigint): string {
@@ -102,12 +97,12 @@ export const IntentTable: React.FC<IntentTableProps> = ({
           <IntentContainer>
             <IntentCountTitle>
               <ThemedText.LabelSmall textAlign="left">
-                Orders on your Deposits
+                Orders on your deposits
               </ThemedText.LabelSmall>
             </IntentCountTitle>
             <Table>
               {intentsRowData.map((intentsRow, rowIndex) => (
-                <PermissionRowStyled
+                <IntentRowStyled
                   key={rowIndex}
                   onClick={() => {
                     onRowClick && onRowClick([rowIndex])}
@@ -119,7 +114,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
                     expirationTimestamp={intentsRow.expirationTimestamp}
                     onRamper={intentsRow.onRamper}
                   />
-                </PermissionRowStyled>
+                </IntentRowStyled>
               ))}
             </Table>
           </IntentContainer>
@@ -187,7 +182,7 @@ const Table = styled.div`
   }
 `;
 
-const PermissionRowStyled = styled.div`
+const IntentRowStyled = styled.div`
   &:hover {
     border: 1px solid rgba(255, 255, 255, 0.8);
     box-shadow: none;

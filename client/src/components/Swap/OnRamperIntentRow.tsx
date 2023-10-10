@@ -22,22 +22,31 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const requestedAmountLabel = `Open Order: ${amountUSDCToReceive} USDC`;
+  const requestedAmountLabel = `Requested ${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
   const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
+  const convenienceLabel = `Convenience window: ${expirationTimestamp}`
 
   return (
     <Container>
       <AddressContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
-          <AmountLabel> {requestedAmountLabel} </AmountLabel>
           <AmountLabel>
-            Complete
-              <StyledLink urlHyperlink={venmoLink} label={' Venmo '}
-            /> payment for {amountUSDToSend}
+            {requestedAmountLabel}
           </AmountLabel>
-          <AmountLabel> {timeRemainingLabel} </AmountLabel>
+          
+          <AmountLabel>
+            Send {amountUSDToSend} via&nbsp;<StyledLink urlHyperlink={venmoLink} label={'Venmo'}/>
+          </AmountLabel>
+          
+          <AmountLabel>
+            {timeRemainingLabel}
+          </AmountLabel>
+          
+          <AmountLabel>
+            {convenienceLabel}
+          </AmountLabel>
         </AmountLabelsContainer>
       </AddressContainer>
     </Container>

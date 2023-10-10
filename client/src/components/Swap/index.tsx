@@ -13,9 +13,9 @@ import { ThemedText } from '../../theme/text'
 import { IntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
-import { StoredDeposit } from '../../contexts/Deposits/types'
+import { IndicativeQuote } from '../../contexts/Deposits/types'
 import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
-import { fromUsdcToNaturalBigInt, usdc } from '@helpers/units'
+import { toBigInt } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from "@hooks/useRampState";
@@ -42,6 +42,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Contexts
    */
+
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash } = useOnRamperIntents();
@@ -52,6 +53,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * State
    */
+
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
@@ -59,16 +61,34 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Event Handlers
    */
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
-    const quoteCopy = {...currentQuote}
+    if (field === 'requestedUSDC') {
+      const value = event.target.value;
+      const quoteCopy = {...currentQuote}
 
-    quoteCopy[field] = event.target.value;
+      if (value === "") {
+        quoteCopy[field] = '';
+        quoteCopy.depositId = ZERO;
 
-    if (field !== 'requestedUSDC') {
-      quoteCopy.depositId = ZERO;
+        setCurrentQuote(quoteCopy);
+      } else if (value === ".") {
+        quoteCopy[field] = "0.";
+        quoteCopy.depositId = ZERO;
+
+        setCurrentQuote(quoteCopy);
+      }
+      else if (isValidInput(value)) {
+        quoteCopy[field] = event.target.value;
+
+        setCurrentQuote(quoteCopy);
+      }
+    } else {
+      const quoteCopy = {...currentQuote}
+      quoteCopy[field] = event.target.value;
+
+      setCurrentQuote(quoteCopy);
     }
-
-    setCurrentQuote(quoteCopy);
   };
 
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -102,7 +122,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     functionName: 'signalIntent',
     args: [
       currentQuote.depositId,
-      usdc(currentQuote.requestedUSDC),
+      toBigInt(currentQuote.requestedUSDC),
       loggedInEthereumAddress
     ],
     onError: (error: { message: any }) => {
@@ -131,6 +151,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Hooks
    */
+
   useEffect(() => {
     if (shouldFetchIntentHash) {
       const intervalId = setInterval(() => {
@@ -163,35 +184,47 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
-      if (currentQuote.requestedUSDC) {
-        const requestedUsdcInNativeUnits = usdc(currentQuote.requestedUSDC);
-        if (requestedUsdcInNativeUnits !== ZERO) {
-          const storedDeposit: StoredDeposit | null = await getBestDepositForAmount(requestedUsdcInNativeUnits);
-          console.log('Selected storedDeposit: ', storedDeposit);
+      const requestedUsdcAmount = currentQuote.requestedUSDC;
+      const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
-          if (storedDeposit) {
-            // Assume conversionRate is a number with up to 18 decimal places
-            const conversionRate = storedDeposit.deposit.conversionRate;
-            const precision = BigInt(10 ** 18);
-            
-            // Multiply requestedUsdcInNativeUnits by conversionRate, assuming requestedUsdcInNativeUnits is a BigInt
-            const usdcAmount = requestedUsdcInNativeUnits * precision / conversionRate;
-            
-            // Convert usdcAmount to a string, then to a number for use with toFixed
-            const usdcAmountNumber = Number(fromUsdcToNaturalBigInt(usdcAmount));
-            const fiatToSend = (usdcAmountNumber % 1 === 0)
-              ? usdcAmountNumber.toString()
-              : usdcAmountNumber.toFixed(2);
-            const depositId = storedDeposit.depositId;
-  
-            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: fiatToSend.toString(), depositId }));
-            setShouldConfigureSignalIntentWrite(true);
+      if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
+        const usdAmountToSend = indicativeQuote.usdAmountToSend;
+        const depositId = indicativeQuote.depositId;
+
+        const isAmountToSendValid = usdAmountToSend !== undefined;
+        const isDepositIdValid = depositId !== undefined;
+
+        if (isAmountToSendValid && isDepositIdValid) {
+          setCurrentQuote(prevState => ({
+            ...prevState,
+            fiatToSend: usdAmountToSend,
+            depositId: depositId
+          }));
+
+          const doesNotHaveOpenIntent = currentIntentHash === null;
+          if (doesNotHaveOpenIntent) {
+            setShouldConfigureSignalIntentWrite(true);  
           } else {
-            // TODO: Show error message, with max available liquidity
-            setCurrentQuote(prevState => ({ ...prevState, fiatToSend: '', depositId: ZERO }));
             setShouldConfigureSignalIntentWrite(false);
           }
+        } else {
+          setCurrentQuote(prevState => ({
+            ...prevState,
+            fiatToSend: '',
+            depositId: ZERO
+          }));
+
+          setShouldConfigureSignalIntentWrite(false);
         }
+      } else {
+        setShouldConfigureSignalIntentWrite(false);
+
+        setCurrentQuote(prevState => ({
+          ...prevState,
+          fiatToSend: '',
+          depositId: ZERO
+        }));
       }
     };
   
@@ -205,6 +238,15 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const navigateToRegistrationHandler = () => {
     navigate('/register');
   };
+
+  /*
+   * Helpers
+   */
+
+  function isValidInput(value) {
+    const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
+    return !isNaN(value) && parseFloat(value) >= 0 && isValid;
+  }
 
   return (
     <Wrapper>
@@ -319,7 +361,7 @@ const CTAButton = styled(Button)`
 `;
 
 const VerticalDivider = styled.div`
-  height: 40px;
+  height: 32px;
   border-left: 1px solid #98a1c03d;
   margin: 0 auto;
 `;
