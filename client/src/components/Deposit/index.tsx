@@ -141,7 +141,7 @@ const NewPositionContainer = styled.div`
 `;
 
 const VerticalDivider = styled.div`
-  height: 40px;
+  height: 32px;
   border-left: 1.5px solid #98a1c03d;
   margin: 0 auto;
 `;
