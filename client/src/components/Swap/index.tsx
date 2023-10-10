@@ -42,6 +42,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Contexts
    */
+
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash } = useOnRamperIntents();
@@ -52,6 +53,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * State
    */
+
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
@@ -59,16 +61,34 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Event Handlers
    */
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
-    const quoteCopy = {...currentQuote}
+    if (field === 'requestedUSDC') {
+      const value = event.target.value;
+      const quoteCopy = {...currentQuote}
 
-    quoteCopy[field] = event.target.value;
+      if (value === "") {
+        quoteCopy[field] = '';
+        quoteCopy.depositId = ZERO;
 
-    if (field !== 'requestedUSDC') {
-      quoteCopy.depositId = ZERO;
+        setCurrentQuote(quoteCopy);
+      } else if (value === ".") {
+        quoteCopy[field] = "0.";
+        quoteCopy.depositId = ZERO;
+
+        setCurrentQuote(quoteCopy);
+      }
+      else if (isValidInput(value)) {
+        quoteCopy[field] = event.target.value;
+
+        setCurrentQuote(quoteCopy);
+      }
+    } else {
+      const quoteCopy = {...currentQuote}
+      quoteCopy[field] = event.target.value;
+
+      setCurrentQuote(quoteCopy);
     }
-
-    setCurrentQuote(quoteCopy);
   };
 
   const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -131,6 +151,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Hooks
    */
+
   useEffect(() => {
     if (shouldFetchIntentHash) {
       const intervalId = setInterval(() => {
@@ -164,20 +185,29 @@ const SwapModal: React.FC<SwapModalProps> = ({
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
+      const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
-      if (getBestDepositForAmount && requestedUsdcAmount && requestedUsdcAmount !== '0') {
+      if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
         const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
 
-        if (usdAmountToSend !== undefined && depositId !== undefined) {
+        const isAmountToSendValid = usdAmountToSend !== undefined;
+        const isDepositIdValid = depositId !== undefined;
+
+        if (isAmountToSendValid && isDepositIdValid) {
           setCurrentQuote(prevState => ({
             ...prevState,
             fiatToSend: usdAmountToSend,
             depositId: depositId
           }));
 
-          setShouldConfigureSignalIntentWrite(true);
+          const doesNotHaveOpenIntent = currentIntentHash === null;
+          if (doesNotHaveOpenIntent) {
+            setShouldConfigureSignalIntentWrite(true);  
+          } else {
+            setShouldConfigureSignalIntentWrite(false);
+          }
         } else {
           setCurrentQuote(prevState => ({
             ...prevState,
@@ -188,7 +218,6 @@ const SwapModal: React.FC<SwapModalProps> = ({
           setShouldConfigureSignalIntentWrite(false);
         }
       } else {
-        console.log('4');
         setShouldConfigureSignalIntentWrite(false);
 
         setCurrentQuote(prevState => ({
@@ -209,6 +238,15 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const navigateToRegistrationHandler = () => {
     navigate('/register');
   };
+
+  /*
+   * Helpers
+   */
+
+  function isValidInput(value) {
+    const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
+    return !isNaN(value) && parseFloat(value) >= 0 && isValid;
+  }
 
   return (
     <Wrapper>

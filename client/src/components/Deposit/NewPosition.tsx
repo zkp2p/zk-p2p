@@ -51,9 +51,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
   const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
   const [venmoId, setVenmoId] = useState<string>("645716473020416186");
-  const [depositAmountInput, setDepositAmountInput] = useState<number>(0);
-  const [receiveAmountInput, setReceiveAmountInput] = useState<number>(0);
-  const [convenienceFeeInput, setConvenienceFeeInput] = useState<number>(0);
+  const [depositAmountInput, setDepositAmountInput] = useState<string>('');
+  const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
+  const [convenienceFeeInput, setConvenienceFeeInput] = useState<string>('');
 
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
@@ -204,7 +204,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }
 
   function isValidInput(value) {
-    const isValid = /^-?\d*(\.\d{1,6})?$/.test(value);
+    const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
     return !isNaN(value) && parseFloat(value) >= 0 && isValid;
   }
 
@@ -306,13 +306,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Handlers
    */
 
-  const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<number>>) => {
+  const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
     if (value === "") {
-      setInputFunction(0);
+      setInputFunction('');
+    } else if (value === ".") {
+      setInputFunction('0.');
     } else if (isValidInput(value)) {
-      setInputFunction(parseFloat(value));
+      setInputFunction(value);
     }
-};
+  };
 
   return (
     <Container>
@@ -338,27 +340,24 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={venmoId}
             placeholder={'215524379021315184'}
             error={venmoInputErrorString()}
-            onChange={(e) => {
-              const value = e.currentTarget.value;
-              setVenmoId(value);
-            }}
+            onChange={(e) => {setVenmoId(e.currentTarget.value)}}
           />
           <SingleLineInput
             label="Deposit Amount"
-            value={depositAmountInput === 0 ? '' : depositAmountInput.toString()}
+            value={depositAmountInput}
             placeholder={'1000'}
             error={depositAmountInputErrorString()}
             onChange={(e) => handleInputChange(e.currentTarget.value, setDepositAmountInput)}
           />
           <SingleLineInput
             label="Receive Amount"
-            value={receiveAmountInput === 0 ? '' : receiveAmountInput.toString()}
+            value={receiveAmountInput}
             placeholder={'110'}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
           />
           <SingleLineInput
             label="Convenience Fee"
-            value={convenienceFeeInput === 0 ? '' : convenienceFeeInput.toString()}
+            value={convenienceFeeInput}
             placeholder={'5'}
             error={convenienceFeeInputErrorString()}
             onChange={(e) => handleInputChange(e.currentTarget.value, setConvenienceFeeInput)}
