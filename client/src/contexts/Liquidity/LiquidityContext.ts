@@ -8,6 +8,7 @@ interface LiquidityValues {
   depositStore: StoredDeposit[] | null;
   getBestDepositForAmount: (amount: bigint) => StoredDeposit | null;
   refetchDeposits: (() => void) | null;
+  shouldFetchDeposits: boolean;
 }
 
 const defaultValues: LiquidityValues = {
@@ -15,6 +16,7 @@ const defaultValues: LiquidityValues = {
   depositStore: null,
   getBestDepositForAmount: () => null,
   refetchDeposits: null,
+  shouldFetchDeposits: false
 };
 
 const LiquidityContext = createContext<LiquidityValues>(defaultValues)

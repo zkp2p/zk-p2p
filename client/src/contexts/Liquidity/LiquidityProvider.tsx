@@ -176,6 +176,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         depositStore,
         getBestDepositForAmount,
         refetchDeposits,
+        shouldFetchDeposits
       }}
     >
       {children}
