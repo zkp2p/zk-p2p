@@ -18,7 +18,6 @@ import { LabeledSwitch } from "./LabeledSwitch";
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 import { downloadProofFiles, generateProof } from "@helpers/zkp";
-import { useDragAndDrop } from "@hooks/useDragAndDrop";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
@@ -290,6 +289,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               onChange={(e) => {
                 setEmailFull(e.currentTarget.value);
               }}
+              height={"28vh"}
             />
           )}
         </TitleRowAndTextAreaContainer>
