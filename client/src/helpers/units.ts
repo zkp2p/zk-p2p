@@ -22,7 +22,8 @@ export const toUsdcString = (amount: bigint): string => {
     fractionalPart = '0';
   }
 
-  return `${wholePart}.${fractionalPart}`;
+  let result = `${wholePart}.${fractionalPart}`;
+  return parseFloat(result).toString();
 }
 
 export const toUsdString = (amount: bigint): string => {
@@ -46,8 +47,10 @@ export const toUsdString = (amount: bigint): string => {
         decimalPart = decimalAsNumber.toString().padStart(2, '0');
       }
     }
-    
-    return `${wholePart}.${decimalPart}`;
+
+    // Create the string and remove trailing zero if present
+    let result = `${wholePart}.${decimalPart}`;
+    return parseFloat(result).toString();
   }
   
   return usdcString;

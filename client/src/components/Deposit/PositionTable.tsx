@@ -215,7 +215,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  You have no active positions.
+                  You have no active deposits.
                 </div>
               </ThemedText.DeprecatedBody>
             </ErrorContainer>
