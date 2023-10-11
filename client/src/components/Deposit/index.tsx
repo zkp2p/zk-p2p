@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import { AutoColumn } from '../layouts/Column'
 import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
-import { IntentTable } from './OffRamperIntentTable'
+import { OffRamperIntentTable } from './OffRamperIntentTable'
 import { OffRamp } from './OffRamp'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
@@ -96,7 +96,7 @@ export default function Deposit() {
         {depositIntents && depositIntents.length > 0 ? (
           <>
             <VerticalDivider />
-            <IntentTable
+            <OffRamperIntentTable
               onIntentRowClick={handleIntentClick}
             />
           </>

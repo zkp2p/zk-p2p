@@ -17,11 +17,11 @@ import useRampState from '@hooks/useRampState';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
-interface IntentTableProps {
+interface OnRamperIntentTableProps {
   onIntentRowClick?: () => void;
 }
 
-export const IntentTable: React.FC<IntentTableProps> = ({
+export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   onIntentRowClick,
 }) => {
   /*
@@ -66,7 +66,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   } = useContractWrite(writeCancelIntentConfig);
 
   const {
-    isLoading: isSubmitCancelIntentMining
+    isLoading: isSubmitCancelIntentMining,
   } = useWaitForTransaction({
     hash: submitCancelIntentResult ? submitCancelIntentResult.hash : undefined,
     onSuccess(data) {
@@ -202,9 +202,7 @@ const TitleAndTableContainer = styled.div`
 `
 
 const IntentCountTitle = styled.div`
-  width: 100%;
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   padding: 1.25rem 1.5rem 1rem 1.5rem;
   border-bottom: 1px solid #98a1c03d;

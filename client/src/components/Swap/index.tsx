@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
-import { IntentTable } from './OnRamperIntentTable'
+import { OnRamperIntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { IndicativeQuote } from '../../contexts/Deposits/types'
@@ -306,7 +306,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
         currentIntentHash && (
           <>
             <VerticalDivider />
-            <IntentTable
+            <OnRamperIntentTable
               onIntentRowClick={onIntentTableRowClick}
             />
           </>

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Inbox, FileText } from 'react-feather'
 import styled, { css } from 'styled-components/macro'
 import { useNavigate } from 'react-router-dom';
-// import {
-//   useContractWrite,
-//   usePrepareContractWrite,
-//   useWaitForTransaction
-// } from 'wagmi'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 
 import { Button } from '../Button'
 import { RowBetween } from '../layouts/Row'
@@ -56,6 +56,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
 
+  const [selectedDepositIdToWithdraw, setSelectedDepositIdToWithdraw] = useState<bigint>(0n);
   const [shouldConfigureWithdrawWrite, setShouldConfigureWithdrawWrite] = useState<boolean>(false);
 
   /*
@@ -100,32 +101,32 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   //
   // withdrawDeposit(uint256[] memory _depositIds)
   //
-  // const { config: writeWithdrawConfig } = usePrepareContractWrite({
-  //   address: rampAddress,
-  //   abi: rampAbi,
-  //   functionName: 'withdrawDeposit',
-  //   args: [
-  //     [],
-  //   ],
-  //   enabled: shouldConfigureWithdrawWrite
-  // });
+  const { config: writeWithdrawConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'withdrawDeposit',
+    args: [
+      [selectedDepositIdToWithdraw],
+    ],
+    enabled: shouldConfigureWithdrawWrite
+  });
 
-  // const {
-  //   data: submitWithdrawResult,
-  //   isLoading: isSubmitWithdrawLoading,
-  //   writeAsync: writeSubmitWithdraw,
-  // } = useContractWrite(writeWithdrawConfig);
+  const {
+    data: submitWithdrawResult,
+    isLoading: isSubmitWithdrawLoading,
+    writeAsync: writeSubmitWithdraw,
+  } = useContractWrite(writeWithdrawConfig);
 
-  // const {
-  //   isLoading: isSubmitWithdrawMining
-  // } = useWaitForTransaction({
-  //   hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
-  //   onSuccess(data) {
-  //     console.log('writeSubmitWithdraw successful: ', data);
+  const {
+    isLoading: isSubmitWithdrawMining
+  } = useWaitForTransaction({
+    hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitWithdraw successful: ', data);
       
-  //     refetchDeposits?.();
-  //   },
-  // });
+      refetchDeposits?.();
+    },
+  });
 
   /*
    * Handlers
@@ -135,8 +136,15 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     navigate('/register');
   };
 
-  const handleWithdrawClick = (rowData: any[]) => {
-    console.log('callWithdrawHere');
+  const handleWithdrawClick = (rowIndex: number) => {
+    if (deposits) {
+      const selectedDeposit = deposits[rowIndex];
+      setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
+
+      setShouldConfigureWithdrawWrite(true);
+  
+      writeSubmitWithdraw?.();
+    }
   };
   
   /*
@@ -227,7 +235,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                       convenienceFee={positionRow.convenienceFee}
                       rowIndex={rowIndex}
                       handleWithdrawClick={() => {
-                        handleWithdrawClick([rowIndex])
+                        handleWithdrawClick(rowIndex)
                       }}
                     />
                   </PositionRowStyled>

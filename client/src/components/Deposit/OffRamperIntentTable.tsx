@@ -11,13 +11,13 @@ import useLiquidity from '@hooks/useLiquidity';
 import useRampState from '@hooks/useRampState';
 
 
-interface IntentTableProps {
+interface OffRamperIntentTableProps {
   onIntentRowClick?: (rowIndex: number) => void;
   selectedRow?: number;
   rowsPerPage?: number;
 }
 
-export const IntentTable: React.FC<IntentTableProps> = ({
+export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   onIntentRowClick,
   selectedRow,
   rowsPerPage = 10
