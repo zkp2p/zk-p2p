@@ -16,6 +16,7 @@ export const LabeledTextArea: React.FC<{
   disabledReason?: string;
   secret?: boolean;
   placeholder?: string;
+  height?: string;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
 }> = ({
   style,
@@ -28,10 +29,14 @@ export const LabeledTextArea: React.FC<{
   onChange,
   className,
   secret,
-  placeholder
+  placeholder,
+  height = '16vh'
 }) => {
   return (
-    <LabeledTextAreaContainer className={_.compact(["labeledTextAreaContainer", className]).join(" ")}>
+    <LabeledTextAreaContainer
+      className={_.compact(["labeledTextAreaContainer", className]).join(" ")}
+      height={height}
+    >
       <Label isEmpty={!label}>{label}</Label>
       {warning && (
         <span className="warning" style={{ color: warningColor }}>
@@ -61,8 +66,8 @@ const Label = styled.label<{ isEmpty: boolean }>`
   padding-left: 8px;
 `;
 
-const LabeledTextAreaContainer = styled(Col)`
-  height: 16vh;
+const LabeledTextAreaContainer = styled(Col)<{ height: string }>`
+  height: ${(props) => props.height};
   border-radius: 4px;
   position: relative;
 
