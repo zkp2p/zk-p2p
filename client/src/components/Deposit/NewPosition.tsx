@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import {
@@ -138,13 +138,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
 
     if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-      const depositAmountForComparison = toBigInt(depositAmountInput.toString());
+      const depositAmountBI = toBigInt(depositAmountInput);
+      const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+      const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+      const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
 
-      if (depositAmountForComparison > usdcBalance) {
+      if (isDepositAmountGreaterThanBalance) {
         setFormState(NewPositionState.INSUFFICIENT_BALANCE);
-      } else if (depositAmountForComparison < minimumDepositAmount) {
+      } else if (isDepositAmountLessThanMinDepositSize) {
         setFormState(NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-      } else if (depositAmountForComparison > usdcApprovalToRamp) {
+      } else if (isDepositAmountGreaterThanApprovedBalance) {
         setFormState(NewPositionState.APPROVAL_REQUIRED);
       } else {
         if (receiveAmountInput && convenienceFeeInput) {

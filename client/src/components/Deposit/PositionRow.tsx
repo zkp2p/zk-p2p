@@ -1,5 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
+import { LogOut } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
@@ -13,6 +14,7 @@ interface PositionRowProps {
   conversionRate: string;
   convenienceFee: string;
   rowIndex: number;
+  handleWithdrawClick: () => void;
 }
 
 export const PositionRow: React.FC<PositionRowProps> = ({
@@ -24,48 +26,80 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   conversionRate,
   convenienceFee,
   rowIndex,
+  handleWithdrawClick
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
 
-  const depositRemainingLabel = `Available USDC: ${availableDepositAmount} / ${totalDepositAmount}`;
-  const intentAmountLabel = `Outstanding Intents: ${intentCount} (${outstandingIntentAmount})`;
+  const depositRemainingLabel = `${availableDepositAmount} / ${totalDepositAmount}`;
+  const intentAmountLabel = `${intentCount} (${outstandingIntentAmount})`;
 
   return (
     <Container>
-      <AmountContainer>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
-        <AmountLabelsContainer>
-          <AmountLabel> {depositRemainingLabel} </AmountLabel>
-          <AmountLabel> {intentAmountLabel} </AmountLabel>
-        </AmountLabelsContainer>
-      </AmountContainer>
+      <PositionDetailsContainer>
+        <SummaryLabelsAndIconContainer>
+          <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+          <SummaryLabelsContainer>
+            <SummaryLabel>
+              <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
+              <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
+            </SummaryLabel>
+            
+            <SummaryLabel>
+              <SummaryLabelTitle>Outstanding Intents:&nbsp;</SummaryLabelTitle>
+              <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
+            </SummaryLabel>
+          </SummaryLabelsContainer>
+        </SummaryLabelsAndIconContainer>
 
-      <FeeLabelsContainer>
-        <PercentageLabel>
-          <Label>Conversion Rate:</Label> <Value>{conversionRate}</Value>
-        </PercentageLabel>
-        <PercentageLabel>
-          <Label>Convenience Fee:</Label> <Value>{convenienceFee}</Value>
-        </PercentageLabel>
-      </FeeLabelsContainer>
+        <FeeLabelsContainer>
+          <PercentageLabel>
+            <Label>Conversion Rate:</Label>
+            <Value>{conversionRate}</Value>
+          </PercentageLabel>
+
+          <PercentageLabel>
+            <Label>Convenience Fee:</Label>
+            <Value>{convenienceFee}</Value>
+          </PercentageLabel>
+        </FeeLabelsContainer>
+      </PositionDetailsContainer>
+
+      <ActionsContainer>
+        <StyledLogOut onClick={handleWithdrawClick}/>
+      </ActionsContainer>
     </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
+  flex-direction: row;
+  height: 100%;
+`;
+
+const PositionDetailsContainer = styled.div`
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 1.5rem;
 `;
 
-const AmountContainer = styled.div`
+const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right 1.5rem;
+  flex-grow: 1;
+`;
+
+const SummaryLabelsAndIconContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 1.25rem;
 `;
 
-const AmountLabelsContainer = styled.div`
+const SummaryLabelsContainer = styled.div`
   width: 100%; 
   display: flex;
   gap: 2px;
@@ -73,11 +107,21 @@ const AmountLabelsContainer = styled.div`
   line-height: 24px;
 `;
 
-const AmountLabel = styled.label`
+const SummaryLabel = styled.label`
   display: flex;
   font-size: 15px;
   color: #FFFFFF;
   align-items: center;
+`;
+
+const SummaryLabelTitle = styled.span`
+  font-size: 15px;
+  color: #6C757D;
+`;
+
+const SummaryLabelValue = styled.span`
+  font-size: 15px;
+  color: #FFFFFF;
 `;
 
 const FeeLabelsContainer = styled.div`
@@ -95,11 +139,21 @@ const PercentageLabel = styled.div`
 
 const Label = styled.span`
   color: #6C757D;
-  font-size: 14px;
+  font-size: 15px;
 `;
 
 const Value = styled.span`
   color: #FFFFFF;
-  font-size: 14px;
+  font-size: 15px;
   margin-left: 4px;
+`;
+
+const StyledLogOut = styled(LogOut)`
+  width: 20px;
+  height: 20px;
+  color: #6C757D;
+
+  &:hover {
+    color: #FFF;
+  }
 `;
