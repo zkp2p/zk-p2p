@@ -31,7 +31,7 @@ export type SwapQuote = {
 };
 
 interface SwapModalProps {
-  onIntentTableRowClick?: (rowData: any[]) => void;
+  onIntentTableRowClick?: () => void;
 }
 
 const SwapModal: React.FC<SwapModalProps> = ({
@@ -307,7 +307,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
           <>
             <VerticalDivider />
             <IntentTable
-              onRowClick={onIntentTableRowClick}
+              onIntentRowClick={onIntentTableRowClick}
             />
           </>
         )
@@ -318,7 +318,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 464px;
+  max-width: 484px;
   margin-top: 50px;
   display: flex;
   flex-direction: column;
