@@ -19,10 +19,15 @@ export interface Deposit {
   intentHashes: string[];
 }
 
+// struct DepositWithAvailableLiquidity {
+// deposit: Deposit;
+// uint256: availableLiquidity;
+// }
 export interface DepositWithAvailableLiquidity {
+  depositId: bigint;
   deposit: Deposit;
   availableLiquidity: bigint;
-}
+} // DepositsProvider.getAccountDeposits, LiquidityProvider.getDepositFromIds
 
 export interface StoredDeposit extends DepositWithAvailableLiquidity {
   depositId: bigint;

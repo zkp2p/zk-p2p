@@ -115,7 +115,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('depositsRaw_1');
     esl && console.log('checking depositsRaw: ', depositsRaw);
 
-    if (depositsRaw && depositsRaw.length > 0) {
+    if (depositsRaw) {
       esl && console.log('depositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
@@ -142,6 +142,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         const depositWithLiquidity: DepositWithAvailableLiquidity = {
           deposit,
           availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
+          depositId: depositWithAvailableLiquidityData.depositId,
         }
 
         sanitizedDeposits.push(depositWithLiquidity);

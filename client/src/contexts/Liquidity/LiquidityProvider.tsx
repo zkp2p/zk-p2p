@@ -138,6 +138,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         const depositWithLiquidity: DepositWithAvailableLiquidity = {
           deposit,
           availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
+          depositId: depositWithAvailableLiquidityData.depositId,
         }
 
         sanitizedDeposits.push(depositWithLiquidity);
