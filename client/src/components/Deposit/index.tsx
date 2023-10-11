@@ -56,13 +56,12 @@ export default function Deposit() {
     setSelectedIntentHash(null);
   }
 
-  const handleIntentClick = (rowData: any[]) => {
-    const selectedIntentIndex = rowData[0];
+  const handleIntentClick = (rowIndex: number) => {
     const intentHashes = [
       ...new Set((deposits).flatMap((depositWithAvailableLiquidity: any) => depositWithAvailableLiquidity.deposit.intentHashes))
     ]
 
-    const selectedIntentHash = intentHashes[selectedIntentIndex];
+    const selectedIntentHash = intentHashes[rowIndex];
     console.log('selectedIntentHash', selectedIntentHash);
 
     setSelectedIntentHash(selectedIntentHash);
@@ -98,7 +97,7 @@ export default function Deposit() {
           <>
             <VerticalDivider />
             <IntentTable
-              onRowClick={handleIntentClick}
+              onIntentRowClick={handleIntentClick}
             />
           </>
         ) : null}
