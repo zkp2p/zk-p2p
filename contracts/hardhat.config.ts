@@ -1,3 +1,5 @@
+import * as dotenv from 'dotenv';
+
 import '@typechain/hardhat'
 import 'solidity-coverage'
 import '@nomiclabs/hardhat-ethers'
@@ -5,6 +7,8 @@ import 'hardhat-deploy';
 import '@nomicfoundation/hardhat-chai-matchers'
 
 import { HardhatUserConfig } from "hardhat/config";
+
+dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -26,7 +30,14 @@ const config: HardhatUserConfig = {
     },
     localhost: {
       allowBlocksWithSameTimestamp: true,
-    }
+    },
+    goerli: {
+      url: "https://goerli.infura.io/v3/" + process.env.INFURA_TOKEN,
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.GOERLI_DEPLOY_PRIVATE_KEY}`,
+      ],
+    },
   },
   // @ts-ignore
   typechain: {

@@ -13,6 +13,7 @@
     "compile": "hardhat compile",
     "coverage": "yarn clean && yarn build && npx hardhat coverage",
     "deploy:localhost": "npx hardhat deploy --network localhost",
+    "deploy:goerli": "npx hardhat deploy --network goerli",
     "importVerifier": "rm -rf ./contracts/verifiers/ && cp -r ../circuits-circom/contracts ./contracts/verifiers",
     "test": "npx hardhat test",
     "test:clean": "yarn build && yarn test",
@@ -44,6 +45,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2",
     "circomlibjs": "^0.1.7",
+    "dotenv": "^16.3.1",
     "ethereum-waffle": "^4.0.10"
   },
   "_moduleAliases": {

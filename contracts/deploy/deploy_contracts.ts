@@ -14,17 +14,18 @@ const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 
 const CONVENIENCE_TIME_PERIOD = BigNumber.from(60);
 const MIN_DEPOSIT_AMOUNT = usdc(20);
+const USDC_MINT_AMOUNT = usdc(1000000);
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
 
   const [ deployer ] = await hre.getUnnamedAccounts();
-
+  console.log(deployer.address);
   const usdcToken = await deploy("USDCMock", {
     from: deployer,
-    args: [usdc(1000000), "USDC", "USDC"],
+    args: [USDC_MINT_AMOUNT, "USDC", "USDC"],
   });
-
+  console.log("USDC deployed...");
   const poseidon = await deploy("Poseidon", {
     from: deployer,
     contract: {
@@ -32,7 +33,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       bytecode: circom.poseidonContract.createCode(3),
     }
   });
-
+  console.log("Poseidon deployed...");
   const ramp = await deploy("Ramp", {
     from: deployer,
     args: [
@@ -43,7 +44,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       CONVENIENCE_TIME_PERIOD
     ],
   });
-
+  console.log("Ramp deployed...");
   const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
     from: deployer,
     args: [SERVER_KEY_HASH],
@@ -63,13 +64,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
   });
-
+  console.log("Processors deployed...");
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
   await rampContract.initialize(
     receiveProcessor.address,
     registrationProcessor.address,
     sendProcessor.address
   );
+
+  const usdcContract = await ethers.getContractAt("USDCMock", usdcToken.address);
+  await usdcContract.transfer("0x1d2033DC6720e3eCC14aBB8C2349C7ED77E831ad", USDC_MINT_AMOUNT);
+  console.log("Deploy finished...");
 };
 
 export default func;
