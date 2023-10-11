@@ -5,7 +5,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction
 } from 'wagmi'
-import { Trash } from 'react-feather';
+import { Trash2 } from 'react-feather';
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
@@ -165,7 +165,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
             Current Order
           </ThemedText.LabelSmall>
 
-          <StyledTrash onClick={handleCancelClick}/>
+          <StyledTrash2 onClick={handleCancelClick}/>
         </IntentCountTitle>
         
         <Table>
@@ -231,7 +231,7 @@ const Table = styled.div`
   }
 `;
 
-const StyledTrash = styled(Trash)`
+const StyledTrash2 = styled(Trash2)`
   width: 18px;
   height: 18px;
   color: #6C757D;

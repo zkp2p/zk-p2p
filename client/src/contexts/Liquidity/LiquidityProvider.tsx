@@ -160,7 +160,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     if (deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
       esl && console.log('depositStore_2');
 
-      const newStore = createDepositsStore(depositIdsToFetch, deposits); // This assumes depositIdsToFetch is correctly ordered
+      const newStore = createDepositsStore(depositIdsToFetch, deposits);
 
       setDepositStore(newStore);
     } else {
