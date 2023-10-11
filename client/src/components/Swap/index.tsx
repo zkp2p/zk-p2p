@@ -134,7 +134,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const {
     data: submitIntentResult,
     isLoading: isSubmitIntentLoading,
-    writeAsync: writeSubmitIntent
+    writeAsync: writeSubmitIntentAsync
   } = useContractWrite(writeIntentConfig);
 
   const {
@@ -142,7 +142,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   } = useWaitForTransaction({
     hash: submitIntentResult ? submitIntentResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitIntent successful: ', data);
+      console.log('writeSubmitIntentAsync successful: ', data);
       
       refetchIntentHash?.();
     },
@@ -293,7 +293,11 @@ const SwapModal: React.FC<SwapModalProps> = ({
               disabled={currentQuote.depositId === ZERO && currentQuote.fiatToSend === ''}
               loading={isSubmitIntentLoading || isSubmitIntentMining}
               onClick={async () => {
-                writeSubmitIntent?.();
+                try {
+                  await writeSubmitIntentAsync?.();
+                } catch (error) {
+                  console.log('writeSubmitIntentAsync failed: ', error);
+                }
               }}
             >
               Start Order

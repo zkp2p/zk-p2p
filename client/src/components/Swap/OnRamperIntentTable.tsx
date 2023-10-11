@@ -62,7 +62,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   const {
     data: submitCancelIntentResult,
     isLoading: isSubmitCancelIntentLoading,
-    writeAsync: writeSubmitCancelIntent,
+    writeAsync: writeSubmitCancelIntentAsync
   } = useContractWrite(writeCancelIntentConfig);
 
   const {
@@ -70,7 +70,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   } = useWaitForTransaction({
     hash: submitCancelIntentResult ? submitCancelIntentResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitCancelIntent successful: ', data);
+      console.log('writeSubmitCancelIntentAsync successful: ', data);
       
       refetchIntentHash?.();
     },
@@ -80,10 +80,14 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
    * Handlers
    */
 
-  const handleCancelClick = () => {
+  const handleCancelClick = async () => {
     setShouldConfigureCancelIntentWrite(true);
 
-    writeSubmitCancelIntent?.();
+    try {
+      await writeSubmitCancelIntentAsync?.();
+    } catch (error) {
+      console.log('writeSubmitCancelIntentAsync failed: ', error);
+    }
   };
 
   /*

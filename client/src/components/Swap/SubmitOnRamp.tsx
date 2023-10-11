@@ -38,11 +38,11 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
     rampAbi,
     sendProcessorAddress,
     sendProcessorAbi,
-  } = useSmartContracts()
+  } = useSmartContracts();
 
   const {
-    refetchOnRamperIntents
-  } = useOnRamperIntents()
+    refetchIntentHash
+  } = useOnRamperIntents();
 
   /*
     State
@@ -75,7 +75,7 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
   //
   // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[8] memory _signals)
   //
-  const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
+  const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
     address: rampAddress,
     abi: rampAbi,
     functionName: 'onRamp',
@@ -91,18 +91,18 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
 
   const {
     data: submitOnRampResult,
-    isLoading: isWriteCompleteOrderLoading,
-    writeAsync: writeCompleteOrder
-  } = useContractWrite(writeCompleteOrderConfig);
+    isLoading: isWriteSubmitOnRampLoading,
+    writeAsync: writeSubmitOnRampAsync
+  } = useContractWrite(writeSubmitOnRampConfig);
 
   const {
     isLoading: isSubmitOnRampMining
   } = useWaitForTransaction({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitOnRamp successful: ', data);
+      console.log('writeSubmitOnRampAsync successful: ', data);
       
-      refetchOnRamperIntents?.();
+      refetchIntentHash?.();
     },
   });
 
@@ -153,10 +153,14 @@ export const SubmitOnRamp: React.FC<SubmitOnRampProps> = ({
           secret
         />
         <Button
-          loading={isWriteCompleteOrderLoading || isSubmitOnRampMining}
-          disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
+          loading={isWriteSubmitOnRampLoading || isSubmitOnRampMining}
+          disabled={proof.length === 0 || publicSignals.length === 0 || isWriteSubmitOnRampLoading}
           onClick={async () => {
-            writeCompleteOrder?.();
+            try {
+              await writeSubmitOnRampAsync?.();
+            } catch (error) {
+              console.log('writeSubmitDepositAsync failed: ', error);
+            }
           }}
         >
           Submit

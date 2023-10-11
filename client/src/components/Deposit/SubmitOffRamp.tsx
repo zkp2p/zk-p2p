@@ -92,7 +92,7 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
   const {
     data: submitOnRampWithConvenienceResult,
     isLoading: isWriteCompleteOrderLoading,
-    writeAsync: writeCompleteOrder
+    writeAsync: writeCompleteOrderAsync
   } = useContractWrite(writeCompleteOrderConfig);
 
   const {
@@ -156,7 +156,11 @@ export const SubmitOffRamp: React.FC<SubmitOffRampProps> = ({
           loading={isSubmitOnRampWithConvenienceMining || isWriteCompleteOrderLoading}
           disabled={proof.length === 0 || publicSignals.length === 0 || isWriteCompleteOrderLoading}
           onClick={async () => {
-            writeCompleteOrder?.();
+            try {
+              await writeCompleteOrderAsync?.();
+            } catch (error) {
+              console.log('writeCompleteOrderAsync failed: ', error);
+            }
           }}
         >
           Submit

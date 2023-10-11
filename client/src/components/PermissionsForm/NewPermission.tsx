@@ -61,7 +61,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   const {
     data: submitPermissionResult,
     isLoading: isSubmitPermissionLoading,
-    writeAsync: writeSubmitPermission
+    writeAsync: writeSubmitPermissionAsync
   } = useContractWrite(writePermissionConfig);
 
   const {
@@ -69,7 +69,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   } = useWaitForTransaction({
     hash: submitPermissionResult ? submitPermissionResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitPermission successful: ', data);
+      console.log('writeSubmitPermissionAsync successful: ', data);
       
       refetchDeniedUsers?.();
     },
@@ -120,7 +120,11 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
               disabled={isSubmitPermissionLoading}
               loading={isSubmitPermissionLoading || isSubmitPermissionMining}
               onClick={async () => {
-                writeSubmitPermission?.();
+                try {
+                  await writeSubmitPermissionAsync?.();
+                } catch (error) {
+                  console.log('writeSubmitPermissionAsync failed: ', error);
+                }
               }}
             >
               Submit

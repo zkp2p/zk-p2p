@@ -114,7 +114,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const {
     data: submitWithdrawResult,
     isLoading: isSubmitWithdrawLoading,
-    writeAsync: writeSubmitWithdraw,
+    writeAsync: writeSubmitWithdrawAsync,
   } = useContractWrite(writeWithdrawConfig);
 
   const {
@@ -122,7 +122,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   } = useWaitForTransaction({
     hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitWithdraw successful: ', data);
+      console.log('writeSubmitWithdrawAsync successful: ', data);
       
       refetchDeposits?.();
     },
@@ -136,14 +136,18 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     navigate('/register');
   };
 
-  const handleWithdrawClick = (rowIndex: number) => {
+  const handleWithdrawClick = async (rowIndex: number) => {
     if (deposits) {
       const selectedDeposit = deposits[rowIndex];
       setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
 
       setShouldConfigureWithdrawWrite(true);
-  
-      writeSubmitWithdraw?.();
+
+      try {
+        await writeSubmitWithdrawAsync?.();
+      } catch (error) {
+        console.log('writeSubmitWithdrawAsync failed: ', error);
+      }
     }
   };
   

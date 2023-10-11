@@ -67,7 +67,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   const {
     data: submitRegistrationResult,
     isLoading: isSubmitRegistrationLoading,
-    writeAsync: writeSubmitRegistration
+    writeAsync: writeSubmitRegistrationAsync
   } = useContractWrite(writeSubmitRegistrationConfig);
 
   const {
@@ -75,7 +75,7 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
   } = useWaitForTransaction({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitRegistration successful: ', data);
+      console.log('writeSubmitRegistrationAsync successful: ', data);
       
       refetchRampAccount?.();
     },
@@ -115,7 +115,11 @@ export const SubmitRegistration: React.FC<SubmitRegistrationProps> = ({
           disabled={proof.length === 0 || publicSignals.length === 0 || isSubmitRegistrationLoading}
           loading={isSubmitRegistrationLoading || isSubmitRegistrationMining}
           onClick={async () => {
-            writeSubmitRegistration?.();
+            try {
+              await writeSubmitRegistrationAsync?.();
+            } catch (error) {
+              console.log('writeSubmitRegistrationAsync failed: ', error);
+            }
           }}
         >
           Submit Registration

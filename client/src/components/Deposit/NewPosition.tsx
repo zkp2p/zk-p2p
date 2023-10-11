@@ -83,7 +83,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const {
     data: submitDepositResult,
     isLoading: isSubmitDepositLoading,
-    writeAsync: writeSubmitDeposit,
+    writeAsync: writeSubmitDepositAsync,
   } = useContractWrite(writeDepositConfig);
 
   const {
@@ -91,7 +91,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   } = useWaitForTransaction({
     hash: submitDepositResult ? submitDepositResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitDeposit successful: ', data);
+      console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
     },
@@ -114,7 +114,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const {
     data: submitApproveResult,
     isLoading: isSubmitApproveLoading,
-    writeAsync: writeSubmitApprove
+    writeAsync: writeSubmitApproveAsync
   } = useContractWrite(writeApproveConfig);
 
   const {
@@ -122,7 +122,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   } = useWaitForTransaction({
     hash: submitApproveResult ? submitApproveResult.hash : undefined,
     onSuccess(data) {
-      console.log('writeSubmitApprove successful: ', data);
+      console.log('writeSubmitApproveAsync successful: ', data);
       
       refetchUsdcApprovalToRamp?.();
     },
@@ -293,11 +293,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const ctaOnClick = async () => {
     switch (formState) {
       case NewPositionState.APPROVAL_REQUIRED:
-        writeSubmitApprove?.();
+        try {
+          await writeSubmitApproveAsync?.();
+        } catch (error) {
+          console.log('writeSubmitApproveAsync failed: ', error);
+        }
         break;
 
       case NewPositionState.VALID:
-        writeSubmitDeposit?.();
+        try {
+          await writeSubmitDepositAsync?.();
+        } catch (error) {
+          console.log('writeSubmitDepositAsync failed: ', error);
+        }
         break;
 
       default:
