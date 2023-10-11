@@ -84,6 +84,7 @@ contract Ramp is Ownable {
     }
 
     struct DepositWithAvailableLiquidity {
+        uint256 depositId;
         Deposit deposit;
         uint256 availableLiquidity;
     }
@@ -556,6 +557,7 @@ contract Ramp is Ownable {
             ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);
 
             accountDeposits[i] = DepositWithAvailableLiquidity({
+                depositId: depositId,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -571,6 +573,7 @@ contract Ramp is Ownable {
             ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);
 
             depositArray[i] = DepositWithAvailableLiquidity({
+                depositId: depositId,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });

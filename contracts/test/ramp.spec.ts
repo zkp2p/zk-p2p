@@ -1521,6 +1521,8 @@ describe("Ramp", () => {
         expect(deposits[1].deposit.outstandingIntentAmount).to.eq(usdc(50));
         expect(deposits[0].deposit.conversionRate).to.eq(conversionRateOne);
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
+        expect(deposits[0].depositId).to.eq(ZERO);
+        expect(deposits[1].depositId).to.eq(ONE);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
       });
@@ -1587,6 +1589,8 @@ describe("Ramp", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
+        expect(deposits[0].depositId).to.eq(ZERO);
+        expect(deposits[1].depositId).to.eq(ONE);
       });
 
       describe("when there are reclaimable intents", async () => {
