@@ -1,34 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
+import { Trash } from 'react-feather';
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { toUsdcString, toUsdString } from '@helpers/units'
 import { PRECISION, SECONDS_IN_DAY  } from '@helpers/constants'
-import useOnRamperIntents from '@hooks/useOnRamperIntents'
 import useLiquidity from '@hooks/useLiquidity';
-// import useRampState from '@hooks/useRampState';
+import useOnRamperIntents from '@hooks/useOnRamperIntents'
+import useRampState from '@hooks/useRampState';
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
-
-interface IntentTableProps {
-  onRowClick?: (rowData: any[]) => void;
-  selectedRow?: number;
-  rowsPerPage?: number;
+interface OnRamperIntentTableProps {
+  onIntentRowClick?: () => void;
 }
 
-export const IntentTable: React.FC<IntentTableProps> = ({
-  onRowClick,
-  selectedRow,
-  rowsPerPage = 3
+export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
+  onIntentRowClick,
 }) => {
   /*
     Contexts
   */
 
- const { currentIntent } = useOnRamperIntents();
+ const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
  const { depositStore } = useLiquidity();
-//  const { convenienceRewardTimePeriod } = useRampState()
+ const { rampAddress, rampAbi } = useSmartContracts();
+ const { convenienceRewardTimePeriod } = useRampState();
 
   
   /*
@@ -37,12 +40,58 @@ export const IntentTable: React.FC<IntentTableProps> = ({
 
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
+  const [shouldConfigureCancelIntentWrite, setShouldConfigureCancelIntentWrite] = useState<boolean>(false);
+
+  /*
+   * Contract Writes
+   */
+
+  //
+  // cancelIntent(bytes32 _intentHash)
+  //
+  const { config: writeCancelIntentConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'cancelIntent',
+    args: [
+      currentIntentHash,
+    ],
+    enabled: shouldConfigureCancelIntentWrite
+  });
+
+  const {
+    data: submitCancelIntentResult,
+    isLoading: isSubmitCancelIntentLoading,
+    writeAsync: writeSubmitCancelIntent,
+  } = useContractWrite(writeCancelIntentConfig);
+
+  const {
+    isLoading: isSubmitCancelIntentMining,
+  } = useWaitForTransaction({
+    hash: submitCancelIntentResult ? submitCancelIntentResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitCancelIntent successful: ', data);
+      
+      refetchIntentHash?.();
+    },
+  });
+
+  /*
+   * Handlers
+   */
+
+  const handleCancelClick = () => {
+    setShouldConfigureCancelIntentWrite(true);
+
+    writeSubmitCancelIntent?.();
+  };
+
   /*
     Hooks
   */
  
   useEffect(() => {
-    if (currentIntent && depositStore) {
+    if (currentIntent && depositStore && convenienceRewardTimePeriod) {
       const storedDeposit = depositStore.find((storedDeposit) => {
         return storedDeposit.depositId === currentIntent.intent.deposit;
       });
@@ -52,16 +101,24 @@ export const IntentTable: React.FC<IntentTableProps> = ({
         const conversionRate = storedDeposit.deposit.conversionRate;
         const usdToSend = amountUSDC * PRECISION / conversionRate;
         const amountUSDToSend = toUsdString(usdToSend);
+        const intentTimestamp = currentIntent.intent.timestamp;
 
         const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);
-        const expirationTimestamp = calculateAndFormatExpiration(currentIntent.intent.timestamp);
+        const expirationTimestamp = formatExpiration(currentIntent.intent.timestamp);
+        const convenienceRewardTimestampRaw = calculateExpiration(intentTimestamp, convenienceRewardTimePeriod);
         const venmoIdString = currentIntent.depositorVenmoId.toString();
 
         const sanitizedIntent: IntentRowData = {
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
-          depositorVenmoId: venmoIdString
+          convenienceRewardTimestampRaw,
+          depositorVenmoId: venmoIdString,
+          handleCompleteOrderClick: () => {
+            if (onIntentRowClick) {
+              onIntentRowClick();
+            }
+          }
         };
 
         setIntentsRowData([sanitizedIntent]);
@@ -71,16 +128,20 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
-  }, [currentIntent, depositStore]);
+  }, [currentIntent, depositStore, convenienceRewardTimePeriod]);
 
   /*
     Helpers
   */
 
-  function calculateAndFormatExpiration(unixTimestamp: bigint): string {
-    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
-    const unixTimestampPlusOneDay = unixTimestamp + SECONDS_IN_DAY;
+  function calculateExpiration(unixTimestamp: bigint, timePeriod: bigint): bigint {
+    return unixTimestamp + timePeriod;
+  }
   
+  function formatExpiration(unixTimestamp: bigint): string {
+    const unixTimestampPlusOneDay = calculateExpiration(unixTimestamp, SECONDS_IN_DAY);
+    
+    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
     if (currentTimestamp > unixTimestampPlusOneDay) {
       return "Expired";
     } else {
@@ -94,76 +155,58 @@ export const IntentTable: React.FC<IntentTableProps> = ({
 
   return (
     <Container>
-      <Column>
-        <Content>
-          <IntentContainer>
-            <IntentCountTitle>
-              <ThemedText.LabelSmall textAlign="left">
-                Current Order
-              </ThemedText.LabelSmall>
-            </IntentCountTitle>
-            <Table>
-              {intentsRowData.map((intentsRow, rowIndex) => (
-                <PermissionRowStyled
-                  key={rowIndex}
-                  onClick={() => {
-                    onRowClick && onRowClick([rowIndex])}
-                  }
-                >
-                  <IntentRow
-                    amountUSDCToReceive={intentsRow.amountUSDCToReceive}
-                    amountUSDToSend={intentsRow.amountUSDToSend}
-                    expirationTimestamp={intentsRow.expirationTimestamp}
-                    depositorVenmoId={intentsRow.depositorVenmoId}
-                  />
-                </PermissionRowStyled>
-              ))}
-            </Table>
-          </IntentContainer>
-        </Content>
-      </Column>
+      <TitleAndTableContainer>
+        <IntentCountTitle>
+          <ThemedText.LabelSmall textAlign="left">
+            Current Order
+          </ThemedText.LabelSmall>
+
+          <StyledTrash onClick={handleCancelClick}/>
+        </IntentCountTitle>
+        
+        <Table>
+          {intentsRowData.map((intentsRow, rowIndex) => (
+            <IntentRow
+              amountUSDCToReceive={intentsRow.amountUSDCToReceive}
+              amountUSDToSend={intentsRow.amountUSDToSend}
+              expirationTimestamp={intentsRow.expirationTimestamp}
+              convenienceRewardTimestampRaw={intentsRow.convenienceRewardTimestampRaw}
+              depositorVenmoId={intentsRow.depositorVenmoId}
+              handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
+            />
+          ))}
+        </Table>
+      </TitleAndTableContainer>
     </Container>
   )
 }
 
 const Container = styled.div`
   width: 100%;
-  gap: 1rem;
-`
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
-  border-radius: 16px;
-  justify-content: center;
-`;
-
-const Content = styled.main`
   display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  justify-content: center;
+  gap: 1rem;
+  
+  border-radius: 16px;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
-  flex-direction: column;
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
   overflow: hidden;
 `;
 
-const IntentContainer = styled.div`
+const TitleAndTableContainer = styled.div`
   display: flex;
-  align-items: flex-start;
   flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
 `
 
 const IntentCountTitle = styled.div`
-  width: 100%;
-  text-align: left;
-  padding-top: 1.25rem;
-  padding-bottom: 1rem;
-  padding-left: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 1rem 1.5rem;
   border-bottom: 1px solid #98a1c03d;
+  align-items: center;
 `
 
 const Table = styled.div`
@@ -184,14 +227,12 @@ const Table = styled.div`
   }
 `;
 
-const PermissionRowStyled = styled.div`
-  &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: none;
-  }    
+const StyledTrash = styled(Trash)`
+  width: 18px;
+  height: 18px;
+  color: #6C757D;
 
-  &:last-child {
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
+  &:hover {
+    color: #FFF;
   }
 `;

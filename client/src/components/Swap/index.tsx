@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from "./Input";
 import { AutoColumn } from '../layouts/Column'
 import { ThemedText } from '../../theme/text'
-import { IntentTable } from './OnRamperIntentTable'
+import { OnRamperIntentTable } from './OnRamperIntentTable'
 import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { IndicativeQuote } from '../../contexts/Deposits/types'
@@ -31,7 +31,7 @@ export type SwapQuote = {
 };
 
 interface SwapModalProps {
-  onIntentTableRowClick?: (rowData: any[]) => void;
+  onIntentTableRowClick?: () => void;
 }
 
 const SwapModal: React.FC<SwapModalProps> = ({
@@ -306,8 +306,8 @@ const SwapModal: React.FC<SwapModalProps> = ({
         currentIntentHash && (
           <>
             <VerticalDivider />
-            <IntentTable
-              onRowClick={onIntentTableRowClick}
+            <OnRamperIntentTable
+              onIntentRowClick={onIntentTableRowClick}
             />
           </>
         )
@@ -318,7 +318,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 464px;
+  max-width: 484px;
   margin-top: 50px;
   display: flex;
   flex-direction: column;

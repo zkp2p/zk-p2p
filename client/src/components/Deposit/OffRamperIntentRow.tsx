@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro'
+import { UserX, ChevronRight } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 
@@ -9,6 +10,8 @@ interface IntentRowProps {
   amountUSDToReceive: string;
   amountUSDCToSend: string;
   expirationTimestamp: string;
+  convenienceRewardTimestampRaw: bigint;
+  handleCompleteOrderClick: () => void;
 }
 
 export type IntentRowData = IntentRowProps;
@@ -18,54 +21,115 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   amountUSDToReceive,
   amountUSDCToSend,
   expirationTimestamp,
+  convenienceRewardTimestampRaw,
+  handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
-  const requestedAmountLabel = `Request ${amountUSDCToSend} USDC`;
-  const onRamperHashLabel = `Receive $${amountUSDToReceive} from ${onRamper} on Venmo`;
-  const timeRemainingLabel = `Expires: ${expirationTimestamp}`;
+  /*
+   * Helpers
+   */
+
+  const requestedAmountLabel = `${amountUSDCToSend} USDC`;
+  const onRamperHashLabel = `$${amountUSDToReceive} from ${onRamper} on Venmo`;
+  const orderExpirationLabel = `${expirationTimestamp}`;
+
+  /*
+   * State
+   */
+
+  const [timeRemainingLabel, setTimeRemainingLabel] = useState<string>('');
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    const calculateTimeRemaining = () => {
+      const now = BigInt(Math.floor(Date.now())) / 1000n;
+      const expirationTime = convenienceRewardTimestampRaw;
+      const timeLeft = expirationTime - now;
+
+      if (timeLeft > 0n) {
+        const minutes = (timeLeft / 60n).toString();
+        const seconds = (timeLeft % 60n).toString();
+
+        setTimeRemainingLabel(`${minutes.padStart(2, '0')} minutes ${seconds.padStart(2, '0')} seconds`);
+      } else {
+        setTimeRemainingLabel('Open');
+
+        clearInterval(intervalId);
+      }
+    };
+
+    const intervalId = setInterval(calculateTimeRemaining, 1000);
+
+    calculateTimeRemaining();
+
+    return () => clearInterval(intervalId);
+  }, [convenienceRewardTimestampRaw]);
+
+  /*
+   * Component
+   */
 
   return (
     <Container>
-      <VenmoHashContainer>
+      <IntentDetailsContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
-          <AmountLabel>
-            {requestedAmountLabel}
-          </AmountLabel>
-          
-          <AmountLabel>
-            {onRamperHashLabel}
-          </AmountLabel>
-          
-          <AmountLabel>
-            {timeRemainingLabel}
-          </AmountLabel>
+          <AmountContainer>
+            <Label>Requesting:&nbsp;</Label>
+            <Value>{requestedAmountLabel}</Value>
+          </AmountContainer>
+
+          <AmountContainer>
+            <Label>Receive:&nbsp;</Label>
+            <Value>{onRamperHashLabel}</Value>
+          </AmountContainer>
+
+          <AmountContainer>
+            <Label>Expires:&nbsp;</Label>
+            <Value>{orderExpirationLabel}</Value>
+          </AmountContainer>
+
+          <AmountContainer>
+            <Label>Convenience Window:&nbsp;</Label>
+            <Value>{timeRemainingLabel}</Value>
+          </AmountContainer>
         </AmountLabelsContainer>
-      </VenmoHashContainer>
+      </IntentDetailsContainer>
+
+      <ActionsContainer>
+        <StyledChevronRight onClick={handleCompleteOrderClick}/>
+        <StyledUserX/>
+      </ActionsContainer>
     </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 1.25rem 1.5rem;
-
-  &:focus-within {
-    border-color: #CED4DA;
-    border-width: 1px;
-  }
+  flex-direction: row;
 `;
 
-const VenmoHashContainer = styled.div`
+const IntentDetailsContainer = styled.div`
   width: 100%; 
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 1.25rem 1.5rem;
   gap: 1.25rem;
   line-height: 24px;
+`;
+
+const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 1.25rem 2rem 0rem;
+  flex-grow: 1;
 `;
 
 const AmountLabelsContainer = styled.div`
@@ -76,9 +140,36 @@ const AmountLabelsContainer = styled.div`
   line-height: 24px;
 `;
 
-const AmountLabel = styled.label`
+const AmountContainer = styled.div`
   display: flex;
+`;
+
+const Label = styled.label`
+  font-size: 15px;
+  color: #6C757D;
+`;
+
+const Value = styled.label`
   font-size: 15px;
   color: #FFFFFF;
-  align-items: center;
+`;
+
+const StyledUserX = styled(UserX)`
+  width: 20px;
+  height: 20px;
+  color: #6C757D;
+
+  &:hover {
+    color: #FFF;
+  }
+`;
+
+const StyledChevronRight = styled(ChevronRight)`
+  width: 26px;
+  height: 26px;
+  color: #6C757D;
+
+  &:hover {
+    color: #FFF;
+  }
 `;

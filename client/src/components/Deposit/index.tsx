@@ -4,7 +4,7 @@ import styled from 'styled-components/macro'
 import { AutoColumn } from '../layouts/Column'
 import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
-import { IntentTable } from './OffRamperIntentTable'
+import { OffRamperIntentTable } from './OffRamperIntentTable'
 import { OffRamp } from './OffRamp'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
@@ -56,13 +56,12 @@ export default function Deposit() {
     setSelectedIntentHash(null);
   }
 
-  const handleIntentClick = (rowData: any[]) => {
-    const selectedIntentIndex = rowData[0];
+  const handleIntentClick = (rowIndex: number) => {
     const intentHashes = [
       ...new Set((deposits).flatMap((depositWithAvailableLiquidity: any) => depositWithAvailableLiquidity.deposit.intentHashes))
     ]
 
-    const selectedIntentHash = intentHashes[selectedIntentIndex];
+    const selectedIntentHash = intentHashes[rowIndex];
     console.log('selectedIntentHash', selectedIntentHash);
 
     setSelectedIntentHash(selectedIntentHash);
@@ -97,8 +96,8 @@ export default function Deposit() {
         {depositIntents && depositIntents.length > 0 ? (
           <>
             <VerticalDivider />
-            <IntentTable
-              onRowClick={handleIntentClick}
+            <OffRamperIntentTable
+              onIntentRowClick={handleIntentClick}
             />
           </>
         ) : null}

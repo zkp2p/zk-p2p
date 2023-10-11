@@ -11,6 +11,7 @@ export const Swap: React.FC<{}> = (props) => {
   /*
     Contexts
   */
+
   const {
     currentIntentHash,
     refetchIntentHash,
@@ -25,6 +26,7 @@ export const Swap: React.FC<{}> = (props) => {
   /*
    * State
    */
+
   const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
 
   /*
@@ -48,7 +50,7 @@ export const Swap: React.FC<{}> = (props) => {
     setSelectedIntentHash(null);
   }
 
-  const handleIntentClick = (rowData: any[]) => {
+  const handleIntentClick = () => {
     console.log('selectedIntentHash', currentIntentHash);
 
     setSelectedIntentHash(currentIntentHash);

@@ -466,6 +466,11 @@ export const abi = [
       {
         "components": [
           {
+            "internalType": "uint256",
+            "name": "depositId",
+            "type": "uint256"
+          },
+          {
             "components": [
               {
                 "internalType": "address",
@@ -649,6 +654,11 @@ export const abi = [
     "outputs": [
       {
         "components": [
+          {
+            "internalType": "uint256",
+            "name": "depositId",
+            "type": "uint256"
+          },
           {
             "components": [
               {

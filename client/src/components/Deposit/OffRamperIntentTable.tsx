@@ -4,20 +4,21 @@ import styled from 'styled-components/macro'
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { toUsdString, toUsdcString  } from '@helpers/units'
-import { SECONDS_IN_DAY, PRECISION  } from '@helpers/constants'
+import { SECONDS_IN_DAY  } from '@helpers/constants'
 import { DepositIntent } from "../../contexts/Deposits/types";
 import useDeposits from '@hooks/useDeposits';
 import useLiquidity from '@hooks/useLiquidity';
+import useRampState from '@hooks/useRampState';
 
 
-interface IntentTableProps {
-  onRowClick?: (rowData: any[]) => void;
+interface OffRamperIntentTableProps {
+  onIntentRowClick?: (rowIndex: number) => void;
   selectedRow?: number;
   rowsPerPage?: number;
 }
 
-export const IntentTable: React.FC<IntentTableProps> = ({
-  onRowClick,
+export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
+  onIntentRowClick,
   selectedRow,
   rowsPerPage = 10
 }) => {
@@ -27,6 +28,7 @@ export const IntentTable: React.FC<IntentTableProps> = ({
 
   const { deposits, depositIntents } = useDeposits();
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
+  const { convenienceRewardTimePeriod } = useRampState();
 
   /*
     State
@@ -39,33 +41,43 @@ export const IntentTable: React.FC<IntentTableProps> = ({
   */
 
   useEffect(() => {
-    if (depositIntents && deposits) {
+    if (depositIntents && deposits && convenienceRewardTimePeriod) {
       var sanitizedIntents: IntentRowData[] = [];
-      sanitizedIntents = depositIntents.map((depositIntent: DepositIntent) => {
+      sanitizedIntents = depositIntents.map((depositIntent: DepositIntent, index: number) => {
         const intent = depositIntent.intent;
         const deposit = depositIntent.deposit;
 
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
+        const intentTimestamp = intent.timestamp;
 
         const onRamper = truncateAddress(intent.onRamper);
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC);
-        const expirationTimestamp = calculateAndFormatExpiration(intent.timestamp);
+        const expirationTimestamp = formatExpiration(intent.timestamp);
+        const convenienceRewardTimestampRaw = calculateExpiration(intentTimestamp, convenienceRewardTimePeriod);
         
-        return {
+        const sanitizedIntent: IntentRowData = {
           onRamper,
           amountUSDToReceive,
           amountUSDCToSend,
-          expirationTimestamp
-        };
+          expirationTimestamp,
+          convenienceRewardTimestampRaw,
+          handleCompleteOrderClick: () => {
+            if (onIntentRowClick) {
+              onIntentRowClick(index);
+            }
+          }
+        }
+
+        return sanitizedIntent;
       });
 
       setIntentsRowData(sanitizedIntents);
     } else {
       setIntentsRowData([]);
     }
-  }, [depositIntents, deposits]);
+  }, [depositIntents, deposits, convenienceRewardTimePeriod]);
 
   /*
     Helpers
@@ -75,10 +87,14 @@ export const IntentTable: React.FC<IntentTableProps> = ({
     return `${onRamperAddress.slice(0, 4)}...${onRamperAddress.slice(-4)}`;
   }
 
-  function calculateAndFormatExpiration(unixTimestamp: bigint): string {
-    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
-    const unixTimestampPlusOneDay = unixTimestamp + SECONDS_IN_DAY;
+  function calculateExpiration(unixTimestamp: bigint, timePeriod: bigint): bigint {
+    return unixTimestamp + timePeriod;
+  }
   
+  function formatExpiration(unixTimestamp: bigint): string {
+    const unixTimestampPlusOneDay = calculateExpiration(unixTimestamp, SECONDS_IN_DAY);
+    
+    const currentTimestamp = BigInt(Math.floor(Date.now() / 1000));
     if (currentTimestamp > unixTimestampPlusOneDay) {
       return "Expired";
     } else {
@@ -92,72 +108,52 @@ export const IntentTable: React.FC<IntentTableProps> = ({
 
   return (
     <Container>
-      <Column>
-        <Content>
-          <IntentContainer>
-            <IntentCountTitle>
-              <ThemedText.LabelSmall textAlign="left">
-                Orders on your deposits
-              </ThemedText.LabelSmall>
-            </IntentCountTitle>
-            <Table>
-              {intentsRowData.map((intentsRow, rowIndex) => (
-                <IntentRowStyled
-                  key={rowIndex}
-                  onClick={() => {
-                    onRowClick && onRowClick([rowIndex])}
-                  }
-                >
-                  <IntentRow
-                    amountUSDToReceive={intentsRow.amountUSDToReceive}
-                    amountUSDCToSend={intentsRow.amountUSDCToSend}
-                    expirationTimestamp={intentsRow.expirationTimestamp}
-                    onRamper={intentsRow.onRamper}
-                  />
-                </IntentRowStyled>
-              ))}
-            </Table>
-          </IntentContainer>
-        </Content>
-      </Column>
+      <TitleAndTableContainer>
+        <IntentCountTitle>
+          <ThemedText.LabelSmall textAlign="left">
+            Orders on your deposits
+          </ThemedText.LabelSmall>
+        </IntentCountTitle>
+
+        <Table>
+          {intentsRowData.map((intentsRow, rowIndex) => (
+            <IntentRow
+              amountUSDToReceive={intentsRow.amountUSDToReceive}
+              amountUSDCToSend={intentsRow.amountUSDCToSend}
+              expirationTimestamp={intentsRow.expirationTimestamp}
+              onRamper={intentsRow.onRamper}
+              convenienceRewardTimestampRaw={intentsRow.convenienceRewardTimestampRaw}
+              handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
+            />
+          ))}
+        </Table>
+      </TitleAndTableContainer>
     </Container>
   )
 }
 
 const Container = styled.div`
   width: 100%;
-  gap: 1rem;
-`
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
-  border-radius: 16px;
-  justify-content: center;
-`;
-
-const Content = styled.main`
   display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  justify-content: center;
+  gap: 1rem;
+
+  border-radius: 16px;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
-  flex-direction: column;
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
-    0px 24px 32px rgba(0, 0, 0, 0.01);
   overflow: hidden;
-`;
+`
 
-const IntentContainer = styled.div`
+const TitleAndTableContainer = styled.div`
   display: flex;
-  align-items: flex-start;
   flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
 `
 
 const IntentCountTitle = styled.div`
   width: 100%;
-  text-align: left;
   padding-top: 1.25rem;
   padding-bottom: 1rem;
   padding-left: 1.5rem;
@@ -179,17 +175,5 @@ const Table = styled.div`
 
   & > *:last-child {
     border-bottom: none;
-  }
-`;
-
-const IntentRowStyled = styled.div`
-  &:hover {
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: none;
-  }    
-
-  &:last-child {
-    border-bottom-left-radius: 16px;
-    border-bottom-right-radius: 16px;
   }
 `;
