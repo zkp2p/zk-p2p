@@ -14,6 +14,7 @@ import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import { LabeledSwitch } from "../common/LabeledSwitch";
+import { Modal } from '@components/modals/Modal'
 
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
@@ -53,7 +54,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    */
   const [emailFull, setEmailFull] = useState<string>("");
 
-  const [displayMessage, setDisplayMessage] = useState<string>("Generate Proof");
+  const [displayMessage, setDisplayMessage] = useState<string>("Verify Email");
   const [downloadProgress, setDownloadProgress] = useState<number>(0);
 
   const [status, setStatus] = useState<
@@ -68,6 +69,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     | "sending-on-chain"
     | "sent"
   >("not-started");
+
+  const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
   const [stopwatch, setStopwatch] = useState<Record<string, number>>({
     startedDownloading: 0,
@@ -116,6 +119,16 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   /*
    * Handlers
    */
+
+  const handleVerifyEmailClicked = () => {
+    // TODO: perform local verification of emails, everything before downloading files
+
+    setShouldShowVerificationModal(true);
+  };
+
+  const handleModalBackClicked = () => {
+    setShouldShowVerificationModal(false);
+  };
 
   const handleEmailInputTypeChanged = (checked: boolean) => {
     if (setIsInputModeDrag) {
@@ -259,66 +272,72 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   return (
     <Container>
-      <Body>
-        <NumberedStep>
-          Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
-          the .eml file into the box below or paste the contents directly.
-        </NumberedStep>
+      {
+        shouldShowVerificationModal && (
+          <Modal
+            title={"Verify Email"}
+            onBackClick={handleModalBackClicked}
+            isFastProving={true}
+            />
+        ) 
+      }
 
-        <TitleRowAndTextAreaContainer>
-          <TitleAndEmailSwitchRowContainer>
-            Email
-            <LabeledSwitch
-              switchChecked={isInputModeDrag ?? true}
-              onSwitchChange={handleEmailInputTypeChanged}
-              checkedLabel={"Drag"}
-              uncheckedLabel={"Paste"}
-              helperText={INPUT_MODE_TOOLTIP}
-            />
-          </TitleAndEmailSwitchRowContainer>
+      <NumberedStep>
+        Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
+        the .eml file into the box below or paste the contents directly.
+      </NumberedStep>
 
-          {isInputModeDrag ? (
-            <DragAndDropTextBox
-              onFileDrop={onFileDrop}
-            />
-          ) : (
-            <LabeledTextArea
-              label=""
-              value={emailFull}
-              placeholder={PLACEHOLDER_EMAIL_BODY}
-              onChange={(e) => {
-                setEmailFull(e.currentTarget.value);
-              }}
-              height={"28vh"}
-            />
-          )}
-        </TitleRowAndTextAreaContainer>
-        
-        <ButtonContainer>
-          <Button
-            disabled={emailFull.length === 0}
-            loading={isRemoteGenerateProofLoading}
-            onClick={isProvingTypeFast ? remoteGenerateProof : handleGenerateProofClick}
-          >
-            {displayMessage}
-          </Button>
-        </ButtonContainer>
-        
-        { isProofGenerationStarted() && <ProofGenerationStatus />}
-      </Body>
+      <EmailTitleRowAndTextAreaContainer>
+        <TitleAndEmailSwitchRowContainer>
+          Email
+          <LabeledSwitch
+            switchChecked={isInputModeDrag ?? true}
+            onSwitchChange={handleEmailInputTypeChanged}
+            checkedLabel={"Drag"}
+            uncheckedLabel={"Paste"}
+            helperText={INPUT_MODE_TOOLTIP}
+          />
+        </TitleAndEmailSwitchRowContainer>
+
+        {isInputModeDrag ? (
+          <DragAndDropTextBox
+            onFileDrop={onFileDrop}
+          />
+        ) : (
+          <LabeledTextArea
+            label=""
+            value={emailFull}
+            placeholder={PLACEHOLDER_EMAIL_BODY}
+            onChange={(e) => {
+              setEmailFull(e.currentTarget.value);
+            }}
+            height={"28vh"}
+          />
+        )}
+      </EmailTitleRowAndTextAreaContainer>
+      
+      <ButtonContainer>
+        <Button
+          disabled={emailFull.length === 0}
+          loading={isRemoteGenerateProofLoading}
+          // onClick={isProvingTypeFast ? remoteGenerateProof : handleGenerateProofClick}
+          onClick={handleVerifyEmailClicked}
+        >
+          {displayMessage}
+        </Button>
+      </ButtonContainer>
+      
+      { isProofGenerationStarted() && <ProofGenerationStatus />}
     </Container>
   );
 };
 
-const Container = styled.div`
-`;
-
-const Body = styled(Col)`
+const Container = styled(Col)`
   gap: 1rem;
 `;
 
-const TitleRowAndTextAreaContainer = styled(Col)`
-  gap: 0rem;
+const EmailTitleRowAndTextAreaContainer = styled(Col)`
+  gap: 0.25rem;
 `;
 
 const ProcessStatus = styled.div<{ status: string }>`

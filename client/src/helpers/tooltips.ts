@@ -11,3 +11,8 @@ export const INPUT_MODE_TOOLTIP = `
 export const EMAIL_TOOLTIP = `
   Open any Venmo transaction email and select 'Show original' to view the full contents.
 `;
+
+export const PROOF_TOOLTIP = `
+  The proof is a cryptographic signature that proves you received the email.
+  It is generated using the email contents.
+`;

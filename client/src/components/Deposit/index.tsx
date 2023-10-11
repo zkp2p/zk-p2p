@@ -12,8 +12,8 @@ import useDeposits from '@hooks/useDeposits';
 
 export default function Deposit() {
   /*
-    Contexts
-  */
+   * Contexts
+   */
   const {
     deposits,
     depositIntents,
@@ -22,8 +22,9 @@ export default function Deposit() {
   } = useDeposits()
 
   /*
-    State
-  */
+   * State
+   */
+
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
@@ -43,8 +44,8 @@ export default function Deposit() {
   }, [shouldFetchDeposits]);
 
   /*
-    Handlers
-  */
+   * Handlers
+   */
   const handleUpdateClick = () => {
     setIsAddPosition(true);
   }

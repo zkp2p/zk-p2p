@@ -6,7 +6,6 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { SubmitOnRamp } from "./SubmitOnRamp";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
@@ -83,16 +82,10 @@ export const OnRamp: React.FC<OnRampProps> = ({
           setPublicSignals={setPublicSignals}
         />
 
-        {/* {!isProvingTypeFast && (
-          <SubmitOnRamp
+        {/* <SubmitOnRamp
             proof={proof}
             publicSignals={publicSignals}
-          />
-        )} */}
-        <SubmitOnRamp
-            proof={proof}
-            publicSignals={publicSignals}
-          />
+          /> */}
       </Body>
     </Container>
   );
