@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from "wagmi/providers/public";
-import { hardhat, goerli, optimism } from 'wagmi/chains'
+import { hardhat, goerli } from 'wagmi/chains'
 
 import {
   RainbowKitProvider,
@@ -25,8 +25,7 @@ import App from "./App";
 const { chains, publicClient } = configureChains(
   [
     hardhat,
-    goerli,
-    optimism
+    goerli
   ],
   [
     alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
