@@ -51,7 +51,7 @@ export interface ICircuitInputs {
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
   venmo_actor_id_idx?: string;
-  order_id?: string;
+  intent_hash?: string;
 
   // subject commands only
   command_idx?: string;
@@ -115,7 +115,7 @@ export async function getCircuitInputs(
   message: Buffer,
   body: Buffer,
   body_hash: string,
-  order_id: string,
+  intent_hash: string,
   circuit: CircuitType
 ): Promise<{
   valid: {
@@ -230,7 +230,7 @@ export async function getCircuitInputs(
       venmo_payer_id_idx,
       email_from_idx,
       // IDs
-      order_id
+      intent_hash
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
@@ -254,7 +254,7 @@ export async function getCircuitInputs(
       venmo_payee_id_idx,
       email_from_idx,
       // IDs
-      order_id,
+      intent_hash,
     };
   } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
     const actor_id_selector = Buffer.from('&actor_id=3D');
@@ -293,7 +293,7 @@ export async function getCircuitInputs(
 export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
-  order_id: string,
+  intent_hash: string,
   nonce_raw: number | string | null = null
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
@@ -339,7 +339,7 @@ export async function generate_inputs(
   const pubKeyData = pki.publicKeyFromPem(pubkey.toString());
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
-  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, order_id, type);
+  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type);
   return fin_result.circuitInputs;
 }
 
