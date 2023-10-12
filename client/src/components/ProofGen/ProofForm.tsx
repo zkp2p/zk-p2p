@@ -10,10 +10,11 @@ import {
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
-import { ProgressBar } from "../legacy/ProgressBar";
+// import { ProgressBar } from "../legacy/ProgressBar";
 import { NumberedStep } from "../common/NumberedStep";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import { LabeledSwitch } from "../common/LabeledSwitch";
+import { ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal'
 
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
@@ -28,8 +29,11 @@ interface ProofGenerationFormProps {
   circuitRemoteFilePath: string;
   circuitInputs: string;
   remoteProofGenEmailType: string;
+  proof: string;
+  publicSignals: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
+  handleSubmitVerificationClick?: () => void;
 }
  
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
@@ -37,8 +41,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   circuitRemoteFilePath,
   circuitInputs,
   remoteProofGenEmailType,
+  proof,
+  publicSignals,
   setProof,
   setPublicSignals,
+  handleSubmitVerificationClick
 }) => {
   /*
    * Context
@@ -54,47 +61,35 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    */
   const [emailFull, setEmailFull] = useState<string>("");
 
-  const [displayMessage, setDisplayMessage] = useState<string>("Verify Email");
-  const [downloadProgress, setDownloadProgress] = useState<number>(0);
+  // const [downloadProgress, setDownloadProgress] = useState<number>(0);
 
-  const [status, setStatus] = useState<
-    | "not-started"
-    | "generating-input"
-    | "downloading-proof-files"
-    | "generating-proof"
-    | "error-bad-input"
-    | "error-failed-to-download"
-    | "error-failed-to-prove"
-    | "done"
-    | "sending-on-chain"
-    | "sent"
-  >("not-started");
+  const [status, setStatus] = useState<ProofGenerationStatus>("not-started");
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
-  const [stopwatch, setStopwatch] = useState<Record<string, number>>({
-    startedDownloading: 0,
-    finishedDownloading: 0,
-    startedProving: 0,
-    finishedProving: 0,
-  });
+  // const [stopwatch, setStopwatch] = useState<Record<string, number>>({
+  //   startedDownloading: 0,
+  //   finishedDownloading: 0,
+  //   startedProving: 0,
+  //   finishedProving: 0,
+  // });
 
-  const recordTimeForActivity = (activity: string) => {
-    setStopwatch((prev) => ({
-      ...prev,
-      [activity]: Date.now(),
-    }));
-  };
+  // const recordTimeForActivity = (activity: string) => {
+  //   setStopwatch((prev) => ({
+  //     ...prev,
+  //     [activity]: Date.now(),
+  //   }));
+  // };
 
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
 
-  const isProofGenerationStarted = () => {
-    return status !== "not-started";
-  };
+  // const isProofGenerationStarted = () => {
+  //   return status !== "not-started";
+  // };
 
   /*
-    Hooks
-  */
+   * Hooks
+   */
 
   const {
     data: remoteGenerateProofResponse,
@@ -110,9 +105,12 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   useEffect(() => {
     if (remoteGenerateProofResponse) {
       console.log('Data:', remoteGenerateProofResponse);
+      setStatus("verifying-proof");
 
       setProof(remoteGenerateProofResponse.proof);
       setPublicSignals(remoteGenerateProofResponse.public_values);
+
+      setStatus("done");
     }
   }, [remoteGenerateProofResponse, setProof, setPublicSignals]);
 
@@ -124,6 +122,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     // TODO: perform local verification of emails, everything before downloading files
 
     setShouldShowVerificationModal(true);
+
+    if (isProvingTypeFast) {
+      console.log('Generating fast proof...');
+      remoteGenerateProof()
+      setStatus("generating-proof");
+    } else {
+      console.log('Generating private proof...');
+      handleGenerateProofClick();
+    }
   };
 
   const handleModalBackClicked = () => {
@@ -138,21 +145,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const handleGenerateProofClick = async () => {
     console.log("Generating proof...");
-    setDisplayMessage("Generating proof...");
     setStatus("generating-input");
 
     // console.log("emailFull at handleGenerateProofClick", emailFull);
     const formattedArray = await insert13Before10(Uint8Array.from(Buffer.from(emailFull)));
-    // console.log('formattedArray', formattedArray);
 
     // Due to a quirk in carriage return parsing in JS, we need to manually edit carriage returns to match DKIM parsing
-    // console.log("formattedArray", formattedArray);
-    // console.log("buffFormArray", Buffer.from(formattedArray.buffer));
-    // console.log("buffFormArray", formattedArray.toString());
-
-    console.log("formattedArray", formattedArray)
-    console.log("circuitType", circuitType)
-    console.log("circuitInputs", circuitInputs)
+    // console.log("formattedArray", formattedArray)
+    // console.log("circuitType", circuitType)
+    // console.log("circuitInputs", circuitInputs)
 
     let input: ICircuitInputs;
     try {
@@ -164,7 +165,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       );
     } catch (e) {
       console.log("Error generating input", e);
-      setDisplayMessage("Prove");
       setStatus("error-bad-input");
       return;
     }
@@ -172,31 +172,31 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     console.log("Generated input:", JSON.stringify(input));
 
     /*
-      Download proving files
-    */
+     * Download proving files
+     */
     console.time("zk-dl");
-    recordTimeForActivity("startedDownloading");
-    setDisplayMessage("Downloading compressed proving files... (this may take a few minutes)");
+    // recordTimeForActivity("startedDownloading");
     setStatus("downloading-proof-files");
     await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {
-      setDownloadProgress((p) => p + 1);
+      // no-op
+
+      // setDownloadProgress((p) => p + 1);
     });
     console.timeEnd("zk-dl");
-    recordTimeForActivity("finishedDownloading");
+    // recordTimeForActivity("finishedDownloading");
 
     /*
-      Generate proof
-    */
+     * Generate proof
+     */
     console.time("zk-gen");
-    recordTimeForActivity("startedProving");
-    setDisplayMessage("Generating Proof (this will take 6-10 minutes. Don't close this window)");
+    // recordTimeForActivity("startedProving");
     setStatus("generating-proof");
     console.log("Starting proof generation");
 
     const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath, HOSTED_FILES_PATH);
     console.log("Finished proof generation");
     console.timeEnd("zk-gen");
-    recordTimeForActivity("finishedProving");
+    // recordTimeForActivity("finishedProving");
 
     /*
       Set proof
@@ -215,7 +215,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setStatus("error-failed-to-prove");
       return;
     }
-    setDisplayMessage("Finished computing ZK proof");
     setStatus("done");
     try {
       (window as any).cJson = JSON.stringify(input);
@@ -245,30 +244,31 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   /*
    * Components
    */
-  function ProofGenerationStatus() {
-    return (
-      <>
-        {displayMessage === "Downloading compressed proving files... (this may take a few minutes)" && (
-          <ProgressBar
-            width={downloadProgress * 10}
-            label={`${downloadProgress} / 10 items`}
-          />
-        )}
 
-        <ProcessStatus status={status}>
-          {status !== "not-started" ? (
-            <div>
-              Status:
-              <span data-testid={"status-" + status}>{status}</span>
-            </div>
-          ) : (
-            <div data-testid={"status-" + status}></div>
-          )}
-          <TimerDisplay timers={stopwatch} />
-        </ProcessStatus>
-      </>
-    );
-  }
+  // function ProofGenerationStatus() {
+  //   return (
+  //     <>
+  //       {displayMessage === "Downloading compressed proving files... (this may take a few minutes)" && (
+  //         <ProgressBar
+  //           width={downloadProgress * 10}
+  //           label={`${downloadProgress} / 10 items`}
+  //         />
+  //       )}
+
+  //       <ProcessStatus status={status}>
+  //         {status !== "not-started" ? (
+  //           <div>
+  //             Status:
+  //             <span data-testid={"status-" + status}>{status}</span>
+  //           </div>
+  //         ) : (
+  //           <div data-testid={"status-" + status}></div>
+  //         )}
+  //         <TimerDisplay timers={stopwatch} />
+  //       </ProcessStatus>
+  //     </>
+  //   );
+  // }
 
   return (
     <Container>
@@ -276,9 +276,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         shouldShowVerificationModal && (
           <Modal
             title={"Verify Email"}
+            proof={proof}
+            publicSignals={publicSignals}
+            status={status}
             onBackClick={handleModalBackClicked}
-            isFastProving={true}
-            />
+            handleSubmitVerificationClick={handleSubmitVerificationClick} />
         ) 
       }
 
@@ -320,14 +322,13 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         <Button
           disabled={emailFull.length === 0}
           loading={isRemoteGenerateProofLoading}
-          // onClick={isProvingTypeFast ? remoteGenerateProof : handleGenerateProofClick}
           onClick={handleVerifyEmailClicked}
         >
-          {displayMessage}
+          Verify Email
         </Button>
       </ButtonContainer>
       
-      { isProofGenerationStarted() && <ProofGenerationStatus />}
+      {/* { isProofGenerationStarted() && <ProofGenerationStatus />} */}
     </Container>
   );
 };
@@ -340,11 +341,11 @@ const EmailTitleRowAndTextAreaContainer = styled(Col)`
   gap: 0.25rem;
 `;
 
-const ProcessStatus = styled.div<{ status: string }>`
-  font-size: 8px;
-  padding: 8px;
-  border-radius: 16px;
-`;
+// const ProcessStatus = styled.div<{ status: string }>`
+//   font-size: 8px;
+//   padding: 8px;
+//   border-radius: 16px;
+// `;
 
 const ButtonContainer = styled.div`
   display: grid;
@@ -358,31 +359,31 @@ const TitleAndEmailSwitchRowContainer = styled.div`
   padding-left: 8px;
 `;
 
-const TimerDisplayContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-size: 8px;
-`;
+// const TimerDisplayContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   font-size: 8px;
+// `;
 
-const TimerDisplay = ({ timers }: { timers: Record<string, number> }) => {
-  return (
-    <TimerDisplayContainer>
-      {timers["startedDownloading"] && timers["finishedDownloading"] ? (
-        <div>
-          Zkey Download time:&nbsp;
-          <span data-testid="download-time">{timers["finishedDownloading"] - timers["startedDownloading"]}</span>ms
-        </div>
-      ) : (
-        <div></div>
-      )}
-      {timers["startedProving"] && timers["finishedProving"] ? (
-        <div>
-          Proof generation time:&nbsp;
-          <span data-testid="proof-time">{timers["finishedProving"] - timers["startedProving"]}</span>ms
-        </div>
-      ) : (
-        <div></div>
-      )}
-    </TimerDisplayContainer>
-  );
-};
+// const TimerDisplay = ({ timers }: { timers: Record<string, number> }) => {
+//   return (
+//     <TimerDisplayContainer>
+//       {timers["startedDownloading"] && timers["finishedDownloading"] ? (
+//         <div>
+//           Zkey Download time:&nbsp;
+//           <span data-testid="download-time">{timers["finishedDownloading"] - timers["startedDownloading"]}</span>ms
+//         </div>
+//       ) : (
+//         <div></div>
+//       )}
+//       {timers["startedProving"] && timers["finishedProving"] ? (
+//         <div>
+//           Proof generation time:&nbsp;
+//           <span data-testid="proof-time">{timers["finishedProving"] - timers["startedProving"]}</span>ms
+//         </div>
+//       ) : (
+//         <div></div>
+//       )}
+//     </TimerDisplayContainer>
+//   );
+// };

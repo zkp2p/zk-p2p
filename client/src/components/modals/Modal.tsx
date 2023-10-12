@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 
@@ -8,29 +8,28 @@ import { Overlay } from '@components/modals/Overlay'
 import { TitleCenteredRow } from '@components/layouts/Row'
 import { PROOF_TOOLTIP } from "@helpers/tooltips";
 import useProofGenSettings from "@hooks/useProofGenSettings";
+import { ProofGenerationStatus } from  "../ProofGen/types";
 
 import { Button } from "../Button";
 import { VerificationStepRow, VerificationState, VerificationStepType } from "./VerificationStepRow";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
 
 
-export interface VerificationStepRowConfiguration {
-  stepType: string;
-  stepState: string;
-}
-
 interface ModalProps {
   title: string;
-  onBackClick: () => void;
-  modalType: string;
-  verificationSteps: VerificationStepRowConfiguration[];
+  proof: string;
+  publicSignals: string;
+  onBackClick: () => void
+  status: ProofGenerationStatus;
   handleSubmitVerificationClick?: () => void;
 }
 
 export const Modal: React.FC<ModalProps> = ({
   title,
+  proof,
+  publicSignals,
   onBackClick,
-  verificationSteps,
+  status,
   handleSubmitVerificationClick = () => {}
 }) => {
   /*
@@ -54,28 +53,75 @@ export const Modal: React.FC<ModalProps> = ({
   }
 
   /*
+   * Helpers
+   */
+
+  const isSubmitVerificationButtonDisabled = useMemo(() => {
+    return status !== "done";
+  }, [status]);
+
+  /*
    * Component
    */
 
   const renderVerificationSteps = () => {
-    if (isProvingTypeFast) {
-      const filteredSteps = verificationSteps.filter(step => step.stepType !== VerificationStepType.DOWNLOAD);
-      return filteredSteps.map((step, index) => (
-        <VerificationStepRow
-          key={index}
-          stepType={step.stepType}
-          stepState={step.stepState}
-        />
-      ));
-    } else {
-      return verificationSteps.map((step, index) => (
-        <VerificationStepRow
-          key={index}
-          stepType={step.stepType}
-          stepState={step.stepState}
-        />
-      ));
+    console.log('Status update: ', status);
+
+    let downloadStepState = VerificationState.DEFAULT;
+    let proveStepState = VerificationState.DEFAULT; 
+    let verificationStepState = VerificationState.DEFAULT;
+    
+    switch (status) {
+      case "not-started":
+      case "generating-input":
+      case "downloading-proof-files":
+        downloadStepState = VerificationState.LOADING;
+        break;
+
+      case "generating-proof":
+        downloadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.LOADING;
+        break;
+
+      case "verifying-proof":
+        downloadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.COMPLETE;
+        verificationStepState = VerificationState.LOADING;
+        break;
+
+      case "done":
+        downloadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.COMPLETE;
+        verificationStepState = VerificationState.COMPLETE;
+        break;
     }
+
+    const verificationStepRows = [];
+    
+    if (!isProvingTypeFast) {
+      verificationStepRows.push(
+        <VerificationStepRow
+          stepType={VerificationStepType.DOWNLOAD}
+          stepState={downloadStepState}
+        />
+      );
+    }
+
+    verificationStepRows.push(
+      <VerificationStepRow
+        stepType={VerificationStepType.PROVE}
+        stepState={proveStepState}
+      />
+    );
+
+    verificationStepRows.push(
+      <VerificationStepRow
+        stepType={VerificationStepType.VERIFY}
+        stepState={verificationStepState}
+      />
+    );
+    
+    return verificationStepRows;
   };
 
   return (
@@ -112,22 +158,22 @@ export const Modal: React.FC<ModalProps> = ({
           <ProofAndSignalsContainer>
             <LabeledTextArea
               label="Proof Output"
-              value={""}
+              value={proof}
               disabled={true}
-              height={"8vh"} />
+              height={"12vh"} />
 
             <LabeledTextArea
               label="Public Signals"
-              value={""}
+              value={publicSignals}
               disabled={true}
-              height={"8vh"}
+              height={"12vh"}
               secret />
           </ProofAndSignalsContainer>
           )
         }
 
         <Button
-          disabled={true}
+          disabled={isSubmitVerificationButtonDisabled}
           loading={false}
           onClick={handleSubmitVerificationClick}
           fullWidth={true}
@@ -163,7 +209,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 2rem;
-  top: 20%;
+  top: 25%;
   position: relative;
 `;
 
