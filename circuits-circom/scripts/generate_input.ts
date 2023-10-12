@@ -235,9 +235,9 @@ export async function getCircuitInputs(
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
     const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
-
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
     const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
-    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_amount_idx, venmo_payee_id_idx);
+    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_amount_idx, venmo_payee_id_idx, email_timestamp_idx);
 
     circuitInputs = {
       in_padded,
@@ -250,6 +250,7 @@ export async function getCircuitInputs(
       body_hash_idx,
       // venmo specific indices
       venmo_amount_idx,
+      email_timestamp_idx,
       venmo_payee_id_idx,
       email_from_idx,
       // IDs
