@@ -252,7 +252,7 @@ describe("Venmo send WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
-    it("Should return the correct order id", async () => {
+    it("Should return the correct intent hash", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_send.json");
@@ -264,11 +264,11 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[10];
+        const intent_hash = witness[10];
 
         // Get expected modulus
-        const expected_order_id = input["order_id"];
+        const expected_intent_hash = input["intent_hash"];
 
-        assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
+        assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
     });
 });
