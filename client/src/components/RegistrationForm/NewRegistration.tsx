@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import {
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+ } from 'wagmi'
 
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { ProofGenerationForm } from "../common/ProofGenerationForm";
-import { SubmitRegistration } from "./SubmitRegistration";
+import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { reformatProofForChain } from "@helpers/submitProof";
 import useProofGenSettings from '@hooks/useProofGenSettings';
+import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/useRegistration';
 
 
 
@@ -26,6 +33,11 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    */
 
   const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
+  const {
+    rampAddress,
+    rampAbi
+  } = useSmartContracts();
+  const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -39,6 +51,66 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   // );
 
   /*
+   * State
+   */
+
+  const [shouldConfigureRegistrationWrite, setShouldConfigureRegistrationWrite] = useState<boolean>(false);
+
+  /*
+    Contract Writes
+  */
+
+  //
+  // register(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
+  //
+  const {
+    config: writeSubmitRegistrationConfig
+  } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'register',
+    args: [
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
+    ],
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+    enabled: shouldConfigureRegistrationWrite
+  });
+
+  const {
+    data: submitRegistrationResult,
+    isLoading: isSubmitRegistrationLoading,
+    writeAsync: writeSubmitRegistrationAsync
+  } = useContractWrite(writeSubmitRegistrationConfig);
+
+  const {
+    isLoading: isSubmitRegistrationMining
+  } = useWaitForTransaction({
+    hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitRegistrationAsync successful: ', data);
+      
+      refetchRampAccount?.();
+    },
+  });
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (proof && publicSignals) {
+      // TODO: perform local verification
+
+      setShouldConfigureRegistrationWrite(true);
+    } else {
+      setShouldConfigureRegistrationWrite(false);
+    }
+  }, [proof, publicSignals]);
+
+  /*
    * Handlers
    */
 
@@ -48,9 +120,19 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     }
   };
 
+  // disabled={proof.length === 0 || publicSignals.length === 0 || isSubmitRegistrationLoading}
+  // loading={isSubmitRegistrationLoading || isSubmitRegistrationMining}
+  const handleRegistrationSubmit = async () => {
+    try {
+      await writeSubmitRegistrationAsync?.();
+    } catch (error) {
+      console.log('writeSubmitRegistrationAsync failed: ', error);
+    }
+  };
+
   /*
-    Component
-  */
+   * Component
+   */
 
   return (
     <Container>
@@ -69,8 +151,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         <LabeledSwitch
           switchChecked={isProvingTypeFast ?? true}
           onSwitchChange={handleProvingTypeChanged}
-          checkedLabel={"Speed"}
-          uncheckedLabel={"Privacy"}
+          checkedLabel={"Fast"}
+          uncheckedLabel={"Private"}
           helperText={PROVING_TYPE_TOOLTIP}
         />
       </TitleCenteredRow>
@@ -81,20 +163,12 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
           circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
           circuitInputs={"1"} // Arbitrary value, unused for registration
           remoteProofGenEmailType={RemoteProofGenEmailTypes.REGISTRATION}
+          proof={proof}
+          publicSignals={publicSignals}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
+          handleSubmitVerificationClick={handleRegistrationSubmit}
         />
-
-        {/* {!isProvingTypeFast && (
-          <SubmitRegistration
-            proof={proof}
-            publicSignals={publicSignals}
-          />
-        )} */}
-        <SubmitRegistration
-            proof={proof}
-            publicSignals={publicSignals}
-          />
       </Body>
     </Container>
   );

@@ -151,7 +151,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         setFormState(NewPositionState.APPROVAL_REQUIRED);
       } else {
         if (receiveAmountInput && convenienceFeeInput) {
-          if (convenienceFeeInput > depositAmountInput) {
+          const convenienceFeeBI = toBigInt(convenienceFeeInput);
+
+          if (convenienceFeeBI > depositAmountBI) {
             setFormState(NewPositionState.CONVENIENCE_FEE_INVALID);
           } else {
             setFormState(NewPositionState.VALID);
@@ -235,7 +237,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const convenienceFeeInputErrorString = (): string => {
     if (depositAmountInput && convenienceFeeInput) {
-      if (convenienceFeeInput > depositAmountInput) {
+      if (Number(convenienceFeeInput) > Number(depositAmountInput)) {
         return `Convenience fee cannot be greater than deposit amount`;
       } else {
         return '';

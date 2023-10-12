@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import {
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction
+} from 'wagmi'
 
 import { TitleCenteredRow } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { ProofGenerationForm } from "../common/ProofGenerationForm";
-import { SubmitOnRamp } from "./SubmitOnRamp";
+import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { reformatProofForChain } from "@helpers/submitProof";
 import useProofGenSettings from '@hooks/useProofGenSettings';
+import useSmartContracts from '@hooks/useSmartContracts';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
 
 
 interface OnRampProps {
@@ -26,6 +34,20 @@ export const OnRamp: React.FC<OnRampProps> = ({
    * Context
    */
   const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
+  const {
+    rampAddress,
+    rampAbi,
+    sendProcessorAddress,
+    sendProcessorAbi,
+  } = useSmartContracts();
+  const { refetchIntentHash } = useOnRamperIntents();
+
+  /*
+   * State
+   */
+
+  const [shouldConfigureOffRampWrite, setShouldConfigureOffRampWrite] = useState<boolean>(false);
+  const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -39,17 +61,111 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // );
 
   /*
+   * Contract Reads
+   */
+
+  const {
+    data: verifyProofRaw,
+  } = useContractRead({
+    address: sendProcessorAddress,
+    abi: sendProcessorAbi,
+    functionName: "verifyProof",
+    args: [
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
+    ],
+    enabled: shouldFetchVerifyProof,
+  });
+
+  /*
+   * Contract Writes
+   */
+
+  //
+  // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[8] memory _signals)
+  //
+  const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'onRamp',
+    args: [
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
+    ],
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+    enabled: shouldConfigureOffRampWrite
+  });
+
+  const {
+    data: submitOnRampResult,
+    isLoading: isWriteSubmitOnRampLoading,
+    writeAsync: writeSubmitOnRampAsync
+  } = useContractWrite(writeSubmitOnRampConfig);
+
+  const {
+    isLoading: isSubmitOnRampMining
+  } = useWaitForTransaction({
+    hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitOnRampAsync successful: ', data);
+      
+      refetchIntentHash?.();
+    },
+  });
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (proof && publicSignals) {
+      // console.log("proof", proof);
+      // console.log("public signals", publicSignals);
+      // console.log("vkey", vkey);
+
+      // const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
+      // console.log("proofVerified", proofVerified);
+
+      setShouldFetchVerifyProof(true);
+    } else {
+      setShouldFetchVerifyProof(false);
+    }
+  }, [proof, publicSignals]);
+
+  useEffect(() => {
+    if (verifyProofRaw) {
+      setShouldConfigureOffRampWrite(true);
+    } else {
+      setShouldConfigureOffRampWrite(false);
+    }
+  }, [verifyProofRaw]);
+
+  /*
    * Handlers
    */
+
   const handleProvingTypeChanged = (checked: boolean) => {
     if (setIsProvingTypeFast) {
       setIsProvingTypeFast(checked);
     }
   };
 
+  // loading={isWriteSubmitOnRampLoading || isSubmitOnRampMining}
+  // disabled={proof.length === 0 || publicSignals.length === 0 || isWriteSubmitOnRampLoading}
+  const handleWriteSubmitOnRampClick = async () => {
+    try {
+      await writeSubmitOnRampAsync?.();
+    } catch (error) {
+      console.log('writeSubmitDepositAsync failed: ', error);
+    }
+  };
+
   /*
-    Component
-  */
+   * Component
+   */
+  
   return (
     <Container>
       <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
@@ -67,8 +183,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <LabeledSwitch
           switchChecked={isProvingTypeFast ?? true}
           onSwitchChange={handleProvingTypeChanged}
-          checkedLabel={"Speed"}
-          uncheckedLabel={"Privacy"}
+          checkedLabel={"Fast"}
+          uncheckedLabel={"Private"}
           helperText={PROVING_TYPE_TOOLTIP}
         />
       </TitleCenteredRow>
@@ -79,20 +195,12 @@ export const OnRamp: React.FC<OnRampProps> = ({
           circuitRemoteFilePath={SEND_KEY_FILE_NAME}
           circuitInputs={selectedIntentHash}
           remoteProofGenEmailType={RemoteProofGenEmailTypes.SEND}
+          proof={proof}
+          publicSignals={publicSignals}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
+          handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         />
-
-        {/* {!isProvingTypeFast && (
-          <SubmitOnRamp
-            proof={proof}
-            publicSignals={publicSignals}
-          />
-        )} */}
-        <SubmitOnRamp
-            proof={proof}
-            publicSignals={publicSignals}
-          />
       </Body>
     </Container>
   );
