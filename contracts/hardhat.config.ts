@@ -4,6 +4,7 @@ import '@typechain/hardhat'
 import 'solidity-coverage'
 import '@nomiclabs/hardhat-ethers'
 import 'hardhat-deploy';
+import '@nomiclabs/hardhat-etherscan';
 import '@nomicfoundation/hardhat-chai-matchers'
 
 import { HardhatUserConfig } from "hardhat/config";
@@ -38,6 +39,11 @@ const config: HardhatUserConfig = {
         `0x${process.env.GOERLI_DEPLOY_PRIVATE_KEY}`,
       ],
     },
+  },
+  verify: {
+    etherscan: {
+      apiKey: process.env.ETHERSCAN_API_KEY
+    }
   },
   // @ts-ignore
   typechain: {
