@@ -13,11 +13,11 @@ jobs:
       - name: Install Dependencies
         run: yarn install
         working-directory: ./contracts
+      - name: Set up env variables...
+        run: cp contracts/.env.default contracts/.env
       - name: Building...
         run: yarn build
         working-directory: ./contracts
-      - name: Set up env variables...
-        run: cp contracts/.env.default contracts/.env
       - name: Set-up chain...
         run: yarn chain &
         working-directory: ./contracts
