@@ -98,11 +98,11 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal cm_rand <== HashSignGenRand(n, k)(signature);
     email_nullifier <== EmailNullifier()(header_hash, cm_rand);
 
-    // The following signals do not take part in any computation, but tie the proof to a specific order_id to prevent replay attacks and frontrunning.
+    // The following signals do not take part in any computation, but tie the proof to a specific intent_hash to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
-    signal input order_id;
-    signal order_id_squared;
-    order_id_squared <== order_id * order_id;
+    signal input intent_hash;
+    signal intent_hash_squared;
+    intent_hash_squared <== intent_hash * intent_hash;
 
     // TOTAL CONSTRAINTS: 6203505
 }
@@ -113,4 +113,4 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ order_id ] } = VenmoReceiveEmail(1024, 6720, 121, 17, 7);
+component main { public [ intent_hash ] } = VenmoReceiveEmail(1024, 6720, 121, 17, 7);
