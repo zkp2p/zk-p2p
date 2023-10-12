@@ -17,7 +17,7 @@ jobs:
         run: yarn build
         working-directory: ./contracts
       - name: Set up env variables...
-        run: cp ./contracts/.env.default ./contracts/.env
+        run: cp contracts/.env.default contracts/.env
       - name: Set-up chain...
         run: yarn chain &
         working-directory: ./contracts
