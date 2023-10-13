@@ -6,6 +6,7 @@ import {
   insert13Before10,
   ICircuitInputs
 } from '@zkp2p/circuits-circom/scripts/generate_input';
+import { wrap } from 'comlink';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
@@ -15,11 +16,11 @@ import { NumberedStep } from "../common/NumberedStep";
 import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { ProofGenerationStatus } from  "./types";
-import { Modal } from '@components/modals/Modal'
+import { Modal } from '@components/modals/Modal';
 
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
-import { downloadProofFiles, generateProof } from "@helpers/zkp";
+import { downloadProofFiles } from "@helpers/zkp";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
@@ -33,6 +34,7 @@ interface ProofGenerationFormProps {
   publicSignals: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
+  isSubmitProcessing: boolean;
   handleSubmitVerificationClick?: () => void;
 }
  
@@ -45,6 +47,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   publicSignals,
   setProof,
   setPublicSignals,
+  isSubmitProcessing,
   handleSubmitVerificationClick
 }) => {
   /*
@@ -193,7 +196,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setStatus("generating-proof");
     console.log("Starting proof generation");
 
-    const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath, HOSTED_FILES_PATH);
+    const worker = new Worker('./ProvingWorker', { name: 'runGenerateProofWorker', type: 'module' })
+    const { generateProof } = wrap<import('./ProvingWorker').RunGenerateProofWorker>(worker)
+    const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath);
+
     console.log("Finished proof generation");
     console.timeEnd("zk-gen");
     // recordTimeForActivity("finishedProving");
@@ -280,6 +286,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             publicSignals={publicSignals}
             status={status}
             onBackClick={handleModalBackClicked}
+            isSubmitProcessing={isSubmitProcessing}
             handleSubmitVerificationClick={handleSubmitVerificationClick} />
         ) 
       }

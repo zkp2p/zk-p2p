@@ -13,6 +13,7 @@ interface InputProps {
   placeholder?: string;
   inputLabel?: string;
   readOnly?: boolean;
+  accessoryLabel?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -26,41 +27,51 @@ export const Input: React.FC<InputProps> = ({
   inputLabel,
   type = "text",
   readOnly = false,
+  accessoryLabel="",
 }: InputProps) => {
   Input.displayName = "Input";
 
   return (
       <Container>
-        <Label htmlFor={name}>
-            {label}
-        </Label>
-        <InputWrapper>
-          <StyledInput
-            type={type}
-            name={name}
-            id={name}
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
-            onFocus={onFocus}
-            onKeyDown={onKeyDown}
-            readOnly={readOnly}
-          />
+        <LabelAndInputContainer>
+          <Label htmlFor={name}>
+              {label}
+          </Label>
+
+          <InputWrapper>
+            <StyledInput
+              type={type}
+              name={name}
+              id={name}
+              placeholder={placeholder}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onKeyDown={onKeyDown}
+              readOnly={readOnly}
+            />
+          </InputWrapper>
+        </LabelAndInputContainer>
+
+        <AccessoryAndInputLabelWrapper>
+          <AccessoryLabel>
+            {accessoryLabel}
+          </AccessoryLabel>
+
           {inputLabel ? (
             <InputLabel>
-                <span>{inputLabel}</span>
+              <span>{inputLabel}</span>
             </InputLabel>
-            ) : null
-          }
-        </InputWrapper>
+          ) : null}
+        </AccessoryAndInputLabelWrapper>
       </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
   border: 1.5px solid #98a1c03d;
@@ -72,6 +83,11 @@ const Container = styled.div`
   }
 `;
 
+const LabelAndInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const Label = styled.label`
   display: flex;
   font-size: 14px;
@@ -81,10 +97,11 @@ const Label = styled.label`
 `;
 
 const InputWrapper = styled.div`
+  width: 100%;  
   position: relative;
   display: flex;
   justify-content: space-between;
-  width: 100%; 
+  align-items: stretch;
   margin-top: 8px;
 `;
 
@@ -93,8 +110,9 @@ interface StyledInputProps {
 }
 
 const StyledInput = styled.input<StyledInputProps>`
-  display: flex;
   width: 100%;
+  display: flex;
+  flex-grow: 1;
   border: 0;
   padding: 0;
   color: #FFFFFF;
@@ -126,11 +144,23 @@ const StyledInput = styled.input<StyledInputProps>`
   }
 `;
 
-const InputLabel = styled.div`
+const AccessoryAndInputLabelWrapper = styled.div`
   display: flex;
-  position: absolute;
-  right: 2px;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #CED4DA;
+  margin: 9px 0px 2px 0px;
+`;
+
+const AccessoryLabel = styled.div`
+  font-size: 14px;
+  text-align: right;
+  font-weight: 550;
+`;
+
+const InputLabel = styled.div`
   pointer-events: none;
   color: #9ca3af;
   font-size: 20px;
+  text-align: right;
 `;

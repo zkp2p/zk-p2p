@@ -199,6 +199,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
           publicSignals={publicSignals}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
+          isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
           handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         />
       </Body>

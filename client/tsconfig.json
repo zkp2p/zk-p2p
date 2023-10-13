@@ -4,6 +4,7 @@
     "module": "esnext",
     "esModuleInterop": true,
     "lib": [
+      "WebWorker",
       "dom",
       "dom.iterable",
       "esnext"
