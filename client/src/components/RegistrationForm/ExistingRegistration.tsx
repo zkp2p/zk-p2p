@@ -1,14 +1,15 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { CheckCircle } from 'react-feather'
+import { CheckCircle } from 'react-feather';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
-import { CustomConnectButton } from "../common/ConnectButton"
+import { CustomConnectButton } from "../common/ConnectButton";
 import { NumberedStep } from "../common/NumberedStep";
 import { ReadOnlyInput } from "../common/ReadOnlyInput";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
+import { RowBetween } from '../layouts/Row';
+import { ThemedText } from '../../theme/text';
+import { REGISTRATION_INSTRUCTIONS } from '@helpers/tooltips';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/useRegistration'
 
@@ -59,8 +60,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
             <Body>
               <NumberedInputContainer>
                 <NumberedStep>
-                  You must complete the registration in order to participate and will require any payment
-                  transaction receipt email from Venmo. Your ID is encrypted to conceal your identity.
+                  { REGISTRATION_INSTRUCTIONS }
                 </NumberedStep>
               </NumberedInputContainer>
               <ReadOnlyInput

@@ -13,7 +13,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
-import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { PROVING_TYPE_TOOLTIP, PROOF_FORM_REGISTRATION_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -159,6 +159,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
       <Body>
         <ProofGenerationForm
+          instructions={PROOF_FORM_REGISTRATION_INSTRUCTIONS}
           circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
           circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
           circuitInputs={"1"} // Arbitrary value, unused for registration

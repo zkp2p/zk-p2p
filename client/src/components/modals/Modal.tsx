@@ -200,7 +200,7 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 480px;
+  width: 472px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -210,8 +210,8 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 20;
-  gap: 2rem;
-  top: 24%;
+  gap: 1.3rem;
+  top: 22%;
   position: relative;
 `;
 

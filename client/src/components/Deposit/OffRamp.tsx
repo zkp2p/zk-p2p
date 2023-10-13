@@ -14,7 +14,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { RECEIVE_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
-import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { PROVING_TYPE_TOOLTIP, PROOF_FORM_RECEIVE_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -193,6 +193,7 @@ export const OffRamp: React.FC<OffRampProps> = ({
 
       <Body>
         <ProofGenerationForm
+          instructions={PROOF_FORM_RECEIVE_INSTRUCTIONS}
           circuitType={CircuitType.EMAIL_VENMO_RECEIVE}
           circuitRemoteFilePath={RECEIVE_KEY_FILE_NAME}
           circuitInputs={selectedIntentHash}

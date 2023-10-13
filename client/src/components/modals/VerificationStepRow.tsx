@@ -3,18 +3,22 @@ import styled from 'styled-components/macro'
 import { Download, Cpu, Shield, Check, Circle } from 'react-feather';
 
 import Spinner from "@components/common/Spinner";
+import {
+  PROOF_MODAL_DOWNLOAD_TITLE,
+  PROOF_MODAL_DOWNLOAD_SUBTITLE,
+  PROOF_MODAL_PROVE_TITLE,
+  PROOF_MODAL_PROVE_SUBTITLE_PRIVATE,
+  PROOF_MODAL_PROVE_SUBTITLE_FAST,
+  PROOF_MODAL_VERIFY_TITLE,
+  PROOF_MODAL_VERIFY_SUBTITLE,
+} from "@helpers/tooltips"
+import useProofGenSettings from "@hooks/useProofGenSettings"
 
 
 export const VerificationStepType = {
   DOWNLOAD: "download",
   PROVE: "prove",
   VERIFY: "verify",
-};
-
-export const VerificationTitles = {
-  DOWNLOAD: "Downloading Verification Tools",
-  PROVE: "Verifying Email Contents",
-  VERIFY: "Finalizing Verification",
 };
 
 export const VerificationState = {
@@ -35,6 +39,12 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   stepState
 }: VerificationStepRowProps) => {
   VerificationStepRow.displayName = "VerificationStepRow";
+
+  /*
+   * Context
+   */
+
+  const { isProvingTypeFast } = useProofGenSettings();
 
   /*
    * Helpers
@@ -69,11 +79,28 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   const getTitle = () => {
     switch (stepType) {
       case VerificationStepType.DOWNLOAD:
-        return VerificationTitles.DOWNLOAD;
+        return PROOF_MODAL_DOWNLOAD_TITLE;
       case VerificationStepType.PROVE:
-        return VerificationTitles.PROVE;
+        return PROOF_MODAL_PROVE_TITLE;
       case VerificationStepType.VERIFY:
-        return VerificationTitles.VERIFY;
+        return PROOF_MODAL_VERIFY_TITLE;
+      default:
+        return null;
+    }
+  }
+
+  const getSubTitle = () => {
+    switch (stepType) {
+      case VerificationStepType.DOWNLOAD:
+        return PROOF_MODAL_DOWNLOAD_SUBTITLE;
+      case VerificationStepType.PROVE:
+        if (isProvingTypeFast) {
+          return PROOF_MODAL_PROVE_SUBTITLE_FAST;
+        } else {
+          return PROOF_MODAL_PROVE_SUBTITLE_PRIVATE;
+        }
+      case VerificationStepType.VERIFY:
+        return PROOF_MODAL_VERIFY_SUBTITLE;
       default:
         return null;
     }
@@ -87,9 +114,14 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
     <Container>
       {getLeftIcon()}
 
-      <Label stepState={stepState}>
-        {getTitle()}&nbsp;.&nbsp;.&nbsp;.
-      </Label>
+      <TitleAndSubtitleContainer>
+        <Label stepState={stepState}>
+          {getTitle()}
+        </Label>
+        <Subtitle stepState={stepState}>
+          {getSubTitle()}
+        </Subtitle>
+      </TitleAndSubtitleContainer>
 
       <ActionsContainer>
         {getRightIcon()}
@@ -101,7 +133,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   padding: 1rem;
   gap: 1.25rem;
 `;
@@ -112,9 +144,21 @@ const ActionsContainer = styled.div`
   margin-left: auto;
 `;
 
+const TitleAndSubtitleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  gap: 4px;
+`;
+
 const Label = styled.span<{ stepState: string }>`
   color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
-  font-size: 17px;
+  font-size: 16px;
+`;
+
+const Subtitle = styled.span<{ stepState: string }>`
+  color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#ADB5BD')};
+  font-size: 12px;
 `;
 
 const IconBase = styled.div<{ stepState: string }>`

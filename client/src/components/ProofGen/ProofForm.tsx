@@ -26,6 +26,7 @@ import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
+  instructions: string;
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
   circuitInputs: string;
@@ -39,6 +40,7 @@ interface ProofGenerationFormProps {
 }
  
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
+  instructions,
   circuitType,
   circuitRemoteFilePath,
   circuitInputs,
@@ -292,8 +294,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       }
 
       <NumberedStep>
-        Open any Venmo transaction email and select 'Show original' to view the full contents. Download and drag
-        the .eml file into the box below or paste the contents directly.
+        {instructions}
       </NumberedStep>
 
       <EmailTitleRowAndTextAreaContainer>
