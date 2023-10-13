@@ -105,6 +105,7 @@ export const Modal: React.FC<ModalProps> = ({
     if (!isProvingTypeFast) {
       verificationStepRows.push(
         <VerificationStepRow
+          key={0}
           stepType={VerificationStepType.DOWNLOAD}
           stepState={downloadStepState}
         />
@@ -113,6 +114,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     verificationStepRows.push(
       <VerificationStepRow
+        key={1}
         stepType={VerificationStepType.PROVE}
         stepState={proveStepState}
       />
@@ -120,6 +122,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     verificationStepRows.push(
       <VerificationStepRow
+        key={2}
         stepType={VerificationStepType.VERIFY}
         stepState={verificationStepState}
       />
