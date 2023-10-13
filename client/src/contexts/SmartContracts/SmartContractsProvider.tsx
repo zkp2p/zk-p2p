@@ -37,6 +37,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
+    
     if (contractsForNetwork) {
       setRampAddress(contractsForNetwork.ramp as Address);
       setUsdcAddress(contractsForNetwork.fusdc as Address);
