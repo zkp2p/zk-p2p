@@ -24,8 +24,8 @@ import App from "./App";
 
 const { chains, publicClient } = configureChains(
   [
-    hardhat,
-    goerli
+    goerli,
+    hardhat
   ],
   [
     alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
