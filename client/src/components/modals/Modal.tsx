@@ -21,6 +21,7 @@ interface ModalProps {
   publicSignals: string;
   onBackClick: () => void
   status: ProofGenerationStatus;
+  buttonTitle: string;
   isSubmitProcessing: boolean;
   handleSubmitVerificationClick?: () => void;
 }
@@ -31,6 +32,7 @@ export const Modal: React.FC<ModalProps> = ({
   publicSignals,
   onBackClick,
   status,
+  buttonTitle,
   isSubmitProcessing,
   handleSubmitVerificationClick = () => {}
 }) => {
@@ -146,8 +148,8 @@ export const Modal: React.FC<ModalProps> = ({
 
           <LabeledSwitch
             switchChecked={shouldShowProofAndSignals}
-            checkedLabel={"Show"}
-            uncheckedLabel={"Hide"}
+            checkedLabel={"Hide"}
+            uncheckedLabel={"Show"}
             helperText={PROOF_TOOLTIP}
             onSwitchChange={(checked: boolean) => setShouldShowProofAndSignals(checked)}/>
         </TitleCenteredRow>

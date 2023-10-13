@@ -61,15 +61,15 @@ export const PROOF_MODAL_DOWNLOAD_SUBTITLE = `
 `;
 
 export const PROOF_MODAL_PROVE_TITLE = `
-  Verifying Payment
+  Validating Payment
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_PRIVATE = `
-  Private verification will take approximately 9 minutes
+  Private validation will take approximately 9 minutes
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_FAST = `
-  Fast verification will take approximately 20 seconds
+  Fast validation will take approximately 20 seconds
 `;
 
 export const PROOF_MODAL_VERIFY_TITLE = `
@@ -77,5 +77,5 @@ export const PROOF_MODAL_VERIFY_TITLE = `
 `;
 
 export const PROOF_MODAL_VERIFY_SUBTITLE = `
-  Constructing and validating transaction on chain
+  Constructing and verifying transaction on chain
 `;

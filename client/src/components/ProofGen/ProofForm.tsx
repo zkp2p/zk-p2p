@@ -249,6 +249,18 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     }
   };
 
+  const getModalCtaTitle = () => {
+    switch (circuitType) {
+      case (CircuitType.EMAIL_VENMO_REGISTRATION):
+        return 'Complete Registration';
+      
+      case (CircuitType.EMAIL_VENMO_RECEIVE):
+      case (CircuitType.EMAIL_VENMO_SEND):
+      default:
+        return 'Complete Ramp';
+    }
+  };
+
   /*
    * Components
    */
@@ -286,8 +298,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             title={"Verify Email"}
             proof={proof}
             publicSignals={publicSignals}
-            status={status}
             onBackClick={handleModalBackClicked}
+            status={status}
+            buttonTitle={getModalCtaTitle()}
             isSubmitProcessing={isSubmitProcessing}
             handleSubmitVerificationClick={handleSubmitVerificationClick} />
         ) 
