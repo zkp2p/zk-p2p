@@ -21,6 +21,7 @@ interface ModalProps {
   publicSignals: string;
   onBackClick: () => void
   status: ProofGenerationStatus;
+  isSubmitProcessing: boolean;
   handleSubmitVerificationClick?: () => void;
 }
 
@@ -30,6 +31,7 @@ export const Modal: React.FC<ModalProps> = ({
   publicSignals,
   onBackClick,
   status,
+  isSubmitProcessing,
   handleSubmitVerificationClick = () => {}
 }) => {
   /*
@@ -173,8 +175,8 @@ export const Modal: React.FC<ModalProps> = ({
         }
 
         <Button
-          disabled={isSubmitVerificationButtonDisabled}
-          loading={false}
+          disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
+          loading={isSubmitProcessing}
           onClick={handleSubmitVerificationClick}
           fullWidth={true}
         >
@@ -209,7 +211,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 2rem;
-  top: 25%;
+  top: 24%;
   position: relative;
 `;
 
@@ -226,5 +228,5 @@ const ProofAndSignalsContainer = styled.div`
   background: #eeeee;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 `;

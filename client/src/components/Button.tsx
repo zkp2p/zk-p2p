@@ -35,7 +35,7 @@ const BaseButton = styled.button<ButtonProps>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   background: #df2e2d;
-  box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
+  box-shadow: inset -3px -6px 4px rgba(0, 0, 0, 0.16);
   border-radius: 24px;
   padding: 8px ${({ fullWidth }) => (fullWidth ? '0' : '24px')};
   text-align: center;

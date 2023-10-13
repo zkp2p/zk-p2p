@@ -167,6 +167,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
           publicSignals={publicSignals}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
+          isSubmitProcessing={isSubmitRegistrationLoading || isSubmitRegistrationMining}
           handleSubmitVerificationClick={handleRegistrationSubmit}
         />
       </Body>

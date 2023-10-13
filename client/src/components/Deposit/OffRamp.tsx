@@ -201,6 +201,7 @@ export const OffRamp: React.FC<OffRampProps> = ({
           publicSignals={publicSignals}
           setProof={setProof}
           setPublicSignals={setPublicSignals}
+          isSubmitProcessing={isWriteCompleteOrderLoading || isSubmitOnRampWithConvenienceMining}
           handleSubmitVerificationClick={handleWriteCompleteOrderClick}
         />
       </Body>
