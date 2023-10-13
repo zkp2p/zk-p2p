@@ -10,6 +10,7 @@ import useAccount from '@hooks/useAccount'
 import SmartContractsContext from './SmartContractsContext'
 import { Abi } from './types'
 
+const DEFAULT_NETWORK = 'goerli'
 
 interface ProvidersProps {
   children: ReactNode;
@@ -35,22 +36,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    if (network) {
-      let contractsForNetwork = contractAddresses[network];
-
-      if (contractsForNetwork) {
-        setRampAddress(contractsForNetwork.ramp as Address);
-        setUsdcAddress(contractsForNetwork.fusdc as Address);
-        setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
-        setReceiveProcessorAddress(contractsForNetwork.receiveProcessor as Address);
-        setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
-      } else {
-        setRampAddress(null);
-        setUsdcAddress(null);
-        setSendProcessorAddress(null);
-        setReceiveProcessorAddress(null);
-        setRegistrationProcessorAddress(null);
-      }
+    const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
+    if (contractsForNetwork) {
+      setRampAddress(contractsForNetwork.ramp as Address);
+      setUsdcAddress(contractsForNetwork.fusdc as Address);
+      setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
+      setReceiveProcessorAddress(contractsForNetwork.receiveProcessor as Address);
+      setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
     } else {
       setRampAddress(null);
       setUsdcAddress(null);
