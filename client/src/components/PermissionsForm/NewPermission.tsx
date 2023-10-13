@@ -105,7 +105,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
 
         <Body>
           <NumberedStep>
-            Add a new user hash to your deny list. Restricted users are prohibited from submitting intents on your deposits.
+            Add a new user hash to your deny list to prevent them from submitting orders on your deposits.
           </NumberedStep>
           <SingleLineInput
             label="Venmo Hash"

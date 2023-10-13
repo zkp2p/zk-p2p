@@ -50,7 +50,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * State
    */
   const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
-  const [venmoId, setVenmoId] = useState<string>("645716473020416186");
+  const [venmoId, setVenmoId] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
   const [convenienceFeeInput, setConvenienceFeeInput] = useState<string>('');
@@ -349,7 +349,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             Create a new deposit by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
           </NumberedStep>
           <SingleLineInput
-            label="Vennmo ID"
+            label="Venmo ID"
             value={venmoId}
             placeholder={'215524379021315184'}
             error={venmoInputErrorString()}
