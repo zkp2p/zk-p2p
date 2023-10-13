@@ -38,7 +38,7 @@ export const STRING_PRESELECTOR = "<!-- recipient name -->";
 export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 export const ZERO_ADDRESS= "0x0000000000000000000000000000000000000000000000000000000000000000";
 export const CALLER_ACCOUNT = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-export const DEFAULT_NETWORK = "hardhat";
+export const DEFAULT_NETWORK = "goerli";
 
 
 // Proving key paths

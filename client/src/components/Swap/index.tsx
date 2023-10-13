@@ -251,7 +251,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   }
 
   const usdcBalanceLabel = useMemo(() => {
-    if (isLoggedIn && usdcBalance) {
+    if (isLoggedIn && usdcBalance !== null) {
       return `Balance: ${toUsdcString(usdcBalance)}`
     } else {
       return '';
