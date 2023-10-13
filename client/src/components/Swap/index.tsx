@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
+import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
 import {
   useContractWrite,
@@ -15,8 +15,9 @@ import { Button } from '../Button'
 import { CustomConnectButton } from "../common/ConnectButton"
 import { IndicativeQuote } from '../../contexts/Deposits/types'
 import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
-import { toBigInt } from '@helpers/units'
+import { toBigInt, toUsdcString } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
+import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from "@hooks/useRampState";
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -44,6 +45,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { usdcBalance } = useBalances();
   const { isRegistered } = useRegistration();
   const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash } = useOnRamperIntents();
   const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
@@ -248,6 +250,14 @@ const SwapModal: React.FC<SwapModalProps> = ({
     return !isNaN(value) && parseFloat(value) >= 0 && isValid;
   }
 
+  const usdcBalanceLabel = useMemo(() => {
+    if (isLoggedIn && usdcBalance) {
+      return `Balance: ${toUsdcString(usdcBalance)}`
+    } else {
+      return '';
+    }
+  }, [usdcBalance, isLoggedIn]);
+
   return (
     <Wrapper>
       <SwapModalContainer>
@@ -265,10 +275,11 @@ const SwapModal: React.FC<SwapModalProps> = ({
             onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
             inputLabel="USDC"
+            accessoryLabel={usdcBalanceLabel}
             placeholder="0"
           />
           <Input
-            label="You send (via Venmo)"
+            label="You send"
             name={`fiatToSend`}
             value={currentQuote.fiatToSend}
             onChange={event => handleInputChange(event, 'fiatToSend')}
@@ -276,6 +287,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             type="number"
             inputLabel="$"
             placeholder="0.00"
+            accessoryLabel="via Venmo"
             readOnly={true}
           />
           {!isLoggedIn ? (
