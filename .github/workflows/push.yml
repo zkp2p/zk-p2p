@@ -29,5 +29,8 @@ jobs:
       - name: Run coverage
         run: yarn coverage
         working-directory: ./contracts
+      - name: Check deploy
+        run: yarn deploy:localhost
+        working-directory: ./contracts
 
 
