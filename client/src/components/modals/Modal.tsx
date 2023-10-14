@@ -106,8 +106,8 @@ export const Modal: React.FC<ModalProps> = ({
       verificationStepRows.push(
         <VerificationStepRow
           key={0}
-          stepType={VerificationStepType.DOWNLOAD}
-          stepState={downloadStepState}
+          type={VerificationStepType.DOWNLOAD}
+          progress={downloadStepState}
         />
       );
     }
@@ -115,16 +115,16 @@ export const Modal: React.FC<ModalProps> = ({
     verificationStepRows.push(
       <VerificationStepRow
         key={1}
-        stepType={VerificationStepType.PROVE}
-        stepState={proveStepState}
+        type={VerificationStepType.PROVE}
+        progress={proveStepState}
       />
     );
 
     verificationStepRows.push(
       <VerificationStepRow
         key={2}
-        stepType={VerificationStepType.VERIFY}
-        stepState={verificationStepState}
+        type={VerificationStepType.VERIFY}
+        progress={verificationStepState}
       />
     );
     

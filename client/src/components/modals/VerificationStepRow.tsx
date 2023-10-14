@@ -28,15 +28,15 @@ export const VerificationState = {
 };
 
 interface VerificationStepRowProps {
-  stepType: string;
-  stepState: string;
+  type: string;
+  progress: string;
 }
 
 export type VerificationStepRowData = VerificationStepRowProps;
 
 export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
-  stepType,
-  stepState
+  type,
+  progress
 }: VerificationStepRowProps) => {
   VerificationStepRow.displayName = "VerificationStepRow";
 
@@ -51,33 +51,33 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
    */
 
   const getLeftIcon = () => {
-    switch (stepType) {
+    switch (type) {
       case VerificationStepType.DOWNLOAD:
-        return <StyledDownload stepState={stepState} />;
+        return <StyledDownload progress={progress} />;
       case VerificationStepType.PROVE:
-        return <StyledCpu stepState={stepState} />;
+        return <StyledCpu progress={progress} />;
       case VerificationStepType.VERIFY:
-        return <StyledShield stepState={stepState} />;
+        return <StyledShield progress={progress} />;
       default:
         return null;
     }
   };
 
   const getRightIcon = () => {
-    switch (stepState) {
+    switch (progress) {
       case VerificationState.DEFAULT:
-        return <StyledCircle stepState={stepState} />;
+        return <StyledCircle progress={progress} />;
       case VerificationState.LOADING:
         return <Spinner />;
       case VerificationState.COMPLETE:
-        return <StyledCheck stepState={stepState} />;
+        return <StyledCheck progress={progress} />;
       default:
         return null;
     }
   };
 
   const getTitle = () => {
-    switch (stepType) {
+    switch (type) {
       case VerificationStepType.DOWNLOAD:
         return PROOF_MODAL_DOWNLOAD_TITLE;
       case VerificationStepType.PROVE:
@@ -90,7 +90,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   }
 
   const getSubTitle = () => {
-    switch (stepType) {
+    switch (type) {
       case VerificationStepType.DOWNLOAD:
         return PROOF_MODAL_DOWNLOAD_SUBTITLE;
       case VerificationStepType.PROVE:
@@ -115,10 +115,11 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       {getLeftIcon()}
 
       <TitleAndSubtitleContainer>
-        <Label stepState={stepState}>
+        <Label progress={progress}>
           {getTitle()}
         </Label>
-        <Subtitle stepState={stepState}>
+
+        <Subtitle progress={progress}>
           {getSubTitle()}
         </Subtitle>
       </TitleAndSubtitleContainer>
@@ -151,26 +152,26 @@ const TitleAndSubtitleContainer = styled.div`
   gap: 4px;
 `;
 
-const Label = styled.span<{ stepState: string }>`
-  color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
+const Label = styled.span<{ progress: string }>`
+  color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
   font-size: 16px;
 `;
 
-const Subtitle = styled.span<{ stepState: string }>`
-  color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#ADB5BD')};
+const Subtitle = styled.span<{ progress: string }>`
+  color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#ADB5BD')};
   font-size: 12px;
 `;
 
-const IconBase = styled.div<{ stepState: string }>`
+const IconBase = styled.div<{ progress: string }>`
   width: 24px;
   height: 24px;
-  color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
+  color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
 `;
 
 const StyledDownload = styled(IconBase).attrs({ as: Download })``;
 const StyledCpu = styled(IconBase).attrs({ as: Cpu })``;
 const StyledShield = styled(IconBase).attrs({ as: Shield })``;
 const StyledCheck = styled(IconBase).attrs({ as: Check })`
-  color: ${props => (props.stepState === VerificationState.DEFAULT ? '#6C757D' : '#4BB543')};
+  color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#4BB543')};
 `;
 const StyledCircle = styled(IconBase).attrs({ as: Circle })``;

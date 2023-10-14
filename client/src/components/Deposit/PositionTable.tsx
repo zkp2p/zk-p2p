@@ -113,12 +113,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   const {
     data: submitWithdrawResult,
-    isLoading: isSubmitWithdrawLoading,
+    // isLoading: isSubmitWithdrawLoading,
     writeAsync: writeSubmitWithdrawAsync,
   } = useContractWrite(writeWithdrawConfig);
 
   const {
-    isLoading: isSubmitWithdrawMining
+    // isLoading: isSubmitWithdrawMining
   } = useWaitForTransaction({
     hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
     onSuccess(data) {
