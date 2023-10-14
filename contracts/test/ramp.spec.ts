@@ -765,6 +765,7 @@ describe("Ramp", () => {
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
 
+          subjectSignals[0] = currentTimestamp;
           subjectSignals[3] = BigNumber.from(intentHash);
         });
 
@@ -818,6 +819,16 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the email timestamp is before the intent was signaled", async () => {
+        beforeEach(async () => {
+          subjectSignals[0] = ONE;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent was not created before send");
+        });
+      });
+
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
           subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
@@ -865,9 +876,9 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(8).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(10).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
-        subjectSignals[1] = BigNumber.from(1);
+        subjectSignals[1] = currentTimestamp;
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
         subjectSignals[3] = BigNumber.from(intentHash);
 
@@ -937,6 +948,7 @@ describe("Ramp", () => {
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
 
+          subjectSignals[1] = currentTimestamp;
           subjectSignals[3] = BigNumber.from(intentHash);
         });
 
@@ -964,6 +976,16 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Payment was not enough");
+        });
+      });
+
+      describe("when the email timestamp is before the intent was signaled", async () => {
+        beforeEach(async () => {
+          subjectSignals[1] = ONE;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent was not created before send");
         });
       });
 

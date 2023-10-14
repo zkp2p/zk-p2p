@@ -34,7 +34,7 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         public
         override
         onlyRamp
-        returns(uint256 amount, bytes32 offRamperIdHash, bytes32 intentHash)
+        returns(uint256 amount, uint256 timestamp, bytes32 offRamperIdHash, bytes32 intentHash)
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
@@ -47,21 +47,24 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         // Signals [4:5] is the packed amount, multiply by 1e4 since venmo only gives us two decimals instead of 6
         amount = _parseSignalArray(_proof.signals, 4, 5).stringToUint256() * 1e4;
 
-        // Signals [5] is the packed offRamperIdHsdh
-        offRamperIdHash = bytes32(_proof.signals[5]);
+        // Signals [5:7] are the packed timestamp
+        timestamp = _parseSignalArray(_proof.signals, 5, 7).stringToUint256();
+
+        // Signals [8] is the packed offRamperIdHsdh
+        offRamperIdHash = bytes32(_proof.signals[7]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        bytes32 nullifier = bytes32(_proof.signals[6]);
+        bytes32 nullifier = bytes32(_proof.signals[8]);
         require(!isEmailNullified[nullifier], "Email has already been used");
         isEmailNullified[nullifier] = true;
 
-        // Signals [7] is intentHash
-        intentHash = bytes32(_proof.signals[7]);
+        // Signals [9] is intentHash
+        intentHash = bytes32(_proof.signals[9]);
     }
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[8] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[10] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
         uint256[] memory signalArray = new uint256[](_to - _from);
         for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
