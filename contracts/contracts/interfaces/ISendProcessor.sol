@@ -8,12 +8,12 @@ interface ISendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[8] signals;
+        uint256[10] signals;
     }
 
     function processProof(
         SendProof calldata _proof
     )
         external
-    returns(uint256, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32);
 }
