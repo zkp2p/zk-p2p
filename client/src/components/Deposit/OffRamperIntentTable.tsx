@@ -118,6 +118,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         <Table>
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
+              key={rowIndex}
               amountUSDToReceive={intentsRow.amountUSDToReceive}
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}

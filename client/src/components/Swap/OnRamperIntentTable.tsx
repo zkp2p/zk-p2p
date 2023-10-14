@@ -171,6 +171,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         <Table>
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
+              key={rowIndex}
               amountUSDCToReceive={intentsRow.amountUSDCToReceive}
               amountUSDToSend={intentsRow.amountUSDToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
