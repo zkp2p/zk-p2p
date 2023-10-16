@@ -233,7 +233,7 @@ template VenmoPayeeId (msg_bytes) {
         and[20][i].a <== states[i][17];
         and[20][i].b <== eq[22][i].out;
         states[i+1][18] <== and[20][i].out;
-        // .
+        // /
         eq[23][i] = IsEqual();
         eq[23][i].in[0] <== in[i];
         eq[23][i].in[1] <== 47;

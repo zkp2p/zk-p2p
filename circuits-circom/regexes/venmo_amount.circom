@@ -70,7 +70,7 @@ template VenmoAmountRegex (msg_bytes) {
         multi_or[2][i].in[0] <== and[1][i].out;
         multi_or[2][i].in[1] <== and[3][i].out;
         states[i+1][1] <== multi_or[2][i].out;
-        // \r
+        // \n
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 10;
@@ -86,7 +86,7 @@ template VenmoAmountRegex (msg_bytes) {
         and[5][i].a <== states[i][0];
         and[5][i].b <== eq[3][i].out;
         states[i+1][3] <== and[5][i].out;
-        // \n
+        // \r
         eq[4][i] = IsEqual();
         eq[4][i].in[0] <== in[i];
         eq[4][i].in[1] <== 13;
