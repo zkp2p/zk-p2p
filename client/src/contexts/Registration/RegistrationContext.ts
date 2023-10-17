@@ -4,7 +4,8 @@ import { createContext } from 'react'
 interface RegistrationValues {
   isRegistered: boolean;
   registrationHash: string | null;
-  registeredVenmoId: string | null;
+  extractedVenmoId: string | null;
+  setExtractedVenmoId: ((venmoId: string) => void) | null;
   refetchRampAccount: (() => void) | null;
   shouldFetchRegistration: boolean;
 }
@@ -12,7 +13,8 @@ interface RegistrationValues {
 const defaultValues: RegistrationValues = {
   isRegistered: false,
   registrationHash: null,
-  registeredVenmoId: null,
+  extractedVenmoId: null,
+  setExtractedVenmoId: null,
   refetchRampAccount: null,
   shouldFetchRegistration: false
 };

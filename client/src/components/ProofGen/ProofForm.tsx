@@ -21,9 +21,10 @@ import { Modal } from '@components/modals/Modal';
 import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
 import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
 import { downloadProofFiles } from "@helpers/zkp";
-import useProofGenSettings from '@hooks/useProofGenSettings';
-import useRemoteProofGen from '@hooks/useRemoteProofGen';
 import useLocalStorage from '@hooks/useLocalStorage';
+import useProofGenSettings from '@hooks/useProofGenSettings';
+import useRegistration from '@hooks/useRegistration';
+import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
@@ -63,12 +64,14 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     isInputModeDrag,
     setIsInputModeDrag,
   } = useProofGenSettings();
+  const { setExtractedVenmoId } = useRegistration();
   
   /*
    * State
    */
 
   const [emailFull, setEmailFull] = useState<string>("");
+
   const [emailHash, setEmailHash] = useState<string>("");
   const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${emailHash}_PROOF`, "");
   const [storedSignalsValue, setStoredSignalsValue] = useLocalStorage<string>(`${emailHash}_SIGNALS`, "");
@@ -148,6 +151,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         await generatePrivateProof();
       }
     }
+
+    const successfulRegistration = status === "done" && circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
+    if (successfulRegistration) {
+      extractAndRecordVenmoId(emailFull);
+    }
   };
 
   const handleModalBackClicked = () => {
@@ -186,6 +194,21 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       case (CircuitType.EMAIL_VENMO_SEND):
       default:
         return 'Complete Ramp';
+    }
+  };
+
+  const extractAndRecordVenmoId = (email: string) => {
+    let actorId: string | null = null;
+
+    const regex = /actor_id=3D(\d{17,})/;
+    const match = email.match(regex);
+
+    if (setExtractedVenmoId && match && match[1]) {
+        actorId = match[1];
+
+        setExtractedVenmoId(actorId);
+    } else {
+        console.log("No actor ID found.");
     }
   };
 
