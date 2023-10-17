@@ -15,6 +15,7 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
+  
   const storedProvingTypeSetting = localStorage.getItem('isProvingTypeRemote');
   const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   
@@ -29,6 +30,7 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   /*
    * Hooks
    */
+
   useEffect(() => {
     localStorage.setItem('isProvingTypeRemote', JSON.stringify(isProvingTypeRemote));
   }, [isProvingTypeRemote]);

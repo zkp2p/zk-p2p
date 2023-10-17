@@ -18,6 +18,7 @@ import { ZERO } from '@helpers/constants'
 import useBalances from '@hooks/useBalance'
 import useDeposits from '@hooks/useDeposits';
 import useRampState from '@hooks/useRampState'
+import useRegistration from '@hooks/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -45,6 +46,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()
   const { refetchDeposits } = useDeposits()
+  const { extractedVenmoId } = useRegistration();
 
   /*
    * State
@@ -198,6 +200,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     
   }, [depositAmountInput, usdcApprovalToRamp]);
 
+  useEffect(() => {
+    if (extractedVenmoId) {
+      setVenmoId(extractedVenmoId);
+    } else {
+      setVenmoId('');
+    }
+  }, [extractedVenmoId]);
+
   /*
    * Helpers
    */
@@ -208,9 +218,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     return ''
   }
 
-  function isValidInput(value) {
+  function isValidInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
-    return !isNaN(value) && parseFloat(value) >= 0 && isValid;
+    
+    return parseFloat(value) >= 0 && isValid;
   }
 
   const depositAmountInputErrorString = (): string => {

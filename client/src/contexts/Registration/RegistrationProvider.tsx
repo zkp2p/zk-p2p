@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useCallback, useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { esl, ZERO_ADDRESS } from '@helpers/constants'
@@ -25,13 +25,31 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const [registrationHash, setRegistrationHash] = useState<string | null>(null);
-  const [registeredVenmoId, setRegisteredVenmoId] = useState<string | null>(null);
+
+  const [extractedVenmoIdStorageKey, setExtractedVenmoIdStorageKey] = useState<string | null>(null);
+  const [extractedVenmoId, _setExtractedVenmoId] = useState<string | null>(() => {
+    if (extractedVenmoIdStorageKey) {
+      return localStorage.getItem(extractedVenmoIdStorageKey) || null;
+    }
+    return null;
+  });
 
   const [shouldFetchRegistration, setShouldFetchRegistration] = useState<boolean>(false);
 
   /*
-    Helpers
-  */
+   * Overridden Setters
+   */
+
+  const setExtractedVenmoId = useCallback((value: string | null) => {
+    if (extractedVenmoIdStorageKey) {
+      localStorage.setItem(extractedVenmoIdStorageKey, value || '');
+      _setExtractedVenmoId(value);
+    }
+  }, [extractedVenmoIdStorageKey]);
+
+  /*
+   * Helpers
+   */
 
   // The !! operator will convert any truthy value to true and any falsy value to false.
   const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
@@ -57,13 +75,6 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   })
 
   /*
-   * Additional Reads:
-   */
-
-  // mapping(address => AccountInfo) public accounts;
-  // mapping(bytes32 => bytes32) public venmoIdIntent;
-
-  /*
    * Hooks
    */
 
@@ -83,9 +94,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setShouldFetchRegistration(false);
 
       setRegistrationHash(null);
-      setRegisteredVenmoId(null);
+      setExtractedVenmoId(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, rampAddress, setExtractedVenmoId]);
 
   useEffect(() => {
     esl && console.log('rampAccountRaw_1');
@@ -105,12 +116,52 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     }
   }, [rampAccountRaw]);
 
+  useEffect(() => {
+    esl && console.log('extractedVenmoIdStorageKey_1');
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+
+    if (loggedInEthereumAddress) {
+      esl && console.log('extractedVenmoIdStorageKey_2');
+
+      setExtractedVenmoIdStorageKey(`extractedVenmoId_${loggedInEthereumAddress}`);
+    } else {
+      esl && console.log('extractedVenmoIdStorageKey_3');
+
+      setExtractedVenmoIdStorageKey(null);
+    }
+  }, [loggedInEthereumAddress]);
+
+  useEffect(() => {
+    esl && console.log('extractedVenmoId_1');
+    esl && console.log('checking extractedVenmoIdStorageKey: ', extractedVenmoIdStorageKey);
+
+    if (extractedVenmoIdStorageKey) {
+      esl && console.log('extractedVenmoId_2');
+
+      const storedValue = localStorage.getItem(extractedVenmoIdStorageKey);
+      if (storedValue !== null) {
+        _setExtractedVenmoId(storedValue);
+      } else {
+        _setExtractedVenmoId(null);
+      }
+    } else {
+      esl && console.log('extractedVenmoId_3');
+
+      _setExtractedVenmoId(null);
+    }
+  }, [extractedVenmoIdStorageKey]);
+
+  /*
+   * Provider
+   */
+
   return (
     <RegistrationContext.Provider
       value={{
         isRegistered,
         registrationHash,
-        registeredVenmoId,
+        extractedVenmoId,
+        setExtractedVenmoId,
         refetchRampAccount,
         shouldFetchRegistration,
       }}

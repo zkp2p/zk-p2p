@@ -20,7 +20,6 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/useRegistration';
 
 
-
 interface NewRegistrationProps {
   handleBackClick: () => void;
 }
@@ -33,10 +32,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    */
 
   const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
-  const {
-    rampAddress,
-    rampAbi
-  } = useSmartContracts();
+  const { rampAddress, rampAbi } = useSmartContracts();
   const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
