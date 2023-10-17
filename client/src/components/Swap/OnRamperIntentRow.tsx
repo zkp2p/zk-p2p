@@ -3,6 +3,7 @@ import styled from 'styled-components/macro'
 import { ChevronRight, Send } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface IntentRowProps {
@@ -109,8 +110,17 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       </IntentDetailsContainer>
 
       <ActionsContainer>
-        <StyledSend onClick={handleSendClick}/>
-        <StyledChevronRight onClick={handleCompleteOrderClick}/>
+        <AccessoryButton
+          onClick={handleSendClick}
+          height={36}
+          title={'Send'}
+          icon={'send'}/>
+
+        <AccessoryButton
+          onClick={handleCompleteOrderClick}
+          height={36}
+          title={'Complete'}
+          icon={'chevronRight'}/>
       </ActionsContainer>
     </Container>
   );
@@ -134,10 +144,10 @@ const IntentDetailsContainer = styled.div`
 const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   padding: 2rem 1.25rem 2rem 0rem;
-  flex-grow: 1;
+  gap: 12px;
 `;
 
 const AmountLabelsContainer = styled.div`
