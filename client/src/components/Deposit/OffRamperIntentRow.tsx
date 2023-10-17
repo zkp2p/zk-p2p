@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro'
-import { UserX, ChevronRight } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface IntentRowProps {
@@ -101,8 +101,16 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       </IntentDetailsContainer>
 
       <ActionsContainer>
-        <StyledChevronRight onClick={handleCompleteOrderClick}/>
-        <StyledUserX/>
+        <AccessoryButton
+          onClick={handleCompleteOrderClick}
+          height={36}
+          title={'Complete'}
+          icon={'chevronRight'}/>
+
+        <AccessoryButton
+          height={36}
+          title={'Block'}
+          icon={'userX'}/>
       </ActionsContainer>
     </Container>
   );
@@ -126,10 +134,10 @@ const IntentDetailsContainer = styled.div`
 const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  padding: 2rem 1.25rem 2rem 0rem;
-  flex-grow: 1;
+  padding: 2rem 1.5rem 2rem 0rem;
+  gap: 16px;
 `;
 
 const AmountLabelsContainer = styled.div`
@@ -152,24 +160,4 @@ const Label = styled.label`
 const Value = styled.label`
   font-size: 15px;
   color: #FFFFFF;
-`;
-
-const StyledUserX = styled(UserX)`
-  width: 20px;
-  height: 20px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
-  }
-`;
-
-const StyledChevronRight = styled(ChevronRight)`
-  width: 26px;
-  height: 26px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
-  }
 `;

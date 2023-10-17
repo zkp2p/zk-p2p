@@ -5,10 +5,10 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction
 } from 'wagmi'
-import { Trash2 } from 'react-feather';
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
+import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units'
 import { PRECISION, SECONDS_IN_DAY  } from '@helpers/constants'
 import useLiquidity from '@hooks/useLiquidity';
@@ -165,7 +165,11 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
             Current Order
           </ThemedText.LabelSmall>
 
-          <StyledTrash2 onClick={handleCancelClick}/>
+          <AccessoryButton
+            onClick={handleCancelClick}
+            height={36}
+            title={'Cancel'}
+            icon={'trash'}/>
         </IntentCountTitle>
         
         <Table>
@@ -209,7 +213,7 @@ const TitleAndTableContainer = styled.div`
 const IntentCountTitle = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem 1rem 1.5rem;
+  padding: 1rem 1.5rem 0.75rem 1.5rem;
   border-bottom: 1px solid #98a1c03d;
   align-items: center;
 `
@@ -229,15 +233,5 @@ const Table = styled.div`
 
   & > *:last-child {
     border-bottom: none;
-  }
-`;
-
-const StyledTrash2 = styled(Trash2)`
-  width: 18px;
-  height: 18px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
   }
 `;

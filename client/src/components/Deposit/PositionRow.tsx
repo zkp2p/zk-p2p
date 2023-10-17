@@ -1,8 +1,8 @@
 import React from "react";
 import styled from 'styled-components';
-import { LogOut } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface PositionRowProps {
@@ -65,7 +65,11 @@ export const PositionRow: React.FC<PositionRowProps> = ({
       </PositionDetailsContainer>
 
       <ActionsContainer>
-        <StyledLogOut onClick={handleWithdrawClick}/>
+        <AccessoryButton
+          onClick={handleWithdrawClick}
+          height={36}
+          title={'Withdraw'}
+          icon={'logout'}/>
       </ActionsContainer>
     </Container>
   );
@@ -146,14 +150,4 @@ const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
   margin-left: 4px;
-`;
-
-const StyledLogOut = styled(LogOut)`
-  width: 20px;
-  height: 20px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
-  }
 `;

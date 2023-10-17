@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro'
-import { ChevronRight, Send } from 'react-feather';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
@@ -146,8 +145,7 @@ const ActionsContainer = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 2rem 1.25rem 2rem 0rem;
-  gap: 12px;
+  padding: 1.5rem 1.5rem 1.65rem 0rem;
 `;
 
 const AmountLabelsContainer = styled.div`
@@ -170,24 +168,4 @@ const Label = styled.span`
 const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
-`;
-
-const StyledSend = styled(Send)`
-  width: 18px;
-  height: 18px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
-  }
-`;
-
-const StyledChevronRight = styled(ChevronRight)`
-  width: 26px;
-  height: 26px;
-  color: #6C757D;
-
-  &:hover {
-    color: #FFF;
-  }
 `;
