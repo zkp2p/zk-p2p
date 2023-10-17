@@ -136,8 +136,7 @@ const ActionsContainer = styled.div`
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 2rem 1.5rem 2rem 0rem;
-  gap: 16px;
+  padding: 1.5rem 1.5rem 1.65rem 0rem;
 `;
 
 const AmountLabelsContainer = styled.div`
