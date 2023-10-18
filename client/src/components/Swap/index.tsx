@@ -7,14 +7,14 @@ import {
 } from 'wagmi'
 import { useNavigate } from 'react-router-dom';
 
-import { Input } from "./Input";
-import { AutoColumn } from '../layouts/Column'
+import { Input } from "@components/Swap/Input";
+import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable'
+import { AutoColumn } from '@components/layouts/Column'
+import { Button } from '@components/Button'
+import { CustomConnectButton } from "@components/common/ConnectButton"
 import { ThemedText } from '../../theme/text'
-import { OnRamperIntentTable } from './OnRamperIntentTable'
-import { Button } from '../Button'
-import { CustomConnectButton } from "../common/ConnectButton"
 import { IndicativeQuote } from '../../contexts/Deposits/types'
-import { DEPOSIT_REFETCH_INTERVAL, ZERO } from "@helpers/constants";
+import { DEPOSIT_REFETCH_INTERVAL, VENMO_MAX_TRANSFER_SIZE, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
@@ -30,6 +30,14 @@ export type SwapQuote = {
   fiatToSend: string;
   depositId: bigint;
 };
+
+type QuoteStatus =
+  | 'default'
+  | 'exceeds-order-count'
+  | 'exceeds-max-size'
+  | 'insufficient-liquidity'
+  | 'blocked-by-depositor'
+  | 'success';
 
 interface SwapModalProps {
   onIntentTableRowClick?: () => void;
@@ -56,6 +64,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
    * State
    */
 
+  const [quoteStatus, setQuoteStatus] = useState<QuoteStatus>('default');
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
@@ -68,6 +77,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     if (field === 'requestedUSDC') {
       const value = event.target.value;
       const quoteCopy = {...currentQuote}
+      setShouldConfigureSignalIntentWrite(false);
 
       if (value === "") {
         quoteCopy[field] = '';
@@ -162,7 +172,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchIntentHash]);
+  }, [shouldFetchIntentHash, refetchIntentHash]);
   
   useEffect(() => {
     if (shouldFetchDeposits) {
@@ -172,7 +182,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchDeposits]);
+  }, [shouldFetchDeposits, refetchDeposits]);
 
   useEffect(() => {
     if (shouldFetchRampState) {
@@ -182,7 +192,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchRampState]);
+  }, [shouldFetchRampState, refetchDepositCounter]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
@@ -206,20 +216,34 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
           if (doesNotHaveOpenIntent) {
-            setShouldConfigureSignalIntentWrite(true);  
+            if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
+              setQuoteStatus('exceeds-max-size');
+
+              setShouldConfigureSignalIntentWrite(false);
+            } else {
+              setQuoteStatus('success');
+
+              setShouldConfigureSignalIntentWrite(true);
+            }
           } else {
+            setQuoteStatus('exceeds-order-count');
+
             setShouldConfigureSignalIntentWrite(false);
           }
         } else {
+          setQuoteStatus('insufficient-liquidity');
+
+          setShouldConfigureSignalIntentWrite(false);
+
           setCurrentQuote(prevState => ({
             ...prevState,
             fiatToSend: '',
             depositId: ZERO
           }));
-
-          setShouldConfigureSignalIntentWrite(false);
         }
       } else {
+        setQuoteStatus('default');
+
         setShouldConfigureSignalIntentWrite(false);
 
         setCurrentQuote(prevState => ({
@@ -231,7 +255,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     };
   
     fetchBestDepositForAmount();
-  }, [currentQuote.requestedUSDC, getBestDepositForAmount]);
+  }, [currentQuote.requestedUSDC, getBestDepositForAmount, currentIntentHash]);
 
   /* 
    * Handlers
@@ -257,6 +281,30 @@ const SwapModal: React.FC<SwapModalProps> = ({
       return '';
     }
   }, [usdcBalance, isLoggedIn]);
+
+  const getButtonText = () => {
+    switch (quoteStatus) {
+      case 'exceeds-order-count':
+        return 'One open order allowed';
+
+      case 'exceeds-max-size':
+        return 'Exceeded USD transfer limit of 2,000';
+
+      case 'insufficient-liquidity':
+        return 'Insufficient liquidity';
+
+      case 'default':
+        return 'Input USDC amount'
+
+      case 'success':
+      default:
+        return 'Start Order';
+    }
+  }
+
+  /*
+   * Component
+   */
 
   return (
     <Wrapper>
@@ -302,7 +350,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             </Button>
           ) : (
             <CTAButton
-              disabled={currentQuote.depositId === ZERO && currentQuote.fiatToSend === ''}
+              disabled={quoteStatus !== 'success'}
               loading={isSubmitIntentLoading || isSubmitIntentMining}
               onClick={async () => {
                 try {
@@ -312,7 +360,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
                 }
               }}
             >
-              Start Order
+              {getButtonText()}
             </CTAButton>
           )}
         </MainContentWrapper>

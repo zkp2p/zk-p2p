@@ -76,24 +76,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${emailHash}_PROOF`, "");
   const [storedSignalsValue, setStoredSignalsValue] = useLocalStorage<string>(`${emailHash}_SIGNALS`, "");
 
-  const [status, setStatus] = useState<ProofGenerationStatus>("not-started");
-
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
-
-  const [stopwatch, setStopwatch] = useState<Record<string, number>>({
-    startedDownloading: 0,
-    finishedDownloading: 0,
-    startedProving: 0,
-    finishedProving: 0,
-  });
-
-  const recordTimeForActivity = (activity: string) => {
-    setStopwatch((prev) => ({
-      ...prev,
-      [activity]: Date.now(),
-    }));
-  };
-
+  
+  const [status, setStatus] = useState<ProofGenerationStatus>("not-started");
   /*
    * Hooks
    */
@@ -143,6 +128,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     if (storedProofValue && storedSignalsValue) {
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
+
       setStatus("done");
     } else {
       if (isProvingTypeFast) {
@@ -225,13 +211,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const generateFastProof = async () => {
     setStatus("generating-proof");
 
-    console.time("zk-gen");
-    recordTimeForActivity("startedProving");
-
+    console.time("remote-proof-gen");
     await remoteGenerateProof();  
-    
-    console.timeEnd("zk-gen");
-    recordTimeForActivity("finishedProving");
+    console.timeEnd("remote-proof-gen");
   }
 
   const processRemoteProofGenerationResponse = (response: any) => {
@@ -240,7 +222,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setAndStoreProvingState(response.proof, response.public_values)
 
     setStatus("done");
-    console.log(stopwatch);
   }
 
   const generatePrivateProof = async () => {
@@ -254,7 +235,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     }
 
     setStatus("downloading-proof-files");
-    await downloadingProvingKeys();
+    await downloadProvingKeys();
 
     setStatus("generating-proof");
     const { proof, publicSignals } = await generateProofWithInputs(input);
@@ -268,7 +249,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setAndStoreProvingState(stringifiedProof, stringifiedSignals);
 
     setStatus("done");
-    console.log(stopwatch);
   }
 
   const generateCircuitInputs = async () => {
@@ -297,28 +277,21 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     return input;
   }
 
-  const downloadingProvingKeys = async () => {
-    console.time("zk-dl");
-
-    recordTimeForActivity("startedDownloading");
-
+  const downloadProvingKeys = async () => {
+    console.time("download-keys");
     await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {});
-
-    console.timeEnd("zk-dl");
-    recordTimeForActivity("finishedDownloading");
+    console.timeEnd("download-keys");
   }
 
   const generateProofWithInputs = async (input: ICircuitInputs) => {
-    console.time("zk-gen");
-    recordTimeForActivity("startedProving");
+    console.time("client-proof-gen");
 
     // Create worker and run async
     const worker = new Worker('./ProvingWorker', { name: 'runGenerateProofWorker', type: 'module' })
     const { generateProof } = wrap<import('./ProvingWorker').RunGenerateProofWorker>(worker)
     const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath);
 
-    console.timeEnd("zk-gen");
-    recordTimeForActivity("finishedProving");
+    console.timeEnd("client-proof-gen");
 
     return { proof, publicSignals }
   }

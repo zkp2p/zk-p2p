@@ -24,7 +24,8 @@ export const Button: React.FC<ButtonProps> = ({
   <BaseButton
     fullWidth={fullWidth}
     height={height}
-    disabled={disabled || loading}
+    disabled={disabled}
+    loading={loading}
     onClick={onClick}
   >
     {loading ? <Spinner /> : children}
@@ -61,17 +62,15 @@ const BaseButton = styled.button<ButtonProps>`
     disabled && css`
       opacity: 0.5;
       cursor: not-allowed;
-      &:hover, &:active {
-        background: #df2e2d; // Reset hover and active states for disabled buttons
-        box-shadow: inset 0px -6px 0px rgba(0, 0, 0, 0.16);
-      }
+      color: #6C757D;
+      background: #131A2A;
     `
   }
 
   ${({ loading }) => 
     loading && css`
       cursor: wait;
-      background: #dedede;
+      background: #df2e2d;
     `
   }
 `;
