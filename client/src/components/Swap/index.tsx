@@ -77,6 +77,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     if (field === 'requestedUSDC') {
       const value = event.target.value;
       const quoteCopy = {...currentQuote}
+      setShouldConfigureSignalIntentWrite(false);
 
       if (value === "") {
         quoteCopy[field] = '';
