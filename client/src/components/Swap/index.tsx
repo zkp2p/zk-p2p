@@ -288,7 +288,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
         return 'One open order allowed';
 
       case 'exceeds-max-size':
-        return 'Max transfer exceeded (2000)';
+        return 'Exceeded USD transfer limit of 2,000';
 
       case 'insufficient-liquidity':
         return 'Insufficient liquidity';
