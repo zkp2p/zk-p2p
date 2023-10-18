@@ -64,7 +64,7 @@ Main circuit that offramper generates a proof of Venmo payment received email
 Main circuit that onramper generates a proof of payment if offramper fails to generate proof above
 
 1. Verifies the DKIM signature (RSA, SHA256)
-2. Extracts payee ID and amount for the Venmo transaction
+2. Extracts payee ID, time of payment and amount for the Venmo transaction
 3. Extract from email
 4. Houses nullifier to prevent replay attacks
 5. Contains other order information to tie a proof to an order ID to prevent frontrunning
@@ -73,6 +73,7 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 | ------------------ | ---------------------------------------------------------------- |
 | Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body     |
 | Amount Regex       | Extracts $ amount sent from from venmo payment sent email header |
+| Timestamp Regex    | Extracts timestamp from venmo payment sent email header in order to ensure that email payment must be after on-chain intent timestamp |
 | From Email Regex | Extracts `from` email in venmo payment received email header to ensure that it is sent from venmo@venmo.com and not another Venmo email |
 
 ### Venmo Registration
