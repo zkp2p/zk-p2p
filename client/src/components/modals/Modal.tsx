@@ -4,8 +4,8 @@ import { ArrowLeft } from 'react-feather';
 
 import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { Overlay } from '@components/modals/Overlay'
-import { TitleCenteredRow } from '@components/layouts/Row'
+import { Overlay } from '@components/modals/Overlay';
+import { TitleCenteredRow } from '@components/layouts/Row';
 import { PROOF_TOOLTIP } from "@helpers/tooltips";
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import { ProofGenerationStatus } from  "../ProofGen/types";

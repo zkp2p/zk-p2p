@@ -12,6 +12,8 @@ import { Swap } from "./pages/Swap";
 import { Deposit } from "./pages/Deposit";
 import { TopNav } from "@components/layouts/TopNav";
 import { BottomNav } from "@components/layouts/BottomNav";
+import { MobileLandingPage } from "@components/MobileLandingPage";
+import { useDevice } from "@hooks/useDevice";
 
 import AccountProvider from "./contexts/Account/AccountProvider";
 import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
@@ -39,30 +41,36 @@ const RedirectToSwap = () => {
 };
 
 const App = () => {
-  return (
-    <Router>
-      <Providers>
-        <div className="app-container">
-          <TopNav />
+  const { isMobile } = useDevice();
 
-          <div className="app-content">
-            <Routes>
-              <Route path="/" element={<RedirectToSwap />} />
-              <Route path="/swap" element={<Swap />} />
-              <Route path="/deposit" element={<Deposit />} />
-              <Route path="/register" element={<Registration />} />
-              <Route path="/permissions" element={<Permissions />} />
-              <Route element={<>Not found</>} />
-            </Routes>
+  if (isMobile()) {
+    return <MobileLandingPage />;
+  } else {
+    return (
+      <Router>
+        <Providers>
+          <div className="app-container">
+            <TopNav />
+  
+            <div className="app-content">
+              <Routes>
+                <Route path="/" element={<RedirectToSwap />} />
+                <Route path="/swap" element={<Swap />} />
+                <Route path="/deposit" element={<Deposit />} />
+                <Route path="/register" element={<Registration />} />
+                <Route path="/permissions" element={<Permissions />} />
+                <Route element={<>Not found</>} />
+              </Routes>
+            </div>
+  
+            <div className="app-footer">
+              <BottomNav />
+            </div>
           </div>
-
-          <div className="app-footer">
-            <BottomNav />
-          </div>
-        </div>
-      </Providers>
-    </Router>
-  );
+        </Providers>
+      </Router>
+    );
+  }
 };
 
 interface ProvidersProps {
