@@ -285,7 +285,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const getButtonText = () => {
     switch (quoteStatus) {
       case 'exceeds-order-count':
-        return 'One open order allowed';
+        return 'Max one open order';
 
       case 'exceeds-max-size':
         return 'Exceeded USD transfer limit of 2,000';

@@ -1,3 +1,5 @@
+import { Address } from 'wagmi';
+
 import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
@@ -7,7 +9,7 @@ import { PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
 
 
-export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
+export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
   const sortedDeposits = deposits.sort((a, b) => {
     // Sort by ascending order of conversion rate
     if (a.deposit.conversionRate > b.deposit.conversionRate) {
@@ -65,10 +67,6 @@ export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, de
   } as IndicativeQuote;
 };
 
-export const pruneDeposits = (depositIds: number[], deposits: DepositWithAvailableLiquidity[]): number[] => {
-  /*
-    TODO: Fill me out, currently returning no deposit ids to prune. This means that all deposits are being re-fetched continuously
-  */
-
-  return [];
+export const pruneDeposits = (deposits: DepositWithAvailableLiquidity[], userAddress: Address): DepositWithAvailableLiquidity[] => {
+  return deposits.filter(deposit => deposit.deposit.depositor !== userAddress);
 };

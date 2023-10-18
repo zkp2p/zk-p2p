@@ -17,11 +17,13 @@ import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
+  pruneDeposits,
  } from './helper'
 import { esl, CALLER_ACCOUNT } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
+import useAccount from '@hooks/useAccount'
 
 import LiquidityContext from './LiquidityContext'
 
@@ -37,6 +39,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const { rampAddress, rampAbi } = useSmartContracts()
   const { depositCounter } = useRampState();
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State
@@ -156,11 +159,14 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     esl && console.log('depositStore_1');
     esl && console.log('checking deposits: ', deposits);
     esl && console.log('checking depositIdsToFetch: ', depositIdsToFetch);
+    esl && console.log('loggedInEthereumAddress: ', loggedInEthereumAddress);
 
-    if (deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
+    if (loggedInEthereumAddress && deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
       esl && console.log('depositStore_2');
 
-      const newStore = createDepositsStore(depositIdsToFetch, deposits);
+      const prunedDeposits = pruneDeposits(deposits, loggedInEthereumAddress);
+
+      const newStore = createDepositsStore(prunedDeposits);
 
       setDepositStore(newStore);
     } else {
@@ -168,7 +174,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       setDepositStore(null);
     }
-  }, [deposits, depositIdsToFetch]);
+  }, [deposits, depositIdsToFetch, loggedInEthereumAddress]);
 
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
     if (depositStore) {

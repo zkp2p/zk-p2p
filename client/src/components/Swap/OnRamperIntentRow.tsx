@@ -54,7 +54,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         const minutes = (timeLeft / 60n).toString();
         const seconds = (timeLeft % 60n).toString();
 
-        setTimeRemainingLabel(`${minutes.padStart(2, '0')} minutes ${seconds.padStart(2, '0')} seconds`);
+        setTimeRemainingLabel(`${minutes.padStart(2, '0')} m ${seconds.padStart(2, '0')} s`);
       } else {
         setTimeRemainingLabel('Open');
 
