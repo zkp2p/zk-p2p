@@ -8,13 +8,15 @@ import { toBigInt, toUsdString } from "@helpers/units";
 
 
 export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
-  const zippedDeposits = depositIds.map((id, index) => ({
-    depositId: id,
-    deposit: deposits[index].deposit,
-    availableLiquidity: deposits[index].availableLiquidity
-  }));
-  
-  const sortedDeposits = zippedDeposits.sort((a, b) => {
+  const sortedDeposits = deposits.sort((a, b) => {
+    // Sort by ascending order of conversion rate
+    if (a.deposit.conversionRate > b.deposit.conversionRate) {
+      return -1;
+    }
+    if (a.deposit.conversionRate < b.deposit.conversionRate) {
+      return 1;
+    }
+    
     // Sort by descending order of remaining available liquidity
     if (b.availableLiquidity > a.availableLiquidity) {
       return 1;
@@ -23,19 +25,11 @@ export const createDepositsStore = (depositIds: bigint[], deposits: DepositWithA
       return -1;
     }
 
-    // Sort by ascending order of conversion rate
-    if (a.deposit.conversionRate > b.deposit.conversionRate) {
-      return -1;
-    }
-    if (a.deposit.conversionRate < b.deposit.conversionRate) {
-      return 1;
-    }
-
-    // Sort by ascending order of convenience fee
-    if (a.deposit.convenienceFee < b.deposit.convenienceFee) {
-      return -1;
-    }
+    // Sort by descending order of convenience fee
     if (a.deposit.convenienceFee > b.deposit.convenienceFee) {
+      return -1;
+    }
+    if (a.deposit.convenienceFee < b.deposit.convenienceFee) {
       return 1;
     }
 
@@ -53,10 +47,8 @@ export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, de
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 
   for (const storedDeposit of depositStore) {
-    const convenienceFee = storedDeposit.deposit.convenienceFee;
-    const availableLiquidityMinusFee = storedDeposit.availableLiquidity - convenienceFee;
 
-    if (availableLiquidityMinusFee >= requestedAmountBI) {
+    if (storedDeposit.availableLiquidity >= requestedAmountBI) {
       const conversionRate = storedDeposit.deposit.conversionRate;
       const usdToSend = calculateUsdFromRequestedUSDC(requestedAmountBI, conversionRate);
       const usdAmountToSend = toUsdString(usdToSend);

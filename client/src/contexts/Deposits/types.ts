@@ -37,6 +37,7 @@ export interface IndicativeQuote {
   depositId?: bigint;
   usdAmountToSend?: string;
   error?: string;
+  maxUSDCAmountAvailable?: string;
 }
 
 // struct Intent {
