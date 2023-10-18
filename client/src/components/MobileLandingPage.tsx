@@ -25,9 +25,9 @@ export const MobileLandingPage: React.FC = () => {
       </Logo>
 
       <ModalContainer>
-        <ThemedText.HeadlineMedium style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+        <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Sorry!
-        </ThemedText.HeadlineMedium>
+        </ThemedText.HeadlineSmall>
 
         <ThemedText.SubHeader style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           ZKP2P is not yet optimized for mobile devices. Please use a desktop for the best experience and join our Telegram for updates on mobile support.
@@ -45,16 +45,17 @@ export const MobileLandingPage: React.FC = () => {
 };
 
 const Container = styled.div`
-  height: calc(100vh - 76px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 32px;
+  position: relative;
+  overflow: hidden;
 `;
 
 const ModalContainer = styled.div`
-  width: 50%;
+  width: 65%;
   max-width: 360px;
   display: flex;
   flex-direction: column;
@@ -65,11 +66,14 @@ const ModalContainer = styled.div`
   align-items: center;
   gap: 1.5rem;
   justify-content: center;
-  margin-top: auto;
-  margin-bottom: auto;
 `;
 
 const Logo = styled.div`
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+
   img {
     width: 44px;
     height: 44px;
