@@ -654,7 +654,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#onRampWithConvenience", async () => {
+    describe("#onRampWithReceiveEmail", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
       let subjectC: [BigNumber, BigNumber];
@@ -692,7 +692,7 @@ describe("Ramp", () => {
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).onRampWithConvenience(subjectA, subjectB, subjectC, subjectSignals);
+        return ramp.connect(subjectCaller.wallet).onRampWithReceiveEmail(subjectA, subjectB, subjectC, subjectSignals);
       }
 
       it("should transfer the usdc correctly to all parties", async () => {

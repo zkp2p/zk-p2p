@@ -315,7 +315,7 @@ contract Ramp is Ownable {
      * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
      *                  nullifier, intentHash
      */
-    function onRampWithConvenience(
+    function onRampWithReceiveEmail(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
@@ -326,7 +326,7 @@ contract Ramp is Ownable {
         (
             Intent memory intent,
             bytes32 intentHash
-        ) = _verifyOnRampWithConvenienceProof(_a, _b, _c, _signals);
+        ) = _verifyOnRampWithReceiveEmailProof(_a, _b, _c, _signals);
 
         Deposit storage deposit = deposits[intent.deposit];
 
@@ -638,7 +638,7 @@ contract Ramp is Ownable {
      * Additionally, we validate that the onRamperIdHash matches the one from the specified intent and indicate if the 
      * convenience reward should be distributed.
      */
-    function _verifyOnRampWithConvenienceProof(
+    function _verifyOnRampWithReceiveEmailProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
