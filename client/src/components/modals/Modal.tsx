@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
 
 import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
@@ -23,7 +24,9 @@ interface ModalProps {
   status: ProofGenerationStatus;
   buttonTitle: string;
   isSubmitProcessing: boolean;
+  isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
+  setStatus?: (status: ProofGenerationStatus) => void;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -34,8 +37,12 @@ export const Modal: React.FC<ModalProps> = ({
   status,
   buttonTitle,
   isSubmitProcessing,
+  isSubmitSuccessful,
+  setStatus,
   handleSubmitVerificationClick = () => {}
 }) => {
+  const navigate = useNavigate();
+
   /*
    * Context
    */
@@ -48,6 +55,8 @@ export const Modal: React.FC<ModalProps> = ({
 
   const [shouldShowProofAndSignals, setShouldShowProofAndSignals] = useState<boolean>(false);
 
+  const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
+
   /*
    * Handlers
    */
@@ -57,12 +66,61 @@ export const Modal: React.FC<ModalProps> = ({
   }
 
   /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (isSubmitProcessing && setStatus) {
+      setStatus("transaction-mining");
+    }
+  }, [isSubmitProcessing, setStatus]);
+
+  useEffect(() => {
+    if (isSubmitSuccessful && setStatus) {
+      setStatus("done");
+    }
+  }, [isSubmitSuccessful, setStatus])
+
+  useEffect(() => {
+    switch (status) {
+      case "transaction-configured":
+        setCtaButtonTitle(buttonTitle);
+        break;
+        
+      case "done":
+        setCtaButtonTitle("Go to Swap");
+        break;
+        
+      default:
+        setCtaButtonTitle(buttonTitle);
+        break;
+    }
+  }, [status, buttonTitle]);
+
+  /*
    * Helpers
    */
 
   const isSubmitVerificationButtonDisabled = useMemo(() => {
-    return status !== "done";
+    switch (status) {
+      case "transaction-configured":
+      case "done":
+        return false;
+        
+      default:
+        return true;
+    }
   }, [status]);
+
+  const getButtonHandler = () => {
+    switch (status) {
+      case "done":
+        return navigate('/swap');
+
+      default:
+        return handleSubmitVerificationClick();
+    }
+  };
 
   /*
    * Component
@@ -74,6 +132,7 @@ export const Modal: React.FC<ModalProps> = ({
     let downloadStepState = VerificationState.DEFAULT;
     let proveStepState = VerificationState.DEFAULT; 
     let verificationStepState = VerificationState.DEFAULT;
+    let submitStepState = VerificationState.DEFAULT;
     
     switch (status) {
       case "not-started":
@@ -93,10 +152,24 @@ export const Modal: React.FC<ModalProps> = ({
         verificationStepState = VerificationState.LOADING;
         break;
 
+      case "transaction-configured":
+        downloadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.COMPLETE;
+        verificationStepState = VerificationState.COMPLETE;
+        break;
+
+      case "transaction-mining":
+        downloadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.COMPLETE;
+        verificationStepState = VerificationState.COMPLETE;
+        submitStepState = VerificationState.LOADING;
+        break;
+
       case "done":
         downloadStepState = VerificationState.COMPLETE;
         proveStepState = VerificationState.COMPLETE;
         verificationStepState = VerificationState.COMPLETE;
+        submitStepState = VerificationState.COMPLETE;
         break;
     }
 
@@ -125,6 +198,14 @@ export const Modal: React.FC<ModalProps> = ({
         key={2}
         type={VerificationStepType.VERIFY}
         progress={verificationStepState}
+      />
+    );
+
+    verificationStepRows.push(
+      <VerificationStepRow
+        key={3}
+        type={VerificationStepType.SUBMIT}
+        progress={submitStepState}
       />
     );
     
@@ -182,10 +263,10 @@ export const Modal: React.FC<ModalProps> = ({
         <Button
           disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
           loading={isSubmitProcessing}
-          onClick={handleSubmitVerificationClick}
+          onClick={getButtonHandler}
           fullWidth={true}
         >
-          Complete Ramp
+          {ctaButtonTitle}
         </Button>
       </ModalContainer>
     </ModalAndOverlayContainer>

@@ -4,6 +4,8 @@ export type ProofGenerationStatus =
   | "downloading-proof-files"
   | "generating-proof"
   | "verifying-proof"
+  | "transaction-configured"
+  | "transaction-mining"
   | "error-bad-input"
   | "error-failed-to-download"
   | "error-failed-to-prove"

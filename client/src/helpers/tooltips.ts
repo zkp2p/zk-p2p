@@ -69,13 +69,21 @@ export const PROOF_MODAL_PROVE_SUBTITLE_PRIVATE = `
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_FAST = `
-  Fast validation will take approximately 20 seconds
+  Fast validation will take approximately 30 seconds
 `;
 
 export const PROOF_MODAL_VERIFY_TITLE = `
-  Finalizing Proof Verification
+  Local Proof Verification
 `;
 
 export const PROOF_MODAL_VERIFY_SUBTITLE = `
-  Constructing and verifying transaction on chain
+  Constructing and verifying transaction
+`;
+
+export const PROOF_MODAL_SUBMIT_TITLE = `
+  Complete Verification
+`;
+
+export const PROOF_MODAL_SUBMIT_SUBTITLE = `
+  Submit on chain to complete transaction
 `;

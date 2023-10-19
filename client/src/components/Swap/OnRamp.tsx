@@ -105,7 +105,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useContractWrite(writeSubmitOnRampConfig);
 
   const {
-    isLoading: isSubmitOnRampMining
+    isLoading: isSubmitOnRampMining,
+    isSuccess: isSubmitOnRampSuccessful
   } = useWaitForTransaction({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
@@ -201,6 +202,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
           setProof={setProof}
           setPublicSignals={setPublicSignals}
           isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
+          isSubmitSuccessful={isSubmitOnRampSuccessful}
           handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         />
       </Body>
