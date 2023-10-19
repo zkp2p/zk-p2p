@@ -12,10 +12,6 @@ const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d168326389
 
 const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 
-const CONVENIENCE_TIME_PERIOD = {
-  "localhost": BigNumber.from(60),
-  "goerli": BigNumber.from(60),
-};
 const MIN_DEPOSIT_AMOUNT = {
   "localhost": usdc(20),
   "goerli": usdc(20),
@@ -57,8 +53,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcAddress,
       poseidon.address,
-      MIN_DEPOSIT_AMOUNT[network],
-      CONVENIENCE_TIME_PERIOD[network]
+      MIN_DEPOSIT_AMOUNT[network]
     ],
   });
   console.log("Ramp deployed...");
