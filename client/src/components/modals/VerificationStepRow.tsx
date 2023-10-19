@@ -1,6 +1,6 @@
 import React from "react";
 import styled from 'styled-components/macro'
-import { Download, Cpu, Shield, Check, Circle } from 'react-feather';
+import { Download, Cpu, Check, Circle, Shield, Play } from 'react-feather';
 
 import Spinner from "@components/common/Spinner";
 import {
@@ -11,6 +11,8 @@ import {
   PROOF_MODAL_PROVE_SUBTITLE_FAST,
   PROOF_MODAL_VERIFY_TITLE,
   PROOF_MODAL_VERIFY_SUBTITLE,
+  PROOF_MODAL_SUBMIT_TITLE,
+  PROOF_MODAL_SUBMIT_SUBTITLE,
 } from "@helpers/tooltips"
 import useProofGenSettings from "@hooks/useProofGenSettings"
 
@@ -19,6 +21,7 @@ export const VerificationStepType = {
   DOWNLOAD: "download",
   PROVE: "prove",
   VERIFY: "verify",
+  SUBMIT: "submit",
 };
 
 export const VerificationState = {
@@ -58,6 +61,8 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return <StyledCpu progress={progress} />;
       case VerificationStepType.VERIFY:
         return <StyledShield progress={progress} />;
+      case VerificationStepType.SUBMIT:
+        return <StyledPlay progress={progress} />;
       default:
         return null;
     }
@@ -67,10 +72,13 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
     switch (progress) {
       case VerificationState.DEFAULT:
         return <StyledCircle progress={progress} />;
+
       case VerificationState.LOADING:
         return <Spinner />;
+
       case VerificationState.COMPLETE:
         return <StyledCheck progress={progress} />;
+        
       default:
         return null;
     }
@@ -80,10 +88,16 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
     switch (type) {
       case VerificationStepType.DOWNLOAD:
         return PROOF_MODAL_DOWNLOAD_TITLE;
+
       case VerificationStepType.PROVE:
         return PROOF_MODAL_PROVE_TITLE;
+
       case VerificationStepType.VERIFY:
         return PROOF_MODAL_VERIFY_TITLE;
+
+      case VerificationStepType.SUBMIT:
+        return PROOF_MODAL_SUBMIT_TITLE;
+
       default:
         return null;
     }
@@ -93,14 +107,20 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
     switch (type) {
       case VerificationStepType.DOWNLOAD:
         return PROOF_MODAL_DOWNLOAD_SUBTITLE;
+
       case VerificationStepType.PROVE:
         if (isProvingTypeFast) {
           return PROOF_MODAL_PROVE_SUBTITLE_FAST;
         } else {
           return PROOF_MODAL_PROVE_SUBTITLE_PRIVATE;
         }
+
       case VerificationStepType.VERIFY:
         return PROOF_MODAL_VERIFY_SUBTITLE;
+
+      case VerificationStepType.SUBMIT:
+        return PROOF_MODAL_SUBMIT_SUBTITLE;
+        
       default:
         return null;
     }
@@ -171,6 +191,7 @@ const IconBase = styled.div<{ progress: string }>`
 const StyledDownload = styled(IconBase).attrs({ as: Download })``;
 const StyledCpu = styled(IconBase).attrs({ as: Cpu })``;
 const StyledShield = styled(IconBase).attrs({ as: Shield })``;
+const StyledPlay = styled(IconBase).attrs({ as: Play })``;
 const StyledCheck = styled(IconBase).attrs({ as: Check })`
   color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#4BB543')};
 `;

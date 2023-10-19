@@ -82,7 +82,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   } = useContractWrite(writeSubmitRegistrationConfig);
 
   const {
-    isLoading: isSubmitRegistrationMining
+    isLoading: isSubmitRegistrationMining,
+    isSuccess: isSubmitRegistrationSuccessful
   } = useWaitForTransaction({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
@@ -165,6 +166,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
           setProof={setProof}
           setPublicSignals={setPublicSignals}
           isSubmitProcessing={isSubmitRegistrationLoading || isSubmitRegistrationMining}
+          isSubmitSuccessful={isSubmitRegistrationSuccessful}
           handleSubmitVerificationClick={handleRegistrationSubmit}
         />
       </Body>

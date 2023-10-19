@@ -109,7 +109,8 @@ export const OffRamp: React.FC<OffRampProps> = ({
   } = useContractWrite(writeCompleteOrderConfig);
 
   const {
-    isLoading: isSubmitOnRampWithConvenienceMining
+    isLoading: isSubmitOnRampWithConvenienceMining,
+    isSuccess: isSubmitOnRampWithConvenienceSuccessful
   } = useWaitForTransaction({
     hash: submitOnRampWithConvenienceResult ? submitOnRampWithConvenienceResult.hash : undefined,
     onSuccess(data) {
@@ -203,6 +204,7 @@ export const OffRamp: React.FC<OffRampProps> = ({
           setProof={setProof}
           setPublicSignals={setPublicSignals}
           isSubmitProcessing={isWriteCompleteOrderLoading || isSubmitOnRampWithConvenienceMining}
+          isSubmitSuccessful={isSubmitOnRampWithConvenienceSuccessful}
           handleSubmitVerificationClick={handleWriteCompleteOrderClick}
         />
       </Body>

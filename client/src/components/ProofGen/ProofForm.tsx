@@ -38,6 +38,7 @@ interface ProofGenerationFormProps {
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
   isSubmitProcessing: boolean;
+  isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
 }
  
@@ -52,6 +53,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   setProof,
   setPublicSignals,
   isSubmitProcessing,
+  isSubmitSuccessful,
   handleSubmitVerificationClick
 }) => {
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
@@ -129,7 +131,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
 
-      setStatus("done");
+      setStatus("transaction-configured");
     } else {
       if (isProvingTypeFast) {
         await generateFastProof();
@@ -138,7 +140,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       }
     }
 
-    const successfulRegistration = status === "done" && circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
+    const successfulRegistration = circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
     if (successfulRegistration) {
       extractAndRecordVenmoId(emailFull);
     }
@@ -174,12 +176,12 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const getModalCtaTitle = () => {
     switch (circuitType) {
       case (CircuitType.EMAIL_VENMO_REGISTRATION):
-        return 'Complete Registration';
+        return 'Submit Registration';
       
       case (CircuitType.EMAIL_VENMO_RECEIVE):
       case (CircuitType.EMAIL_VENMO_SEND):
       default:
-        return 'Complete Ramp';
+        return 'Submit Ramp';
     }
   };
 
@@ -221,7 +223,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
     setAndStoreProvingState(response.proof, response.public_values)
 
-    setStatus("done");
+    setStatus("transaction-configured");
   }
 
   const generatePrivateProof = async () => {
@@ -248,7 +250,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     const stringifiedSignals = JSON.stringify(publicSignals);
     setAndStoreProvingState(stringifiedProof, stringifiedSignals);
 
-    setStatus("done");
+    setStatus("transaction-configured");
   }
 
   const generateCircuitInputs = async () => {
@@ -326,6 +328,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             status={status}
             buttonTitle={getModalCtaTitle()}
             isSubmitProcessing={isSubmitProcessing}
+            isSubmitSuccessful={isSubmitSuccessful}
+            setStatus={setStatus}
             handleSubmitVerificationClick={handleSubmitVerificationClick} />
         ) 
       }
