@@ -110,24 +110,24 @@ contract Ramp is Ownable {
     uint256 constant CIRCOM_PRIME_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
     
     /* ============ State Variables ============ */
-    IERC20 public immutable usdc;
-    IPoseidon public immutable poseidon;
-    IReceiveProcessor public receiveProcessor;
-    IRegistrationProcessor public registrationProcessor;
-    ISendProcessor public sendProcessor;
+    IERC20 public immutable usdc;                               // USDC token contract
+    IPoseidon public immutable poseidon;                        // Poseidon hashing contract
+    IReceiveProcessor public receiveProcessor;                  // Address of receive processor contract verifies onRampWithReceiveEmail emails
+    IRegistrationProcessor public registrationProcessor;        // Address of registration processor contract, verifies registration e-mails
+    ISendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
-    bool internal isInitialized;
+    bool internal isInitialized;                                // Indicates if contract has been initialized
 
-    mapping(bytes32 => DenyList) internal userDenylist;                 // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
-                                                                        // signal an intent on their deposit
+    mapping(bytes32 => DenyList) internal userDenylist;         // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
+                                                                // signal an intent on their deposit
     mapping(address => AccountInfo) internal accounts;
-    mapping(bytes32 => bytes32) public venmoIdIntent;                   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
-    mapping(uint256 => Deposit) public deposits;
-    mapping(bytes32 => Intent) public intents;
+    mapping(bytes32 => bytes32) public venmoIdIntent;           // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
+    mapping(uint256 => Deposit) public deposits;                // Mapping of depositIds to deposit structs
+    mapping(bytes32 => Intent) public intents;                  // Mapping of intentHashes to intent structs
 
-    uint256 public minDepositAmount;
-    uint256 public maxOnRampAmount;
-    uint256 public depositCounter;
+    uint256 public minDepositAmount;                            // Minimum amount of USDC that can be deposited
+    uint256 public maxOnRampAmount;                             // Maximum amount of USDC that can be on-ramped in a single transaction
+    uint256 public depositCounter;                              // Counter for depositIds
 
     /* ============ Constructor ============ */
     constructor(
@@ -175,7 +175,7 @@ contract Ramp is Ownable {
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction.
+     * sender of the transaction. One venmo account can be registered to multiple Ethereum addresses.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -246,6 +246,7 @@ contract Ramp is Ownable {
      *
      * @param _depositId    The ID of the deposit the on-ramper intends to use for 
      * @param _amount       The amount of USDC the user wants to on-ramp
+     * @param _to           Address to forward funds to (can be same as onRamper)
      */
     function signalIntent(uint256 _depositId, uint256 _amount, address _to) external {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
@@ -348,8 +349,8 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Upon submission the proof is validated, intent is removed, and deposit state is updated. USDC is transferred
-     * to the on-ramper.
+     * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-remaper.Upon submission the proof is validated,
+     * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -382,9 +383,9 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Caller must be the depositor for each depositId in the array. Depositor is returned all remaining deposits
-     * and any outstanding intents that are expired. If an intent is not expired then those funds will not be returned. Deposit
-     * will be deleted as long as there are no more outstanding intents.
+     * @notice Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all
+     * remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be
+     * returned. Deposit will be deleted as long as there are no more outstanding intents.
      *
      * @param _depositIds   Array of depositIds the depositor is attempting to withdraw
      */
