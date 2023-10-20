@@ -66,8 +66,8 @@ contract Ramp is Ownable {
     /* ============ Structs ============ */
 
     struct AccountInfo {
-        bytes32 venmoIdHash;
-        uint256[] deposits;
+        bytes32 venmoIdHash;                // Poseidon hash of account's venmoId
+        uint256[] deposits;                 // Array of open account deposits
     }
 
     struct Deposit {
@@ -81,27 +81,27 @@ contract Ramp is Ownable {
     }
 
     struct DepositWithAvailableLiquidity {
-        uint256 depositId;
-        Deposit deposit;
-        uint256 availableLiquidity;
+        uint256 depositId;                  // ID of the deposit
+        Deposit deposit;                    // Deposit struct
+        uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
 
     struct Intent {
-        address onRamper;
-        address to;
-        uint256 deposit;
-        uint256 amount;
-        uint256 intentTimestamp;
+        address onRamper;                   // On-ramper's address
+        address to;                         // Address to forward funds to (can be same as onRamper)
+        uint256 deposit;                    // ID of the deposit the intent is signaling on
+        uint256 amount;                     // Amount of USDC the on-ramper signals intent for on-chain
+        uint256 intentTimestamp;            // Timestamp of when the intent was signaled
     }
 
     struct IntentWithOnRamperId {
-        Intent intent;
-        bytes32 onRamperIdHash;
+        Intent intent;                      // Intent struct
+        bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's venmoId
     }
 
     struct DenyList {
-        bytes32[] deniedUsers;
-        mapping(bytes32 => bool) isDenied;
+        bytes32[] deniedUsers;              // Array of venmoIdHashes that are denied from taking depositors liquidity
+        mapping(bytes32 => bool) isDenied;  // Mapping of venmoIdHash to boolean indicating if the user is denied
     }
 
     /* ============ Constants ============ */
