@@ -89,6 +89,11 @@ describe("Ramp", () => {
       const minDepositAmount: BigNumber = await ramp.minDepositAmount();
       expect(minDepositAmount).to.eq(usdc(20));
     });
+
+    it("should set the correct max on ramp amount", async () => {
+      const maxOnRampAmount: BigNumber = await ramp.maxOnRampAmount();
+      expect(maxOnRampAmount).to.eq(usdc(999));
+    });
   });
 
   describe("#initialize", async () => {
@@ -542,6 +547,16 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Signaled amount must be greater than 0");
+        });
+      });
+
+      describe("when the amount exceeds the max on ramp amount", async () => {
+        beforeEach(async () => {
+          subjectAmount = usdc(1000);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Signaled amount must be less than max on-ramp amount");
         });
       });
 
@@ -1258,6 +1273,58 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Minimum deposit cannot be zero");
+        });
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setMaxOnRampAmount", async () => {
+      let subjectMaxOnRampAmount: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectMaxOnRampAmount = usdc(998);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setMaxOnRampAmount(subjectMaxOnRampAmount);
+      }
+
+      it("should set the correct reward time period", async () => {
+        const preOnRampAmount = await ramp.maxOnRampAmount();
+
+        expect(preOnRampAmount).to.eq(usdc(999));
+
+        await subject();
+
+        const postOnRampAmount = await ramp.maxOnRampAmount();
+
+        expect(postOnRampAmount).to.eq(subjectMaxOnRampAmount);
+      });
+
+      it("should emit a MaxOnRampAmountSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "MaxOnRampAmountSet").withArgs(subjectMaxOnRampAmount);
+      });
+
+      describe("when the max amount is 0", async () => {
+        beforeEach(async () => {
+          subjectMaxOnRampAmount = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Max on ramp amount cannot be zero");
         });
       });
 

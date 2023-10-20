@@ -1,6 +1,7 @@
 import { BigNumber, Signer, ethers } from "ethers";
 
 import { Address } from "@utils/types";
+import { usdc } from "@utils/common";
 
 const circom = require("circomlibjs");
 
@@ -38,15 +39,17 @@ export default class DeployHelper {
 
   public async deployRamp(
     owner: Address,
-    usdc: Address,
+    usdcToken: Address,
     poseidon: Address,
     minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber = usdc(999),
   ): Promise<Ramp> {
     return await new Ramp__factory(this._deployerSigner).deploy(
       owner,
-      usdc,
+      usdcToken,
       poseidon,
-      minDepositAmount
+      minDepositAmount,
+      maxOnRampAmount
     );
   }
 

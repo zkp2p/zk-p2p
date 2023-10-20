@@ -58,6 +58,7 @@ contract Ramp is Ownable {
     event UserAddedToDenylist(bytes32 listOwner, bytes32 deniedUser);
     event UserRemovedFromDenylist(bytes32 listOwner, bytes32 approvedUser);
     event MinDepositAmountSet(uint256 minDepositAmount);
+    event MaxOnRampAmountSet(uint256 maxOnRampAmount);
     event NewSendProcessorSet(address sendProcessor);
     event NewRegistrationProcessorSet(address registrationProcessor);
     event NewReceiveProcessorSet(address receiveProcessor);
@@ -125,6 +126,7 @@ contract Ramp is Ownable {
     mapping(bytes32 => Intent) public intents;
 
     uint256 public minDepositAmount;
+    uint256 public maxOnRampAmount;
     uint256 public depositCounter;
 
     /* ============ Constructor ============ */
@@ -132,13 +134,15 @@ contract Ramp is Ownable {
         address _owner,
         IERC20 _usdc,
         IPoseidon _poseidon,
-        uint256 _minDepositAmount
+        uint256 _minDepositAmount,
+        uint256 _maxOnRampAmount
     )
         Ownable()
     {
         usdc = _usdc;
         poseidon = _poseidon;
         minDepositAmount = _minDepositAmount;
+        maxOnRampAmount = _maxOnRampAmount;
 
         transferOwnership(_owner);
     }
@@ -250,6 +254,7 @@ contract Ramp is Ownable {
 
         require(!userDenylist[depositorVenmoIdHash].isDenied[venmoIdHash], "Onramper on depositor's denylist");
         require(_amount > 0, "Signaled amount must be greater than 0");
+        require(_amount <= maxOnRampAmount, "Signaled amount must be less than max on-ramp amount");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
         bytes32 intentHash = _calculateIntentHash(venmoIdHash, _depositId);
@@ -488,6 +493,20 @@ contract Ramp is Ownable {
         minDepositAmount = _minDepositAmount;
         emit MinDepositAmountSet(_minDepositAmount);
     }
+
+    /**
+     * @notice GOVERNANCE ONLY: Updates the max amount allowed to be on-ramped in each transaction. To on-ramp more than
+     * this amount a user must make multiple transactions.
+     *
+     * @param _maxOnRampAmount   The new max on ramp amount
+     */
+    function setMaxOnRampAmount(uint256 _maxOnRampAmount) external onlyOwner {
+        require(_maxOnRampAmount != 0, "Max on ramp amount cannot be zero");
+
+        maxOnRampAmount = _maxOnRampAmount;
+        emit MaxOnRampAmountSet(_maxOnRampAmount);
+    }
+
 
     /* ============ External View Functions ============ */
 
