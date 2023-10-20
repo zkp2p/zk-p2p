@@ -124,8 +124,8 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned packed amount
-        // Index 5 represent the packed amount
-        const packed_amount = witness.slice(5, 6);
+        // Indexes 5 to 7 represent the packed amount (8 \ 7)
+        const packed_amount = witness.slice(5, 7);
 
         // Get expected packed amount
         const regex_start = Number(input["venmo_amount_idx"]);
@@ -134,7 +134,7 @@ describe("Venmo send WASM tester", function () {
         const amount_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(amount_array, 7, 7);
+        let chunkedArrays = chunkArray(amount_array, 7, 10);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -157,8 +157,8 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned packed timestamp
-        // Indexes 6 to 8 represent the packed timestamp; (10 \ 7)
-        const packed_timestamp = witness.slice(6, 8);
+        // Indexes 7 to 9 represent the packed timestamp; (10 \ 7)
+        const packed_timestamp = witness.slice(7, 9);
 
         // Get expected packed timestamp
         const regex_start = Number(input["email_timestamp_idx"]);
@@ -208,8 +208,8 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned hashed offramper_id
-        // Indexes 16 represents the hashed offramper_id
-        const hashed_offramper_id = witness[8];
+        // Index 9 represents the hashed offramper_id
+        const hashed_offramper_id = witness[9];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["venmo_payee_id_idx"]);
@@ -242,7 +242,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[9];
+        const nullifier = witness[10];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -264,7 +264,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[10];
+        const intent_hash = witness[11];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
