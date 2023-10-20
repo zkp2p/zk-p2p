@@ -291,7 +291,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[11];
+        const nullifier = witness[10];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -313,7 +313,7 @@ describe("Venmo send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[12];
+        const intent_hash = witness[11];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
