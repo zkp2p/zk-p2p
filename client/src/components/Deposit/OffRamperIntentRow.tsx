@@ -10,7 +10,6 @@ interface IntentRowProps {
   amountUSDToReceive: string;
   amountUSDCToSend: string;
   expirationTimestamp: string;
-  convenienceRewardTimestampRaw: bigint;
   handleCompleteOrderClick: () => void;
 }
 
@@ -21,7 +20,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   amountUSDToReceive,
   amountUSDCToSend,
   expirationTimestamp,
-  convenienceRewardTimestampRaw,
   handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
@@ -33,41 +31,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const requestedAmountLabel = `${amountUSDCToSend} USDC`;
   const onRamperHashLabel = `$${amountUSDToReceive} from ${onRamper} on Venmo`;
   const orderExpirationLabel = `${expirationTimestamp}`;
-
-  /*
-   * State
-   */
-
-  const [timeRemainingLabel, setTimeRemainingLabel] = useState<string>('');
-
-  /*
-   * Hooks
-   */
-
-  useEffect(() => {
-    const calculateTimeRemaining = () => {
-      const now = BigInt(Math.floor(Date.now())) / 1000n;
-      const expirationTime = convenienceRewardTimestampRaw;
-      const timeLeft = expirationTime - now;
-
-      if (timeLeft > 0n) {
-        const minutes = (timeLeft / 60n).toString();
-        const seconds = (timeLeft % 60n).toString();
-
-        setTimeRemainingLabel(`${minutes.padStart(2, '0')} minutes ${seconds.padStart(2, '0')} seconds`);
-      } else {
-        setTimeRemainingLabel('Open');
-
-        clearInterval(intervalId);
-      }
-    };
-
-    const intervalId = setInterval(calculateTimeRemaining, 1000);
-
-    calculateTimeRemaining();
-
-    return () => clearInterval(intervalId);
-  }, [convenienceRewardTimestampRaw]);
 
   /*
    * Component
@@ -91,11 +54,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           <AmountContainer>
             <Label>Expires:&nbsp;</Label>
             <Value>{orderExpirationLabel}</Value>
-          </AmountContainer>
-
-          <AmountContainer>
-            <Label>Convenience Window:&nbsp;</Label>
-            <Value>{timeRemainingLabel}</Value>
           </AmountContainer>
         </AmountLabelsContainer>
       </IntentDetailsContainer>
@@ -137,6 +95,7 @@ const ActionsContainer = styled.div`
   align-items: flex-end;
   justify-content: space-between;
   padding: 1.5rem 1.5rem 1.65rem 0rem;
+  gap: 1rem;
 `;
 
 const AmountLabelsContainer = styled.div`

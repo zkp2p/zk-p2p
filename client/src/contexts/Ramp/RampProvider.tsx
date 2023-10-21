@@ -23,7 +23,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
-  const [convenienceRewardTimePeriod, setConvenienceRewardTimePeriod] = useState<bigint | null>(null);
   const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
 
   const [shouldFetchRampState, setShouldFetchRampState] = useState<boolean>(false);
@@ -42,20 +41,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'minDepositAmount',
-    enabled: shouldFetchRampState,
-    account: CALLER_ACCOUNT
-  })
-
-  // uint256 public convenienceRewardTimePeriod;
-  const {
-    data: convenienceRewardTimePeriodRaw,
-    // isLoading: isConvenienceRewardTimePeriodLoading,
-    // isError: isConvenienceRewardTimePeriodError,
-    // refetch: refetchDeposits,
-  } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
-    functionName: 'convenienceRewardTimePeriod',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
   })
@@ -92,7 +77,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
       setShouldFetchRampState(false);
 
       setMinimumDepositAmount(null);
-      setConvenienceRewardTimePeriod(null);
       setDepositCounter(null);
     }
   }, [rampAddress]);
@@ -115,23 +99,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    esl && console.log('convenienceRewardTimePeriodRaw_1');
-    esl && console.log('checking convenienceRewardTimePeriodRaw: ', convenienceRewardTimePeriodRaw);
-  
-    if (convenienceRewardTimePeriodRaw) {
-      esl && console.log('convenienceRewardTimePeriodRaw_2');
-
-      const convenienceRewardTimePerioProcessed = convenienceRewardTimePeriodRaw as bigint;
-
-      setConvenienceRewardTimePeriod(convenienceRewardTimePerioProcessed);
-    } else {
-      esl && console.log('convenienceRewardTimePeriodRaw_3');
-
-      setConvenienceRewardTimePeriod(null);
-    }
-  }, [convenienceRewardTimePeriodRaw]);
-
-  useEffect(() => {
     esl && console.log('depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
@@ -150,7 +117,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
     <RampContext.Provider
       value={{
         minimumDepositAmount,
-        convenienceRewardTimePeriod,
         depositCounter,
         refetchDepositCounter,
         shouldFetchRampState

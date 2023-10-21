@@ -55,7 +55,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const [venmoId, setVenmoId] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
-  const [convenienceFeeInput, setConvenienceFeeInput] = useState<string>('');
 
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
@@ -67,7 +66,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   //
-  // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount, uint256 _convenienceFee)
+  // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount)
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
     address: rampAddress,
@@ -77,7 +76,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       calculatePackedVenmoId(venmoId),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
-      toBigInt(convenienceFeeInput.toString()),
     ],
     enabled: shouldConfigureSignalIntentWrite
   });
@@ -152,14 +150,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       } else if (isDepositAmountGreaterThanApprovedBalance) {
         setFormState(NewPositionState.APPROVAL_REQUIRED);
       } else {
-        if (receiveAmountInput && convenienceFeeInput) {
-          const convenienceFeeBI = toBigInt(convenienceFeeInput);
-
-          if (convenienceFeeBI > depositAmountBI) {
-            setFormState(NewPositionState.CONVENIENCE_FEE_INVALID);
-          } else {
-            setFormState(NewPositionState.VALID);
-          }
+        if (receiveAmountInput) {
+          setFormState(NewPositionState.VALID);
         } else {
           setFormState(NewPositionState.INCOMPLETE);
         }
@@ -170,7 +162,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [
       depositAmountInput,
       receiveAmountInput,
-      convenienceFeeInput,
       minimumDepositAmount,
       usdcBalance,
       usdcApprovalToRamp
@@ -240,18 +231,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
         default:
           return '';
-      }
-    } else {
-      return '';
-    }
-  }
-
-  const convenienceFeeInputErrorString = (): string => {
-    if (depositAmountInput && convenienceFeeInput) {
-      if (Number(convenienceFeeInput) > Number(depositAmountInput)) {
-        return `Convenience fee cannot be greater than deposit amount`;
-      } else {
-        return '';
       }
     } else {
       return '';
@@ -378,13 +357,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={receiveAmountInput}
             placeholder={'110'}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
-          />
-          <SingleLineInput
-            label="Convenience Fee"
-            value={convenienceFeeInput}
-            placeholder={'5'}
-            error={convenienceFeeInputErrorString()}
-            onChange={(e) => handleInputChange(e.currentTarget.value, setConvenienceFeeInput)}
           />
           <ButtonContainer>
             <Button

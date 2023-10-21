@@ -8,7 +8,6 @@ import { SECONDS_IN_DAY  } from '@helpers/constants'
 import { DepositIntent } from "../../contexts/Deposits/types";
 import useDeposits from '@hooks/useDeposits';
 import useLiquidity from '@hooks/useLiquidity';
-import useRampState from '@hooks/useRampState';
 
 
 interface OffRamperIntentTableProps {
@@ -28,7 +27,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
 
   const { deposits, depositIntents } = useDeposits();
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
-  const { convenienceRewardTimePeriod } = useRampState();
 
   /*
     State
@@ -41,7 +39,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   */
 
   useEffect(() => {
-    if (depositIntents && deposits && convenienceRewardTimePeriod) {
+    if (depositIntents && deposits) {
       var sanitizedIntents: IntentRowData[] = [];
       sanitizedIntents = depositIntents.map((depositIntent: DepositIntent, index: number) => {
         const intent = depositIntent.intent;
@@ -49,20 +47,17 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
 
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
-        const intentTimestamp = intent.timestamp;
 
         const onRamper = truncateAddress(intent.onRamper);
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC);
         const expirationTimestamp = formatExpiration(intent.timestamp);
-        const convenienceRewardTimestampRaw = calculateExpiration(intentTimestamp, convenienceRewardTimePeriod);
         
         const sanitizedIntent: IntentRowData = {
           onRamper,
           amountUSDToReceive,
           amountUSDCToSend,
           expirationTimestamp,
-          convenienceRewardTimestampRaw,
           handleCompleteOrderClick: () => {
             if (onIntentRowClick) {
               onIntentRowClick(index);
@@ -77,7 +72,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
-  }, [depositIntents, deposits, convenienceRewardTimePeriod]);
+  }, [depositIntents, deposits]);
 
   /*
     Helpers
@@ -123,7 +118,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
               onRamper={intentsRow.onRamper}
-              convenienceRewardTimestampRaw={intentsRow.convenienceRewardTimestampRaw}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
             />
           ))}
