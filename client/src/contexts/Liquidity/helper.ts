@@ -27,14 +27,6 @@ export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): 
       return -1;
     }
 
-    // Sort by descending order of convenience fee
-    if (a.deposit.convenienceFee > b.deposit.convenienceFee) {
-      return -1;
-    }
-    if (a.deposit.convenienceFee < b.deposit.convenienceFee) {
-      return 1;
-    }
-
     return 0;
   });
 

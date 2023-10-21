@@ -3,7 +3,6 @@ import { createContext } from 'react'
 
 interface RampValues {
   minimumDepositAmount: bigint | null;
-  convenienceRewardTimePeriod: bigint | null;
   depositCounter: bigint | null;
   refetchDepositCounter: (() => void) | null;
   shouldFetchRampState: boolean;
@@ -11,7 +10,6 @@ interface RampValues {
 
 const defaultValues: RampValues = {
   minimumDepositAmount: null,
-  convenienceRewardTimePeriod: null,
   depositCounter: null,
   refetchDepositCounter: null,
   shouldFetchRampState: false

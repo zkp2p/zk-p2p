@@ -41,14 +41,12 @@ export default class DeployHelper {
     usdc: Address,
     poseidon: Address,
     minDepositAmount: BigNumber,
-    convenienceRewardTimePeriod: BigNumber = BigNumber.from(10),
   ): Promise<Ramp> {
     return await new Ramp__factory(this._deployerSigner).deploy(
       owner,
       usdc,
       poseidon,
-      minDepositAmount,
-      convenienceRewardTimePeriod
+      minDepositAmount
     );
   }
 

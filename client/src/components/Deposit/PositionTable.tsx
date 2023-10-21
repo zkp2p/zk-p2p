@@ -29,7 +29,6 @@ export interface DepositPrime {
   outstandingIntentAmount: string;
   intentCount: string;
   conversionRate: string;
-  convenienceFee: string;
 }
 
 interface PositionTableProps {
@@ -77,7 +76,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
         const conversionRate = conversionRateToString(deposit.conversionRate);
-        const convenienceFee = feeAmountString(toUsdcString(deposit.convenienceFee));
 
         return {
           depositor,
@@ -85,8 +83,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           totalDepositAmount,
           outstandingIntentAmount,
           intentCount,
-          conversionRate,
-          convenienceFee
+          conversionRate
         };
       });
 
@@ -236,7 +233,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                       outstandingIntentAmount={positionRow.outstandingIntentAmount}
                       intentCount={positionRow.intentCount}
                       conversionRate={positionRow.conversionRate}
-                      convenienceFee={positionRow.convenienceFee}
                       rowIndex={rowIndex}
                       handleWithdrawClick={() => {
                         handleWithdrawClick(rowIndex)

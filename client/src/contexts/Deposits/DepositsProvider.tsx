@@ -135,7 +135,6 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           remainingDepositAmount: depositData.remainingDeposits,
           outstandingIntentAmount: depositData.outstandingIntentAmount,
           conversionRate: depositData.conversionRate,
-          convenienceFee: depositData.convenienceFee,
           intentHashes: depositData.intentHashes,
         };
 

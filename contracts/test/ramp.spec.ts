@@ -89,11 +89,6 @@ describe("Ramp", () => {
       const minDepositAmount: BigNumber = await ramp.minDepositAmount();
       expect(minDepositAmount).to.eq(usdc(20));
     });
-
-    it("should set the correct convenience reward tme period", async () => {
-      const minDepositAmount: BigNumber = await ramp.convenienceRewardTimePeriod();
-      expect(minDepositAmount).to.eq(BigNumber.from(10));
-    });
   });
 
   describe("#initialize", async () => {
@@ -253,19 +248,17 @@ describe("Ramp", () => {
       let subjectPackedVenmoId: [BigNumber, BigNumber, BigNumber];
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
-      let subjectConvenienceFee: BigNumber;
       let subjectCaller: Account;
 
       beforeEach(async () => {
         subjectPackedVenmoId = calculatePackedVenmoId("1");
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(101);
-        subjectConvenienceFee = usdc(2);
         subjectCaller = offRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, subjectReceiveAmount, subjectConvenienceFee);
+        return ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, subjectReceiveAmount);
       }
 
       it("should transfer the usdc to the Ramp contract", async () => {
@@ -290,7 +283,6 @@ describe("Ramp", () => {
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
         expect(deposit.conversionRate).to.eq(conversionRate);
-        expect(deposit.convenienceFee).to.eq(subjectConvenienceFee);
       });
 
       it("should increment the deposit counter correctly", async () => {
@@ -308,8 +300,7 @@ describe("Ramp", () => {
           ZERO,
           await calculateVenmoIdHash("1"),
           subjectDepositAmount,
-          conversionRate,
-          subjectConvenienceFee
+          conversionRate
         );
       });
 
@@ -335,11 +326,11 @@ describe("Ramp", () => {
 
       describe("when the depositor has reached their max amount of deposits", async () => {
         beforeEach(async () => {
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(102), subjectConvenienceFee);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(103), subjectConvenienceFee);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(104), subjectConvenienceFee);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(105), subjectConvenienceFee);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(106), subjectConvenienceFee);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(102));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(103));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(104));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(105));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectPackedVenmoId, subjectDepositAmount, usdc(106));
         });
 
         it("should revert", async () => {
@@ -368,8 +359,7 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         subjectDepositId = ZERO;
@@ -588,8 +578,7 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         const venmoId = await calculateVenmoIdHash("2");
@@ -665,7 +654,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#onRampWithConvenience", async () => {
+    describe("#onRampWithReceiveEmail", async () => {
       let subjectA: [BigNumber, BigNumber];
       let subjectB: [[BigNumber, BigNumber], [BigNumber, BigNumber]];
       let subjectC: [BigNumber, BigNumber];
@@ -679,8 +668,7 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         const venmoId = await calculateVenmoIdHash("2");
@@ -704,22 +692,19 @@ describe("Ramp", () => {
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).onRampWithConvenience(subjectA, subjectB, subjectC, subjectSignals);
+        return ramp.connect(subjectCaller.wallet).onRampWithReceiveEmail(subjectA, subjectB, subjectC, subjectSignals);
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
         const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
-        const offRamperPreBalance = await usdcToken.balanceOf(offRamper.address);
         const rampPreBalance = await usdcToken.balanceOf(ramp.address);
         
         await subject();
 
         const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
-        const offRamperPostBalance = await usdcToken.balanceOf(offRamper.address);
         const rampPostBalance = await usdcToken.balanceOf(ramp.address);
 
-        expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(48)));
-        expect(offRamperPostBalance).to.eq(offRamperPreBalance.add(usdc(2)));
+        expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(50)));
         expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
       });
 
@@ -752,8 +737,7 @@ describe("Ramp", () => {
           depositId,
           onRamper.address,
           receiver.address,
-          usdc(50),
-          usdc(2)
+          usdc(50)
         );
       });
 
@@ -782,39 +766,6 @@ describe("Ramp", () => {
 
         it("should emit a DepositClosed event", async () => {
           await expect(subject()).to.emit(ramp, "DepositClosed").withArgs(depositId, offRamper.address);
-        });
-      });
-
-      describe("when the proof wasn't submitted in time to get the convenience reward", async () => {
-        beforeEach(async () => {
-          await blockchain.increaseTimeAsync(30);
-        });
-
-        it("should transfer the usdc correctly to all parties", async () => {
-          const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
-          const offRamperPreBalance = await usdcToken.balanceOf(offRamper.address);
-          const rampPreBalance = await usdcToken.balanceOf(ramp.address);
-          
-          await subject();
-  
-          const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
-          const offRamperPostBalance = await usdcToken.balanceOf(offRamper.address);
-          const rampPostBalance = await usdcToken.balanceOf(ramp.address);
-  
-          expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(50)));
-          expect(offRamperPostBalance).to.eq(offRamperPreBalance.add(usdc(0)));
-          expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
-        });
-  
-        it("should emit an IntentFulfilled event", async () => {
-          await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
-            intentHash,
-            depositId,
-            onRamper.address,
-            receiver.address,
-            usdc(50),
-            0
-          );
         });
       });
 
@@ -853,8 +804,7 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
         
         depositId = (await ramp.depositCounter()).sub(1);
@@ -924,8 +874,7 @@ describe("Ramp", () => {
           depositId,
           onRamper.address,
           receiver.address,
-          usdc(50),
-          ZERO
+          usdc(50)
         );
       });
 
@@ -986,15 +935,13 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           await calculatePackedVenmoId("1"),
           usdc(50),
-          usdc(51),
-          usdc(2)
+          usdc(51)
         );
 
         const currentDepositCounter = await ramp.depositCounter();
@@ -1265,54 +1212,6 @@ describe("Ramp", () => {
       });
     });
 
-    describe("#setConvenienceRewardTimePeriod", async () => {
-      let subjectConvenienceRewardTimePeriod: BigNumber;
-      let subjectCaller: Account;
-
-      beforeEach(async () => {
-        subjectConvenienceRewardTimePeriod = ONE_DAY_IN_SECONDS;
-        subjectCaller = owner;
-      });
-
-      async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).setConvenienceRewardTimePeriod(subjectConvenienceRewardTimePeriod);
-      }
-
-      it("should set the correct reward time period", async () => {
-        await subject();
-
-        const rewardTimePeriod = await ramp.convenienceRewardTimePeriod();
-
-        expect(rewardTimePeriod).to.eq(subjectConvenienceRewardTimePeriod);
-      });
-
-      it("should emit a ConvenienceRewardTimePeriodSet event", async () => {
-        const tx = await subject();
-        
-        expect(tx).to.emit(ramp, "ConvenienceRewardTimePeriodSet").withArgs(subjectConvenienceRewardTimePeriod);
-      });
-
-      describe("when the time period is 0", async () => {
-        beforeEach(async () => {
-          subjectConvenienceRewardTimePeriod = ZERO;
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Convenience reward time period cannot be zero");
-        });
-      });
-
-      describe("when the caller is not the owner", async () => {
-        beforeEach(async () => {
-          subjectCaller = onRamper;
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
-        });
-      });
-    });
-
     describe("#setMinDepositAmount", async () => {
       let subjectMinDepositAmount: BigNumber;
       let subjectCaller: Account;
@@ -1484,15 +1383,13 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(102),
-          usdc(2)
+          usdc(102)
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1550,15 +1447,13 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(102),
-          usdc(2)
+          usdc(102)
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1614,8 +1509,7 @@ describe("Ramp", () => {
         await ramp.connect(offRamper.wallet).offRamp(
           calculatePackedVenmoId("1"),
           usdc(100),
-          usdc(101),
-          usdc(2)
+          usdc(101)
         );
   
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);

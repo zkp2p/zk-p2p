@@ -12,8 +12,7 @@ import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units'
 import { PRECISION, SECONDS_IN_DAY  } from '@helpers/constants'
 import useLiquidity from '@hooks/useLiquidity';
-import useOnRamperIntents from '@hooks/useOnRamperIntents'
-import useRampState from '@hooks/useRampState';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -31,7 +30,6 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
  const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
  const { depositStore } = useLiquidity();
  const { rampAddress, rampAbi } = useSmartContracts();
- const { convenienceRewardTimePeriod } = useRampState();
 
   
   /*
@@ -95,7 +93,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   */
  
   useEffect(() => {
-    if (currentIntent && depositStore && convenienceRewardTimePeriod) {
+    if (currentIntent && depositStore) {
       const storedDeposit = depositStore.find((storedDeposit) => {
         return storedDeposit.depositId === currentIntent.intent.deposit;
       });
@@ -105,18 +103,15 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const conversionRate = storedDeposit.deposit.conversionRate;
         const usdToSend = amountUSDC * PRECISION / conversionRate;
         const amountUSDToSend = toUsdString(usdToSend);
-        const intentTimestamp = currentIntent.intent.timestamp;
 
         const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);
         const expirationTimestamp = formatExpiration(currentIntent.intent.timestamp);
-        const convenienceRewardTimestampRaw = calculateExpiration(intentTimestamp, convenienceRewardTimePeriod);
         const venmoIdString = currentIntent.depositorVenmoId.toString();
 
         const sanitizedIntent: IntentRowData = {
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
-          convenienceRewardTimestampRaw,
           depositorVenmoId: venmoIdString,
           handleCompleteOrderClick: () => {
             if (onIntentRowClick) {
@@ -132,7 +127,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
-  }, [currentIntent, depositStore, convenienceRewardTimePeriod]);
+  }, [currentIntent, depositStore]);
 
   /*
     Helpers
@@ -179,7 +174,6 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
               amountUSDCToReceive={intentsRow.amountUSDCToReceive}
               amountUSDToSend={intentsRow.amountUSDToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
-              convenienceRewardTimestampRaw={intentsRow.convenienceRewardTimestampRaw}
               depositorVenmoId={intentsRow.depositorVenmoId}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
             />

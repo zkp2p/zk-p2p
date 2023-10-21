@@ -24,8 +24,7 @@ contract Ramp is Ownable {
         uint256 indexed depositId,
         bytes32 indexed venmoId,
         uint256 amount,
-        uint256 conversionRate,
-        uint256 convenienceFee
+        uint256 conversionRate
     );
     event IntentSignaled(
         bytes32 indexed intentHash,
@@ -46,8 +45,7 @@ contract Ramp is Ownable {
         uint256 indexed depositId,
         address indexed onRamper,
         address to,
-        uint256 amount,
-        uint256 convenienceFee
+        uint256 amount
     );
     // Do we want to emit the depositor or the venmoId
     event DepositWithdrawn(
@@ -59,7 +57,6 @@ contract Ramp is Ownable {
     event DepositClosed(uint256 depositId, address depositor);
     event UserAddedToDenylist(bytes32 listOwner, bytes32 deniedUser);
     event UserRemovedFromDenylist(bytes32 listOwner, bytes32 approvedUser);
-    event ConvenienceRewardTimePeriodSet(uint256 convenienceRewardTimePeriod);
     event MinDepositAmountSet(uint256 minDepositAmount);
     event NewSendProcessorSet(address sendProcessor);
     event NewRegistrationProcessorSet(address registrationProcessor);
@@ -79,7 +76,6 @@ contract Ramp is Ownable {
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
         uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
-        uint256 convenienceFee;             // Amount of USDC per on-ramp transaction available to be claimed by off-ramper
         bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
     }
 
@@ -128,7 +124,6 @@ contract Ramp is Ownable {
     mapping(uint256 => Deposit) public deposits;
     mapping(bytes32 => Intent) public intents;
 
-    uint256 public convenienceRewardTimePeriod;
     uint256 public minDepositAmount;
     uint256 public depositCounter;
 
@@ -137,15 +132,13 @@ contract Ramp is Ownable {
         address _owner,
         IERC20 _usdc,
         IPoseidon _poseidon,
-        uint256 _minDepositAmount,
-        uint256 _convenienceRewardTimePeriod
+        uint256 _minDepositAmount
     )
         Ownable()
     {
         usdc = _usdc;
         poseidon = _poseidon;
         minDepositAmount = _minDepositAmount;
-        convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
 
         transferOwnership(_owner);
     }
@@ -209,13 +202,11 @@ contract Ramp is Ownable {
      * @param _packedVenmoId    The packed venmo id of the account owner (we pack for easy use with poseidon)
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
-     * @param _convenienceFee   The amount of USDC per on-ramp transaction available to be claimed by off-ramper
      */
     function offRamp(
         uint256[3] memory _packedVenmoId,
         uint256 _depositAmount,
-        uint256 _receiveAmount,
-        uint256 _convenienceFee
+        uint256 _receiveAmount
     ) external {
         bytes32 _venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
 
@@ -237,11 +228,10 @@ contract Ramp is Ownable {
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
-            convenienceFee: _convenienceFee,
             intentHashes: new bytes32[](0)
         });
 
-        emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate, _convenienceFee);
+        emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate);
     }
 
     /**
@@ -325,7 +315,7 @@ contract Ramp is Ownable {
      * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
      *                  nullifier, intentHash
      */
-    function onRampWithConvenience(
+    function onRampWithReceiveEmail(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
@@ -335,9 +325,8 @@ contract Ramp is Ownable {
     {
         (
             Intent memory intent,
-            bytes32 intentHash,
-            bool distributeConvenienceReward
-        ) = _verifyOnRampWithConvenienceProof(_a, _b, _c, _signals);
+            bytes32 intentHash
+        ) = _verifyOnRampWithReceiveEmailProof(_a, _b, _c, _signals);
 
         Deposit storage deposit = deposits[intent.deposit];
 
@@ -348,11 +337,9 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        uint256 convenienceFee = distributeConvenienceReward ? deposit.convenienceFee : 0;
-        usdc.transfer(intent.to, intent.amount - convenienceFee);
-        usdc.transfer(msg.sender, convenienceFee);
+        usdc.transfer(intent.to, intent.amount);
 
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, convenienceFee);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount);
     }
 
     /**
@@ -386,7 +373,7 @@ contract Ramp is Ownable {
 
         usdc.transfer(intent.to, intent.amount);
         
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount, 0);
+        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount);
     }
 
     /**
@@ -488,19 +475,6 @@ contract Ramp is Ownable {
     function setRegistrationProcessor(IRegistrationProcessor _registrationProcessor) external onlyOwner {
         registrationProcessor = _registrationProcessor;
         emit NewRegistrationProcessorSet(address(_registrationProcessor));
-    }
-
-    /**
-     * @notice GOVERNANCE ONLY: Updates the convenience reward time period after which convenience rewards are no longer distributed
-     * to off rampers that submit proofs for on-rampers.
-     *
-     * @param _convenienceRewardTimePeriod   The new convenience reward time period
-     */
-    function setConvenienceRewardTimePeriod(uint256 _convenienceRewardTimePeriod) external onlyOwner {
-        require(_convenienceRewardTimePeriod != 0, "Convenience reward time period cannot be zero");
-
-        convenienceRewardTimePeriod = _convenienceRewardTimePeriod;
-        emit ConvenienceRewardTimePeriodSet(_convenienceRewardTimePeriod);
     }
 
     /**
@@ -664,14 +638,14 @@ contract Ramp is Ownable {
      * Additionally, we validate that the onRamperIdHash matches the one from the specified intent and indicate if the 
      * convenience reward should be distributed.
      */
-    function _verifyOnRampWithConvenienceProof(
+    function _verifyOnRampWithReceiveEmailProof(
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
         uint256[9] memory _signals
     )
         internal
-        returns(Intent memory, bytes32, bool)
+        returns(Intent memory, bytes32)
     {
         (
             uint256 timestamp,
@@ -689,8 +663,7 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
         require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
 
-        bool distributeConvenienceReward = block.timestamp - timestamp < convenienceRewardTimePeriod;
-        return (intent, intentHash, distributeConvenienceReward);
+        return (intent, intentHash);
     }
 
     /**
