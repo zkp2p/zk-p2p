@@ -26,6 +26,7 @@ template VenmoAmountRegex (msg_bytes) {
     }
 
     for (var i = 0; i < num_bytes; i++) {
+        // 0-9
         lt[0][i] = LessThan(8);
         lt[0][i].in[0] <== 47;
         lt[0][i].in[1] <== in[i];

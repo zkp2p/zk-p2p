@@ -54,7 +54,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     from_regex_out === 1;
     reveal_email_from_packed <== ShiftAndPack(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
-    // VENMO EMAIL RECEIVER ID REGEX
+    // VENMO EMAIL ACTOR ID REGEX
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_actor_id_idx;
@@ -76,7 +76,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 5484358
+    // TOTAL CONSTRAINTS: 5358930
 }
 
 // Args:
