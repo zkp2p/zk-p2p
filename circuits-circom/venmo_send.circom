@@ -18,8 +18,8 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_email_amount_len = 8; // Allowing max 5 fig amount + one decimal point + 2 decimal places. e.g. $2,500.00
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_email_timestamp_len = 10; // 10 digits till year 2286
-    // 21 digits includes 3 chars `=\r\n` extracted from regex. It is safe if Venmo adds more users
-    // NOTE: thus length of Venmo ID is dictated by this SEND email to account for the 3 extra characters. 21 == max venmo ID of 18
+    // 21 digits does not include the 3 chars `=\r\n` extracted from regex. These 3 chars will be removed during shift and pack
+    // Current Venmo IDs are 19 digits, but we allow for 21 digits to be future proof
     var max_payee_len = ceil(21, pack_size);
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
@@ -124,7 +124,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 6268172
+    // TOTAL CONSTRAINTS: 6092600
 }
 
 // Args:
