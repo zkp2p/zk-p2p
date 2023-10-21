@@ -20,11 +20,6 @@ export const abi = [
         "internalType": "uint256",
         "name": "_minDepositAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_convenienceRewardTimePeriod",
-        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -47,19 +42,6 @@ export const abi = [
       }
     ],
     "name": "AccountRegistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "convenienceRewardTimePeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "ConvenienceRewardTimePeriodSet",
     "type": "event"
   },
   {
@@ -106,12 +88,6 @@ export const abi = [
         "indexed": false,
         "internalType": "uint256",
         "name": "conversionRate",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "convenienceFee",
         "type": "uint256"
       }
     ],
@@ -174,12 +150,6 @@ export const abi = [
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "convenienceFee",
         "type": "uint256"
       }
     ],
@@ -385,19 +355,6 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "convenienceRewardTimePeriod",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "depositCounter",
     "outputs": [
       {
@@ -442,11 +399,6 @@ export const abi = [
       {
         "internalType": "uint256",
         "name": "conversionRate",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "convenienceFee",
         "type": "uint256"
       }
     ],
@@ -500,11 +452,6 @@ export const abi = [
               {
                 "internalType": "uint256",
                 "name": "conversionRate",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "convenienceFee",
                 "type": "uint256"
               },
               {
@@ -624,11 +571,6 @@ export const abi = [
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "convenienceFee",
-            "type": "uint256"
-          },
-          {
             "internalType": "bytes32[]",
             "name": "intentHashes",
             "type": "bytes32[]"
@@ -689,11 +631,6 @@ export const abi = [
               {
                 "internalType": "uint256",
                 "name": "conversionRate",
-                "type": "uint256"
-              },
-              {
-                "internalType": "uint256",
-                "name": "convenienceFee",
                 "type": "uint256"
               },
               {
@@ -893,11 +830,6 @@ export const abi = [
         "internalType": "uint256",
         "name": "_receiveAmount",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_convenienceFee",
-        "type": "uint256"
       }
     ],
     "name": "offRamp",
@@ -956,7 +888,7 @@ export const abi = [
         "type": "uint256[9]"
       }
     ],
-    "name": "onRampWithConvenience",
+    "name": "onRampWithReceiveEmail",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1072,19 +1004,6 @@ export const abi = [
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_convenienceRewardTimePeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "setConvenienceRewardTimePeriod",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
