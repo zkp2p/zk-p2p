@@ -29,6 +29,7 @@ import {
   VenmoSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
 import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
+import { ONE_DAY_IN_SECONDS } from "./constants";
 
 export default class DeployHelper {
   private _deployerSigner: Signer;
@@ -43,13 +44,15 @@ export default class DeployHelper {
     poseidon: Address,
     minDepositAmount: BigNumber,
     maxOnRampAmount: BigNumber = usdc(999),
+    intentExpirationPeriod: BigNumber = ONE_DAY_IN_SECONDS,
   ): Promise<Ramp> {
     return await new Ramp__factory(this._deployerSigner).deploy(
       owner,
       usdcToken,
       poseidon,
       minDepositAmount,
-      maxOnRampAmount
+      maxOnRampAmount,
+      intentExpirationPeriod
     );
   }
 

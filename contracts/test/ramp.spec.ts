@@ -36,6 +36,7 @@ describe("Ramp", () => {
   let onRamperTwo: Account;
   let receiver: Account;
   let maliciousOnRamper: Account;
+  let unregisteredUser: Account;
 
   let ramp: Ramp;
   let usdcToken: USDCMock;
@@ -52,7 +53,8 @@ describe("Ramp", () => {
       onRamper,
       onRamperTwo,
       receiver,
-      maliciousOnRamper
+      maliciousOnRamper,
+      unregisteredUser
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -343,6 +345,16 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the caller is not a registered user", async () => {
+        beforeEach(async () => {
+          subjectCaller = unregisteredUser;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be registered user");
+        });
+      });
+
       describe("when the receive amount is zero", async () => {
         beforeEach(async () => {
           subjectReceiveAmount = ZERO;
@@ -537,6 +549,36 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Onramper on depositor's denylist");
+        });
+      });
+
+      describe("when the caller is the depositor", async () => {
+        beforeEach(async () => {
+          subjectCaller = offRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Sender cannot be the depositor");
+        });
+      });
+
+      describe("when the to address is zero", async () => {
+        beforeEach(async () => {
+          subjectTo = ADDRESS_ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Cannot send to zero address");
+        });
+      });
+
+      describe("when the caller is not a registered user", async () => {
+        beforeEach(async () => {
+          subjectCaller = unregisteredUser;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be registered user");
         });
       });
 
@@ -785,6 +827,16 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the intent has already been pruned", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper id does not match");
+        });
+      });
+
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
           subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
@@ -940,6 +992,16 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Intent was not created before send");
+        });
+      });
+
+      describe("when the intent has already been pruned", async () => {
+        beforeEach(async () => {
+          await subject();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent does not exist");
         });
       });
 
@@ -1188,6 +1250,16 @@ describe("Ramp", () => {
           await expect(subject()).to.be.revertedWith("User already on denylist");
         });
       });
+
+      describe("when the caller is not a registered user", async () => {
+        beforeEach(async () => {
+          subjectCaller = unregisteredUser;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be registered user");
+        });
+      });
     });
 
     describe("#removeAccountFromDenylist", async () => {
@@ -1235,6 +1307,16 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("User not on denylist");
+        });
+      });
+
+      describe("when the caller is not a registered user", async () => {
+        beforeEach(async () => {
+          subjectCaller = unregisteredUser;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be registered user");
         });
       });
     });
@@ -1325,6 +1407,58 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Max on ramp amount cannot be zero");
+        });
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe.only("#setIntentExpirationPeriod", async () => {
+      let subjectIntentExpirationPeriod: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectIntentExpirationPeriod = ONE_DAY_IN_SECONDS.mul(2);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setIntentExpirationPeriod(subjectIntentExpirationPeriod);
+      }
+
+      it("should set the correct reward time period", async () => {
+        const preOnRampAmount = await ramp.intentExpirationPeriod();
+
+        expect(preOnRampAmount).to.eq(ONE_DAY_IN_SECONDS);
+
+        await subject();
+
+        const postOnRampAmount = await ramp.intentExpirationPeriod();
+
+        expect(postOnRampAmount).to.eq(subjectIntentExpirationPeriod);
+      });
+
+      it("should emit a IntentExpirationPeriodSet event", async () => {
+        const tx = await subject();
+        
+        expect(tx).to.emit(ramp, "IntentExpirationPeriodSet").withArgs(subjectIntentExpirationPeriod);
+      });
+
+      describe("when the intent expiration period is 0", async () => {
+        beforeEach(async () => {
+          subjectIntentExpirationPeriod = ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Max intent expiration period cannot be zero");
         });
       });
 

@@ -1,6 +1,9 @@
+import "module-alias/register";
+
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
+import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
 import { BigNumber } from "ethers";
 
@@ -15,6 +18,14 @@ const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 const MIN_DEPOSIT_AMOUNT = {
   "localhost": usdc(20),
   "goerli": usdc(20),
+};
+const MAX_ONRAMP_AMOUNT = {
+  "localhost": usdc(999),
+  "goerli": usdc(999),
+};
+const INTENT_EXPIRATION_PERIOD = {
+  "localhost": ONE_DAY_IN_SECONDS,
+  "goerli": ONE_DAY_IN_SECONDS,
 };
 const USDC = {};
 const USDC_MINT_AMOUNT = usdc(1000000);
@@ -53,7 +64,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcAddress,
       poseidon.address,
-      MIN_DEPOSIT_AMOUNT[network]
+      MIN_DEPOSIT_AMOUNT[network],
+      MAX_ONRAMP_AMOUNT[network],
+      INTENT_EXPIRATION_PERIOD[network]
     ],
   });
   console.log("Ramp deployed...");
