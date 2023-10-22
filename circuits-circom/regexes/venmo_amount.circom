@@ -26,7 +26,7 @@ template VenmoAmountRegex (msg_bytes) {
     }
 
     for (var i = 0; i < num_bytes; i++) {
-        // 0-9
+        // 47-58 = [0-9]
         lt[0][i] = LessThan(8);
         lt[0][i].in[0] <== 47;
         lt[0][i].in[1] <== in[i];
@@ -36,11 +36,11 @@ template VenmoAmountRegex (msg_bytes) {
         and[0][i] = AND();
         and[0][i].a <== lt[0][i].out;
         and[0][i].b <== lt[1][i].out;
-        // .
+        // 46 = '.''
         eq[0][i] = IsEqual();
         eq[0][i].in[0] <== in[i];
         eq[0][i].in[1] <== 46;
-        // ,
+        // 44 = ','
         eq[1][i] = IsEqual();
         eq[1][i].in[0] <== in[i];
         eq[1][i].in[1] <== 44;
@@ -55,7 +55,7 @@ template VenmoAmountRegex (msg_bytes) {
         multi_or[1][i].in[0] <== and[1][i].out;
         multi_or[1][i].in[1] <== states[i][3];
         states[i+1][1] <== multi_or[1][i].out;
-        // \n
+        // 10 = '\n'
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 10;
@@ -63,7 +63,7 @@ template VenmoAmountRegex (msg_bytes) {
         and[2][i].a <== states[i][4];
         and[2][i].b <== eq[2][i].out;
         states[i+1][2] <== and[2][i].out;
-        // $
+        // 36 = '$'
         eq[3][i] = IsEqual();
         eq[3][i].in[0] <== in[i];
         eq[3][i].in[1] <== 36;
@@ -71,7 +71,7 @@ template VenmoAmountRegex (msg_bytes) {
         and[3][i].a <== states[i][0];
         and[3][i].b <== eq[3][i].out;
         states[i+1][3] <== and[3][i].out;
-        // \r
+        // 13 = '\r'
         eq[4][i] = IsEqual();
         eq[4][i].in[0] <== in[i];
         eq[4][i].in[1] <== 13;
