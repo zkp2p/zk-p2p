@@ -7,6 +7,9 @@ import {
 } from 'wagmi'
 import { useNavigate } from 'react-router-dom';
 
+import { ArrowLeft } from 'react-feather';
+import { TitleCenteredRow } from '../layouts/Row';
+
 import { Input } from "@components/Swap/Input";
 import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable'
 import { AutoColumn } from '@components/layouts/Column'
@@ -23,6 +26,9 @@ import useRampState from "@hooks/useRampState";
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity';
 import useRegistration from "@hooks/useRegistration";
+
+import { HaloGateway } from "@arx-research/libhalo/api/desktop.js";
+import websocket from "websocket";
 
 
 export type SwapQuote = {
@@ -66,6 +72,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
   const [quoteStatus, setQuoteStatus] = useState<QuoteStatus>('default');
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
+  const [loadCard, setLoadCard] = useState<boolean>(false);
+  const [cardQrCode, setCardQrCode] = useState<string>('');
+  const [cardAddress, setCardAddress] = useState<string>('');
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
@@ -121,6 +130,10 @@ const SwapModal: React.FC<SwapModalProps> = ({
     setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: ZERO });
   };
 
+  const handleLoadCard = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    setLoadCard(!loadCard);
+  }
+
   /*
    * Contract Writes
    */
@@ -135,7 +148,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     args: [
       currentQuote.depositId,
       toBigInt(currentQuote.requestedUSDC),
-      loggedInEthereumAddress
+      cardAddress != '' ? cardAddress : loggedInEthereumAddress
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -193,6 +206,51 @@ const SwapModal: React.FC<SwapModalProps> = ({
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchRampState, refetchDepositCounter]);
+
+  useEffect(() => {
+    const getGateway = async () => {
+      let gate = new HaloGateway('wss://s1.halo-gateway.arx.org', {
+        createWebSocket: (url: string) => new websocket.w3cwebsocket(url)
+      });
+      let pairInfo;
+      try {
+        pairInfo = await gate.startPairing();
+      } catch (e) {
+        console.log(e);
+      }
+      return {gate, qrCode: pairInfo.qrCode};
+    }
+
+    const connectGateway = async (gate: HaloGateway) => {
+      console.log('Waiting for smartphone to connect...');
+      await gate.waitConnected();
+
+      return gate;
+    };
+
+    const getCardAddress = async (gate: HaloGateway) => {
+      let cmd = {
+        "name": "get_pkeys",
+      };
+    
+      const rawKeys = await gate.execHaloCmd(cmd);
+      return rawKeys.etherAddresses['1'];
+    };
+
+    if (loadCard) {
+      getGateway().then((output) => {
+        console.log(output.qrCode);
+        setCardQrCode(output.qrCode);
+
+        connectGateway(output.gate).then((gate) => {
+          getCardAddress(gate).then((cardAddress) => {
+            setCardAddress(cardAddress);
+            setLoadCard(false)
+          });
+        });
+      });
+    }
+  }, [loadCard]);
 
   useEffect(() => {
     const fetchBestDepositForAmount = async () => {
@@ -309,63 +367,102 @@ const SwapModal: React.FC<SwapModalProps> = ({
   return (
     <Wrapper>
       <SwapModalContainer>
-        <TitleContainer>
-          <ThemedText.HeadlineSmall>
-            Swap
-          </ThemedText.HeadlineSmall>
-        </TitleContainer>
+        {!loadCard ? (
+          <div>
+            <TitleContainer>
+              <ThemedText.HeadlineSmall>
+                Swap
+              </ThemedText.HeadlineSmall>
+            </TitleContainer>
+            <MainContentWrapper>
+              <Input
+                label="Requesting"
+                name={`requestedUSDC`}
+                value={currentQuote.requestedUSDC}
+                onChange={event => handleInputChange(event, 'requestedUSDC')}
+                type="number"
+                inputLabel="USDC"
+                accessoryLabel={usdcBalanceLabel}
+                placeholder="0"
+              />
+              <Input
+                label="You send"
+                name={`fiatToSend`}
+                value={currentQuote.fiatToSend}
+                onChange={event => handleInputChange(event, 'fiatToSend')}
+                onKeyDown={handleEnterPress}
+                type="number"
+                inputLabel="$"
+                placeholder="0.00"
+                accessoryLabel="via Venmo"
+                readOnly={true}
+              />
+              {!isLoggedIn ? (
+                <CustomConnectButton
+                  fullWidth={true}
+                />
+              ) : (!isRegistered && currentQuote.requestedUSDC) ? (
+                <Button
+                  onClick={navigateToRegistrationHandler}
+                >
+                  Complete Registration
+                </Button>
+              ) : (
+                <CTAButton
+                  disabled={quoteStatus !== 'success'}
+                  loading={isSubmitIntentLoading || isSubmitIntentMining}
+                  onClick={async () => {
+                    try {
+                      await writeSubmitIntentAsync?.();
+                    } catch (error) {
+                      console.log('writeSubmitIntentAsync failed: ', error);
+                    }
+                  }}
+                >
+                  {getButtonText()}
+                </CTAButton>
+              )}
+            </MainContentWrapper>
+          </div>
+        ) : (
+          <div>
+            <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
+              <button
+                onClick={handleLoadCard}
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                <StyledArrowLeft/>
+              </button>
 
-        <MainContentWrapper>
-          <Input
-            label="Requesting"
-            name={`requestedUSDC`}
-            value={currentQuote.requestedUSDC}
-            onChange={event => handleInputChange(event, 'requestedUSDC')}
-            type="number"
-            inputLabel="USDC"
-            accessoryLabel={usdcBalanceLabel}
-            placeholder="0"
-          />
-          <Input
-            label="You send"
-            name={`fiatToSend`}
-            value={currentQuote.fiatToSend}
-            onChange={event => handleInputChange(event, 'fiatToSend')}
-            onKeyDown={handleEnterPress}
-            type="number"
-            inputLabel="$"
-            placeholder="0.00"
-            accessoryLabel="via Venmo"
-            readOnly={true}
-          />
-          {!isLoggedIn ? (
-            <CustomConnectButton
-              fullWidth={true}
-            />
-          ) : (!isRegistered && currentQuote.requestedUSDC) ? (
-            <Button
-              onClick={navigateToRegistrationHandler}
-            >
-              Complete Registration
-            </Button>
-          ) : (
-            <CTAButton
-              disabled={quoteStatus !== 'success'}
-              loading={isSubmitIntentLoading || isSubmitIntentMining}
-              onClick={async () => {
-                try {
-                  await writeSubmitIntentAsync?.();
-                } catch (error) {
-                  console.log('writeSubmitIntentAsync failed: ', error);
-                }
-              }}
-            >
-              {getButtonText()}
-            </CTAButton>
-          )}
-        </MainContentWrapper>
+              <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+                Load Arx Wallet
+              </ThemedText.HeadlineSmall>
+
+            </TitleCenteredRow>
+            <LoadCardContainer>
+              <p>Step 1: Scan QR code with your phone camera</p>
+              <img
+                id="qr"
+                src={cardQrCode}
+                alt="n/a"
+                style={{ marginBottom: 16 }}
+              />
+            </LoadCardContainer>
+          </div>
+        )
+        }
       </SwapModalContainer>
-
+      {(!loadCard && cardAddress == '') && (
+        <CTAButton
+          loading={isSubmitIntentLoading || isSubmitIntentMining}
+          onClick={handleLoadCard}
+        >
+          Load Arx Wallet
+        </CTAButton>
+      )}
+      {cardAddress != '' && (
+        <p>Loading Card Address: {cardAddress}</p>
+      )}
       {
         currentIntentHash && (
           <>
@@ -379,6 +476,17 @@ const SwapModal: React.FC<SwapModalProps> = ({
     </Wrapper>
   );
 };
+
+const StyledArrowLeft = styled(ArrowLeft)`
+  color: #FFF;
+`;
+
+const LoadCardContainer = styled.div`
+  padding: 1.5rem;
+  background-color: #0D111C;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
 
 const Wrapper = styled.div`
   width: 100%;
