@@ -38,7 +38,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           <ThemedText.HeadlineMedium>
             Registration
           </ThemedText.HeadlineMedium>
-          {isLoggedIn ? (
+          {isLoggedIn && !isRegistered ? (
             <Button onClick={handleNewRegistrationClick} height={40}>
                 + Update
             </Button>
