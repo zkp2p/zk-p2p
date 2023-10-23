@@ -86,12 +86,12 @@ export const OffRamp: React.FC<OffRampProps> = ({
    */
 
   //
-  // new: onRampWithConvenience(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[9] memory _signals)
+  // onRampWithReceiveEmail(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[9] memory _signals)
   //
   const { config: writeCompleteOrderConfig } = usePrepareContractWrite({
     address: rampAddress,
     abi: rampAbi,
-    functionName: 'onRampWithConvenience',
+    functionName: 'onRampWithReceiveEmail',
     args: [
       ...reformatProofForChain(proof),
       publicSignals ? JSON.parse(publicSignals) : null,

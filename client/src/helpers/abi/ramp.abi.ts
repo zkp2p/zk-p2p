@@ -855,9 +855,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[8]",
+        "internalType": "uint256[10]",
         "name": "_signals",
-        "type": "uint256[8]"
+        "type": "uint256[10]"
       }
     ],
     "name": "onRamp",

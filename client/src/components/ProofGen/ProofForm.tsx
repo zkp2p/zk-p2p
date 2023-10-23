@@ -93,7 +93,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   } = useRemoteProofGen({
     emailType: remoteProofGenEmailType,
     emailBody: emailFull,
-    orderId: circuitInputs,
+    intentHash: circuitInputs,
   });
 
   useEffect(() => {
@@ -326,6 +326,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             publicSignals={publicSignals}
             onBackClick={handleModalBackClicked}
             status={status}
+            circuitType={circuitType}
             buttonTitle={getModalCtaTitle()}
             isSubmitProcessing={isSubmitProcessing}
             isSubmitSuccessful={isSubmitSuccessful}

@@ -130,9 +130,9 @@ export const abi = [
             "type": "uint256[2]"
           },
           {
-            "internalType": "uint256[8]",
+            "internalType": "uint256[10]",
             "name": "signals",
-            "type": "uint256[8]"
+            "type": "uint256[10]"
           }
         ],
         "internalType": "struct ISendProcessor.SendProof",
@@ -145,6 +145,11 @@ export const abi = [
       {
         "internalType": "uint256",
         "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "timestamp",
         "type": "uint256"
       },
       {
@@ -251,9 +256,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[8]",
+        "internalType": "uint256[10]",
         "name": "_pubSignals",
-        "type": "uint256[8]"
+        "type": "uint256[10]"
       }
     ],
     "name": "verifyProof",

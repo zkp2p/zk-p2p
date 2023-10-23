@@ -1,6 +1,7 @@
 import React from "react";
 import styled from 'styled-components/macro'
 import { Download, Cpu, Check, Circle, Shield, Play } from 'react-feather';
+import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 
 import Spinner from "@components/common/Spinner";
 import {
@@ -13,6 +14,8 @@ import {
   PROOF_MODAL_VERIFY_SUBTITLE,
   PROOF_MODAL_SUBMIT_TITLE,
   PROOF_MODAL_SUBMIT_SUBTITLE,
+  PROOF_MODAL_REGISTRATION_SUBMIT_TITLE,
+  PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE
 } from "@helpers/tooltips"
 import useProofGenSettings from "@hooks/useProofGenSettings"
 
@@ -33,13 +36,15 @@ export const VerificationState = {
 interface VerificationStepRowProps {
   type: string;
   progress: string;
+  circuitType: CircuitType;
 }
 
 export type VerificationStepRowData = VerificationStepRowProps;
 
 export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   type,
-  progress
+  progress,
+  circuitType
 }: VerificationStepRowProps) => {
   VerificationStepRow.displayName = "VerificationStepRow";
 
@@ -96,7 +101,15 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return PROOF_MODAL_VERIFY_TITLE;
 
       case VerificationStepType.SUBMIT:
-        return PROOF_MODAL_SUBMIT_TITLE;
+        switch (circuitType) {
+          case CircuitType.EMAIL_VENMO_REGISTRATION:
+            return PROOF_MODAL_REGISTRATION_SUBMIT_TITLE;
+
+          case CircuitType.EMAIL_VENMO_RECEIVE:
+          case CircuitType.EMAIL_VENMO_SEND:
+          default:
+            return PROOF_MODAL_SUBMIT_TITLE;
+        }
 
       default:
         return null;
@@ -119,7 +132,15 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return PROOF_MODAL_VERIFY_SUBTITLE;
 
       case VerificationStepType.SUBMIT:
-        return PROOF_MODAL_SUBMIT_SUBTITLE;
+        switch (circuitType) {
+          case CircuitType.EMAIL_VENMO_REGISTRATION:
+            return PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE;
+
+          case CircuitType.EMAIL_VENMO_RECEIVE:
+          case CircuitType.EMAIL_VENMO_SEND:
+          default:
+            return PROOF_MODAL_SUBMIT_SUBTITLE;
+        }
         
       default:
         return null;
