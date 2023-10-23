@@ -64,7 +64,7 @@ describe("VenmoRegistrationProcessor", () => {
       await subject();
 
       const rampAddress = await registrationProcessor.ramp();
-      const venmoMailserverKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
+      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(subjectRamp);
@@ -137,7 +137,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -156,7 +156,7 @@ describe("VenmoRegistrationProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+  describe("#setMailserverKeyHashAdapter", async () => {
     let subjectVenmoMailserverKeyHashAdapter: Address;
     let subjectCaller: Account;
 
@@ -167,13 +167,13 @@ describe("VenmoRegistrationProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
+      return await registrationProcessor.connect(subjectCaller.wallet).setMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 

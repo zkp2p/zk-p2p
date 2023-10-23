@@ -32,6 +32,7 @@ const blockchain = new Blockchain(ethers.provider);
 describe("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
+  let offRamperNewAcct: Account;
   let onRamper: Account;
   let onRamperTwo: Account;
   let receiver: Account;
@@ -54,7 +55,8 @@ describe("Ramp", () => {
       onRamperTwo,
       receiver,
       maliciousOnRamper,
-      unregisteredUser
+      unregisteredUser,
+      offRamperNewAcct
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -555,6 +557,27 @@ describe("Ramp", () => {
       describe("when the caller is the depositor", async () => {
         beforeEach(async () => {
           subjectCaller = offRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Sender cannot be the depositor");
+        });
+      });
+
+      describe("when the caller is the depositor from another Ethereum account", async () => {
+        beforeEach(async () => {
+          const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
+
+          await ramp.connect(offRamperNewAcct.wallet).register(
+            _a,
+            _b,
+            _c,
+            signalsOffRamp
+          );
+          
+          subjectCaller = offRamperNewAcct;
         });
 
         it("should revert", async () => {
@@ -1421,7 +1444,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#setIntentExpirationPeriod", async () => {
+    describe("#setIntentExpirationPeriod", async () => {
       let subjectIntentExpirationPeriod: BigNumber;
       let subjectCaller: Account;
 

@@ -19,13 +19,13 @@ contract BaseProcessor is Ownable {
 
     /* ============ State Variables ============ */
     address public immutable ramp;
-    IKeyHashAdapter public venmoMailserverKeyHashAdapter;
+    IKeyHashAdapter public mailserverKeyHashAdapter;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        IKeyHashAdapter _mailserverKeyHashAdapter,
         string memory _emailFromAddress
     )
         Ownable()
@@ -33,14 +33,14 @@ contract BaseProcessor is Ownable {
         require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
 
         ramp = _ramp;
-        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
+        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeyHashAdapter(IKeyHashAdapter _venmoMailserverKeyHashAdapter) external onlyOwner {
-        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
+    function setMailserverKeyHashAdapter(IKeyHashAdapter _mailserverKeyHashAdapter) external onlyOwner {
+        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
     }
 
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
@@ -55,7 +55,7 @@ contract BaseProcessor is Ownable {
         return emailFromAddress;
     }
 
-    function getVenmoMailserverKeyHash() public view returns (bytes32) {
-        return IKeyHashAdapter(venmoMailserverKeyHashAdapter).venmoMailserverKeyHash();
+    function getMailserverKeyHash() public view returns (bytes32) {
+        return IKeyHashAdapter(mailserverKeyHashAdapter).mailserverKeyHash();
     }
 }

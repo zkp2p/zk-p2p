@@ -64,7 +64,7 @@ describe("VenmoReceiveProcessor", () => {
       await subject();
 
       const rampAddress = await receiveProcessor.ramp();
-      const venmoKeyHashAdapter = await receiveProcessor.venmoMailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await receiveProcessor.mailserverKeyHashAdapter();
       const emailFromAddress = await receiveProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(subjectRamp);
@@ -156,7 +156,7 @@ describe("VenmoReceiveProcessor", () => {
 
     describe("when the mailserver key hash doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -185,7 +185,7 @@ describe("VenmoReceiveProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+  describe("#setMailserverKeyHashAdapter", async () => {
     let subjectVenmoMailserverKeyHashAdapter: Address;
     let subjectCaller: Account;
 
@@ -196,13 +196,13 @@ describe("VenmoReceiveProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await receiveProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
+      return await receiveProcessor.connect(subjectCaller.wallet).setMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await receiveProcessor.venmoMailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await receiveProcessor.mailserverKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 

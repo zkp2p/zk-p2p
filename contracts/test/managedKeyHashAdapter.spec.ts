@@ -37,12 +37,12 @@ describe("ManagedKeyHashAdapter", () => {
 
   describe("#constructor", async () => {
     it("should have the correct key hash", async () => {
-      const keyHash = await keyHashAdapter.venmoMailserverKeyHash();
+      const keyHash = await keyHashAdapter.mailserverKeyHash();
       expect(keyHash).to.eq(venmoKeyHash);
     });
   });
 
-  describe("#setVenmoMailserverKeyHash", async () => {
+  describe("#setMailserverKeyHash", async () => {
     let subjectVenmoMailserverKeyHash: string;
     let subjectCaller: Account;
 
@@ -53,13 +53,13 @@ describe("ManagedKeyHashAdapter", () => {
     });
 
     async function subject(): Promise<any> {
-      return await keyHashAdapter.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+      return await keyHashAdapter.connect(subjectCaller.wallet).setMailserverKeyHash(subjectVenmoMailserverKeyHash);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHash = await keyHashAdapter.venmoMailserverKeyHash();
+      const venmoKeyHash = await keyHashAdapter.mailserverKeyHash();
       expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
     });
 
