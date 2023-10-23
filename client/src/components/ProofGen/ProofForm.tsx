@@ -93,7 +93,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   } = useRemoteProofGen({
     emailType: remoteProofGenEmailType,
     emailBody: emailFull,
-    orderId: circuitInputs,
+    intentHash: circuitInputs,
   });
 
   useEffect(() => {

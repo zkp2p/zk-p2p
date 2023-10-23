@@ -9,7 +9,7 @@ if (!REMOTE_PROOF_API_URL) {
 type ProofGenParams = {
   emailType: string;
   emailBody: string;
-  orderId: string;
+  intentHash: string;
 }
 
 type RemoteProofResponse = {
@@ -17,7 +17,7 @@ type RemoteProofResponse = {
   public_values: any;
 };
 
-export default function useRemoteProofGen({ emailType, emailBody, orderId }: ProofGenParams) {
+export default function useRemoteProofGen({ emailType, emailBody, intentHash }: ProofGenParams) {
   const [data, setData] = useState<RemoteProofResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState(null);
@@ -33,7 +33,7 @@ export default function useRemoteProofGen({ emailType, emailBody, orderId }: Pro
         body: JSON.stringify({
           "email_type": emailType,
           "email": emailBody,
-          "order_id": orderId,
+          "intent_hash": intentHash,
         })
       });
 
