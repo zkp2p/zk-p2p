@@ -24,17 +24,16 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   onIntentRowClick,
 }) => {
   /*
-    Contexts
-  */
+   * Contexts
+   */
 
  const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
  const { depositStore } = useLiquidity();
  const { rampAddress, rampAbi } = useSmartContracts();
 
-  
   /*
-    State
-  */
+   * State
+   */
 
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 

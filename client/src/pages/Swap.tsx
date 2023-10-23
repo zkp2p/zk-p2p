@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import SwapModal from "@components/Swap"
 import { OnRamp } from '@components/Swap/OnRamp'
+import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from '@hooks/useRampState';
 
@@ -12,6 +13,7 @@ export const Swap: React.FC<{}> = (props) => {
     Contexts
   */
 
+  const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
   const {
     currentIntentHash,
     refetchIntentHash,
@@ -40,6 +42,10 @@ export const Swap: React.FC<{}> = (props) => {
 
     if (shouldFetchRampState) {
       refetchDepositCounter?.();
+    }
+
+    if (shouldFetchUsdcBalance) {
+      refetchUsdcBalance?.();
     }
   }, []);
 
