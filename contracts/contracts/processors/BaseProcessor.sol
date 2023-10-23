@@ -13,9 +13,6 @@ contract BaseProcessor is Ownable {
         require(msg.sender == ramp, "Only Ramp can call this function");
         _;
     }
-    
-    /* ============ Constants ============ */
-    uint8 private constant EMAIL_ADDRESS_LENGTH = 21;   // 21 bytes in an email address
 
     /* ============ State Variables ============ */
     address public immutable ramp;
@@ -30,8 +27,6 @@ contract BaseProcessor is Ownable {
     )
         Ownable()
     {
-        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
-
         ramp = _ramp;
         mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
         emailFromAddress = bytes(_emailFromAddress);
@@ -43,9 +38,13 @@ contract BaseProcessor is Ownable {
         mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
     }
 
+    /**
+     * @notice ONLY OWNER: Sets the from email address for validated emails. Check that email address is properly
+     * padded (if necessary). Padding will be dependent on if unpacking functions cut trailing 0s or not.
+     *
+     * @param _emailFromAddress    The from email address for validated emails, MUST BE PROPERLY PADDED
+     */
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
-        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
-
         emailFromAddress = bytes(_emailFromAddress);
     }
 
