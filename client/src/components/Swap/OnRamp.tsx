@@ -16,9 +16,10 @@ import { LabeledSwitch } from "../common/LabeledSwitch";
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROVING_TYPE_TOOLTIP, PROOF_FORM_SEND_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
+import useBalances from '@hooks/useBalance';
+import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
 
 
 interface OnRampProps {
@@ -41,12 +42,13 @@ export const OnRamp: React.FC<OnRampProps> = ({
     sendProcessorAbi,
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
+  const { refetchUsdcBalance } = useBalances();
 
   /*
    * State
    */
 
-  const [shouldConfigureOffRampWrite, setShouldConfigureOffRampWrite] = useState<boolean>(false);
+  const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
 
   // ----- transaction state -----
@@ -82,7 +84,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   //
-  // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[8] memory _signals)
+  // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
     address: rampAddress,
@@ -95,7 +97,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
-    enabled: shouldConfigureOffRampWrite
+    enabled: shouldConfigureRampWrite
   });
 
   const {
@@ -112,6 +114,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
     onSuccess(data) {
       console.log('writeSubmitOnRampAsync successful: ', data);
       
+      refetchUsdcBalance?.();
       refetchIntentHash?.();
     },
   });
@@ -137,9 +140,9 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   useEffect(() => {
     if (verifyProofRaw) {
-      setShouldConfigureOffRampWrite(true);
+      setShouldConfigureRampWrite(true);
     } else {
-      setShouldConfigureOffRampWrite(false);
+      setShouldConfigureRampWrite(false);
     }
   }, [verifyProofRaw]);
 

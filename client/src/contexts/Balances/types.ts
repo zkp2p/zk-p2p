@@ -3,4 +3,5 @@ export interface ContextValues {
   usdcBalance: bigint | null
   usdcApprovalToRamp: bigint | null
   refetchUsdcApprovalToRamp: (() => void) | null
+  refetchUsdcBalance: (() => void) | null
 }

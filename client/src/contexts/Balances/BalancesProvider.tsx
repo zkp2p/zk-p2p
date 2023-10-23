@@ -51,7 +51,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     data: usdcBalanceRaw,
     // isLoading: isFetchUsdcBalanceLoading,
     // isError: isFetchUsdcBalanceError,
-    // refetch: refetchUsdcBalance,
+    refetch: refetchUsdcBalance,
   } = useBalance({
     address: loggedInEthereumAddress ?? ZERO_ADDRESS,
     token: usdcAddress,
@@ -180,6 +180,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         usdcBalance,
         usdcApprovalToRamp,
         refetchUsdcApprovalToRamp,
+        refetchUsdcBalance,
       }}
     >
       {children}
