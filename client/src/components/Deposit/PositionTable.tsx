@@ -164,16 +164,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
   }
 
-  function feeAmountString(usdcAmountString: string) {
-    return usdcAmountString + ' USDC';
-  }
-
   return (
     <Container>
       <Column>
         <TitleRow>
           <ThemedText.HeadlineMedium>
-            Deposit
+            Deposits
           </ThemedText.HeadlineMedium>
           {isLoggedIn ? (
             <Button onClick={handleNewPositionClick} height={40}>
@@ -220,7 +216,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             <PositionsContainer>
               <PositionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
-                  Your deposits ({positionsRowData.length})
+                  Your active deposits ({positionsRowData.length})
                 </ThemedText.LabelSmall>
               </PositionCountTitle>
               <Table>
