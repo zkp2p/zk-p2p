@@ -355,7 +355,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           <SingleLineInput
             label="Receive Amount"
             value={receiveAmountInput}
-            placeholder={'110'}
+            placeholder={'1050'}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
           />
           <ButtonContainer>

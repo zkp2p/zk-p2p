@@ -142,7 +142,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         </button>
 
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          Update Registration
+          New Registration
         </ThemedText.HeadlineSmall>
 
         <LabeledSwitch
