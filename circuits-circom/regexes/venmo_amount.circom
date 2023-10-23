@@ -14,7 +14,7 @@ template VenmoAmountRegex (msg_bytes) {
     }
     component eq[5][num_bytes];
     component lt[4][num_bytes];
-    component and[7][num_bytes];
+    component and[6][num_bytes];
     component multi_or[2][num_bytes];
     signal states[num_bytes+1][5];
 
@@ -51,34 +51,37 @@ template VenmoAmountRegex (msg_bytes) {
         multi_or[0][i].in[1] <== eq[0][i].out;
         multi_or[0][i].in[2] <== eq[1][i].out;
         and[1][i].b <== multi_or[0][i].out;
+        and[2][i] = AND();
+        and[2][i].a <== states[i][3];
+        and[2][i].b <== multi_or[0][i].out;
         multi_or[1][i] = MultiOR(2);
         multi_or[1][i].in[0] <== and[1][i].out;
-        multi_or[1][i].in[1] <== states[i][3];
+        multi_or[1][i].in[1] <== and[2][i].out;
         states[i+1][1] <== multi_or[1][i].out;
         // 10 = '\n'
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 10;
-        and[2][i] = AND();
-        and[2][i].a <== states[i][4];
-        and[2][i].b <== eq[2][i].out;
-        states[i+1][2] <== and[2][i].out;
+        and[3][i] = AND();
+        and[3][i].a <== states[i][4];
+        and[3][i].b <== eq[2][i].out;
+        states[i+1][2] <== and[3][i].out;
         // 36 = '$'
         eq[3][i] = IsEqual();
         eq[3][i].in[0] <== in[i];
         eq[3][i].in[1] <== 36;
-        and[3][i] = AND();
-        and[3][i].a <== states[i][0];
-        and[3][i].b <== eq[3][i].out;
-        states[i+1][3] <== and[3][i].out;
+        and[4][i] = AND();
+        and[4][i].a <== states[i][0];
+        and[4][i].b <== eq[3][i].out;
+        states[i+1][3] <== and[4][i].out;
         // 13 = '\r'
         eq[4][i] = IsEqual();
         eq[4][i].in[0] <== in[i];
         eq[4][i].in[1] <== 13;
-        and[4][i] = AND();
-        and[4][i].a <== states[i][1];
-        and[4][i].b <== eq[4][i].out;
-        states[i+1][4] <== and[4][i].out;
+        and[5][i] = AND();
+        and[5][i].a <== states[i][1];
+        and[5][i].b <== eq[4][i].out;
+        states[i+1][4] <== and[5][i].out;
     }
 
     signal final_state_sum[num_bytes+1];
