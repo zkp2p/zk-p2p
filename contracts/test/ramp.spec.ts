@@ -625,6 +625,17 @@ describe("Ramp", () => {
         });
       });
 
+
+      describe("when the deposit does not exist", async () => {
+        beforeEach(async () => {
+          subjectDepositId = BigNumber.from(10);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Deposit does not exist");
+        });
+      });
+
       describe("when the caller already has an outstanding intent", async () => {
         beforeEach(async () => {
           await subject();

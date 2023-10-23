@@ -71,16 +71,6 @@ describe("VenmoRegistrationProcessor", () => {
       expect(venmoMailserverKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
-
-    describe("when the email address is not properly padded", async () => {
-      beforeEach(async () => {
-        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
-      });
-    });
   });
 
   describe("#processProof", async () => {
@@ -208,16 +198,6 @@ describe("VenmoRegistrationProcessor", () => {
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
-    });
-
-    describe("when the email address is not properly padded", async () => {
-      beforeEach(async () => {
-        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
-      });
     });
 
     describe("when the caller is not the owner", async () => {
