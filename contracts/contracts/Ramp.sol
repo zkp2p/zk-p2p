@@ -356,7 +356,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[8] memory _signals
+        uint256[10] memory _signals
     )
         external
     {
@@ -661,6 +661,8 @@ contract Ramp is Ownable {
         );
 
         Intent memory intent = intents[intentHash];
+
+        require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
 
         return (intent, intentHash);
@@ -675,13 +677,14 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[8] memory _signals
+        uint256[10] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
     {
         (
             uint256 amount,
+            uint256 timestamp,
             bytes32 offRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
@@ -696,6 +699,7 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
 
+        require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accounts[deposit.depositor].venmoIdHash == offRamperIdHash, "Offramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 

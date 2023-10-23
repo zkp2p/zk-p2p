@@ -16,7 +16,7 @@ const expect = getWaffleExpect();
 
 const venmoKeyHash = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-describe("VenmoReceiveProcessor", () => {
+describe("ManagedKeyHashAdapter", () => {
   let owner: Account;
   let attacker: Account;
 
