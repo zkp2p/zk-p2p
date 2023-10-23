@@ -24,15 +24,15 @@ async function getArgs() {
   const args = process.argv.slice(2);
   const emailFileArg = args.find((arg) => arg.startsWith("--email_file="));
   const emailTypeArg = args.find((arg) => arg.startsWith("--email_type="));
-  const orderIdArg = args.find((arg) => arg.startsWith("--order_id="));
+  const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
 
   const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/test.eml`;
   const email_type = emailTypeArg ? emailTypeArg.split("=")[1] : "test";
-  const orderId = orderIdArg ? orderIdArg.split("=")[1] : "1";
+  const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
 
-  return { email_file, email_type, orderId, nonce };
+  return { email_file, email_type, intentHash, nonce };
 }
 
 export interface ICircuitInputs {
@@ -368,8 +368,8 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Email file read");
   const type = args.email_type as keyof typeof CircuitType;
   console.log("Email file type:", args.email_type)
-  console.log("OrderId", args.orderId)
-  const gen_inputs = await generate_inputs(email, type, args.orderId, args.nonce);
+  console.log("Intent Hash", args.intentHash)
+  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
   console.log("Input generation successful");
   if (writeToFile) {
     const email_file_dir = args.email_file.substring(0, args.email_file.lastIndexOf("/") + 1);
