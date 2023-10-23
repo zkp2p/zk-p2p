@@ -24,13 +24,15 @@ async function getArgs() {
   const args = process.argv.slice(2);
   const emailFileArg = args.find((arg) => arg.startsWith("--email_file="));
   const emailTypeArg = args.find((arg) => arg.startsWith("--email_type="));
+  const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
 
   const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/test.eml`;
   const email_type = emailTypeArg ? emailTypeArg.split("=")[1] : "test";
+  const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
 
-  return { email_file, email_type, nonce };
+  return { email_file, email_type, intentHash, nonce };
 }
 
 export interface ICircuitInputs {
@@ -51,7 +53,7 @@ export interface ICircuitInputs {
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
   venmo_actor_id_idx?: string;
-  order_id?: string;
+  intent_hash?: string;
 
   // subject commands only
   command_idx?: string;
@@ -115,7 +117,7 @@ export async function getCircuitInputs(
   message: Buffer,
   body: Buffer,
   body_hash: string,
-  order_id: string,
+  intent_hash: string,
   circuit: CircuitType
 ): Promise<{
   valid: {
@@ -230,14 +232,14 @@ export async function getCircuitInputs(
       venmo_payer_id_idx,
       email_from_idx,
       // IDs
-      order_id
+      intent_hash
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
     const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
-
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
     const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
-    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_amount_idx, venmo_payee_id_idx);
+    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_amount_idx, venmo_payee_id_idx, email_timestamp_idx);
 
     circuitInputs = {
       in_padded,
@@ -250,10 +252,11 @@ export async function getCircuitInputs(
       body_hash_idx,
       // venmo specific indices
       venmo_amount_idx,
+      email_timestamp_idx,
       venmo_payee_id_idx,
       email_from_idx,
       // IDs
-      order_id,
+      intent_hash,
     };
   } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
     const actor_id_selector = Buffer.from('&actor_id=3D');
@@ -292,7 +295,7 @@ export async function getCircuitInputs(
 export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
-  order_id: string,
+  intent_hash: string,
   nonce_raw: number | string | null = null
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
@@ -338,7 +341,7 @@ export async function generate_inputs(
   const pubKeyData = pki.publicKeyFromPem(pubkey.toString());
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
-  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, order_id, type);
+  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type);
   return fin_result.circuitInputs;
 }
 
@@ -365,7 +368,8 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Email file read");
   const type = args.email_type as keyof typeof CircuitType;
   console.log("Email file type:", args.email_type)
-  const gen_inputs = await generate_inputs(email, type, "1", args.nonce);
+  console.log("Intent Hash", args.intentHash)
+  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
   console.log("Input generation successful");
   if (writeToFile) {
     const email_file_dir = args.email_file.substring(0, args.email_file.lastIndexOf("/") + 1);

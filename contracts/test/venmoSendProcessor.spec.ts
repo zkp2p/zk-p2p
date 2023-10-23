@@ -17,7 +17,7 @@ import { ZERO_BYTES32 } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x00000000000000000000000000000000000000000000000000000030302e3033","0x14465b905804512ffd4ed3425fd0d9d0f50947bddfd35bb55be9c29cca1e1c3a","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000000001"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x00000000000000000000000000000000000000000000000000000030302e3033","0x0000000000000000000000000000000000000000000000000033373633383631","0x0000000000000000000000000000000000000000000000000000000000393334","0x14465b905804512ffd4ed3425fd0d9d0f50947bddfd35bb55be9c29cca1e1c3a","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000000001"];
 
 describe("VenmoSendProcessor", () => {
   let owner: Account;
@@ -89,12 +89,12 @@ describe("VenmoSendProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x1a87563f29cf404a4d66152d3892a37eaef8c6d1f2fe54dc52bbdb1c21546ebf"), BigNumber.from("0x2cabfb196af15e9aed58afe4cb05593cf223ae46ed3425edd1ccc3e535d93bb3")]
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x24bf0d1870268c88da79e664a0ebefd19a91ca53e0f19374029c152ce6d27436"), BigNumber.from("0x2bd07613aa9649fd0305fb5617d5fba6d63712953ba08c83b5326b46fa43038c")]
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x2f76a35888dcc6855bea665e8f3f793272d1b9e6c0bb0fe04eacef01dd566ed4"), BigNumber.from("0x0d0619bb30fd2cda27b806fa4da9e0c53c003fc825ce83e47c93d45484a34b5a")],
-        [BigNumber.from("0x1bd5b1cf953ed111d155acaaada7932965804f08d17ab056849f7fa7ea0f96f6"), BigNumber.from("0x2f08c8aecf025fcb3620d2322905e6d9ad31abe6c31d7559ce8f81a7113cec15")]
+        [BigNumber.from("0x21a44c7052372e9fb99384bef6a0529360cae732b6461081d6cfe49a6412c489"), BigNumber.from("0x26b67a84191cd2f8f00e4f7ab7ab858301f7513188bf5c98620399e81904a90f")],
+        [BigNumber.from("0x1eaf4cff3be31e45dbe80392b2d7cac3df51b921f7d2f8f92e4d52fb1803cd12"), BigNumber.from("0x231afbd1cab29ee8cffeef4dfa53fe52d6e3ea3a750df09dafff0c71f5691563")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x1fbe955c3b167b5b91ffcf4dd9c205e64741847c4061ee07d2313a401724ccc2"), BigNumber.from("0x07bb6a521bcf9f8fe54218ee49ba4d33946b83b0e19aefd32abf36e6563ee053")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x2a179e9c14bb8094634dcdf79b3581c94bc143c36dc54277d8c3d0808a53bda1"), BigNumber.from("0x18b4193b39c8d12dfe4727e7c2ce9d323d01654f642de597655f9778425336de")];
       const signals: BigNumber[] = rawSignals.map((signal) => BigNumber.from(signal));
 
       subjectProof = {
@@ -118,19 +118,21 @@ describe("VenmoSendProcessor", () => {
     it("should process the proof", async () => {
       const {
         amount,
+        timestamp,
         offRamperIdHash,
         intentHash
       } = await subjectCallStatic();
 
       expect(amount).to.eq(usdc(30));
-      expect(offRamperIdHash).to.eq(rawSignals[5]);
+      expect(timestamp).to.eq(BigNumber.from(1683673439));
+      expect(offRamperIdHash).to.eq(rawSignals[7]);
       expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
     });
 
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await sendProcessor.isEmailNullified(subjectProof.signals[6].toHexString());
+      const isNullified = await sendProcessor.isEmailNullified(subjectProof.signals[8].toHexString());
 
       expect(isNullified).to.be.true;
     });
