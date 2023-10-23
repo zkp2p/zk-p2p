@@ -91,7 +91,7 @@ const Container = styled.button<AccessoryButtonProps>`
   border-radius: 18px;
   background: transparent;
   border: 1px solid #adb5bd;
-  padding: 0px 14px;
+  padding: 1px 14px 0px 14px;
   color: white;
   cursor: pointer;
   transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;

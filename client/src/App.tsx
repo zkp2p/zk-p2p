@@ -56,7 +56,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<RedirectToSwap />} />
                 <Route path="/swap" element={<Swap />} />
-                <Route path="/deposit" element={<Deposit />} />
+                <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />
                 <Route element={<>Not found</>} />

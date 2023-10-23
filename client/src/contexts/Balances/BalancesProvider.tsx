@@ -181,6 +181,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         usdcApprovalToRamp,
         refetchUsdcApprovalToRamp,
         refetchUsdcBalance,
+        shouldFetchUsdcBalance,
       }}
     >
       {children}

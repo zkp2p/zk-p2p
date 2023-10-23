@@ -26,7 +26,7 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  Registration requires a payment transaction email from Venmo. Your ID is encrypted to conceal your identity.
+  Registration requires a payment transaction email from Venmo. Your ID is hashed to conceal your identity.
 `;
 
 /*
