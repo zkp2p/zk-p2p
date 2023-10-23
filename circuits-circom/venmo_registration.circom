@@ -57,11 +57,10 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // VENMO EMAIL ACTOR ID REGEX
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
-    signal input venmo_actor_id_idx;
     signal reveal_actor_packed[max_actor_id_packed_bytes];
 
-    signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes]) <== VenmoActorId(max_body_bytes)(in_body_padded);
-
+    signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes], venmo_actor_id_idx) <== VenmoActorId(max_body_bytes)(in_body_padded);
+    log("venmo actor id", venmo_actor_id_idx);
     signal is_found_actor_id <== IsZero()(actor_id_regex_out);
     is_found_actor_id === 0;
 
@@ -76,7 +75,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 5365190
+    // TOTAL CONSTRAINTS: 5390230
 }
 
 // Args:

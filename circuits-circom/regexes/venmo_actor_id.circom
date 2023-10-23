@@ -189,4 +189,25 @@ template VenmoActorId (msg_bytes) {
     for (var i = 0; i < num_bytes; i++) {
         reveal[i] <== in[i] * states[i+1][1];
     }
+
+    // TODO: Verify this is constrained properly
+    signal temp_index[num_bytes+1];
+    signal prefix_sum[num_bytes+1];
+    signal output venmo_actor_id_idx;
+    component isz[num_bytes];
+    component eq2[num_bytes];
+    temp_index[0] <== 0;
+    prefix_sum[0] <== 0;
+    for (var i = 1; i <= num_bytes; i++) {
+        isz[i-1] = IsZero();
+        isz[i-1].in <== reveal[i-1];
+        prefix_sum[i] <== prefix_sum[i-1] + (1 - isz[i-1].out);
+
+        eq2[i-1] = IsEqual();
+        eq2[i-1].in[0] <== prefix_sum[i];
+        eq2[i-1].in[1] <== 1;
+        temp_index[i] <== temp_index[i-1] + eq2[i-1].out * (i-1);
+    }
+
+    venmo_actor_id_idx <== temp_index[num_bytes];
 }

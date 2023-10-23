@@ -2,7 +2,7 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked } from "./utils";
+import { chunkArray, bytesToPacked, findSubarrayIndexEndPlusOne } from "./utils";
 import { ethers } from "ethers";
 import ganache from "ganache";
 
@@ -142,7 +142,10 @@ describe("Venmo Registration", function () {
         const hashed_actor_id = witness[5];
 
         // Get expected packed offramper_id
-        const regex_start = Number(input["venmo_actor_id_idx"]);
+        const regex_start = findSubarrayIndexEndPlusOne(
+            input["in_body_padded"],
+            ["38","97","99","116","111","114","95","105","100","61","51","68"] // Look for `&actor_id=3D` in ascii
+        );
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("34"); // Look for `"` to end the actor_id which is 34 in ascii 
         const actor_id_array = regex_start_sub_array.slice(0, regex_end);

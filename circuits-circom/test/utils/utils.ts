@@ -77,3 +77,13 @@ export function hashSignatureGenRand(signature, n, k, poseidon) {
     let cm_rand = poseidon(cm_rand_input);
     return cm_rand;
 }
+
+export function findSubarrayIndexEndPlusOne(array, subarray) {
+    for (let i = 0; i <= array.length - subarray.length; i++) {
+        let slice = array.slice(i, i + subarray.length);
+        if (slice.every((value, index) => value === subarray[index])) {
+            return i + subarray.length;  // Adds the length of the subarray to the starting index
+        }
+    }
+    return -1;  // return -1 if the subarray is not found
+}
