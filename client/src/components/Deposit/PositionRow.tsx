@@ -28,8 +28,9 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
 
-  const depositRemainingLabel = `${availableDepositAmount} / ${totalDepositAmount}`;
-  const intentAmountLabel = `${intentCount} (${outstandingIntentAmount})`;
+  const depositRemainingLabel = `${availableDepositAmount} USDC`;
+  const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
+  const originalAmountLabel = `${totalDepositAmount} USDC`
 
   return (
     <Container>
@@ -43,18 +44,21 @@ export const PositionRow: React.FC<PositionRowProps> = ({
             </SummaryLabel>
             
             <SummaryLabel>
-              <SummaryLabelTitle>Outstanding Intents:&nbsp;</SummaryLabelTitle>
+              <SummaryLabelTitle>Outstanding Orders:&nbsp;</SummaryLabelTitle>
               <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
+            </SummaryLabel>
+
+            <PercentageLabel>
+              <Label>Conversion Rate:</Label>
+              <Value>{conversionRate}</Value>
+            </PercentageLabel>
+
+            <SummaryLabel>
+              <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
+              <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
             </SummaryLabel>
           </SummaryLabelsContainer>
         </SummaryLabelsAndIconContainer>
-
-        <FeeLabelsContainer>
-          <PercentageLabel>
-            <Label>Conversion Rate:</Label>
-            <Value>{conversionRate}</Value>
-          </PercentageLabel>
-        </FeeLabelsContainer>
       </PositionDetailsContainer>
 
       <ActionsContainer>
@@ -119,15 +123,6 @@ const SummaryLabelTitle = styled.span`
 const SummaryLabelValue = styled.span`
   font-size: 15px;
   color: #FFFFFF;
-`;
-
-const FeeLabelsContainer = styled.div`
-  width: 100%; 
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  padding-top: 12px;
-  color: #6C757D;
 `;
 
 const PercentageLabel = styled.div`
