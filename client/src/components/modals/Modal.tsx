@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
+import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 
 import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
@@ -22,6 +23,7 @@ interface ModalProps {
   publicSignals: string;
   onBackClick: () => void
   status: ProofGenerationStatus;
+  circuitType: CircuitType;
   buttonTitle: string;
   isSubmitProcessing: boolean;
   isSubmitSuccessful: boolean;
@@ -35,6 +37,7 @@ export const Modal: React.FC<ModalProps> = ({
   publicSignals,
   onBackClick,
   status,
+  circuitType,
   buttonTitle,
   isSubmitProcessing,
   isSubmitSuccessful,
@@ -181,6 +184,7 @@ export const Modal: React.FC<ModalProps> = ({
           key={0}
           type={VerificationStepType.DOWNLOAD}
           progress={downloadStepState}
+          circuitType={circuitType}
         />
       );
     }
@@ -190,6 +194,7 @@ export const Modal: React.FC<ModalProps> = ({
         key={1}
         type={VerificationStepType.PROVE}
         progress={proveStepState}
+        circuitType={circuitType}
       />
     );
 
@@ -198,6 +203,7 @@ export const Modal: React.FC<ModalProps> = ({
         key={2}
         type={VerificationStepType.VERIFY}
         progress={verificationStepState}
+        circuitType={circuitType}
       />
     );
 
@@ -206,6 +212,7 @@ export const Modal: React.FC<ModalProps> = ({
         key={3}
         type={VerificationStepType.SUBMIT}
         progress={submitStepState}
+        circuitType={circuitType}
       />
     );
     

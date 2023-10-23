@@ -81,9 +81,17 @@ export const PROOF_MODAL_VERIFY_SUBTITLE = `
 `;
 
 export const PROOF_MODAL_SUBMIT_TITLE = `
-  Complete Verification
+  Complete Order
+`;
+
+export const PROOF_MODAL_REGISTRATION_SUBMIT_TITLE = `
+  Complete Registration
 `;
 
 export const PROOF_MODAL_SUBMIT_SUBTITLE = `
-  Submit on chain to complete transaction
+  Submit transaction to complete the on ramp
+`;
+
+export const PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE = `
+  Submit transaction to complete registration
 `;

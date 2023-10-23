@@ -326,6 +326,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             publicSignals={publicSignals}
             onBackClick={handleModalBackClicked}
             status={status}
+            circuitType={circuitType}
             buttonTitle={getModalCtaTitle()}
             isSubmitProcessing={isSubmitProcessing}
             isSubmitSuccessful={isSubmitSuccessful}
