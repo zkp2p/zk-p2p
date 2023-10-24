@@ -876,6 +876,16 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the email timestamp is before the intent was signaled", async () => {
+        beforeEach(async () => {
+          subjectSignals[0] = ONE;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent was not created before send");
+        });
+      });
+
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
           subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
