@@ -152,7 +152,7 @@ describe("VenmoSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Email has already been used");
+        await expect(subject()).to.be.revertedWith("Nullifier has already been used");
       });
     });
 
