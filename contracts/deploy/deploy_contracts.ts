@@ -76,19 +76,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [SERVER_KEY_HASH],
   });
 
+  const nullifierRegistry = await deploy("NullifierRegistry", {
+    from: deployer,
+    args: [],
+  });
+
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
 
   const receiveProcessor = await deploy("VenmoReceiveProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
   console.log("Processors deployed...");
 
@@ -98,6 +103,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     registrationProcessor.address,
     sendProcessor.address
   );
+
+  console.log("Ramp initialized...");
+
+  const nullifierRegistryContract = await ethers.getContractAt("NullifierRegistry", nullifierRegistry.address);
+  await nullifierRegistryContract.addWritePermission(receiveProcessor.address);
+  await nullifierRegistryContract.addWritePermission(sendProcessor.address);
+
+  console.log("NullifierRegistry permissions added...");
   
   if (network == "goerli") {
     const usdcContract = await ethers.getContractAt("USDCMock", usdcAddress);
