@@ -98,6 +98,11 @@ describe("Ramp", () => {
       const maxOnRampAmount: BigNumber = await ramp.maxOnRampAmount();
       expect(maxOnRampAmount).to.eq(usdc(999));
     });
+
+    it("should have the correct owner set", async () => {
+      const keyHash = await ramp.owner();
+      expect(keyHash).to.eq(owner.address);
+    });
   });
 
   describe("#initialize", async () => {

@@ -1,11 +1,8 @@
 import "module-alias/register";
 
-import { ethers } from "hardhat";
-
 import { Account } from "@utils/test/types";
 import { ManagedKeyHashAdapter } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
-import { Address } from "@utils/types";
 
 import {
   getWaffleExpect,
@@ -39,6 +36,11 @@ describe("ManagedKeyHashAdapter", () => {
     it("should have the correct key hash", async () => {
       const keyHash = await keyHashAdapter.mailserverKeyHash();
       expect(keyHash).to.eq(venmoKeyHash);
+    });
+
+    it("should have the correct owner set", async () => {
+      const keyHash = await keyHashAdapter.owner();
+      expect(keyHash).to.eq(owner.address);
     });
   });
 

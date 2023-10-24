@@ -3,6 +3,7 @@
 import { BaseProcessor } from "./BaseProcessor.sol";
 import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
 
@@ -17,10 +18,11 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
     constructor(
         address _ramp,
         IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _emailFromAddress)
+        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
 
     /* ============ External Functions ============ */

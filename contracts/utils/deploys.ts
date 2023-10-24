@@ -14,7 +14,8 @@ import {
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
-  VenmoSendProcessor
+  VenmoSendProcessor,
+  NullifierRegistry
 } from "./contracts";
 import { Ramp__factory } from "../typechain/factories/contracts";
 import { 
@@ -29,6 +30,7 @@ import {
   VenmoSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
 import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
+import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
 import { ONE_DAY_IN_SECONDS } from "./constants";
 
 export default class DeployHelper {
@@ -62,30 +64,52 @@ export default class DeployHelper {
 
   public async deployVenmoRegistrationProcessor(
     ramp: Address,
-    venmoKeys: string,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
     emailFromAddress: string,
   ): Promise<VenmoRegistrationProcessor> {
-    return await new VenmoRegistrationProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
+    return await new VenmoRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
   }
 
   public async deployVenmoReceiveProcessor(
     ramp: Address,
-    venmoKeys: string,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
     emailFromAddress: string,
   ): Promise<VenmoReceiveProcessor> {
-    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
+    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
   }
 
   public async deployVenmoSendProcessor(
     ramp: Address,
-    venmoKeys: string,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
-    return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(ramp, venmoKeys, emailFromAddress);
+    return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
   }
 
   public async deployManagedKeyHashAdapter(venmoKeyHash: string): Promise<ManagedKeyHashAdapter> {
     return await new ManagedKeyHashAdapter__factory(this._deployerSigner).deploy(venmoKeyHash);
+  }
+
+  public async deployNullifierRegistry(): Promise<NullifierRegistry> {
+    return await new NullifierRegistry__factory(this._deployerSigner).deploy();
   }
 
   public async deployVenmoReceiveProcessorMock(): Promise<VenmoReceiveProcessorMock> {

@@ -3,6 +3,7 @@
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;
 
@@ -17,18 +18,21 @@ contract BaseProcessor is Ownable {
     /* ============ State Variables ============ */
     address public immutable ramp;
     IKeyHashAdapter public mailserverKeyHashAdapter;
+    INullifierRegistry public nullifierRegistry;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapter _mailserverKeyHashAdapter,
+        INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Ownable()
     {
         ramp = _ramp;
         mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
+        nullifierRegistry = _nullifierRegistry;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
@@ -56,5 +60,12 @@ contract BaseProcessor is Ownable {
 
     function getMailserverKeyHash() public view returns (bytes32) {
         return IKeyHashAdapter(mailserverKeyHashAdapter).mailserverKeyHash();
+    }
+
+    /* ============ Internal Functions ============ */
+
+    function _validateAndAddNullifier(bytes32 _nullifier) internal {
+        require(!nullifierRegistry.isNullified(_nullifier), "Nullifier has already been used");
+        nullifierRegistry.addNullifier(_nullifier);
     }
 }

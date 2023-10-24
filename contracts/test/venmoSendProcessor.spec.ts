@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapter, VenmoSendProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, NullifierRegistry, VenmoSendProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 import { Address, GrothProof } from "@utils/types";
 
@@ -25,6 +25,7 @@ describe("VenmoSendProcessor", () => {
   let ramp: Account;
 
   let keyHashAdapter: ManagedKeyHashAdapter;
+  let nullifierRegistry: NullifierRegistry;
   let sendProcessor: VenmoSendProcessor;
 
   let deployer: DeployHelper;
@@ -39,36 +40,24 @@ describe("VenmoSendProcessor", () => {
     deployer = new DeployHelper(owner.wallet);
 
     keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
+    nullifierRegistry = await deployer.deployNullifierRegistry();
     sendProcessor = await deployer.deployVenmoSendProcessor(
       ramp.address,
       keyHashAdapter.address,
+      nullifierRegistry.address,
       "venmo@venmo.com".padEnd(21, "\0")
     );
+
+    await nullifierRegistry.connect(owner.wallet).addWritePermission(sendProcessor.address);
   });
 
   describe("#constructor", async () => {
-    let subjectRamp: Address;
-    let subjectVenmoKeyHashAdapter: Address;
-    let subjectEmailFromAddress: string;
-
-    beforeEach(async () => {
-      subjectRamp = ramp.address;
-      subjectVenmoKeyHashAdapter = keyHashAdapter.address;
-      subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
-    });
-
-    async function subject(): Promise<any> {
-      return await deployer.deployVenmoSendProcessor(subjectRamp, subjectVenmoKeyHashAdapter, subjectEmailFromAddress);
-    }
-
     it("should set the correct state", async () => {
-      await subject();
-
       const rampAddress = await sendProcessor.ramp();
       const venmoKeyHashAdapter = await sendProcessor.mailserverKeyHashAdapter();
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
-      expect(rampAddress).to.eq(subjectRamp);
+      expect(rampAddress).to.eq(ramp.address);
       expect(venmoKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
@@ -122,7 +111,7 @@ describe("VenmoSendProcessor", () => {
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await sendProcessor.isEmailNullified(subjectProof.signals[8].toHexString());
+      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[8].toHexString());
 
       expect(isNullified).to.be.true;
     });
