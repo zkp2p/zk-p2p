@@ -142,13 +142,10 @@ describe("Venmo Registration", function () {
         const hashed_actor_id = witness[5];
 
         // Get expected packed offramper_id
-        const regex_start = findSubarrayIndexEndPlusOne(
-            input["in_body_padded"],
-            ["38","97","99","116","111","114","95","105","100","61","51","68"] // Look for `&actor_id=3D` in ascii
-        );
-        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("34"); // Look for `"` to end the actor_id which is 34 in ascii 
-        const actor_id_array = regex_start_sub_array.slice(0, regex_end);
+        const actor_id_selector = Buffer.from('&actor_id=3D');
+        const venmo_actor_id_start_idx = (Buffer.from(input['in_body_padded']).indexOf(actor_id_selector) + actor_id_selector.length);
+        const venmo_actor_id_end_idx = (Buffer.from(input['in_body_padded']).indexOf(Buffer.from('"', 'ascii'), venmo_actor_id_start_idx));
+        const actor_id_array = input['in_body_padded'].slice(venmo_actor_id_start_idx, venmo_actor_id_end_idx);
 
         // Chunk bytes into 7 and pack
         const chunkedArrays = chunkArray(actor_id_array, 7, 21);
