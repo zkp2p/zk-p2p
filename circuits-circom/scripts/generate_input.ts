@@ -57,7 +57,6 @@ export interface ICircuitInputs {
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
-  venmo_actor_id_idx?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -239,9 +238,7 @@ export async function getCircuitInputs(
       intent_hash,
     };
   } else if (circuit == CircuitType.EMAIL_VENMO_REGISTRATION) {
-    const actor_id_selector = Buffer.from('&actor_id=3D');
-    const venmo_actor_id_idx = (Buffer.from(bodyRemaining).indexOf(actor_id_selector) + actor_id_selector.length).toString();
-    console.log("Indexes into for venmo send email are: ", email_from_idx, venmo_actor_id_idx);
+    console.log("Indexes into for venmo send email are: ", email_from_idx);
 
     circuitInputs = {
       in_padded,
@@ -253,7 +250,6 @@ export async function getCircuitInputs(
       in_body_len_padded_bytes,
       body_hash_idx,
       // venmo specific indices
-      venmo_actor_id_idx,
       email_from_idx,
     };
   } else {
