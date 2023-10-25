@@ -142,6 +142,7 @@ describe("Venmo Registration", function () {
         const hashed_actor_id = witness[5];
 
         // Get expected packed offramper_id
+        // xxxx&actor_id=3Dxxxxxxxxxxxxxxxxxxx">
         const actor_id_selector = Buffer.from('&actor_id=3D');
         const venmo_actor_id_start_idx = (Buffer.from(input['in_body_padded']).indexOf(actor_id_selector) + actor_id_selector.length);
         const venmo_actor_id_end_idx = (Buffer.from(input['in_body_padded']).indexOf(Buffer.from('"', 'ascii'), venmo_actor_id_start_idx));
