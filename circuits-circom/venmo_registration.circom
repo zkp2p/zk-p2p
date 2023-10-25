@@ -1,9 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
-// include "@zk-email/circuits/helpers/extract.circom";
-// include "./stubs/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
 include "./utils/ceil.circom";
@@ -64,6 +64,12 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes], reveal_start_idx) <== VenmoActorId(max_body_bytes)(in_body_padded);    
     signal is_found_actor_id <== IsZero()(actor_id_regex_out);
     is_found_actor_id === 0;
+
+    for (var i = 0; i < max_body_bytes; i++) {
+        if (actor_id_regex_reveal[i] != 0) {
+            log(actor_id_regex_reveal[i]);
+        }
+    }
 
     // PACKING
     reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_id_len, pack_size)(actor_id_regex_reveal, reveal_start_idx);
