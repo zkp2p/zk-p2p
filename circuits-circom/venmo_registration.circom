@@ -2,6 +2,8 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/helpers/extract.circom";
+// include "./stubs/email-verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
 include "./utils/ceil.circom";
@@ -57,16 +59,14 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // VENMO EMAIL ACTOR ID REGEX
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
-    signal input venmo_actor_id_idx;
     signal reveal_actor_packed[max_actor_id_packed_bytes];
 
-    signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes]) <== VenmoActorId(max_body_bytes)(in_body_padded);
-
+    signal (actor_id_regex_out, actor_id_regex_reveal[max_body_bytes], reveal_start_idx) <== VenmoActorId(max_body_bytes)(in_body_padded);    
     signal is_found_actor_id <== IsZero()(actor_id_regex_out);
     is_found_actor_id === 0;
 
     // PACKING
-    reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_id_len, pack_size)(actor_id_regex_reveal, venmo_actor_id_idx);
+    reveal_actor_packed <== ShiftAndPack(max_body_bytes, max_actor_id_len, pack_size)(actor_id_regex_reveal, reveal_start_idx);
 
     // HASH ACTOR ID
     component hash = Poseidon(max_actor_id_packed_bytes);
@@ -76,7 +76,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 5365190
+    // TOTAL CONSTRAINTS: 5377710
 }
 
 // Args:
