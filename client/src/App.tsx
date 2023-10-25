@@ -5,6 +5,7 @@ import {
   Routes,
   useNavigate
 } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
@@ -89,7 +90,9 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                   <LiquidityProvider>
                     <OnRamperIntentsProvider>
                       <ProofGenSettingsProvider>
-                        { children }
+                        <GoogleOAuthProvider clientId="1045959776048-45j0c9oh1chdha5c92okbop243t9msf8.apps.googleusercontent.com">
+                          { children }
+                        </GoogleOAuthProvider>
                       </ProofGenSettingsProvider>
                     </OnRamperIntentsProvider>
                   </LiquidityProvider>
