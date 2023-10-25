@@ -4,7 +4,7 @@ This folder contains the Circom circuits for ZKP2P
 
 ## Venmo Emails
 
-Venmo uses the same HTML template for it's send, receive, request completed sent and request completed received emails. 
+Venmo uses the same HTML template for its send, receive, request completed sent and request completed received emails. 
 Although each email has different Venmo IDs, at the 4 spaces in the HTML template.
 
 
@@ -101,7 +101,7 @@ They both contain the Venmo payer ID and the payee ID. Hence we have abstracted 
 |----------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | VenmoPayerID   | `\r\ntps://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+`                         | Extracts the Venmo payer ID from both send and receive emails                                                                |
 | VenmoPayeeID   | `href=3D\"https://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9\|\r\|\n\|=)+`       | Extracts the Venmo payee ID from both send and receive emails                                                                |
-| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received and payment request completed received emails |
+| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed received and payment request completed sent emails |
 
 Circuits that use the Venmo regexes:
 
