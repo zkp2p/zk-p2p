@@ -135,8 +135,11 @@ The Venmo Payee ID regex is generated using [zk-regex](https://github.com/zkemai
 }
 ```
 
-### Venmo Actor ID Regex
-The Venmo Actor ID regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains ~330 bytes of HTML to prevent custom injection and index shifting attacks. Regex extracts after `actor_id=3D`. Notice that the regex is exactly the same as above, except the revealed regex string is different
+| Regex Template | Regex                                                                                           | Description                                                                                                                  |
+|----------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| VenmoPayerID   | `\r\ntps://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+`                         | Extracts the Venmo payer ID from both send and receive emails                                                                |
+| VenmoPayeeID   | `href=3D\"https://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9\|\r\|\n\|=)+`       | Extracts the Venmo payee ID from both send and receive emails                                                                |
+| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed received and payment request completed sent emails |
 
 ```json
 {
