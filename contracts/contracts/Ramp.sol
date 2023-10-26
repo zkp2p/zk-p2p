@@ -366,7 +366,7 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-remaper.Upon submission the proof is validated,
+     * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
      * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
      * @param _a        Parameter of zk proof
