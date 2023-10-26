@@ -2103,7 +2103,7 @@ template VenmoActorIdRegex(msg_bytes) {
     prefix_sum[0] <== 0;
     temp_index[0] <== 0;
     for (var i = 1; i <= num_bytes; i++) {
-        prefix_sum[i] <== prefix_sum[i-1] + (1 - states[i][1]);
+        prefix_sum[i] <== prefix_sum[i-1] + states[i][1];
 
         is_eq_one[i-1] = IsEqual();
         is_eq_one[i-1].in[0] <== prefix_sum[i];
