@@ -330,7 +330,8 @@ contract Ramp is Ownable {
     /**
      * @notice ONLY OFF-RAMPER: Must be submitted by off-ramper. Upon submission the proof is validated, intent is removed,
      * and deposit state is updated. USDC is transferred to the on-ramper and the defined convenience fee is sent to the off-
-     * ramper.
+     * ramper. THE OFF-RAMPER MUST VALIDATE THAT THE CORRECT AMOUNT OF USD WAS RECEIVED OFF-CHAIN, there is no validation for
+     * that on-chain.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -641,7 +642,7 @@ contract Ramp is Ownable {
 
         for (uint256 i = 0; i < intentHashes.length; ++i) {
             Intent memory intent = intents[intentHashes[i]];
-            if (intent.intentTimestamp + 1 days < block.timestamp) {
+            if (intent.intentTimestamp + intentExpirationPeriod < block.timestamp) {
                 prunableIntents[i] = intentHashes[i];
                 reclaimedAmount += intent.amount;
             }
@@ -715,7 +716,7 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
 
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
+        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match or intent does not exist");
 
         return (intent, intentHash);
     }

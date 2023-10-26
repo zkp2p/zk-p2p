@@ -872,7 +872,7 @@ describe("Ramp", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Onramper id does not match");
+          await expect(subject()).to.be.revertedWith("Onramper id does not match or intent does not exist");
         });
       });
 
@@ -892,7 +892,7 @@ describe("Ramp", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Onramper id does not match");
+          await expect(subject()).to.be.revertedWith("Onramper id does not match or intent does not exist");
         });
       });
 
