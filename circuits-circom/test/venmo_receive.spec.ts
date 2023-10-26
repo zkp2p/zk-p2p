@@ -112,6 +112,39 @@ describe("Venmo receive WASM tester", function () {
         });
     });
 
+    it("Should return the correct packed amount", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed amount
+        // Indexes 5 to 7 represent the packed amount (8 \ 7)
+        const packed_amount = witness.slice(5, 7);
+
+        // Get expected packed amount
+        const regex_start = Number(input["venmo_amount_idx"]);
+        const regex_start_sub_array = input["in_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the amount which is 13 in ascii
+        const amount_array = regex_start_sub_array.slice(0, regex_end);
+
+        // Chunk bytes into 7 and pack
+        let chunkedArrays = chunkArray(amount_array, 7, 10);
+
+        chunkedArrays.map((arr, i) => {
+            // Pack each chunk
+            let expectedValue = bytesToPacked(arr);
+
+            // Check packed amount is the same
+            assert.equal(expectedValue, packed_amount[i], true);
+        });
+    });
+
     it("Should return the correct packed timestamp", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
@@ -124,8 +157,8 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned packed timestamp
-        // Indexes 5 to 7 represent the packed timestamp; (10 \ 7)
-        const packed_timestamp = witness.slice(5, 7);
+        // Indexes 7 to 9 represent the packed timestamp; (10 \ 7)
+        const packed_timestamp = witness.slice(7, 9);
 
         // Get expected packed timestamp
         const regex_start = Number(input["email_timestamp_idx"]);
@@ -176,7 +209,7 @@ describe("Venmo receive WASM tester", function () {
 
         // Get returned hashed onramper_id
         // Indexes 7 represents the hashed onramper_id
-        const hashed_onramper_id = witness[7];
+        const hashed_onramper_id = witness[9];
 
         // Get expected packed onramper_id
         const regex_start = Number(input["venmo_payer_id_idx"]);
@@ -207,7 +240,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[8];
+        const nullifier = witness[10];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -217,7 +250,7 @@ describe("Venmo receive WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
-    it("Should return the correct intent hash", async () => {
+    it("Should return the correct order id", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
@@ -229,7 +262,7 @@ describe("Venmo receive WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[9];
+        const intent_hash = witness[11];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
