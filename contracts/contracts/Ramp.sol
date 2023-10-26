@@ -262,7 +262,7 @@ contract Ramp is Ownable {
      * @param _amount       The amount of USDC the user wants to on-ramp
      * @param _to           Address to forward funds to (can be same as onRamper)
      */
-    function signalIntent(uint256 _depositId, uint256 _amount, address _to)external onlyRegisteredUser {
+    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
         Deposit storage deposit = deposits[_depositId];
         bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;

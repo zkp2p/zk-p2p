@@ -34,7 +34,7 @@ contract VenmoReceiveProcessor is Groth16Verifier, IReceiveProcessor, BaseProces
         onlyRamp
         returns(uint256 timestamp, bytes32 onRamperIdHash, bytes32 intentHash)
     {
-        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects interactions, this should come first
 
         require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
 
