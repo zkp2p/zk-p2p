@@ -6,16 +6,12 @@ include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
-include "./regexes/from_regex.circom";
-include "./regexes/venmo_send_amount.circom";
-include "./regexes/venmo_payee_id.circom";
-include "./regexes/venmo_timestamp.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
 
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
-    var max_email_amount_len = 8; // Allowing max 5 fig amount + one decimal point + 2 decimal places. e.g. $2,500.00
+    var max_email_amount_len = 8; // Allowing max 4 fig amount + one decimal point + 2 decimal places. e.g. $2,500.00
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_email_timestamp_len = 10; // 10 digits till year 2286
     // 21 digits does not include the 3 chars `=\r\n` extracted from regex. These 3 chars will be removed during shift and pack
@@ -65,6 +61,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // VENMO SEND AMOUNT REGEX
+    // Note: this regex works for both receive and send emails. The alternative is to tighten up the regex so it only supports one kind of subject
     var max_email_amount_packed_bytes = count_packed(max_email_amount_len, pack_size);
     assert(max_email_amount_packed_bytes < max_header_bytes);
 
@@ -106,7 +103,6 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // PACKING
     // Special packing to skip over `=\r\n` only for Venmo payee ids
     reveal_payee_packed <== ShiftAndPackMaskedStrVenmoPayeeId(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
-    reveal_payer_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_payee_len, pack_size)(payer_regex_reveal, venmo_payer_id_idx);
     
     // HASH OFFRAMPER ID
     component hash_payee = Poseidon(max_venmo_id_packed_bytes);
@@ -134,7 +130,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 6080395
+    // TOTAL CONSTRAINTS: 6154754
 }
 
 // Args:
