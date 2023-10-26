@@ -108,7 +108,7 @@ describe("Venmo Registration", function () {
         });
     });
 
-    it.only("Should return the correct hashed actor id", async () => {
+    it("Should return the correct hashed actor id", async () => {
         const provider = new ethers.providers.Web3Provider(
             ganache.provider({
                 logging: {
@@ -147,19 +147,13 @@ describe("Venmo Registration", function () {
         const venmo_actor_id_start_idx = (Buffer.from(input['in_body_padded']).indexOf(actor_id_selector) + actor_id_selector.length);
         const venmo_actor_id_end_idx = (Buffer.from(input['in_body_padded']).indexOf(Buffer.from('"', 'ascii'), venmo_actor_id_start_idx));
         const actor_id_array = input['in_body_padded'].slice(venmo_actor_id_start_idx, venmo_actor_id_end_idx);
-        
-        // this is correct
-        console.log(actor_id_array);
+
         // Chunk bytes into 7 and pack
         const chunkedArrays = chunkArray(actor_id_array, 7, 21);
-        // this is packed correctly
-        console.log(chunkedArrays);
 
         const packed_actor_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
         const expected_hash = poseidon(packed_actor_id);
         const expected_hash_contract = await poseidonContract["poseidon(uint256[3])"](packed_actor_id);
-        // BUG: Circuit poseidon has is different here
-        console.log(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())));
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
