@@ -3,8 +3,8 @@
  */
 
 export const PROVING_TYPE_TOOLTIP = `
-  Fast verification sends your email to our servers for processing (20 secs).
-  Private verification processes in your browser(10 mins).
+  Fast verification sends your email to our servers for processing (30 seconds).
+  Private verification processes in your browser (10 minutes).
 `;
 
 export const INPUT_MODE_TOOLTIP = `
@@ -33,19 +33,20 @@ export const REGISTRATION_INSTRUCTIONS = `
  * Proof Form
  */
 
-export const PROOF_FORM_REGISTRATION_INSTRUCTIONS = `
-  Open any email from Venmo containing "You paid" or "paid you" in the subject. Select "Download message" and drag
-  the .eml file here or paste the contents directly.
+export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
+  Supply any previous transaction email from Venmo to register. Choose your input method and verification type below. Emails are never stored.
 `;
 
-export const PROOF_FORM_SEND_INSTRUCTIONS = `
-  Open the email from Venmo containing "You paid" in the subject for this order. Select "Download message" and drag
-  the .eml file here or paste the contents directly.
+export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
+  Supply the transaction email containing "You paid". Choose your input method and verification type below. Emails are never stored.
 `;
 
-export const PROOF_FORM_RECEIVE_INSTRUCTIONS = `
-  Open the email from Venmo containing "paid you" in the subject for this order. Select "Download message" and drag
-  the .eml file here or paste the contents directly.
+export const PROOF_FORM_TITLE_RECEIVE_INSTRUCTIONS = `
+  Supply the transaction email containing "paid you". Choose your input method and verification type below. Emails are never stored.
+`;
+
+export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `
+  Select "Download message" and drag the .eml file here or "Show original" and paste the contents directly.
 `;
 
 /*

@@ -179,7 +179,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         </TitleRow>
 
         <Content>
-        {!isLoggedIn ? (
+          {!isLoggedIn ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />

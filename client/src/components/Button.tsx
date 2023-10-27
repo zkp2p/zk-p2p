@@ -7,6 +7,7 @@ import Spinner from "./common/Spinner";
 interface ButtonProps {
   fullWidth?: boolean;
   height?: number;
+  fontSize?: number;
   disabled?: boolean;
   loading?: boolean;
   onClick?: () => void;
@@ -16,6 +17,7 @@ interface ButtonProps {
 export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   height = 48,
+  fontSize = 16,
   disabled = false,
   loading = false,
   onClick,
@@ -24,6 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
   <BaseButton
     fullWidth={fullWidth}
     height={height}
+    fontSize={fontSize}
     disabled={disabled}
     loading={loading}
     onClick={onClick}
@@ -42,7 +45,7 @@ const BaseButton = styled.button<ButtonProps>`
   text-align: center;
   color: white;
   font-weight: 700;
-  font-size: 16px;
+  font-size: ${({ fontSize }) => fontSize}px;
   font-family: 'Graphik';
   cursor: pointer;
   display: inline-block;

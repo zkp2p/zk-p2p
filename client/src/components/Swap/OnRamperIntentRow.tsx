@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from 'styled-components/macro'
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import { PaymentModal } from '@components/Swap/PaymentModal';
 
 
 interface IntentRowProps {
@@ -25,6 +26,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   IntentRow.displayName = "IntentRow";
 
   /*
+   * State
+   */
+
+  const [shouldShowPaymentModal, setShouldShowPaymentModal] = useState<boolean>(false);
+
+  /*
    * Helpers
    */
 
@@ -37,7 +44,11 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const handleSendClick = () => {
-    window.open(venmoLink, '_blank');
+    setShouldShowPaymentModal(true);
+  };
+
+  const handleModalBackClicked = () => {
+    setShouldShowPaymentModal(false);
   };
 
   /*
@@ -46,6 +57,14 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
+      {
+        shouldShowPaymentModal && (
+          <PaymentModal
+            link={venmoLink}
+            onBackClick={handleModalBackClicked} />
+        ) 
+      }
+
       <IntentDetailsContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>

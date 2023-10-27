@@ -9,16 +9,16 @@ import {
   useWaitForTransaction
 } from 'wagmi'
 
-import { TitleCenteredRow } from '../layouts/Row'
+import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { LabeledSwitch } from "../common/LabeledSwitch";
+import { NumberedStep } from "../common/NumberedStep";
+import { ProofSettings } from "@components/ProofGen/ProofSettings";
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
-import { PROVING_TYPE_TOOLTIP, PROOF_FORM_SEND_INSTRUCTIONS } from "@helpers/tooltips";
+import { PROOF_FORM_TITLE_SEND_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
-import useProofGenSettings from '@hooks/useProofGenSettings';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -34,7 +34,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Context
    */
-  const { isProvingTypeFast, setIsProvingTypeFast } = useProofGenSettings();
+  
   const {
     rampAddress,
     rampAbi,
@@ -150,12 +150,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
    * Handlers
    */
 
-  const handleProvingTypeChanged = (checked: boolean) => {
-    if (setIsProvingTypeFast) {
-      setIsProvingTypeFast(checked);
-    }
-  };
-
   // loading={isWriteSubmitOnRampLoading || isSubmitOnRampMining}
   // disabled={proof.length === 0 || publicSignals.length === 0 || isWriteSubmitOnRampLoading}
   const handleWriteSubmitOnRampClick = async () => {
@@ -172,62 +166,65 @@ export const OnRamp: React.FC<OnRampProps> = ({
   
   return (
     <Container>
-      <TitleCenteredRow style={{ paddingBottom: '1.5rem' }}>
-        <button
-          onClick={handleBackClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          <StyledArrowLeft/>
-        </button>
+      <TitleContainer>
+        <RowBetween style={{ paddingBottom: '1.5rem' }}>
+          <button
+            onClick={handleBackClick}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            <StyledArrowLeft/>
+          </button>
 
-        <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          Complete On-Ramp
-        </ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+            Complete On-Ramp
+          </ThemedText.HeadlineSmall>
+        </RowBetween>
 
-        <LabeledSwitch
-          switchChecked={isProvingTypeFast ?? true}
-          onSwitchChange={handleProvingTypeChanged}
-          checkedLabel={"Fast"}
-          uncheckedLabel={"Private"}
-          helperText={PROVING_TYPE_TOOLTIP}
-        />
-      </TitleCenteredRow>
+        <InstructionsAndTogglesContainer>
+          <NumberedStep>
+            {PROOF_FORM_TITLE_SEND_INSTRUCTIONS}
+          </NumberedStep>
 
-      <Body>
-        <ProofGenerationForm
-          instructions={PROOF_FORM_SEND_INSTRUCTIONS}
-          circuitType={CircuitType.EMAIL_VENMO_SEND}
-          circuitRemoteFilePath={SEND_KEY_FILE_NAME}
-          circuitInputs={selectedIntentHash}
-          remoteProofGenEmailType={RemoteProofGenEmailTypes.SEND}
-          proof={proof}
-          publicSignals={publicSignals}
-          setProof={setProof}
-          setPublicSignals={setPublicSignals}
-          isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
-          isSubmitSuccessful={isSubmitOnRampSuccessful}
-          handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
-        />
-      </Body>
+          <ProofSettings/>
+        </InstructionsAndTogglesContainer>
+      </TitleContainer>
+
+      <ProofGenerationForm
+        circuitType={CircuitType.EMAIL_VENMO_SEND}
+        circuitRemoteFilePath={SEND_KEY_FILE_NAME}
+        circuitInputs={selectedIntentHash}
+        remoteProofGenEmailType={RemoteProofGenEmailTypes.SEND}
+        proof={proof}
+        publicSignals={publicSignals}
+        setProof={setProof}
+        setPublicSignals={setPublicSignals}
+        isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
+        isSubmitSuccessful={isSubmitOnRampSuccessful}
+        handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
+      />
     </Container>
   );
 };
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
+const TitleContainer = styled.div`
   padding: 1.5rem;
   background-color: #0D111C;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
-const StyledArrowLeft = styled(ArrowLeft)`
-  color: #FFF;
+const InstructionsAndTogglesContainer = styled.div`
+  display: grid;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
-const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  align-self: flex-start;
-  justify-content: center;
+const StyledArrowLeft = styled(ArrowLeft)`
+  color: #FFF;
 `;

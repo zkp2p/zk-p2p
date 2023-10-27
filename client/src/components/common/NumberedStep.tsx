@@ -7,27 +7,28 @@ export const NumberedStep: React.FC<{
   children: React.ReactNode;
 }> = ({ step, children }) => {
   return (
-    <NumberedStepContainer>
+    <Container>
       {step !== undefined && (
-        <NumberedStepLabel>
+        <Label>
           <span>{step}</span>
-        </NumberedStepLabel>
+        </Label>
       )}
       <NumberedStepText>{children}</NumberedStepText>
-    </NumberedStepContainer>
+    </Container>
   );
 };
 
-const NumberedStepContainer = styled(Row)`
+const Container = styled(Row)`
   background: rgba(255, 255, 255, 0.05);
   gap: 1rem;
   border-radius: 12px;
   padding: 12px 16px;
   color: #fff;
   line-height: 1.4;
+  font-size: 15px;
 `;
 
-const NumberedStepLabel = styled(CenterAllDiv)`
+const Label = styled(CenterAllDiv)`
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   width: 24px;
