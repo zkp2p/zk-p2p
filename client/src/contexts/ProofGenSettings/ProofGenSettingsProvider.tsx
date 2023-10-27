@@ -18,6 +18,7 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   
   const storedProvingTypeSetting = localStorage.getItem('isProvingTypeRemote');
   const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
+  const storedEmailModeSetting = localStorage.getItem('isEmailModeAuth');
   
   const [isProvingTypeRemote, setIsProvingTypeRemote] = useState<boolean>(
     storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
@@ -25,6 +26,10 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
 
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
     storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : true
+  );
+
+  const [isEmailModeAuth, setIsEmailModeAuth] = useState<boolean>(
+    storedEmailModeSetting !== null ? JSON.parse(storedEmailModeSetting) : true
   );
 
   /*
@@ -39,13 +44,19 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
     localStorage.setItem('isEmailInputPreferenceDrag', JSON.stringify(isEmailInputSettingDrag));
   }, [isEmailInputSettingDrag]);
 
+  useEffect(() => {
+    localStorage.setItem('isEmailModeAuth', JSON.stringify(isEmailModeAuth));
+  }, [isEmailModeAuth]);
+
   return (
     <ProofGenSettingsContext.Provider
       value={{
+        isEmailModeAuth,
         isProvingTypeFast: isProvingTypeRemote,
         isInputModeDrag: isEmailInputSettingDrag,
+        setIsEmailModeAuth,
         setIsProvingTypeFast: setIsProvingTypeRemote,
-        setIsInputModeDrag: setIsEmailInputSettingDrag
+        setIsInputModeDrag: setIsEmailInputSettingDrag,
       }}
     >
       {children}
