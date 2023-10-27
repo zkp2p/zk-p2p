@@ -3011,6 +3011,7 @@ __metadata:
     "@types/tar-stream": ^2.2.2
     "@zk-email/circuits": ^3.2.0
     "@zk-email/helpers": ^2.0.0
+    "@zk-email/zk-regex-circom": ^1.1.1
     babel-preset-jest: ^29.5.0
     browserify-fs: ^1.0.0
     browserstack-local: ^1.5.1

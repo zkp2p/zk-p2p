@@ -13,6 +13,7 @@
   "dependencies": {
     "@zk-email/circuits": "^3.2.0",
     "@zk-email/helpers": "^2.0.0",
+    "@zk-email/zk-regex-circom": "^1.1.1",
     "buffer": "^6.0.3",
     "circomlib": "^2.0.5",
     "ethers": "^5.5.1",
