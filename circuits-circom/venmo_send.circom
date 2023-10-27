@@ -1,11 +1,11 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// include "@zk-email/circuits/email-verifier.circom";
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
+include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/helpers/extract.circom";
+// include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
-include "@zk-email/zk-regex-circom/circuits/common/timestamp_regex.circom";
+include "./regexes/venmo_timestamp.circom";
 include "./regexes/venmo_amount.circom";
 include "./regexes/venmo_payee_id.circom";
 include "./utils/ceil.circom";
@@ -89,7 +89,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output reveal_email_timestamp_packed[max_email_timestamp_packed_bytes]; // packed into 7-bytes
 
     signal timestamp_regex_out, timestamp_regex_reveal[max_header_bytes];
-    (timestamp_regex_out, timestamp_regex_reveal) <== TimestampRegex(max_header_bytes)(in_padded);
+    (timestamp_regex_out, timestamp_regex_reveal) <== VenmoTimestampRegex(max_header_bytes)(in_padded);
     timestamp_regex_out === 1;
 
     // PACKING
@@ -142,7 +142,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 7513102
+    // TOTAL CONSTRAINTS: 6826579
 }
 
 // Args:
