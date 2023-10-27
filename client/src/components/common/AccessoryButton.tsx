@@ -5,13 +5,14 @@ import {
   LogOut,
   Send,
   Trash2,
-  UserX
+  UserX,
+  RefreshCw
 } from 'react-feather';
 
 import Spinner from "@components/common/Spinner";
 
 
-type iconType = "send" | "chevronRight" | "trash" | "userX" | "logout";
+type iconType = "send" | "chevronRight" | "trash" | "userX" | "logout" | "refresh";
 
 interface AccessoryButtonProps {
   fullWidth?: boolean;
@@ -49,6 +50,9 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
 
       case "logout":
         return <StyledLogOut />;
+
+      case "refresh":
+        return <StyledRefresh />;
 
       case "trash":
         return <StyledTrash />;
@@ -155,6 +159,13 @@ const StyledChevronRight = styled(ChevronRight)`
 `;
 
 const StyledLogOut = styled(LogOut)`
+  width: 15px;
+  height: 15px;
+  color: #adb5bd;
+  margin-left: 2px;
+`;
+
+const StyledRefresh = styled(RefreshCw)`
   width: 15px;
   height: 15px;
   color: #adb5bd;
