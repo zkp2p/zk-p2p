@@ -112,7 +112,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   useEffect(() => {
     setSelectedIndex(null);
     setEmailFull('');
-  }, [fetchedEmails, setEmailFull]);
+  }, [fetchedEmails]);
   
   /*
    * Component
