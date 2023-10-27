@@ -9,17 +9,13 @@ import {
 import { wrap } from 'comlink';
 import * as crypto from 'crypto';
 
-import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
-import { LabeledTextArea } from '../legacy/LabeledTextArea';
-import { NumberedStep } from "../common/NumberedStep";
-import { DragAndDropTextBox } from "../common/DragAndDropTextBox";
-import { LabeledSwitch } from "../common/LabeledSwitch";
 import { ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal';
+import { MailTable } from '@components/ProofGen/MailTable';
+import { UploadEmail } from '@components/ProofGen/UploadEmail';
 
-import { PLACEHOLDER_EMAIL_BODY, HOSTED_FILES_PATH } from "@helpers/constants";
-import { INPUT_MODE_TOOLTIP } from "@helpers/tooltips";
+import { HOSTED_FILES_PATH } from "@helpers/constants";
 import { downloadProofFiles } from "@helpers/zkp";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
@@ -28,7 +24,6 @@ import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
-  instructions: string;
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
   circuitInputs: string;
@@ -43,7 +38,6 @@ interface ProofGenerationFormProps {
 }
  
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
-  instructions,
   circuitType,
   circuitRemoteFilePath,
   circuitInputs,
@@ -63,8 +57,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    */
   const {
     isProvingTypeFast,
-    isInputModeDrag,
     setIsInputModeDrag,
+    isEmailModeAuth,
   } = useProofGenSettings();
   const { setExtractedVenmoId } = useRegistration();
   
@@ -150,28 +144,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setShouldShowVerificationModal(false);
   };
 
-  const handleEmailInputTypeChanged = (checked: boolean) => {
-    if (setIsInputModeDrag) {
-      setIsInputModeDrag(checked);
-    }
-  };
-
   /*
    * Helpers
    */
-
-  const onFileDrop = async (file: File) => {
-    if (file.name.endsWith(".eml")) {
-      const content = await file.text();
-      setEmailFull(content);
-
-      if (setIsInputModeDrag) {
-        setIsInputModeDrag(false);
-      }
-    } else {
-      alert("Only .eml files are allowed.");
-    }
-  };
 
   const getModalCtaTitle = () => {
     switch (circuitType) {
@@ -197,6 +172,14 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         setExtractedVenmoId(actorId);
     } else {
         console.log("No actor ID found.");
+    }
+  };
+
+  const setEmailAndToggleInputMode = (email: string) => {
+    setEmailFull(email);
+
+    if (setIsInputModeDrag) {
+      setIsInputModeDrag(false);
     }
   };
 
@@ -335,48 +318,23 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         ) 
       }
 
-      <NumberedStep>
-        {instructions}
-      </NumberedStep>
+      <VerticalDivider/>
 
-      <EmailTitleRowAndTextAreaContainer>
-        <TitleAndEmailSwitchRowContainer>
-          Email
-          <LabeledSwitch
-            switchChecked={isInputModeDrag ?? true}
-            onSwitchChange={handleEmailInputTypeChanged}
-            checkedLabel={"Drag"}
-            uncheckedLabel={"Paste"}
-            helperText={INPUT_MODE_TOOLTIP}
-          />
-        </TitleAndEmailSwitchRowContainer>
-
-        {isInputModeDrag ? (
-          <DragAndDropTextBox
-            onFileDrop={onFileDrop}
+      {
+        isEmailModeAuth ? (
+          <MailTable
+            setEmailFull={setEmailAndToggleInputMode}
+            handleVerifyEmailClicked={handleVerifyEmailClicked}
           />
         ) : (
-          <LabeledTextArea
-            label=""
-            value={emailFull}
-            placeholder={PLACEHOLDER_EMAIL_BODY}
-            onChange={(e) => {
-              setEmailFull(e.currentTarget.value);
-            }}
-            height={"28vh"}
+          <UploadEmail
+            email={emailFull}
+            setEmail={setEmailFull}
+            handleVerifyEmailClicked={handleVerifyEmailClicked}
+            isProofModalOpen={isRemoteGenerateProofLoading}
           />
-        )}
-      </EmailTitleRowAndTextAreaContainer>
-      
-      <ButtonContainer>
-        <Button
-          disabled={emailFull.length === 0}
-          loading={isRemoteGenerateProofLoading}
-          onClick={handleVerifyEmailClicked}
-        >
-          Verify Email
-        </Button>
-      </ButtonContainer>
+        )
+      }
     </Container>
   );
 };
@@ -385,18 +343,8 @@ const Container = styled(Col)`
   gap: 1rem;
 `;
 
-const EmailTitleRowAndTextAreaContainer = styled(Col)`
-  gap: 0.25rem;
-`;
-
-const ButtonContainer = styled.div`
-  display: grid;
-  padding-top: 1rem;
-`;
-
-const TitleAndEmailSwitchRowContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-left: 8px;
+const VerticalDivider = styled.div`
+  height: 32px;
+  border-left: 1px solid #98a1c03d;
+  margin: 0 auto;
 `;
