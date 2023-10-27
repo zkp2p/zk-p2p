@@ -2,7 +2,7 @@
   "parts": [
     {
       "is_public": false,
-      "regex_def": "   href=3D\"https://venmo.com/code\\?user_id=3D"
+      "regex_def": "user_id=3D"
     },
     {
       "is_public": true,
