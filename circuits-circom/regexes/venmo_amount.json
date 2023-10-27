@@ -2,15 +2,15 @@
   "parts": [
     {
       "is_public": false,
-      "regex_def": "&actor_id=3D"
+      "regex_def": "\\$"
     },
     {
       "is_public": true,
-      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9|.|,)+"
     },
     {
       "is_public": false,
-      "regex_def": "\">\r\n"
+      "regex_def": "\r\n"
     }
   ]
 }
