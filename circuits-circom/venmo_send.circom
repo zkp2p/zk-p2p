@@ -1,12 +1,12 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
-// include "@zk-email/circuits/helpers/extract.circom";
-// include "./stubs/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 include "./regexes/venmo_timestamp.circom";
-include "./regexes/venmo_amount.circom";
+include "./regexes/venmo_send_amount.circom";
 include "./regexes/venmo_payee_id.circom";
 include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
@@ -76,7 +76,12 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output reveal_email_amount_packed[max_email_amount_packed_bytes]; // packed into 7-bytes. TODO: make this rotate to take up even less space
 
     signal amount_regex_out, amount_regex_reveal[max_header_bytes];
-    (amount_regex_out, amount_regex_reveal) <== VenmoAmountRegex(max_header_bytes)(in_padded);
+    (amount_regex_out, amount_regex_reveal) <== VenmoSendAmountRegex(max_header_bytes)(in_padded);
+    for (var i = 0; i < max_header_bytes; i++) {
+        if (amount_regex_reveal[i] != 0) {
+            log("amount", amount_regex_reveal[i]);
+        }
+    }
     amount_regex_out === 1;
 
     reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, venmo_amount_idx);
@@ -105,7 +110,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal is_found_payee <== IsZero()(payee_regex_out);
     for (var i = 0; i < max_body_bytes; i++) {
         if (payee_regex_reveal[i] != 0) {
-            log(payee_regex_reveal[i]);
+            log("payee id", payee_regex_reveal[i]);
         }
     }   
     is_found_payee === 0;
