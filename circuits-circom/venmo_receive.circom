@@ -2,14 +2,14 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/email-verifier.circom";
-include "@zk-email/circuits/regexes/from_regex.circom";
+include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
+include "@zk-email/circuits/helpers/extract.circom";
 include "./regexes/venmo_amount.circom";
 include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./utils/ceil.circom";
-include "./utils/extract.circom";
 
 template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -57,7 +57,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input email_from_idx;
     signal output reveal_email_from_packed[max_email_from_packed_bytes]; // packed into 7-bytes
 
-    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegex(max_header_bytes)(in_padded);
+    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromAddrRegex(max_header_bytes)(in_padded);
     from_regex_out === 1;
     reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
