@@ -234,7 +234,7 @@ describe("Venmo receive WASM tester", function () {
     });
 
     // NOTE: WOULD FAIL IF YOU ARE USING STUB.
-    it("Should return the correct nullifier", async () => {
+    it.skip("Should return the correct nullifier", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_receive.json");
