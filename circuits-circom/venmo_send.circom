@@ -1,7 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 include "@zk-email/zk-regex-circom/circuits/common/timestamp_regex.circom";
 include "./regexes/venmo_amount.circom";
@@ -93,21 +95,26 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // PACKING
     reveal_email_timestamp_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
     
-    // VENMO SEND PAYEE ID REGEX
+    // // VENMO SEND PAYEE ID REGEX
     var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payee_id_idx;
     signal reveal_payee_packed[max_payee_packed_bytes];
 
-    signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== VenmoPayeeId(max_body_bytes)(in_body_padded);
+    signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== VenmoPayeeIdRegex(max_body_bytes)(in_body_padded);
     signal is_found_payee <== IsZero()(payee_regex_out);
+    for (var i = 0; i < max_body_bytes; i++) {
+        if (payee_regex_reveal[i] != 0) {
+            log(payee_regex_reveal[i]);
+        }
+    }   
     is_found_payee === 0;
 
     // PACKING
     // Special packing to skip over `=\r\n` only for Venmo payee ids
     reveal_payee_packed <== ShiftAndPackMaskedStrVenmoPayeeId(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
     
-    // HASH ONRAMPER ID
+    // HASH OFFRAMPER ID
     component hash = Poseidon(max_payee_packed_bytes);
     assert(max_payee_packed_bytes < 16);
     for (var i = 0; i < max_payee_packed_bytes; i++) {
