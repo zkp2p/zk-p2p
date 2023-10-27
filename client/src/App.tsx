@@ -26,6 +26,7 @@ import PermissionsProvider from './contexts/Permissions/PermissionsProvider';
 import OnRamperIntentsProvider  from './contexts/OnRamperIntents/OnRamperIntentsProvider';
 import LiquidityProvider from './contexts/Liquidity/LiquidityProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
+import GoogleAuthProvider from './contexts/GoogleAuth/GoogleAuthProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -91,7 +92,9 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                     <OnRamperIntentsProvider>
                       <ProofGenSettingsProvider>
                         <GoogleOAuthProvider clientId="1045959776048-45j0c9oh1chdha5c92okbop243t9msf8.apps.googleusercontent.com">
-                          { children }
+                          <GoogleAuthProvider>
+                            { children }
+                          </GoogleAuthProvider>
                         </GoogleOAuthProvider>
                       </ProofGenSettingsProvider>
                     </OnRamperIntentsProvider>
