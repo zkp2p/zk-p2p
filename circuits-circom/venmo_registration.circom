@@ -1,7 +1,7 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+include "./utils/email_verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
 include "./utils/ceil.circom";
@@ -76,7 +76,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 5423507
+    // TOTAL CONSTRAINTS: 5431521
 }
 
 // Args:
