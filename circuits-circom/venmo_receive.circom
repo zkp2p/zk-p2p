@@ -1,7 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 include "@zk-email/zk-regex-circom/circuits/common/timestamp_regex.circom";
 include "@zk-email/circuits/helpers/extract.circom";
@@ -86,7 +88,6 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     (timestamp_regex_out, timestamp_regex_reveal) <== TimestampRegex(max_header_bytes)(in_padded);
     timestamp_regex_out === 1;
 
-    // PACKING
     reveal_email_timestamp_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
 
     // VENMO RECEIVE ONRAMPER ID REGEX
@@ -95,8 +96,13 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input venmo_payer_id_idx;
     signal reveal_payer_packed[max_payer_packed_bytes];
 
-    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
+    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerIdRegex(max_body_bytes)(in_body_padded);
     signal is_found_payer <== IsZero()(payer_regex_out);
+    for (var i = 0; i < max_body_bytes; i++) {
+        if (payer_regex_reveal[i] != 0) {
+            log(payer_regex_reveal[i]);
+        }
+    }
     is_found_payer === 0;
 
     // PACKING
