@@ -58,6 +58,8 @@ contract Ramp is Ownable {
     event UserAddedToDenylist(bytes32 listOwner, bytes32 deniedUser);
     event UserRemovedFromDenylist(bytes32 listOwner, bytes32 approvedUser);
     event MinDepositAmountSet(uint256 minDepositAmount);
+    event MaxOnRampAmountSet(uint256 maxOnRampAmount);
+    event IntentExpirationPeriodSet(uint256 intentExpirationPeriod);
     event NewSendProcessorSet(address sendProcessor);
     event NewRegistrationProcessorSet(address registrationProcessor);
     event NewReceiveProcessorSet(address receiveProcessor);
@@ -65,8 +67,8 @@ contract Ramp is Ownable {
     /* ============ Structs ============ */
 
     struct AccountInfo {
-        bytes32 venmoIdHash;
-        uint256[] deposits;
+        bytes32 venmoIdHash;                // Poseidon hash of account's venmoId
+        uint256[] deposits;                 // Array of open account deposits
     }
 
     struct Deposit {
@@ -80,27 +82,33 @@ contract Ramp is Ownable {
     }
 
     struct DepositWithAvailableLiquidity {
-        uint256 depositId;
-        Deposit deposit;
-        uint256 availableLiquidity;
+        uint256 depositId;                  // ID of the deposit
+        Deposit deposit;                    // Deposit struct
+        uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
 
     struct Intent {
-        address onRamper;
-        address to;
-        uint256 deposit;
-        uint256 amount;
-        uint256 intentTimestamp;
+        address onRamper;                   // On-ramper's address
+        address to;                         // Address to forward funds to (can be same as onRamper)
+        uint256 deposit;                    // ID of the deposit the intent is signaling on
+        uint256 amount;                     // Amount of USDC the on-ramper signals intent for on-chain
+        uint256 intentTimestamp;            // Timestamp of when the intent was signaled
     }
 
     struct IntentWithOnRamperId {
-        Intent intent;
-        bytes32 onRamperIdHash;
+        Intent intent;                      // Intent struct
+        bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's venmoId
     }
 
     struct DenyList {
-        bytes32[] deniedUsers;
-        mapping(bytes32 => bool) isDenied;
+        bytes32[] deniedUsers;              // Array of venmoIdHashes that are denied from taking depositors liquidity
+        mapping(bytes32 => bool) isDenied;  // Mapping of venmoIdHash to boolean indicating if the user is denied
+    }
+
+    /* ============ Modifiers ============ */
+    modifier onlyRegisteredUser() {
+        require(accounts[msg.sender].venmoIdHash != bytes32(0), "Caller must be registered user");
+        _;
     }
 
     /* ============ Constants ============ */
@@ -109,36 +117,42 @@ contract Ramp is Ownable {
     uint256 constant CIRCOM_PRIME_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
     
     /* ============ State Variables ============ */
-    IERC20 public immutable usdc;
-    IPoseidon public immutable poseidon;
-    IReceiveProcessor public receiveProcessor;
-    IRegistrationProcessor public registrationProcessor;
-    ISendProcessor public sendProcessor;
+    IERC20 public immutable usdc;                               // USDC token contract
+    IPoseidon public immutable poseidon;                        // Poseidon hashing contract
+    IReceiveProcessor public receiveProcessor;                  // Address of receive processor contract verifies onRampWithReceiveEmail emails
+    IRegistrationProcessor public registrationProcessor;        // Address of registration processor contract, verifies registration e-mails
+    ISendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
-    bool internal isInitialized;
+    bool internal isInitialized;                                // Indicates if contract has been initialized
 
-    mapping(bytes32 => DenyList) internal userDenylist;                 // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
-                                                                        // signal an intent on their deposit
+    mapping(bytes32 => DenyList) internal userDenylist;         // Mapping of venmoIdHash to user's deny list. User's on deny list cannot
+                                                                // signal an intent on their deposit
     mapping(address => AccountInfo) internal accounts;
-    mapping(bytes32 => bytes32) public venmoIdIntent;                   // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
-    mapping(uint256 => Deposit) public deposits;
-    mapping(bytes32 => Intent) public intents;
+    mapping(bytes32 => bytes32) public venmoIdIntent;           // Mapping of venmoIdHash to intentHash, we limit one intent per venmoId
+    mapping(uint256 => Deposit) public deposits;                // Mapping of depositIds to deposit structs
+    mapping(bytes32 => Intent) public intents;                  // Mapping of intentHashes to intent structs
 
-    uint256 public minDepositAmount;
-    uint256 public depositCounter;
+    uint256 public minDepositAmount;                            // Minimum amount of USDC that can be deposited
+    uint256 public maxOnRampAmount;                             // Maximum amount of USDC that can be on-ramped in a single transaction
+    uint256 public intentExpirationPeriod;                      // Time period after which an intent can be pruned from the system
+    uint256 public depositCounter;                              // Counter for depositIds
 
     /* ============ Constructor ============ */
     constructor(
         address _owner,
         IERC20 _usdc,
         IPoseidon _poseidon,
-        uint256 _minDepositAmount
+        uint256 _minDepositAmount,
+        uint256 _maxOnRampAmount,
+        uint256 _intentExpirationPeriod
     )
         Ownable()
     {
         usdc = _usdc;
         poseidon = _poseidon;
         minDepositAmount = _minDepositAmount;
+        maxOnRampAmount = _maxOnRampAmount;
+        intentExpirationPeriod = _intentExpirationPeriod;
 
         transferOwnership(_owner);
     }
@@ -171,7 +185,7 @@ contract Ramp is Ownable {
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction.
+     * sender of the transaction. One venmo account can be registered to multiple Ethereum addresses.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -207,18 +221,20 @@ contract Ramp is Ownable {
         uint256[3] memory _packedVenmoId,
         uint256 _depositAmount,
         uint256 _receiveAmount
-    ) external {
-        bytes32 _venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
+    )
+        external
+        onlyRegisteredUser
+    {
+        bytes32 venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
 
+        require(accounts[msg.sender].venmoIdHash == venmoIdHash, "Sender must be the account owner");
         require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
-        require(accounts[msg.sender].venmoIdHash == _venmoIdHash, "Sender must be the account owner");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
 
         uint256 conversionRate = (_depositAmount * PRECISE_UNIT) / _receiveAmount;
         uint256 depositId = depositCounter++;
 
-        usdc.transferFrom(msg.sender, address(this), _depositAmount);
         accounts[msg.sender].deposits.push(depositId);
 
         deposits[depositId] = Deposit({
@@ -231,7 +247,9 @@ contract Ramp is Ownable {
             intentHashes: new bytes32[](0)
         });
 
-        emit DepositReceived(depositId, _venmoIdHash, _depositAmount, conversionRate);
+        usdc.transferFrom(msg.sender, address(this), _depositAmount);
+
+        emit DepositReceived(depositId, venmoIdHash, _depositAmount, conversionRate);
     }
 
     /**
@@ -242,14 +260,19 @@ contract Ramp is Ownable {
      *
      * @param _depositId    The ID of the deposit the on-ramper intends to use for 
      * @param _amount       The amount of USDC the user wants to on-ramp
+     * @param _to           Address to forward funds to (can be same as onRamper)
      */
-    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external {
+    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
         bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
         Deposit storage deposit = deposits[_depositId];
         bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
 
+        require(deposit.depositor != address(0), "Deposit does not exist");
         require(!userDenylist[depositorVenmoIdHash].isDenied[venmoIdHash], "Onramper on depositor's denylist");
         require(_amount > 0, "Signaled amount must be greater than 0");
+        require(_amount <= maxOnRampAmount, "Signaled amount must be less than max on-ramp amount");
+        require(accounts[deposit.depositor].venmoIdHash != accounts[msg.sender].venmoIdHash, "Sender cannot be the depositor");
+        require(_to != address(0), "Cannot send to zero address");
         require(venmoIdIntent[venmoIdHash] == bytes32(0), "Intent still outstanding");
 
         bytes32 intentHash = _calculateIntentHash(venmoIdHash, _depositId);
@@ -292,11 +315,11 @@ contract Ramp is Ownable {
      */
     function cancelIntent(bytes32 _intentHash) external {
         Intent memory intent = intents[_intentHash];
+        
         require(intent.intentTimestamp != 0, "Intent does not exist");
+        require(intent.onRamper == msg.sender, "Sender must be the on-ramper");
 
         Deposit storage deposit = deposits[intent.deposit];
-
-        require(intent.onRamper == msg.sender, "Sender must be the on-ramper");
 
         _pruneIntent(deposit, _intentHash);
 
@@ -307,7 +330,8 @@ contract Ramp is Ownable {
     /**
      * @notice ONLY OFF-RAMPER: Must be submitted by off-ramper. Upon submission the proof is validated, intent is removed,
      * and deposit state is updated. USDC is transferred to the on-ramper and the defined convenience fee is sent to the off-
-     * ramper.
+     * ramper. THE OFF-RAMPER MUST VALIDATE THAT THE CORRECT AMOUNT OF USD WAS RECEIVED OFF-CHAIN, there is no validation for
+     * that on-chain.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -343,8 +367,8 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Upon submission the proof is validated, intent is removed, and deposit state is updated. USDC is transferred
-     * to the on-ramper.
+     * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
+     * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -377,9 +401,9 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Caller must be the depositor for each depositId in the array. Depositor is returned all remaining deposits
-     * and any outstanding intents that are expired. If an intent is not expired then those funds will not be returned. Deposit
-     * will be deleted as long as there are no more outstanding intents.
+     * @notice Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all
+     * remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be
+     * returned. Deposit will be deleted as long as there are no more outstanding intents.
      *
      * @param _depositIds   Array of depositIds the depositor is attempting to withdraw
      */
@@ -418,7 +442,7 @@ contract Ramp is Ownable {
      *
      * @param _deniedUser   Poseidon hash of the venmoId being banned
      */
-    function addAccountToDenylist(bytes32 _deniedUser) external {
+    function addAccountToDenylist(bytes32 _deniedUser) external onlyRegisteredUser {
         bytes32 denyingUser = accounts[msg.sender].venmoIdHash;
 
         require(!userDenylist[denyingUser].isDenied[_deniedUser], "User already on denylist");
@@ -434,7 +458,7 @@ contract Ramp is Ownable {
      *
      * @param _approvedUser   Poseidon hash of the venmoId being approved
      */
-    function removeAccountFromDenylist(bytes32 _approvedUser) external {
+    function removeAccountFromDenylist(bytes32 _approvedUser) external onlyRegisteredUser {
         bytes32 approvingUser = accounts[msg.sender].venmoIdHash;
 
         require(userDenylist[approvingUser].isDenied[_approvedUser], "User not on denylist");
@@ -488,6 +512,33 @@ contract Ramp is Ownable {
         minDepositAmount = _minDepositAmount;
         emit MinDepositAmountSet(_minDepositAmount);
     }
+
+    /**
+     * @notice GOVERNANCE ONLY: Updates the max amount allowed to be on-ramped in each transaction. To on-ramp more than
+     * this amount a user must make multiple transactions.
+     *
+     * @param _maxOnRampAmount   The new max on ramp amount
+     */
+    function setMaxOnRampAmount(uint256 _maxOnRampAmount) external onlyOwner {
+        require(_maxOnRampAmount != 0, "Max on ramp amount cannot be zero");
+
+        maxOnRampAmount = _maxOnRampAmount;
+        emit MaxOnRampAmountSet(_maxOnRampAmount);
+    }
+
+    /**
+     * @notice GOVERNANCE ONLY: Updates the intent expiration period, after this period elapses an intent can be pruned to prevent
+     * locking up a depositor's funds.
+     *
+     * @param _intentExpirationPeriod   New intent expiration period
+     */
+    function setIntentExpirationPeriod(uint256 _intentExpirationPeriod) external onlyOwner {
+        require(_intentExpirationPeriod != 0, "Max intent expiration period cannot be zero");
+
+        intentExpirationPeriod = _intentExpirationPeriod;
+        emit IntentExpirationPeriodSet(_intentExpirationPeriod);
+    }
+
 
     /* ============ External View Functions ============ */
 
@@ -591,7 +642,7 @@ contract Ramp is Ownable {
 
         for (uint256 i = 0; i < intentHashes.length; ++i) {
             Intent memory intent = intents[intentHashes[i]];
-            if (intent.intentTimestamp + 1 days < block.timestamp) {
+            if (intent.intentTimestamp + intentExpirationPeriod < block.timestamp) {
                 prunableIntents[i] = intentHashes[i];
                 reclaimedAmount += intent.amount;
             }
@@ -612,6 +663,8 @@ contract Ramp is Ownable {
      */
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
+
+        require(intent.intentTimestamp != 0, "Intent does not exist");
 
         delete venmoIdIntent[accounts[intent.onRamper].venmoIdHash];
         delete intents[_intentHash];
@@ -663,7 +716,7 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
 
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
+        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match or intent does not exist");
 
         return (intent, intentHash);
     }

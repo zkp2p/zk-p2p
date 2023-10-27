@@ -1,11 +1,8 @@
 import "module-alias/register";
 
-import { ethers } from "hardhat";
-
 import { Account } from "@utils/test/types";
 import { ManagedKeyHashAdapter } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
-import { Address } from "@utils/types";
 
 import {
   getWaffleExpect,
@@ -37,12 +34,17 @@ describe("ManagedKeyHashAdapter", () => {
 
   describe("#constructor", async () => {
     it("should have the correct key hash", async () => {
-      const keyHash = await keyHashAdapter.venmoMailserverKeyHash();
+      const keyHash = await keyHashAdapter.mailserverKeyHash();
       expect(keyHash).to.eq(venmoKeyHash);
+    });
+
+    it("should have the correct owner set", async () => {
+      const keyHash = await keyHashAdapter.owner();
+      expect(keyHash).to.eq(owner.address);
     });
   });
 
-  describe("#setVenmoMailserverKeyHash", async () => {
+  describe("#setMailserverKeyHash", async () => {
     let subjectVenmoMailserverKeyHash: string;
     let subjectCaller: Account;
 
@@ -53,13 +55,13 @@ describe("ManagedKeyHashAdapter", () => {
     });
 
     async function subject(): Promise<any> {
-      return await keyHashAdapter.connect(subjectCaller.wallet).setVenmoMailserverKeyHash(subjectVenmoMailserverKeyHash);
+      return await keyHashAdapter.connect(subjectCaller.wallet).setMailserverKeyHash(subjectVenmoMailserverKeyHash);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHash = await keyHashAdapter.venmoMailserverKeyHash();
+      const venmoKeyHash = await keyHashAdapter.mailserverKeyHash();
       expect(venmoKeyHash).to.equal(subjectVenmoMailserverKeyHash);
     });
 

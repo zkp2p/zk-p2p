@@ -3,6 +3,7 @@
 import { BaseProcessor } from "./BaseProcessor.sol";
 import { Groth16Verifier } from "../verifiers/venmo_send_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
 
@@ -13,18 +14,15 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     using ProofParsingUtils for string;
     using ProofParsingUtils for uint256[];
 
-    /* ============ State Variables ============ */
-
-    mapping(bytes32 => bool) public isEmailNullified;
-
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _emailFromAddress)
+        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
     
     /* ============ External Functions ============ */
@@ -38,7 +36,7 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getVenmoMailserverKeyHash(), "Invalid mailserver key hash");
+        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
@@ -54,9 +52,7 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         offRamperIdHash = bytes32(_proof.signals[7]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        bytes32 nullifier = bytes32(_proof.signals[8]);
-        require(!isEmailNullified[nullifier], "Email has already been used");
-        isEmailNullified[nullifier] = true;
+        _validateAndAddNullifier(bytes32(_proof.signals[8]));
 
         // Signals [9] is intentHash
         intentHash = bytes32(_proof.signals[9]);

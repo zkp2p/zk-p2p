@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapter, VenmoRegistrationProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, NullifierRegistry, VenmoRegistrationProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -24,6 +24,7 @@ describe("VenmoRegistrationProcessor", () => {
   let ramp: Account;
 
   let keyHashAdapter: ManagedKeyHashAdapter;
+  let nullifierRegistry: NullifierRegistry;
   let registrationProcessor: VenmoRegistrationProcessor;
 
   let deployer: DeployHelper;
@@ -38,48 +39,24 @@ describe("VenmoRegistrationProcessor", () => {
     deployer = new DeployHelper(owner.wallet);
 
     keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
+    nullifierRegistry = await deployer.deployNullifierRegistry();
     registrationProcessor = await deployer.deployVenmoRegistrationProcessor(
       ramp.address,
       keyHashAdapter.address,
+      nullifierRegistry.address,
       "venmo@venmo.com".padEnd(21, "\0")
     );
   });
 
   describe("#constructor", async () => {
-    let subjectRamp: Address;
-    let subjectVenmoKeyHashAdapter: Address;
-    let subjectEmailFromAddress: string;
-
-    beforeEach(async () => {
-      subjectRamp = ramp.address;
-      subjectVenmoKeyHashAdapter = keyHashAdapter.address;
-      subjectEmailFromAddress = "venmo@venmo.com".padEnd(21, "\0"); // Pad the address to match length returned by circuit
-    });
-
-    async function subject(): Promise<any> {
-      return await deployer.deployVenmoRegistrationProcessor(subjectRamp, subjectVenmoKeyHashAdapter, subjectEmailFromAddress);
-    }
-
     it("should set the correct state", async () => {
-      await subject();
-
       const rampAddress = await registrationProcessor.ramp();
-      const venmoMailserverKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
+      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
-      expect(rampAddress).to.eq(subjectRamp);
+      expect(rampAddress).to.eq(ramp.address);
       expect(venmoMailserverKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
       expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
-    });
-
-    describe("when the email address is not properly padded", async () => {
-      beforeEach(async () => {
-        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
-      });
     });
   });
 
@@ -137,7 +114,7 @@ describe("VenmoRegistrationProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setVenmoMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -156,7 +133,7 @@ describe("VenmoRegistrationProcessor", () => {
     });
   });
 
-  describe("#setVenmoMailserverKeyHashAdapter", async () => {
+  describe("#setMailserverKeyHashAdapter", async () => {
     let subjectVenmoMailserverKeyHashAdapter: Address;
     let subjectCaller: Account;
 
@@ -167,13 +144,13 @@ describe("VenmoRegistrationProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setVenmoMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
+      return await registrationProcessor.connect(subjectCaller.wallet).setMailserverKeyHashAdapter(subjectVenmoMailserverKeyHashAdapter);
     }
 
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await registrationProcessor.venmoMailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 
@@ -208,16 +185,6 @@ describe("VenmoRegistrationProcessor", () => {
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
-    });
-
-    describe("when the email address is not properly padded", async () => {
-      beforeEach(async () => {
-        subjectEmailFromAddress = "venmo@venmo.com".padEnd(34, "\0");
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Email from address not properly padded");
-      });
     });
 
     describe("when the caller is not the owner", async () => {

@@ -3,6 +3,7 @@
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;
 
@@ -13,39 +14,41 @@ contract BaseProcessor is Ownable {
         require(msg.sender == ramp, "Only Ramp can call this function");
         _;
     }
-    
-    /* ============ Constants ============ */
-    uint8 private constant EMAIL_ADDRESS_LENGTH = 21;   // 21 bytes in an email address
 
     /* ============ State Variables ============ */
     address public immutable ramp;
-    IKeyHashAdapter public venmoMailserverKeyHashAdapter;
+    IKeyHashAdapter public mailserverKeyHashAdapter;
+    INullifierRegistry public nullifierRegistry;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        IKeyHashAdapter _mailserverKeyHashAdapter,
+        INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Ownable()
     {
-        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
-
         ramp = _ramp;
-        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
+        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
+        nullifierRegistry = _nullifierRegistry;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setVenmoMailserverKeyHashAdapter(IKeyHashAdapter _venmoMailserverKeyHashAdapter) external onlyOwner {
-        venmoMailserverKeyHashAdapter = _venmoMailserverKeyHashAdapter;
+    function setMailserverKeyHashAdapter(IKeyHashAdapter _mailserverKeyHashAdapter) external onlyOwner {
+        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
     }
 
+    /**
+     * @notice ONLY OWNER: Sets the from email address for validated emails. Check that email address is properly
+     * padded (if necessary). Padding will be dependent on if unpacking functions cut trailing 0s or not.
+     *
+     * @param _emailFromAddress    The from email address for validated emails, MUST BE PROPERLY PADDED
+     */
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
-        require(bytes(_emailFromAddress).length == EMAIL_ADDRESS_LENGTH, "Email from address not properly padded");
-
         emailFromAddress = bytes(_emailFromAddress);
     }
 
@@ -55,7 +58,14 @@ contract BaseProcessor is Ownable {
         return emailFromAddress;
     }
 
-    function getVenmoMailserverKeyHash() public view returns (bytes32) {
-        return IKeyHashAdapter(venmoMailserverKeyHashAdapter).venmoMailserverKeyHash();
+    function getMailserverKeyHash() public view returns (bytes32) {
+        return IKeyHashAdapter(mailserverKeyHashAdapter).mailserverKeyHash();
+    }
+
+    /* ============ Internal Functions ============ */
+
+    function _validateAndAddNullifier(bytes32 _nullifier) internal {
+        require(!nullifierRegistry.isNullified(_nullifier), "Nullifier has already been used");
+        nullifierRegistry.addNullifier(_nullifier);
     }
 }

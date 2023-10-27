@@ -3,6 +3,7 @@
 import { BaseProcessor } from "./BaseProcessor.sol";
 import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
 
@@ -17,10 +18,11 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
     constructor(
         address _ramp,
         IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _emailFromAddress)
+        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
 
     /* ============ External Functions ============ */
@@ -36,7 +38,7 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getVenmoMailserverKeyHash(), "Invalid mailserver key hash");
+        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);

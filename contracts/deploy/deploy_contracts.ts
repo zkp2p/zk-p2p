@@ -1,6 +1,9 @@
+import "module-alias/register";
+
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
+import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
 import { BigNumber } from "ethers";
 
@@ -15,6 +18,14 @@ const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
 const MIN_DEPOSIT_AMOUNT = {
   "localhost": usdc(20),
   "goerli": usdc(20),
+};
+const MAX_ONRAMP_AMOUNT = {
+  "localhost": usdc(999),
+  "goerli": usdc(999),
+};
+const INTENT_EXPIRATION_PERIOD = {
+  "localhost": ONE_DAY_IN_SECONDS,
+  "goerli": ONE_DAY_IN_SECONDS,
 };
 const USDC = {};
 const USDC_MINT_AMOUNT = usdc(1000000);
@@ -53,7 +64,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcAddress,
       poseidon.address,
-      MIN_DEPOSIT_AMOUNT[network]
+      MIN_DEPOSIT_AMOUNT[network],
+      MAX_ONRAMP_AMOUNT[network],
+      INTENT_EXPIRATION_PERIOD[network]
     ],
   });
   console.log("Ramp deployed...");
@@ -63,19 +76,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [SERVER_KEY_HASH],
   });
 
+  const nullifierRegistry = await deploy("NullifierRegistry", {
+    from: deployer,
+    args: [],
+  });
+
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
 
   const receiveProcessor = await deploy("VenmoReceiveProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
   console.log("Processors deployed...");
 
@@ -85,6 +103,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     registrationProcessor.address,
     sendProcessor.address
   );
+
+  console.log("Ramp initialized...");
+
+  const nullifierRegistryContract = await ethers.getContractAt("NullifierRegistry", nullifierRegistry.address);
+  await nullifierRegistryContract.addWritePermission(receiveProcessor.address);
+  await nullifierRegistryContract.addWritePermission(sendProcessor.address);
+
+  console.log("NullifierRegistry permissions added...");
   
   if (network == "goerli") {
     const usdcContract = await ethers.getContractAt("USDCMock", usdcAddress);
