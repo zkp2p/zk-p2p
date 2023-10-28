@@ -1,3 +1,3 @@
 include "../../regexes/venmo_actor_id.circom";
 
-component main = VenmoActorIdRegex(430);
+component main = VenmoActorIdRegex(87);
