@@ -120,7 +120,7 @@ export const MailTable: React.FC<MailTableProps> = ({
 
   return (
     <Container>
-      {!isGoogleAuthed ? (
+      {!isGoogleAuthed || fetchedEmails.length === 0 ? (
         <ErrorContainer>
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />

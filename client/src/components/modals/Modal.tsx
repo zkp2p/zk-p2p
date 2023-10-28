@@ -91,7 +91,9 @@ export const Modal: React.FC<ModalProps> = ({
         break;
         
       case "done":
-        setCtaButtonTitle("Go to Swap");
+        const buttonDoneTitle = getButtonDoneTitle();
+
+        setCtaButtonTitle(buttonDoneTitle);
         break;
         
       default:
@@ -118,10 +120,34 @@ export const Modal: React.FC<ModalProps> = ({
   const getButtonHandler = () => {
     switch (status) {
       case "done":
-        return navigate('/swap');
+        switch (circuitType) {
+          case CircuitType.EMAIL_VENMO_SEND:
+            return onBackClick();
+          
+          case CircuitType.EMAIL_VENMO_RECEIVE:
+            return navigate('/deposits');
+
+          case CircuitType.EMAIL_VENMO_REGISTRATION:
+          default:
+            return navigate('/swap');
+        }
 
       default:
         return handleSubmitVerificationClick();
+    }
+  };
+
+  const getButtonDoneTitle = () => {
+    switch (circuitType) {
+      case CircuitType.EMAIL_VENMO_SEND:
+        return 'Go Back'
+      
+      case CircuitType.EMAIL_VENMO_RECEIVE:
+        return 'Go to Deposits'
+
+      case CircuitType.EMAIL_VENMO_REGISTRATION:
+      default:
+        return 'Go to Swap'
     }
   };
 

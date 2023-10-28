@@ -150,8 +150,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
    * Handlers
    */
 
-  // loading={isWriteSubmitOnRampLoading || isSubmitOnRampMining}
-  // disabled={proof.length === 0 || publicSignals.length === 0 || isWriteSubmitOnRampLoading}
   const handleWriteSubmitOnRampClick = async () => {
     try {
       await writeSubmitOnRampAsync?.();
