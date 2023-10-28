@@ -52,6 +52,7 @@
     "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh && cd ..",
     "test:send": "yarn test ./test/venmo_send.spec.ts",
     "test:registration": "yarn test ./test/venmo_registration.spec.ts",
+    "test:hdfc:send": "yarn test ./test/hdfc_send.spec.ts",
     "test:hdfc:regex:payee_id": "yarn test ./test/regexes/hdfc/hdfc_payee_id.spec.ts",
     "test:hdfc:regex:amount": "yarn test ./test/regexes/hdfc/hdfc_amount.spec.ts",
     "genverifier:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",

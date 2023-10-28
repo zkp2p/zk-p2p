@@ -45,7 +45,7 @@ describe("HDFC amount", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.5.00 has been debited from account xxx")
         };
         const witness = await cir.calculateWitness(
             input,

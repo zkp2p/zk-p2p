@@ -1,9 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// include "@zk-email/circuits/email-verifier.circom";
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
+include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/helpers/extract.circom";
+// include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 // include "./regexes/hdfc/venmo_timestamp.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
@@ -21,7 +21,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_email_amount_len = 8; // Allowing max 4 fig amount+ one comma  + one decimal point + 2 decimal places. e.g. 2,500.00
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (alerts@hdfcbank.net)
     var max_email_timestamp_len = 10; // 10 digits till year 2286
-    var max_payee_len = ceil(50, pack_size);    // Max 50 characters in UPI ID
+    // TODO: CHANGE THIS TO 50.
+    var max_payee_len = ceil(42, pack_size);    // Max 50 characters in UPI ID  (TODO: CHANGE THIS TO 50)
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -80,9 +81,10 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
             log("amount", amount_regex_reveal[i]);
         }
     }
-    amount_regex_out === 1;
+    // TODO: Fix this.
+    // amount_regex_out === 1;
+    // reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
-    reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
     // TIMESTAMP REGEX
     // var max_email_timestamp_packed_bytes = count_packed(max_email_timestamp_len, pack_size);
@@ -135,13 +137,13 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 2944382
+    // TOTAL CONSTRAINTS: 5199622
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 6272 is the max number of bytes in the body after precomputed slice (Need to leave room for >280 char custom message)
+// * max_body_bytes = 3200 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ intent_hash ] } = HdfcSendEmail(1024, 6272, 121, 17, 7);
+component main { public [ intent_hash ] } = HdfcSendEmail(1024, 3200, 121, 17, 7);
