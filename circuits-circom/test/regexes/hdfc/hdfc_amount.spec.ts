@@ -11,17 +11,17 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("HDFC payer id", function () {
+describe("HDFC amount", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/hdfc/test_hdfc_payee_id.circom"),
+            path.join(__dirname, "../../mocks/hdfc/test_hdfc_amount.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_hdfc_payee_id"),
+                output: path.join(__dirname, "../../../build/test_hdfc_amount"),
                 recompile: true,
                 verbose: true,
             }
@@ -34,7 +34,7 @@ describe("HDFC payer id", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("5678 to VPA sachin1234@paytm on 28-10-23")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -45,7 +45,7 @@ describe("HDFC payer id", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("5678 to VPA sachin1234@paytm on 28-10-23")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -57,22 +57,23 @@ describe("HDFC payer id", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("5678 to VPA sachin1234@paytm on 28-10-23")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        // 0s, sachin1234@paytm, 0s
-        const expected = Array(12).fill("0").concat(textToAsciiArray("sachin1234@paytm")).concat(Array(12).fill("0"));
+        // 0s, 1,234.56, 0s
+        const expected = Array(27).fill("0").concat(textToAsciiArray("1,234.56")).concat(Array(30).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
+        console.log(result)
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("5678 to ABC sachin1234@paytm on 28-10-23")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been credited to account ")
         };
         const witness = await cir.calculateWitness(
             input,
