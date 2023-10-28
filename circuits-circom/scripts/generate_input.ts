@@ -58,6 +58,8 @@ export interface ICircuitInputs {
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
   venmo_actor_id_idx?: string;
+  hdfc_payee_id_idx?: string;
+  hdfc_amount_idx?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -77,7 +79,8 @@ export enum CircuitType {
   SHA = "sha",
   TEST = "test",
   EMAIL_VENMO_SEND = "send",
-  EMAIL_VENMO_REGISTRATION = "registration"
+  EMAIL_VENMO_REGISTRATION = "registration",
+  HDFC_SEND = "hdfc_send"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -143,6 +146,9 @@ export async function getCircuitInputs(
     // IMPORTANT: Only send payment email can be used to register
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
+  } else if (circuit == CircuitType.HDFC_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
   }
 
   // Derive modulus from signature
@@ -281,6 +287,29 @@ export async function getCircuitInputs(
       venmo_actor_id_idx,
       email_from_idx,
     };
+  } else if (circuit == CircuitType.HDFC_SEND) {
+    const payee_id_selector = Buffer.from("to VPA ");
+    const hdfc_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
+
+    const venmo_amount_idx = Buffer.from("Dear Customer,<br> <br> Rs.");
+    const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(venmo_amount_idx) + venmo_amount_idx.length).toString();
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // venmo specific indices
+      hdfc_amount_idx,
+      hdfc_payee_id_idx,
+      email_from_idx,
+      // IDs
+      intent_hash,
+    }
   } else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
     circuitInputs = {
