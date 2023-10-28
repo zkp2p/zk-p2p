@@ -95,7 +95,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input venmo_payer_id_idx;
     signal reveal_payer_packed[max_payer_packed_bytes];
 
-    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerId(max_body_bytes)(in_body_padded);
+    signal (payer_regex_out, payer_regex_reveal[max_body_bytes]) <== VenmoPayerIdRegex(max_body_bytes)(in_body_padded);
     signal is_found_payer <== IsZero()(payer_regex_out);
     is_found_payer === 0;
 
