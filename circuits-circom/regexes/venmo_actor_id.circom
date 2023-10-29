@@ -2,7 +2,7 @@ pragma circom 2.1.5;
 
 include "@zk-email/circuits/regexes/regex_helpers.circom";
 
-// `&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+">/r/n`;
+// `&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+">\r\n`;
 // Works for payment sent, payment received, payment request completed sent and payment request completed received emails.
 template VenmoActorIdRegex (msg_bytes) {
     signal input msg[msg_bytes];
