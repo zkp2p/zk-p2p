@@ -2,6 +2,7 @@ pragma circom 2.1.5;
 
 include "@zk-email/circuits/regexes/regex_helpers.circom";
 
+// (\r\n|^)from:([A-Za-z0-9 _.,"@-]+)<[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+>\r\n
 template FromRegex (msg_bytes) {
     signal input msg[msg_bytes];
     signal output out;
@@ -27,6 +28,7 @@ template FromRegex (msg_bytes) {
     }
 
     for (var i = 0; i < num_bytes; i++) {
+        // 64-91 = [A-Z]
         lt[0][i] = LessThan(8);
         lt[0][i].in[0] <== 64;
         lt[0][i].in[1] <== in[i];
@@ -36,6 +38,7 @@ template FromRegex (msg_bytes) {
         and[0][i] = AND();
         and[0][i].a <== lt[0][i].out;
         and[0][i].b <== lt[1][i].out;
+        // 96-123 = [a-z]
         lt[2][i] = LessThan(8);
         lt[2][i].in[0] <== 96;
         lt[2][i].in[1] <== in[i];
@@ -45,6 +48,7 @@ template FromRegex (msg_bytes) {
         and[1][i] = AND();
         and[1][i].a <== lt[2][i].out;
         and[1][i].b <== lt[3][i].out;
+        // 47-58 = [0-9]
         lt[4][i] = LessThan(8);
         lt[4][i].in[0] <== 47;
         lt[4][i].in[1] <== in[i];
@@ -54,24 +58,31 @@ template FromRegex (msg_bytes) {
         and[2][i] = AND();
         and[2][i].a <== lt[4][i].out;
         and[2][i].b <== lt[5][i].out;
+        // 44 = ','
         eq[0][i] = IsEqual();
         eq[0][i].in[0] <== in[i];
         eq[0][i].in[1] <== 44;
+        // 45 = '-'
         eq[1][i] = IsEqual();
         eq[1][i].in[0] <== in[i];
         eq[1][i].in[1] <== 45;
+        // 32 = ' '
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 32;
+        // 34 = '"'
         eq[3][i] = IsEqual();
         eq[3][i].in[0] <== in[i];
         eq[3][i].in[1] <== 34;
+        // 64 = '@'
         eq[4][i] = IsEqual();
         eq[4][i].in[0] <== in[i];
         eq[4][i].in[1] <== 64;
+        // 95 = '_'
         eq[5][i] = IsEqual();
         eq[5][i].in[0] <== in[i];
         eq[5][i].in[1] <== 95;
+        // 46 = '.'
         eq[6][i] = IsEqual();
         eq[6][i].in[0] <== in[i];
         eq[6][i].in[1] <== 46;
@@ -96,6 +107,7 @@ template FromRegex (msg_bytes) {
         multi_or[1][i].in[0] <== and[3][i].out;
         multi_or[1][i].in[1] <== and[4][i].out;
         states[i+1][1] <== multi_or[1][i].out;
+        // 13 = '\r'
         eq[7][i] = IsEqual();
         eq[7][i].in[0] <== in[i];
         eq[7][i].in[1] <== 13;
@@ -103,12 +115,14 @@ template FromRegex (msg_bytes) {
         and[5][i].a <== states[i][0];
         and[5][i].b <== eq[7][i].out;
         states[i+1][2] <== and[5][i].out;
+        // 128 = '\x80'
         eq[8][i] = IsEqual();
         eq[8][i].in[0] <== in[i];
         eq[8][i].in[1] <== 128;
         and[6][i] = AND();
         and[6][i].a <== states[i][0];
         and[6][i].b <== eq[8][i].out;
+        // 10 = '\n'
         eq[9][i] = IsEqual();
         eq[9][i].in[0] <== in[i];
         eq[9][i].in[1] <== 10;
@@ -119,6 +133,7 @@ template FromRegex (msg_bytes) {
         multi_or[2][i].in[0] <== and[6][i].out;
         multi_or[2][i].in[1] <== and[7][i].out;
         states[i+1][3] <== multi_or[2][i].out;
+        // 60 = '<'
         eq[10][i] = IsEqual();
         eq[10][i].in[0] <== in[i];
         eq[10][i].in[1] <== 60;
@@ -126,6 +141,7 @@ template FromRegex (msg_bytes) {
         and[8][i].a <== states[i][1];
         and[8][i].b <== eq[10][i].out;
         states[i+1][4] <== and[8][i].out;
+        // 102 = 'f'
         eq[11][i] = IsEqual();
         eq[11][i].in[0] <== in[i];
         eq[11][i].in[1] <== 102;
@@ -133,8 +149,7 @@ template FromRegex (msg_bytes) {
         and[9][i].a <== states[i][3];
         and[9][i].b <== eq[11][i].out;
         states[i+1][5] <== and[9][i].out;
-
-
+        // 64-91 = [A-Z]
         lt[6][i] = LessThan(8);
         lt[6][i].in[0] <== 64;
         lt[6][i].in[1] <== in[i];
@@ -144,6 +159,7 @@ template FromRegex (msg_bytes) {
         and[10][i] = AND();
         and[10][i].a <== lt[6][i].out;
         and[10][i].b <== lt[7][i].out;
+        // 96-123 = [a-z]
         lt[8][i] = LessThan(8);
         lt[8][i].in[0] <== 96;
         lt[8][i].in[1] <== in[i];
@@ -153,6 +169,7 @@ template FromRegex (msg_bytes) {
         and[11][i] = AND();
         and[11][i].a <== lt[8][i].out;
         and[11][i].b <== lt[9][i].out;
+        // 47-58 = [0-9]
         lt[10][i] = LessThan(8);
         lt[10][i].in[0] <== 47;
         lt[10][i].in[1] <== in[i];
@@ -162,12 +179,15 @@ template FromRegex (msg_bytes) {
         and[12][i] = AND();
         and[12][i].a <== lt[10][i].out;
         and[12][i].b <== lt[11][i].out;
+        // 45 = '-'
         eq[12][i] = IsEqual();
         eq[12][i].in[0] <== in[i];
         eq[12][i].in[1] <== 45;
+        // 95 = '_'
         eq[13][i] = IsEqual();
         eq[13][i].in[0] <== in[i];
         eq[13][i].in[1] <== 95;
+        // 46 = '.'
         eq[14][i] = IsEqual();
         eq[14][i].in[0] <== in[i];
         eq[14][i].in[1] <== 46;
@@ -188,8 +208,7 @@ template FromRegex (msg_bytes) {
         multi_or[4][i].in[0] <== and[15][i].out;
         multi_or[4][i].in[1] <== and[16][i].out;
         states[i+1][6] <== multi_or[4][i].out;
-
-
+        // 114 = 'r'
         eq[15][i] = IsEqual();
         eq[15][i].in[0] <== in[i];
         eq[15][i].in[1] <== 114;
@@ -197,6 +216,7 @@ template FromRegex (msg_bytes) {
         and[17][i].a <== states[i][5];
         and[17][i].b <== eq[15][i].out;
         states[i+1][7] <== and[17][i].out;
+        // 111 = 'o'
         eq[16][i] = IsEqual();
         eq[16][i].in[0] <== in[i];
         eq[16][i].in[1] <== 111;
@@ -204,6 +224,7 @@ template FromRegex (msg_bytes) {
         and[18][i].a <== states[i][7];
         and[18][i].b <== eq[16][i].out;
         states[i+1][8] <== and[18][i].out;
+        // 109 = 'm'
         eq[17][i] = IsEqual();
         eq[17][i].in[0] <== in[i];
         eq[17][i].in[1] <== 109;
@@ -211,6 +232,7 @@ template FromRegex (msg_bytes) {
         and[19][i].a <== states[i][8];
         and[19][i].b <== eq[17][i].out;
         states[i+1][9] <== and[19][i].out;
+        // 64 = '@'
         eq[18][i] = IsEqual();
         eq[18][i].in[0] <== in[i];
         eq[18][i].in[1] <== 64;
@@ -218,6 +240,7 @@ template FromRegex (msg_bytes) {
         and[20][i].a <== states[i][6];
         and[20][i].b <== eq[18][i].out;
         states[i+1][10] <== and[20][i].out;
+        // 58 = ':'
         eq[19][i] = IsEqual();
         eq[19][i].in[0] <== in[i];
         eq[19][i].in[1] <== 58;
@@ -228,7 +251,6 @@ template FromRegex (msg_bytes) {
         and[22][i] = AND();
         and[22][i].a <== states[i][10];
         and[22][i].b <== multi_or[3][i].out;
-
         and[23][i] = AND();
         and[23][i].a <== states[i][12];
         and[23][i].b <== multi_or[3][i].out;
@@ -236,6 +258,7 @@ template FromRegex (msg_bytes) {
         multi_or[5][i].in[0] <== and[22][i].out;
         multi_or[5][i].in[1] <== and[23][i].out;
         states[i+1][12] <== multi_or[5][i].out;
+        // 62 = '>'
         eq[20][i] = IsEqual();
         eq[20][i].in[0] <== in[i];
         eq[20][i].in[1] <== 62;
@@ -243,6 +266,7 @@ template FromRegex (msg_bytes) {
         and[24][i].a <== states[i][12];
         and[24][i].b <== eq[20][i].out;
         states[i+1][13] <== and[24][i].out;
+        // 13 = '\r'
         eq[21][i] = IsEqual();
         eq[21][i].in[0] <== in[i];
         eq[21][i].in[1] <== 13;
@@ -250,6 +274,7 @@ template FromRegex (msg_bytes) {
         and[25][i].a <== states[i][13];
         and[25][i].b <== eq[21][i].out;
         states[i+1][14] <== and[25][i].out;
+        // 10 = '\n'
         eq[22][i] = IsEqual();
         eq[22][i].in[0] <== in[i];
         eq[22][i].in[1] <== 10;
