@@ -1,6 +1,6 @@
 pragma circom 2.1.5;
 
-include "./regex_helpers.circom";
+include "@zk-email/circuits/regexes/regex_helpers.circom";
 
 template BodyHashRegex (msg_bytes) {
     signal input msg[msg_bytes];
@@ -12,10 +12,10 @@ template BodyHashRegex (msg_bytes) {
         in[i] <== msg[i];
     }
 
-    component eq[90][num_bytes];
-    component lt[10][num_bytes];
-    component and[37][num_bytes];
-    component multi_or[6][num_bytes];
+    component eq[91][num_bytes];
+    component lt[16][num_bytes];
+    component and[39][num_bytes];
+    component multi_or[7][num_bytes];
     signal states[num_bytes+1][29];
 
     for (var i = 0; i < num_bytes; i++) {
@@ -716,32 +716,32 @@ template BodyHashRegex (msg_bytes) {
         lt[8][i] = LessThan(8);
         lt[8][i].in[0] <== 64;
         lt[8][i].in[1] <== in[i];
-        lt[15][i] = LessThan(8);
-        lt[15][i].in[0] <== in[i];
-        lt[15][i].in[1] <== 91;
+        lt[9][i] = LessThan(8);
+        lt[9][i].in[0] <== in[i];
+        lt[9][i].in[1] <== 91;
         and[32][i] = AND();
         and[32][i].a <== lt[8][i].out;
-        and[32][i].b <== lt[15][i].out;
+        and[32][i].b <== lt[9][i].out;
         // [96 - 123] = a-z
-        lt[9][i] = LessThan(8);
-        lt[9][i].in[0] <== 96;
-        lt[9][i].in[1] <== in[i];
-        lt[17][i] = LessThan(8);
-        lt[17][i].in[0] <== in[i];
-        lt[17][i].in[1] <== 123;
+        lt[12][i] = LessThan(8);
+        lt[12][i].in[0] <== 96;
+        lt[12][i].in[1] <== in[i];
+        lt[13][i] = LessThan(8);
+        lt[13][i].in[0] <== in[i];
+        lt[13][i].in[1] <== 123;
         and[33][i] = AND();
-        and[33][i].a <== lt[9][i].out;
-        and[33][i].b <== lt[17][i].out;
+        and[33][i].a <== lt[12][i].out;
+        and[33][i].b <== lt[13][i].out;
         // [47 - 58] = 0-9
-        lt[10][i] = LessThan(8);
-        lt[10][i].in[0] <== 47;
-        lt[10][i].in[1] <== in[i];
-        lt[19][i] = LessThan(8);
-        lt[19][i].in[0] <== in[i];
-        lt[19][i].in[1] <== 58;
+        lt[14][i] = LessThan(8);
+        lt[14][i].in[0] <== 47;
+        lt[14][i].in[1] <== in[i];
+        lt[15][i] = LessThan(8);
+        lt[15][i].in[0] <== in[i];
+        lt[15][i].in[1] <== 58;
         and[34][i] = AND();
-        and[34][i].a <== lt[10][i].out;
-        and[34][i].b <== lt[19][i].out;
+        and[34][i].a <== lt[14][i].out;
+        and[34][i].b <== lt[15][i].out;
         // 47 = /
         eq[86][i] = IsEqual();
         eq[86][i].in[0] <== in[i];
@@ -757,12 +757,12 @@ template BodyHashRegex (msg_bytes) {
         and[35][i] = AND();
         and[35][i].a <== states[i][21];
         multi_or[5][i] = MultiOR(6);
-        multi_or[5][i].in[0] <== and[35][i].out;
-        multi_or[5][i].in[1] <== and[36][i].out;
-        multi_or[5][i].in[2] <== and[37][i].out;
-        multi_or[5][i].in[3] <== eq[123][i].out;
-        multi_or[5][i].in[4] <== eq[124][i].out;
-        multi_or[5][i].in[5] <== eq[125][i].out;
+        multi_or[5][i].in[0] <== and[32][i].out;
+        multi_or[5][i].in[1] <== and[32][i].out;
+        multi_or[5][i].in[2] <== and[34][i].out;
+        multi_or[5][i].in[3] <== eq[86][i].out;
+        multi_or[5][i].in[4] <== eq[87][i].out;
+        multi_or[5][i].in[5] <== eq[88][i].out;
         and[35][i].b <== multi_or[5][i].out;
         // lt[20][i] = LessThan(8);
         // lt[20][i].in[0] <== 64;
@@ -800,8 +800,8 @@ template BodyHashRegex (msg_bytes) {
         // eq[128][i] = IsEqual();
         // eq[128][i].in[0] <== in[i];
         // eq[128][i].in[1] <== 61;
-        and[42][i] = AND();
-        and[42][i].a <== states[i][26];
+        and[36][i] = AND();
+        and[36][i].a <== states[i][26];
         // multi_or[7][i] = MultiOR(6);
         // multi_or[7][i].in[0] <== and[39][i].out;
         // multi_or[7][i].in[1] <== and[40][i].out;
@@ -809,27 +809,27 @@ template BodyHashRegex (msg_bytes) {
         // multi_or[7][i].in[3] <== eq[126][i].out;
         // multi_or[7][i].in[4] <== eq[127][i].out;
         // multi_or[7][i].in[5] <== eq[128][i].out;
-        and[42][i].b <== multi_or[5][i].out;
+        and[36][i].b <== multi_or[5][i].out;
         multi_or[6][i] = MultiOR(2);
-        multi_or[6][i].in[0] <== and[38][i].out;
-        multi_or[6][i].in[1] <== and[42][i].out;
+        multi_or[6][i].in[0] <== and[35][i].out;
+        multi_or[6][i].in[1] <== and[36][i].out;
         states[i+1][26] <== multi_or[6][i].out;
         // 59 = ;
         eq[89][i] = IsEqual();
         eq[89][i].in[0] <== in[i];
         eq[89][i].in[1] <== 59;
-        and[36][i] = AND();
-        and[36][i].a <== states[i][26];
-        and[36][i].b <== eq[129][i].out;
-        states[i+1][27] <== and[36][i].out;
+        and[37][i] = AND();
+        and[37][i].a <== states[i][26];
+        and[37][i].b <== eq[89][i].out;
+        states[i+1][27] <== and[37][i].out;
         // 32 = space
         eq[90][i] = IsEqual();
         eq[90][i].in[0] <== in[i];
         eq[90][i].in[1] <== 32;
-        and[37][i] = AND();
-        and[37][i].a <== states[i][27];
-        and[37][i].b <== eq[130][i].out;
-        states[i+1][28] <== and[37][i].out;
+        and[38][i] = AND();
+        and[38][i].a <== states[i][27];
+        and[38][i].b <== eq[90][i].out;
+        states[i+1][28] <== and[38][i].out;
     }
 
     signal final_state_sum[num_bytes+1];
