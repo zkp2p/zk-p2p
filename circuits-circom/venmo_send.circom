@@ -2,14 +2,14 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
-include "@zk-email/circuits/regexes/from_regex.circom";
-include "./regexes/venmo_amount.circom";
-include "./regexes/venmo_payee_id.circom";
-include "./regexes/venmo_timestamp.circom";
 include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
+include "./regexes/from_regex.circom";
+include "./regexes/venmo_amount.circom";
+include "./regexes/venmo_payee_id.circom";
+include "./regexes/venmo_timestamp.circom";
 
 template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA

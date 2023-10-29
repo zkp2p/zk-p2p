@@ -2,10 +2,10 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
-include "@zk-email/circuits/regexes/from_regex.circom";
-include "./regexes/venmo_actor_id.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
+include "./regexes/from_regex.circom";
+include "./regexes/venmo_actor_id.circom";
 
 template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
