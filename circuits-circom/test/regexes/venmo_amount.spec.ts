@@ -16,6 +16,10 @@ describe("Venmo amount", function () {
 
     let cir;
 
+    function textToAsciiArray(text: string): string[] {
+        return Array.from(text).map(char => char.charCodeAt(0).toString());
+    }
+
     beforeAll(async () => {
         cir = await wasm_tester(
             path.join(__dirname, "../mocks/test_venmo_amount.circom"),
@@ -31,11 +35,7 @@ describe("Venmo amount", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": [
-                "101","101","101","101","101","32","101","101","101","101","101","32","36",
-                "50","44","53","48","48","46","48","48", // Regex match
-                "13","10","109","105","109","101"
-            ]
+            "msg": textToAsciiArray("eeeee eeeee $2,500.00\r\nmime")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -47,11 +47,7 @@ describe("Venmo amount", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": [
-                "101","101","101","101","101","32","101","101","101","101","101","32","36",
-                "50","44","53","48","48","46","48","48", // Regex match
-                "13","10","109","105","109","101"
-            ]
+            "msg": textToAsciiArray("eeeee eeeee $2,500.00\r\nmime")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -63,33 +59,23 @@ describe("Venmo amount", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": [
-                "101","101","101","101","101","32","101","101","101","101","101","32","36",
-                "50","44","53","48","48","46","48","48", // Regex match
-                "13","10","109","105","109","101"
-            ]
+            "msg": textToAsciiArray("eeeee eeeee $2,500.00\r\nmime")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = [
-            "0","0","0","0","0","0","0","0","0","0","0","0","0",
-            "50","44","53","48","48","46","48","48", // Regex match
-            "0","0","0","0","0","0"
-        ]
-        const result = witness.slice(2, 27 + 2);
+        const expected = Array(textToAsciiArray("eeeee eeeee $").length).fill("0")
+            .concat(textToAsciiArray("2,500.00"))
+            .concat(textToAsciiArray("\r\nmime").fill("0"));
+        const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": [
-                "101","101","101","101","101","32","101","101","101","101","101","32","68", // Update to 68
-                "50","44","53","48","48","46","48","48",
-                "13","10","109","105","109","101"
-            ]
+            "msg": textToAsciiArray("eeeee eeeee D2,500.00\r\nmime")    // Remove $, Add D
         };
         const witness = await cir.calculateWitness(
             input,
