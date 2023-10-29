@@ -16,6 +16,10 @@ describe("Venmo Actor ID", function () {
 
     let cir;
 
+    function textToAsciiArray(text: string): string[] {
+        return Array.from(text).map(char => char.charCodeAt(0).toString());
+    }
+
     beforeAll(async () => {
         cir = await wasm_tester(
             path.join(__dirname, "../mocks/test_from_regex.circom"),
@@ -31,11 +35,7 @@ describe("Venmo Actor ID", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": [
-                "102","114","111","109","58","86","101","110","109","111","32","60",
-                "118","101","110","109","111","64","118","101","110","109","111","46","99","111","109", // Regex match
-                "62","13","10","114","101","112","108","121","45","116","111","58","86","101","110","109","111","32","78","111","45","114","101",
-            ]
+            "msg": textToAsciiArray("from:Venmo <venmo@venmo.com>\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -47,11 +47,7 @@ describe("Venmo Actor ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": [
-                "102","114","111","109","58","86","101","110","109","111","32","60",
-                "118","101","110","109","111","64","118","101","110","109","111","46","99","111","109", // Regex match
-                "62","13","10","114","101","112","108","121","45","116","111","58","86","101","110","109","111","32","78","111","45","114","101",
-            ]
+            "msg": textToAsciiArray("from:Venmo <venmo@venmo.com>\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -63,21 +59,13 @@ describe("Venmo Actor ID", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": [
-                "102","114","111","109","58","86","101","110","109","111","32","60",
-                "118","101","110","109","111","64","118","101","110","109","111","46","99","111","109", // Regex match
-                "62","13","10","114","101","112","108","121","45","116","111","58","86","101","110","109","111","32","78","111","45","114","101",
-            ]
+            "msg": textToAsciiArray("from:Venmo <venmo@venmo.com>\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = [
-            "0","0","0","0","0","0","0","0","0","0","0","0",
-            "118","101","110","109","111","64","118","101","110","109","111","46","99","111","109", // Regex match
-            "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0"
-        ];
+        const expected = Array(12).fill("0").concat(textToAsciiArray("venmo@venmo.com")).concat(Array(23).fill("0"));
         const result = witness.slice(2, 50 + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -85,11 +73,7 @@ describe("Venmo Actor ID", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": [
-                "102","114","111","109","58","86","101","110","109","111","32","68", // Replace with 68
-                "118","101","110","109","111","64","118","101","110","109","111","46","99","111","109",
-                "62","13","10","114","101","112","108","121","45","116","111","58","86","101","110","109","111","32","78","111","45","114","101",
-            ]
+            "msg": textToAsciiArray("from:Venmo Dvenmo@venmo.com>\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
