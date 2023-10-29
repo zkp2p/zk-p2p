@@ -1,7 +1,7 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+include "./utils/email_verifier.circom";
 include "@zk-email/circuits/regexes/from_regex.circom";
 include "./regexes/venmo_amount.circom";
 include "./regexes/venmo_payee_id.circom";
@@ -125,7 +125,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 6154754
+    // TOTAL CONSTRAINTS: 6162768
 }
 
 // Args:
