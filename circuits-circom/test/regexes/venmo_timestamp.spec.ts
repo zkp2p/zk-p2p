@@ -29,13 +29,13 @@ describe("Venmo timestamp", function () {
     });
 
 
+    function textToAsciiArray(text: string): string[] {
+        return Array.from(text).map(char => char.charCodeAt(0).toString());
+    }
+
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": [
-                "120","102","116","107","108","121","59","32","100","61","118","101","110","109","111","46","99","111","109","59","32","116","61",
-                "49","54","57","56","50","54","48","54","56","55","59", // Regex match
-                "32","104","61","70","114","111"
-            ]
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -47,11 +47,7 @@ describe("Venmo timestamp", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": [
-                "120","102","116","107","108","121","59","32","100","61","118","101","110","109","111","46","99","111","109","59","32","116","61",
-                "49","54","57","56","50","54","48","54","56","55", // Regex match
-                "59","32","104","61","70","114","111"
-            ]
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -63,21 +59,15 @@ describe("Venmo timestamp", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": [
-                "120","102","116","107","108","121","59","32","100","61","118","101","110","109","111","46","99","111","109","59","32","116","61",
-                "49","54","57","56","50","54","48","54","56","55", // Regex match
-                "59","32","104","61","70","114","111"
-            ]
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = [
-            "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",
-            "49","54","57","56","50","54","48","54","56","55", // Regex match
-            "0","0","0","0","0","0","0"
-        ];
+        const expected = Array(textToAsciiArray("xftkly; d=venmo.com; t=").length).fill("0")
+            .concat(textToAsciiArray("1698260687"))
+            .concat(Array(textToAsciiArray("; h=Fro").length).fill("0"));
         const result = witness.slice(2, 40 + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -85,11 +75,7 @@ describe("Venmo timestamp", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": [
-                "120","102","116","107","108","121","59","32","100","61","118","101","110","109","111","46","99","111","109","59","32","116","62", // Update to 62
-                "49","54","57","56","50","54","48","54","56","55",
-                "59","32","104","61","70","114","111"
-            ] 
+            "msg": textToAsciiArray("xftkly; D=venmo.com; t=1698260687; h=Fro")     // D instead of d
         };
         const witness = await cir.calculateWitness(
             input,
