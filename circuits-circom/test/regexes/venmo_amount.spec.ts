@@ -65,8 +65,10 @@ describe("Venmo amount", function () {
             input,
             true
         );
-        const expected = Array(13).fill("0").concat(textToAsciiArray("2,500.00")).concat(Array(6).fill("0"));
-        const result = witness.slice(2, 27 + 2);
+        const expected = Array(textToAsciiArray("eeeee eeeee $").length).fill("0")
+            .concat(textToAsciiArray("2,500.00"))
+            .concat(textToAsciiArray("\r\nmime").fill("0"));
+        const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
