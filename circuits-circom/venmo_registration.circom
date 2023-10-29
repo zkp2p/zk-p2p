@@ -76,11 +76,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-<<<<<<< HEAD
     // TOTAL CONSTRAINTS: 5431521
-=======
-    // TOTAL CONSTRAINTS: 5148839
->>>>>>> 541cdaa (add docs and build files)
 }
 
 // Args:
