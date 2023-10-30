@@ -33,8 +33,9 @@ describe("HDFC amount", function () {
     }
 
     it("Should generate witnesses", async () => {
+        // No commas in amount.
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -45,7 +46,7 @@ describe("HDFC amount", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.5.00 has been debited from account xxx")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.5.00 has been debited from account xx")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -57,14 +58,14 @@ describe("HDFC amount", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been debited from account")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
         const expected = Array(textToAsciiArray("Dear Customer,<br> <br> Rs.").length).fill("0")
-            .concat(textToAsciiArray("1,234.56"))
+            .concat(textToAsciiArray("1234.56"))
             .concat(Array(textToAsciiArray(" has been debited from account").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
@@ -73,7 +74,7 @@ describe("HDFC amount", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> RS.1,234.56 has been debited from account")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> RS.1234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,
