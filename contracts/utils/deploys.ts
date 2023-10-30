@@ -5,7 +5,7 @@ import { usdc } from "@utils/common";
 
 const circom = require("circomlibjs");
 
-import { 
+import {
   Ramp,
   ManagedKeyHashAdapter,
   USDCMock,
@@ -15,19 +15,21 @@ import {
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
+  HdfcSendProcessor,
   NullifierRegistry
 } from "./contracts";
 import { Ramp__factory } from "../typechain/factories/contracts";
-import { 
+import {
   USDCMock__factory,
   VenmoReceiveProcessorMock__factory,
   VenmoRegistrationProcessorMock__factory,
-  VenmoSendProcessorMock__factory
+  VenmoSendProcessorMock__factory,
 } from "../typechain/factories/contracts/mocks";
 import {
   VenmoReceiveProcessor__factory,
   VenmoRegistrationProcessor__factory,
-  VenmoSendProcessor__factory
+  VenmoSendProcessor__factory,
+  HdfcSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
 import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
 import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
@@ -97,6 +99,20 @@ export default class DeployHelper {
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
     return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
+  }
+
+  public async deployHdfcSendProcessor(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    emailFromAddress: string,
+  ): Promise<HdfcSendProcessor> {
+    return await new HdfcSendProcessor__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,

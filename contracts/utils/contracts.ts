@@ -9,4 +9,5 @@ export {
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
+  HdfcSendProcessor
 } from "../typechain";
