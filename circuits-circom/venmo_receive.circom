@@ -7,7 +7,7 @@ include "./utils/hash_sign_gen_rand.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./regexes/from_regex.circom";
-include "./regexes/venmo_amount.circom";
+include "./regexes/venmo_receive_amount.circom";
 include "./regexes/venmo_payer_id.circom";
 include "./regexes/venmo_timestamp.circom";
 
@@ -71,7 +71,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output reveal_email_amount_packed[max_email_amount_packed_bytes]; // packed into 7-bytes. TODO: make this rotate to take up even less space
 
     signal amount_regex_out, amount_regex_reveal[max_header_bytes];
-    (amount_regex_out, amount_regex_reveal) <== VenmoAmountRegex(max_header_bytes)(in_padded);
+    (amount_regex_out, amount_regex_reveal) <== VenmoReceiveAmountRegex(max_header_bytes)(in_padded);
     amount_regex_out === 1;
 
     reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, venmo_amount_idx);
@@ -122,7 +122,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5583287
+    // TOTAL CONSTRAINTS: 6764636
 }
 
 // Args:
