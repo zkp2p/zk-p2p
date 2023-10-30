@@ -113,7 +113,7 @@ describe("HDFC send WASM tester", function () {
     });
 
     // There's probably a diff on how the packing happens on contract / circuit vs how we do it here.
-    it.skip("Should return the correct packed amount", async () => {
+    it("Should return the correct packed amount", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
@@ -129,23 +129,16 @@ describe("HDFC send WASM tester", function () {
         const packed_amount = witness.slice(5, 7);
 
         // Get expected packed amount
-        const regex_start = Number(input["venmo_amount_idx"]);
-        const regex_start_sub_array = input["in_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the amount which is 13 in ascii
+        const regex_start = Number(input["hdfc_amount_idx"]);
+        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("32"); // Look for `space` to end the amount which is 32 in ascii
         const amount_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        console.log("amount_array", amount_array)
-        let chunkedArrays = chunkArray(amount_array, 7, 10);
-
-        console.log("chunkedArrays", chunkedArrays)
-        console.log("packed_amount", packed_amount)
+        let chunkedArrays = chunkArray(amount_array, 7, 8);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
-            console.log("arr", arr)
-            console.log("bytesToPacked(arr)", bytesToPacked(arr))
-            console.log("packed_amount[i]", packed_amount[i])
             let expectedValue = bytesToPacked(arr);
 
             // Check packed amount is the same
@@ -176,9 +169,6 @@ describe("HDFC send WASM tester", function () {
 
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(timestamp_array, 7, 10);
-
-        console.log("chunkedArrays", chunkedArrays)
-        console.log("packed_timestamp", packed_timestamp)
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -227,7 +217,6 @@ describe("HDFC send WASM tester", function () {
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("32");  // Look for ` ` to end the offramper_id which is 32 in ascii
         const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
-        // console.log("offramper_id_array", offramper_id_array)
 
         // Chunk bytes into 7 and pack
         const chunkedArrays = chunkArray(offramper_id_array, 7, 42);

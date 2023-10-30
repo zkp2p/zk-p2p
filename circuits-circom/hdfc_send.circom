@@ -1,9 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
-// include "@zk-email/circuits/helpers/extract.circom";
-// include "./stubs/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
 // include "./regexes/hdfc/venmo_timestamp.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
@@ -55,7 +55,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     modulus_hash <== EV.pubkey_hash;
 
     // FROM HEADER REGEX
-    // This extracts the from email, and the precise regex format can be viewed in the README
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
     assert(max_email_from_packed_bytes < max_header_bytes);
 
@@ -67,23 +66,21 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // HDFC SEND AMOUNT REGEX
-    // Note: this regex works for both receive and send emails. The alternative is to tighten up the regex so it only supports one kind of subject
     var max_email_amount_packed_bytes = count_packed(max_email_amount_len, pack_size);
-    assert(max_email_amount_packed_bytes < max_header_bytes);
+    assert(max_email_amount_packed_bytes < max_body_bytes);
 
     signal input hdfc_amount_idx;
     signal output reveal_email_amount_packed[max_email_amount_packed_bytes]; // packed into 7-bytes. TODO: make this rotate to take up even less space
 
-    signal amount_regex_out, amount_regex_reveal[max_header_bytes];
-    (amount_regex_out, amount_regex_reveal) <== HdfcAmountRegex(max_header_bytes)(in_padded);
-    for (var i = 0; i < max_header_bytes; i++) {
+    signal amount_regex_out, amount_regex_reveal[max_body_bytes];
+    (amount_regex_out, amount_regex_reveal) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
+    for (var i = 0; i < max_body_bytes; i++) {
         if (amount_regex_reveal[i] != 0) {
             log("amount", amount_regex_reveal[i]);
         }
     }
-    // TODO: Fix this.
-    // amount_regex_out === 1;
-    // reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
+    amount_regex_out === 1;
+    reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
 
     // TIMESTAMP REGEX
