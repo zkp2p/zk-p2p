@@ -5,7 +5,7 @@ include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/helpers/extract.circom";
 include "./stubs/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
-// include "./regexes/hdfc/venmo_timestamp.circom";
+include "./regexes/hdfc/hdfc_date.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_payee_id.circom";
 include "./utils/ceil.circom";
@@ -20,7 +20,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
     var max_email_amount_len = 8; // Allowing max 4 fig amount+ one comma  + one decimal point + 2 decimal places. e.g. 2,500.00
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (alerts@hdfcbank.net)
-    var max_email_timestamp_len = 10; // 10 digits till year 2286
+    var max_email_date_len = 31; // Sat, 14 Oct 2023 22:09:12 +0530
     // TODO: CHANGE THIS TO 50.
     var max_payee_len = ceil(42, pack_size);    // Max 50 characters in UPI ID  (TODO: CHANGE THIS TO 50)
 
@@ -83,20 +83,24 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
 
-    // TIMESTAMP REGEX
-    // var max_email_timestamp_packed_bytes = count_packed(max_email_timestamp_len, pack_size);
-    // assert(max_email_timestamp_packed_bytes < max_header_bytes);
+    // DATE REGEX
+    var max_email_date_packed_bytes = count_packed(max_email_date_len, pack_size);
+    assert(max_email_date_packed_bytes < max_header_bytes);
 
-    // signal input email_timestamp_idx;
-    // signal output reveal_email_timestamp_packed[max_email_timestamp_packed_bytes]; // packed into 7-bytes
+    signal input email_date_idx;
+    signal output reveal_email_date_packed[max_email_date_packed_bytes]; // packed into 7-bytes
 
-    // signal timestamp_regex_out, timestamp_regex_reveal[max_header_bytes];
-    // (timestamp_regex_out, timestamp_regex_reveal) <== VenmoTimestampRegex(max_header_bytes)(in_padded);
-    // timestamp_regex_out === 1;
+    signal date_regex_out, date_regex_reveal[max_header_bytes];
+    (date_regex_out, date_regex_reveal) <== HdfcDateRegex(max_header_bytes)(in_padded);
+    for (var i = 0; i < max_header_bytes; i++) {
+        if (date_regex_reveal[i] != 0) {
+            log("date", date_regex_reveal[i]);
+        }
+    }
+    date_regex_out === 1;
 
-    // // PACKING
-    // reveal_email_timestamp_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
-    
+    reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
+   
     // HDFC SEND PAYEE ID REGEX
     var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
@@ -134,7 +138,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5199622
+    // TOTAL CONSTRAINTS: (WITH STUB): 5199622
+    // WITHOUT STUB: 5449204
 }
 
 // Args:

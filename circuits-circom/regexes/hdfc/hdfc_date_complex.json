@@ -1,0 +1,56 @@
+{
+  "parts": [
+    {
+      "is_public": false,
+      "regex_def": "\r\ndate:"
+    },
+    {
+      "is_public": true,
+      "regex_def": "(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"
+    },
+    {
+      "is_public": false,
+      "regex_def": ", "
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": " "
+    },
+    {
+      "is_public": true,
+      "regex_def": "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
+    },
+    {
+      "is_public": false,
+      "regex_def": " "
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": " "
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+:(0|1|2|3|4|5|6|7|8|9)+:(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": " "
+    },
+    {
+      "is_public": true,
+      "regex_def": "(\\+|-)(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": "\r\n"
+    }
+  ]
+}

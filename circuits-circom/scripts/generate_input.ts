@@ -60,6 +60,7 @@ export interface ICircuitInputs {
   venmo_actor_id_idx?: string;
   hdfc_payee_id_idx?: string;
   hdfc_amount_idx?: string;
+  email_date_idx?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -291,8 +292,11 @@ export async function getCircuitInputs(
     const payee_id_selector = Buffer.from("to VPA ");
     const hdfc_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
 
-    const venmo_amount_idx = Buffer.from("Dear Customer,<br> <br> Rs.");
-    const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(venmo_amount_idx) + venmo_amount_idx.length).toString();
+    const hdfc_amount_selector = Buffer.from("Dear Customer,<br> <br> Rs.");
+    const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
+
+    const email_date_idx = (raw_header.length - trimStrByStr(raw_header, "date:").length).toString();
+    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx)
 
     circuitInputs = {
       in_padded,
@@ -306,6 +310,7 @@ export async function getCircuitInputs(
       // venmo specific indices
       hdfc_amount_idx,
       hdfc_payee_id_idx,
+      email_date_idx,
       email_from_idx,
       // IDs
       intent_hash,

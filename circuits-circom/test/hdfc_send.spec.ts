@@ -146,7 +146,7 @@ describe("HDFC send WASM tester", function () {
         });
     });
 
-    it.skip("Should return the correct packed timestamp", async () => {
+    it("Should return the correct packed date", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
@@ -159,16 +159,17 @@ describe("HDFC send WASM tester", function () {
 
         // Get returned packed timestamp
         // Indexes 7 to 9 represent the packed timestamp; (10 \ 7)
-        const packed_timestamp = witness.slice(7, 9);
+        const packed_timestamp = witness.slice(7, 12);
 
         // Get expected packed timestamp
-        const regex_start = Number(input["email_timestamp_idx"]);
+        const regex_start = Number(input["email_date_idx"]);
         const regex_start_sub_array = input["in_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("59"); // Look for `;` to end the timestamp which is 59 in ascii
-        const timestamp_array = regex_start_sub_array.slice(0, regex_end);
+        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the timestamp which is 13 in ascii
+        const date_array = regex_start_sub_array.slice(0, regex_end);
+        console.log(date_array)
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(timestamp_array, 7, 10);
+        let chunkedArrays = chunkArray(date_array, 7, 31);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -210,7 +211,7 @@ describe("HDFC send WASM tester", function () {
 
         // Get returned hashed offramper_id
         // Index 9 represents the hashed offramper_id
-        const hashed_offramper_id = witness[7];
+        const hashed_offramper_id = witness[12];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["hdfc_payee_id_idx"]);
@@ -242,7 +243,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[8];
+        const nullifier = witness[13];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -264,7 +265,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[9];
+        const intent_hash = witness[14];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
