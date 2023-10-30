@@ -37,7 +37,6 @@ describe("Body Hash  Regex", function () {
         const input = {
             "msg": textToAsciiArray("\r\ndkim-signature:v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple; s=yzlavq3ml4jl4lt6dltbgmnoftxftkly; d=venmo.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date; bh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
         };
-        console.log(input.msg.length)
         const witness = await cir.calculateWitness(
             input,
             true
@@ -54,7 +53,6 @@ describe("Body Hash  Regex", function () {
             input,
             true
         );
-        console.log(witness)
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
@@ -62,7 +60,6 @@ describe("Body Hash  Regex", function () {
         const input = {
             "msg": textToAsciiArray("\r\ndkim-signature:v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple; s=yzlavq3ml4jl4lt6dltbgmnoftxftkly; d=venmo.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date; bh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
         };
-        console.log(input.msg.length, textToAsciiArray("C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=").length)
         const witness = await cir.calculateWitness(
             input,
             true

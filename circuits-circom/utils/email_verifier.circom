@@ -6,7 +6,7 @@ include "circomlib/circuits/mimcsponge.circom";
 include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/rsa.circom";
 include "@zk-email/circuits/helpers/base64.circom";
-include "@zk-email/circuits/regexes/body_hash_regex.circom";
+include "../regexes/body_hash_regex.circom";
 include "./extract.circom";
 
 // Here, n and k are the biginteger parameters for RSA
@@ -14,7 +14,6 @@ include "./extract.circom";
 // Max header bytes shouldn't need to be changed much per email,
 // but the max mody bytes may need to be changed to be larger if the email has a lot of i.e. HTML formatting
 // ignore_body_hash_check is a flag that allows us to skip the body hash check, for projects that dont care about the body contents
-// TODO: split into header and body
 template EmailVerifier(max_header_bytes, max_body_bytes, n, k, ignore_body_hash_check) {
     assert(max_header_bytes % 64 == 0);
     assert(max_body_bytes % 64 == 0);
