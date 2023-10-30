@@ -65,8 +65,10 @@ describe("Venmo Actor ID", function () {
             input,
             true
         );
-        const expected = Array(12).fill("0").concat(textToAsciiArray("venmo@venmo.com")).concat(Array(23).fill("0"));
-        const result = witness.slice(2, 50 + 2);
+        const expected = Array(textToAsciiArray("from:Venmo <").length).fill("0")
+            .concat(textToAsciiArray("venmo@venmo.com"))
+            .concat(Array(textToAsciiArray(">\r\nreply-to:Venmo No-re").length).fill("0"));
+        const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
