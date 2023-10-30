@@ -26,6 +26,7 @@ template BodyHashRegex (msg_bytes) {
     }
 
     for (var i = 0; i < num_bytes; i++) {
+        // first section catch all lower case except 'b' so only 25 chars
         // 110 = 'n'
         eq[0][i] = IsEqual();
         eq[0][i].in[0] <== in[i];
@@ -34,7 +35,7 @@ template BodyHashRegex (msg_bytes) {
         eq[1][i] = IsEqual();
         eq[1][i].in[0] <== in[i];
         eq[1][i].in[1] <== 108;
-        // 101 = 'e'
+        // 103 = 'g'
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 103;
@@ -180,12 +181,12 @@ template BodyHashRegex (msg_bytes) {
         and[3][i].a <== states[i][1];
         and[3][i].b <== eq[25][i].out;
         // 61 = '='
-        eq[26][i] = IsEqual();
-        eq[26][i].in[0] <== in[i];
-        eq[26][i].in[1] <== 61;
+        // eq[26][i] = IsEqual();
+        // eq[26][i].in[0] <== in[i];
+        // eq[26][i].in[1] <== 61;
         and[4][i] = AND();
         and[4][i].a <== states[i][14];
-        and[4][i].b <== eq[26][i].out;
+        and[4][i].b <== eq[25][i].out;
         multi_or[2][i] = MultiOR(2);
         multi_or[2][i].in[0] <== and[3][i].out;
         multi_or[2][i].in[1] <== and[4][i].out;
@@ -422,37 +423,41 @@ template BodyHashRegex (msg_bytes) {
         multi_or[4][i].in[1] <== and[12][i].out;
         states[i+1][3] <== multi_or[4][i].out;
         // 13 = '\r'
-        eq[101][i] = IsEqual();
-        eq[101][i].in[0] <== in[i];
-        eq[101][i].in[1] <== 13;
+        // eq[101][i] = IsEqual();
+        // eq[101][i].in[0] <== in[i];
+        // eq[101][i].in[1] <== 13;
         and[13][i] = AND();
         and[13][i].a <== states[i][0];
-        and[13][i].b <== eq[101][i].out;
+        and[13][i].b <== eq[48][i].out;
         states[i+1][4] <== and[13][i].out;
         // 10 = '\n'
-        eq[102][i] = IsEqual();
-        eq[102][i].in[0] <== in[i];
-        eq[102][i].in[1] <== 10;
+        // eq[102][i] = IsEqual();
+        // eq[102][i].in[0] <== in[i];
+        // eq[102][i].in[1] <== 10;
         and[14][i] = AND();
         and[14][i].a <== states[i][4];
-        and[14][i].b <== eq[102][i].out;
+        and[14][i].b <== eq[33][i].out;
         states[i+1][5] <== and[14][i].out;
         // 100 = 'd'
-        eq[103][i] = IsEqual();
-        eq[103][i].in[0] <== in[i];
-        eq[103][i].in[1] <== 100;
+        // eq[103][i] = IsEqual();
+        // eq[103][i].in[0] <== in[i];
+        // eq[103][i].in[1] <== 100;
         and[15][i] = AND();
         and[15][i].a <== states[i][5];
-        and[15][i].b <== eq[103][i].out;
+        and[15][i].b <== eq[23][i].out;
         states[i+1][6] <== and[15][i].out;
         // 107 = 'k'
-        eq[104][i] = IsEqual();
-        eq[104][i].in[0] <== in[i];
-        eq[104][i].in[1] <== 107;
+        // eq[104][i] = IsEqual();
+        // eq[104][i].in[0] <== in[i];
+        // eq[104][i].in[1] <== 107;
         and[16][i] = AND();
         and[16][i].a <== states[i][6];
-        and[16][i].b <== eq[104][i].out;
+        and[16][i].b <== eq[7][i].out;
         states[i+1][7] <== and[16][i].out;
+
+        // TODO: I AM HERE
+
+
         // 105 = 'i'
         eq[105][i] = IsEqual();
         eq[105][i].in[0] <== in[i];
