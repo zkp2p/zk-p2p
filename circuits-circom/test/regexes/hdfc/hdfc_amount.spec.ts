@@ -63,17 +63,17 @@ describe("HDFC amount", function () {
             input,
             true
         );
-        // 0s, 1,234.56, 0s
-        const expected = Array(27).fill("0").concat(textToAsciiArray("1,234.56")).concat(Array(30).fill("0"));
+        const expected = Array(textToAsciiArray("Dear Customer,<br> <br> Rs.").length).fill("0")
+            .concat(textToAsciiArray("1,234.56"))
+            .concat(Array(textToAsciiArray(" has been debited from account").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
-        console.log(result)
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1,234.56 has been credited to account ")
+            "msg": textToAsciiArray("Dear Customer,<br> <br> RS.1,234.56 has been debited from account")
         };
         const witness = await cir.calculateWitness(
             input,

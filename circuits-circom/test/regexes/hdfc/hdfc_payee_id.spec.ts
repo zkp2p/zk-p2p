@@ -64,7 +64,9 @@ describe("HDFC payer id", function () {
             true
         );
         // 0s, sachin1234@paytm, 0s
-        const expected = Array(12).fill("0").concat(textToAsciiArray("sachin1234@paytm")).concat(Array(12).fill("0"));
+        const expected = Array(textToAsciiArray("5678 to VPA ").length).fill("0")
+            .concat(textToAsciiArray("sachin1234@paytm"))
+            .concat(Array(textToAsciiArray(" on 28-10-23").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
