@@ -36,7 +36,6 @@ describe("Venmo payee id", function () {
         const input = {
             "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id")
         };
-        console.log(input.msg.length);
         const witness = await cir.calculateWitness(
             input,
             true
