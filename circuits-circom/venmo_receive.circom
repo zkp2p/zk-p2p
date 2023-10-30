@@ -122,7 +122,7 @@ template VenmoReceiveEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5714359
+    // TOTAL CONSTRAINTS: 5583287
 }
 
 // Args:
