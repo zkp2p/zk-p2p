@@ -35,16 +35,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
       <ModalContainer>
         <RowBetween>
-          <button
-            onClick={handleOverlayClick}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'absolute', left: '1rem' }}
-          >  
-            <StyledArrowLeft/>
-          </button>
+          <div style={{ flex: 0.5 }}>
+            <button
+              onClick={handleOverlayClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              <StyledArrowLeft/>
+            </button>
+          </div>
 
-          <ThemedText.HeadlineSmall style={{ margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             Send Venmo Payment
           </ThemedText.HeadlineSmall>
+
+          <div style={{ flex: 0.5 }}/>
         </RowBetween>
 
         <QRCode

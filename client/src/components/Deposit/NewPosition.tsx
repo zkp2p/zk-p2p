@@ -375,15 +375,20 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   return (
     <Container>
       <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
-        <button
-          onClick={handleBackClick}
-          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          <StyledArrowLeft/>
-        </button>
+        <div style={{ flex: 0.5 }}>
+          <button
+            onClick={handleBackClick}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            <StyledArrowLeft/>
+          </button>
+        </div>
+
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           New Position
         </ThemedText.HeadlineSmall>
+
+        <div style={{ flex: 0.5 }}/>
       </RowBetween>
 
       <Body>

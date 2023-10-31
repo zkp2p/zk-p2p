@@ -166,16 +166,20 @@ export const OffRamp: React.FC<OffRampProps> = ({
     <Container>
       <TitleContainer>
         <RowBetween style={{ paddingBottom: '1.5rem' }}>
-          <button
-            onClick={handleBackClick}
-            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            <StyledArrowLeft/>
-          </button>
+          <div style={{ flex: 0.5 }}>
+            <button
+              onClick={handleBackClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              <StyledArrowLeft/>
+            </button>
+          </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             Complete Off-Ramp
           </ThemedText.HeadlineSmall>
+
+          <div style={{ flex: 0.5 }}/>
         </RowBetween>
 
         <InstructionsAndTogglesContainer>

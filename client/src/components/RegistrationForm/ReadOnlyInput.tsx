@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import styled from 'styled-components';
 
 import QuestionHelper from '@components/common/QuestionHelper';
