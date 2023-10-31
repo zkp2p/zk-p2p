@@ -218,21 +218,33 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     if (extractedVenmoId) {
-      setVenmoId(extractedVenmoId);
+      setVenmoIdInput(extractedVenmoId);
     } else {
-      setVenmoId('');
+      setVenmoIdInput('');
     }
   }, [extractedVenmoId]);
+
+  useEffect(() => {
+    const verifyVenmoIdInput = async () => {
+      if (venmoIdInput.length < 18) {
+        setIsVenmoIdInputValid(false);
+      } else {
+        if (registrationHash) {
+          const validVenmoInput = await isProvidedIdEqualToRegistration(venmoIdInput, registrationHash);
+
+          setIsVenmoIdInputValid(validVenmoInput);
+        } else {
+          setIsVenmoIdInputValid(false);
+        }
+      }
+    };
+
+    verifyVenmoIdInput();
+  }, [venmoIdInput, registrationHash]);
 
   /*
    * Helpers
    */
-
-  const venmoInputErrorString = (): string => {
-    // TODO: check that the input venmo ID matches the user's registration hash
-
-    return ''
-  }
 
   function isValidInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
@@ -240,66 +252,66 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     return parseFloat(value) >= 0 && isValid;
   }
 
-  const depositAmountInputErrorString = (): string => {
-    if (depositAmountInput) {
-      switch (formState) {
-        case NewPositionState.INSUFFICIENT_BALANCE:
-          return `Current USDC balance: ${usdcBalance}`;
-        
-        case NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
-          const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount) : '0';
-          return `Minimum deposit amount is ${minimumDepositAmountString}`;
-
-        case NewPositionState.APPROVAL_REQUIRED:
-          const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp) : '0';
-          return `Current approved transfer amount: ${usdcApprovalToRampString}`;
-
-        default:
-          return '';
-      }
-    } else {
-      return '';
-    }
-  }
-
   const ctaDisabled = (): boolean => {
-    switch (formState) {
-      case NewPositionState.INCOMPLETE:
-      case NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
-      case NewPositionState.CONVENIENCE_FEE_INVALID:
-      case NewPositionState.INSUFFICIENT_BALANCE:
-      case NewPositionState.MAX_INTENTS_REACHED:
+    switch (depositState) {
+      case NewDepositState.DEFAULT:
+      case NewDepositState.INVALID_VENMO_ID:
+      case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewDepositState.CONVENIENCE_FEE_INVALID:
+      case NewDepositState.INSUFFICIENT_BALANCE:
+      case NewDepositState.MAX_INTENTS_REACHED:
+      case NewDepositState.MISSING_REGISTRATION:
+      case NewDepositState.MISSING_AMOUNTS:
         return true;
 
-      case NewPositionState.APPROVAL_REQUIRED:
+      case NewDepositState.APPROVAL_REQUIRED:
         return false;
 
-      case NewPositionState.VALID:
+      case NewDepositState.VALID:
       default:
         return false;
     }
   }
 
   const ctaText = (): string => {
-    switch (formState) {
-      case NewPositionState.APPROVAL_REQUIRED:
-        return 'Approve USDC Transfer';
+    switch (depositState) {
+      case NewDepositState.MISSING_REGISTRATION:
+        return 'Missing registration';
 
-      case NewPositionState.INSUFFICIENT_BALANCE:
-        return 'Insufficient USDC Balance';
+      case NewDepositState.INVALID_VENMO_ID:
+        return 'Venmo id does not match registration';
 
-      case NewPositionState.VALID:
-      default:
+      case NewDepositState.MISSING_AMOUNTS:
+        return 'Enter deposit and receive amounts';
+      
+      case NewDepositState.INSUFFICIENT_BALANCE:
+        const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
+        return `Insufficient USDC balance: ${humanReadableUsdcBalance}`;
+      
+      case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+        const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount) : '0';
+        return `Minimum deposit amount is ${minimumDepositAmountString}`;
+
+      case NewDepositState.APPROVAL_REQUIRED:
+        const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
+
+      case NewDepositState.VALID:
         return 'Create Deposit';
+
+      case NewDepositState.DEFAULT:
+      default:
+        return 'Enter valid venmo id';
+
     }
   }
 
   const ctaLoading = (): boolean => {
-    switch (formState) {
-      case NewPositionState.APPROVAL_REQUIRED:
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
         return isSubmitApproveLoading || isSubmitApproveMining;
 
-      case NewPositionState.VALID:
+      case NewDepositState.VALID:
         return isSubmitDepositLoading || isSubmitDepositMining;
 
       default:
