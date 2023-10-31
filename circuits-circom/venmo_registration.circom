@@ -6,11 +6,13 @@ include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./regexes/from_regex.circom";
 include "./regexes/venmo_actor_id.circom";
+include "./regexes/venmo_send_amount.circom";
 
 template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
 
     // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
+    var max_email_amount_len = 8; // Allowing max 4 fig amount + one decimal point + 2 decimal places. e.g. $2,500.00
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (venmo@venmo.com)
     var max_actor_id_len = ceil(21, pack_size); // Current Venmo IDs are 19 digits, but we allow for 21 digits to be future proof
     
@@ -55,6 +57,17 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     from_regex_out === 1;
     reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
+    // VENMO SEND AMOUNT REGEX
+    // Check that email is of the format "You paid YYYY $X"
+    // Registration only works with send emails, not any other type of email
+    var max_email_amount_packed_bytes = count_packed(max_email_amount_len, pack_size);
+    assert(max_email_amount_packed_bytes < max_header_bytes);
+
+    signal amount_regex_out, amount_regex_reveal[max_header_bytes];
+    (amount_regex_out, _) <== VenmoSendAmountRegex(max_header_bytes)(in_padded);
+    // Check that regex matches; no need to reveal output
+    amount_regex_out === 1;
+
     // VENMO EMAIL ACTOR ID REGEX
     var max_actor_id_packed_bytes = count_packed(max_actor_id_len, pack_size); // ceil(max_num_bytes / 7)
     
@@ -76,7 +89,7 @@ template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_actor_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: 4823029
+    // TOTAL CONSTRAINTS: 5261847
 }
 
 // Args:
