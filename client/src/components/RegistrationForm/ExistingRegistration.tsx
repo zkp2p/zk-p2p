@@ -6,7 +6,7 @@ import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
 import { CustomConnectButton } from "../common/ConnectButton";
 import { NumberedStep } from "../common/NumberedStep";
-import { ReadOnlyInput } from "../common/ReadOnlyInput";
+import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
 import { RowBetween } from '../layouts/Row';
 import { ThemedText } from '../../theme/text';
 import { REGISTRATION_INSTRUCTIONS } from '@helpers/tooltips';
@@ -63,14 +63,22 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                   { REGISTRATION_INSTRUCTIONS }
                 </NumberedStep>
               </NumberedInputContainer>
-              <ReadOnlyInput
-                label="Registration Status"
-                value={ isRegistered ? "Registered" : "Not Registered" }
-              />
-              {isRegistered && <ReadOnlyInput
-                label="Venmo Profile"
-                value={registrationHash}
-              />}
+
+              <InputsContainer>
+                <ReadOnlyInput
+                  label="Status"
+                  name={`depositAmount`}
+                  value={isRegistered ? "Registered" : "Not Registered"}
+                />
+                
+                {
+                  isRegistered && <ReadOnlyInput
+                    label="Venmo Identifier"
+                    name={`venmoProfile`}
+                    value={registrationHash ? registrationHash : ""}
+                  />
+                }
+              </InputsContainer>
             </Body>
           )}
         </Content>
@@ -85,10 +93,10 @@ const Container = styled.div`
 `;
 
 const Column = styled.div`
-  gap: 1rem;
   align-self: flex-start;
-  border-radius: 16px;
   justify-content: center;
+  border-radius: 16px;
+  gap: 1rem;
 `;
 
 const TitleRow = styled(RowBetween)`
@@ -141,11 +149,17 @@ const CheckCircleIcon = styled(CheckCircle)`
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   padding: 1.5rem;
   background-color: #0D111C;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
+`;
+
+const InputsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const NumberedInputContainer = styled(Col)`

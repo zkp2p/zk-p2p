@@ -4,36 +4,32 @@ import styled from 'styled-components';
 import QuestionHelper from '@components/common/QuestionHelper';
 
 
-interface InputProps {
+interface ReadOnlyInputProps {
   label: string;
   name: string;
   value?: string;
   type?: string;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   inputLabel?: string;
-  readOnly?: boolean;
   accessoryLabel?: string;
   helperText?: string;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const ReadOnlyInput: React.FC<ReadOnlyInputProps> = ({
   label,
   name,
   value,
-  onChange,
   onFocus,
   onKeyDown,
   placeholder,
   inputLabel,
   type = "text",
-  readOnly = false,
   accessoryLabel="",
   helperText="",
-}: InputProps) => {
-  Input.displayName = "Input";
+}: ReadOnlyInputProps) => {
+  ReadOnlyInput.displayName = "Input";
 
   return (
       <Container>
@@ -59,25 +55,13 @@ export const Input: React.FC<InputProps> = ({
               id={name}
               placeholder={placeholder}
               value={value}
-              onChange={onChange}
+              onChange={() => {}}
               onFocus={onFocus}
               onKeyDown={onKeyDown}
-              readOnly={readOnly}
+              readOnly={true}
             />
           </InputWrapper>
         </LabelAndInputContainer>
-
-        <AccessoryAndInputLabelWrapper>
-          <AccessoryLabel>
-            {accessoryLabel}
-          </AccessoryLabel>
-
-          {inputLabel ? (
-            <InputLabel>
-              <span>{inputLabel}</span>
-            </InputLabel>
-          ) : null}
-        </AccessoryAndInputLabelWrapper>
       </Container>
   );
 };
@@ -98,6 +82,7 @@ const Container = styled.div`
 `;
 
 const LabelAndInputContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -139,7 +124,7 @@ const StyledInput = styled.input<StyledInputProps>`
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: 24px;
+  font-size: 16px;
 
   &:focus {
     box-shadow: none;
@@ -164,25 +149,4 @@ const StyledInput = styled.input<StyledInputProps>`
       pointer-events: none;
     `
   }
-`;
-
-const AccessoryAndInputLabelWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: #CED4DA;
-  margin: 9px 0px 2px 0px;
-`;
-
-const AccessoryLabel = styled.div`
-  font-size: 14px;
-  text-align: right;
-  font-weight: 550;
-`;
-
-const InputLabel = styled.div`
-  pointer-events: none;
-  color: #9ca3af;
-  font-size: 20px;
-  text-align: right;
 `;
