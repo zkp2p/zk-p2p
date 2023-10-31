@@ -64,7 +64,9 @@ describe("Body Hash  Regex", function () {
             input,
             true
         );
-        const expected = Array(201).fill("0").concat(textToAsciiArray("C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=")).concat(Array(4).fill("0"));
+        const expected = Array(textToAsciiArray("\r\ndkim-signature:v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple; s=yzlavq3ml4jl4lt6dltbgmnoftxftkly; d=venmo.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date; bh=").length).fill("0")
+            .concat(textToAsciiArray("C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI="))
+            .concat(textToAsciiArray("; b=").fill("0"));
         const result = witness.slice(2, 249 + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
