@@ -34,7 +34,21 @@ describe("Venmo payee id", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            "msg": textToAsciiArray(
+                "EEEEEEEEEEE<!-- recipient name -->\r\n"
+                + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+                + "                   =20\r\n"
+                + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
+                + "45553&actor_id=3D1192345678912345678\">\r\n"
+                + "                   =20\r\n"
+                + "                    La Fleur Salon\r\n"
+                + "                </a>\r\n"
+                + "               =20\r\n"
+                + "            </div>\r\n"
+                + "            <!-- note -->\r\n"
+                + "            <div>\r\n"
+                + "               <p>"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
@@ -46,27 +60,55 @@ describe("Venmo payee id", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            "msg": textToAsciiArray(
+                "EEEEEEEEEEE<!-- recipient name -->\r\n"
+                + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+                + "                   =20\r\n"
+                + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
+                + "45553&actor_id=3D1192345678912345678\">\r\n"
+                + "                   =20\r\n"
+                + "                    La Fleur Salon\r\n"
+                + "                </a>\r\n"
+                + "               =20\r\n"
+                + "            </div>\r\n"
+                + "            <!-- note -->\r\n"
+                + "            <div>\r\n"
+                + "               <p>"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
 
-        assert(Fr.eq(Fr.e(witness[1]), Fr.e(22)));
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
+            "msg": textToAsciiArray(
+                "EEEEEEEEEEE<!-- recipient name -->\r\n"
+                + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+                + "                   =20\r\n"
+                + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
+                + "45553&actor_id=3D1192345678912345678\">\r\n"
+                + "                   =20\r\n"
+                + "                    La Fleur Salon\r\n"
+                + "                </a>\r\n"
+                + "               =20\r\n"
+                + "            </div>\r\n"
+                + "            <!-- note -->\r\n"
+                + "            <div>\r\n"
+                + "               <p>"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D").length).fill("0")
+        const expected = Array(textToAsciiArray("EEEEEEEEEEE<!-- recipient name -->\r\n                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n                   =20\r\n                    href=3D\"https://venmo.com/code?user_id=3D").length).fill("0")
             .concat(textToAsciiArray("27443255215553=\r\n45553"))
-            .concat(textToAsciiArray("&actor_id EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE").fill("0"));
+            .concat(textToAsciiArray("&actor_id=3D1192345678912345678\">\r\n                   =20\r\n                    La Fleur Salon\r\n                </a>\r\n               =20\r\n            </div>\r\n            <!-- note -->\r\n            <div>\r\n               <p>").fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -74,7 +116,21 @@ describe("Venmo payee id", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3DD7443255215553=\r\n45553&actor_id EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE") // D7443255215553
+            "msg": textToAsciiArray(
+                "EEEEEEEEEEE<!-- recipient name -->\r\n"
+                + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+                + "                   =20\r\n"
+                + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
+                + "45553&actor_id=3D1192345678912345678\">\r\n"
+                + "                   =20\r\n"
+                + "                    La Fleur Salon\r\n"
+                + "                </a>\r\n"
+                + "               =20\r\n"
+                + "            </div>\r\n"
+                + "            <!-- npte -->\r\n" // Update to `p`
+                + "            <div>\r\n"
+                + "               <p>"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
@@ -82,17 +138,5 @@ describe("Venmo payee id", function () {
         );
 
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
-    });
-
-    it("Should match regex twice", async () => {
-        const input = {
-            "msg": textToAsciiArray(" =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id =\r\n   href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id")
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        assert(Fr.eq(Fr.e(witness[1]), Fr.e(44)));
     });
 });
