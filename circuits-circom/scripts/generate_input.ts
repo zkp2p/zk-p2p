@@ -139,8 +139,7 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
-    // IMPORTANT: Venmo completed request, send payment, and receive payment emails can be used to register
-    // since they share similar formats to extract actor ID
+    // IMPORTANT: Only send payment email can be used to register
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   }

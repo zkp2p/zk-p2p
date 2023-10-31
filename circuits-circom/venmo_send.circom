@@ -65,7 +65,6 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // VENMO SEND AMOUNT REGEX
-    // Note: this regex works for both receive and send emails. The alternative is to tighten up the regex so it only supports one kind of subject
     var max_email_amount_packed_bytes = count_packed(max_email_amount_len, pack_size);
     assert(max_email_amount_packed_bytes < max_header_bytes);
 
