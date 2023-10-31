@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import {
@@ -10,13 +10,19 @@ import {
 import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { Input } from "@components/Swap/Input";
+import { Input } from "@components/Deposit/Input";
 import {
   calculatePackedVenmoId,
   isProvidedIdEqualToRegistration
 } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
+import {
+  NEW_DEPOSIT_VENMO_ID_TOOLTIP,
+  NEW_DEPOSIT_DEPOSIT_TOOLTIP,
+  NEW_DEPOSIT_RECEIVE_TOOLTIP
+} from '@helpers/tooltips'
+import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
 import useDeposits from '@hooks/useDeposits';
 import useRampState from '@hooks/useRampState'
@@ -47,6 +53,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * Contexts
    */
+
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()
@@ -149,9 +157,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           if (!isVenmoIdInputValid) {
             setDepositState(NewDepositState.INVALID_VENMO_ID);
           } else {
-            const usdcBalanceLoaded = usdcBalance !== null && usdcBalance !== undefined;
-            const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
-            const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
+            const usdcBalanceLoaded = usdcBalance !== null;
+            const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
+            const minimumDepositAmountLoaded = minimumDepositAmount !== null;
   
             if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
               const depositAmountBI = toBigInt(depositAmountInput);
@@ -282,7 +290,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Venmo id does not match registration';
 
       case NewDepositState.MISSING_AMOUNTS:
-        return 'Enter deposit and receive amounts';
+        return 'Input deposit and receive amounts';
       
       case NewDepositState.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
@@ -301,7 +309,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewDepositState.DEFAULT:
       default:
-        return 'Enter valid venmo id';
+        return 'Input valid venmo id';
 
     }
   }
@@ -342,6 +350,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }
 
+  const usdcBalanceLabel = useMemo(() => {
+    if (isLoggedIn && usdcBalance !== null) {
+      return `Balance: ${toUsdcString(usdcBalance)}`
+    } else {
+      return '';
+    }
+  }, [usdcBalance, isLoggedIn]);
+
   /*
    * Handlers
    */
@@ -379,6 +395,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             onChange={(e) => {setVenmoIdInput(e.currentTarget.value)}}
             type="number"
             placeholder="215524379021315184"
+            helperText={NEW_DEPOSIT_VENMO_ID_TOOLTIP}
           />
 
           <Input
@@ -389,6 +406,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="USDC"
             placeholder="1000"
+            accessoryLabel={usdcBalanceLabel}
+            helperText={NEW_DEPOSIT_DEPOSIT_TOOLTIP}
           />
 
           <Input
@@ -399,6 +418,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="USD"
             placeholder="1050"
+            helperText={NEW_DEPOSIT_RECEIVE_TOOLTIP}
           />
 
           <ButtonContainer>

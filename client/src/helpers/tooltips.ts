@@ -26,7 +26,26 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  Registration requires a payment transaction email from Venmo. Your ID is hashed to conceal your identity.
+  Registration requires a completed payment transaction email from Venmo.
+  Your ID is hashed to conceal your identity.
+`;
+
+/*
+ * New Deposit
+ */
+
+export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
+  This is a valid 18-19 digit Venmo ID where users will send payments.
+  This connects your Venmo account to your wallet address on chain.
+  This must match the Venmo account you used to register.
+`;
+
+export const NEW_DEPOSIT_DEPOSIT_TOOLTIP = `
+  This is the amount of USDC you will deposit for users to claim by sending you Venmo payments.
+`;
+
+export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
+  This is the amount of USD you will receive if your entire deposit is claimed.
 `;
 
 /*
