@@ -10,9 +10,11 @@ import {
 import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
-import { NumberedStep } from "../common/NumberedStep";
-import { SingleLineInput } from "../common/SingleLineInput";
-import { calculatePackedVenmoId } from '@helpers/poseidonHash'
+import { Input } from "@components/Swap/Input";
+import {
+  calculatePackedVenmoId,
+  isProvidedIdEqualToRegistration
+} from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
 import useBalances from '@hooks/useBalance'
@@ -22,12 +24,11 @@ import useRegistration from '@hooks/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
-interface NewPositionProps {
-  handleBackClick: () => void;
-}
-
-const NewPositionState = {
-  INCOMPLETE: 'incomplete',
+const NewDepositState = {
+  MISSING_REGISTRATION: 'missing_registration',
+  DEFAULT: 'default',
+  INVALID_VENMO_ID: 'invalid_venmo_id',
+  MISSING_AMOUNTS: 'missing_amounts',
   INSUFFICIENT_BALANCE: 'insufficient_balance',
   APPROVAL_REQUIRED: 'approval_required',
   CONVENIENCE_FEE_INVALID: 'convenience_fee_invalid',
@@ -35,6 +36,10 @@ const NewPositionState = {
   MIN_DEPOSIT_THRESHOLD_NOT_MET: 'min_deposit_threshold_not_met',
   VALID: 'valid'
 };
+
+interface NewPositionProps {
+  handleBackClick: () => void;
+}
  
 export const NewPosition: React.FC<NewPositionProps> = ({
   handleBackClick
@@ -46,16 +51,17 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()
   const { refetchDeposits } = useDeposits()
-  const { extractedVenmoId } = useRegistration();
+  const { extractedVenmoId, registrationHash } = useRegistration();
 
   /*
    * State
    */
-  const [formState, setFormState] = useState(NewPositionState.INCOMPLETE);
-  const [venmoId, setVenmoId] = useState<string>('');
+  const [depositState, setDepositState] = useState(NewDepositState.DEFAULT);
+  const [venmoIdInput, setVenmoIdInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
 
+  const [isVenmoIdInputValid, setIsVenmoIdInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
@@ -73,7 +79,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: rampAbi,
     functionName: 'offRamp',
     args: [
-      calculatePackedVenmoId(venmoId),
+      calculatePackedVenmoId(venmoIdInput),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],
@@ -133,47 +139,66 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   useEffect(() => {
-    const usdcBalanceLoaded = usdcBalance !== null && usdcBalance !== undefined;
-    const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
-    const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
-
-    if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-      const depositAmountBI = toBigInt(depositAmountInput);
-      const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
-      const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-      const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
-
-      if (isDepositAmountGreaterThanBalance) {
-        setFormState(NewPositionState.INSUFFICIENT_BALANCE);
-      } else if (isDepositAmountLessThanMinDepositSize) {
-        setFormState(NewPositionState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-      } else if (isDepositAmountGreaterThanApprovedBalance) {
-        setFormState(NewPositionState.APPROVAL_REQUIRED);
+    const updateDepositState = async () => {
+      if(!registrationHash) {
+        setDepositState(NewDepositState.MISSING_REGISTRATION);
       } else {
-        if (receiveAmountInput) {
-          setFormState(NewPositionState.VALID);
+        if (!venmoIdInput) { 
+          setDepositState(NewDepositState.DEFAULT);
         } else {
-          setFormState(NewPositionState.INCOMPLETE);
+          if (!isVenmoIdInputValid) {
+            setDepositState(NewDepositState.INVALID_VENMO_ID);
+          } else {
+            const usdcBalanceLoaded = usdcBalance !== null && usdcBalance !== undefined;
+            const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
+            const minimumDepositAmountLoaded = minimumDepositAmount !== null && minimumDepositAmount !== undefined;
+  
+            if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+              const depositAmountBI = toBigInt(depositAmountInput);
+              const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+              const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
+        
+              if (isDepositAmountGreaterThanBalance) {
+                setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
+              } else if (isDepositAmountLessThanMinDepositSize) {
+                setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+              } else if (isDepositAmountGreaterThanApprovedBalance) {
+                setDepositState(NewDepositState.APPROVAL_REQUIRED);
+              } else {
+                if (receiveAmountInput) {
+                  setDepositState(NewDepositState.VALID);
+                } else {
+                  setDepositState(NewDepositState.MISSING_AMOUNTS);
+                }
+              }
+            } else {
+              setDepositState(NewDepositState.MISSING_AMOUNTS);
+            }
+          }
         }
       }
-    } else {
-      setFormState(NewPositionState.INCOMPLETE);
     }
+
+    updateDepositState();
   }, [
+      venmoIdInput,
+      registrationHash,
       depositAmountInput,
       receiveAmountInput,
       minimumDepositAmount,
       usdcBalance,
-      usdcApprovalToRamp
+      usdcApprovalToRamp,
+      isVenmoIdInputValid,
     ]
   );
 
   useEffect(() => {
-    const isApprovalRequired = formState === NewPositionState.APPROVAL_REQUIRED;
+    const isApprovalRequired = depositState === NewDepositState.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
-    setShouldConfigureSignalIntentWrite(formState === NewPositionState.VALID);
-  }, [formState]);
+    setShouldConfigureSignalIntentWrite(depositState === NewDepositState.VALID);
+  }, [depositState]);
 
   useEffect(() => {
     const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
@@ -283,8 +308,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }
 
   const ctaOnClick = async () => {
-    switch (formState) {
-      case NewPositionState.APPROVAL_REQUIRED:
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
         try {
           await writeSubmitApproveAsync?.();
         } catch (error) {
@@ -292,7 +317,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         }
         break;
 
-      case NewPositionState.VALID:
+      case NewDepositState.VALID:
         try {
           await writeSubmitDepositAsync?.();
         } catch (error) {
@@ -321,43 +346,49 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   return (
     <Container>
-      <Column>
-        <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
-          <button
-            onClick={handleBackClick}
-            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            <StyledArrowLeft/>
-          </button>
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            New Position
-          </ThemedText.HeadlineSmall>
-        </RowBetween>
+      <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+        <button
+          onClick={handleBackClick}
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <StyledArrowLeft/>
+        </button>
+        <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          New Position
+        </ThemedText.HeadlineSmall>
+      </RowBetween>
 
-        <Body>
-          <NumberedStep>
-            Create a new deposit by specifying the amount of USDC you want to deposit and the conversion rate you want to charge.
-          </NumberedStep>
-          <SingleLineInput
+      <Body>
+        <InputsContainer>
+          <Input
             label="Venmo ID"
-            value={venmoId}
-            placeholder={'215524379021315184'}
-            error={venmoInputErrorString()}
-            onChange={(e) => {setVenmoId(e.currentTarget.value)}}
+            name={`venmoId`}
+            value={venmoIdInput}
+            onChange={(e) => {setVenmoIdInput(e.currentTarget.value)}}
+            type="number"
+            placeholder="215524379021315184"
           />
-          <SingleLineInput
+
+          <Input
             label="Deposit Amount"
+            name={`depositAmount`}
             value={depositAmountInput}
-            placeholder={'1000'}
-            error={depositAmountInputErrorString()}
             onChange={(e) => handleInputChange(e.currentTarget.value, setDepositAmountInput)}
+            type="number"
+            inputLabel="USDC"
+            placeholder="1000"
           />
-          <SingleLineInput
+
+          <Input
             label="Receive Amount"
+            name={`receiveAmount`}
             value={receiveAmountInput}
-            placeholder={'1050'}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
+            type="number"
+            inputLabel="USD"
+            placeholder="1050"
           />
+
           <ButtonContainer>
             <Button
               disabled={ctaDisabled()}
@@ -369,29 +400,27 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               {ctaText()}
             </Button>
           </ButtonContainer>
-        </Body>
-      </Column>
+        </InputsContainer>
+      </Body>
     </Container>
   );
 };
 
 const Container = styled.div`
   width: 100%;
-  gap: 1rem;
-`;
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
-  border-radius: 16px;
-  justify-content: center;
 `;
 
 const Body = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   background-color: #0D111C;
+`;
+
+const InputsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const ButtonContainer = styled.div`

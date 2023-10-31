@@ -111,7 +111,6 @@ interface StyledInputProps {
 
 const StyledInput = styled.input<StyledInputProps>`
   width: 100%;
-  display: flex;
   flex-grow: 1;
   border: 0;
   padding: 0;
