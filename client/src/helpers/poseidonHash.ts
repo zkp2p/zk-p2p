@@ -1,5 +1,7 @@
 // @ts-ignore
 import { buildPoseidon } from "circomlibjs";
+import { BigNumber } from "ethers";
+
 import { ZERO } from '@helpers/constants'
 
 
@@ -25,6 +27,15 @@ export const poseidonK = (ar: (number | bigint | string)[]): string => {
   return poseidon(cur);
 };
 
+export const isProvidedIdEqualToRegistration = async(input: string, registrationHash: string): Promise<boolean> => {
+  const venmoHashFromInput = await calculateVenmoIdHash(input);
+  const venmoHashFromInputNumber = BigNumber.from(venmoHashFromInput);
+
+  const existingRegistrationNumber = BigNumber.from(registrationHash);
+
+  return existingRegistrationNumber.eq(venmoHashFromInputNumber);
+}
+
 export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
   const poseidon = await buildPoseidon();
 
@@ -37,7 +48,7 @@ export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
 export const calculatePackedVenmoId = (venmoId: string): [bigint, bigint, bigint] => {
   const venmoIdArray: number[] = venmoId.split('').map(char => char.charCodeAt(0));
 
-  // Pad with zeros until length is 30
+  // Pad with zeros until length is 21
   while (venmoIdArray.length < 21) {
     venmoIdArray.push(0);
   }
@@ -47,11 +58,7 @@ export const calculatePackedVenmoId = (venmoId: string): [bigint, bigint, bigint
 
 function Bytes2Packed(n: number, inArr: number[]) {
   let index = 0;
-  const out: [bigint, bigint, bigint] = [
-    ZERO,
-    ZERO,
-    ZERO,
-  ];
+  const out: [bigint, bigint, bigint] = [ZERO, ZERO, ZERO];
 
   for (let i = 0; i < inArr.length; i += n) {
     let packedValue = BigInt(0);
