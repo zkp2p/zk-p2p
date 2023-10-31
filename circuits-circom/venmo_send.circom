@@ -124,7 +124,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5954017
+    // TOTAL CONSTRAINTS: 5763495
 }
 
 // Args:
