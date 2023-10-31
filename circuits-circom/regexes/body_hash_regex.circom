@@ -130,31 +130,31 @@ template BodyHashRegex (msg_bytes) {
         and[0][i] = AND();
         and[0][i].a <== states[i][13];
         multi_or[0][i] = MultiOR(25);
-        multi_or[0][i].in[0] <== eq[0][i].out;
-        multi_or[0][i].in[1] <== eq[1][i].out;
-        multi_or[0][i].in[2] <== eq[2][i].out;
-        multi_or[0][i].in[3] <== eq[3][i].out;
-        multi_or[0][i].in[4] <== eq[4][i].out;
-        multi_or[0][i].in[5] <== eq[5][i].out;
-        multi_or[0][i].in[6] <== eq[6][i].out;
-        multi_or[0][i].in[7] <== eq[7][i].out;
-        multi_or[0][i].in[8] <== eq[8][i].out;
-        multi_or[0][i].in[9] <== eq[9][i].out;
-        multi_or[0][i].in[10] <== eq[10][i].out;
-        multi_or[0][i].in[11] <== eq[11][i].out;
-        multi_or[0][i].in[12] <== eq[12][i].out;
-        multi_or[0][i].in[13] <== eq[13][i].out;
-        multi_or[0][i].in[14] <== eq[14][i].out;
-        multi_or[0][i].in[15] <== eq[15][i].out;
-        multi_or[0][i].in[16] <== eq[16][i].out;
-        multi_or[0][i].in[17] <== eq[17][i].out;
-        multi_or[0][i].in[18] <== eq[18][i].out;
-        multi_or[0][i].in[19] <== eq[19][i].out;
-        multi_or[0][i].in[20] <== eq[20][i].out;
-        multi_or[0][i].in[21] <== eq[21][i].out;
-        multi_or[0][i].in[22] <== eq[22][i].out;
-        multi_or[0][i].in[23] <== eq[23][i].out;
-        multi_or[0][i].in[24] <== eq[24][i].out;
+        multi_or[0][i].in[0] <== eq[0][i].out; // 110 = 'n'
+        multi_or[0][i].in[1] <== eq[1][i].out; // 108 = 'l'
+        multi_or[0][i].in[2] <== eq[2][i].out; // 103 = 'g'
+        multi_or[0][i].in[3] <== eq[3][i].out; // 114 = 'r'
+        multi_or[0][i].in[4] <== eq[4][i].out; // 115 = 's'
+        multi_or[0][i].in[5] <== eq[5][i].out; // 112 = 'p'
+        multi_or[0][i].in[6] <== eq[6][i].out; // 101 = 'e'
+        multi_or[0][i].in[7] <== eq[7][i].out; // 107 = 'k'
+        multi_or[0][i].in[8] <== eq[8][i].out; // 99 = 'c'
+        multi_or[0][i].in[9] <== eq[9][i].out; // 109 = 'm'
+        multi_or[0][i].in[10] <== eq[10][i].out; // 118 = 'v'
+        multi_or[0][i].in[11] <== eq[11][i].out; // 117 = 'u'
+        multi_or[0][i].in[12] <== eq[12][i].out; // 105 = 'i'
+        multi_or[0][i].in[13] <== eq[13][i].out; // 113 = 'q'
+        multi_or[0][i].in[14] <== eq[14][i].out; // 122 = 'z'
+        multi_or[0][i].in[15] <== eq[15][i].out; // 111 = 'o'
+        multi_or[0][i].in[16] <== eq[16][i].out; // 104 = 'h'
+        multi_or[0][i].in[17] <== eq[17][i].out; // 102 = 'f'
+        multi_or[0][i].in[18] <== eq[18][i].out; // 97 = 'a'
+        multi_or[0][i].in[19] <== eq[19][i].out; // 116 = 't'
+        multi_or[0][i].in[20] <== eq[20][i].out; // 121 = 'y'
+        multi_or[0][i].in[21] <== eq[21][i].out; // 120 = 'x'
+        multi_or[0][i].in[22] <== eq[22][i].out; // 106 = 'j'
+        multi_or[0][i].in[23] <== eq[23][i].out; // 100 = 'd'
+        multi_or[0][i].in[24] <== eq[24][i].out; // 119 = 'w'
         and[0][i].b <== multi_or[0][i].out;
         // 96-123 = [a-z]
         lt[0][i] = LessThan(8);
@@ -357,44 +357,43 @@ template BodyHashRegex (msg_bytes) {
         multi_or[3][i].in[0] <== and[5][i].out;
         multi_or[3][i].in[1] <== and[1][i].out;
         multi_or[3][i].in[2] <== and[6][i].out;
-        multi_or[3][i].in[3] <== eq[26][i].out;
-        multi_or[3][i].in[4] <== eq[27][i].out;
-        multi_or[3][i].in[5] <== eq[28][i].out;
-        multi_or[3][i].in[6] <== eq[29][i].out;
-        multi_or[3][i].in[7] <== eq[30][i].out;
-        multi_or[3][i].in[8] <== eq[31][i].out;
-        multi_or[3][i].in[9] <== eq[32][i].out;
-        multi_or[3][i].in[10] <== eq[33][i].out;
-        multi_or[3][i].in[11] <== eq[34][i].out;
-        multi_or[3][i].in[12] <== eq[35][i].out;
-        multi_or[3][i].in[13] <== eq[36][i].out;
-        multi_or[3][i].in[14] <== eq[37][i].out;
-        multi_or[3][i].in[15] <== eq[38][i].out;
-        multi_or[3][i].in[16] <== eq[39][i].out;
-        multi_or[3][i].in[17] <== eq[40][i].out;
-        // Use eq[25] instead of redeclaring 61 = '='
-        multi_or[3][i].in[18] <== eq[25][i].out;
-        multi_or[3][i].in[19] <== eq[41][i].out;
-        multi_or[3][i].in[20] <== eq[42][i].out;
-        multi_or[3][i].in[21] <== eq[43][i].out;
-        multi_or[3][i].in[22] <== eq[44][i].out;
-        multi_or[3][i].in[23] <== eq[45][i].out;
-        multi_or[3][i].in[24] <== eq[46][i].out;
-        multi_or[3][i].in[25] <== eq[47][i].out;
-        multi_or[3][i].in[26] <== eq[48][i].out;
-        multi_or[3][i].in[27] <== eq[49][i].out;
-        multi_or[3][i].in[28] <== eq[50][i].out;
-        multi_or[3][i].in[29] <== eq[51][i].out;
-        multi_or[3][i].in[30] <== eq[52][i].out;
-        multi_or[3][i].in[31] <== eq[53][i].out;
-        multi_or[3][i].in[32] <== eq[54][i].out;
-        multi_or[3][i].in[33] <== eq[55][i].out;
-        multi_or[3][i].in[34] <== eq[56][i].out;
-        multi_or[3][i].in[35] <== eq[57][i].out;
-        multi_or[3][i].in[36] <== eq[58][i].out;
-        multi_or[3][i].in[37] <== eq[59][i].out;
-        multi_or[3][i].in[38] <== eq[60][i].out;
-        multi_or[3][i].in[39] <== eq[61][i].out;
+        multi_or[3][i].in[3] <== eq[26][i].out; // 126 = '~'
+        multi_or[3][i].in[4] <== eq[27][i].out; // 60 = '<'
+        multi_or[3][i].in[5] <== eq[28][i].out; // 37 = '%'
+        multi_or[3][i].in[6] <== eq[29][i].out; // 96 = '`'
+        multi_or[3][i].in[7] <== eq[30][i].out; // 11 = '\t'
+        multi_or[3][i].in[8] <== eq[31][i].out; // 58 = ':'
+        multi_or[3][i].in[9] <== eq[32][i].out; // 10 = '\n'
+        multi_or[3][i].in[10] <== eq[33][i].out; // 39 = '''
+        multi_or[3][i].in[11] <== eq[34][i].out; // 41 = ')'
+        multi_or[3][i].in[12] <== eq[35][i].out; // 47 = '/'
+        multi_or[3][i].in[13] <== eq[36][i].out; // 93 = ']'
+        multi_or[3][i].in[14] <== eq[37][i].out; // 36 = '$'
+        multi_or[3][i].in[15] <== eq[38][i].out; // 64 = '@'
+        multi_or[3][i].in[16] <== eq[39][i].out; // 63 = '?'
+        multi_or[3][i].in[17] <== eq[40][i].out; // 12 = '\f'
+        multi_or[3][i].in[18] <== eq[25][i].out; // 61 = '=': Note using eq[25]
+        multi_or[3][i].in[19] <== eq[41][i].out; // 95 = '_'
+        multi_or[3][i].in[20] <== eq[42][i].out; // 9 = '\t'
+        multi_or[3][i].in[21] <== eq[43][i].out; // 43 = '+'
+        multi_or[3][i].in[22] <== eq[44][i].out; // 35 = '#'
+        multi_or[3][i].in[23] <== eq[45][i].out; // 94 = '^'
+        multi_or[3][i].in[24] <== eq[46][i].out; // 13 = '\r'
+        multi_or[3][i].in[25] <== eq[47][i].out; // 46 = '.'
+        multi_or[3][i].in[26] <== eq[48][i].out; // 123 = '{'
+        multi_or[3][i].in[27] <== eq[49][i].out; // 92 = '\'
+        multi_or[3][i].in[28] <== eq[50][i].out; // 40 = '('
+        multi_or[3][i].in[29] <== eq[51][i].out; // 44 = ','
+        multi_or[3][i].in[30] <== eq[52][i].out; // 38 = '&'
+        multi_or[3][i].in[31] <== eq[53][i].out; // 42 = '*'
+        multi_or[3][i].in[32] <== eq[54][i].out; // 62 = '>'
+        multi_or[3][i].in[33] <== eq[55][i].out; // 32 = ' '
+        multi_or[3][i].in[34] <== eq[56][i].out; // 34 = '"'
+        multi_or[3][i].in[35] <== eq[57][i].out; // 91 = '['
+        multi_or[3][i].in[36] <== eq[58][i].out; // 33 = '!'
+        multi_or[3][i].in[37] <== eq[59][i].out; // 42 = '*'
+        multi_or[3][i].in[38] <== eq[60][i].out; // 125 = '}'
+        multi_or[3][i].in[39] <== eq[61][i].out; // 124 = '|'
         and[7][i].b <== multi_or[3][i].out;
         and[8][i] = AND();
         and[8][i].a <== states[i][3];
@@ -405,23 +404,23 @@ template BodyHashRegex (msg_bytes) {
         states[i+1][3] <== multi_or[4][i].out;
         and[9][i] = AND();
         and[9][i].a <== states[i][0];
-        and[9][i].b <== eq[46][i].out;
+        and[9][i].b <== eq[46][i].out; // 13 = '\r'
         states[i+1][4] <== and[9][i].out;
         and[10][i] = AND();
         and[10][i].a <== states[i][4];
-        and[10][i].b <== eq[32][i].out;
+        and[10][i].b <== eq[32][i].out; // 10 = '\n'
         states[i+1][5] <== and[10][i].out;
         and[11][i] = AND();
         and[11][i].a <== states[i][5];
-        and[11][i].b <== eq[23][i].out;
+        and[11][i].b <== eq[23][i].out; // 100 = 'd'
         states[i+1][6] <== and[11][i].out;
         and[12][i] = AND();
         and[12][i].a <== states[i][6];
-        and[12][i].b <== eq[7][i].out;
+        and[12][i].b <== eq[7][i].out; // 107 = 'k'
         states[i+1][7] <== and[12][i].out;
         and[13][i] = AND();
         and[13][i].a <== states[i][7];
-        and[13][i].b <== eq[12][i].out;
+        and[13][i].b <== eq[12][i].out; // 105 = 'i'
         states[i+1][8] <== and[13][i].out;
         // 59 = ';'
         eq[62][i] = IsEqual();
@@ -433,7 +432,7 @@ template BodyHashRegex (msg_bytes) {
         states[i+1][9] <== and[14][i].out;
         and[15][i] = AND();
         and[15][i].a <== states[i][8];
-        and[15][i].b <== eq[9][i].out;
+        and[15][i].b <== eq[9][i].out; // 109 = 'm'
         states[i+1][10] <== and[15][i].out;
         // 45 = '-'
         eq[63][i] = IsEqual();
@@ -445,11 +444,11 @@ template BodyHashRegex (msg_bytes) {
         states[i+1][11] <== and[16][i].out;
         and[17][i] = AND();
         and[17][i].a <== states[i][11];
-        and[17][i].b <== eq[4][i].out;
+        and[17][i].b <== eq[4][i].out; // 115 = 's'
         states[i+1][12] <== and[17][i].out;
         and[18][i] = AND();
         and[18][i].a <== states[i][9];
-        and[18][i].b <== eq[55][i].out;
+        and[18][i].b <== eq[55][i].out; // 32 = ' '
         states[i+1][13] <== and[18][i].out;
         // 98 = 'b'
         eq[64][i] = IsEqual();
@@ -465,43 +464,43 @@ template BodyHashRegex (msg_bytes) {
         states[i+1][15] <== and[20][i].out;
         and[21][i] = AND();
         and[21][i].a <== states[i][14];
-        and[21][i].b <== eq[16][i].out;
+        and[21][i].b <== eq[16][i].out; // 104 = 'h'
         states[i+1][16] <== and[21][i].out;
         and[22][i] = AND();
         and[22][i].a <== states[i][15];
-        and[22][i].b <== eq[2][i].out;
+        and[22][i].b <== eq[2][i].out; // 103 = 'g'
         states[i+1][17] <== and[22][i].out;
         and[23][i] = AND();
         and[23][i].a <== states[i][17];
-        and[23][i].b <== eq[0][i].out;
+        and[23][i].b <== eq[0][i].out; // 110 = 'n'
         states[i+1][18] <== and[23][i].out;
         and[24][i] = AND();
         and[24][i].a <== states[i][18];
-        and[24][i].b <== eq[18][i].out;
+        and[24][i].b <== eq[18][i].out; // 97 = 'a'
         states[i+1][19] <== and[24][i].out;
         and[25][i] = AND();
         and[25][i].a <== states[i][19];
-        and[25][i].b <== eq[19][i].out;
+        and[25][i].b <== eq[19][i].out; // 116 = 't'
         states[i+1][20] <== and[25][i].out;
         and[26][i] = AND();
         and[26][i].a <== states[i][16];
-        and[26][i].b <== eq[25][i].out;
+        and[26][i].b <== eq[25][i].out; // 61 = '='
         states[i+1][21] <== and[26][i].out;
         and[27][i] = AND();
         and[27][i].a <== states[i][20];
-        and[27][i].b <== eq[11][i].out;
+        and[27][i].b <== eq[11][i].out; // 117 = 'u'
         states[i+1][22] <== and[27][i].out;
         and[28][i] = AND();
         and[28][i].a <== states[i][22];
-        and[28][i].b <== eq[3][i].out;
+        and[28][i].b <== eq[3][i].out; // 114 = 'r'
         states[i+1][23] <== and[28][i].out;
         and[29][i] = AND();
         and[29][i].a <== states[i][23];
-        and[29][i].b <== eq[6][i].out;
+        and[29][i].b <== eq[6][i].out; // 112 = 'p'
         states[i+1][24] <== and[29][i].out;
         and[30][i] = AND();
         and[30][i].a <== states[i][24];
-        and[30][i].b <== eq[31][i].out;
+        and[30][i].b <== eq[31][i].out; // 58 = ':'
         states[i+1][25] <== and[30][i].out;
         and[31][i] = AND();
         and[31][i].a <== states[i][21];
@@ -510,9 +509,9 @@ template BodyHashRegex (msg_bytes) {
         multi_or[5][i].in[0] <== and[5][i].out;
         multi_or[5][i].in[1] <== and[1][i].out;
         multi_or[5][i].in[2] <== and[6][i].out;
-        multi_or[5][i].in[3] <== eq[35][i].out;
-        multi_or[5][i].in[4] <== eq[43][i].out;
-        multi_or[5][i].in[5] <== eq[25][i].out;
+        multi_or[5][i].in[3] <== eq[35][i].out; // 47 = '/'
+        multi_or[5][i].in[4] <== eq[43][i].out; // 43 = '+'
+        multi_or[5][i].in[5] <== eq[25][i].out; // 61 = '='
         and[31][i].b <== multi_or[5][i].out;
         and[32][i] = AND();
         and[32][i].a <== states[i][26];
@@ -523,11 +522,11 @@ template BodyHashRegex (msg_bytes) {
         states[i+1][26] <== multi_or[6][i].out;
         and[33][i] = AND();
         and[33][i].a <== states[i][26];
-        and[33][i].b <== eq[62][i].out;
+        and[33][i].b <== eq[62][i].out; // 59 = ';'
         states[i+1][27] <== and[33][i].out;
         and[34][i] = AND();
         and[34][i].a <== states[i][27];
-        and[34][i].b <== eq[55][i].out;
+        and[34][i].b <== eq[55][i].out; // 32 = ' '
         states[i+1][28] <== and[34][i].out;
     }
 

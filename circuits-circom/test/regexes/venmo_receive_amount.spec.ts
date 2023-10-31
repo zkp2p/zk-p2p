@@ -53,7 +53,6 @@ describe("Venmo receive amount", function () {
             input,
             true
         );
-        console.log(witness)
 
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
@@ -62,12 +61,10 @@ describe("Venmo receive amount", function () {
         const input = {
             "msg": textToAsciiArray("\r\nsubject:Eeeee Eeeee paid you $2,500.00\r\n")
         };
-        console.log(JSON.stringify(input))
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        console.log(witness);
         const expected = Array(textToAsciiArray("\r\nsubject:Eeeee Eeeee paid you $").length).fill("0")
             .concat(textToAsciiArray("2,500.00"))
             .concat(Array(textToAsciiArray("\r\n").length).fill("0"));
