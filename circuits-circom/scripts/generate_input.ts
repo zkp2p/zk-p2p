@@ -76,7 +76,6 @@ export enum CircuitType {
   RSA = "rsa",
   SHA = "sha",
   TEST = "test",
-  EMAIL_VENMO_RECEIVE = "receive",
   EMAIL_VENMO_SEND = "send",
   EMAIL_VENMO_REGISTRATION = "registration"
 }
@@ -137,10 +136,7 @@ export async function getCircuitInputs(
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
 
   // Update preselector string based on circuit type
-  if (circuit === CircuitType.EMAIL_VENMO_RECEIVE) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "\r\ntps://venmo.com/code?user_id=3D";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6720;  // +320 (>280 limit for custom message)
-  } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
+  if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
@@ -214,31 +210,6 @@ export async function getCircuitInputs(
       modulus,
       signature,
       base_message,
-    };
-  } else if (circuit === CircuitType.EMAIL_VENMO_RECEIVE) {
-    const payer_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
-    const venmo_payer_id_idx = (Buffer.from(bodyRemaining).indexOf(payer_id_selector) + payer_id_selector.length).toString();
-    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
-    const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
-
-    console.log("Indexes into for venmo receive email are: ", email_from_idx, email_timestamp_idx, venmo_payer_id_idx, venmo_amount_idx);
-
-    circuitInputs = {
-      in_padded,
-      modulus,
-      signature,
-      in_len_padded_bytes,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-      body_hash_idx,
-      // venmo specific indices
-      email_timestamp_idx,
-      venmo_payer_id_idx,
-      email_from_idx,
-      venmo_amount_idx,
-      // IDs
-      intent_hash
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     const payee_id_selector = Buffer.from("user_id=3D");
@@ -370,7 +341,7 @@ async function test_generate(writeToFile: boolean = true) {
   const args = await getArgs();
   const email = fs.readFileSync(args.email_file.trim());
   console.log("Email file read");
-  const type = args.email_type as keyof typeof CircuitType;
+  const type = args.email_type as CircuitType;
   console.log("Email file type:", args.email_type)
   console.log("Intent Hash", args.intentHash)
   const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
