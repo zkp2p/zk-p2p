@@ -8,8 +8,8 @@ export const contractAddresses: Contracts = {
   "hardhat": {
     "ramp": '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
     "fusdc": '0x5fbdb2315678afecb367f032d93f642f64180aa3',
-    "sendProcessor": '0x0165878a594ca255338adfa4d48449f69242eb8f',
-    "registrationProcessor": '0xdc64a140aa3e981100a9beca4e685f962f0cf6c9',
+    "sendProcessor": '0xa513e6e4b8f2a923d98304ec87f64353c4d5c853',
+    "registrationProcessor": '0x0165878a594ca255338adfa4d48449f69242eb8f',
   },
   "goerli": {
     "ramp": '0x1A2dcc7AfC7Bf09bE718E54466aA18166C00E4FD',
