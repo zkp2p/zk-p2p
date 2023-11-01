@@ -141,7 +141,7 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "\r\ntps://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6720;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
     // IMPORTANT: Only send payment email can be used to register
@@ -241,7 +241,7 @@ export async function getCircuitInputs(
       intent_hash
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
-    const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const payee_id_selector = Buffer.from("user_id=3D");
     const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
     const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
     const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
