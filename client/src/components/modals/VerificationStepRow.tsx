@@ -105,7 +105,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
           case CircuitType.EMAIL_VENMO_REGISTRATION:
             return PROOF_MODAL_REGISTRATION_SUBMIT_TITLE;
 
-          case CircuitType.EMAIL_VENMO_RECEIVE:
           case CircuitType.EMAIL_VENMO_SEND:
           default:
             return PROOF_MODAL_SUBMIT_TITLE;
@@ -136,7 +135,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
           case CircuitType.EMAIL_VENMO_REGISTRATION:
             return PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE;
 
-          case CircuitType.EMAIL_VENMO_RECEIVE:
           case CircuitType.EMAIL_VENMO_SEND:
           default:
             return PROOF_MODAL_SUBMIT_SUBTITLE;

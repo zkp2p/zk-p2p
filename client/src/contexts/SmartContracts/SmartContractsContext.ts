@@ -11,8 +11,6 @@ interface SmartContractsValues {
   // registrationProcessorAbi: Abi | null;
   sendProcessorAddress: Address | null;
   sendProcessorAbi: Abi | null;
-  receiveProcessorAddress: Address | null;
-  receiveProcessorAbi: Abi | null;
   usdcAddress: Address | null;
   usdcAbi?: Abi | null;
 }
@@ -24,8 +22,6 @@ const defaultValues: SmartContractsValues = {
   // registrationProcessorAbi: null,
   sendProcessorAddress: null,
   sendProcessorAbi: null,
-  receiveProcessorAddress: null,
-  receiveProcessorAbi: null,
   usdcAddress: null,
   usdcAbi: null,
 };

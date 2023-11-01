@@ -54,7 +54,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { isLoggedIn } = useAccount();
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()

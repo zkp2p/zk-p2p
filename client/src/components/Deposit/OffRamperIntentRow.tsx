@@ -10,7 +10,6 @@ interface IntentRowProps {
   amountUSDToReceive: string;
   amountUSDCToSend: string;
   expirationTimestamp: string;
-  handleCompleteOrderClick: () => void;
 }
 
 export type IntentRowData = IntentRowProps;
@@ -20,7 +19,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   amountUSDToReceive,
   amountUSDCToSend,
   expirationTimestamp,
-  handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
@@ -59,12 +57,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       </IntentDetailsContainer>
 
       <ActionsContainer>
-        <AccessoryButton
-          onClick={handleCompleteOrderClick}
-          height={36}
-          title={'Complete'}
-          icon={'chevronRight'}/>
-
         <AccessoryButton
           height={36}
           title={'Block'}

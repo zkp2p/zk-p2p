@@ -223,7 +223,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 {positionsRowData.map((positionRow, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
                     <PositionRow
-                      depositorHash={positionRow.depositor}
                       availableDepositAmount={positionRow.availableDepositAmount}
                       totalDepositAmount={positionRow.totalDepositAmount}
                       outstandingIntentAmount={positionRow.outstandingIntentAmount}

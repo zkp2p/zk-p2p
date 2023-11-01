@@ -153,7 +153,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       case (CircuitType.EMAIL_VENMO_REGISTRATION):
         return 'Submit Registration';
       
-      case (CircuitType.EMAIL_VENMO_RECEIVE):
       case (CircuitType.EMAIL_VENMO_SEND):
       default:
         return 'Submit Ramp';
