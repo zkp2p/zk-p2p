@@ -42,6 +42,7 @@ export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
 
 export const NEW_DEPOSIT_DEPOSIT_TOOLTIP = `
   This is the amount of USDC you will deposit for users to claim by sending you Venmo payments.
+  You can withdraw unclaimed USDC or USDC not locked for orders at any time.
 `;
 
 export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `

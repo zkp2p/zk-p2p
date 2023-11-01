@@ -9,11 +9,13 @@ import { ThemedText } from '../../theme/text'
 
 interface PaymentModalProps {
   link: string;
+  amount: string;
   onBackClick: () => void
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
   link,
+  amount,
   onBackClick,
 }) => {
 
@@ -35,7 +37,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
       <ModalContainer>
         <RowBetween>
-          <div style={{ flex: 0.5 }}>
+          <div style={{ flex: 0.25 }}>
             <button
               onClick={handleOverlayClick}
               style={{ background: 'none', border: 'none', cursor: 'pointer' }}
@@ -48,12 +50,25 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             Send Venmo Payment
           </ThemedText.HeadlineSmall>
 
-          <div style={{ flex: 0.5 }}/>
+          <div style={{ flex: 0.25 }}/>
         </RowBetween>
 
-        <QRCode
-          value={link}
-          size={256}/>
+        <QRContainer>
+          <QRCode
+            value={link}
+            size={196}/>
+        </QRContainer>
+
+        <InstructionsContainer>
+          <InstructionsTitle>
+            Scan and send ${amount}
+          </InstructionsTitle>
+
+          <InstructionsLabel>
+            Payment receipt emails are required to complete the order.
+            Ensure emails are enabled in your Venmo settings under Email Notifications {">"} Money
+          </InstructionsLabel>
+        </InstructionsContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -76,20 +91,47 @@ const StyledArrowLeft = styled(ArrowLeft)`
 `;
 
 const ModalContainer = styled.div`
-  width: 360px;
+  width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem 0.5rem 2.5rem 1rem;
+  padding: 2rem 1rem;
   background: #0D111C;
   justify-content: space-between;
   color: #FFF;
   align-items: center;
   z-index: 20;
-  gap: 1rem;
-  top: 30%;
+  gap: 1.5rem;
+  top: 24%;
   position: relative;
+`;
+
+const QRContainer = styled.div`
+  padding: 2rem;
+  border: 1.5px solid #98a1c03d;
+  border-radius: 16px;
+  background: #131A2A;
+`;
+
+const InstructionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 1.75rem;
+`;
+
+const InstructionsTitle = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+`;
+
+const InstructionsLabel = styled.div`
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
 `;
 
 const RowBetween = styled.div`
@@ -97,6 +139,5 @@ const RowBetween = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0rem 1.5rem 0rem;
   gap: 1.5rem;
 `;

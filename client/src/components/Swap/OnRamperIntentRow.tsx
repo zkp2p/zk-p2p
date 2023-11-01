@@ -61,6 +61,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         shouldShowPaymentModal && (
           <PaymentModal
             link={venmoLink}
+            amount={amountUSDToSend}
             onBackClick={handleModalBackClicked} />
         ) 
       }
