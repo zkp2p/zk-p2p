@@ -492,7 +492,7 @@ template VenmoPayeeIdRegex(msg_bytes) {
 		state_changed[i].in[68] <== states[i+1][69];
 		and[71][i] = AND();
 		and[71][i].a <== states[i][69];
-		and[71][i].b <== eq[13][i].out;
+		and[71][i].b <== eq[13][i].out; // 10 = `\n`
 		states[i+1][70] <== and[71][i].out;
 		state_changed[i].in[69] <== states[i+1][70];
 		and[72][i] = AND();
@@ -1086,7 +1086,7 @@ template VenmoPayeeIdRegex(msg_bytes) {
 		state_changed[i].in[170] <== states[i+1][171];
 		and[174][i] = AND();
 		and[174][i].a <== states[i][145];
-		and[174][i].b <== eq[26][i].out;
+		and[174][i].b <== eq[26][i].out; // 45 = `-`
 		states[i+1][172] <== and[174][i].out;
 		state_changed[i].in[171] <== states[i+1][172];
 		and[175][i] = AND();
@@ -1924,17 +1924,17 @@ template VenmoPayeeIdRegex(msg_bytes) {
 		state_changed[i].in[319] <== states[i+1][320];
 		and[325][i] = AND();
 		and[325][i].a <== states[i][320];
-		and[325][i].b <== eq[16][i].out;
+		and[325][i].b <== eq[16][i].out; // 97 = `a`
 		states[i+1][321] <== and[325][i].out;
 		state_changed[i].in[320] <== states[i+1][321];
 		and[326][i] = AND();
 		and[326][i].a <== states[i][321];
-		and[326][i].b <== eq[49][i].out;
+		and[326][i].b <== eq[49][i].out; // 109 = `m`
 		states[i+1][322] <== and[326][i].out;
 		state_changed[i].in[321] <== states[i+1][322];
 		and[327][i] = AND();
 		and[327][i].a <== states[i][322];
-		and[327][i].b <== eq[30][i].out;
+		and[327][i].b <== eq[30][i].out; // 101 = `e`
 		states[i+1][323] <== and[327][i].out;
 		state_changed[i].in[322] <== states[i+1][323];
 		and[328][i] = AND();
@@ -1944,7 +1944,7 @@ template VenmoPayeeIdRegex(msg_bytes) {
 		state_changed[i].in[323] <== states[i+1][324];
 		and[329][i] = AND();
 		and[329][i].a <== states[i][2];
-		and[329][i].b <== eq[18][i].out;
+		and[329][i].b <== eq[18][i].out; // 13 = `\r`
 		states[i+1][325] <== and[329][i].out;
 		state_changed[i].in[324] <== states[i+1][325];
 		and[330][i] = AND();
