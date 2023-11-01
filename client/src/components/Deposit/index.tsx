@@ -5,7 +5,6 @@ import { AutoColumn } from '../layouts/Column'
 import { NewPosition } from './NewPosition'
 import { PositionTable } from './PositionTable'
 import { OffRamperIntentTable } from './OffRamperIntentTable'
-import { OffRamp } from './OffRamp'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
 
@@ -14,20 +13,14 @@ export default function Deposit() {
   /*
    * Contexts
    */
-  const {
-    deposits,
-    depositIntents,
-    refetchDeposits,
-    shouldFetchDeposits
-  } = useDeposits()
+
+  const { depositIntents, refetchDeposits, shouldFetchDeposits } = useDeposits()
 
   /*
    * State
    */
 
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
-
-  const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
 
   /*
    * Hooks
@@ -53,20 +46,6 @@ export default function Deposit() {
   const handleBackClickOnNewDeposit = () => {
     setIsAddPosition(false);
   }
-  const handleBackClickOnProof = () => {
-    setSelectedIntentHash(null);
-  }
-
-  const handleIntentClick = (rowIndex: number) => {
-    const intentHashes = [
-      ...new Set((deposits).flatMap((depositWithAvailableLiquidity: any) => depositWithAvailableLiquidity.deposit.intentHashes))
-    ]
-
-    const selectedIntentHash = intentHashes[rowIndex];
-    console.log('selectedIntentHash', selectedIntentHash);
-
-    setSelectedIntentHash(selectedIntentHash);
-  };
 
   function renderContent() {
     if (isAddPosition) {
@@ -79,15 +58,6 @@ export default function Deposit() {
       );
     }
   
-    if (selectedIntentHash) {
-      return (
-        <OffRamp
-          handleBackClick={handleBackClickOnProof}
-          selectedIntentHash={selectedIntentHash}
-        />
-      );
-    }
-  
     return (
       <DepositAndIntentContainer>
         <PositionTable
@@ -97,9 +67,8 @@ export default function Deposit() {
         {depositIntents && depositIntents.length > 0 ? (
           <>
             <VerticalDivider />
-            <OffRamperIntentTable
-              onIntentRowClick={handleIntentClick}
-            />
+
+            <OffRamperIntentTable/>
           </>
         ) : null}
       </DepositAndIntentContainer>

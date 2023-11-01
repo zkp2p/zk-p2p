@@ -17,7 +17,7 @@ export const EMAIL_TOOLTIP = `
 `;
 
 export const PROOF_TOOLTIP = `
-  The proof is a cryptographic signature that shows you sent or received the email using contents
+  The proof is a cryptographic signature that shows you sent the email using contents
   and signatures that exist in the email.
 `;
 
@@ -54,15 +54,11 @@ export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
  */
 
 export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
-  Supply any previous transaction email from Venmo to register. Choose your input method and verification type below. Emails are never stored.
+  Supply a previous transaction email from Venmo containing "You paid". Choose your input method and verification type below. Emails are never stored.
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
   Supply the transaction email containing "You paid". Choose your input method and verification type below. Emails are never stored.
-`;
-
-export const PROOF_FORM_TITLE_RECEIVE_INSTRUCTIONS = `
-  Supply the transaction email containing "paid you". Choose your input method and verification type below. Emails are never stored.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `

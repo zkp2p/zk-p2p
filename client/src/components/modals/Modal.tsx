@@ -123,9 +123,6 @@ export const Modal: React.FC<ModalProps> = ({
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
             return onBackClick();
-          
-          case CircuitType.EMAIL_VENMO_RECEIVE:
-            return navigate('/deposits');
 
           case CircuitType.EMAIL_VENMO_REGISTRATION:
           default:
@@ -141,9 +138,6 @@ export const Modal: React.FC<ModalProps> = ({
     switch (circuitType) {
       case CircuitType.EMAIL_VENMO_SEND:
         return 'Go Back'
-      
-      case CircuitType.EMAIL_VENMO_RECEIVE:
-        return 'Go to Deposits'
 
       case CircuitType.EMAIL_VENMO_REGISTRATION:
       default:

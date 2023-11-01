@@ -11,32 +11,30 @@ import useLiquidity from '@hooks/useLiquidity';
 
 
 interface OffRamperIntentTableProps {
-  onIntentRowClick?: (rowIndex: number) => void;
   selectedRow?: number;
   rowsPerPage?: number;
 }
 
 export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
-  onIntentRowClick,
   selectedRow,
   rowsPerPage = 10
 }) => {
   /*
-    Contexts
-  */
+   * Contexts
+   */
 
   const { deposits, depositIntents } = useDeposits();
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
   /*
-    State
-  */
+   * State
+   */
  
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
   /*
-    Hooks
-  */
+   * Hooks
+   */
 
   useEffect(() => {
     if (depositIntents && deposits) {
@@ -58,11 +56,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
           amountUSDToReceive,
           amountUSDCToSend,
           expirationTimestamp,
-          handleCompleteOrderClick: () => {
-            if (onIntentRowClick) {
-              onIntentRowClick(index);
-            }
-          }
         }
 
         return sanitizedIntent;
@@ -75,8 +68,8 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   }, [depositIntents, deposits]);
 
   /*
-    Helpers
-  */
+   * Helpers
+   */
 
   function truncateAddress(onRamperAddress: string): string {
     return `${onRamperAddress.slice(0, 4)}...${onRamperAddress.slice(-4)}`;
@@ -118,7 +111,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
               onRamper={intentsRow.onRamper}
-              handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
             />
           ))}
         </Table>

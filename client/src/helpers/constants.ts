@@ -47,12 +47,10 @@ export const DEFAULT_NETWORK = "goerli";
 export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p/v2/v0.0.8/";
 export const REGISTRATION_KEY_FILE_NAME = "venmo_registration/venmo_registration";
 export const SEND_KEY_FILE_NAME = "venmo_send/venmo_send";
-export const RECEIVE_KEY_FILE_NAME = "venmo_receive/venmo_receive";
 
 export const RemoteProofGenEmailTypes = {
     REGISTRATION: "registration",
     SEND: "send",
-    RECEIVE: "receive"
 };
 
 const ENABLE_STATE_LOGGING = false;

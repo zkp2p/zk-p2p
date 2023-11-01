@@ -6,7 +6,6 @@ import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface PositionRowProps {
-  depositorHash: string;
   availableDepositAmount: string;
   totalDepositAmount: string;
   outstandingIntentAmount: string;
@@ -17,7 +16,6 @@ interface PositionRowProps {
 }
 
 export const PositionRow: React.FC<PositionRowProps> = ({
-  depositorHash,
   availableDepositAmount,
   totalDepositAmount,
   outstandingIntentAmount,
