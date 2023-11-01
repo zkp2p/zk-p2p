@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["test/*.spec.ts", "test/utils/*.ts", "test/types/declaration.d.ts"],
+  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/utils/*.ts", "test/types/declaration.d.ts"],
   "exclude": ["node_modules"]
 }

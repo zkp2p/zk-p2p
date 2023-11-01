@@ -26,13 +26,18 @@ async function getArgs() {
   const emailTypeArg = args.find((arg) => arg.startsWith("--email_type="));
   const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
+  const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="))
+
 
   const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/test.eml`;
   const email_type = emailTypeArg ? emailTypeArg.split("=")[1] : "test";
   const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
+  const email_file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
+  const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_venmo_${email_type}_${nonce}` : `input_venmo_${email_type}`
+  const output_file_path = `${email_file_dir}/../inputs/${outputFileName}.json`;
 
-  return { email_file, email_type, intentHash, nonce };
+  return { email_file, email_type, intentHash, nonce, output_file_path };
 }
 
 export interface ICircuitInputs {
@@ -136,12 +141,11 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "\r\ntps://venmo.com/code?user_id=3D";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6720;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
-    // IMPORTANT: Venmo completed request, send payment, and receive payment emails can be used to register
-    // since they share similar formats to extract actor ID
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "                    href=3D\"https://venmo.com/code?user_id=3D";
+    // IMPORTANT: Only send payment email can be used to register
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   }
 
@@ -237,7 +241,7 @@ export async function getCircuitInputs(
       intent_hash
     };
   } else if (circuit === CircuitType.EMAIL_VENMO_SEND) {
-    const payee_id_selector = Buffer.from(STRING_PRESELECTOR_FOR_EMAIL_TYPE);
+    const payee_id_selector = Buffer.from("user_id=3D");
     const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
     const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
     const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
@@ -308,7 +312,6 @@ export async function generate_inputs(
 
   console.log("DKIM verification starting");
   result = await dkimVerify(email);
-  // console.log(result.results[0])
   // console.log("From:", result.headerFrom);
   // console.log("Results:", result.results[0]);
   if (!result.results[0]) {
@@ -373,11 +376,8 @@ async function test_generate(writeToFile: boolean = true) {
   const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
   console.log("Input generation successful");
   if (writeToFile) {
-    const email_file_dir = args.email_file.substring(0, args.email_file.lastIndexOf("/") + 1);
-    // const email_file = args.email_file.substring(args.email_file.lastIndexOf("/") + 1, args.email_file.lastIndexOf("."));
-    const filename = args.nonce ? `${email_file_dir}/../inputs/input_venmo_${args.email_type}_${args.nonce}.json` : `${email_file_dir}/../inputs/input_venmo_${args.email_type}.json`;
-    console.log(`Writing to default file ${filename}`);
-    fs.writeFileSync(filename, JSON.stringify(gen_inputs), { flag: "w" });
+    console.log(`Writing to default file ${args.output_file_path}`);
+    fs.writeFileSync(args.output_file_path, JSON.stringify(gen_inputs), { flag: "w" });
   }
   return gen_inputs;
 }

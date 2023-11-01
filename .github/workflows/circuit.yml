@@ -1,0 +1,27 @@
+name: circuit
+on: [pull_request]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Specify node version...
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.15.0'
+      - name: Install Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom
+      - name: Install rust...
+        run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
+        working-directory: ./circuits-circom
+      - name: Install circom...
+        run: git clone https://github.com/iden3/circom.git && cd circom && cargo build --release && cargo install --path circom
+        working-directory: ../
+      - name: Create env...
+        run: cp scripts/circuit.env.example scripts/circuit.env
+        working-directory: ./circuits-circom
+      - name: Testing regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom

@@ -271,4 +271,19 @@ describe("Venmo send WASM tester", function () {
 
         assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
     });
+
+    it("Should not generate witnesses for a receive email", async () => {
+        // Generate input with receive email using yarn gen-input:send:receive
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_399 line: 76\n');
+        }
+    });
+
 });
