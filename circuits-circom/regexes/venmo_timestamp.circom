@@ -13,7 +13,7 @@ template VenmoTimestampRegex (msg_bytes) {
         in[i] <== msg[i];
     }
 
-    component eq[18][num_bytes];
+    component eq[14][num_bytes];
     component lt[2][num_bytes];
     component and[21][num_bytes];
     component multi_or[1][num_bytes];
@@ -143,53 +143,37 @@ template VenmoTimestampRegex (msg_bytes) {
         and[14][i].a <== states[i][12];
         and[14][i].b <== eq[11][i].out;
         states[i+1][13] <== and[14][i].out;
-        // 111 = 'o'
-        eq[12][i] = IsEqual();
-        eq[12][i].in[0] <== in[i];
-        eq[12][i].in[1] <== 111;
         and[15][i] = AND();
         and[15][i].a <== states[i][13];
-        and[15][i].b <== eq[12][i].out;
+        and[15][i].b <== eq[9][i].out; // 111 = 'o'
         states[i+1][14] <== and[15][i].out;
-        // 109 = 'm'
-        eq[13][i] = IsEqual();
-        eq[13][i].in[0] <== in[i];
-        eq[13][i].in[1] <== 109;
         and[16][i] = AND();
         and[16][i].a <== states[i][14];
-        and[16][i].b <== eq[13][i].out;
+        and[16][i].b <== eq[8][i].out; // 109 = 'm'
         states[i+1][15] <== and[16][i].out;
-        // 59 = ';'
-        eq[14][i] = IsEqual();
-        eq[14][i].in[0] <== in[i];
-        eq[14][i].in[1] <== 59;
         and[17][i] = AND();
         and[17][i].a <== states[i][15];
-        and[17][i].b <== eq[14][i].out;
+        and[17][i].b <== eq[0][i].out; // 59 = ';'
         states[i+1][16] <== and[17][i].out;
         // 32 = space
-        eq[15][i] = IsEqual();
-        eq[15][i].in[0] <== in[i];
-        eq[15][i].in[1] <== 32;
+        eq[12][i] = IsEqual();
+        eq[12][i].in[0] <== in[i];
+        eq[12][i].in[1] <== 32;
         and[18][i] = AND();
         and[18][i].a <== states[i][16];
-        and[18][i].b <== eq[15][i].out;
+        and[18][i].b <== eq[12][i].out;
         states[i+1][17] <== and[18][i].out;
         // 116 = 't'
-        eq[16][i] = IsEqual();
-        eq[16][i].in[0] <== in[i];
-        eq[16][i].in[1] <== 116;
+        eq[13][i] = IsEqual();
+        eq[13][i].in[0] <== in[i];
+        eq[13][i].in[1] <== 116;
         and[19][i] = AND();
         and[19][i].a <== states[i][17];
-        and[19][i].b <== eq[16][i].out;
+        and[19][i].b <== eq[13][i].out;
         states[i+1][18] <== and[19][i].out;
-        // 61 = '='
-        eq[17][i] = IsEqual();
-        eq[17][i].in[0] <== in[i];
-        eq[17][i].in[1] <== 61;
         and[20][i] = AND();
         and[20][i].a <== states[i][18];
-        and[20][i].b <== eq[17][i].out;
+        and[20][i].b <== eq[4][i].out; // 61 = '='
         states[i+1][19] <== and[20][i].out;
     }
 

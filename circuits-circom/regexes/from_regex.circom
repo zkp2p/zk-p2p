@@ -14,9 +14,9 @@ template FromRegex (msg_bytes) {
         in[i+1] <== msg[i];
     }
 
-    component eq[23][num_bytes];
+    component eq[17][num_bytes];
     component lt[12][num_bytes];
-    component and[27][num_bytes];
+    component and[22][num_bytes];
     component multi_or[6][num_bytes];
     signal states[num_bytes+1][16];
 
@@ -149,139 +149,85 @@ template FromRegex (msg_bytes) {
         and[9][i].a <== states[i][3];
         and[9][i].b <== eq[11][i].out;
         states[i+1][5] <== and[9][i].out;
-        // 64-91 = [A-Z]
-        lt[6][i] = LessThan(8);
-        lt[6][i].in[0] <== 64;
-        lt[6][i].in[1] <== in[i];
-        lt[7][i] = LessThan(8);
-        lt[7][i].in[0] <== in[i];
-        lt[7][i].in[1] <== 91;
         and[10][i] = AND();
-        and[10][i].a <== lt[6][i].out;
-        and[10][i].b <== lt[7][i].out;
-        // 96-123 = [a-z]
-        lt[8][i] = LessThan(8);
-        lt[8][i].in[0] <== 96;
-        lt[8][i].in[1] <== in[i];
-        lt[9][i] = LessThan(8);
-        lt[9][i].in[0] <== in[i];
-        lt[9][i].in[1] <== 123;
-        and[11][i] = AND();
-        and[11][i].a <== lt[8][i].out;
-        and[11][i].b <== lt[9][i].out;
-        // 47-58 = [0-9]
-        lt[10][i] = LessThan(8);
-        lt[10][i].in[0] <== 47;
-        lt[10][i].in[1] <== in[i];
-        lt[11][i] = LessThan(8);
-        lt[11][i].in[0] <== in[i];
-        lt[11][i].in[1] <== 58;
-        and[12][i] = AND();
-        and[12][i].a <== lt[10][i].out;
-        and[12][i].b <== lt[11][i].out;
-        // 45 = '-'
-        eq[12][i] = IsEqual();
-        eq[12][i].in[0] <== in[i];
-        eq[12][i].in[1] <== 45;
-        // 95 = '_'
-        eq[13][i] = IsEqual();
-        eq[13][i].in[0] <== in[i];
-        eq[13][i].in[1] <== 95;
-        // 46 = '.'
-        eq[14][i] = IsEqual();
-        eq[14][i].in[0] <== in[i];
-        eq[14][i].in[1] <== 46;
-        and[15][i] = AND();
-        and[15][i].a <== states[i][4];
+        and[10][i].a <== states[i][4];
         multi_or[3][i] = MultiOR(6);
-        multi_or[3][i].in[0] <== and[10][i].out;
-        multi_or[3][i].in[1] <== and[11][i].out;
-        multi_or[3][i].in[2] <== and[12][i].out;
-        multi_or[3][i].in[3] <== eq[12][i].out;
-        multi_or[3][i].in[4] <== eq[13][i].out;
-        multi_or[3][i].in[5] <== eq[14][i].out;
-        and[15][i].b <== multi_or[3][i].out;
-        and[16][i] = AND();
-        and[16][i].a <== states[i][6];
-        and[16][i].b <== multi_or[3][i].out;
+        multi_or[3][i].in[0] <== and[0][i].out; // [A-Z]
+        multi_or[3][i].in[1] <== and[1][i].out; // [a-z]
+        multi_or[3][i].in[2] <== and[2][i].out; // [0-9]
+        multi_or[3][i].in[3] <== eq[1][i].out; // 45 = '-'
+        multi_or[3][i].in[4] <== eq[5][i].out; // 95 = '_'
+        multi_or[3][i].in[5] <== eq[6][i].out; // 46 = '.'
+        and[10][i].b <== multi_or[3][i].out;
+        and[11][i] = AND();
+        and[11][i].a <== states[i][6];
+        and[11][i].b <== multi_or[3][i].out;
         multi_or[4][i] = MultiOR(2);
-        multi_or[4][i].in[0] <== and[15][i].out;
-        multi_or[4][i].in[1] <== and[16][i].out;
+        multi_or[4][i].in[0] <== and[10][i].out;
+        multi_or[4][i].in[1] <== and[11][i].out;
         states[i+1][6] <== multi_or[4][i].out;
         // 114 = 'r'
+        eq[12][i] = IsEqual();
+        eq[12][i].in[0] <== in[i];
+        eq[12][i].in[1] <== 114;
+        and[12][i] = AND();
+        and[12][i].a <== states[i][5];
+        and[12][i].b <== eq[12][i].out;
+        states[i+1][7] <== and[12][i].out;
+        // 111 = 'o'
+        eq[13][i] = IsEqual();
+        eq[13][i].in[0] <== in[i];
+        eq[13][i].in[1] <== 111;
+        and[13][i] = AND();
+        and[13][i].a <== states[i][7];
+        and[13][i].b <== eq[13][i].out;
+        states[i+1][8] <== and[13][i].out;
+        // 109 = 'm'
+        eq[14][i] = IsEqual();
+        eq[14][i].in[0] <== in[i];
+        eq[14][i].in[1] <== 109;
+        and[14][i] = AND();
+        and[14][i].a <== states[i][8];
+        and[14][i].b <== eq[14][i].out;
+        states[i+1][9] <== and[14][i].out;
+        and[15][i] = AND();
+        and[15][i].a <== states[i][6];
+        and[15][i].b <== eq[4][i].out; // 64 = '@'
+        states[i+1][10] <== and[15][i].out;
+        // 58 = ':'
         eq[15][i] = IsEqual();
         eq[15][i].in[0] <== in[i];
-        eq[15][i].in[1] <== 114;
+        eq[15][i].in[1] <== 58;
+        and[16][i] = AND();
+        and[16][i].a <== states[i][9];
+        and[16][i].b <== eq[15][i].out;
+        states[i+1][11] <== and[16][i].out;
         and[17][i] = AND();
-        and[17][i].a <== states[i][5];
-        and[17][i].b <== eq[15][i].out;
-        states[i+1][7] <== and[17][i].out;
-        // 111 = 'o'
-        eq[16][i] = IsEqual();
-        eq[16][i].in[0] <== in[i];
-        eq[16][i].in[1] <== 111;
+        and[17][i].a <== states[i][10];
+        and[17][i].b <== multi_or[3][i].out;
         and[18][i] = AND();
-        and[18][i].a <== states[i][7];
-        and[18][i].b <== eq[16][i].out;
-        states[i+1][8] <== and[18][i].out;
-        // 109 = 'm'
-        eq[17][i] = IsEqual();
-        eq[17][i].in[0] <== in[i];
-        eq[17][i].in[1] <== 109;
-        and[19][i] = AND();
-        and[19][i].a <== states[i][8];
-        and[19][i].b <== eq[17][i].out;
-        states[i+1][9] <== and[19][i].out;
-        // 64 = '@'
-        eq[18][i] = IsEqual();
-        eq[18][i].in[0] <== in[i];
-        eq[18][i].in[1] <== 64;
-        and[20][i] = AND();
-        and[20][i].a <== states[i][6];
-        and[20][i].b <== eq[18][i].out;
-        states[i+1][10] <== and[20][i].out;
-        // 58 = ':'
-        eq[19][i] = IsEqual();
-        eq[19][i].in[0] <== in[i];
-        eq[19][i].in[1] <== 58;
-        and[21][i] = AND();
-        and[21][i].a <== states[i][9];
-        and[21][i].b <== eq[19][i].out;
-        states[i+1][11] <== and[21][i].out;
-        and[22][i] = AND();
-        and[22][i].a <== states[i][10];
-        and[22][i].b <== multi_or[3][i].out;
-        and[23][i] = AND();
-        and[23][i].a <== states[i][12];
-        and[23][i].b <== multi_or[3][i].out;
+        and[18][i].a <== states[i][12];
+        and[18][i].b <== multi_or[3][i].out;
         multi_or[5][i] = MultiOR(2);
-        multi_or[5][i].in[0] <== and[22][i].out;
-        multi_or[5][i].in[1] <== and[23][i].out;
+        multi_or[5][i].in[0] <== and[17][i].out;
+        multi_or[5][i].in[1] <== and[18][i].out;
         states[i+1][12] <== multi_or[5][i].out;
         // 62 = '>'
-        eq[20][i] = IsEqual();
-        eq[20][i].in[0] <== in[i];
-        eq[20][i].in[1] <== 62;
-        and[24][i] = AND();
-        and[24][i].a <== states[i][12];
-        and[24][i].b <== eq[20][i].out;
-        states[i+1][13] <== and[24][i].out;
-        // 13 = '\r'
-        eq[21][i] = IsEqual();
-        eq[21][i].in[0] <== in[i];
-        eq[21][i].in[1] <== 13;
-        and[25][i] = AND();
-        and[25][i].a <== states[i][13];
-        and[25][i].b <== eq[21][i].out;
-        states[i+1][14] <== and[25][i].out;
-        // 10 = '\n'
-        eq[22][i] = IsEqual();
-        eq[22][i].in[0] <== in[i];
-        eq[22][i].in[1] <== 10;
-        and[26][i] = AND();
-        and[26][i].a <== states[i][14];
-        and[26][i].b <== eq[22][i].out;
-        states[i+1][15] <== and[26][i].out;
+        eq[16][i] = IsEqual();
+        eq[16][i].in[0] <== in[i];
+        eq[16][i].in[1] <== 62;
+        and[19][i] = AND();
+        and[19][i].a <== states[i][12];
+        and[19][i].b <== eq[16][i].out;
+        states[i+1][13] <== and[19][i].out;
+        and[20][i] = AND();
+        and[20][i].a <== states[i][13];
+        and[20][i].b <== eq[7][i].out; // 13 = '\r'
+        states[i+1][14] <== and[20][i].out;
+        and[21][i] = AND();
+        and[21][i].a <== states[i][14];
+        and[21][i].b <== eq[9][i].out; // 10 = '\n'
+        states[i+1][15] <== and[21][i].out;
     }
 
     signal final_state_sum[num_bytes+1];

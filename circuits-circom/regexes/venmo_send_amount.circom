@@ -210,9 +210,6 @@ template VenmoSendAmountRegex(msg_bytes) {
 		and[8][i] = AND();
 		and[8][i].a <== states[i][0];
 		and[8][i].b <== eq[21][i].out;
-		// eq[67][i] = IsEqual();
-		// eq[67][i].in[0] <== in[i];
-		// eq[67][i].in[1] <== 13;
 		and[9][i] = AND();
 		and[9][i].a <== states[i][3];
 		and[9][i].b <== eq[21][i].out; // Use eq[21]
