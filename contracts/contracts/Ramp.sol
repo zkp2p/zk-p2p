@@ -118,6 +118,7 @@ contract Ramp is Ownable {
     uint256 internal constant PRECISE_UNIT = 1e18;
     uint256 internal constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds
     uint256 constant CIRCOM_PRIME_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+    uint256 constant MAX_SUSTAINABILITY_FEE = 5e16;   // 5% max sustainability fee
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                               // USDC token contract
@@ -523,9 +524,11 @@ contract Ramp is Ownable {
      * @notice GOVERNANCE ONLY: Updates the sustainability fee. Fee updates are subject to a timelock in order to give users
      * enough time to react to proposed fee changes.
      *
-     * @param _fee   The new sustainability fee
+     * @param _fee   The new sustainability fee in precise units (10**18, ie 10% = 1e17)
      */
     function setSustainabilityFee(uint256 _fee) external onlyOwner {
+        require(_fee <= MAX_SUSTAINABILITY_FEE, "Fee cannot be greater than max fee");
+        
         sustainabilityFee = _fee;
         emit SustainabilityFeeUpdated(_fee);
     }

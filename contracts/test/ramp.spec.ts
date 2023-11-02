@@ -1596,7 +1596,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#setSustainabilityFee", async () => {
+    describe("#setSustainabilityFee", async () => {
       let subjectSustainabilityFee: BigNumber;
       let subjectCaller: Account;
 
@@ -1627,6 +1627,16 @@ describe("Ramp", () => {
         expect(tx).to.emit(ramp, "SustainabilityFeeUpdated").withArgs(subjectSustainabilityFee);
       });
 
+      describe("when the fee exceeds the max sustainability fee", async () => {
+        beforeEach(async () => {
+          subjectSustainabilityFee = ether(.1);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Fee cannot be greater than max fee");
+        });
+      });
+
       describe("when the caller is not the owner", async () => {
         beforeEach(async () => {
           subjectCaller = onRamper;
@@ -1638,7 +1648,7 @@ describe("Ramp", () => {
       });
     });
 
-    describe.only("#setSustainabilityFeeRecipient", async () => {
+    describe("#setSustainabilityFeeRecipient", async () => {
       let subjectSustainabilityFeeRecipient: Address;
       let subjectCaller: Account;
 
