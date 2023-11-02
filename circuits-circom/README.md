@@ -39,40 +39,24 @@ xxxxx&actor_id=3D<EMAIL_RECEIVER_VENMO_ID>">
 | Venmo Request Completed Send | Receiver/Payee Venmo ID  | Sender/Payer Venmo ID |
 | Venmo Request Completed Receive | Receiver/Payee Venmo ID  | Sender/Payer Venmo ID |
 
-To prevent users from using request complete emails to generate proofs, we must ensure that the email is a send or receive email using appropriate regexes.
+> The protocol ONLY supports the SEND email type
 
 ## Circuits
-
-### Venmo Receive Email
-
-Main circuit that offramper generates a proof of Venmo payment received email
-
-1. Verifies the DKIM signature (RSA, SHA256)
-2. Extracts Venmo payer ID, time of payment from email
-3. Extract from email
-4. Houses nullifier to prevent replay attacks
-5. Contains other order information to tie a proof to an order ID to prevent frontrunning
-
-| Regex Config    | Description                                                      |
-| --------------- | ---------------------------------------------------------------- |
-| Onramper Regex  | Extracts the Venmo payer ID from the payment received email body |
-| Timestamp Regex | Extracts timestamp from venmo payment received email header      |
-| From Email Regex | Extracts `from` email in venmo payment received email header to ensure that it is sent from venmo@venmo.com and not another Venmo email |
 
 ### Venmo Send Email
 
 Main circuit that onramper generates a proof of payment if offramper fails to generate proof above
 
 1. Verifies the DKIM signature (RSA, SHA256)
-2. Extracts payee ID, time of payment and amount for the Venmo transaction
-3. Extract from email
+2. Extracts from email, time of payment and amount for the Venmo transaction from the header
+3. Extract the payee ID from the body
 4. Houses nullifier to prevent replay attacks
 5. Contains other order information to tie a proof to an order ID to prevent frontrunning
 
 | Regex Config       | Description                                                      |
 | ------------------ | ---------------------------------------------------------------- |
-| Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body     |
-| Amount Regex       | Extracts $ amount sent from from venmo payment sent email header |
+| Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body to ensure the correct offramper is being paid    |
+| Send Amount Regex       | Extracts $ amount sent from from venmo payment sent email header to ensure its a Send email type and amount is greater than requested |
 | Timestamp Regex    | Extracts timestamp from venmo payment sent email header in order to ensure that email payment must be after on-chain intent timestamp |
 | From Email Regex | Extracts `from` email in venmo payment received email header to ensure that it is sent from venmo@venmo.com and not another Venmo email |
 
@@ -80,45 +64,174 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 Main circuit that both onramper and offramper must generate a proof prior to using the protocol
 
 1. Verifies the DKIM signature (RSA, SHA256)
-2. Extracts actor ID
-3. Extracts from email
+2. Extracts from email and Venmo amount (restricts to a Send email type of the format: `You Paid $X to OFF_RAMPER_NAME`) from the header
+3. Extracts actor ID (my Venmo ID) from the body
 4. Houses nullifier to prevent replay attacks
 5. Contains other order information to tie a proof to an order ID to prevent frontrunning
 
 | Regex Config       | Description                                                      |
 | ------------------ | ---------------------------------------------------------------- |
-| Actor ID Regex | Extracts the Venmo actor ID which is the same for the 3 Venmo payment confirmation emails (send, receive,complete payment). NOTE: request payment is excluded from the list because regex is different (and less sybil resistant due to not needing to complete a payment to generate this email)  |
+| Actor ID Regex     | Extracts the Venmo actor ID which is your email  |
+| Send Amount Regex       | Extracts $ amount sent from from venmo payment sent email header to ensure its a Send email type and amount is greater than requested |
 | From Email Regex | Extracts `from` email in venmo payment received email header to ensure that it is sent from venmo@venmo.com and not another Venmo email |
 
 ## Regexes
 
-### Venmo
+### Venmo Payee ID
+The Venmo Payee ID regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains ~330 bytes of HTML to prevent custom injection and index shifting attacks. Regex extracts after `user_id=3D`
 
-Both the Venmo send and receive email have the same HTML structure. 
-They both contain the Venmo payer ID and the payee ID. Hence we have abstracted the regexes into their own templates.
+```json
+{
+  "parts": [
+    {
+      "is_public": false,
+      "regex_def": "<!-- recipient name -->\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                   =20\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                    href=3D\"https://venmo.com/code\\?user_id=3D"
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": "&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+\">\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                   =20\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                    [^\r\n]+\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                </a>\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "               =20\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "            </div>\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "            <!-- note -->\r\n"
+    }
+  ]
+}
+```
 
-| Regex Template | Regex                                                                                           | Description                                                                                                                  |
-|----------------|------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| VenmoPayerID   | `\r\ntps://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+`                         | Extracts the Venmo payer ID from both send and receive emails                                                                |
-| VenmoPayeeID   | `href=3D\"https://venmo.com/code\\?user_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9\|\r\|\n\|=)+`       | Extracts the Venmo payee ID from both send and receive emails                                                                |
-| VenmoActorId   | `&actor_id=3D(0\|1\|2\|3\|4\|5\|6\|7\|8\|9)+">/r/n`                                           | Extracts the actor ID (my ID) from payment sent, payment received, payment request completed received and payment request completed sent emails |
+### Venmo Actor ID Regex
+The Venmo Actor ID regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains ~330 bytes of HTML to prevent custom injection and index shifting attacks. Regex extracts after `actor_id=3D`. Notice that the regex is exactly the same as above, except the revealed regex string is different
 
-Circuits that use the Venmo regexes:
+```json
+{
+    "parts": [
+      {
+        "is_public": false,
+        "regex_def": "<!-- recipient name -->\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                   =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                    href=3D\"https://venmo.com/code\\?user_id=3D"
+      },
+      {
+        "is_public": false,
+        "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+&actor_id=3D"
+      },
+      {
+        "is_public": true,
+        "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+      },
+      {
+        "is_public": false,
+        "regex_def": "\">\r\n                   =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                    [^\r\n]+\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                </a>\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "               =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "            </div>\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "            <!-- note -->\r\n"
+      }
+    ]
+  }
+```
 
-| Circuit Name | Regex Template | Description |
-| ------------ | -------------- | ----------- |
-| VenmoSend    | VenmoPayeeID   | Extracts the Venmo payee ID from the payment sent email body |
-| VenmoReceive | VenmoPayerID   | Extracts the Venmo payer ID from the payment received email body |
-| VenmoRegistration | VenmoActorID   | Extracts the actor ID (my ID) from payment sent, payment received and payment request completed received emails |
+### Venmo Send Amount
+The Venmo Send Amount regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains the entire subject line to prevent index shifting attacks. Regex extracts after `You paid `. Note that this regex limits the user to generate proofs using Send email types. For receive emails, the subject line will be `X paid you $Y`
+
+```json
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "((\r\n)|^)subject:You paid "
+        },
+        {
+            "is_public": false,
+            "regex_def": "[^\r\n]+\\$"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9|\\.|,)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "\r\n"
+        }
+    ]
+}
+```
+
+| Regex Template | Description                                                                                                                  |
+|----------------|------------------------------------------------------------------------------------------------------------------------------|
+| VenmoPayeeID   | Extracts the Venmo payee ID from Send email types                                                                |
+| VenmoActorId   | Extracts the actor ID (my ID) from Send email types |
+| VenmoSendAmount | Extracts the amount from a Send email type |
+| VenmoTimestamp | Extracts the timestamp from Venmo emails |
+| FromRegex | Extracts the from email (venmo@venmo.com) |
 
 ## Usage
 
 ### Generating Regexes
 
-1. `cd` into `regex_to_circom`
-2. Update `regex_to_dfa.js` with the regex or raw regex string. To validate if the regex is run correctly, you can use [ZK Regex UI](https://frontend-zk-regex.vercel.app/)
-3. Run `python3 gen.py` to generate the Circom template
-4. Copy the output into a circom regex file
+1. Go to [zk-regex](https://github.com/zkemail/zk-regex) and follow instructions
 
 ### Compilation
 
@@ -127,14 +240,14 @@ Circuits that use the Venmo regexes:
 
 ### Generate witness
 
-1. Copy an eml file into `circuits-circom/emls` for a given email type. Venmo send and receive emails are different. Make sure you are downloading the original email file. For example you can follow the following steps in [Gmail](https://support.google.com/mail/answer/29436?hl=en#zippy=%2Cgmail). Name your Venmo receive email `venmo_receive.eml` and Venmo send email `venmo_send.eml`.
-2. In `circuits-circom` directory, run `yarn gen-input:TYPE` where `TYPE` is either `send`, `receive` or one of three registration emails. This will generate an input file with the name `input_EML_FILE_NAME.json`.
-  a. NOTE: for registration, all 3 types of Venmo emails above work: `reg-complete` (registration using a Complete Payment email), `reg-send` (registration using a Send Payment email), `reg-receive` (registration using a Receive Payment email). 
+1. Copy a `SEND` eml file into `circuits-circom/emls` for a given email type. Venmo send emails have the subject line `You paid OFFRAMPER_NAME $X`. Make sure you are downloading the original email file. For example you can follow the following steps in [Gmail](https://support.google.com/mail/answer/29436?hl=en#zippy=%2Cgmail). Name your Venmo email `venmo_send.eml`.
+2. In `circuits-circom` directory, run `yarn gen-input:TYPE` where `TYPE` is either `send`, `registration`. This will generate an input file with the name `input_EML_FILE_NAME.json`.
 3. For development purposes, you only need to run up to this step
 
 ### Run tests
 1. Inside the `circuits-circom` directory, first complete the `Compilation` and generate input steps above for all the circuits. Tests will use the `input_EML_FILE_NAME.json`, `.wasm`, and `.r1cs` files.
 2. Run `yarn test`. This will generate witnesses in the `wtns` files prior to running tests.
+3. Optionally, only run regex tests by running `yarn test test/regexes`
 
 ### Proving Key Generation
 
@@ -145,4 +258,9 @@ Circuits that use the Venmo regexes:
 ### Generating Proofs
 
 1. To generate proofs on your local machine, `cd` into `scripts` and run `CIRCUIT_NAME=YOUR_EMAIL_TYPE ./5_gen_proof.sh`
-2. To generate proofs using RapidSnark serverside, `cd` into `scripts` and run `yarn:genproof:TYPE`
+2. To generate proofs using RapidSnark serverside, run `yarn:genproof:TYPE`
+
+## Security Assumptions
+- Users do not share emails with each other. Treat your email like a private key
+- Venmo does not change their email template drastically
+- Admin has ability to update verification contracts over time
