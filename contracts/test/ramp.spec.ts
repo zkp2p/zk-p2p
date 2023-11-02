@@ -79,6 +79,7 @@ describe("Ramp", () => {
       usdc(20),                          // $20 min deposit amount
       usdc(999),
       ONE_DAY_IN_SECONDS,
+      ONE_DAY_IN_SECONDS,               // On ramp cooldown period
       ZERO,                             // Sustainability fee
       feeRecipient.address
     );
@@ -440,7 +441,7 @@ describe("Ramp", () => {
           await blockchain.getCurrentTimestamp()
         );
 
-        const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("2"));
+        const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
         expect(expectedIntentHash).to.eq(intentHash);
       });
@@ -531,7 +532,7 @@ describe("Ramp", () => {
             await blockchain.getCurrentTimestamp()
           );
 
-          const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("3"));
+          const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
           expect(expectedIntentHash).to.eq(intentHash);
         });
@@ -636,6 +637,30 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the cool down period hasn't elapsed", async () => {
+        beforeEach(async () => {
+          await subject();
+
+          const currentTimestamp = await blockchain.getCurrentTimestamp();
+          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
+  
+          const signals = new Array<BigNumber>(10).fill(ZERO);
+          signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
+          signals[1] = currentTimestamp;
+          signals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
+          signals[3] = BigNumber.from(intentHash);
+  
+          const a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const c: [BigNumber, BigNumber] = [ZERO, ZERO];
+          
+          await ramp.connect(onRamper.wallet).onRamp(a, b, c, signals);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("On ramp cool down period not elapsed");
+        });
+      });
 
       describe("when the deposit does not exist", async () => {
         beforeEach(async () => {
@@ -726,7 +751,7 @@ describe("Ramp", () => {
       it("should update the venmoIdIntent mapping correctly", async () => {
         await subject();
 
-        const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("3"));
+        const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
         expect(intentHash).to.eq(ZERO_BYTES32);
       });
@@ -1023,6 +1048,15 @@ describe("Ramp", () => {
         expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
         expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
         expect(postDeposit.intentHashes).to.not.include(intentHash);
+      });
+
+      it("should log the block timestamp for user's lastOnrampTimestamp", async () => {
+        await subject();
+        
+        const expectedLastOnRampTimestamp = await blockchain.getCurrentTimestamp();
+        const lastOnRampTimestamp = await ramp.getLastOnRampTimestamp(subjectCaller.address);
+
+        expect(lastOnRampTimestamp).to.eq(expectedLastOnRampTimestamp);
       });
 
       it("should emit an IntentFulfilled event", async () => {
@@ -1557,7 +1591,7 @@ describe("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).setIntentExpirationPeriod(subjectIntentExpirationPeriod);
       }
 
-      it("should set the correct reward time period", async () => {
+      it("should set the correct expiration time period", async () => {
         const preOnRampAmount = await ramp.intentExpirationPeriod();
 
         expect(preOnRampAmount).to.eq(ONE_DAY_IN_SECONDS);
@@ -1583,6 +1617,48 @@ describe("Ramp", () => {
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Max intent expiration period cannot be zero");
         });
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setOnRampCooldownPeriod", async () => {
+      let subjectOnRampCoolDownPeriod: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectOnRampCoolDownPeriod = ONE_DAY_IN_SECONDS.div(2);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setOnRampCooldownPeriod(subjectOnRampCoolDownPeriod);
+      }
+
+      it("should set the correct cool down time period", async () => {
+        const preOnRampAmount = await ramp.onRampCooldownPeriod();
+
+        expect(preOnRampAmount).to.eq(ONE_DAY_IN_SECONDS);
+
+        await subject();
+
+        const postOnRampAmount = await ramp.onRampCooldownPeriod();
+
+        expect(postOnRampAmount).to.eq(subjectOnRampCoolDownPeriod);
+      });
+
+      it("should emit a OnRampCooldownPeriodSet event", async () => {
+        const tx = await subject();
+
+        expect(tx).to.emit(ramp, "OnRampCooldownPeriodSet").withArgs(subjectOnRampCoolDownPeriod);
       });
 
       describe("when the caller is not the owner", async () => {

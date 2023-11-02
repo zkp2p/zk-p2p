@@ -45,6 +45,7 @@ export default class DeployHelper {
     minDepositAmount: BigNumber,
     maxOnRampAmount: BigNumber,
     intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
     sustainabilityFee: BigNumber,
     sustainabilityFeeRecipient: Address,
   ): Promise<Ramp> {
@@ -55,6 +56,7 @@ export default class DeployHelper {
       minDepositAmount,
       maxOnRampAmount,
       intentExpirationPeriod,
+      onRampCoolDownPeriod,
       sustainabilityFee,
       sustainabilityFeeRecipient
     );
