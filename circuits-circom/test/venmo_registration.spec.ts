@@ -56,8 +56,8 @@ describe("Venmo Registration", function () {
     });
 
     it("Should return the correct modulus hash", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration.json");
         const jsonString = fs.readFileSync(venmo_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -142,10 +142,11 @@ describe("Venmo Registration", function () {
         const hashed_actor_id = witness[5];
 
         // Get expected packed offramper_id
-        const regex_start = Number(input["venmo_actor_id_idx"]);
-        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("34"); // Look for `"` to end the actor_id which is 34 in ascii 
-        const actor_id_array = regex_start_sub_array.slice(0, regex_end);
+        // xxxx&actor_id=3Dxxxxxxxxxxxxxxxxxxx">
+        const actor_id_selector = Buffer.from('&actor_id=3D');
+        const venmo_actor_id_start_idx = (Buffer.from(input['in_body_padded']).indexOf(actor_id_selector) + actor_id_selector.length);
+        const venmo_actor_id_end_idx = (Buffer.from(input['in_body_padded']).indexOf(Buffer.from('"', 'ascii'), venmo_actor_id_start_idx));
+        const actor_id_array = input['in_body_padded'].slice(venmo_actor_id_start_idx, venmo_actor_id_end_idx);
 
         // Chunk bytes into 7 and pack
         const chunkedArrays = chunkArray(actor_id_array, 7, 21);
@@ -156,5 +157,19 @@ describe("Venmo Registration", function () {
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_actor_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
+    });
+
+    it("should fail to generate witness if receive email is provided", async () => {
+        // Generate inputs for this test using `yarn gen-input:registration:receive`
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration_receive.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoRegistration_243 line: 65\n');
+        }
     });
 });

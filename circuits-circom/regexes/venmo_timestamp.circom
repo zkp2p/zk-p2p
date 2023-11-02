@@ -13,9 +13,9 @@ template VenmoTimestampRegex (msg_bytes) {
         in[i] <== msg[i];
     }
 
-    component eq[18][num_bytes];
-    component lt[4][num_bytes];
-    component and[22][num_bytes];
+    component eq[14][num_bytes];
+    component lt[2][num_bytes];
+    component and[21][num_bytes];
     component multi_or[1][num_bytes];
     signal states[num_bytes+1][20];
 
@@ -27,187 +27,154 @@ template VenmoTimestampRegex (msg_bytes) {
     }
 
     for (var i = 0; i < num_bytes; i++) {
+        // 47-58 = [0-9]
         lt[0][i] = LessThan(8);
         lt[0][i].in[0] <== 47;
         lt[0][i].in[1] <== in[i];
-
         lt[1][i] = LessThan(8);
         lt[1][i].in[0] <== in[i];
         lt[1][i].in[1] <== 58;
-
         and[0][i] = AND();
         and[0][i].a <== lt[0][i].out;
         and[0][i].b <== lt[1][i].out;
-
         and[1][i] = AND();
         and[1][i].a <== states[i][1];
         and[1][i].b <== and[0][i].out;
-
-        lt[2][i] = LessThan(8);
-        lt[2][i].in[0] <== 47;
-        lt[2][i].in[1] <== in[i];
-
-        lt[3][i] = LessThan(8);
-        lt[3][i].in[0] <== in[i];
-        lt[3][i].in[1] <== 58;
-
         and[2][i] = AND();
-        and[2][i].a <== lt[2][i].out;
-        and[2][i].b <== lt[3][i].out;
-
-        and[3][i] = AND();
-        and[3][i].a <== states[i][19];
-        and[3][i].b <== and[2][i].out;
-
+        and[2][i].a <== states[i][19];
+        and[2][i].b <== and[0][i].out;
         multi_or[0][i] = MultiOR(2);
         multi_or[0][i].in[0] <== and[1][i].out;
-        multi_or[0][i].in[1] <== and[3][i].out;
+        multi_or[0][i].in[1] <== and[2][i].out;
         states[i+1][1] <== multi_or[0][i].out;
-        
-        // ;
+        // 59 = ';'
         eq[0][i] = IsEqual();
         eq[0][i].in[0] <== in[i];
         eq[0][i].in[1] <== 59;
-        and[4][i] = AND();
-        and[4][i].a <== states[i][1];
-        and[4][i].b <== eq[0][i].out;
-        states[i+1][2] <== and[4][i].out;
-        // \r
+        and[3][i] = AND();
+        and[3][i].a <== states[i][1];
+        and[3][i].b <== eq[0][i].out;
+        states[i+1][2] <== and[3][i].out;
+        // 13 = '\r'
         eq[1][i] = IsEqual();
         eq[1][i].in[0] <== in[i];
         eq[1][i].in[1] <== 13;
-        and[5][i] = AND();
-        and[5][i].a <== states[i][2];
-        and[5][i].b <== eq[1][i].out;
-        states[i+1][3] <== and[5][i].out;
-        // \n
+        and[4][i] = AND();
+        and[4][i].a <== states[i][2];
+        and[4][i].b <== eq[1][i].out;
+        states[i+1][3] <== and[4][i].out;
+        // 10 = '\n'
         eq[2][i] = IsEqual();
         eq[2][i].in[0] <== in[i];
         eq[2][i].in[1] <== 10;
-        and[6][i] = AND();
-        and[6][i].a <== states[i][3];
-        and[6][i].b <== eq[2][i].out;
-        states[i+1][4] <== and[6][i].out;
-        // d
+        and[5][i] = AND();
+        and[5][i].a <== states[i][3];
+        and[5][i].b <== eq[2][i].out;
+        states[i+1][4] <== and[5][i].out;
+        // 100 = 'd'
         eq[3][i] = IsEqual();
         eq[3][i].in[0] <== in[i];
         eq[3][i].in[1] <== 100;
-        and[7][i] = AND();
-        and[7][i].a <== states[i][0];
-        and[7][i].b <== eq[3][i].out;
-        states[i+1][5] <== and[7][i].out;
-        // =
+        and[6][i] = AND();
+        and[6][i].a <== states[i][0];
+        and[6][i].b <== eq[3][i].out;
+        states[i+1][5] <== and[6][i].out;
+        // 61 = '='
         eq[4][i] = IsEqual();
         eq[4][i].in[0] <== in[i];
         eq[4][i].in[1] <== 61;
-        and[8][i] = AND();
-        and[8][i].a <== states[i][5];
-        and[8][i].b <== eq[4][i].out;
-        states[i+1][6] <== and[8][i].out;
-        // v
+        and[7][i] = AND();
+        and[7][i].a <== states[i][5];
+        and[7][i].b <== eq[4][i].out;
+        states[i+1][6] <== and[7][i].out;
+        // 118 = 'v'
         eq[5][i] = IsEqual();
         eq[5][i].in[0] <== in[i];
         eq[5][i].in[1] <== 118;
-        and[9][i] = AND();
-        and[9][i].a <== states[i][6];
-        and[9][i].b <== eq[5][i].out;
-        states[i+1][7] <== and[9][i].out;
-        // e
+        and[8][i] = AND();
+        and[8][i].a <== states[i][6];
+        and[8][i].b <== eq[5][i].out;
+        states[i+1][7] <== and[8][i].out;
+        // 101 = 'e'
         eq[6][i] = IsEqual();
         eq[6][i].in[0] <== in[i];
         eq[6][i].in[1] <== 101;
-        and[10][i] = AND();
-        and[10][i].a <== states[i][7];
-        and[10][i].b <== eq[6][i].out;
-        states[i+1][8] <== and[10][i].out;
-        // n
+        and[9][i] = AND();
+        and[9][i].a <== states[i][7];
+        and[9][i].b <== eq[6][i].out;
+        states[i+1][8] <== and[9][i].out;
+        // 110 = 'n'
         eq[7][i] = IsEqual();
         eq[7][i].in[0] <== in[i];
         eq[7][i].in[1] <== 110;
-        and[11][i] = AND();
-        and[11][i].a <== states[i][8];
-        and[11][i].b <== eq[7][i].out;
-        states[i+1][9] <== and[11][i].out;
-        // m
+        and[10][i] = AND();
+        and[10][i].a <== states[i][8];
+        and[10][i].b <== eq[7][i].out;
+        states[i+1][9] <== and[10][i].out;
+        // 109 = 'm'
         eq[8][i] = IsEqual();
         eq[8][i].in[0] <== in[i];
         eq[8][i].in[1] <== 109;
-        and[12][i] = AND();
-        and[12][i].a <== states[i][9];
-        and[12][i].b <== eq[8][i].out;
-        states[i+1][10] <== and[12][i].out;
-        // o
+        and[11][i] = AND();
+        and[11][i].a <== states[i][9];
+        and[11][i].b <== eq[8][i].out;
+        states[i+1][10] <== and[11][i].out;
+        // 111 = 'o'
         eq[9][i] = IsEqual();
         eq[9][i].in[0] <== in[i];
         eq[9][i].in[1] <== 111;
-        and[13][i] = AND();
-        and[13][i].a <== states[i][10];
-        and[13][i].b <== eq[9][i].out;
-        states[i+1][11] <== and[13][i].out;
-        // . 
+        and[12][i] = AND();
+        and[12][i].a <== states[i][10];
+        and[12][i].b <== eq[9][i].out;
+        states[i+1][11] <== and[12][i].out;
+        // 46 = '.'
         eq[10][i] = IsEqual();
         eq[10][i].in[0] <== in[i];
         eq[10][i].in[1] <== 46;
-        and[14][i] = AND();
-        and[14][i].a <== states[i][11];
-        and[14][i].b <== eq[10][i].out;
-        states[i+1][12] <== and[14][i].out;
-        // c
+        and[13][i] = AND();
+        and[13][i].a <== states[i][11];
+        and[13][i].b <== eq[10][i].out;
+        states[i+1][12] <== and[13][i].out;
+        // 99 = 'c'
         eq[11][i] = IsEqual();
         eq[11][i].in[0] <== in[i];
         eq[11][i].in[1] <== 99;
+        and[14][i] = AND();
+        and[14][i].a <== states[i][12];
+        and[14][i].b <== eq[11][i].out;
+        states[i+1][13] <== and[14][i].out;
         and[15][i] = AND();
-        and[15][i].a <== states[i][12];
-        and[15][i].b <== eq[11][i].out;
-        states[i+1][13] <== and[15][i].out;
-        // o
+        and[15][i].a <== states[i][13];
+        and[15][i].b <== eq[9][i].out; // 111 = 'o'
+        states[i+1][14] <== and[15][i].out;
+        and[16][i] = AND();
+        and[16][i].a <== states[i][14];
+        and[16][i].b <== eq[8][i].out; // 109 = 'm'
+        states[i+1][15] <== and[16][i].out;
+        and[17][i] = AND();
+        and[17][i].a <== states[i][15];
+        and[17][i].b <== eq[0][i].out; // 59 = ';'
+        states[i+1][16] <== and[17][i].out;
+        // 32 = space
         eq[12][i] = IsEqual();
         eq[12][i].in[0] <== in[i];
-        eq[12][i].in[1] <== 111;
-        and[16][i] = AND();
-        and[16][i].a <== states[i][13];
-        and[16][i].b <== eq[12][i].out;
-        states[i+1][14] <== and[16][i].out;
-        // m
+        eq[12][i].in[1] <== 32;
+        and[18][i] = AND();
+        and[18][i].a <== states[i][16];
+        and[18][i].b <== eq[12][i].out;
+        states[i+1][17] <== and[18][i].out;
+        // 116 = 't'
         eq[13][i] = IsEqual();
         eq[13][i].in[0] <== in[i];
-        eq[13][i].in[1] <== 109;
-        and[17][i] = AND();
-        and[17][i].a <== states[i][14];
-        and[17][i].b <== eq[13][i].out;
-        states[i+1][15] <== and[17][i].out;
-        // ;
-        eq[14][i] = IsEqual();
-        eq[14][i].in[0] <== in[i];
-        eq[14][i].in[1] <== 59;
-        and[18][i] = AND();
-        and[18][i].a <== states[i][15];
-        and[18][i].b <== eq[14][i].out;
-        states[i+1][16] <== and[18][i].out;
-        // (space)
-        eq[15][i] = IsEqual();
-        eq[15][i].in[0] <== in[i];
-        eq[15][i].in[1] <== 32;
+        eq[13][i].in[1] <== 116;
         and[19][i] = AND();
-        and[19][i].a <== states[i][16];
-        and[19][i].b <== eq[15][i].out;
-        states[i+1][17] <== and[19][i].out;
-        // t
-        eq[16][i] = IsEqual();
-        eq[16][i].in[0] <== in[i];
-        eq[16][i].in[1] <== 116;
+        and[19][i].a <== states[i][17];
+        and[19][i].b <== eq[13][i].out;
+        states[i+1][18] <== and[19][i].out;
         and[20][i] = AND();
-        and[20][i].a <== states[i][17];
-        and[20][i].b <== eq[16][i].out;
-        states[i+1][18] <== and[20][i].out;
-        // =
-        eq[17][i] = IsEqual();
-        eq[17][i].in[0] <== in[i];
-        eq[17][i].in[1] <== 61;
-        and[21][i] = AND();
-        and[21][i].a <== states[i][18];
-        and[21][i].b <== eq[17][i].out;
-        states[i+1][19] <== and[21][i].out;
+        and[20][i].a <== states[i][18];
+        and[20][i].b <== eq[4][i].out; // 61 = '='
+        states[i+1][19] <== and[20][i].out;
     }
 
     signal final_state_sum[num_bytes+1];
