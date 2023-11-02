@@ -45,7 +45,8 @@ contract Ramp is Ownable {
         uint256 indexed depositId,
         address indexed onRamper,
         address to,
-        uint256 amount
+        uint256 amount,
+        uint256 feeAmount
     );
     // Do we want to emit the depositor or the venmoId
     event DepositWithdrawn(
@@ -60,6 +61,8 @@ contract Ramp is Ownable {
     event MinDepositAmountSet(uint256 minDepositAmount);
     event MaxOnRampAmountSet(uint256 maxOnRampAmount);
     event IntentExpirationPeriodSet(uint256 intentExpirationPeriod);
+    event SustainabilityFeeUpdated(uint256 fee);
+    event SustainabilityFeeRecipientUpdated(address feeRecipient);
     event NewSendProcessorSet(address sendProcessor);
     event NewRegistrationProcessorSet(address registrationProcessor);
     event NewReceiveProcessorSet(address receiveProcessor);
@@ -135,6 +138,9 @@ contract Ramp is Ownable {
     uint256 public minDepositAmount;                            // Minimum amount of USDC that can be deposited
     uint256 public maxOnRampAmount;                             // Maximum amount of USDC that can be on-ramped in a single transaction
     uint256 public intentExpirationPeriod;                      // Time period after which an intent can be pruned from the system
+    uint256 public sustainabilityFee;                           // Fee charged to on-rampers in preciseUnits (1e16 = 1%)
+    address public sustainabilityFeeRecipient;                  // Address that receives the sustainability fee
+
     uint256 public depositCounter;                              // Counter for depositIds
 
     /* ============ Constructor ============ */
@@ -144,7 +150,9 @@ contract Ramp is Ownable {
         IPoseidon _poseidon,
         uint256 _minDepositAmount,
         uint256 _maxOnRampAmount,
-        uint256 _intentExpirationPeriod
+        uint256 _intentExpirationPeriod,
+        uint256 _sustainabilityFee,
+        address _sustainabilityFeeRecipient
     )
         Ownable()
     {
@@ -153,6 +161,8 @@ contract Ramp is Ownable {
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
         intentExpirationPeriod = _intentExpirationPeriod;
+        sustainabilityFee = _sustainabilityFee;
+        sustainabilityFeeRecipient = _sustainabilityFeeRecipient;
 
         transferOwnership(_owner);
     }
@@ -361,9 +371,7 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        usdc.transfer(intent.to, intent.amount);
-
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount);
+        _transferFunds(intentHash, intent);
     }
 
     /**
@@ -395,9 +403,7 @@ contract Ramp is Ownable {
         deposit.outstandingIntentAmount -= intent.amount;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        usdc.transfer(intent.to, intent.amount);
-        
-        emit IntentFulfilled(intentHash, intent.deposit, intent.onRamper, intent.to, intent.amount);
+        _transferFunds(intentHash, intent);
     }
 
     /**
@@ -511,6 +517,29 @@ contract Ramp is Ownable {
 
         minDepositAmount = _minDepositAmount;
         emit MinDepositAmountSet(_minDepositAmount);
+    }
+
+    /**
+     * @notice GOVERNANCE ONLY: Updates the sustainability fee. Fee updates are subject to a timelock in order to give users
+     * enough time to react to proposed fee changes.
+     *
+     * @param _fee   The new sustainability fee
+     */
+    function setSustainabilityFee(uint256 _fee) external onlyOwner {
+        sustainabilityFee = _fee;
+        emit SustainabilityFeeUpdated(_fee);
+    }
+
+    /**
+     * @notice GOVERNANCE ONLY: Updates the recepient of sustainability fees.
+     *
+     * @param _feeRecipient   The new fee recipient address
+     */
+    function setSustainabilityFeeRecipient(address _feeRecipient) external onlyOwner {
+        require(_feeRecipient != address(0), "Fee recipient cannot be zero address");
+
+        sustainabilityFeeRecipient = _feeRecipient;
+        emit SustainabilityFeeRecipientUpdated(_feeRecipient);
     }
 
     /**
@@ -684,6 +713,22 @@ contract Ramp is Ownable {
             emit DepositClosed(_depositId, _deposit.depositor);
             delete deposits[_depositId];
         }
+    }
+
+    /**
+     * @notice Checks if sustainability fee has been defined, if so sends fee to the fee recipient and intent amount minus fee
+     * to the on-ramper. If sustainability fee is undefined then full intent amount is transferred to on-ramper.
+     */
+    function _transferFunds(bytes32 _intentHash, Intent memory _intent) internal {
+        uint256 fee;
+        if (sustainabilityFee != 0) {
+            fee = (_intent.amount * sustainabilityFee) / PRECISE_UNIT;
+            usdc.transfer(sustainabilityFeeRecipient, fee);
+        }
+
+        usdc.transfer(_intent.to, _intent.amount - fee);
+
+        emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, _intent.amount - fee, fee);
     }
 
     /**
