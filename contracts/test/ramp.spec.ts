@@ -906,7 +906,7 @@ describe("Ramp", () => {
         beforeEach(async () => {
           await subject();
 
-          await blockchain.increaseTimeAsync(ONE_DAY_IN_SECONDS.add(1).toNumber());
+          await blockchain.increaseTimeAsync(ONE_DAY_IN_SECONDS.add(10).toNumber());
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
