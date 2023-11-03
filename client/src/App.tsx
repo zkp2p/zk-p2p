@@ -42,6 +42,14 @@ const RedirectToSwap = () => {
   return null;
 };
 
+const ExternalRedirect: React.FC<{ url: string }> = ({ url }) => {
+  useEffect(() => {
+    window.location.href = url;
+  }, [url]);
+
+  return null;
+};
+
 const App = () => {
   const { isMobile } = useDevice();
 
@@ -61,6 +69,8 @@ const App = () => {
                 <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />
+                <Route path="/pp" element={<ExternalRedirect url={process.env.PP_URL || ""} />} />
+                <Route path="/tos" element={<ExternalRedirect url={process.env.TOS_URL || ""} />} />
                 <Route element={<>Not found</>} />
               </Routes>
             </div>
@@ -91,7 +101,7 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                   <LiquidityProvider>
                     <OnRamperIntentsProvider>
                       <ProofGenSettingsProvider>
-                        <GoogleOAuthProvider clientId="1045959776048-45j0c9oh1chdha5c92okbop243t9msf8.apps.googleusercontent.com">
+                        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
                           <GoogleAuthProvider>
                             { children }
                           </GoogleAuthProvider>

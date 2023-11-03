@@ -624,6 +624,9 @@ module.exports = function (webpackEnv) {
         'process.env.WALLET_CONNECT_PROJECT_ID': JSON.stringify(process.env.WALLET_CONNECT_PROJECT_ID),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
         'process.env.REMOTE_PROOF_API_URL': JSON.stringify(process.env.REMOTE_PROOF_API_URL),
+        'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
+        'process.env.PP_URL': JSON.stringify(process.env.PP_URL),
+        'process.env.TOS_URL': JSON.stringify(process.env.PP_URL),
       }),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
