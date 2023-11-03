@@ -3,8 +3,6 @@ export {
   ManagedKeyHashAdapter,
   NullifierRegistry,
   USDCMock,
-  VenmoReceiveProcessor,
-  VenmoReceiveProcessorMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,

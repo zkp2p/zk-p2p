@@ -8,8 +8,6 @@ import {
   Ramp,
   ManagedKeyHashAdapter,
   USDCMock,
-  VenmoReceiveProcessorMock,
-  VenmoReceiveProcessor,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
@@ -19,12 +17,10 @@ import {
 import { Ramp__factory } from "../typechain/factories/contracts";
 import { 
   USDCMock__factory,
-  VenmoReceiveProcessorMock__factory,
   VenmoRegistrationProcessorMock__factory,
   VenmoSendProcessorMock__factory
 } from "../typechain/factories/contracts/mocks";
 import {
-  VenmoReceiveProcessor__factory,
   VenmoRegistrationProcessor__factory,
   VenmoSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
@@ -80,20 +76,6 @@ export default class DeployHelper {
     );
   }
 
-  public async deployVenmoReceiveProcessor(
-    ramp: Address,
-    keyHashAdapter: Address,
-    nullifierRegistry: Address,
-    emailFromAddress: string,
-  ): Promise<VenmoReceiveProcessor> {
-    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(
-      ramp,
-      keyHashAdapter,
-      nullifierRegistry,
-      emailFromAddress
-    );
-  }
-
   public async deployVenmoSendProcessor(
     ramp: Address,
     keyHashAdapter: Address,
@@ -114,10 +96,6 @@ export default class DeployHelper {
 
   public async deployNullifierRegistry(): Promise<NullifierRegistry> {
     return await new NullifierRegistry__factory(this._deployerSigner).deploy();
-  }
-
-  public async deployVenmoReceiveProcessorMock(): Promise<VenmoReceiveProcessorMock> {
-    return await new VenmoReceiveProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployVenmoSendProcessorMock(): Promise<VenmoSendProcessorMock> {

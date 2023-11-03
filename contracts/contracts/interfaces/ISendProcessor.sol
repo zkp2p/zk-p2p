@@ -8,7 +8,7 @@ interface ISendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[10] signals;
+        uint256[11] signals;
     }
 
     function processProof(

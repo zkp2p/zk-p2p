@@ -17,9 +17,9 @@ import { ZERO_BYTES32 } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x00000000000000000000000000000000000000000000000000000030302e3033","0x0000000000000000000000000000000000000000000000000033373633383631","0x0000000000000000000000000000000000000000000000000000000000393334","0x14465b905804512ffd4ed3425fd0d9d0f50947bddfd35bb55be9c29cca1e1c3a","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000000001"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x00000000000000000000000000000000000000000000000000000030302e3033","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000033373633383631","0x0000000000000000000000000000000000000000000000000000000000393334","0x14465b905804512ffd4ed3425fd0d9d0f50947bddfd35bb55be9c29cca1e1c3a","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000003039"];
 
-describe("VenmoSendProcessor", () => {
+describe.only("VenmoSendProcessor", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
@@ -45,7 +45,7 @@ describe("VenmoSendProcessor", () => {
       ramp.address,
       keyHashAdapter.address,
       nullifierRegistry.address,
-      "venmo@venmo.com".padEnd(21, "\0")
+      "venmo@venmo.com"
     );
 
     await nullifierRegistry.connect(owner.wallet).addWritePermission(sendProcessor.address);
@@ -59,7 +59,7 @@ describe("VenmoSendProcessor", () => {
 
       expect(rampAddress).to.eq(ramp.address);
       expect(venmoKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
-      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com")).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
   });
 
@@ -68,12 +68,12 @@ describe("VenmoSendProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x24bf0d1870268c88da79e664a0ebefd19a91ca53e0f19374029c152ce6d27436"), BigNumber.from("0x2bd07613aa9649fd0305fb5617d5fba6d63712953ba08c83b5326b46fa43038c")]
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x226c7510f1bc5e74f5ad3bd370e3f0fccb9ea2125b79be9ba4fcb7a266c438e7"), BigNumber.from("0x06019100116fb49a5c846963d6b3342bf0c41aaa3e1c70f21add1649cc47ea69")]
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x21a44c7052372e9fb99384bef6a0529360cae732b6461081d6cfe49a6412c489"), BigNumber.from("0x26b67a84191cd2f8f00e4f7ab7ab858301f7513188bf5c98620399e81904a90f")],
-        [BigNumber.from("0x1eaf4cff3be31e45dbe80392b2d7cac3df51b921f7d2f8f92e4d52fb1803cd12"), BigNumber.from("0x231afbd1cab29ee8cffeef4dfa53fe52d6e3ea3a750df09dafff0c71f5691563")]
+        [BigNumber.from("0x2716a896339b0cd0b12c1860e8cf1c647cbde473216f2b3d4a5e2f8930f5b65b"), BigNumber.from("0x0625204290ee08b13b2a6ac210c880eeca7192952137734ef9e8927d05c17d7c")],
+        [BigNumber.from("0x1068f5cccca7f9b428df8dcbf8180e5aa597cdb4e40130b7208057ccf23611d9"), BigNumber.from("0x07793b9fb030bfb0aa5d3598e3dcdbe9d31698045404f434ba573966eef21bb1")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x2a179e9c14bb8094634dcdf79b3581c94bc143c36dc54277d8c3d0808a53bda1"), BigNumber.from("0x18b4193b39c8d12dfe4727e7c2ce9d323d01654f642de597655f9778425336de")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x0afd380d08eac5415ce73074230162f7efdedf550b548ca3ab0cdd92024d8122"), BigNumber.from("0x10449a83449773b49035bbae972a5688a31384b37ba326f345e4afc1c6eeee13")];
       const signals: BigNumber[] = rawSignals.map((signal) => BigNumber.from(signal));
 
       subjectProof = {
@@ -104,14 +104,14 @@ describe("VenmoSendProcessor", () => {
 
       expect(amount).to.eq(usdc(30));
       expect(timestamp).to.eq(BigNumber.from(1683673439));
-      expect(offRamperIdHash).to.eq(rawSignals[7]);
-      expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000000001");
+      expect(offRamperIdHash).to.eq(rawSignals[8]);
+      expect(intentHash).to.eq("0x0000000000000000000000000000000000000000000000000000000000003039");
     });
 
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[8].toHexString());
+      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[9].toHexString());
 
       expect(isNullified).to.be.true;
     });
