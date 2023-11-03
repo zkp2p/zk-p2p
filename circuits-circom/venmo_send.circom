@@ -91,7 +91,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // PACKING
     reveal_email_timestamp_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
     
-    // VENMO SEND PAYEE ID REGEX
+    // VENMO SEND PAYEE ID AND PAYER ID REGEX
     var max_venmo_id_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payee_id_idx;
