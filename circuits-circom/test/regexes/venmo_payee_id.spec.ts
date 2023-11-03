@@ -140,7 +140,6 @@ describe("Venmo payee id", function () {
             .concat(textToAsciiArray("1192345678912345678"))
             .concat(textToAsciiArray("\">\r\n                   =20\r\n                    La Fleur Salon\r\n                </a>\r\n               =20\r\n            </div>\r\n            <!-- note -->\r\n            <div>\r\n               <p>").fill("0"));
         const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
-        console.log(JSON.stringify(result));
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
