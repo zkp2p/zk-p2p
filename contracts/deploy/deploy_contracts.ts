@@ -27,6 +27,10 @@ const INTENT_EXPIRATION_PERIOD = {
   "localhost": ONE_DAY_IN_SECONDS,
   "goerli": ONE_DAY_IN_SECONDS,
 };
+const ONRAMP_COOL_DOWN_PERIOD = {
+  "localhost": ONE_DAY_IN_SECONDS,
+  "goerli": ONE_DAY_IN_SECONDS,
+};
 const SUSTAINABILITY_FEE = {
   "localhost": ether(.001),
   "goerli": ether(.001),
@@ -75,6 +79,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       MIN_DEPOSIT_AMOUNT[network],
       MAX_ONRAMP_AMOUNT[network],
       INTENT_EXPIRATION_PERIOD[network],
+      ONRAMP_COOL_DOWN_PERIOD[network],
       SUSTAINABILITY_FEE[network],
       SUSTAINABILITY_FEE_RECIPIENT[network] != "" ? SUSTAINABILITY_FEE_RECIPIENT[network] : deployer,
     ],
