@@ -1962,4 +1962,14 @@ template VenmoPayeeIdRegex(msg_bytes) {
 		is_reveal0[i] <== is_substr0[i][2] * is_consecutive[i][1];
 		reveal0[i] <== in[i+1] * is_reveal0[i];
 	}
+	signal is_substr1[msg_bytes][3];
+	signal is_reveal1[msg_bytes];
+	signal output reveal1[msg_bytes];
+	for (var i = 0; i < msg_bytes; i++) {
+		is_substr1[i][0] <== 0;
+		is_substr1[i][1] <== is_substr1[i][0] + states[i+1][262] * states[i+2][263];
+		is_substr1[i][2] <== is_substr1[i][1] + states[i+1][263] * states[i+2][263];
+		is_reveal1[i] <== is_substr1[i][2] * is_consecutive[i][1];
+		reveal1[i] <== in[i+1] * is_reveal1[i];
+	}
 }

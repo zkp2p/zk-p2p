@@ -91,27 +91,37 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // PACKING
     reveal_email_timestamp_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_timestamp_len, pack_size)(timestamp_regex_reveal, email_timestamp_idx);
     
-    // VENMO SEND PAYEE ID REGEX
-    var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
+    // VENMO SEND PAYEE ID AND PAYER ID REGEX
+    var max_venmo_id_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
     
     signal input venmo_payee_id_idx;
-    signal reveal_payee_packed[max_payee_packed_bytes];
+    signal reveal_payee_packed[max_venmo_id_packed_bytes];
+    signal input venmo_payer_id_idx;
+    signal reveal_payer_packed[max_venmo_id_packed_bytes];
 
-    signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== VenmoPayeeIdRegex(max_body_bytes)(in_body_padded);
+    signal (payee_regex_out, payee_regex_reveal[max_body_bytes], payer_regex_reveal[max_body_bytes]) <== VenmoPayeeIdRegex(max_body_bytes)(in_body_padded);
     signal is_found_payee <== IsZero()(payee_regex_out);
     is_found_payee === 0;
 
     // PACKING
     // Special packing to skip over `=\r\n` only for Venmo payee ids
     reveal_payee_packed <== ShiftAndPackMaskedStrVenmoPayeeId(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, venmo_payee_id_idx);
+    reveal_payer_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_payee_len, pack_size)(payer_regex_reveal, venmo_payer_id_idx);
     
-    // HASH ONRAMPER ID
-    component hash = Poseidon(max_payee_packed_bytes);
-    assert(max_payee_packed_bytes < 16);
-    for (var i = 0; i < max_payee_packed_bytes; i++) {
-        hash.inputs[i] <== reveal_payee_packed[i];
+    // HASH OFFRAMPER ID
+    component hash_payee = Poseidon(max_venmo_id_packed_bytes);
+    assert(max_venmo_id_packed_bytes < 16);
+    for (var i = 0; i < max_venmo_id_packed_bytes; i++) {
+        hash_payee.inputs[i] <== reveal_payee_packed[i];
     }
-    signal output packed_offramper_id_hashed <== hash.out;
+    signal output packed_offramper_id_hashed <== hash_payee.out;
+
+    // HASH ONRAMPER ID
+    component hash_payer = Poseidon(max_venmo_id_packed_bytes);
+    for (var i = 0; i < max_venmo_id_packed_bytes; i++) {
+        hash_payer.inputs[i] <== reveal_payer_packed[i];
+    }
+    signal output packed_onramper_id_hashed <== hash_payer.out;
 
     // NULLIFIER
     signal output email_nullifier;
@@ -124,7 +134,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 7768268
+    // TOTAL CONSTRAINTS: 7849887
 }
 
 // Args:
