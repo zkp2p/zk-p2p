@@ -537,8 +537,7 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice GOVERNANCE ONLY: Updates the sustainability fee. Fee updates are subject to a timelock in order to give users
-     * enough time to react to proposed fee changes.
+     * @notice GOVERNANCE ONLY: Updates the sustainability fee. This fee is charged to on-rampers upon a successful on-ramp.
      *
      * @param _fee   The new sustainability fee in precise units (10**18, ie 10% = 1e17)
      */
