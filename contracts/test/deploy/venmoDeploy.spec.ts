@@ -39,13 +39,14 @@ import {
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
   USDC,
-  USDC_MINT_AMOUNT,
-  USDC_RECIPIENT,
 } from "../../deployments/parameters";
+import { PaymentProviders } from "../../utils/types"
 
 const expect = getWaffleExpect();
 
-describe("System Deploy", () => {
+const paymentProvider = PaymentProviders.Venmo;
+
+describe("System and Venmo Deploy", () => {
   let deployer: Account;
   let multiSig: Address;
 
@@ -66,7 +67,7 @@ describe("System Deploy", () => {
       deployer,
     ] = await getAccounts();
 
-    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
+    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer.address;
 
     const rampAddress  = await getDeployedContractAddress(network, "Ramp");
     ramp = new Ramp__factory(deployer.wallet).attach(rampAddress);
@@ -80,7 +81,7 @@ describe("System Deploy", () => {
     const nullifierRegistryAddress  = await getDeployedContractAddress(network, "NullifierRegistry");
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
 
-    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "ManagedKeyHashAdapter");
+    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter");
     keyHashAdapter = new ManagedKeyHashAdapter__factory(deployer.wallet).attach(keyHashAdapterAddress);
   });
 
@@ -95,7 +96,7 @@ describe("System Deploy", () => {
 
       expect(actualRegistrationProcessor).to.eq(venmoRegistrationProcessor.address);
       expect(actualSendProcessor).to.eq(venmoSendProcessor.address);
-      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon"));
+      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon3"));
       expect(actualUsdc).to.eq(expectedUsdc);
     });
 
@@ -105,10 +106,10 @@ describe("System Deploy", () => {
       const actualMaxOnRampAmount = await ramp.maxOnRampAmount();
       const actualIntentExpirationPeriod = await ramp.intentExpirationPeriod();
 
-      expect(actualCoolDownPeriod).to.eq(ONRAMP_COOL_DOWN_PERIOD[network]);
-      expect(actualMinDepositAmount).to.eq(MIN_DEPOSIT_AMOUNT[network]);
-      expect(actualMaxOnRampAmount).to.eq(MAX_ONRAMP_AMOUNT[network]);
-      expect(actualIntentExpirationPeriod).to.eq(INTENT_EXPIRATION_PERIOD[network]);
+      expect(actualCoolDownPeriod).to.eq(ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network]);
+      expect(actualMinDepositAmount).to.eq(MIN_DEPOSIT_AMOUNT[paymentProvider][network]);
+      expect(actualMaxOnRampAmount).to.eq(MAX_ONRAMP_AMOUNT[paymentProvider][network]);
+      expect(actualIntentExpirationPeriod).to.eq(INTENT_EXPIRATION_PERIOD[paymentProvider][network]);
     });
 
     it("should correctly fee and ownership params", async () => {
@@ -116,10 +117,11 @@ describe("System Deploy", () => {
       const actualSustainabilityFeeRecipient = await ramp.sustainabilityFeeRecipient();
       const actualOwner = await ramp.owner();
 
-      const expectedSustainabilityFeeRecipient = SUSTAINABILITY_FEE_RECIPIENT[network] != "" ?
-        SUSTAINABILITY_FEE_RECIPIENT[network] : deployer.address;
+      const expectedSustainabilityFeeRecipient = SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
+        : deployer.address;
 
-      expect(actualSustainabilityFee).to.eq(SUSTAINABILITY_FEE[network]);
+      expect(actualSustainabilityFee).to.eq(SUSTAINABILITY_FEE[paymentProvider][network]);
       expect(actualSustainabilityFeeRecipient).to.eq(expectedSustainabilityFeeRecipient);
       expect(actualOwner).to.eq(multiSig);
     });
@@ -137,7 +139,7 @@ describe("System Deploy", () => {
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
-      expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL));
+      expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
     });
   });
 
@@ -153,7 +155,7 @@ describe("System Deploy", () => {
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
-      expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL));
+      expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
     });
   });
 
@@ -163,7 +165,7 @@ describe("System Deploy", () => {
       const actualMailserverKeyHash = await keyHashAdapter.mailserverKeyHash();
 
       expect(actualOwner).to.eq(multiSig);
-      expect(actualMailserverKeyHash).to.eq(SERVER_KEY_HASH);
+      expect(actualMailserverKeyHash).to.eq(SERVER_KEY_HASH[paymentProvider]);
     });
   });
 

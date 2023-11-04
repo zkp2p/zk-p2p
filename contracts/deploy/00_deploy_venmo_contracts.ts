@@ -6,7 +6,6 @@ import { ethers } from "hardhat";
 
 const circom = require("circomlibjs");
 
-import { Address } from "../utils/types";
 import {
   FROM_EMAIL,
   INTENT_EXPIRATION_PERIOD,
@@ -21,6 +20,8 @@ import {
   USDC_MINT_AMOUNT,
   USDC_RECIPIENT,
 } from "../deployments/parameters";
+import { setNewOwner } from "../deployments/helpers";
+import { PaymentProviders } from "../utils/types";
 
 // Deployment Scripts
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -29,6 +30,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
+  const paymentProvider = PaymentProviders.Venmo;
 
   let usdcAddress;
   if (!USDC[network]) {
@@ -42,14 +44,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     usdcAddress = USDC[network];
   }
 
-  const poseidon = await deploy("Poseidon", {
+  const poseidon = await deploy("Poseidon3", {
     from: deployer,
     contract: {
       abi: circom.poseidonContract.generateABI(3),
       bytecode: circom.poseidonContract.createCode(3),
     }
   });
-  console.log("Poseidon deployed at ", poseidon.address);
+  console.log("Poseidon3 deployed at ", poseidon.address);
 
   const ramp = await deploy("Ramp", {
     from: deployer,
@@ -57,19 +59,22 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcAddress,
       poseidon.address,
-      MIN_DEPOSIT_AMOUNT[network],
-      MAX_ONRAMP_AMOUNT[network],
-      INTENT_EXPIRATION_PERIOD[network],
-      ONRAMP_COOL_DOWN_PERIOD[network],
-      SUSTAINABILITY_FEE[network],
-      SUSTAINABILITY_FEE_RECIPIENT[network] != "" ? SUSTAINABILITY_FEE_RECIPIENT[network] : deployer,
+      MIN_DEPOSIT_AMOUNT[paymentProvider][network],
+      MAX_ONRAMP_AMOUNT[paymentProvider][network],
+      INTENT_EXPIRATION_PERIOD[paymentProvider][network],
+      ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
+      SUSTAINABILITY_FEE[paymentProvider][network],
+      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] 
+        : deployer,
     ],
   });
   console.log("Ramp deployed at ", ramp.address);
 
-  const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
+  const keyHashAdapter = await deploy("VenmoManagedKeyHashAdapter", {
+    contract: "ManagedKeyHashAdapter",
     from: deployer,
-    args: [SERVER_KEY_HASH],
+    args: [SERVER_KEY_HASH[paymentProvider]],
   });
   console.log("KeyHashAdapter deployed at ", keyHashAdapter.address);
 
@@ -81,13 +86,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL[paymentProvider]],
   });
   console.log("RegistrationProcessor deployed at ", registrationProcessor.address);
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
-    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
+    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL[paymentProvider]],
   });
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
@@ -131,19 +136,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log("Deploy finished...");
 };
-
-export async function setNewOwner(hre: HardhatRuntimeEnvironment, contract: any, newOwner: Address): Promise<void> {
-  const currentOwner = await contract.owner();
-
-  if (currentOwner != newOwner) {
-    const data = contract.interface.encodeFunctionData("transferOwnership", [newOwner]);
-
-    await hre.deployments.rawTx({
-      from: currentOwner,
-      to: contract.address,
-      data
-    });
-  }
-}
 
 export default func;

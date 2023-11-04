@@ -45,4 +45,20 @@ library StringConversionUtils {
         require(decimalPlaces <= _desiredDecimals, "String has too many decimal places");
         return result * (10 ** (_desiredDecimals - decimalPlaces));
     }
+
+    /**
+     * @notice Function that returns a substring from _startIndex to _endIndex (non-inclusive).
+     *
+     * @param _str           String being processed
+     * @param _startIndex    Index to start parsing from
+     * @param _endIndex      Index to stop parsing at (index not included in result)
+     */
+    function substring(string memory _str, uint _startIndex, uint _endIndex) internal pure returns (string memory ) {
+        bytes memory strBytes = bytes(_str);
+        bytes memory result = new bytes(_endIndex-_startIndex);
+        for(uint i = _startIndex; i < _endIndex; i++) {
+            result[i-_startIndex] = strBytes[i];
+        }
+        return string(result);
+    }
 }

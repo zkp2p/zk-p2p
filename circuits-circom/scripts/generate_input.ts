@@ -285,7 +285,6 @@ export async function getCircuitInputs(
 
     const hdfc_amount_selector = Buffer.from("Dear Customer,<br> <br> Rs.");
     const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
-
     const bodyRemainingString = Buffer.from(bodyRemaining).toString();
     const paymentIdRegex = /is ([0-9]+).<br/;
     const match = bodyRemainingString.match(paymentIdRegex);
