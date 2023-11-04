@@ -1,6 +1,6 @@
 pragma circom 2.1.5;
 
-include "@zk-email/zk-regex-circom/circuits/regex_helpers.circom";
+include "@zk-email/circuits/regexes/regex_helpers.circom";
 
 template HdfcAmountRegex(msg_bytes) {
 	signal input msg[msg_bytes];
@@ -534,36 +534,14 @@ template HdfcAmountRegex(msg_bytes) {
 		is_consecutive[msg_bytes-1-i][0] <== states[num_bytes-i][26] * (1 - is_consecutive[msg_bytes-i][1]) + is_consecutive[msg_bytes-i][1];
 		is_consecutive[msg_bytes-1-i][1] <== state_changed[msg_bytes-i].out * is_consecutive[msg_bytes-1-i][0];
 	}
-	signal is_substr0[msg_bytes][25];
+	signal is_substr0[msg_bytes][3];
 	signal is_reveal0[msg_bytes];
 	signal output reveal0[msg_bytes];
 	for (var i = 0; i < msg_bytes; i++) {
 		is_substr0[i][0] <== 0;
 		is_substr0[i][1] <== is_substr0[i][0] + states[i+1][2] * states[i+2][3];
 		is_substr0[i][2] <== is_substr0[i][1] + states[i+1][3] * states[i+2][3];
-		is_substr0[i][3] <== is_substr0[i][2] + states[i+1][3] * states[i+2][4];
-		is_substr0[i][4] <== is_substr0[i][3] + states[i+1][4] * states[i+2][5];
-		is_substr0[i][5] <== is_substr0[i][4] + states[i+1][5] * states[i+2][7];
-		is_substr0[i][6] <== is_substr0[i][5] + states[i+1][7] * states[i+2][8];
-		is_substr0[i][7] <== is_substr0[i][6] + states[i+1][8] * states[i+2][9];
-		is_substr0[i][8] <== is_substr0[i][7] + states[i+1][9] * states[i+2][10];
-		is_substr0[i][9] <== is_substr0[i][8] + states[i+1][10] * states[i+2][11];
-		is_substr0[i][10] <== is_substr0[i][9] + states[i+1][11] * states[i+2][12];
-		is_substr0[i][11] <== is_substr0[i][10] + states[i+1][12] * states[i+2][13];
-		is_substr0[i][12] <== is_substr0[i][11] + states[i+1][13] * states[i+2][14];
-		is_substr0[i][13] <== is_substr0[i][12] + states[i+1][14] * states[i+2][15];
-		is_substr0[i][14] <== is_substr0[i][13] + states[i+1][15] * states[i+2][16];
-		is_substr0[i][15] <== is_substr0[i][14] + states[i+1][16] * states[i+2][17];
-		is_substr0[i][16] <== is_substr0[i][15] + states[i+1][17] * states[i+2][18];
-		is_substr0[i][17] <== is_substr0[i][16] + states[i+1][18] * states[i+2][19];
-		is_substr0[i][18] <== is_substr0[i][17] + states[i+1][19] * states[i+2][20];
-		is_substr0[i][19] <== is_substr0[i][18] + states[i+1][20] * states[i+2][21];
-		is_substr0[i][20] <== is_substr0[i][19] + states[i+1][21] * states[i+2][22];
-		is_substr0[i][21] <== is_substr0[i][20] + states[i+1][22] * states[i+2][23];
-		is_substr0[i][22] <== is_substr0[i][21] + states[i+1][23] * states[i+2][24];
-		is_substr0[i][23] <== is_substr0[i][22] + states[i+1][24] * states[i+2][25];
-		is_substr0[i][24] <== is_substr0[i][23] + states[i+1][25] * states[i+2][26];
-		is_reveal0[i] <== is_substr0[i][24] * is_consecutive[i][1];
+		is_reveal0[i] <== is_substr0[i][2] * is_consecutive[i][1];
 		reveal0[i] <== in[i+1] * is_reveal0[i];
 	}
 }
