@@ -70,6 +70,8 @@ contract Ramp is Ownable {
 
     /* ============ Structs ============ */
 
+    // Each Account is tied to a GlobalAccount via its associated venmoIdHash. Each account is represented by an Ethereum address
+    // and is allowed to have at most 5 deposits associated with it.
     struct AccountInfo {
         bytes32 venmoIdHash;                // Poseidon hash of account's venmoId
         uint256[] deposits;                 // Array of open account deposits
@@ -109,6 +111,9 @@ contract Ramp is Ownable {
         mapping(bytes32 => bool) isDenied;  // Mapping of venmoIdHash to boolean indicating if the user is denied
     }
 
+    // A Global Account is defined as an account represented by one venmoIdHash. This is used to enforce limitations on actions across
+    // all Ethereum addresses that are associated with that venmoId. In this case we use it to enforce a cooldown period between on ramps,
+    // restrict each venmo account to one outstanding intent at a time, and to enforce deny lists.
     struct GlobalAccountInfo {
         bytes32 currentIntentHash;          // Hash of the current open intent (if exists)
         uint256 lastOnrampTimestamp;        // Timestamp of the last on-ramp transaction used to check if cooldown period elapsed
@@ -763,9 +768,10 @@ contract Ramp is Ownable {
             usdc.transfer(sustainabilityFeeRecipient, fee);
         }
 
-        usdc.transfer(_intent.to, _intent.amount - fee);
+        uint256 onRampAmount = _intent.amount - fee;
+        usdc.transfer(_intent.to, onRampAmount);
 
-        emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, _intent.amount - fee, fee);
+        emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, onRampAmount, fee);
     }
 
     /**
