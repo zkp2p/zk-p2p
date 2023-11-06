@@ -798,11 +798,12 @@ describe("Ramp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(venmoId, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(11).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(12).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = currentTimestamp;
         subjectSignals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
-        subjectSignals[3] = BigNumber.from(intentHash);
+        subjectSignals[3] = BigNumber.from(await calculateVenmoIdHash("2"));
+        subjectSignals[4] = BigNumber.from(intentHash);
 
         subjectA = [ZERO, ZERO];
         subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
@@ -915,7 +916,7 @@ describe("Ramp", () => {
           intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), depositId, currentTimestamp);
 
           subjectSignals[1] = currentTimestamp;
-          subjectSignals[3] = BigNumber.from(intentHash);
+          subjectSignals[4] = BigNumber.from(intentHash);
         });
 
         it("should prune the deposit", async () => {
@@ -972,6 +973,16 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Offramper id does not match");
+        });
+      });
+
+      describe("when the onRamperIdHash doesn't match the intent", async () => {
+        beforeEach(async () => {
+          subjectSignals[3] = BigNumber.from(await calculateVenmoIdHash("1"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper id does not match");
         });
       });
     });
