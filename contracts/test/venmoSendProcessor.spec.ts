@@ -113,7 +113,7 @@ describe("VenmoSendProcessor", () => {
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[9].toHexString());
+      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[10].toHexString());
 
       expect(isNullified).to.be.true;
     });
