@@ -5,8 +5,6 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
 import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
-import { BigNumber } from "ethers";
-
 const circom = require("circomlibjs");
 
 import { ether, usdc } from "../utils/common/units";
@@ -101,11 +99,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
 
-  const receiveProcessor = await deploy("VenmoReceiveProcessor", {
-    from: deployer,
-    args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
-  });
-
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
@@ -114,7 +107,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
   await rampContract.initialize(
-    receiveProcessor.address,
     registrationProcessor.address,
     sendProcessor.address
   );
@@ -122,7 +114,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Ramp initialized...");
 
   const nullifierRegistryContract = await ethers.getContractAt("NullifierRegistry", nullifierRegistry.address);
-  await nullifierRegistryContract.addWritePermission(receiveProcessor.address);
   await nullifierRegistryContract.addWritePermission(sendProcessor.address);
 
   console.log("NullifierRegistry permissions added...");
