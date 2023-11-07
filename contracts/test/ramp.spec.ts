@@ -636,7 +636,7 @@ describe("Ramp", () => {
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
   
-          const signals = new Array<BigNumber>(10).fill(ZERO);
+          const signals = new Array<BigNumber>(12).fill(ZERO);
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
           signals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
