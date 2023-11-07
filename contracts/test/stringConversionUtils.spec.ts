@@ -65,14 +65,14 @@ describe.only("StringConversionUtils", () => {
 
     describe("when the desired decimals is 0 and no decimal is found", async () => {
       beforeEach(async () => {
-        subjectString = "123456"
+        subjectString = "120459"
         subjectDesiredDecimals = ZERO
       });
 
       it("should return the correct value", async () => {
         const output = await subject();
   
-        expect(output).to.equal(BigNumber.from(123456));
+        expect(output).to.equal(BigNumber.from(120459));
       });
     });
 
