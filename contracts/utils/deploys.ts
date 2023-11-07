@@ -7,6 +7,7 @@ const circom = require("circomlibjs");
 import { 
   Ramp,
   ManagedKeyHashAdapter,
+  StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
@@ -15,7 +16,8 @@ import {
   NullifierRegistry
 } from "./contracts";
 import { Ramp__factory } from "../typechain/factories/contracts";
-import { 
+import {
+  StringConversionUtilsMock__factory,
   USDCMock__factory,
   VenmoRegistrationProcessorMock__factory,
   VenmoSendProcessorMock__factory
@@ -114,5 +116,9 @@ export default class DeployHelper {
     );
 
     return await contract.deploy();
+  }
+
+  public async deployStringConversionUtilsMock(): Promise<StringConversionUtilsMock> {
+    return await new StringConversionUtilsMock__factory(this._deployerSigner).deploy();
   }
 }

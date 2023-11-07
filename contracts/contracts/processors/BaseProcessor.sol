@@ -68,29 +68,4 @@ contract BaseProcessor is Ownable {
         require(!nullifierRegistry.isNullified(_nullifier), "Nullifier has already been used");
         nullifierRegistry.addNullifier(_nullifier);
     }
-
-    // stringToUint is used to convert a string like "45" to a uint256 4
-    function _stringToUint(string memory s, uint256 expectedDecimals) internal pure returns (uint256) {
-        bytes memory b = bytes(s);
-        uint256 result = 0;
-        bool decimals = false;
-        uint256 decimalPlaces;
-        for (uint256 i = 0; i < b.length; i++) {
-            if (b[i] >= 0x30 && b[i] <= 0x39) {
-                result = result * 10 + (uint256(uint8(b[i])) - 48);
-            }
-
-            if (decimals) {
-                decimalPlaces++;
-            }
-
-            if (b[i] == 0x2E) {
-                require(decimals == false, "String has multiple decimals");
-                decimals = true;
-            }
-        }
-
-        // If expected decimals is 0 and there are decimals will revert, otherwise adds missing zeroes to end of number
-        return result * (10 ** (expectedDecimals - decimalPlaces));
-    }
 }

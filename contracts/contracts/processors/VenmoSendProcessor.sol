@@ -7,12 +7,14 @@ import { Groth16Verifier } from "../verifiers/venmo_send_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
+import { StringConversionUtils } from "../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 
 contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     
     using StringUtils for uint256[];
+    using StringConversionUtils for string;
 
     /* ============ Constructor ============ */
     constructor(
@@ -42,11 +44,13 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [4:5] is the packed amount, multiply by 1e4 since venmo only gives us two decimals instead of 6
-        amount = _stringToUint(_parseSignalArray(_proof.signals, 4, 6), 6);
+        // Signals [4:5] is the packed amount, since this is a USDC amount we want to make sure the returned number is
+        // properly padded to 6 decimals. If the parsed has more than 6 figures to the right of the decimal it will revert
+        amount = _parseSignalArray(_proof.signals, 4, 6).stringToUint(6);
 
-        // Signals [5:7] are the packed timestamp
-        timestamp = _stringToUint(_parseSignalArray(_proof.signals, 6, 8), 0);
+        // Signals [5:7] are the packed timestamp, we do not expect there to be any decimal places in this number so we
+        // specify 0 decimals, if any decimal appears this function will revert
+        timestamp = _parseSignalArray(_proof.signals, 6, 8).stringToUint(0);
 
         // Signals [8] is the packed offRamperIdHash
         offRamperIdHash = bytes32(_proof.signals[8]);

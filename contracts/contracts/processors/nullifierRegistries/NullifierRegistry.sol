@@ -2,7 +2,7 @@
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { AddressArrayUtils } from "../../lib/AddressArrayUtils.sol";
+import { AddressArrayUtils } from "../../external/AddressArrayUtils.sol";
 import { INullifierRegistry } from "./INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;

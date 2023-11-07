@@ -2,6 +2,7 @@ export {
   Ramp,
   ManagedKeyHashAdapter,
   NullifierRegistry,
+  StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
