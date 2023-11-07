@@ -1,7 +1,6 @@
 import { BigNumber, Signer, ethers } from "ethers";
 
 import { Address } from "@utils/types";
-import { usdc } from "@utils/common";
 
 const circom = require("circomlibjs");
 
@@ -31,7 +30,6 @@ import {
 } from "../typechain/factories/contracts/processors";
 import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
 import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
-import { ONE_DAY_IN_SECONDS } from "./constants";
 
 export default class DeployHelper {
   private _deployerSigner: Signer;
@@ -45,8 +43,11 @@ export default class DeployHelper {
     usdcToken: Address,
     poseidon: Address,
     minDepositAmount: BigNumber,
-    maxOnRampAmount: BigNumber = usdc(999),
-    intentExpirationPeriod: BigNumber = ONE_DAY_IN_SECONDS,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
   ): Promise<Ramp> {
     return await new Ramp__factory(this._deployerSigner).deploy(
       owner,
@@ -54,7 +55,10 @@ export default class DeployHelper {
       poseidon,
       minDepositAmount,
       maxOnRampAmount,
-      intentExpirationPeriod
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
     );
   }
 

@@ -38,6 +38,7 @@ describe("Ramp", () => {
   let receiver: Account;
   let maliciousOnRamper: Account;
   let unregisteredUser: Account;
+  let feeRecipient: Account;
 
   let ramp: Ramp;
   let usdcToken: USDCMock;
@@ -56,7 +57,8 @@ describe("Ramp", () => {
       receiver,
       maliciousOnRamper,
       unregisteredUser,
-      offRamperNewAcct
+      offRamperNewAcct,
+      feeRecipient
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -74,7 +76,12 @@ describe("Ramp", () => {
       owner.address,
       usdcToken.address,
       poseidonContract.address,
-      usdc(20)                          // $20 min deposit amount
+      usdc(20),                          // $20 min deposit amount
+      usdc(999),
+      ONE_DAY_IN_SECONDS,
+      ONE_DAY_IN_SECONDS,               // On ramp cooldown period
+      ZERO,                             // Sustainability fee
+      feeRecipient.address
     );
   });
 
@@ -434,7 +441,7 @@ describe("Ramp", () => {
           await blockchain.getCurrentTimestamp()
         );
 
-        const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("2"));
+        const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
         expect(expectedIntentHash).to.eq(intentHash);
       });
@@ -525,7 +532,7 @@ describe("Ramp", () => {
             await blockchain.getCurrentTimestamp()
           );
 
-          const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("3"));
+          const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
           expect(expectedIntentHash).to.eq(intentHash);
         });
@@ -630,6 +637,30 @@ describe("Ramp", () => {
         });
       });
 
+      describe("when the cool down period hasn't elapsed", async () => {
+        beforeEach(async () => {
+          await subject();
+
+          const currentTimestamp = await blockchain.getCurrentTimestamp();
+          const intentHash = calculateIntentHash(await calculateVenmoIdHash("2"), subjectDepositId, currentTimestamp);
+  
+          const signals = new Array<BigNumber>(10).fill(ZERO);
+          signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
+          signals[1] = currentTimestamp;
+          signals[2] = BigNumber.from(await calculateVenmoIdHash("1"));
+          signals[3] = BigNumber.from(intentHash);
+  
+          const a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const c: [BigNumber, BigNumber] = [ZERO, ZERO];
+          
+          await ramp.connect(onRamper.wallet).onRamp(a, b, c, signals);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("On ramp cool down period not elapsed");
+        });
+      });
 
       describe("when the deposit does not exist", async () => {
         beforeEach(async () => {
@@ -720,7 +751,7 @@ describe("Ramp", () => {
       it("should update the venmoIdIntent mapping correctly", async () => {
         await subject();
 
-        const intentHash = await ramp.venmoIdIntent(await calculateVenmoIdHash("3"));
+        const intentHash = await ramp.getVenmoIdCurrentIntentHash(subjectCaller.address);
 
         expect(intentHash).to.eq(ZERO_BYTES32);
       });
@@ -833,8 +864,42 @@ describe("Ramp", () => {
           depositId,
           onRamper.address,
           receiver.address,
-          usdc(50)
+          usdc(50),
+          ZERO
         );
+      });
+
+      describe("when a sustainability fee is defined", async () => {
+        beforeEach(async () => {
+          await ramp.connect(owner.wallet).setSustainabilityFee(ether(0.01));
+        });
+
+        it("should transfer the usdc correctly to all parties", async () => {
+          const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPreBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPreBalance = await usdcToken.balanceOf(feeRecipient.address);
+  
+          await subject();
+  
+          const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPostBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPostBalance = await usdcToken.balanceOf(feeRecipient.address);
+  
+          expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(49.5)));
+          expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
+          expect(feeRecipientPostBalance).to.eq(feeRecipientPreBalance.add(usdc(0.5)));
+        });
+
+        it("should emit an IntentFulfilled event", async () => {
+          await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
+            intentHash,
+            depositId,
+            onRamper.address,
+            receiver.address,
+            usdc(49.5),
+            usdc(0.5)
+          );
+        });
       });
 
       describe("when the intent zeroes out the deposit", async () => {
@@ -985,19 +1050,64 @@ describe("Ramp", () => {
         expect(postDeposit.intentHashes).to.not.include(intentHash);
       });
 
+      it("should log the block timestamp for user's lastOnrampTimestamp", async () => {
+        await subject();
+        
+        const expectedLastOnRampTimestamp = await blockchain.getCurrentTimestamp();
+        const lastOnRampTimestamp = await ramp.getLastOnRampTimestamp(subjectCaller.address);
+
+        expect(lastOnRampTimestamp).to.eq(expectedLastOnRampTimestamp);
+      });
+
       it("should emit an IntentFulfilled event", async () => {
         await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
           intentHash,
           depositId,
           onRamper.address,
           receiver.address,
-          usdc(50)
+          usdc(50),
+          ZERO
         );
+      });
+
+      describe("when a sustainability fee is defined", async () => {
+        beforeEach(async () => {
+          await ramp.connect(owner.wallet).setSustainabilityFee(ether(0.01));
+        });
+
+        it("should transfer the usdc correctly to all parties", async () => {
+          const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPreBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPreBalance = await usdcToken.balanceOf(feeRecipient.address);
+  
+          await subject();
+  
+          const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPostBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPostBalance = await usdcToken.balanceOf(feeRecipient.address);
+  
+          expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(49.5)));
+          expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
+          expect(feeRecipientPostBalance).to.eq(feeRecipientPreBalance.add(usdc(0.5)));
+        });
+
+        it("should emit an IntentFulfilled event", async () => {
+          await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
+            intentHash,
+            depositId,
+            onRamper.address,
+            receiver.address,
+            usdc(49.5),
+            usdc(0.5)
+          );
+        });
       });
 
       describe("when the intent zeroes out the deposit", async () => {
         beforeEach(async () => {
           await subject();
+
+          await blockchain.increaseTimeAsync(ONE_DAY_IN_SECONDS.add(10).toNumber());
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
@@ -1483,7 +1593,7 @@ describe("Ramp", () => {
         return ramp.connect(subjectCaller.wallet).setIntentExpirationPeriod(subjectIntentExpirationPeriod);
       }
 
-      it("should set the correct reward time period", async () => {
+      it("should set the correct expiration time period", async () => {
         const preOnRampAmount = await ramp.intentExpirationPeriod();
 
         expect(preOnRampAmount).to.eq(ONE_DAY_IN_SECONDS);
@@ -1508,6 +1618,152 @@ describe("Ramp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Max intent expiration period cannot be zero");
+        });
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setOnRampCooldownPeriod", async () => {
+      let subjectOnRampCoolDownPeriod: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectOnRampCoolDownPeriod = ONE_DAY_IN_SECONDS.div(2);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setOnRampCooldownPeriod(subjectOnRampCoolDownPeriod);
+      }
+
+      it("should set the correct cool down time period", async () => {
+        const preOnRampAmount = await ramp.onRampCooldownPeriod();
+
+        expect(preOnRampAmount).to.eq(ONE_DAY_IN_SECONDS);
+
+        await subject();
+
+        const postOnRampAmount = await ramp.onRampCooldownPeriod();
+
+        expect(postOnRampAmount).to.eq(subjectOnRampCoolDownPeriod);
+      });
+
+      it("should emit a OnRampCooldownPeriodSet event", async () => {
+        const tx = await subject();
+
+        expect(tx).to.emit(ramp, "OnRampCooldownPeriodSet").withArgs(subjectOnRampCoolDownPeriod);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setSustainabilityFee", async () => {
+      let subjectSustainabilityFee: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectSustainabilityFee = ether(.002);
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setSustainabilityFee(subjectSustainabilityFee);
+      }
+
+      it("should set the correct sustainability fee", async () => {
+        const preSustainabilityFee = await ramp.sustainabilityFee();
+
+        expect(preSustainabilityFee).to.eq(ZERO);
+
+        await subject();
+
+        const postSustainabilityFee = await ramp.sustainabilityFee();
+
+        expect(postSustainabilityFee).to.eq(subjectSustainabilityFee);
+      });
+
+      it("should emit a SustainabilityFeeUpdated event", async () => {
+        const tx = await subject();
+
+        expect(tx).to.emit(ramp, "SustainabilityFeeUpdated").withArgs(subjectSustainabilityFee);
+      });
+
+      describe("when the fee exceeds the max sustainability fee", async () => {
+        beforeEach(async () => {
+          subjectSustainabilityFee = ether(.1);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Fee cannot be greater than max fee");
+        });
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setSustainabilityFeeRecipient", async () => {
+      let subjectSustainabilityFeeRecipient: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectSustainabilityFeeRecipient = owner.address;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setSustainabilityFeeRecipient(subjectSustainabilityFeeRecipient);
+      }
+
+      it("should set the correct sustainability fee recipient", async () => {
+        const preSustainabilityFeeRecipient = await ramp.sustainabilityFeeRecipient();
+
+        expect(preSustainabilityFeeRecipient).to.eq(feeRecipient.address);
+
+        await subject();
+
+        const postSustainabilityFeeRecipient = await ramp.sustainabilityFeeRecipient();
+
+        expect(postSustainabilityFeeRecipient).to.eq(subjectSustainabilityFeeRecipient);
+      });
+
+      it("should emit a SustainabilityFeeRecipientUpdated event", async () => {
+        const tx = await subject();
+
+        expect(tx).to.emit(ramp, "SustainabilityFeeRecipientUpdated").withArgs(subjectSustainabilityFeeRecipient);
+      });
+
+      describe("when the passed fee recipient is the zero address", async () => {
+        beforeEach(async () => {
+          subjectSustainabilityFeeRecipient = ADDRESS_ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Fee recipient cannot be zero address");
         });
       });
 

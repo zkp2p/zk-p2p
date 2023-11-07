@@ -9,7 +9,7 @@ import { BigNumber } from "ethers";
 
 const circom = require("circomlibjs");
 
-import { usdc } from "../utils/common/units";
+import { ether, usdc } from "../utils/common/units";
 
 const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
@@ -26,6 +26,18 @@ const MAX_ONRAMP_AMOUNT = {
 const INTENT_EXPIRATION_PERIOD = {
   "localhost": ONE_DAY_IN_SECONDS,
   "goerli": ONE_DAY_IN_SECONDS,
+};
+const ONRAMP_COOL_DOWN_PERIOD = {
+  "localhost": ONE_DAY_IN_SECONDS,
+  "goerli": ONE_DAY_IN_SECONDS,
+};
+const SUSTAINABILITY_FEE = {
+  "localhost": ether(.001),
+  "goerli": ether(.001),
+};
+const SUSTAINABILITY_FEE_RECIPIENT = {
+  "localhost": "",
+  "goerli": "",
 };
 const USDC = {};
 const USDC_MINT_AMOUNT = usdc(1000000);
@@ -66,7 +78,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       poseidon.address,
       MIN_DEPOSIT_AMOUNT[network],
       MAX_ONRAMP_AMOUNT[network],
-      INTENT_EXPIRATION_PERIOD[network]
+      INTENT_EXPIRATION_PERIOD[network],
+      ONRAMP_COOL_DOWN_PERIOD[network],
+      SUSTAINABILITY_FEE[network],
+      SUSTAINABILITY_FEE_RECIPIENT[network] != "" ? SUSTAINABILITY_FEE_RECIPIENT[network] : deployer,
     ],
   });
   console.log("Ramp deployed...");
