@@ -12,7 +12,6 @@ pragma solidity ^0.8.18;
 
 contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     
-    using StringUtils for string;
     using StringUtils for uint256[];
 
     /* ============ Constructor ============ */
@@ -44,10 +43,10 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
         // Signals [4:5] is the packed amount, multiply by 1e4 since venmo only gives us two decimals instead of 6
-        amount = _parseSignalArray(_proof.signals, 4, 6).stringToUint() * 1e4;
+        amount = _stringToUint(_parseSignalArray(_proof.signals, 4, 6), 6);
 
         // Signals [5:7] are the packed timestamp
-        timestamp = _parseSignalArray(_proof.signals, 6, 8).stringToUint();
+        timestamp = _stringToUint(_parseSignalArray(_proof.signals, 6, 8), 0);
 
         // Signals [8] is the packed offRamperIdHash
         offRamperIdHash = bytes32(_proof.signals[8]);
@@ -56,10 +55,10 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         onRamperIdHash = bytes32(_proof.signals[9]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        _validateAndAddNullifier(bytes32(_proof.signals[9]));
+        _validateAndAddNullifier(bytes32(_proof.signals[10]));
 
         // Signals [9] is intentHash
-        intentHash = bytes32(_proof.signals[10]);
+        intentHash = bytes32(_proof.signals[11]);
     }
 
     /* ============ Internal Functions ============ */
