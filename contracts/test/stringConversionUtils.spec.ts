@@ -15,7 +15,7 @@ import { ONE, ZERO } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-describe.only("StringConversionUtils", () => {
+describe("StringConversionUtils", () => {
   let owner: Account;
 
   let stringUtils: StringConversionUtilsMock;
