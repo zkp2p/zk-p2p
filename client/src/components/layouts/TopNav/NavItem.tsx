@@ -36,12 +36,7 @@ export const NavItem: React.FC<NavItemProps> = ({
       name: 'Registration',
       routeName: 'register',
       href: '/register',
-    },
-    {
-      name: 'Permission',
-      routeName: 'permissions',
-      href: '/permissions',
-    },
+    }
   ]);
 
   return (
