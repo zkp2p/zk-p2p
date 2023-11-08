@@ -12,6 +12,11 @@ export const abi = [
         "type": "address"
       },
       {
+        "internalType": "contract INullifierRegistry",
+        "name": "_nullifierRegistry",
+        "type": "address"
+      },
+      {
         "internalType": "string",
         "name": "_emailFromAddress",
         "type": "string"
@@ -67,7 +72,7 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "getVenmoMailserverKeyHash",
+    "name": "getMailserverKeyHash",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -79,19 +84,26 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isEmailNullified",
+    "inputs": [],
+    "name": "mailserverKeyHashAdapter",
     "outputs": [
       {
-        "internalType": "bool",
+        "internalType": "contract IKeyHashAdapter",
         "name": "",
-        "type": "bool"
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nullifierRegistry",
+    "outputs": [
+      {
+        "internalType": "contract INullifierRegistry",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -130,9 +142,9 @@ export const abi = [
             "type": "uint256[2]"
           },
           {
-            "internalType": "uint256[10]",
+            "internalType": "uint256[12]",
             "name": "signals",
-            "type": "uint256[10]"
+            "type": "uint256[12]"
           }
         ],
         "internalType": "struct ISendProcessor.SendProof",
@@ -155,6 +167,11 @@ export const abi = [
       {
         "internalType": "bytes32",
         "name": "offRamperIdHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "onRamperIdHash",
         "type": "bytes32"
       },
       {
@@ -203,11 +220,11 @@ export const abi = [
     "inputs": [
       {
         "internalType": "contract IKeyHashAdapter",
-        "name": "_venmoMailserverKeyHashAdapter",
+        "name": "_mailserverKeyHashAdapter",
         "type": "address"
       }
     ],
-    "name": "setVenmoMailserverKeyHashAdapter",
+    "name": "setMailserverKeyHashAdapter",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -223,19 +240,6 @@ export const abi = [
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "venmoMailserverKeyHashAdapter",
-    "outputs": [
-      {
-        "internalType": "contract IKeyHashAdapter",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -256,9 +260,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[10]",
+        "internalType": "uint256[12]",
         "name": "_pubSignals",
-        "type": "uint256[10]"
+        "type": "uint256[12]"
       }
     ],
     "name": "verifyProof",

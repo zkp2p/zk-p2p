@@ -4,16 +4,20 @@ import { OnRamperIntent } from '../Deposits/types'
 
 
 interface OnRamperIntentsValues {
-  currentIntentHash: string | null;
   currentIntent: OnRamperIntent | null;
+  currentIntentHash: string | null;
   refetchIntentHash: (() => void) | null;
+  lastOnRampTimestamp: bigint | null;
+  refetchLastOnRampTimestamp: (() => void) | null;
   shouldFetchIntentHash: boolean;
 }
 
 const defaultValues: OnRamperIntentsValues = {
-  currentIntentHash: null,
   currentIntent: null,
+  currentIntentHash: null,
   refetchIntentHash: null,
+  lastOnRampTimestamp: null,
+  refetchLastOnRampTimestamp: null,
   shouldFetchIntentHash: false
 };
 

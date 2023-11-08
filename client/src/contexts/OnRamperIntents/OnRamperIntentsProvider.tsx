@@ -2,9 +2,8 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
-import { esl, ZERO_ADDRESS } from '@helpers/constants'
+import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
-import useRegistration from '@hooks/useRegistration'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity'
 
@@ -21,7 +20,6 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { registrationHash } = useRegistration()
   const { rampAddress, rampAbi } = useSmartContracts()
   const { depositStore } = useLiquidity()
 
@@ -31,6 +29,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
   const [currentIntent, setCurrentIntent] = useState<OnRamperIntent | null>(null);
+  const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
 
   const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
   const [shouldFetchIntent, setShouldFetchIntent] = useState<boolean>(false);
@@ -39,7 +38,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  // mapping(bytes32 => bytes32) public venmoIdIntent;
+  // getVenmoIdCurrentIntentHash(address _account) external view returns (bytes32)
   const {
     data: intentHashRaw,
     // isLoading: isFetchIntentHashLoading,
@@ -48,9 +47,23 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
-    functionName: 'venmoIdIntent',
+    functionName: 'getVenmoIdCurrentIntentHash',
     args: [
-      registrationHash
+      loggedInEthereumAddress
+    ],
+    enabled: shouldFetchIntentHash,
+  })
+
+  // function getLastOnRampTimestamp(address _account) external view returns (uint256)
+  const {
+    data: lastOnRampTimeStampRaw,
+    refetch: refetchLastOnRampTimestamp,
+  } = useContractRead({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'getLastOnRampTimestamp',
+    args: [
+      loggedInEthereumAddress
     ],
     enabled: shouldFetchIntentHash,
   })
@@ -94,9 +107,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchIntentHash_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking registrationHash: ', registrationHash);
 
-    if (isLoggedIn && loggedInEthereumAddress && registrationHash) {
+    if (isLoggedIn && loggedInEthereumAddress) {
       esl && console.log('shouldFetchIntentHash_2');
 
       setShouldFetchIntentHash(true);
@@ -108,7 +120,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       setCurrentIntentHash(null);
       setCurrentIntent(null)
     }
-  }, [isLoggedIn, loggedInEthereumAddress, registrationHash]);
+  }, [isLoggedIn, loggedInEthereumAddress]);
 
   useEffect(() => {
     esl && console.log('shouldFetchIntent_1');
@@ -143,6 +155,21 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
+
+  useEffect(() => {
+    esl && console.log('lastOnRampTimeStampRaw_1');
+    esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
+  
+    if (lastOnRampTimeStampRaw || lastOnRampTimeStampRaw === ZERO) {
+      esl && console.log('lastOnRampTimeStampRaw_2');
+
+      setLastOnRampTimestamp(lastOnRampTimeStampRaw as bigint);
+    } else {
+      esl && console.log('lastOnRampTimeStampRaw_3');
+
+      setLastOnRampTimestamp(null);
+    }
+  }, [lastOnRampTimeStampRaw]);
 
   useEffect(() => {
     esl && console.log('intentRaw_1');
@@ -187,6 +214,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         currentIntentHash,
         currentIntent,
         refetchIntentHash,
+        lastOnRampTimestamp,
+        refetchLastOnRampTimestamp,
         shouldFetchIntentHash
       }}
     >

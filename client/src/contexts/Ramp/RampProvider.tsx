@@ -24,6 +24,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
 
   const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
   const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
+  const [onRampCooldownPeriod, setOnRampCooldownPeriod] = useState<bigint | null>(null);
 
   const [shouldFetchRampState, setShouldFetchRampState] = useState<boolean>(false);
 
@@ -55,6 +56,19 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: rampAddress,
     abi: rampAbi,
     functionName: 'depositCounter',
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
+  })
+
+  // uint256 public onRampCooldownPeriod;
+  const {
+    data: onRampCooldownPeriodRaw,
+    // isLoading: isonRampCooldownPeriodLoading,
+    // isError: isonRampCooldownPeriodError,
+  } = useContractRead({
+    address: rampAddress,
+    abi: rampAbi,
+    functionName: 'onRampCooldownPeriod',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
   })
@@ -113,11 +127,27 @@ const RampProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounterRaw]);
 
+  useEffect(() => {
+    esl && console.log('onRampCooldownPeriodRaw_1');
+    esl && console.log('checking onRampCooldownPeriodRaw: ', onRampCooldownPeriodRaw);
+  
+    if (onRampCooldownPeriodRaw || onRampCooldownPeriodRaw === ZERO) { // BigInt(0) is falsy)
+      esl && console.log('onRampCooldownPeriodRaw_2');
+      
+      setOnRampCooldownPeriod(onRampCooldownPeriodRaw as bigint);
+    } else {
+      esl && console.log('onRampCooldownPeriodRaw_3');
+      
+      setOnRampCooldownPeriod(null);
+    }
+  }, [onRampCooldownPeriodRaw]);
+
   return (
     <RampContext.Provider
       value={{
         minimumDepositAmount,
         depositCounter,
+        onRampCooldownPeriod,
         refetchDepositCounter,
         shouldFetchRampState
       }}

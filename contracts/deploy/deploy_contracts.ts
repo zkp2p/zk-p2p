@@ -3,7 +3,7 @@ import "module-alias/register";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
-import { ONE_DAY_IN_SECONDS } from "@utils/constants";
+import { ONE_DAY_IN_SECONDS, THREE_MINUTES_IN_SECONDS } from "@utils/constants";
 
 const circom = require("circomlibjs");
 
@@ -26,7 +26,7 @@ const INTENT_EXPIRATION_PERIOD = {
   "goerli": ONE_DAY_IN_SECONDS,
 };
 const ONRAMP_COOL_DOWN_PERIOD = {
-  "localhost": ONE_DAY_IN_SECONDS,
+  "localhost": THREE_MINUTES_IN_SECONDS,
   "goerli": ONE_DAY_IN_SECONDS,
 };
 const SUSTAINABILITY_FEE = {

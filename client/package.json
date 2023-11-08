@@ -21,7 +21,7 @@
     "@types/styled-components": "^5.1.24",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
-    "@zkp2p/circuits-circom": "^0.0.8",
+    "@zkp2p/circuits-circom": "^0.0.10-rc1",
     "addressparser": "^1.0.1",
     "atob": "^2.1.2",
     "babel-eslint": "^10.1.0",
