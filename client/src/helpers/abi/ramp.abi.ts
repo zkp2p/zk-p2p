@@ -20,6 +20,31 @@ export const abi = [
         "internalType": "uint256",
         "name": "_minDepositAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxOnRampAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_intentExpirationPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_onRampCooldownPeriod",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_sustainabilityFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_sustainabilityFeeRecipient",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -123,6 +148,19 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "intentExpirationPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "IntentExpirationPeriodSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "bytes32",
         "name": "intentHash",
@@ -150,6 +188,12 @@ export const abi = [
         "indexed": false,
         "internalType": "uint256",
         "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "feeAmount",
         "type": "uint256"
       }
     ],
@@ -224,6 +268,19 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "maxOnRampAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MaxOnRampAmountSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "minDepositAmount",
         "type": "uint256"
       }
@@ -274,6 +331,19 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "onRampCooldownPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "OnRampCooldownPeriodSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -287,6 +357,32 @@ export const abi = [
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "feeRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "SustainabilityFeeRecipientUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "SustainabilityFeeUpdated",
     "type": "event"
   },
   {
@@ -718,6 +814,44 @@ export const abi = [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "getLastOnRampTimestamp",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "getVenmoIdCurrentIntentHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IReceiveProcessor",
         "name": "_receiveProcessor",
         "type": "address"
@@ -736,6 +870,19 @@ export const abi = [
     "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "intentExpirationPeriod",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -803,6 +950,19 @@ export const abi = [
   },
   {
     "inputs": [],
+    "name": "maxOnRampAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "minDepositAmount",
     "outputs": [
       {
@@ -863,6 +1023,19 @@ export const abi = [
     "name": "onRamp",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "onRampCooldownPeriod",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1010,11 +1183,50 @@ export const abi = [
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_intentExpirationPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setIntentExpirationPeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxOnRampAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMaxOnRampAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_minDepositAmount",
         "type": "uint256"
       }
     ],
     "name": "setMinDepositAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_onRampCooldownPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setOnRampCooldownPeriod",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1062,6 +1274,32 @@ export const abi = [
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSustainabilityFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_feeRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "setSustainabilityFeeRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_depositId",
         "type": "uint256"
       },
@@ -1079,6 +1317,32 @@ export const abi = [
     "name": "signalIntent",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sustainabilityFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sustainabilityFeeRecipient",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1102,25 +1366,6 @@ export const abi = [
         "internalType": "contract IERC20",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "venmoIdIntent",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
