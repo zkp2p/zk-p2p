@@ -17,7 +17,8 @@ export const Swap: React.FC<{}> = (props) => {
   const {
     currentIntentHash,
     refetchIntentHash,
-    shouldFetchIntentHash
+    shouldFetchIntentHash,
+    refetchLastOnRampTimestamp
   } = useOnRamperIntents();
 
   const {
@@ -38,6 +39,10 @@ export const Swap: React.FC<{}> = (props) => {
   useEffect(() => {
     if (shouldFetchIntentHash) {
       refetchIntentHash?.();
+    }
+
+    if (shouldFetchIntentHash) {
+      refetchLastOnRampTimestamp?.();
     }
 
     if (shouldFetchRampState) {
