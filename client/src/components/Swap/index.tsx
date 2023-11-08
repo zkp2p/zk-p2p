@@ -36,6 +36,7 @@ const QuoteState = {
   EXCEEDS_ORDER_COUNT: 'exceeds-order-count',
   EXCEEDS_MAX_SIZE: 'exceeds-max-size',
   INSUFFICIENT_LIQUIDITY: 'insufficient-liquidity',
+  ORDER_COOLDOWN_PERIOD: 'order-cooldown-period',
   BLOCKED_BY_DEPOSITOR: 'blocked-by-depositor',
   SUCCESS: 'success',
 }
@@ -56,10 +57,10 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { usdcBalance } = useBalances();
   const { isRegistered } = useRegistration();
-  const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash } = useOnRamperIntents();
+  const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash, lastOnRampTimestamp, refetchLastOnRampTimestamp } = useOnRamperIntents();
   const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts();
-  const { refetchDepositCounter, shouldFetchRampState } = useRampState();
+  const { refetchDepositCounter, shouldFetchRampState, onRampCooldownPeriod } = useRampState();
   
   /*
    * State
@@ -158,6 +159,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
       console.log('writeSubmitIntentAsync successful: ', data);
       
       refetchIntentHash?.();
+      refetchLastOnRampTimestamp?.();
     },
   });
 
@@ -196,7 +198,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   }, [shouldFetchRampState, refetchDepositCounter]);
 
   useEffect(() => {
-    const fetchBestDepositForAmount = async () => {
+    const fetchUsdAmountToSendAndVerifyOrder = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
       const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
@@ -217,25 +219,28 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
           if (doesNotHaveOpenIntent) {
-            if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
-              setQuoteState(QuoteState.EXCEEDS_MAX_SIZE);
 
-              setShouldConfigureSignalIntentWrite(false);
-            } else {
-              setQuoteState(QuoteState.SUCCESS);
+            const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
+            const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
+            if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
+              const onRampCooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+              const onRampCooldownElapsed = Date.now() >= onRampCooldownEnd;
+  
+              if (!onRampCooldownElapsed) {
+                updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
+              } else if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
+                updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
+              } else {
+                setQuoteState(QuoteState.SUCCESS);
 
-              setShouldConfigureSignalIntentWrite(true);
+                setShouldConfigureSignalIntentWrite(true);
+              }
             }
           } else {
-            setQuoteState(QuoteState.EXCEEDS_ORDER_COUNT);
-
-            setShouldConfigureSignalIntentWrite(false);
+            updateQuoteErrorState(QuoteState.EXCEEDS_ORDER_COUNT);
           }
         } else {
-          setQuoteState(QuoteState.INSUFFICIENT_LIQUIDITY);
-
-          setShouldConfigureSignalIntentWrite(false);
-
+          updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
           setCurrentQuote(prevState => ({
             ...prevState,
             fiatToSend: '',
@@ -243,10 +248,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
           }));
         }
       } else {
-        setQuoteState(QuoteState.DEFAULT);
-
-        setShouldConfigureSignalIntentWrite(false);
-
+        updateQuoteErrorState(QuoteState.DEFAULT);
         setCurrentQuote(prevState => ({
           ...prevState,
           fiatToSend: '',
@@ -255,8 +257,15 @@ const SwapModal: React.FC<SwapModalProps> = ({
       }
     };
   
-    fetchBestDepositForAmount();
-  }, [currentQuote.requestedUSDC, getBestDepositForAmount, currentIntentHash]);
+    fetchUsdAmountToSendAndVerifyOrder();
+  }, [
+      currentQuote.requestedUSDC,
+      getBestDepositForAmount,
+      currentIntentHash,
+      lastOnRampTimestamp,
+      onRampCooldownPeriod,
+    ]
+  );
 
   /* 
    * Handlers
@@ -269,6 +278,14 @@ const SwapModal: React.FC<SwapModalProps> = ({
   /*
    * Helpers
    */
+
+  const updateQuoteErrorState = (error: any) => {
+    console.log('updateQuoteErrorState: ', error)
+
+    setQuoteState(error);
+
+    setShouldConfigureSignalIntentWrite(false);
+  }
 
   function isValidInput(value) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
@@ -285,6 +302,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
 
   const getButtonText = () => {
     switch (quoteState) {
+      case QuoteState.ORDER_COOLDOWN_PERIOD:
+        return 'Order cooldown not elapsed';
+      
       case QuoteState.EXCEEDS_ORDER_COUNT:
         return 'Max one open order';
 

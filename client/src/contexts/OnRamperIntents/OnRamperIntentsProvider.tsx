@@ -160,7 +160,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('lastOnRampTimeStampRaw_1');
     esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
   
-    if (lastOnRampTimeStampRaw !== ZERO) {
+    if (lastOnRampTimeStampRaw || lastOnRampTimeStampRaw === ZERO) {
       esl && console.log('lastOnRampTimeStampRaw_2');
 
       setLastOnRampTimestamp(lastOnRampTimeStampRaw as bigint);
