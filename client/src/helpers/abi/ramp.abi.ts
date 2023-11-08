@@ -852,11 +852,6 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IReceiveProcessor",
-        "name": "_receiveProcessor",
-        "type": "address"
-      },
-      {
         "internalType": "contract IRegistrationProcessor",
         "name": "_registrationProcessor",
         "type": "address"
@@ -1015,9 +1010,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[10]",
+        "internalType": "uint256[12]",
         "name": "_signals",
-        "type": "uint256[10]"
+        "type": "uint256[12]"
       }
     ],
     "name": "onRamp",
@@ -1039,34 +1034,6 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256[2]",
-        "name": "_a",
-        "type": "uint256[2]"
-      },
-      {
-        "internalType": "uint256[2][2]",
-        "name": "_b",
-        "type": "uint256[2][2]"
-      },
-      {
-        "internalType": "uint256[2]",
-        "name": "_c",
-        "type": "uint256[2]"
-      },
-      {
-        "internalType": "uint256[9]",
-        "name": "_signals",
-        "type": "uint256[9]"
-      }
-    ],
-    "name": "onRampWithReceiveEmail",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -1085,19 +1052,6 @@ export const abi = [
     "outputs": [
       {
         "internalType": "contract IPoseidon",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "receiveProcessor",
-    "outputs": [
-      {
-        "internalType": "contract IReceiveProcessor",
         "name": "",
         "type": "address"
       }
@@ -1227,19 +1181,6 @@ export const abi = [
       }
     ],
     "name": "setOnRampCooldownPeriod",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IReceiveProcessor",
-        "name": "_receiveProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "setReceiveProcessor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
