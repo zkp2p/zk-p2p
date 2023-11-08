@@ -17,14 +17,4 @@ export const contractAddresses: Contracts = {
     "sendProcessor": '0x0a7537A73079C45f64623D213Cd284E9b55Fe0b7',
     "registrationProcessor": '0x8D54b20922aEA549224D61501225a0DaB5bC3839',
   },
-  "goerli_legacy": {
-    "ramp": '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
-    "fusdc": '0xbba5c9bd54a4293f4261b38e5ad41820ec41ed86',
-    "sendProcessor": '0x951E072a8eD9ad9F8dCe89a3Be274a96966097Bb',
-    "registrationProcessor": '0xAf0196f22a1383B779E3f833AD35BFf38722c8AD',
-  },
-  "optimism": {
-    "ramp": '',
-    "fusdc": '',
-  },
 };
