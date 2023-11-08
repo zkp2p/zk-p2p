@@ -12,9 +12,21 @@ export const contractAddresses: Contracts = {
     "registrationProcessor": '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
   },
   "goerli": {
+    "ramp": '0x3AcFEeFF0d80929f00143490af1ed7bf2836fcBD',
+    "fusdc": '0x4EA8130c89625AcFecdcac6CA2008967E31992e3',
+    "sendProcessor": '0x8f2Bdd3343cAa489696dFDBCae7262cEb6C247be',
+    "registrationProcessor": '0xbCC63C904898063fB04014189Ec1fB1628F7B6E1',
+  },
+  "goerli_0_0_8": {
     "ramp": '0x1A2dcc7AfC7Bf09bE718E54466aA18166C00E4FD',
     "fusdc": '0x0a5A6f847899e185a14e54266036CE8260142659',
     "sendProcessor": '0x0a7537A73079C45f64623D213Cd284E9b55Fe0b7',
     "registrationProcessor": '0x8D54b20922aEA549224D61501225a0DaB5bC3839',
+  },
+  "goerli_0_0_7": {
+    "ramp": '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
+    "fusdc": '0xbba5c9bd54a4293f4261b38e5ad41820ec41ed86',
+    "sendProcessor": '0x951E072a8eD9ad9F8dCe89a3Be274a96966097Bb',
+    "registrationProcessor": '0xAf0196f22a1383B779E3f833AD35BFf38722c8AD',
   },
 };
