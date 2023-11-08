@@ -2,7 +2,7 @@ import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
-import { esl, ZERO_ADDRESS } from '@helpers/constants'
+import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/useLiquidity'
@@ -160,7 +160,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('lastOnRampTimeStampRaw_1');
     esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
   
-    if (lastOnRampTimeStampRaw !== ZERO_ADDRESS) {
+    if (lastOnRampTimeStampRaw !== ZERO) {
       esl && console.log('lastOnRampTimeStampRaw_2');
 
       setLastOnRampTimestamp(lastOnRampTimeStampRaw as bigint);

@@ -6,13 +6,15 @@ interface RampValues {
   depositCounter: bigint | null;
   refetchDepositCounter: (() => void) | null;
   shouldFetchRampState: boolean;
+  onRampCooldownPeriod: bigint | null;
 }
 
 const defaultValues: RampValues = {
   minimumDepositAmount: null,
   depositCounter: null,
   refetchDepositCounter: null,
-  shouldFetchRampState: false
+  shouldFetchRampState: false,
+  onRampCooldownPeriod: null
 };
 
 const RampContext = createContext<RampValues>(defaultValues)
