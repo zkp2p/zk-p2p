@@ -11,7 +11,7 @@ import { ether, usdc } from "../utils/common/units";
 
 const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-const FROM_EMAIL = "venmo@venmo.com".padEnd(21, "\0");
+const FROM_EMAIL = "venmo@venmo.com";
 
 const MIN_DEPOSIT_AMOUNT = {
   "localhost": usdc(20),
