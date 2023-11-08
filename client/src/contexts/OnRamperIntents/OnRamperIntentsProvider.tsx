@@ -1,11 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types'
-import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
-import useAccount from '@hooks/useAccount'
+import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types';
+import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants';
+import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLiquidity from '@hooks/useLiquidity'
+import useLiquidity from '@hooks/useLiquidity';
+import useRegistration from '@hooks/useRegistration';
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -20,6 +21,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
+  const { isRegistered } = useRegistration();
   const { rampAddress, rampAbi } = useSmartContracts()
   const { depositStore } = useLiquidity()
 
@@ -107,8 +109,9 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchIntentHash_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking isRegistered: ', isRegistered);
 
-    if (isLoggedIn && loggedInEthereumAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
       esl && console.log('shouldFetchIntentHash_2');
 
       setShouldFetchIntentHash(true);
@@ -120,7 +123,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
       setCurrentIntentHash(null);
       setCurrentIntent(null)
     }
-  }, [isLoggedIn, loggedInEthereumAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
     esl && console.log('shouldFetchIntent_1');
