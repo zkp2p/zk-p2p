@@ -12,10 +12,10 @@ export const contractAddresses: Contracts = {
     "registrationProcessor": '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
   },
   "goerli": {
-    "ramp": '',
-    "fusdc": '',
-    "sendProcessor": '',
-    "registrationProcessor": '',
+    "ramp": '0x3AcFEeFF0d80929f00143490af1ed7bf2836fcBD',
+    "fusdc": '0x4EA8130c89625AcFecdcac6CA2008967E31992e3',
+    "sendProcessor": '0x8f2Bdd3343cAa489696dFDBCae7262cEb6C247be',
+    "registrationProcessor": '0xbCC63C904898063fB04014189Ec1fB1628F7B6E1',
   },
   "goerli_0_0_8": {
     "ramp": '0x1A2dcc7AfC7Bf09bE718E54466aA18166C00E4FD',
