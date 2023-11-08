@@ -3,11 +3,10 @@
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { Bytes32ArrayUtils } from "./lib/Bytes32ArrayUtils.sol";
-import { Uint256ArrayUtils } from "./lib/Uint256ArrayUtils.sol";
+import { Bytes32ArrayUtils } from "./external/Bytes32ArrayUtils.sol";
+import { Uint256ArrayUtils } from "./external/Uint256ArrayUtils.sol";
 
 import { IPoseidon } from "./interfaces/IPoseidon.sol";
-import { IReceiveProcessor } from "./interfaces/IReceiveProcessor.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
 
@@ -135,7 +134,6 @@ contract Ramp is Ownable {
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
     IPoseidon public immutable poseidon;                            // Poseidon hashing contract
-    IReceiveProcessor public receiveProcessor;                      // Address of receive processor contract verifies onRampWithReceiveEmail emails
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
     ISendProcessor public sendProcessor;                            // Address of send processor contract, verifies onRamp emails
 
@@ -186,12 +184,10 @@ contract Ramp is Ownable {
     /**
      * @notice Initialize Ramp with the addresses of the Processors
      *
-     * @param _receiveProcessor         Receive processor address
      * @param _registrationProcessor    Registration processor address
      * @param _sendProcessor            Send processor address
      */
     function initialize(
-        IReceiveProcessor _receiveProcessor,
         IRegistrationProcessor _registrationProcessor,
         ISendProcessor _sendProcessor
     )
@@ -200,7 +196,6 @@ contract Ramp is Ownable {
     {
         require(!isInitialized, "Already initialized");
 
-        receiveProcessor = _receiveProcessor;
         registrationProcessor = _registrationProcessor;
         sendProcessor = _sendProcessor;
 
@@ -359,43 +354,6 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice ONLY OFF-RAMPER: Must be submitted by off-ramper. Upon submission the proof is validated, intent is removed,
-     * and deposit state is updated. USDC is transferred to the on-ramper and the defined convenience fee is sent to the off-
-     * ramper. THE OFF-RAMPER MUST VALIDATE THAT THE CORRECT AMOUNT OF USD WAS RECEIVED OFF-CHAIN, there is no validation for
-     * that on-chain.
-     *
-     * @param _a        Parameter of zk proof
-     * @param _b        Parameter of zk proof
-     * @param _c        Parameter of zk proof
-     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
-     *                  nullifier, intentHash
-     */
-    function onRampWithReceiveEmail(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[9] memory _signals
-    )
-        external
-    {
-        (
-            Intent memory intent,
-            bytes32 intentHash
-        ) = _verifyOnRampWithReceiveEmailProof(_a, _b, _c, _signals);
-
-        Deposit storage deposit = deposits[intent.deposit];
-
-        require(deposit.depositor == msg.sender, "Sender must be the account owner");
-
-        _pruneIntent(deposit, intentHash);
-
-        deposit.outstandingIntentAmount -= intent.amount;
-        _closeDepositIfNecessary(intent.deposit, deposit);
-
-        _transferFunds(intentHash, intent);
-    }
-
-    /**
      * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
      * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
@@ -409,7 +367,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[10] memory _signals
+        uint256[12] memory _signals
     )
         external
     {
@@ -507,16 +465,6 @@ contract Ramp is Ownable {
     function setSendProcessor(ISendProcessor _sendProcessor) external onlyOwner {
         sendProcessor = _sendProcessor;
         emit NewSendProcessorSet(address(_sendProcessor));
-    }
-
-    /**
-     * @notice GOVERNANCE ONLY: Updates the receive processor address used for validating and interpreting zk proofs.
-     *
-     * @param _receiveProcessor   New receive proccesor address
-     */
-    function setReceiveProcessor(IReceiveProcessor _receiveProcessor) external onlyOwner {
-        receiveProcessor = _receiveProcessor;
-        emit NewReceiveProcessorSet(address(_receiveProcessor));
     }
 
     /**
@@ -735,8 +683,6 @@ contract Ramp is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
 
-        require(intent.intentTimestamp != 0, "Intent does not exist");
-
         delete globalAccount[accounts[intent.onRamper].venmoIdHash].currentIntentHash;
         delete intents[_intentHash];
         _deposit.intentHashes.removeStorage(_intentHash);
@@ -775,41 +721,6 @@ contract Ramp is Ownable {
     }
 
     /**
-     * @notice Validate venmo receive payment email and check that it hasn't already been used (done on ReciveProcessor).
-     * Additionally, we validate that the onRamperIdHash matches the one from the specified intent and indicate if the 
-     * convenience reward should be distributed.
-     */
-    function _verifyOnRampWithReceiveEmailProof(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[9] memory _signals
-    )
-        internal
-        returns(Intent memory, bytes32)
-    {
-        (
-            uint256 timestamp,
-            bytes32 onRamperIdHash,
-            bytes32 intentHash
-        ) = receiveProcessor.processProof(
-            IReceiveProcessor.ReceiveProof({
-                a: _a,
-                b: _b,
-                c: _c,
-                signals: _signals
-            })
-        );
-
-        Intent memory intent = intents[intentHash];
-
-        require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match or intent does not exist");
-
-        return (intent, intentHash);
-    }
-
-    /**
      * @notice Validate venmo send payment email and check that it hasn't already been used (done on SendProcessor).
      * Additionally, we validate that the offRamperIdHash matches the one from the specified intent and that enough
      * was paid off-chain inclusive of the conversionRate.
@@ -818,7 +729,7 @@ contract Ramp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[10] memory _signals
+        uint256[12] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -827,6 +738,7 @@ contract Ramp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperIdHash,
+            bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
             ISendProcessor.SendProof({
@@ -840,8 +752,10 @@ contract Ramp is Ownable {
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
 
+        require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accounts[deposit.depositor].venmoIdHash == offRamperIdHash, "Offramper id does not match");
+        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);

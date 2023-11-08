@@ -7,9 +7,8 @@ const circom = require("circomlibjs");
 import { 
   Ramp,
   ManagedKeyHashAdapter,
+  StringConversionUtilsMock,
   USDCMock,
-  VenmoReceiveProcessorMock,
-  VenmoReceiveProcessor,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
@@ -17,14 +16,13 @@ import {
   NullifierRegistry
 } from "./contracts";
 import { Ramp__factory } from "../typechain/factories/contracts";
-import { 
+import {
+  StringConversionUtilsMock__factory,
   USDCMock__factory,
-  VenmoReceiveProcessorMock__factory,
   VenmoRegistrationProcessorMock__factory,
   VenmoSendProcessorMock__factory
 } from "../typechain/factories/contracts/mocks";
 import {
-  VenmoReceiveProcessor__factory,
   VenmoRegistrationProcessor__factory,
   VenmoSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
@@ -80,20 +78,6 @@ export default class DeployHelper {
     );
   }
 
-  public async deployVenmoReceiveProcessor(
-    ramp: Address,
-    keyHashAdapter: Address,
-    nullifierRegistry: Address,
-    emailFromAddress: string,
-  ): Promise<VenmoReceiveProcessor> {
-    return await new VenmoReceiveProcessor__factory(this._deployerSigner).deploy(
-      ramp,
-      keyHashAdapter,
-      nullifierRegistry,
-      emailFromAddress
-    );
-  }
-
   public async deployVenmoSendProcessor(
     ramp: Address,
     keyHashAdapter: Address,
@@ -116,10 +100,6 @@ export default class DeployHelper {
     return await new NullifierRegistry__factory(this._deployerSigner).deploy();
   }
 
-  public async deployVenmoReceiveProcessorMock(): Promise<VenmoReceiveProcessorMock> {
-    return await new VenmoReceiveProcessorMock__factory(this._deployerSigner).deploy();
-  }
-
   public async deployVenmoSendProcessorMock(): Promise<VenmoSendProcessorMock> {
     return await new VenmoSendProcessorMock__factory(this._deployerSigner).deploy();
   }
@@ -136,5 +116,9 @@ export default class DeployHelper {
     );
 
     return await contract.deploy();
+  }
+
+  public async deployStringConversionUtilsMock(): Promise<StringConversionUtilsMock> {
+    return await new StringConversionUtilsMock__factory(this._deployerSigner).deploy();
   }
 }

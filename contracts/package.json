@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2",
+    "@zk-email/contracts": "^3.2.0",
     "circomlibjs": "^0.1.7",
     "dotenv": "^16.3.1",
     "ethereum-waffle": "^4.0.10"

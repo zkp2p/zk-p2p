@@ -1,18 +1,18 @@
 //SPDX-License-Identifier: MIT
 
+import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
+
 import { BaseProcessor } from "./BaseProcessor.sol";
 import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
-import { ProofParsingUtils } from "../lib/ProofParsingUtils.sol";
 
 pragma solidity ^0.8.18;
 
 contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, BaseProcessor {
 
-    using ProofParsingUtils for string;
-    using ProofParsingUtils for uint256[];
+    using StringUtils for uint256[];
 
     /* ============ Constructor ============ */
     constructor(
@@ -56,6 +56,6 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToBytes(_to - _from);
+        return signalArray.convertPackedBytesToString();
     }
 }
