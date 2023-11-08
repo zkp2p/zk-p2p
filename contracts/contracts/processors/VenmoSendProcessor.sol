@@ -61,7 +61,7 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
         // Check if email has been used previously, if not nullify it so it can't be used again
         _validateAndAddNullifier(bytes32(_proof.signals[10]));
 
-        // Signals [9] is intentHash
+        // Signals [11] is intentHash
         intentHash = bytes32(_proof.signals[11]);
     }
 

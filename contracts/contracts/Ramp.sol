@@ -683,8 +683,6 @@ contract Ramp is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
 
-        require(intent.intentTimestamp != 0, "Intent does not exist");
-
         delete globalAccount[accounts[intent.onRamper].venmoIdHash].currentIntentHash;
         delete intents[_intentHash];
         _deposit.intentHashes.removeStorage(_intentHash);
