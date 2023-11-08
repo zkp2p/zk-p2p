@@ -57,7 +57,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { isLoggedIn } = useAccount();
   const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
   const { minimumDepositAmount } = useRampState()
-  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp } = useBalances()
+  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances()
   const { refetchDeposits } = useDeposits()
   const { extractedVenmoId, registrationHash } = useRegistration();
 
@@ -139,6 +139,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       console.log('writeSubmitApproveAsync successful: ', data);
       
       refetchUsdcApprovalToRamp?.();
+      refetchUsdcBalance?.();
     },
   });
 
