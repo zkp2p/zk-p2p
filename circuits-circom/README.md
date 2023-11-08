@@ -49,13 +49,14 @@ Main circuit that onramper generates a proof of payment if offramper fails to ge
 
 1. Verifies the DKIM signature (RSA, SHA256)
 2. Extracts from email, time of payment and amount for the Venmo transaction from the header
-3. Extract the payee ID from the body
+3. Extract the payee ID and payer ID from the body
 4. Houses nullifier to prevent replay attacks
 5. Contains other order information to tie a proof to an order ID to prevent frontrunning
 
 | Regex Config       | Description                                                      |
 | ------------------ | ---------------------------------------------------------------- |
 | Offramper ID Regex | Extracts the Venmo payee ID from the payment sent email body to ensure the correct offramper is being paid    |
+| Onramper ID Regex | Extracts the Venmo payer ID from the payment sent email body to ensure the correct onramper sent the payment. This is to prevent man-in-the-middle attacks if onramper email is revealed to a 3rd party   |
 | Send Amount Regex       | Extracts $ amount sent from from venmo payment sent email header to ensure its a Send email type and amount is greater than requested |
 | Timestamp Regex    | Extracts timestamp from venmo payment sent email header in order to ensure that email payment must be after on-chain intent timestamp |
 | From Email Regex | Extracts `from` email in venmo payment received email header to ensure that it is sent from venmo@venmo.com and not another Venmo email |
@@ -77,8 +78,8 @@ Main circuit that both onramper and offramper must generate a proof prior to usi
 
 ## Regexes
 
-### Venmo Payee ID
-The Venmo Payee ID regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains ~330 bytes of HTML to prevent custom injection and index shifting attacks. Regex extracts after `user_id=3D`
+### Venmo Payee and Payer ID
+The Venmo Payee ID regex is generated using [zk-regex](https://github.com/zkemail/zk-regex) which constrains ~330 bytes of HTML to prevent custom injection and index shifting attacks. Regex extracts 2 values: first one after `user_id=3D` and second one after `&actor_id=3D`
 
 ```json
 {
@@ -105,7 +106,15 @@ The Venmo Payee ID regex is generated using [zk-regex](https://github.com/zkemai
     },
     {
       "is_public": false,
-      "regex_def": "&actor_id=3D(0|1|2|3|4|5|6|7|8|9)+\">\r\n"
+      "regex_def": "&actor_id=3D"
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": "\">\r\n"
     },
     {
       "is_public": false,
@@ -221,7 +230,7 @@ The Venmo Send Amount regex is generated using [zk-regex](https://github.com/zke
 
 | Regex Template | Description                                                                                                                  |
 |----------------|------------------------------------------------------------------------------------------------------------------------------|
-| VenmoPayeeID   | Extracts the Venmo payee ID from Send email types                                                                |
+| VenmoPayeeID   | Extracts the Venmo payee ID and payer ID from Send email types                                                                |
 | VenmoActorId   | Extracts the actor ID (my ID) from Send email types |
 | VenmoSendAmount | Extracts the amount from a Send email type |
 | VenmoTimestamp | Extracts the timestamp from Venmo emails |
