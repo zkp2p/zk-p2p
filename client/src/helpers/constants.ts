@@ -9,6 +9,7 @@ export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 
 export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
 export const USDC_UNITS = BigInt(1_000_000); // 6
+export const PENNY_IN_USDC_UNITS = BigInt(10_000); // 6
 
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:

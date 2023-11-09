@@ -5,7 +5,7 @@ import {
   IndicativeQuote,
   StoredDeposit
 } from "../Deposits/types";
-import { PRECISION } from "@helpers/constants";
+import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
 
 
@@ -34,7 +34,14 @@ export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): 
 };
 
 export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint, conversionRate: bigint): bigint => {
-  return requestedOnRampInputAmount * PRECISION / conversionRate;
+  const rawAmount = requestedOnRampInputAmount * PRECISION / conversionRate;
+  const remainder = rawAmount % PENNY_IN_USDC_UNITS;
+
+  if (remainder > 0) {
+    return rawAmount - remainder + PENNY_IN_USDC_UNITS;
+  } else {
+    return rawAmount;
+  }
 }
 
 export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, depositStore: StoredDeposit[]): IndicativeQuote => {
