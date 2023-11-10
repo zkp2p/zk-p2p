@@ -112,6 +112,7 @@ const NavButton = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 10;
+  padding-right: 8px;
 `;
 
 const NavDropdown = styled.div`
@@ -122,8 +123,8 @@ const NavDropdown = styled.div`
   padding: 1.75rem 1.5rem;
   background: #1B1B1B;
   position: absolute;
-  top: calc(100% + 24px);
-  right: -8px;
+  top: calc(100% + 20px);
+  right: 0;
   z-index: 20;
   gap: 0.75rem;
   color: #FFFFFF;
