@@ -399,8 +399,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             { NEW_DEPOSIT_INSTRUCTIONS }
-            <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/off-ramping" target="_blank">
-              Learn more ↗
+            <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
+              Fetch Your Venmo ID ↗
             </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>

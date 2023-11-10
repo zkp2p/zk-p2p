@@ -13,6 +13,7 @@ import {
 } from "@hooks/useGmailClient";
 import useGoogleAuth from "@hooks/useGoogleAuth";
 import { MailRow } from "./MailRow";
+import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
@@ -132,10 +133,9 @@ export const MailTable: React.FC<MailTableProps> = ({
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: "2em" }} />
             <div>
-              Sign in with Google to pull in your past Venmo transaction emails.
-              The emails never leave your browser. Read more&nbsp;
+             { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS }
               <Link
-                href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration "
+                href="https://zkp2p.gitbook.io/zkp2p/user-guides/faq#im-concerned-about-privacy-why-should-i-grant-read-access-to-my-email-inbox"
                 target="_blank"
               >
                 Privacy and Safety ↗

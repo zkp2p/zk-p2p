@@ -35,6 +35,9 @@ export const REGISTRATION_INSTRUCTIONS = `
   Your ID is hashed to conceal your identity.
 `;
 
+export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
+Sign in with Google to pull in your past Venmo transaction emails. The emails never leave your browser. Read more.
+`;
 
 /*
 * New Deposit
