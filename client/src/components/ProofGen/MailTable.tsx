@@ -9,7 +9,7 @@ import { AccessoryButton } from "@components/common/AccessoryButton";
 import {
   fetchEmailsRaw,
   fetchVenmoEmailList,
-  RawEmailResponse,
+  RawEmailResponse, 
 } from "@hooks/useGmailClient";
 import useGoogleAuth from "@hooks/useGoogleAuth";
 import { MailRow } from "./MailRow";
