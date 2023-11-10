@@ -9,6 +9,7 @@ import { LabeledSwitch } from "../common/LabeledSwitch";
 import { ThemedText } from '../../theme/text';
 import { NumberedStep } from "../common/NumberedStep";
 
+import { TextButton } from '@components/common/TextButton';
 import { INPUT_MODE_TOOLTIP, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/constants";
 import useProofGenSettings from '@hooks/useProofGenSettings';
@@ -35,7 +36,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   const {
     isInputModeDrag,
     setIsInputModeDrag,
-
+    setIsEmailModeAuth,
   } = useProofGenSettings();
 
   /*
@@ -51,6 +52,12 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   const handleEmailInputTypeChanged = (checked: boolean) => {
     if (setIsInputModeDrag) {
       setIsInputModeDrag(checked);
+    }
+  };
+
+  const handleEmailModeChanged = (checked: boolean) => {
+    if (setIsEmailModeAuth) {
+      setIsEmailModeAuth(checked);
     }
   };
 
@@ -142,7 +149,15 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         >
           Verify Email
         </Button>
+
       </ButtonContainer>
+      <LoginOrUploadButtonContainer>
+        <TextButton
+          onClick={() => handleEmailModeChanged(true)}
+          height={24}
+          title={'Or Sign in with Google'}
+        />
+      </LoginOrUploadButtonContainer>
     </Container>
   );
 };
@@ -170,4 +185,12 @@ const TitleAndEmailSwitchRowContainer = styled.div`
 const ButtonContainer = styled.div`
   display: grid;
   padding-top: 1rem;
+`;
+
+const LoginOrUploadButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  gap: 1rem;
 `;
