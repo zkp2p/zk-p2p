@@ -1,12 +1,10 @@
 import React from 'react';
 
 import { ReactComponent as DefaultTokenLogo } from '../../icons/svg/ethereum-token-logo.svg';
-import { ReactComponent as LightGithubLogo } from '../../icons/svg/light-github.svg';
 import { ReactComponent as DarkGithubLogo } from '../../icons/svg/dark-github.svg';
-import { ReactComponent as LightTwitterLogo } from '../../icons/svg/light-twitter.svg';
 import { ReactComponent as DarkTwitterLogo } from '../../icons/svg/dark-twitter.svg';
-import { ReactComponent as LightUsdcLogo } from '../../icons/svg/light-usdc.svg';
 import { ReactComponent as DarkUsdcLogo } from '../../icons/svg/dark-usdc.svg';
+import { ReactComponent as DarkTelegramLogo } from '../../icons/svg/dark-telegram.svg';
 
 import './SVGIcon.css';
 
@@ -24,24 +22,16 @@ export const SVGIcon: React.FC<SVGIconProps> = ({
 }) => {
   let Icon;
   switch (iconName) {
-    case 'light-github':
-      Icon = LightGithubLogo;
+    case 'dark-telegram':
+      Icon = DarkTelegramLogo;
       break;
 
     case 'dark-github':
       Icon = DarkGithubLogo;
       break;
 
-    case 'light-usdc':
-      Icon = LightUsdcLogo;
-      break;
-
     case 'dark-usdc':
       Icon = DarkUsdcLogo;
-      break;
-
-    case 'light-twitter':
-      Icon = LightTwitterLogo;
       break;
 
     case 'dark-twitter':

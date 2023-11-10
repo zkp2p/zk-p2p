@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
+import { MenuDropdown } from "../MenuDropdown"
+
 
 type Nav = {
   name: string;
@@ -51,6 +53,8 @@ export const NavItem: React.FC<NavItemProps> = ({
           {item.name}
         </StyledLink>
       ))}
+
+      <MenuDropdown />
     </HeaderLinksBox>
   );
 };

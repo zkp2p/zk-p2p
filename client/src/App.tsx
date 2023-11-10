@@ -12,7 +12,6 @@ import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Deposit } from "./pages/Deposit";
 import { TopNav } from "@components/layouts/TopNav";
-import { BottomNav } from "@components/layouts/BottomNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { useDevice } from "@hooks/useDevice";
 
@@ -73,10 +72,6 @@ const App = () => {
                 <Route path="/tos" element={<ExternalRedirect url={process.env.TOS_URL || ""} />} />
                 <Route element={<>Not found</>} />
               </Routes>
-            </div>
-  
-            <div className="app-footer">
-              <BottomNav />
             </div>
           </div>
         </Providers>
