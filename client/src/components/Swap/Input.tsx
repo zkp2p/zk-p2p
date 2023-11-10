@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
+import { TokenSelector } from './TokenSelector';
+
 
 interface InputProps {
   label: string;
@@ -59,9 +61,10 @@ export const Input: React.FC<InputProps> = ({
           </AccessoryLabel>
 
           {inputLabel ? (
-            <InputLabel>
-              <span>{inputLabel}</span>
-            </InputLabel>
+            // <InputLabel>
+            //   {inputLabel}
+            // </InputLabel>
+            <TokenSelector/>
           ) : null}
         </AccessoryAndInputLabelWrapper>
       </Container>
