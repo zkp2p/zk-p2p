@@ -1,5 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import Link from '@mui/material/Link';
 import { CheckCircle } from 'react-feather';
 
 import { Button } from "../Button";
@@ -61,6 +62,9 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               <NumberedInputContainer>
                 <NumberedStep>
                   { REGISTRATION_INSTRUCTIONS }
+                  <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration " target="_blank">
+                    Learn more ↗
+                  </Link>
                 </NumberedStep>
               </NumberedInputContainer>
 

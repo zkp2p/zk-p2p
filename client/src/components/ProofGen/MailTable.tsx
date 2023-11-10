@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro'
+import Link from '@mui/material/Link';
 import { Mail } from 'react-feather'
 
 import { ThemedText } from '../../theme/text';
@@ -125,7 +126,10 @@ export const MailTable: React.FC<MailTableProps> = ({
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
             <div>
-              Your emails from Venmo will appear here.
+              Your emails from Venmo will appear here. {' '} 
+              <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration " target="_blank">
+                Privacy and Safety ↗
+              </Link>
             </div>
           </ThemedText.DeprecatedBody>
           

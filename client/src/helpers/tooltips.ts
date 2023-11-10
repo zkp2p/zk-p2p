@@ -3,8 +3,13 @@
  */
 
 export const PROVING_TYPE_TOOLTIP = `
-  Fast verification sends your email to our servers for processing (30 seconds).
-  Private verification processes in your browser (10 minutes).
+  Fast verification sends your email to our servers for processing (30 to 60 seconds).
+  Private verification processes locally in your browser (10 minutes).
+`;
+
+export const UPLOAD_TYPE_TOOLTIP = `
+  Login uses Google authentication to pull in your past Venmo transaction emails. Data is NEVER stored.
+  Upload requires you to manually input the .eml file.
 `;
 
 export const INPUT_MODE_TOOLTIP = `
@@ -26,7 +31,7 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  Registration requires a completed payment transaction email from Venmo.
+  Registration requires a previously send payment confirmation email from Venmo, which proves you own a Venmo account.
   Your ID is hashed to conceal your identity.
 `;
 
