@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components/macro'
-import Link from '@mui/material/Link';
-import { Mail } from 'react-feather'
+import React, { useEffect, useState } from "react";
+import styled, { css } from "styled-components/macro";
+import Link from "@mui/material/Link";
+import { Mail } from "react-feather";
 
-import { ThemedText } from '../../theme/text';
-import { Button } from '../Button';
-import { AccessoryButton } from '@components/common/AccessoryButton';
+import { ThemedText } from "../../theme/text";
+import { Button } from "../Button";
+import { AccessoryButton } from "@components/common/AccessoryButton";
 import {
   fetchEmailsRaw,
   fetchVenmoEmailList,
-  RawEmailResponse
-} from '@hooks/useGmailClient';
-import useGoogleAuth from '@hooks/useGoogleAuth';
-import { MailRow } from './MailRow';
-
+  RawEmailResponse,
+} from "@hooks/useGmailClient";
+import useGoogleAuth from "@hooks/useGoogleAuth";
+import { MailRow } from "./MailRow";
 
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
@@ -48,7 +47,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   /*
    * Handlers
    */
-  
+
   const handleRowClick = (index: number) => {
     setSelectedIndex(index);
 
@@ -64,41 +63,48 @@ export const MailTable: React.FC<MailTableProps> = ({
   function formatDateTime(unixTimestamp: string): string {
     const date = new Date(Number(unixTimestamp));
     const now = new Date();
-  
-    const isToday = date.getDate() === now.getDate() &&
-                    date.getMonth() === now.getMonth() &&
-                    date.getFullYear() === now.getFullYear();
-  
+
+    const isToday =
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+
     if (isToday) {
       return date.toLocaleTimeString(undefined, {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
       });
     } else {
       return date.toLocaleDateString(undefined, {
-        month: 'numeric',
-        day: 'numeric'
+        month: "numeric",
+        day: "numeric",
       });
     }
   }
 
   async function fetchData() {
     try {
-      const emailListResponse = await fetchVenmoEmailList(googleAuthToken.access_token, {'q': 'from:venmo@venmo.com'});
-      
-      const emailIds = emailListResponse.messages.map(message => message.id);
+      const emailListResponse = await fetchVenmoEmailList(
+        googleAuthToken.access_token,
+        { q: "from:venmo@venmo.com" }
+      );
+
+      const emailIds = emailListResponse.messages.map((message) => message.id);
       if (emailIds.length > 0) {
-        const emails = await fetchEmailsRaw(googleAuthToken.access_token, emailIds);
+        const emails = await fetchEmailsRaw(
+          googleAuthToken.access_token,
+          emailIds
+        );
 
         setFetchedEmails(emails);
 
-        console.log('Fetched Emails:', emails);
+        console.log("Fetched Emails:", emails);
       }
     } catch (error) {
-      console.error('Error in fetching data:', error);
+      console.error("Error in fetching data:", error);
     }
-  };
+  }
 
   /*
    * Hooks
@@ -112,9 +118,9 @@ export const MailTable: React.FC<MailTableProps> = ({
 
   useEffect(() => {
     setSelectedIndex(null);
-    setEmailFull('');
+    setEmailFull("");
   }, [fetchedEmails]);
-  
+
   /*
    * Component
    */
@@ -124,19 +130,20 @@ export const MailTable: React.FC<MailTableProps> = ({
       {!isGoogleAuthed || fetchedEmails.length === 0 ? (
         <ErrorContainer>
           <ThemedText.DeprecatedBody textAlign="center">
-            <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+            <MailIcon strokeWidth={1} style={{ marginTop: "2em" }} />
             <div>
-              Your emails from Venmo will appear here. {' '} 
-              <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration " target="_blank">
+              Sign in with Google to pull in your past Venmo transaction emails.
+              The emails never leave your browser. Read more&nbsp;
+              <Link
+                href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration "
+                target="_blank"
+              >
                 Privacy and Safety ↗
               </Link>
             </div>
           </ThemedText.DeprecatedBody>
-          
-          <Button
-            onClick={googleLogIn}
-            height={48}
-          >
+
+          <Button onClick={googleLogIn} height={48}>
             Sign in with Google
           </Button>
         </ErrorContainer>
@@ -150,8 +157,8 @@ export const MailTable: React.FC<MailTableProps> = ({
             <AccessoryButton
               onClick={googleLogOut}
               height={36}
-              title={'Logout'}
-              icon={'logout'}
+              title={"Logout"}
+              icon={"logout"}
             />
           </TitleContainer>
 
@@ -164,12 +171,11 @@ export const MailTable: React.FC<MailTableProps> = ({
                 </EmailLabel>
               </EmailAddressTitle>
 
-
               <AccessoryButton
                 onClick={fetchData}
                 height={36}
-                title={'Refresh'}
-                icon={'refresh'}
+                title={"Refresh"}
+                icon={"refresh"}
               />
             </TitleAndOAuthContainer>
 
@@ -199,8 +205,8 @@ export const MailTable: React.FC<MailTableProps> = ({
         </LoggedInContainer>
       )}
     </Container>
-  )
-}
+  );
+};
 
 const Container = styled.div`
   width: 100%;
@@ -208,8 +214,8 @@ const Container = styled.div`
   flex-direction: column;
   align-self: flex-start;
   justify-content: center;
-  
-  background-color: #0D111C;
+
+  background-color: #0d111c;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   overflow: hidden;
@@ -255,7 +261,7 @@ const TitleContainer = styled.div`
 const TitleAndTableContainer = styled.div`
   border: 1px solid #98a1c03d;
   border-radius: 8px;
-  background-color: #090D14;
+  background-color: #090d14;
 `;
 
 const TitleAndOAuthContainer = styled.div`
@@ -276,18 +282,18 @@ const EmailAddressTitle = styled.div`
 const EmailLabel = styled.label`
   display: flex;
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
   align-items: center;
 `;
 
 const EmailLabelTitle = styled.span`
   font-size: 14px;
-  color: #6C757D;
+  color: #6c757d;
 `;
 
 const EmailLabelValue = styled.span`
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
 `;
 
 const Table = styled.div`
