@@ -35,9 +35,15 @@ export const REGISTRATION_INSTRUCTIONS = `
   Your ID is hashed to conceal your identity.
 `;
 
+
 /*
- * New Deposit
- */
+* New Deposit
+*/
+
+export const NEW_DEPOSIT_INSTRUCTIONS = `
+  Creating a new deposit requires you to submit your Venmo ID, the USDC liquidity to deposit and desired USD conversion rate.
+  Your Venmo ID must match the ID you registered with. Instructions on how to fetch you Venmo ID can be found here.
+`
 
 export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
   This is a valid 18-19 digit Venmo ID where users will send payments.
