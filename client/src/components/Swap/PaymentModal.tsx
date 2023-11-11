@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
+import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
@@ -64,38 +65,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           <div style={{ flex: 0.25 }}/>
         </RowBetween>
-        <InstructionsContainer>
-          <InstructionsTitle>
-            User {registrationHash ?
-              registrationHash
-                .slice(0, 5)
-                .concat("...")
-                .concat(registrationHash.slice(-1))
-                .concat(registrationHash.slice(-2))
-              : ""} is your match!
-          </InstructionsTitle>
-        </InstructionsContainer>
 
         <QRContainer>
           <QRCode
             value={link}
             size={196}/>
         </QRContainer>
+        <QRLabel>
+          <Link href={link} target="_blank">
+            Trouble reading the QR? ↗
+          </Link>
+        </QRLabel>
 
         <InstructionsContainer>
           <InstructionsTitle>
-            Scan and send ${amount} to {registrationHash ?
-              registrationHash
-                .slice(0, 5)
-                .concat("...")
-                .concat(registrationHash.slice(-1))
-                .concat(registrationHash.slice(-2))
-              : ""}
+            Scan and send ${amount}
           </InstructionsTitle>
 
           <InstructionsLabel>
-            You must send greater than or equal to the send amount in one transaction or funds may be lost.
-            Payment receipt emails are required to complete the order.
+            All onramp transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
+            Payment receipt emails are required to complete the order. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+              Learn more ↗
+            </Link>
           </InstructionsLabel>
         </InstructionsContainer>
 
@@ -142,7 +133,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 24%;
+  top: 20%;
   position: relative;
 `;
 
@@ -162,6 +153,7 @@ const InstructionsContainer = styled.div`
 `;
 
 const InstructionsTitle = styled.div`
+  line-height: 1.15;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
@@ -183,4 +175,11 @@ const RowBetween = styled.div`
 
 const ButtonContainer = styled.div`
   display: grid;
+`;
+
+const QRLabel = styled.div`
+  font-size: 14px;
+  text-align: center;
+  margin-top: -1rem;
+  line-height: 1.5;
 `;
