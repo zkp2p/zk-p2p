@@ -69,7 +69,7 @@ export const Swap: React.FC<{}> = (props) => {
 
   return (
     <PageWrapper>
-      {!selectedIntentHash ? (
+      {false && !selectedIntentHash ? (
         <SwapModal
           onIntentTableRowClick={handleIntentClick}
         />

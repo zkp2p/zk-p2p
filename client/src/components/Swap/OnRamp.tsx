@@ -9,6 +9,8 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction
 } from 'wagmi'
+import { useWindowSize } from "@uidotdev/usehooks";
+import Confetti from 'react-confetti';
 
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
@@ -27,7 +29,7 @@ interface OnRampProps {
   handleBackClick: () => void;
   selectedIntentHash: string;
 }
- 
+
 export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
   selectedIntentHash
@@ -35,7 +37,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Context
    */
-  
+
   const {
     rampAddress,
     rampAbi,
@@ -44,6 +46,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
+  const size = useWindowSize();
 
   /*
    * State
@@ -51,13 +54,14 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
+  const [showConfetti, setShowConfetti] = useState<boolean>(true);
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
-  
+
   const [publicSignals, setPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
@@ -70,8 +74,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const {
     data: verifyProofRaw,
   } = useContractRead({
-    address: sendProcessorAddress,
-    abi: sendProcessorAbi,
+    address: sendProcessorAddress ?? undefined,
+    abi: sendProcessorAbi ?? undefined,
     functionName: "verifyProof",
     args: [
       ...reformatProofForChain(proof),
@@ -88,8 +92,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: rampAddress ?? undefined,
+    abi: rampAbi ?? undefined,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),
@@ -114,9 +118,14 @@ export const OnRamp: React.FC<OnRampProps> = ({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitOnRampAsync successful: ', data);
-      
+
       refetchUsdcBalance?.();
       refetchIntentHash?.();
+
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
     },
   });
 
@@ -162,10 +171,18 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Component
    */
-  
+
   return (
     <Container>
       <TitleContainer>
+        {showConfetti ? (
+          <Confetti
+            recycle={false}
+            numberOfPieces={500}
+            width={size.width ?? undefined}
+            height={document.documentElement.scrollHeight}
+          />
+        ) : null}
         <RowBetween style={{ paddingBottom: '1.5rem' }}>
           <div style={{ flex: 0.5 }}>
             <button
