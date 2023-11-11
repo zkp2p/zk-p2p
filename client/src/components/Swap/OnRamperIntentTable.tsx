@@ -106,12 +106,14 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);
         const expirationTimestamp = formatExpiration(currentIntent.intent.timestamp);
         const venmoIdString = currentIntent.depositorVenmoId.toString();
+        const depositorAddress = storedDeposit.deposit.depositor;
 
         const sanitizedIntent: IntentRowData = {
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
           depositorVenmoId: venmoIdString,
+          depositorAddress,
           handleCompleteOrderClick: () => {
             if (onIntentRowClick) {
               onIntentRowClick();
@@ -174,6 +176,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
               amountUSDToSend={intentsRow.amountUSDToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
               depositorVenmoId={intentsRow.depositorVenmoId}
+              depositorAddress={intentsRow.depositorAddress}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
             />
           ))}

@@ -12,6 +12,7 @@ interface IntentRowProps {
   amountUSDToSend: string;
   expirationTimestamp: string;
   depositorVenmoId: string;
+  depositorAddress: string;
   handleCompleteOrderClick: () => void;
 }
 
@@ -22,6 +23,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   amountUSDToSend,
   expirationTimestamp,
   depositorVenmoId,
+  depositorAddress,
   handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
@@ -38,6 +40,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
+  const depositorEtherscanLink = `https://etherscan.io/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*
@@ -72,10 +75,10 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
           <AmountContainer>
-            <Label>Counterparty:&nbsp;</Label>
+            <Label>Offramper:&nbsp;</Label>
             <Value>
-              <Link href={venmoLink} target="_blank">
-                Link ↗
+              <Link href={depositorEtherscanLink} target="_blank">
+                Account ↗
               </Link>
             </Value>
           </AmountContainer>
