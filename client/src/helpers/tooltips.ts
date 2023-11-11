@@ -36,7 +36,7 @@ export const REGISTRATION_INSTRUCTIONS = `
 `;
 
 export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
-Sign in with Google to pull in your past Venmo transaction emails. The emails never leave your browser. Read more.
+  Sign in with Google to pull in your Venmo transaction emails. The emails are not stored and never leave your browser. Read more:
 `;
 
 /*
@@ -72,7 +72,7 @@ export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Supply the transaction email with subject "You paid" to complete the on-ramp. Choose your verification type below.
+  Supply the transaction email containing "You paid". Choose your verification type below.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `

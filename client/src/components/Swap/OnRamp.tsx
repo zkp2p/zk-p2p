@@ -216,6 +216,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  padding-bottom: 4rem;
 `;
 
 const TitleContainer = styled.div`

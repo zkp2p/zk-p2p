@@ -135,6 +135,7 @@ export const MailTable: React.FC<MailTableProps> = ({
         <ErrorContainer>
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+
             <div>
              { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS }
               <Link
@@ -243,8 +244,9 @@ const ErrorContainer = styled.div`
   justify-content: center;
   margin: auto;
   padding: 36px 0px;
-  max-width: 340px;
+  max-width: 50vh;
   min-height: 25vh;
+  line-height: 1.3;
   gap: 36px;
 `;
 

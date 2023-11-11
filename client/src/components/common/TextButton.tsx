@@ -68,13 +68,14 @@ const Container = styled.button<TextButtonProps>`
   color: white;
   cursor: pointer;
   transition: color 0.2s ease-in-out;
+  text-decoration: underline;
 
   &:hover:not([disabled]) {
     color: #adb5bd;
   }
 
   &:active:not([disabled]) {
-    color: #343a40; // Active text color
+    color: #343a40;
   }
 
   ${({ disabled }) => 
@@ -82,8 +83,8 @@ const Container = styled.button<TextButtonProps>`
       opacity: 0.5;
       cursor: not-allowed;
       &:hover, &:active {
-        color: white; // Reset hover and active text color for disabled
-        text-decoration: none; /* No underline for disabled state */
+        color: white;
+        text-decoration: none;
       }
     `
   }
