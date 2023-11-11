@@ -31,8 +31,8 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  Registration requires a previously send payment confirmation email from Venmo, which proves you own a Venmo account.
-  Your ID is hashed to conceal your identity.
+  You have to register with your Venmo ID to use this protocol. Registration requires a confirmation email from Venmo with subject "You paid", which proves you own a Venmo account.
+  Your Venmo ID is hashed to conceal your identity.
 `;
 
 export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
@@ -72,7 +72,7 @@ export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Supply the transaction email containing "You paid". Choose your verification type below. Emails are never stored.
+  Supply the transaction email with subject "You paid" to complete the on-ramp. Choose your verification type below.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `
