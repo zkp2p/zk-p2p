@@ -62,7 +62,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           <PaymentModal
             link={venmoLink}
             amount={amountUSDToSend}
-            onBackClick={handleModalBackClicked} />
+            onBackClick={handleModalBackClicked}
+            onCompleteClick={handleCompleteOrderClick} />
         ) 
       }
 

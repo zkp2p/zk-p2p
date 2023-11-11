@@ -3,21 +3,29 @@ import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
 
+import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '../../theme/text'
-
+import useRegistration from '@hooks/useRegistration'
 
 interface PaymentModalProps {
   link: string;
   amount: string;
   onBackClick: () => void
+  onCompleteClick: () => void
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
   link,
   amount,
   onBackClick,
+  onCompleteClick
 }) => {
+
+  /*
+   * Contexts
+   */
+  const { registrationHash } = useRegistration();
 
   /*
    * Handlers
@@ -25,6 +33,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handleOverlayClick = () => {
     onBackClick();
+  };
+
+  const handleCompleteClick = () => {
+    onCompleteClick();
   };
 
   /*
@@ -52,6 +64,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           <div style={{ flex: 0.25 }}/>
         </RowBetween>
+        <InstructionsContainer>
+          <InstructionsTitle>
+            User {registrationHash ?
+              registrationHash
+                .slice(0, 5)
+                .concat("...")
+                .concat(registrationHash.slice(-1))
+                .concat(registrationHash.slice(-2))
+              : ""} is your match!
+          </InstructionsTitle>
+        </InstructionsContainer>
 
         <QRContainer>
           <QRCode
@@ -61,7 +84,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
         <InstructionsContainer>
           <InstructionsTitle>
-            Scan and send ${amount}
+            Scan and send ${amount} to {registrationHash ?
+              registrationHash
+                .slice(0, 5)
+                .concat("...")
+                .concat(registrationHash.slice(-1))
+                .concat(registrationHash.slice(-2))
+              : ""}
           </InstructionsTitle>
 
           <InstructionsLabel>
@@ -69,6 +98,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             Payment receipt emails are required to complete the order.
           </InstructionsLabel>
         </InstructionsContainer>
+
+        <ButtonContainer>
+          <Button
+            onClick={async () => {
+              handleCompleteClick();
+            }}
+          >
+            I have completed payment
+          </Button>
+        </ButtonContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -140,4 +179,8 @@ const RowBetween = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
+`;
+
+const ButtonContainer = styled.div`
+  display: grid;
 `;
