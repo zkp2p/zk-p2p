@@ -6,29 +6,44 @@ import { CustomConnectButton } from "../../common/ConnectButton";
 import { NavItem } from "./NavItem";
 
 
-export const TopNav: React.FC = () => {
+export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
   const location = useLocation();
-  const [selectedItem, setSelectedItem] = useState<string>('Swap');
+  const [selectedItem, setSelectedItem] = useState<string>('Landing');
 
   useEffect(() => {
     const routeName = location.pathname.split('/')[1];
-    setSelectedItem(routeName || 'Swap');
+    setSelectedItem(routeName || 'Landing');
   }, [location]);
 
   return (
     <NavBar>
-      <LogoAndNavItems>
-        <Logo to="/swap" onClick={() => setSelectedItem('Swap')}>
-          <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
-        </Logo>
-        
-        <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
-      </LogoAndNavItems>
-        
-      <CustomConnectButton height={40} />
+      {withoutLinks ? (
+        <NavBarCentered>
+          <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
+            <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
+          </Logo>
+        </NavBarCentered>
+      ) : (
+        <LogoAndNavItems>
+          <Logo to="/" onClick={() => setSelectedItem('Landing')}>
+            <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
+          </Logo>
+
+          <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+        </LogoAndNavItems>
+      )}
+
+      {!withoutLinks && <CustomConnectButton height={40} />}
     </NavBar>
   );
 }
+
+const NavBarCentered = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
 
 const NavBar = styled.nav`
   display: flex;
@@ -37,7 +52,7 @@ const NavBar = styled.nav`
   padding: 30px;
 `;
 
-const Logo = styled(Link)`
+const Logo = styled(Link)<{ size?: number }>`
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #ffffff;
@@ -45,8 +60,8 @@ const Logo = styled(Link)`
   font-size: 1.2rem;
 
   img {
-    width: 32px;
-    height: 32px;
+    width: ${({ size }) => size || 32}px;
+    height: ${({ size }) => size || 32}px;
     object-fit: cover;
   }
 `;

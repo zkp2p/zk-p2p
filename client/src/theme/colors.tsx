@@ -66,6 +66,7 @@ export const colors = {
   red800: '#380A03',
   red900: '#240800',
   redVibrant: '#F14544',
+  brandRed: '#DF2E2D',
   yellow50: '#F6F2D5',
   yellow100: '#DBBC19',
   yellow200: '#DBBC19',

@@ -13,17 +13,13 @@ export const MobileLandingPage: React.FC = () => {
   const handleJoinTelegramClicked = () => {
     window.open('https://t.me/+XDj9FNnW-xs5ODNl', '_blank');
   };
-  
+
   /*
    * Component
    */
 
   return (
     <Container>
-      <Logo>
-        <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
-      </Logo>
-
       <ModalContainer>
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Sorry!
@@ -69,18 +65,6 @@ const ModalContainer = styled.div`
   align-items: center;
   gap: 1.5rem;
   justify-content: center;
-`;
-
-const Logo = styled.div`
   position: absolute;
-  top: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  img {
-    width: 44px;
-    height: 44px;
-    object-fit: cover;
-  }
+  top: 200px;
 `;
-

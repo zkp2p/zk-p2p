@@ -41,13 +41,13 @@ const QuoteState = {
   SUCCESS: 'success',
 }
 
-interface SwapModalProps {
+interface SwapProps {
   onIntentTableRowClick?: () => void;
 }
 
-const SwapModal: React.FC<SwapModalProps> = ({
+const Swap: React.FC<SwapProps> = ({
   onIntentTableRowClick
-}: SwapModalProps) => {
+}: SwapProps) => {
   const navigate = useNavigate();
 
   /*
@@ -61,7 +61,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
   const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
   const { rampAddress, rampAbi } = useSmartContracts();
   const { refetchDepositCounter, shouldFetchRampState, onRampCooldownPeriod } = useRampState();
-  
+
   /*
    * State
    */
@@ -131,8 +131,8 @@ const SwapModal: React.FC<SwapModalProps> = ({
   // function signalIntent(uint256 _depositId, uint256 _amount, address _to)
   //
   const { config: writeIntentConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: rampAddress ?? undefined,
+    abi: rampAbi ?? undefined,
     functionName: 'signalIntent',
     args: [
       currentQuote.depositId,
@@ -157,7 +157,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     hash: submitIntentResult ? submitIntentResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitIntentAsync successful: ', data);
-      
+
       refetchIntentHash?.();
       refetchLastOnRampTimestamp?.();
     },
@@ -172,17 +172,17 @@ const SwapModal: React.FC<SwapModalProps> = ({
       const intervalId = setInterval(() => {
         refetchIntentHash?.();
       }, DEPOSIT_REFETCH_INTERVAL);
-  
+
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchIntentHash, refetchIntentHash]);
-  
+
   useEffect(() => {
     if (shouldFetchDeposits) {
       const intervalId = setInterval(() => {
         refetchDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
-  
+
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchDeposits, refetchDeposits]);
@@ -192,7 +192,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
       const intervalId = setInterval(() => {
         refetchDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
-  
+
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchRampState, refetchDepositCounter]);
@@ -225,7 +225,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
               const onRampCooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
               const onRampCooldownElapsed = Date.now() >= onRampCooldownEnd;
-  
+
               if (!onRampCooldownElapsed) {
                 updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
               } else if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
@@ -256,7 +256,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
         }));
       }
     };
-  
+
     fetchUsdAmountToSendAndVerifyOrder();
   }, [
       currentQuote.requestedUSDC,
@@ -267,9 +267,9 @@ const SwapModal: React.FC<SwapModalProps> = ({
     ]
   );
 
-  /* 
+  /*
    * Handlers
-   */ 
+   */
 
   const navigateToRegistrationHandler = () => {
     navigate('/register');
@@ -304,7 +304,7 @@ const SwapModal: React.FC<SwapModalProps> = ({
     switch (quoteState) {
       case QuoteState.ORDER_COOLDOWN_PERIOD:
         return 'Order cooldown not elapsed';
-      
+
       case QuoteState.EXCEEDS_ORDER_COUNT:
         return 'Max one open order';
 
@@ -451,4 +451,4 @@ const VerticalDivider = styled.div`
   margin: 0 auto;
 `;
 
-export default SwapModal;
+export default Swap;
