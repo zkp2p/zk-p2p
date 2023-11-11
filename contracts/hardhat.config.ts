@@ -39,6 +39,13 @@ const config: HardhatUserConfig = {
         `0x${process.env.GOERLI_DEPLOY_PRIVATE_KEY}`,
       ],
     },
+    base: {
+      url: "https://rpc.ankr.com/base/",
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
+      ],
+    },
   },
   verify: {
     etherscan: {
