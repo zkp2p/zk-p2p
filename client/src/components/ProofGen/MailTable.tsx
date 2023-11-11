@@ -15,6 +15,7 @@ import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
 import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
+import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
 
 interface MailTableProps {
@@ -95,7 +96,9 @@ export const MailTable: React.FC<MailTableProps> = ({
 
   async function fetchData() {
     try {
-      const emailListResponse = await fetchVenmoEmailList(googleAuthToken.access_token, {'q': 'from:venmo@venmo.com'});
+      const emailListResponse = await fetchVenmoEmailList(googleAuthToken.access_token, {
+        'q': `from:venmo@venmo.com subject:"You paid" after:${FETCH_VENMO_EMAILS_AFTER_DATE}` 
+      });
       
       const emailIds = emailListResponse.messages.map(message => message.id);
       if (emailIds.length > 0) {
