@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
+import Link from '@mui/material/Link';
 import {
   useContractWrite,
   usePrepareContractWrite,
@@ -11,6 +12,7 @@ import { Button } from "../Button";
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { Input } from "@components/Deposit/Input";
+import { NumberedStep } from "../common/NumberedStep";
 import {
   calculatePackedVenmoId,
   isProvidedIdEqualToRegistration
@@ -20,7 +22,8 @@ import { ZERO } from '@helpers/constants'
 import {
   NEW_DEPOSIT_VENMO_ID_TOOLTIP,
   NEW_DEPOSIT_DEPOSIT_TOOLTIP,
-  NEW_DEPOSIT_RECEIVE_TOOLTIP
+  NEW_DEPOSIT_RECEIVE_TOOLTIP,
+  NEW_DEPOSIT_INSTRUCTIONS,
 } from '@helpers/tooltips'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
@@ -393,6 +396,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       </RowBetween>
 
       <Body>
+        <InstructionsAndTogglesContainer>
+          <NumberedStep>
+            { NEW_DEPOSIT_INSTRUCTIONS }
+            <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
+              Fetch Your Venmo ID ↗
+            </Link>
+          </NumberedStep>
+        </InstructionsAndTogglesContainer>
         <InputsContainer>
           <Input
             label="Venmo ID"
@@ -468,3 +479,9 @@ const ButtonContainer = styled.div`
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
 `
+
+const InstructionsAndTogglesContainer = styled.div`
+  display: grid;
+  flex-direction: column;
+  gap: 1rem;
+`;

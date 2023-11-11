@@ -13,6 +13,7 @@ import { TextButton } from '@components/common/TextButton';
 import { INPUT_MODE_TOOLTIP, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/constants";
 import useProofGenSettings from '@hooks/useProofGenSettings';
+import Link from '@mui/material/Link';
 
 
 interface UploadEmailProps {
@@ -122,6 +123,9 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
         <NumberedStep>
           {PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS}
+          <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping/manual-email-input" target="_blank">
+            Guide ↗
+          </Link>
         </NumberedStep>
 
         {isInputModeDrag ? (

@@ -65,8 +65,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           </InstructionsTitle>
 
           <InstructionsLabel>
+            You must send greater than or equal to the send amount in one transaction or funds may be lost.
             Payment receipt emails are required to complete the order.
-            Ensure emails are enabled in your Venmo settings under Email Notifications {">"} Money
           </InstructionsLabel>
         </InstructionsContainer>
       </ModalContainer>
