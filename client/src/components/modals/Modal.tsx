@@ -30,6 +30,7 @@ interface ModalProps {
   handleSubmitVerificationClick?: () => void;
   setStatus?: (status: ProofGenerationStatus) => void;
   onVerifyEmailCompletion?: () => void;
+  transactionAddress?: string | null;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -42,6 +43,7 @@ export const Modal: React.FC<ModalProps> = ({
   buttonTitle,
   isSubmitProcessing,
   isSubmitSuccessful,
+  transactionAddress,
   setStatus,
   handleSubmitVerificationClick = () => {},
   onVerifyEmailCompletion,
@@ -295,6 +297,17 @@ export const Modal: React.FC<ModalProps> = ({
         >
           {ctaButtonTitle}
         </Button>
+
+        {transactionAddress?.length ? (
+          <Link
+            href={`https://goerli.etherscan.io/address/${transactionAddress}`}
+            target="_blank"
+            rel="noopener noreferrer">
+              <ThemedText.LabelSmall textAlign="left">
+                View on Etherscan ↗
+              </ThemedText.LabelSmall>
+          </Link>
+        ) : null}
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -342,4 +355,15 @@ const ProofAndSignalsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+`;
+
+const Link = styled.a`
+  white-space: pre;
+  display: inline-block;
+  color: #1F95E2;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;

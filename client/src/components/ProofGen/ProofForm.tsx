@@ -36,6 +36,7 @@ interface ProofGenerationFormProps {
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
   onVerifyEmailCompletion?: () => void;
+  transactionAddress?: string | null;
 }
 
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
@@ -51,6 +52,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   isSubmitSuccessful,
   handleSubmitVerificationClick,
   onVerifyEmailCompletion,
+  transactionAddress,
 }) => {
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
 
@@ -316,7 +318,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             isSubmitProcessing={isSubmitProcessing}
             isSubmitSuccessful={isSubmitSuccessful}
             setStatus={setStatus}
-            handleSubmitVerificationClick={handleSubmitVerificationClick} />
+            handleSubmitVerificationClick={handleSubmitVerificationClick}
+            transactionAddress={transactionAddress}
+          />
         )
       }
 
