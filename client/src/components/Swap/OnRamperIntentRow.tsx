@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from 'styled-components/macro'
+import Link from '@mui/material/Link';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
@@ -11,6 +12,7 @@ interface IntentRowProps {
   amountUSDToSend: string;
   expirationTimestamp: string;
   depositorVenmoId: string;
+  depositorAddress: string;
   handleCompleteOrderClick: () => void;
 }
 
@@ -21,6 +23,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   amountUSDToSend,
   expirationTimestamp,
   depositorVenmoId,
+  depositorAddress,
   handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
@@ -37,6 +40,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
+  const depositorEtherscanLink = `https://etherscan.io/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*
@@ -62,13 +66,23 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           <PaymentModal
             link={venmoLink}
             amount={amountUSDToSend}
-            onBackClick={handleModalBackClicked} />
+            onBackClick={handleModalBackClicked}
+            onCompleteClick={handleCompleteOrderClick} />
         ) 
       }
 
       <IntentDetailsContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
+          <AmountContainer>
+            <Label>Offramper:&nbsp;</Label>
+            <Value>
+              <Link href={depositorEtherscanLink} target="_blank">
+                Etherscan ↗
+              </Link>
+            </Value>
+          </AmountContainer>
+
           <AmountContainer>
             <Label>Requested:&nbsp;</Label>
             <Value>{requestedAmountLabel}</Value>
@@ -92,12 +106,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           height={36}
           title={'Send'}
           icon={'send'}/>
-
-        <AccessoryButton
-          onClick={handleCompleteOrderClick}
-          height={36}
-          title={'Complete'}
-          icon={'chevronRight'}/>
       </ActionsContainer>
     </Container>
   );
@@ -122,7 +130,7 @@ const ActionsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: center;
   padding: 1.5rem 1.5rem 1.65rem 0rem;
   gap: 1rem;
 `;
