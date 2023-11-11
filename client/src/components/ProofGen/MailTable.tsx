@@ -5,14 +5,17 @@ import { Mail } from 'react-feather'
 import { ThemedText } from '../../theme/text';
 import { Button } from '../Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import { TextButton } from '@components/common/TextButton';
 import {
   fetchEmailsRaw,
   fetchVenmoEmailList,
   RawEmailResponse
 } from '@hooks/useGmailClient';
 import useGoogleAuth from '@hooks/useGoogleAuth';
+import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
-
+import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
+import Link from '@mui/material/Link';
 
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
@@ -36,6 +39,8 @@ export const MailTable: React.FC<MailTableProps> = ({
     googleLogOut,
   } = useGoogleAuth();
 
+  const { setIsEmailModeAuth } = useProofGenSettings();
+
   /*
    * State
    */
@@ -54,6 +59,12 @@ export const MailTable: React.FC<MailTableProps> = ({
     const email = fetchedEmails[index];
 
     setEmailFull(email.decodedContents);
+  };
+
+  const handleEmailModeChanged = (checked: boolean) => {
+    if (setIsEmailModeAuth) {
+      setIsEmailModeAuth(checked);
+    }
   };
 
   /*
@@ -124,17 +135,32 @@ export const MailTable: React.FC<MailTableProps> = ({
         <ErrorContainer>
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+
             <div>
-              Your emails from Venmo will appear here.
+             { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS }
+              <Link
+                href="https://zkp2p.gitbook.io/zkp2p/user-guides/faq#im-concerned-about-privacy-why-should-i-grant-read-access-to-my-email-inbox"
+                target="_blank"
+              >
+                Privacy and Safety ↗
+              </Link>
             </div>
           </ThemedText.DeprecatedBody>
-          
-          <Button
-            onClick={googleLogIn}
-            height={48}
-          >
-            Sign in with Google
-          </Button>
+
+          <LoginOrUploadButtonContainer>
+            <Button
+              onClick={googleLogIn}
+              height={48}
+            >
+              Sign in with Google
+            </Button>
+            
+            <TextButton
+              onClick={() => handleEmailModeChanged(false)}
+              height={24}
+              title={'Or Upload'}
+            />
+          </LoginOrUploadButtonContainer>
         </ErrorContainer>
       ) : (
         <LoggedInContainer>
@@ -218,8 +244,9 @@ const ErrorContainer = styled.div`
   justify-content: center;
   margin: auto;
   padding: 36px 0px;
-  max-width: 340px;
+  max-width: 50vh;
   min-height: 25vh;
+  line-height: 1.3;
   gap: 36px;
 `;
 
@@ -295,4 +322,12 @@ const Table = styled.div`
 const ButtonContainer = styled.div`
   display: grid;
   padding-top: 1rem;
+`;
+
+const LoginOrUploadButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  gap: 1rem;
 `;

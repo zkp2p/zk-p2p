@@ -3,8 +3,13 @@
  */
 
 export const PROVING_TYPE_TOOLTIP = `
-  Fast verification sends your email to our servers for processing (30 seconds).
-  Private verification processes in your browser (10 minutes).
+  Fast verification sends your email to our servers for processing (30 to 60 seconds).
+  Private verification processes locally in your browser (10 minutes).
+`;
+
+export const UPLOAD_TYPE_TOOLTIP = `
+  Login uses Google authentication to pull in your past Venmo transaction emails. Data is NEVER stored.
+  Upload requires you to manually input the .eml file.
 `;
 
 export const INPUT_MODE_TOOLTIP = `
@@ -26,13 +31,22 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  Registration requires a completed payment transaction email from Venmo.
-  Your ID is hashed to conceal your identity.
+  You have to register with your Venmo ID to use this protocol. Registration requires a confirmation email from Venmo with subject "You paid", which proves you own a Venmo account.
+  Your Venmo ID is hashed to conceal your identity.
+`;
+
+export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
+  Sign in with Google to pull in your Venmo transaction emails. The emails are not stored and never leave your browser. Read more:
 `;
 
 /*
- * New Deposit
- */
+* New Deposit
+*/
+
+export const NEW_DEPOSIT_INSTRUCTIONS = `
+  Creating a new deposit requires you to submit your Venmo ID, the USDC liquidity to deposit and desired USD conversion rate.
+  Your Venmo ID must match the ID you registered with. Instructions on how to fetch you Venmo ID can be found here.
+`
 
 export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
   This is a valid 18-19 digit Venmo ID where users will send payments.
@@ -58,7 +72,7 @@ export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Supply the transaction email containing "You paid". Choose your input method and verification type below. Emails are never stored.
+  Supply the transaction email containing "You paid". Choose your verification type below.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `

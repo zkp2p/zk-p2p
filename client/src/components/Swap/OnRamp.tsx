@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
+import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import {
@@ -185,6 +186,9 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             {PROOF_FORM_TITLE_SEND_INSTRUCTIONS}
+            <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+              Learn more ↗
+            </Link>
           </NumberedStep>
 
           <ProofSettings/>
@@ -212,6 +216,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  padding-bottom: 4rem;
 `;
 
 const TitleContainer = styled.div`
