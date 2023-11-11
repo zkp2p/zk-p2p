@@ -5,12 +5,14 @@ import { Mail } from 'react-feather'
 import { ThemedText } from '../../theme/text';
 import { Button } from '../Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import { TextButton } from '@components/common/TextButton';
 import {
   fetchEmailsRaw,
   fetchVenmoEmailList,
   RawEmailResponse
 } from '@hooks/useGmailClient';
 import useGoogleAuth from '@hooks/useGoogleAuth';
+import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
 import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import Link from '@mui/material/Link';
@@ -37,6 +39,8 @@ export const MailTable: React.FC<MailTableProps> = ({
     googleLogOut,
   } = useGoogleAuth();
 
+  const { setIsEmailModeAuth } = useProofGenSettings();
+
   /*
    * State
    */
@@ -55,6 +59,12 @@ export const MailTable: React.FC<MailTableProps> = ({
     const email = fetchedEmails[index];
 
     setEmailFull(email.decodedContents);
+  };
+
+  const handleEmailModeChanged = (checked: boolean) => {
+    if (setIsEmailModeAuth) {
+      setIsEmailModeAuth(checked);
+    }
   };
 
   /*
@@ -135,13 +145,21 @@ export const MailTable: React.FC<MailTableProps> = ({
               </Link>
             </div>
           </ThemedText.DeprecatedBody>
-          
-          <Button
-            onClick={googleLogIn}
-            height={48}
-          >
-            Sign in with Google
-          </Button>
+
+          <LoginOrUploadButtonContainer>
+            <Button
+              onClick={googleLogIn}
+              height={48}
+            >
+              Sign in with Google
+            </Button>
+            
+            <TextButton
+              onClick={() => handleEmailModeChanged(false)}
+              height={24}
+              title={'Or Upload'}
+            />
+          </LoginOrUploadButtonContainer>
         </ErrorContainer>
       ) : (
         <LoggedInContainer>
@@ -302,4 +320,12 @@ const Table = styled.div`
 const ButtonContainer = styled.div`
   display: grid;
   padding-top: 1rem;
+`;
+
+const LoginOrUploadButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: auto;
+  gap: 1rem;
 `;

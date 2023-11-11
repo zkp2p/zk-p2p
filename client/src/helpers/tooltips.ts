@@ -72,7 +72,7 @@ export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Supply the transaction email containing "You paid". Choose your input method and verification type below. Emails are never stored.
+  Supply the transaction email containing "You paid". Choose your verification type below. Emails are never stored.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `

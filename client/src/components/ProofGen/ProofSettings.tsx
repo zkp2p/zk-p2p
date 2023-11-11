@@ -43,16 +43,6 @@ export const ProofSettings: React.FC = () => {
       <TogglesContainer>
         <ToggleWrapper>
           <LabeledSwitch
-            switchChecked={isEmailModeAuth ?? true}
-            onSwitchChange={handleEmailModeChanged}
-            checkedLabel={"Login"}
-            uncheckedLabel={"Upload"}
-            helperText={UPLOAD_TYPE_TOOLTIP}
-          />
-        </ToggleWrapper>
-        
-        <ToggleWrapper>
-          <LabeledSwitch
             switchChecked={isProvingTypeFast ?? true}
             onSwitchChange={handleProvingTypeChanged}
             checkedLabel={"Fast"}
@@ -73,7 +63,7 @@ const Container = styled.div`
 
 const TogglesContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: center;
   justify-items: flex-end
 `;
