@@ -9,8 +9,6 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction
 } from 'wagmi'
-import { useWindowSize } from "@uidotdev/usehooks";
-import Confetti from 'react-confetti';
 
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
@@ -46,7 +44,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
-  const size = useWindowSize();
 
   /*
    * State
@@ -54,7 +51,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
-  const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [tx, setTx] = useState<string | null>(null);
 
   // ----- transaction state -----
@@ -123,11 +119,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
       refetchUsdcBalance?.();
       refetchIntentHash?.();
-
-      setShowConfetti(true);
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 5000);
     },
   });
 
@@ -177,14 +168,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
   return (
     <Container>
       <TitleContainer>
-        {showConfetti ? (
-          <Confetti
-            recycle={false}
-            numberOfPieces={500}
-            width={size.width ?? undefined}
-            height={document.documentElement.scrollHeight}
-          />
-        ) : null}
         <RowBetween style={{ paddingBottom: '1.5rem' }}>
           <div style={{ flex: 0.5 }}>
             <button

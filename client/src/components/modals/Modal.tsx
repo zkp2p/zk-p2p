@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@uidotdev/usehooks';
 
 import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
@@ -53,6 +54,7 @@ export const Modal: React.FC<ModalProps> = ({
    */
 
   const { isProvingTypeFast } = useProofGenSettings();
+  const size = useWindowSize();
 
   /*
    * State
@@ -61,6 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
   const [shouldShowProofAndSignals, setShouldShowProofAndSignals] = useState<boolean>(false);
 
   const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
+  const [showConfetti, setShowConfetti] = useState<boolean>(true);
 
   /*
    * Handlers
@@ -241,10 +244,29 @@ export const Modal: React.FC<ModalProps> = ({
     return verificationStepRows;
   };
 
+  useEffect(() => {
+    if (transactionAddress?.length) {
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
+    }
+  }, [transactionAddress])
+
   return (
     <ModalAndOverlayContainer>
       <Overlay onClick={handleOverlayClick}/>
 
+      {showConfetti ? (
+        <ConfettiContainer>
+          <Confetti
+            recycle={false}
+            numberOfPieces={500}
+            width={size.width ?? undefined}
+            height={document.documentElement.scrollHeight}
+          />
+        </ConfettiContainer>
+        ) : null}
       <ModalContainer>
         <TitleCenteredRow>
           <button
@@ -300,7 +322,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {transactionAddress?.length ? (
           <Link
-            href={`https://goerli.etherscan.io/address/${transactionAddress}`}
+            href={`https://goerli.etherscan.io/tx/${transactionAddress}`}
             target="_blank"
             rel="noopener noreferrer">
               <ThemedText.LabelSmall textAlign="left">
@@ -366,4 +388,8 @@ const Link = styled.a`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const ConfettiContainer = styled.div`
+  z-index: 20;
 `;
