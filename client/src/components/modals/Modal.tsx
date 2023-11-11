@@ -29,6 +29,7 @@ interface ModalProps {
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
   setStatus?: (status: ProofGenerationStatus) => void;
+  onVerifyEmailCompletion?: () => void;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -42,10 +43,9 @@ export const Modal: React.FC<ModalProps> = ({
   isSubmitProcessing,
   isSubmitSuccessful,
   setStatus,
-  handleSubmitVerificationClick = () => {}
+  handleSubmitVerificationClick = () => {},
+  onVerifyEmailCompletion,
 }) => {
-  const navigate = useNavigate();
-
   /*
    * Context
    */
@@ -89,13 +89,13 @@ export const Modal: React.FC<ModalProps> = ({
       case "transaction-configured":
         setCtaButtonTitle(buttonTitle);
         break;
-        
+
       case "done":
         const buttonDoneTitle = getButtonDoneTitle();
 
         setCtaButtonTitle(buttonDoneTitle);
         break;
-        
+
       default:
         setCtaButtonTitle(buttonTitle);
         break;
@@ -111,7 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
       case "transaction-configured":
       case "done":
         return false;
-        
+
       default:
         return true;
     }
@@ -122,11 +122,11 @@ export const Modal: React.FC<ModalProps> = ({
       case "done":
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
-            return onBackClick();
+            return onVerifyEmailCompletion?.();
 
           case CircuitType.EMAIL_VENMO_REGISTRATION:
           default:
-            return navigate('/swap');
+            return onVerifyEmailCompletion?.();
         }
 
       default:
@@ -137,11 +137,11 @@ export const Modal: React.FC<ModalProps> = ({
   const getButtonDoneTitle = () => {
     switch (circuitType) {
       case CircuitType.EMAIL_VENMO_SEND:
-        return 'Go Back'
+        return 'Go to Swap'
 
       case CircuitType.EMAIL_VENMO_REGISTRATION:
       default:
-        return 'Go to Swap'
+        return 'Go to Registration'
     }
   };
 
@@ -153,10 +153,10 @@ export const Modal: React.FC<ModalProps> = ({
     console.log('Status update: ', status);
 
     let downloadStepState = VerificationState.DEFAULT;
-    let proveStepState = VerificationState.DEFAULT; 
+    let proveStepState = VerificationState.DEFAULT;
     let verificationStepState = VerificationState.DEFAULT;
     let submitStepState = VerificationState.DEFAULT;
-    
+
     switch (status) {
       case "not-started":
       case "generating-input":
@@ -197,7 +197,7 @@ export const Modal: React.FC<ModalProps> = ({
     }
 
     const verificationStepRows = [];
-    
+
     if (!isProvingTypeFast) {
       verificationStepRows.push(
         <VerificationStepRow
@@ -235,7 +235,7 @@ export const Modal: React.FC<ModalProps> = ({
         circuitType={circuitType}
       />
     );
-    
+
     return verificationStepRows;
   };
 
@@ -249,7 +249,7 @@ export const Modal: React.FC<ModalProps> = ({
             onClick={handleOverlayClick}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
-            
+
             <StyledArrowLeft/>
           </button>
 

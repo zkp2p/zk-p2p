@@ -23,7 +23,7 @@ import useRegistration from '@hooks/useRegistration';
 interface NewRegistrationProps {
   handleBackClick: () => void;
 }
- 
+
 export const NewRegistration: React.FC<NewRegistrationProps> = ({
   handleBackClick
 }) => {
@@ -39,7 +39,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
-  
+
   const [publicSignals, setPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
@@ -61,8 +61,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: rampAddress ?? undefined,
+    abi: rampAbi ?? undefined,
     functionName: 'register',
     args: [
       ...reformatProofForChain(proof),
@@ -87,7 +87,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitRegistrationAsync successful: ', data);
-      
+
       refetchRampAccount?.();
     },
   });
@@ -163,6 +163,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         isSubmitProcessing={isSubmitRegistrationLoading || isSubmitRegistrationMining}
         isSubmitSuccessful={isSubmitRegistrationSuccessful}
         handleSubmitVerificationClick={handleRegistrationSubmit}
+        onVerifyEmailCompletion={handleBackClick}
       />
     </Container>
   );

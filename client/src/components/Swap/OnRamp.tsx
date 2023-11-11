@@ -221,6 +221,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
+        onVerifyEmailCompletion={handleBackClick}
         isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
