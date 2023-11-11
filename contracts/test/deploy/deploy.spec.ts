@@ -45,7 +45,7 @@ import {
 
 const expect = getWaffleExpect();
 
-describe.only("System Deploy", () => {
+describe("System Deploy", () => {
   let deployer: Account;
   let multiSig: Address;
 
