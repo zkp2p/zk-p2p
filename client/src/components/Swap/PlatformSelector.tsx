@@ -6,10 +6,10 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '../../theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import venmoLogo from '../../assets/images/venmo_logo.png';
 
 
-export const TokenSelector: React.FC = () => {
+export const PlatformSelector: React.FC = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -30,10 +30,7 @@ export const TokenSelector: React.FC = () => {
   return (
     <Wrapper ref={ref}>
       <LogoAndTokenLabel onClick={toggleOpen}>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
-        <TokenLabel>
-          USDC
-        </TokenLabel>
+        <Logo src={venmoLogo} alt="Venmo" />
         <StyledChevronDown/>
       </LogoAndTokenLabel>
 
@@ -43,8 +40,8 @@ export const TokenSelector: React.FC = () => {
 
           <ModalContainer>
             <RowBetween>
-              <ThemedText.SubHeader>
-                Select a Token
+              <ThemedText.SubHeader style={{ textAlign: 'left' }}>
+                Select a Platform
               </ThemedText.SubHeader>
 
               <button
@@ -56,7 +53,7 @@ export const TokenSelector: React.FC = () => {
             </RowBetween>
 
             <InstructionsLabel>
-              We currently only support USDC, but will be adding support for other tokens. Please let us know which tokens
+              We currently only support Venmo, but are quickly expanding to other platforms. Please let us know which platforms
               you are interested in seeing ZKP2P add support for. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
                 Give feedback ↗
               </Link>
@@ -81,21 +78,14 @@ const LogoAndTokenLabel = styled.div`
   border-radius: 24px;
   background: #0D111C;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 4px 4px;
+  padding: 4px 8px 4px 14px;
   gap: 4px;
 `;
 
-const TokenLabel = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  font-weight: 600;
-  color: #FFF;
-  padding-top: 2px;
-`;
-
-const StyledX = styled(X)`
-  color: #FFF;
+const Logo = styled.img`
+  width: 64px;
+  padding-top: 1px;
+  height: auto;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
@@ -136,6 +126,10 @@ const RowBetween = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
+`;
+
+const StyledX = styled(X)`
+  color: #FFF;
 `;
 
 const InstructionsLabel = styled.div`

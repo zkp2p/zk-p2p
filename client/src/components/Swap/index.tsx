@@ -343,7 +343,6 @@ const Swap: React.FC<SwapProps> = ({
             value={currentQuote.requestedUSDC}
             onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
-            inputLabel="USDC"
             accessoryLabel={usdcBalanceLabel}
             placeholder="0"
           />
@@ -356,7 +355,6 @@ const Swap: React.FC<SwapProps> = ({
             type="number"
             inputLabel="$"
             placeholder="0.00"
-            accessoryLabel="via Venmo"
             readOnly={true}
           />
           {!isLoggedIn ? (

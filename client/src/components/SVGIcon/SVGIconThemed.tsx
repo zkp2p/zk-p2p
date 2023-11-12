@@ -1,13 +1,11 @@
 import React, { CSSProperties } from 'react';
 
 import { SVGIcon } from './SVGIcon';
-import './SVGIconThemed.css';
 
 
 interface SVGIconThemedProps {
     iconName?: string,
     icon?: string,
-    size?: string,
     lightOpacity?: number,
     darkOpacity?: number,
     width?: string,
@@ -20,7 +18,6 @@ interface SVGIconThemedProps {
 export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
     iconName = 'ethereum-logo',
     icon,
-    size = 'lg',
     lightOpacity = 0.4,
     darkOpacity = 0.4,
     width,
@@ -30,10 +27,8 @@ export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
     className
 }) => {
   const styles: CSSProperties = {
-    display: 'inline-block'
+    display: 'flex'
   };
-  
-  const showedClass = `svg-icon-${size} ${className}`;
   
   const showedIconName = typeof icon === 'string'
     ? `${themeMode}-${icon}`
@@ -48,7 +43,6 @@ export const SVGIconThemed: React.FC<SVGIconThemedProps> = ({
 
   return (
     <div
-      className={showedClass}
       style={styles}
       onClick={onClick}>
         <SVGIcon iconName={showedIconName} width={width} height={height} />
