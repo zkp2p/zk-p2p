@@ -63,7 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
   const [shouldShowProofAndSignals, setShouldShowProofAndSignals] = useState<boolean>(false);
 
   const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
-  const [showConfetti, setShowConfetti] = useState<boolean>(true);
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   /*
    * Handlers
