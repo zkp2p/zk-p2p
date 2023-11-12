@@ -247,7 +247,7 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   useEffect(() => {
-    if (transactionAddress?.length) {
+    if (transactionAddress?.length && process.env.SHOW_CONFETTI === 'true') {
       setShowConfetti(true);
       setTimeout(() => {
         setShowConfetti(false);
