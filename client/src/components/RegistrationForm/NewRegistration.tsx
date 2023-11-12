@@ -170,7 +170,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         isSubmitSuccessful={isSubmitRegistrationSuccessful}
         handleSubmitVerificationClick={handleRegistrationSubmit}
         onVerifyEmailCompletion={handleBackClick}
-        transactionAddress={tx}
+        transactionAddress={submitRegistrationTransactionHash}
       />
     </Container>
   );

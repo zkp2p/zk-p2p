@@ -51,7 +51,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
-  const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
+  const [submitOnRampTransactionHash, setSubmitOnRampTransactionHash] = useState<string | null>(null);
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -149,7 +149,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   useEffect(() => {
     if (submitOnRampResult?.hash) {
-      setSubmitRegistrationTransactionHash(submitOnRampResult.hash);
+      setSubmitOnRampTransactionHash(submitOnRampResult.hash);
     }
   }, [submitOnRampResult])
 
@@ -214,7 +214,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
-        transactionAddress={tx}
+        transactionAddress={submitOnRampTransactionHash}
       />
     </Container>
   );
