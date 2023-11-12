@@ -2,7 +2,6 @@ import React from "react";
 import styled from 'styled-components/macro'
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
-import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface IntentRowProps {
@@ -55,13 +54,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           </AmountContainer>
         </AmountLabelsContainer>
       </IntentDetailsContainer>
-
-      <ActionsContainer>
-        <AccessoryButton
-          height={36}
-          title={'Block'}
-          icon={'userX'}/>
-      </ActionsContainer>
     </Container>
   );
 };
@@ -79,15 +71,6 @@ const IntentDetailsContainer = styled.div`
   padding: 1.25rem 1.5rem;
   gap: 1.25rem;
   line-height: 24px;
-`;
-
-const ActionsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 1.5rem 1.5rem 1.65rem 0rem;
-  gap: 1rem;
 `;
 
 const AmountLabelsContainer = styled.div`
