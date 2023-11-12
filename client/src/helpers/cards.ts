@@ -7,11 +7,11 @@ export const MAIN_CARDS = [
 	},
 	{
 		title: 'Documentation',
-		description: 'Interested in learning more about how the protocol works? Check out our docs!',
+		description: 'Interested in learning more about how the protocol works? Check out our docs',
 		cta: 'Go to Docs',
 		navigateTo: 'https://zkp2p.gitbook.io/zkp2p/',
 	},
-]
+];
 
 export const SECONDARY_CARDS = [
 	{
@@ -26,7 +26,7 @@ export const SECONDARY_CARDS = [
 	},
 	{
 		title: 'Permissionless',
-		description: 'Global and permissionless from day 1, anyone can use or integrate with the protocol',
+		description: 'Global and permissionless from Day 1, anyone can use or integrate with the protocol',
 		icon: 'padlock',
 	},
-]
+];

@@ -1,10 +1,9 @@
-import React, {  } from "react";
+import React from "react";
 import styled from 'styled-components';
 
 import { Input } from "@components/Swap/Input";
-import { AutoColumn } from '@components/layouts/Column'
-import { Button } from '@components/Button'
-import { ThemedText } from '../../theme/text'
+import { AutoColumn } from '@components/layouts/Column';
+import { ThemedText } from '../../theme/text';
 
 
 export type SwapQuote = {
@@ -73,8 +72,8 @@ const Wrapper = styled.div`
     right: 0;
     bottom: 0;
     left: 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #171717FF); /* Adjust the gradient colors as needed */
-    pointer-events: none; /* Ensure that the pseudo-element doesn't interfere with interactions */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), #171717FF);
+    pointer-events: none;
   }
 `;
 

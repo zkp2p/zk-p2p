@@ -16,9 +16,9 @@ const StyledCard = styled.div<{ cursor: string }>`
 	text-decoration: none;
 	color: ${({ theme }) => theme.neutral1};
 	padding: 32px;
-	height: 260px;
+	height: 228px;
 	border-radius: 24px;
-	border: 1px solid transparent;
+	border: 1px solid #98a1c03d;
   cursor: ${({ cursor }) => cursor}};
 `
 
