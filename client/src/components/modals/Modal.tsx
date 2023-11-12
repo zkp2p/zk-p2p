@@ -16,6 +16,7 @@ import { ProofGenerationStatus } from  "../ProofGen/types";
 import { Button } from "../Button";
 import { VerificationStepRow, VerificationState, VerificationStepType } from "./VerificationStepRow";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
+import useSmartContracts from "@hooks/useSmartContracts";
 
 
 interface ModalProps {
@@ -55,6 +56,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   const { isProvingTypeFast } = useProofGenSettings();
   const size = useWindowSize();
+  const { blockscanUrl } = useSmartContracts();
 
   /*
    * State
@@ -322,7 +324,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {transactionAddress?.length ? (
           <Link
-            href={`https://goerli.etherscan.io/tx/${transactionAddress}`}
+            href={`${blockscanUrl}/tx/${transactionAddress}`}
             target="_blank"
             rel="noopener noreferrer">
               <ThemedText.LabelSmall textAlign="left">
