@@ -7,13 +7,13 @@ import {
 } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import { Landing } from "./pages/Landing";
 import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Deposit } from "./pages/Deposit";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
-import { useDevice } from "@hooks/useDevice";
 
 import AccountProvider from "./contexts/Account/AccountProvider";
 import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
@@ -29,6 +29,7 @@ import GoogleAuthProvider from './contexts/GoogleAuth/GoogleAuthProvider';
 
 import "./App.css";
 import "./styles.css";
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 const RedirectToSwap = () => {
@@ -50,20 +51,37 @@ const ExternalRedirect: React.FC<{ url: string }> = ({ url }) => {
 };
 
 const App = () => {
-  const { isMobile } = useDevice();
+  const currentDeviceSize = useMediaQuery();
 
-  if (isMobile()) {
-    return <MobileLandingPage />;
+  if (currentDeviceSize === 'mobile') {
+    return (
+      <Router>
+        <Providers>
+          <div className="app-container">
+            <TopNav withoutLinks />
+            <div className="app-content">
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/swap" element={<MobileLandingPage />} />
+                <Route path="/deposits" element={<MobileLandingPage />} />
+                <Route path="/register" element={<MobileLandingPage />} />
+                <Route path="/permissions" element={<MobileLandingPage />} />
+              </Routes>
+            </div>
+          </div>
+        </Providers>
+      </Router>
+    )
   } else {
     return (
       <Router>
         <Providers>
           <div className="app-container">
             <TopNav />
-  
+
             <div className="app-content">
               <Routes>
-                <Route path="/" element={<RedirectToSwap />} />
+                <Route path="/" element={<Landing />} />
                 <Route path="/swap" element={<Swap />} />
                 <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />

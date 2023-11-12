@@ -4,7 +4,7 @@ import Link from '@mui/material/Link';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
-import { PaymentModal } from '@components/Swap/PaymentModal';
+import { SwapModal } from '@components/Swap/SwapModal';
 
 
 interface IntentRowProps {
@@ -32,7 +32,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    * State
    */
 
-  const [shouldShowPaymentModal, setShouldShowPaymentModal] = useState<boolean>(false);
+  const [shouldShowSwapModal, setShouldShowSwapModal] = useState<boolean>(false);
 
   /*
    * Helpers
@@ -48,11 +48,11 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const handleSendClick = () => {
-    setShouldShowPaymentModal(true);
+    setShouldShowSwapModal(true);
   };
 
   const handleModalBackClicked = () => {
-    setShouldShowPaymentModal(false);
+    setShouldShowSwapModal(false);
   };
 
   /*
@@ -62,13 +62,13 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   return (
     <Container>
       {
-        shouldShowPaymentModal && (
-          <PaymentModal
+        shouldShowSwapModal && (
+          <SwapModal
             link={venmoLink}
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}
             onCompleteClick={handleCompleteOrderClick} />
-        ) 
+        )
       }
 
       <IntentDetailsContainer>
@@ -87,12 +87,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             <Label>Requested:&nbsp;</Label>
             <Value>{requestedAmountLabel}</Value>
           </AmountContainer>
-          
+
           <AmountContainer>
             <Label>Send:&nbsp;</Label>
             <Value>{amountUSDToSend} on Venmo</Value>
           </AmountContainer>
-          
+
           <AmountContainer>
             <Label>Expires:&nbsp;</Label>
             <Value>{orderExpirationLabel}</Value>
@@ -117,7 +117,7 @@ const Container = styled.div`
 `;
 
 const IntentDetailsContainer = styled.div`
-  width: 100%; 
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -136,7 +136,7 @@ const ActionsContainer = styled.div`
 `;
 
 const AmountLabelsContainer = styled.div`
-  width: 100%; 
+  width: 100%;
   display: flex;
   gap: 2px;
   flex-direction: column;

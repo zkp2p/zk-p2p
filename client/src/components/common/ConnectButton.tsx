@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 import { Button } from '../Button';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 interface CustomConnectButtonProps {
@@ -13,6 +14,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   fullWidth = false,
   height = 48
 }) => {
+  const currentDeviceSize = useMediaQuery();
 
   return (
     <ConnectButton.Custom>
@@ -54,7 +56,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                     onClick={openConnectModal}
                     height={height}
                   >
-                    Connect Wallet
+                    {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
                   </Button>
                 );
               }

@@ -28,6 +28,9 @@ export const ThemedText = {
   Caption(props: TextProps) {
     return <TextWrapper fontWeight={400} fontSize={12} color="textPrimary" {...props} />
   },
+  TitleAccent(props: TextProps) {
+    return <TextWrapper fontWeight={600} fontSize={20} lineHeight="28px" color="textAccent" {...props} />
+  },
   HeadlineSmall(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize={20} lineHeight="28px" color="textPrimary" {...props} />
   },
@@ -41,7 +44,7 @@ export const ThemedText = {
     return <TextWrapper fontWeight={400} fontSize={36} color="textPrimary" {...props} />
   },
   Hero(props: TextProps) {
-    return <TextWrapper fontWeight={500} fontSize={48} color="textPrimary" {...props} />
+    return <TextWrapper fontWeight={500} fontSize={64} color="textPrimary" {...props} />
   },
   LabelSmall(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize={16} color="textSecondary" {...props} />

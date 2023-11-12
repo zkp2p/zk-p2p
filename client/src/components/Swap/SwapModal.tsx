@@ -9,14 +9,14 @@ import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '../../theme/text'
 import useRegistration from '@hooks/useRegistration'
 
-interface PaymentModalProps {
+interface SwapModalProps {
   link: string;
   amount: string;
   onBackClick: () => void
   onCompleteClick: () => void
 }
 
-export const PaymentModal: React.FC<PaymentModalProps> = ({
+export const SwapModal: React.FC<SwapModalProps> = ({
   link,
   amount,
   onBackClick,
