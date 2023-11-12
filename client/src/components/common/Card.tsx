@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'
 import { colors } from 'theme/colors'
 
-const StyledCard = styled.div`
+const StyledCard = styled.div<{ cursor: string }>`
 	display: flex;
 	background-color: #0D111C;
 	background-size: auto 100%;
@@ -19,7 +19,7 @@ const StyledCard = styled.div`
 	height: 260px;
 	border-radius: 24px;
 	border: 1px solid transparent;
-  cursor: pointer;
+  cursor: ${({ cursor }) => cursor}};
 `
 
 const TitleRow = styled.div`
@@ -60,12 +60,6 @@ const CardCTA = styled.div`
 const Icon = styled(SVGIconThemed)`
   width: 20px;
   height: 20px;
-  cursor: pointer;
-  transition: opacity 0.2s ease-in-out;
-
-  &:hover {
-    opacity: 0.6;
-  }
 `;
 
 const Card = ({
@@ -84,11 +78,14 @@ const Card = ({
   const navigate = useNavigate()
 
   return (
-		<StyledCard onClick={() =>
-      navigateTo
-        ? (navigateTo.startsWith('http') ? window.open(navigateTo, '_blank') : navigate(navigateTo))
-        : null
-    }>
+		<StyledCard
+      cursor={navigateTo ? 'pointer' : 'normal'}
+      onClick={() =>
+        navigateTo
+          ? (navigateTo.startsWith('http') ? window.open(navigateTo, '_blank') : navigate(navigateTo))
+          : null
+      }
+    >
 			<TitleRow>
 				<CardTitle>{title}</CardTitle>
 				{icon ? <Icon icon={icon} /> : null}

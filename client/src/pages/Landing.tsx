@@ -148,7 +148,7 @@ const LearnMoreContainer = styled.div`
 
 const CardGrid = styled.div<{ cols: number }>`
   display: grid;
-  gap: 12px;
+  gap: 32px;
   width: 100%;
   padding: 24px 0 0;
   max-width: 1440px;
