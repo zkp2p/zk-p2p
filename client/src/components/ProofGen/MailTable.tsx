@@ -203,7 +203,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               <EmptyMailContainer>
                 <Icon icon="mailbox" />
                 <ThemedText.LabelSmall textAlign="center">
-                  No Venmo emails found for this email address.
+                  No Venmo emails found.
                   Please ensure you are using an email attached to a valid Venmo account.
                 </ThemedText.LabelSmall>
               </EmptyMailContainer>
