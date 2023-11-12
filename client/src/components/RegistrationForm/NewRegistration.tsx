@@ -62,8 +62,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
-    address: rampAddress ?? undefined,
-    abi: rampAbi ?? undefined,
+    address: rampAddress,
+    abi: rampAbi,
     functionName: 'register',
     args: [
       ...reformatProofForChain(proof),

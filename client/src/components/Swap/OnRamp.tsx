@@ -71,8 +71,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const {
     data: verifyProofRaw,
   } = useContractRead({
-    address: sendProcessorAddress ?? undefined,
-    abi: sendProcessorAbi ?? undefined,
+    address: sendProcessorAddress,
+    abi: sendProcessorAbi,
     functionName: "verifyProof",
     args: [
       ...reformatProofForChain(proof),
@@ -89,8 +89,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
-    address: rampAddress ?? undefined,
-    abi: rampAbi ?? undefined,
+    address: rampAddress,
+    abi: rampAbi,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),
