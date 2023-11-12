@@ -142,7 +142,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             <div>
              { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS }
               <Link
-                href="https://zkp2p.gitbook.io/zkp2p/user-guides/faq#im-concerned-about-privacy-why-should-i-grant-read-access-to-my-email-inbox"
+                href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping/privacy-and-safety"
                 target="_blank"
               >
                 Privacy and Safety ↗
