@@ -9,6 +9,7 @@ import { ReactComponent as LightningIcon } from '../../icons/svg/dark-lightning.
 import { ReactComponent as CashIcon } from '../../icons/svg/dark-cash.svg';
 import { ReactComponent as PadlockIcon } from '../../icons/svg/dark-padlock.svg';
 import { ReactComponent as DownArrowIcon } from '../../icons/svg/dark-arrow-down.svg';
+import { ReactComponent as DarkMailboxLogo } from '../../icons/svg/dark-mailbox.svg';
 
 import './SVGIcon.css';
 
@@ -60,6 +61,10 @@ export const SVGIcon: React.FC<SVGIconProps> = ({
 
     case 'dark-arrow-down':
       Icon = DownArrowIcon;
+      break;
+
+    case 'dark-mailbox':
+      Icon = DarkMailboxLogo;
       break;
 
     default:
