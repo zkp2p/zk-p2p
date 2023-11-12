@@ -18,7 +18,7 @@ import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
-
+import { Inbox } from 'react-feather';
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
@@ -201,7 +201,7 @@ export const MailTable: React.FC<MailTableProps> = ({
 
             {fetchedEmails.length === 0 ? (
               <EmptyMailContainer>
-                <Icon icon="mailbox" />
+                <StyledInbox />
                 <ThemedText.LabelSmall textAlign="center">
                   No Venmo emails found.
                   Please ensure you are using an email attached to a valid Venmo account.
@@ -362,3 +362,7 @@ const LoginOrUploadButtonContainer = styled.div`
   margin: auto;
   gap: 1rem;
 `;
+
+const StyledInbox = styled(Inbox)`
+  color: #FFF;
+`
