@@ -51,7 +51,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
-  const [tx, setTx] = useState<string | null>(null);
+  const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -115,8 +115,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitOnRampAsync successful: ', data);
-      setTx(data.transactionHash);
-
       refetchUsdcBalance?.();
       refetchIntentHash?.();
     },
@@ -148,6 +146,12 @@ export const OnRamp: React.FC<OnRampProps> = ({
       setShouldConfigureRampWrite(false);
     }
   }, [verifyProofRaw]);
+
+  useEffect(() => {
+    if (submitOnRampResult?.hash) {
+      setSubmitRegistrationTransactionHash(submitOnRampResult.hash);
+    }
+  }, [submitOnRampResult])
 
   /*
    * Handlers

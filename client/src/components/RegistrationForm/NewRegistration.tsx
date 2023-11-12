@@ -36,7 +36,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
-  const [tx, setTx] = useState<string | null>(null);
+  const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
@@ -88,8 +88,6 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitRegistrationAsync successful: ', data);
-      setTx(data.transactionHash);
-
       refetchRampAccount?.();
     },
   });
@@ -107,6 +105,12 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       setShouldConfigureRegistrationWrite(false);
     }
   }, [proof, publicSignals]);
+
+  useEffect(() => {
+    if (submitRegistrationResult?.hash) {
+      setSubmitRegistrationTransactionHash(submitRegistrationResult.hash);
+    }
+  }, [submitRegistrationResult])
 
   /*
    * Handlers
