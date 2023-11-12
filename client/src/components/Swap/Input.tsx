@@ -1,6 +1,9 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
+import { TokenSelector } from './TokenSelector';
+import { PlatformSelector } from './PlatformSelector';
+
 
 interface InputProps {
   label: string;
@@ -32,39 +35,41 @@ export const Input: React.FC<InputProps> = ({
   Input.displayName = "Input";
 
   return (
-      <Container>
-        <LabelAndInputContainer>
-          <Label htmlFor={name}>
-              {label}
-          </Label>
+    <Container>
+      <LabelAndInputContainer>
+        <Label htmlFor={name}>
+            {label}
+        </Label>
 
-          <InputWrapper>
-            <StyledInput
-              type={type}
-              name={name}
-              id={name}
-              placeholder={placeholder}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onKeyDown={onKeyDown}
-              readOnly={readOnly}
-            />
-          </InputWrapper>
-        </LabelAndInputContainer>
+        <InputWrapper>
+          <StyledInput
+            type={type}
+            name={name}
+            id={name}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            onFocus={onFocus}
+            onKeyDown={onKeyDown}
+            readOnly={readOnly}
+          />
+        </InputWrapper>
+      </LabelAndInputContainer>
 
-        <AccessoryAndInputLabelWrapper>
+      <AccessoryAndInputLabelWrapper hasAccessoryLabel={accessoryLabel !== ""}>
+        {accessoryLabel !== "" && (
           <AccessoryLabel>
             {accessoryLabel}
           </AccessoryLabel>
+        )}
 
-          {inputLabel ? (
-            <InputLabel>
-              <span>{inputLabel}</span>
-            </InputLabel>
-          ) : null}
-        </AccessoryAndInputLabelWrapper>
-      </Container>
+        {inputLabel ? (
+          <PlatformSelector/>
+        ) : (
+          <TokenSelector/>
+        )}
+      </AccessoryAndInputLabelWrapper>
+    </Container>
   );
 };
 
@@ -143,23 +148,20 @@ const StyledInput = styled.input<StyledInputProps>`
   }
 `;
 
-const AccessoryAndInputLabelWrapper = styled.div`
+interface AccessoryAndInputLabelWrapperProps {
+  hasAccessoryLabel: boolean;
+}
+
+const AccessoryAndInputLabelWrapper = styled.div<AccessoryAndInputLabelWrapperProps>`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: ${props => props.hasAccessoryLabel ? 'space-between' : 'center'};
   color: #CED4DA;
-  margin: 9px 0px 2px 0px;
+  margin-top: 8px;
 `;
 
 const AccessoryLabel = styled.div`
   font-size: 14px;
   text-align: right;
   font-weight: 550;
-`;
-
-const InputLabel = styled.div`
-  pointer-events: none;
-  color: #9ca3af;
-  font-size: 20px;
-  text-align: right;
 `;

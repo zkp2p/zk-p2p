@@ -6,8 +6,7 @@ import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
-import { ThemedText } from '../../theme/text'
-import useRegistration from '@hooks/useRegistration'
+import { ThemedText } from '../../theme/text';
 
 interface SwapModalProps {
   link: string;
@@ -22,12 +21,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   onBackClick,
   onCompleteClick
 }) => {
-
-  /*
-   * Contexts
-   */
-  const { registrationHash } = useRegistration();
-
   /*
    * Handlers
    */
@@ -73,7 +66,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         </QRContainer>
         <QRLabel>
           <Link href={link} target="_blank">
-            Trouble reading the QR? ↗
+            Trouble scanning QR?
           </Link>
         </QRLabel>
 
@@ -83,7 +76,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </InstructionsTitle>
 
           <InstructionsLabel>
-            All onramp transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
+            All transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
             Payment receipt emails are required to complete the order. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
