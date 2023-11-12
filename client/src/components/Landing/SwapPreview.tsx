@@ -34,8 +34,6 @@ const SwapPreview: React.FC = () => {
             value={undefined}
             onChange={() => {}}
             type="number"
-            inputLabel="USDC"
-            accessoryLabel={''}
             placeholder="0"
             readOnly
           />
@@ -48,7 +46,6 @@ const SwapPreview: React.FC = () => {
             type="number"
             inputLabel="$"
             placeholder="0.00"
-            accessoryLabel="via Venmo"
             readOnly
           />
         </MainContentWrapper>
