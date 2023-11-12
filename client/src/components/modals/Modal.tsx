@@ -268,7 +268,7 @@ export const Modal: React.FC<ModalProps> = ({
             height={document.documentElement.scrollHeight}
           />
         </ConfettiContainer>
-        ) : null}
+      ) : null}
       <ModalContainer>
         <TitleCenteredRow>
           <button
