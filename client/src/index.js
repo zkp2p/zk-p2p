@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from "wagmi/providers/public";
-import { hardhat, goerli } from 'wagmi/chains'
+import { hardhat, goerli, base } from 'wagmi/chains'
 
 import {
   RainbowKitProvider,
@@ -22,11 +22,19 @@ import "./index.css";
 import App from "./App";
 
 
-const { chains, publicClient } = configureChains(
-  [
-    goerli,
-    hardhat
-  ],
+const getChainsForEnvironment = (env) => {
+  if (env === 'STAGING') {
+    return [goerli, hardhat];
+  } else if (env === 'PRODUCTION') {
+    return [base];
+  }
+  return [base, goerli, hardhat];
+};
+
+const env = process.env.DEPLOYMENT_ENVIRONMENT;
+const chains = getChainsForEnvironment(env);
+const { publicClient } = configureChains(
+  chains,
   [
     alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
     publicProvider()
