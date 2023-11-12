@@ -25,7 +25,7 @@ const defaultValues: SmartContractsValues = {
   sendProcessorAbi: null,
   usdcAddress: null,
   usdcAbi: null,
-  blockscanUrl: 'https://goerli.etherscan.io',
+  blockscanUrl: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

@@ -7,7 +7,6 @@ import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from '@hooks/useRampState';
 
-
 export const Swap: React.FC<{}> = (props) => {
   /*
     Contexts
