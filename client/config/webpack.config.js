@@ -627,6 +627,7 @@ module.exports = function (webpackEnv) {
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.PP_URL': JSON.stringify(process.env.PP_URL),
         'process.env.TOS_URL': JSON.stringify(process.env.TOS_URL),
+        'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
       }),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
