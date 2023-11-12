@@ -23,6 +23,8 @@ interface AccessoryButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
   icon?: iconType;
+  color?: string;
+  backgroundColor?: string;
 }
 
 export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
@@ -35,7 +37,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
   children,
   icon
 }) => {
-  
+
   /*
    * Helpers
    */
@@ -64,7 +66,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
         return null;
     }
   };
-  
+
   /*
    * Component
    */
@@ -74,6 +76,8 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
       fullWidth={fullWidth}
       height={height}
       disabled={disabled || loading}
+      backgroundColor={icon && icon === 'send' ? '#DF2E2D' : 'transparent'}
+      color={icon && icon === 'send' ? '#DF2E2D' : '#adb5bd'}
       onClick={onClick}
     >
       <ButtonAndLabelContainer>
@@ -93,8 +97,8 @@ const Container = styled.button<AccessoryButtonProps>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   border-radius: 18px;
-  background: transparent;
-  border: 1px solid #adb5bd;
+  background: ${({ backgroundColor }) => backgroundColor || 'transparent'};
+  border: 1px solid ${({ color }) => color};
   padding: 1px 14px 0px 14px;
   color: white;
   cursor: pointer;
@@ -114,7 +118,7 @@ const Container = styled.button<AccessoryButtonProps>`
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
 
-  ${({ disabled }) => 
+  ${({ disabled }) =>
     disabled && css`
       opacity: 0.5;
       cursor: not-allowed;
@@ -125,7 +129,7 @@ const Container = styled.button<AccessoryButtonProps>`
     `
   }
 
-  ${({ loading }) => 
+  ${({ loading }) =>
     loading && css`
       cursor: wait;
       background: #dedede;
@@ -147,8 +151,9 @@ const ButtonAndLabelContainer = styled.div`
 const StyledSend = styled(Send)`
   width: 12px;
   height: 12px;
-  color: #adb5bd;
+  color: white;
   margin-left: 2px;
+  border: 1px solid DF2E2D;
 `;
 
 const StyledChevronRight = styled(ChevronRight)`
