@@ -1,9 +1,9 @@
 export default {
-  "name": "base",
+  "name": "base_staging",
   "chainId": "8453",
   "contracts": {
     "ManagedKeyHashAdapter": {
-      "address": "0xAd7C20a218aD45c89A05b3738Dbf9af543E591b6",
+      "address": "0x28B23225877AedFe6A9FB1B480026aFdF9801213",
       "abi": [
         {
           "inputs": [
@@ -97,7 +97,7 @@ export default {
       ]
     },
     "NullifierRegistry": {
-      "address": "0x444f51AAE21057370c5e2d041F0a3D60bac42ea3",
+      "address": "0x3DD68Da97Eaf62Dd5cdD0767AA20b5AF665D0a34",
       "abi": [
         {
           "inputs": [],
@@ -313,7 +313,7 @@ export default {
       ]
     },
     "Poseidon": {
-      "address": "0x4Ae791BFF39a985bBbF72926C838764ED84DB4b0",
+      "address": "0xfdb7153989116F650387813013A047B6Ab56aEff",
       "abi": [
         {
           "constant": true,
@@ -360,7 +360,7 @@ export default {
       ]
     },
     "Ramp": {
-      "address": "0x7833C39FEf489Be40F639FEA5855847f340Fbe66",
+      "address": "0xa08d9952196ABECB2BaCD14188093314053f6335",
       "abi": [
         {
           "inputs": [
@@ -1691,7 +1691,7 @@ export default {
       ]
     },
     "VenmoRegistrationProcessor": {
-      "address": "0x801aE00F86E29002511B99C705E661A631208bBA",
+      "address": "0xC536C23C2dc76be96eb25A444c857053a591923E",
       "abi": [
         {
           "inputs": [
@@ -1953,7 +1953,7 @@ export default {
       ]
     },
     "VenmoSendProcessor": {
-      "address": "0x60631C48d09242b3E9ca028142bDBAb230E07815",
+      "address": "0x38074075e15057C83f9A6A7E31C2eB74E6362c57",
       "abi": [
         {
           "inputs": [
