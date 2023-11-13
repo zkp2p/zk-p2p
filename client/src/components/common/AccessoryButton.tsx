@@ -23,6 +23,26 @@ interface AccessoryButtonProps {
   onClick?: () => void;
   children?: React.ReactNode;
   icon?: iconType;
+  borderColor?: string;
+  backgroundColor?: string;
+  hoverColor?: string;
+  borderHoverColor?: string;
+}
+
+const primaryColors = {
+  backgroundColor: '#DF2E2D',
+  borderColor: '#DF2E2D',
+  borderHoverColor: '#DF2E2D',
+  hoverColor: 'white',
+  textColor: 'white',
+}
+
+const secondaryColors = {
+  backgroundColor: 'transparent',
+  borderColor: '#adb5bd',
+  borderHoverColor: '#adb5bd',
+  hoverColor: '#495057',
+  textColor: '#adb5bd',
 }
 
 export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
@@ -35,7 +55,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
   children,
   icon
 }) => {
-  
+
   /*
    * Helpers
    */
@@ -64,7 +84,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
         return null;
     }
   };
-  
+
   /*
    * Component
    */
@@ -74,9 +94,13 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
       fullWidth={fullWidth}
       height={height}
       disabled={disabled || loading}
+      backgroundColor={icon === 'send' ? primaryColors.backgroundColor : secondaryColors.backgroundColor}
+      borderColor={icon === 'send' ? primaryColors.borderColor : secondaryColors.borderColor}
+      hoverColor={icon === 'send' ? primaryColors.hoverColor : secondaryColors.hoverColor}
+      borderHoverColor={icon === 'send' ? primaryColors.borderHoverColor : secondaryColors.borderHoverColor}
       onClick={onClick}
     >
-      <ButtonAndLabelContainer>
+      <ButtonAndLabelContainer color={icon === 'send' ? primaryColors.textColor : secondaryColors.textColor}>
         {loading ? <Spinner /> : (
           <>
             {title && <span>{title}</span>}
@@ -93,19 +117,19 @@ const Container = styled.button<AccessoryButtonProps>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   border-radius: 18px;
-  background: transparent;
-  border: 1px solid #adb5bd;
+  background: ${({ backgroundColor }) => backgroundColor || 'transparent'};
+  border: 1px solid ${({ borderColor }) => borderColor};
   padding: 1px 14px 0px 14px;
   color: white;
   cursor: pointer;
   transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
   &:hover:not([disabled]) {
-    border: 1px solid #495057;
-    color: #495057;
+    border: 1px solid ${({ borderHoverColor }) => borderHoverColor};
+    color: ${({ hoverColor }) => hoverColor};
 
     * {
-      color: #495057;
+      color: ${({ hoverColor }) => hoverColor};
     }
   }
 
@@ -114,7 +138,7 @@ const Container = styled.button<AccessoryButtonProps>`
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
 
-  ${({ disabled }) => 
+  ${({ disabled }) =>
     disabled && css`
       opacity: 0.5;
       cursor: not-allowed;
@@ -125,7 +149,7 @@ const Container = styled.button<AccessoryButtonProps>`
     `
   }
 
-  ${({ loading }) => 
+  ${({ loading }) =>
     loading && css`
       cursor: wait;
       background: #dedede;
@@ -133,22 +157,23 @@ const Container = styled.button<AccessoryButtonProps>`
   }
 `;
 
-const ButtonAndLabelContainer = styled.div`
+const ButtonAndLabelContainer = styled.div<{ color: string }>`
   display: flex;
   align-items: center;
   font-size: 13px;
   font-family: 'Graphik';
   font-weight: 600;
   text-align: center;
-  color: #adb5bd;
+  color: ${({ color }) => color}};
   gap: 8px;
 `;
 
 const StyledSend = styled(Send)`
   width: 12px;
   height: 12px;
-  color: #adb5bd;
+  color: white;
   margin-left: 2px;
+  border: 1px solid #DF2E2D;
 `;
 
 const StyledChevronRight = styled(ChevronRight)`

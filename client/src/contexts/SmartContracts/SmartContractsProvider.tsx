@@ -35,7 +35,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
-    
+
     if (contractsForNetwork) {
       setRampAddress(contractsForNetwork.ramp as Address);
       setUsdcAddress(contractsForNetwork.fusdc as Address);
@@ -59,6 +59,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         sendProcessorAddress,
         usdcAddress,
         usdcAbi: erc20ABI as any,
+        blockscanUrl: process.env.BLOCKSCAN_URL || 'https://goerli.etherscan.io',
       }}
     >
       {children}

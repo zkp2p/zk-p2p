@@ -467,7 +467,7 @@ module.exports = function (webpackEnv) {
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
                 cacheCompression: false,
-                
+
                 // Babel sourcemaps are needed for debugging into node_modules
                 // code.  Without the options below, debuggers like VSCode
                 // show incorrect code and set breakpoints on the wrong lines.
@@ -628,6 +628,8 @@ module.exports = function (webpackEnv) {
         'process.env.PP_URL': JSON.stringify(process.env.PP_URL),
         'process.env.TOS_URL': JSON.stringify(process.env.TOS_URL),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
+        'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
+        'process.env.BLOCKSCAN_URL': JSON.stringify(process.env.BLOCKSCAN_URL),
       }),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),

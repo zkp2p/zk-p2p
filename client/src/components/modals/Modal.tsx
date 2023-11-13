@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@uidotdev/usehooks';
 
 import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
@@ -15,6 +16,7 @@ import { ProofGenerationStatus } from  "../ProofGen/types";
 import { Button } from "../Button";
 import { VerificationStepRow, VerificationState, VerificationStepType } from "./VerificationStepRow";
 import { LabeledTextArea } from '../legacy/LabeledTextArea';
+import useSmartContracts from "@hooks/useSmartContracts";
 
 
 interface ModalProps {
@@ -29,6 +31,8 @@ interface ModalProps {
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
   setStatus?: (status: ProofGenerationStatus) => void;
+  onVerifyEmailCompletion?: () => void;
+  transactionAddress?: string | null;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -41,16 +45,18 @@ export const Modal: React.FC<ModalProps> = ({
   buttonTitle,
   isSubmitProcessing,
   isSubmitSuccessful,
+  transactionAddress,
   setStatus,
-  handleSubmitVerificationClick = () => {}
+  handleSubmitVerificationClick = () => {},
+  onVerifyEmailCompletion,
 }) => {
-  const navigate = useNavigate();
-
   /*
    * Context
    */
 
   const { isProvingTypeFast } = useProofGenSettings();
+  const size = useWindowSize();
+  const { blockscanUrl } = useSmartContracts();
 
   /*
    * State
@@ -59,6 +65,7 @@ export const Modal: React.FC<ModalProps> = ({
   const [shouldShowProofAndSignals, setShouldShowProofAndSignals] = useState<boolean>(false);
 
   const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   /*
    * Handlers
@@ -80,6 +87,12 @@ export const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     if (isSubmitSuccessful && setStatus) {
+      if (process.env.SHOW_CONFETTI === 'true') {
+        setShowConfetti(true);
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
+      }
       setStatus("done");
     }
   }, [isSubmitSuccessful, setStatus])
@@ -89,13 +102,13 @@ export const Modal: React.FC<ModalProps> = ({
       case "transaction-configured":
         setCtaButtonTitle(buttonTitle);
         break;
-        
+
       case "done":
         const buttonDoneTitle = getButtonDoneTitle();
 
         setCtaButtonTitle(buttonDoneTitle);
         break;
-        
+
       default:
         setCtaButtonTitle(buttonTitle);
         break;
@@ -111,7 +124,7 @@ export const Modal: React.FC<ModalProps> = ({
       case "transaction-configured":
       case "done":
         return false;
-        
+
       default:
         return true;
     }
@@ -122,11 +135,11 @@ export const Modal: React.FC<ModalProps> = ({
       case "done":
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
-            return onBackClick();
+            return onVerifyEmailCompletion?.();
 
           case CircuitType.EMAIL_VENMO_REGISTRATION:
           default:
-            return navigate('/swap');
+            return onVerifyEmailCompletion?.();
         }
 
       default:
@@ -137,11 +150,11 @@ export const Modal: React.FC<ModalProps> = ({
   const getButtonDoneTitle = () => {
     switch (circuitType) {
       case CircuitType.EMAIL_VENMO_SEND:
-        return 'Go Back'
+        return 'Go to Swap'
 
       case CircuitType.EMAIL_VENMO_REGISTRATION:
       default:
-        return 'Go to Swap'
+        return 'Go to Registration'
     }
   };
 
@@ -153,10 +166,10 @@ export const Modal: React.FC<ModalProps> = ({
     console.log('Status update: ', status);
 
     let downloadStepState = VerificationState.DEFAULT;
-    let proveStepState = VerificationState.DEFAULT; 
+    let proveStepState = VerificationState.DEFAULT;
     let verificationStepState = VerificationState.DEFAULT;
     let submitStepState = VerificationState.DEFAULT;
-    
+
     switch (status) {
       case "not-started":
       case "generating-input":
@@ -197,7 +210,7 @@ export const Modal: React.FC<ModalProps> = ({
     }
 
     const verificationStepRows = [];
-    
+
     if (!isProvingTypeFast) {
       verificationStepRows.push(
         <VerificationStepRow
@@ -235,7 +248,7 @@ export const Modal: React.FC<ModalProps> = ({
         circuitType={circuitType}
       />
     );
-    
+
     return verificationStepRows;
   };
 
@@ -243,13 +256,23 @@ export const Modal: React.FC<ModalProps> = ({
     <ModalAndOverlayContainer>
       <Overlay onClick={handleOverlayClick}/>
 
+      {showConfetti ? (
+        <ConfettiContainer>
+          <Confetti
+            recycle={false}
+            numberOfPieces={500}
+            width={size.width ?? undefined}
+            height={document.documentElement.scrollHeight}
+          />
+        </ConfettiContainer>
+      ) : null}
       <ModalContainer>
         <TitleCenteredRow>
           <button
             onClick={handleOverlayClick}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
-            
+
             <StyledArrowLeft/>
           </button>
 
@@ -286,6 +309,17 @@ export const Modal: React.FC<ModalProps> = ({
           </ProofAndSignalsContainer>
           )
         }
+
+        {transactionAddress?.length ? (
+          <Link
+            href={`${blockscanUrl}/tx/${transactionAddress}`}
+            target="_blank"
+            rel="noopener noreferrer">
+              <ThemedText.LabelSmall textAlign="left">
+                View on Etherscan ↗
+              </ThemedText.LabelSmall>
+          </Link>
+        ) : null}
 
         <Button
           disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
@@ -342,4 +376,19 @@ const ProofAndSignalsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+`;
+
+const Link = styled.a`
+  white-space: pre;
+  display: inline-block;
+  color: #1F95E2;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ConfettiContainer = styled.div`
+  z-index: 20;
 `;

@@ -35,8 +35,10 @@ interface ProofGenerationFormProps {
   isSubmitProcessing: boolean;
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
+  onVerifyEmailCompletion?: () => void;
+  transactionAddress?: string | null;
 }
- 
+
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   circuitType,
   circuitRemoteFilePath,
@@ -48,7 +50,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   setPublicSignals,
   isSubmitProcessing,
   isSubmitSuccessful,
-  handleSubmitVerificationClick
+  handleSubmitVerificationClick,
+  onVerifyEmailCompletion,
+  transactionAddress,
 }) => {
   var Buffer = require("buffer/").Buffer; // note: the trailing slash is important!
 
@@ -61,7 +65,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     isEmailModeAuth,
   } = useProofGenSettings();
   const { setExtractedVenmoId } = useRegistration();
-  
+
   /*
    * State
    */
@@ -73,7 +77,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const [storedSignalsValue, setStoredSignalsValue] = useLocalStorage<string>(`${emailHash}_SIGNALS`, "");
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
-  
+
   const [status, setStatus] = useState<ProofGenerationStatus>("not-started");
   /*
    * Hooks
@@ -151,11 +155,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const getModalCtaTitle = () => {
     switch (circuitType) {
       case (CircuitType.EMAIL_VENMO_REGISTRATION):
-        return 'Submit Registration';
-      
+        return 'Complete Registration';
+
       case (CircuitType.EMAIL_VENMO_SEND):
       default:
-        return 'Submit Ramp';
+        return 'Complete Order';
     }
   };
 
@@ -196,7 +200,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setStatus("generating-proof");
 
     console.time("remote-proof-gen");
-    await remoteGenerateProof();  
+    await remoteGenerateProof();
     console.timeEnd("remote-proof-gen");
   }
 
@@ -307,14 +311,17 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             proof={proof}
             publicSignals={publicSignals}
             onBackClick={handleModalBackClicked}
+            onVerifyEmailCompletion={onVerifyEmailCompletion}
             status={status}
             circuitType={circuitType}
             buttonTitle={getModalCtaTitle()}
             isSubmitProcessing={isSubmitProcessing}
             isSubmitSuccessful={isSubmitSuccessful}
             setStatus={setStatus}
-            handleSubmitVerificationClick={handleSubmitVerificationClick} />
-        ) 
+            handleSubmitVerificationClick={handleSubmitVerificationClick}
+            transactionAddress={transactionAddress}
+          />
+        )
       }
 
       <VerticalDivider/>

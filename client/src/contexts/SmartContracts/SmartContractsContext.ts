@@ -13,6 +13,7 @@ interface SmartContractsValues {
   sendProcessorAbi: Abi | null;
   usdcAddress: Address | null;
   usdcAbi?: Abi | null;
+  blockscanUrl?: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -24,6 +25,7 @@ const defaultValues: SmartContractsValues = {
   sendProcessorAbi: null,
   usdcAddress: null,
   usdcAbi: null,
+  blockscanUrl: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

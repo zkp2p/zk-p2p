@@ -131,8 +131,8 @@ const Swap: React.FC<SwapProps> = ({
   // function signalIntent(uint256 _depositId, uint256 _amount, address _to)
   //
   const { config: writeIntentConfig } = usePrepareContractWrite({
-    address: rampAddress ?? undefined,
-    abi: rampAbi ?? undefined,
+    address: rampAddress,
+    abi: rampAbi,
     functionName: 'signalIntent',
     args: [
       currentQuote.depositId,

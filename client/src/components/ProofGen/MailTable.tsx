@@ -17,7 +17,8 @@ import { MailRow } from './MailRow';
 import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
-
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
+import { Inbox } from 'react-feather';
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
@@ -53,7 +54,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   /*
    * Handlers
    */
-  
+
   const handleRowClick = (index: number) => {
     setSelectedIndex(index);
 
@@ -75,11 +76,11 @@ export const MailTable: React.FC<MailTableProps> = ({
   function formatDateTime(unixTimestamp: string): string {
     const date = new Date(Number(unixTimestamp));
     const now = new Date();
-  
+
     const isToday = date.getDate() === now.getDate() &&
                     date.getMonth() === now.getMonth() &&
                     date.getFullYear() === now.getFullYear();
-  
+
     if (isToday) {
       return date.toLocaleTimeString(undefined, {
         hour: 'numeric',
@@ -97,9 +98,9 @@ export const MailTable: React.FC<MailTableProps> = ({
   async function fetchData() {
     try {
       const emailListResponse = await fetchVenmoEmailList(googleAuthToken.access_token, {
-        'q': `from:venmo@venmo.com subject:"You paid" after:${FETCH_VENMO_EMAILS_AFTER_DATE}` 
+        'q': `from:venmo@venmo.com subject:"You paid" after:${FETCH_VENMO_EMAILS_AFTER_DATE}`
       });
-      
+
       const emailIds = emailListResponse.messages.map(message => message.id);
       if (emailIds.length > 0) {
         const emails = await fetchEmailsRaw(googleAuthToken.access_token, emailIds);
@@ -127,14 +128,14 @@ export const MailTable: React.FC<MailTableProps> = ({
     setSelectedIndex(null);
     setEmailFull('');
   }, [fetchedEmails]);
-  
+
   /*
    * Component
    */
 
   return (
     <Container>
-      {!isGoogleAuthed || fetchedEmails.length === 0 ? (
+      {!isGoogleAuthed ? (
         <ErrorContainer>
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -157,7 +158,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             >
               Sign in with Google
             </Button>
-            
+
             <TextButton
               onClick={() => handleEmailModeChanged(false)}
               height={24}
@@ -198,18 +199,28 @@ export const MailTable: React.FC<MailTableProps> = ({
               />
             </TitleAndOAuthContainer>
 
-            <Table>
-              {fetchedEmails.map((email, index) => (
-                <MailRow
-                  key={index}
-                  subjectText={email.subject}
-                  dateText={formatDateTime(email.internalDate)}
-                  isSelected={index === selectedIndex}
-                  isLastRow={index === fetchedEmails.length - 1}
-                  onRowClick={() => handleRowClick(index)}
-                />
-              ))}
-            </Table>
+            {fetchedEmails.length === 0 ? (
+              <EmptyMailContainer>
+                <StyledInbox />
+                <ThemedText.LabelSmall textAlign="center">
+                  No Venmo emails found.
+                  Please ensure you are using an email attached to a valid Venmo account.
+                </ThemedText.LabelSmall>
+              </EmptyMailContainer>
+            ) : (
+              <Table>
+                {fetchedEmails.map((email, index) => (
+                  <MailRow
+                    key={index}
+                    subjectText={email.subject}
+                    dateText={formatDateTime(email.internalDate)}
+                    isSelected={index === selectedIndex}
+                    isLastRow={index === fetchedEmails.length - 1}
+                    onRowClick={() => handleRowClick(index)}
+                  />
+                ))}
+              </Table>
+            )}
           </TitleAndTableContainer>
 
           <ButtonContainer>
@@ -227,13 +238,25 @@ export const MailTable: React.FC<MailTableProps> = ({
   )
 }
 
+const EmptyMailContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0rem;
+  max-width: 75%;
+  margin: auto;
+  gap: 1rem;
+`;
+
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   align-self: flex-start;
   justify-content: center;
-  
+
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
@@ -251,6 +274,11 @@ const ErrorContainer = styled.div`
   min-height: 25vh;
   line-height: 1.3;
   gap: 36px;
+`;
+
+const Icon = styled(SVGIconThemed)`
+  width: 36px;
+  height: 36px;
 `;
 
 const IconStyle = css`
@@ -334,3 +362,7 @@ const LoginOrUploadButtonContainer = styled.div`
   margin: auto;
   gap: 1rem;
 `;
+
+const StyledInbox = styled(Inbox)`
+  color: #FFF;
+`

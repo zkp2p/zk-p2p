@@ -23,7 +23,7 @@ import useRegistration from '@hooks/useRegistration';
 interface NewRegistrationProps {
   handleBackClick: () => void;
 }
- 
+
 export const NewRegistration: React.FC<NewRegistrationProps> = ({
   handleBackClick
 }) => {
@@ -36,10 +36,11 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
+  const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
-  
+
   const [publicSignals, setPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
@@ -87,7 +88,6 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitRegistrationAsync successful: ', data);
-      
       refetchRampAccount?.();
     },
   });
@@ -105,6 +105,12 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       setShouldConfigureRegistrationWrite(false);
     }
   }, [proof, publicSignals]);
+
+  useEffect(() => {
+    if (submitRegistrationResult?.hash) {
+      setSubmitRegistrationTransactionHash(submitRegistrationResult.hash);
+    }
+  }, [submitRegistrationResult])
 
   /*
    * Handlers
@@ -163,6 +169,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         isSubmitProcessing={isSubmitRegistrationLoading || isSubmitRegistrationMining}
         isSubmitSuccessful={isSubmitRegistrationSuccessful}
         handleSubmitVerificationClick={handleRegistrationSubmit}
+        onVerifyEmailCompletion={handleBackClick}
+        transactionAddress={submitRegistrationTransactionHash}
       />
     </Container>
   );

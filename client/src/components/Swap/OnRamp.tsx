@@ -27,7 +27,7 @@ interface OnRampProps {
   handleBackClick: () => void;
   selectedIntentHash: string;
 }
- 
+
 export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
   selectedIntentHash
@@ -35,7 +35,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Context
    */
-  
+
   const {
     rampAddress,
     rampAbi,
@@ -51,13 +51,14 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
   const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
+  const [submitOnRampTransactionHash, setSubmitOnRampTransactionHash] = useState<string | null>(null);
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
-  
+
   const [publicSignals, setPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
@@ -114,7 +115,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitOnRampAsync successful: ', data);
-      
       refetchUsdcBalance?.();
       refetchIntentHash?.();
     },
@@ -147,6 +147,12 @@ export const OnRamp: React.FC<OnRampProps> = ({
     }
   }, [verifyProofRaw]);
 
+  useEffect(() => {
+    if (submitOnRampResult?.hash) {
+      setSubmitOnRampTransactionHash(submitOnRampResult.hash);
+    }
+  }, [submitOnRampResult])
+
   /*
    * Handlers
    */
@@ -162,7 +168,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   /*
    * Component
    */
-  
+
   return (
     <Container>
       <TitleContainer>
@@ -204,9 +210,11 @@ export const OnRamp: React.FC<OnRampProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
+        onVerifyEmailCompletion={handleBackClick}
         isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
+        transactionAddress={submitOnRampTransactionHash}
       />
     </Container>
   );
