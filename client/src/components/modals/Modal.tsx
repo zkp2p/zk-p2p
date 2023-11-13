@@ -87,6 +87,12 @@ export const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     if (isSubmitSuccessful && setStatus) {
+      if (process.env.SHOW_CONFETTI === 'true') {
+        setShowConfetti(true);
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 5000);
+      }
       setStatus("done");
     }
   }, [isSubmitSuccessful, setStatus])
@@ -245,15 +251,6 @@ export const Modal: React.FC<ModalProps> = ({
 
     return verificationStepRows;
   };
-
-  useEffect(() => {
-    if (transactionAddress?.length && process.env.SHOW_CONFETTI === 'true') {
-      setShowConfetti(true);
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 5000);
-    }
-  }, [transactionAddress])
 
   return (
     <ModalAndOverlayContainer>
