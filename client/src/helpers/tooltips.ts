@@ -31,8 +31,8 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  You have to register with your Venmo ID to use this protocol. Registration requires a confirmation email from Venmo with subject "You paid", which proves you own a Venmo account.
-  Your Venmo ID is hashed to conceal your identity.
+  You must register in order to use ZKP2P. Registration requires a confirmation email from Venmo with subject "You paid", which
+  is used to prove you own a Venmo account. Your Venmo ID is hashed to conceal your identity.
 `;
 
 export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `

@@ -78,7 +78,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             <Label>Offramper:&nbsp;</Label>
             <Value>
               <Link href={depositorEtherscanLink} target="_blank">
-                Etherscan ↗
+                Explorer ↗
               </Link>
             </Value>
           </AmountContainer>
