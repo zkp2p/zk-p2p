@@ -32,7 +32,7 @@ export const Landing: React.FC = () => {
   return (
     <PageWrapper>
       <Container>
-        <HeroContainer>
+        <HeroContainer style={{ width: currentDeviceSize === 'mobile' ? '90%' : '50%' }}>
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
@@ -135,7 +135,6 @@ const Container = styled.div`
 
 const HeroContainer = styled.div`
   height: 100vh;
-  width: 50%;
   display: flex;
   flex-direction: column;
   gap: 1rem;

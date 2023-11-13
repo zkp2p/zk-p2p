@@ -20,13 +20,13 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
       {withoutLinks ? (
         <NavBarCentered>
           <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
-            <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
+            <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
           </Logo>
         </NavBarCentered>
       ) : (
         <LogoAndNavItems>
           <Logo to="/" onClick={() => setSelectedItem('Landing')}>
-            <img src={`${process.env.PUBLIC_URL}/favicon.ico`} alt="logo" />
+            <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
           </Logo>
 
           <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
