@@ -629,7 +629,6 @@ module.exports = function (webpackEnv) {
         'process.env.TOS_URL': JSON.stringify(process.env.TOS_URL),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
-        'process.env.BLOCKSCAN_URL': JSON.stringify(process.env.BLOCKSCAN_URL),
       }),
       // This is necessary to emit hot updates (CSS and Fast Refresh):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),

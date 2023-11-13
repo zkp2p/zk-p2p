@@ -3,7 +3,7 @@ import { Address, erc20ABI } from 'wagmi';
 
 import { abi as rampAbi } from "@helpers/abi/ramp.abi";
 import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
-import { contractAddresses } from "@helpers/deployed_addresses";
+import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { DEFAULT_NETWORK } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 
@@ -28,6 +28,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [sendProcessorAddress, setSendProcessorAddress] = useState<Address | null>(null);
   const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address | null>(null);
   const [usdcAddress, setUsdcAddress] = useState<Address | null>(null);
+  const [blockscanUrl, setBlockscanUrl] = useState<string>(blockExplorerUrls[DEFAULT_NETWORK]);
 
   /*
    * Hooks
@@ -41,11 +42,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       setUsdcAddress(contractsForNetwork.fusdc as Address);
       setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
       setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
+      setBlockscanUrl(blockExplorerUrls[network || DEFAULT_NETWORK]);
     } else {
       setRampAddress(null);
       setUsdcAddress(null);
       setSendProcessorAddress(null);
       setRegistrationProcessorAddress(null);
+      setBlockscanUrl(blockExplorerUrls[DEFAULT_NETWORK]);
     }
   }, [network]);
 
@@ -59,7 +62,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         sendProcessorAddress,
         usdcAddress,
         usdcAbi: erc20ABI as any,
-        blockscanUrl: process.env.BLOCKSCAN_URL || 'https://goerli.etherscan.io',
+        blockscanUrl: blockscanUrl,
       }}
     >
       {children}

@@ -36,3 +36,9 @@ export const contractAddresses: Contracts = {
     "registrationProcessor": '0xAf0196f22a1383B779E3f833AD35BFf38722c8AD',
   },
 };
+
+export const blockExplorerUrls: { [network: string]: string } = {
+  "hardhat": "https://etherscan.io",
+  "goerli": "https://goerli.etherscan.io",
+  "base": "https://basescan.org"
+};
