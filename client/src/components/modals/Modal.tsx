@@ -310,15 +310,6 @@ export const Modal: React.FC<ModalProps> = ({
           )
         }
 
-        <Button
-          disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
-          loading={isSubmitProcessing}
-          onClick={getButtonHandler}
-          fullWidth={true}
-        >
-          {ctaButtonTitle}
-        </Button>
-
         {transactionAddress?.length ? (
           <Link
             href={`${blockscanUrl}/tx/${transactionAddress}`}
@@ -329,6 +320,15 @@ export const Modal: React.FC<ModalProps> = ({
               </ThemedText.LabelSmall>
           </Link>
         ) : null}
+
+        <Button
+          disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
+          loading={isSubmitProcessing}
+          onClick={getButtonHandler}
+          fullWidth={true}
+        >
+          {ctaButtonTitle}
+        </Button>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
