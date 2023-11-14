@@ -2,8 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Routes,
-  useNavigate
+  Routes
 } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -31,16 +30,6 @@ import "./App.css";
 import "./styles.css";
 import useMediaQuery from '@hooks/useMediaQuery';
 
-
-const RedirectToSwap = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate('/swap');
-  }, [navigate]);
-
-  return null;
-};
 
 const ExternalRedirect: React.FC<{ url: string }> = ({ url }) => {
   useEffect(() => {

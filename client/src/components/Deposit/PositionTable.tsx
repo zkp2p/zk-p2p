@@ -56,6 +56,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
 
   const [selectedDepositIdToWithdraw, setSelectedDepositIdToWithdraw] = useState<bigint>(0n);
+  const [selectedRowIndexToWithdraw, setSelectedRowIndexToWithdraw] = useState<number>(0);
   const [shouldConfigureWithdrawWrite, setShouldConfigureWithdrawWrite] = useState<boolean>(false);
 
   /*
@@ -110,12 +111,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   const {
     data: submitWithdrawResult,
-    // isLoading: isSubmitWithdrawLoading,
+    isLoading: isSubmitWithdrawLoading,
     writeAsync: writeSubmitWithdrawAsync,
   } = useContractWrite(writeWithdrawConfig);
 
   const {
-    // isLoading: isSubmitWithdrawMining
+    isLoading: isSubmitWithdrawMining
   } = useWaitForTransaction({
     hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
     onSuccess(data) {
@@ -137,6 +138,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     if (deposits) {
       const selectedDeposit = deposits[rowIndex];
       setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
+
+      setSelectedRowIndexToWithdraw(rowIndex);
 
       setShouldConfigureWithdrawWrite(true);
 
@@ -229,6 +232,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                       intentCount={positionRow.intentCount}
                       conversionRate={positionRow.conversionRate}
                       rowIndex={rowIndex}
+                      isCancelDepositLoading={rowIndex === selectedRowIndexToWithdraw && (isSubmitWithdrawLoading || isSubmitWithdrawMining)}
                       handleWithdrawClick={() => {
                         handleWithdrawClick(rowIndex)
                       }}

@@ -58,7 +58,9 @@ const GoogleAuthProvider = ({ children }: ProvidersProps) => {
       esl && console.log('logoOutGoogleAuth_1');
 
       googleLogOut();
-    } 
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedInEthereumAddress]);
 
   useEffect(() => {

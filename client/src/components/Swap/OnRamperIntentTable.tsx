@@ -128,6 +128,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIntent, depositStore]);
 
   /*
@@ -164,6 +166,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
           <AccessoryButton
             onClick={handleCancelClick}
             height={36}
+            loading={isSubmitCancelIntentLoading || isSubmitCancelIntentMining}
             title={'Cancel'}
             icon={'trash'}/>
         </IntentCountTitle>

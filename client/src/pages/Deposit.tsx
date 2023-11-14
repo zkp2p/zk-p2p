@@ -29,6 +29,8 @@ export const Deposit: React.FC<{}> = (props) => {
     if (shouldFetchDepositIntents) {
       refetchDepositIntents?.();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -43,7 +45,8 @@ export const Deposit: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px 0px;
+  padding: 12px 8px;
+  padding-bottom: 2rem;
 `;
 
 const Main = styled.div`

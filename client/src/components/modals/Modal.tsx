@@ -113,6 +113,8 @@ export const Modal: React.FC<ModalProps> = ({
         setCtaButtonTitle(buttonTitle);
         break;
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, buttonTitle]);
 
   /*

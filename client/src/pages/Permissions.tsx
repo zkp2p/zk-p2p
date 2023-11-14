@@ -20,6 +20,8 @@ export const Permissions: React.FC<{}> = (props) => {
     if (shouldFetchDeniedUsers) {
       refetchDeniedUsers?.();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

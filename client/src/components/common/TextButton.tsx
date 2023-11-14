@@ -1,13 +1,5 @@
 import React from "react";
 import styled, { css } from 'styled-components';
-import {
-  ChevronRight,
-  LogOut,
-  Send,
-  Trash2,
-  UserX,
-  RefreshCw
-} from 'react-feather';
 
 import Spinner from "@components/common/Spinner";
 

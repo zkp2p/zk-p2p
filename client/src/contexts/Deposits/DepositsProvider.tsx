@@ -221,7 +221,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       
       setDepositIntents([]);
     }
-  }, [depositIntentsRaw]);
+  }, [depositIntentsRaw, intentIndexDepositMap]);
 
   return (
     <DepositsContext.Provider
