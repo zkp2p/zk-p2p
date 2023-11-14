@@ -1,7 +1,12 @@
 import React from "react";
 import styled from 'styled-components/macro'
+import Link from '@mui/material/Link';
+import ellipsize from 'ellipsize';
+import { ENSName } from 'ethereum-ens-name';
 
+import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { alchemyMainnetEthersProvider } from "index";
 
 
 interface IntentRowProps {
@@ -22,11 +27,19 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   IntentRow.displayName = "IntentRow";
 
   /*
+   * Context
+   */
+
+  const { blockscanUrl } = useSmartContracts();
+
+  /*
    * Helpers
    */
 
   const requestedAmountLabel = `${amountUSDCToSend} USDC`;
-  const onRamperHashLabel = `$${amountUSDToReceive} from ${onRamper} on Venmo`;
+  const onRamperHashLabel = `$${amountUSDToReceive} from `;
+  const onRamperEtherscanLink = `${blockscanUrl}/address/${onRamper}`;
+  const onRamperLinkLabel = ` on Venmo`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*
@@ -45,7 +58,17 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
           <AmountContainer>
             <Label>Receive:&nbsp;</Label>
-            <Value>{onRamperHashLabel}</Value>
+            <Value>
+              {onRamperHashLabel}
+              <Link href={onRamperEtherscanLink} target="_blank">
+                <ENSName
+                  provider={alchemyMainnetEthersProvider}
+                  address={onRamper}
+                  customDisplay={(hash?: string) => ellipsize(hash, 9, { truncate: 'middle' })}
+                />
+              </Link>
+              {onRamperLinkLabel}
+            </Value>
           </AmountContainer>
 
           <AmountContainer>

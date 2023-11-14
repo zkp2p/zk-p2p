@@ -46,7 +46,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
 
-        const onRamper = truncateAddress(intent.onRamper);
+        const onRamper = intent.onRamper;
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC);
         const expirationTimestamp = formatExpiration(intent.timestamp);
@@ -72,10 +72,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   /*
    * Helpers
    */
-
-  function truncateAddress(onRamperAddress: string): string {
-    return `${onRamperAddress.slice(0, 4)}...${onRamperAddress.slice(-4)}`;
-  }
 
   function calculateExpiration(unixTimestamp: bigint, timePeriod: bigint): bigint {
     return unixTimestamp + timePeriod;

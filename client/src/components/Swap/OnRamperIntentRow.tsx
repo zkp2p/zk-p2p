@@ -33,11 +33,16 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   IntentRow.displayName = "IntentRow";
 
   /*
+   * Context
+   */
+
+  const { blockscanUrl } = useSmartContracts()
+
+  /*
    * State
    */
 
   const [shouldShowSwapModal, setShouldShowSwapModal] = useState<boolean>(false);
-  const { blockscanUrl } = useSmartContracts()
 
   /*
    * Helpers
@@ -87,7 +92,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
                   provider={alchemyMainnetEthersProvider}
                   address={depositorAddress}
                   customDisplay={(hash?: string) => ellipsize(hash, 9, { truncate: 'middle' })}
-                /> ↗
+                />
               </Link>
             </Value>
           </AmountContainer>
