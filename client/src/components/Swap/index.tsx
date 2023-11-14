@@ -14,7 +14,12 @@ import { Button } from '@components/Button'
 import { CustomConnectButton } from "@components/common/ConnectButton"
 import { ThemedText } from '../../theme/text'
 import { IndicativeQuote } from '../../contexts/Deposits/types'
-import { DEPOSIT_REFETCH_INTERVAL, VENMO_MAX_TRANSFER_SIZE, ZERO } from "@helpers/constants";
+import {
+  DEPOSIT_REFETCH_INTERVAL,
+  PRECISION,
+  VENMO_MAX_TRANSFER_SIZE,
+  ZERO
+} from "@helpers/constants";
 import { toBigInt, toUsdcString } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
@@ -29,6 +34,7 @@ export type SwapQuote = {
   requestedUSDC: string;
   fiatToSend: string;
   depositId: bigint;
+  conversionRate: bigint;
 };
 
 const QuoteState = {
@@ -67,7 +73,9 @@ const Swap: React.FC<SwapProps> = ({
    */
 
   const [quoteState, setQuoteState] = useState(QuoteState.DEFAULT);
-  const [currentQuote, setCurrentQuote] = useState<SwapQuote>({ requestedUSDC: '', fiatToSend: '' , depositId: ZERO });
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote>(
+    { requestedUSDC: '', fiatToSend: '' , depositId: ZERO, conversionRate: ZERO }
+  );
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
@@ -84,11 +92,13 @@ const Swap: React.FC<SwapProps> = ({
       if (value === "") {
         quoteCopy[field] = '';
         quoteCopy.depositId = ZERO;
+        quoteCopy.conversionRate = ZERO;
 
         setCurrentQuote(quoteCopy);
       } else if (value === ".") {
         quoteCopy[field] = "0.";
         quoteCopy.depositId = ZERO;
+        quoteCopy.conversionRate = ZERO;
 
         setCurrentQuote(quoteCopy);
       }
@@ -120,7 +130,7 @@ const Swap: React.FC<SwapProps> = ({
     event.preventDefault();
 
     // Reset form fields
-    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: ZERO });
+    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: ZERO, conversionRate: ZERO });
   };
 
   /*
@@ -206,15 +216,18 @@ const Swap: React.FC<SwapProps> = ({
         const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
+        const conversionRate = indicativeQuote.conversionRate;
 
         const isAmountToSendValid = usdAmountToSend !== undefined;
         const isDepositIdValid = depositId !== undefined;
+        const isConversionRateValid = conversionRate !== undefined;
 
-        if (isAmountToSendValid && isDepositIdValid) {
+        if (isAmountToSendValid && isDepositIdValid && isConversionRateValid) {
           setCurrentQuote(prevState => ({
             ...prevState,
             fiatToSend: usdAmountToSend,
-            depositId: depositId
+            depositId,
+            conversionRate,
           }));
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
@@ -300,6 +313,26 @@ const Swap: React.FC<SwapProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
+  function conversionRateToString(rate: bigint) {
+    const scaledValue = rate * (PRECISION); // 833333333333333333000000000000000000n
+    const reciprocal = (PRECISION * (100n * PRECISION)) / scaledValue; // 120n
+    const difference = reciprocal - 100n;
+  
+    if (difference > 0n) {
+      return difference.toString() + '%';
+    } else {
+      return '1:1';
+    }
+  }
+
+  const bestAvailableRateLabel = useMemo(() => {
+    if (currentQuote.conversionRate !== ZERO) {
+      return `Best available rate: ${conversionRateToString(currentQuote.conversionRate)}`
+    } else {
+      return '';
+    }
+  }, [currentQuote.conversionRate]);
+
   const getButtonText = () => {
     switch (quoteState) {
       case QuoteState.ORDER_COOLDOWN_PERIOD:
@@ -353,6 +386,8 @@ const Swap: React.FC<SwapProps> = ({
             onChange={event => handleInputChange(event, 'fiatToSend')}
             onKeyDown={handleEnterPress}
             type="number"
+            accessoryLabel={bestAvailableRateLabel}
+            accessoryLabelAlignment="left"
             inputLabel="$"
             placeholder="0.00"
             readOnly={true}
