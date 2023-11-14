@@ -5174,6 +5174,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@uidotdev/usehooks@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "@uidotdev/usehooks@npm:2.4.1"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: d381ce7d4853abe53127b70b0734935d1cfba97bfd2314e67aa42d4f35cd5b955712c6e968f435d8818bd51bea9cf7688b60eeb0db19bae2a6666a37ceee8b5f
+  languageName: node
+  linkType: hard
+
 "@vanilla-extract/css@npm:1.9.1":
   version: 1.9.1
   resolution: "@vanilla-extract/css@npm:1.9.1"
@@ -10021,6 +10031,7 @@ __metadata:
     "@types/tar-stream": ^2.2.2
     "@typescript-eslint/eslint-plugin": ^4.5.0
     "@typescript-eslint/parser": ^4.5.0
+    "@uidotdev/usehooks": ^2.4.1
     "@zkp2p/circuits-circom": ^0.0.10-rc1
     addressparser: ^1.0.1
     atob: ^2.1.2
@@ -10045,6 +10056,7 @@ __metadata:
     css-loader: 4.3.0
     dotenv: ^16.3.1
     dotenv-expand: 5.1.0
+    ellipsize: ^0.5.1
     eslint: ^7.11.0
     eslint-config-react-app: ^6.0.0
     eslint-plugin-flowtype: ^5.2.0
@@ -10056,6 +10068,7 @@ __metadata:
     eslint-plugin-testing-library: ^3.9.2
     eslint-webpack-plugin: ^2.5.2
     eth-crypto: ^2.6.0
+    ethereum-ens-name: ^0.0.3
     ethereumjs-abi: ^0.6.8
     ethers: ^5.7.1
     file-loader: 6.1.1
@@ -10090,6 +10103,8 @@ __metadata:
     puppeteer: 18.1
     react: ^17.0.2
     react-app-polyfill: ^2.0.0
+    react-circular-progressbar: ^2.1.0
+    react-confetti: ^6.1.0
     react-dev-utils: ^11.0.3
     react-dom: ^17.0.2
     react-dropzone: ^12.0.4
@@ -10251,6 +10266,13 @@ __metadata:
   version: 1.4.508
   resolution: "electron-to-chromium@npm:1.4.508"
   checksum: 4475eb18f5805d43f84d9542364045a39b183a14cd9f4626e0951ea61d0fa4f84a5ed579c2c32189f9af4a27a31041d09fed78f60930ac36b3baa08547dd3aa6
+  languageName: node
+  linkType: hard
+
+"ellipsize@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "ellipsize@npm:0.5.1"
+  checksum: 7e62c3bf7209e6763e4cb5f72b8ea4adeba41f50057b5c5ac6ef3dcfeadaef3b35051d5d4999d9d9e4f483d0dc851c195d7977a7c9ca2c559feda11ce410306b
   languageName: node
   linkType: hard
 
@@ -11161,6 +11183,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethereum-ens-name@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "ethereum-ens-name@npm:0.0.3"
+  dependencies:
+    ethers: ^5.4.5
+    zustand: ^3.5.9
+  peerDependencies:
+    react: ">=16.8"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 407b80a7068a9f07d8a35c9ca14530ddc56a0b3444ee0fd6d83c0956e8a048f68610d684da848e8e9c414dbc7b75342e2dfc910be0eff38bef77f10321c030ac
+  languageName: node
+  linkType: hard
+
 "ethereumjs-abi@npm:^0.6.8":
   version: 0.6.8
   resolution: "ethereumjs-abi@npm:0.6.8"
@@ -11199,7 +11236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:5.7.2, ethers@npm:^5.5.1, ethers@npm:^5.7.1":
+"ethers@npm:5.7.2, ethers@npm:^5.4.5, ethers@npm:^5.5.1, ethers@npm:^5.7.1":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -19239,6 +19276,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-circular-progressbar@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "react-circular-progressbar@npm:2.1.0"
+  peerDependencies:
+    react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: dc118010a8f94733daafac586c969f7e889ad0736d96a0fda79406ee62e9410848abfd3dee4887bb0ff46b99e1f8c86ee1afabc88dfbf4dcb95107b22de1d6d7
+  languageName: node
+  linkType: hard
+
+"react-confetti@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "react-confetti@npm:6.1.0"
+  dependencies:
+    tween-functions: ^1.2.0
+  peerDependencies:
+    react: ^16.3.0 || ^17.0.1 || ^18.0.0
+  checksum: 24b6975df144d2bf09d8e1c95ddc49e547775f911efaa8d96b49e522659d931539e9d9e48cc0db3a01f3a671be7e3824e6e728db85096f5527db5d1c69ebb153
+  languageName: node
+  linkType: hard
+
 "react-dev-utils@npm:^11.0.3":
   version: 11.0.4
   resolution: "react-dev-utils@npm:11.0.4"
@@ -22597,6 +22654,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tween-functions@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "tween-functions@npm:1.2.0"
+  checksum: 880708d680eff5c347ddcb9f922ad121703a91c78ce308ed309073e73a794b633eb0b80589a839365803f150515ad34c9646809ae8a0e90f09e62686eefb1ab6
+  languageName: node
+  linkType: hard
+
 "tweetnacl@npm:^0.14.3, tweetnacl@npm:~0.14.0":
   version: 0.14.5
   resolution: "tweetnacl@npm:0.14.5"
@@ -24532,6 +24596,18 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^3.5.9":
+  version: 3.7.2
+  resolution: "zustand@npm:3.7.2"
+  peerDependencies:
+    react: ">=16.8"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 18f025b1b666a311121d3855303ff58e6a21fd107920ca474307e86984c13338d6c4cfa5cdf13382a9e0f76821f2554a12d4d200a98a66b58637e729f149797b
   languageName: node
   linkType: hard
 

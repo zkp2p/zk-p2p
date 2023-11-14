@@ -1,9 +1,9 @@
-export type ProofGenerationStatus = 
+export type ProofGenerationStatus =
   | "not-started"
   | "generating-input"
+  | "uploading-proof-files"
   | "downloading-proof-files"
   | "generating-proof"
-  | "verifying-proof"
   | "transaction-configured"
   | "transaction-mining"
   | "error-bad-input"
