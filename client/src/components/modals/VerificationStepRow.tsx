@@ -90,6 +90,10 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
    * Helpers
    */
 
+  const shouldShowProgressCircle = (percentage: number) => {
+    return percentage < 99 && type !== VerificationStepType.SUBMIT
+  }
+
   const getEstimatedTimesMs = () => {
     switch (type) {
       case VerificationStepType.DOWNLOAD:
@@ -137,13 +141,13 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return <StyledCircle progress={progress} />;
 
       case VerificationState.LOADING:
-        return percentage < 99 && type !== VerificationStepType.SUBMIT ? (
+        return shouldShowProgressCircle(percentage) ? (
           <CircularProgressbarWithChildren
             maxValue={99}
             styles={{
               root: {
-                height: 33,
-                width: 33,
+                height: 32,
+                width: 32,
               },
               text: {
                 fontSize: 32,
@@ -159,7 +163,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
             <Percentage>{`${percentage}`}</Percentage>
           </CircularProgressbarWithChildren>
         ) : (
-          <Spinner size={36} />
+          <Spinner size={24} />
         )
 
       case VerificationState.COMPLETE:
@@ -256,6 +260,7 @@ const Container = styled.div`
   flex-direction: row;
   align-items: center;
   padding: 1rem;
+  margin-top: 4px;
   gap: 1.25rem;
 `;
 
@@ -268,7 +273,6 @@ const ActionsContainer = styled.div`
 const TitleAndSubtitleContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 4px;
   gap: 4px;
 `;
 
@@ -283,14 +287,15 @@ const Subtitle = styled.span<{ progress: string }>`
 `;
 
 const IconBase = styled.div<{ progress: string }>`
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   color: ${props => (props.progress === VerificationState.DEFAULT ? '#6C757D' : '#FFFFFF')};
 `;
 
 const Percentage = styled.div`
   font-size: 12px;
   color: #4BB543;
+  margin-top: 1px;
 `
 
 const StyledDownload = styled(IconBase).attrs({ as: Download })``;

@@ -80,7 +80,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
           <AmountContainer>
-            <Label>Counterparty:&nbsp;</Label>
+            <Label>Depositor:&nbsp;</Label>
             <Value>
               <Link href={depositorEtherscanLink} target="_blank">
                 <ENSName
