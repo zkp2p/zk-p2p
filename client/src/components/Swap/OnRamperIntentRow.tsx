@@ -40,7 +40,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
-  const depositorEtherscanLink = `https://etherscan.io/address/${depositorAddress}`;
+  const depositorEtherscanLink = `https://basescan.io/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*
