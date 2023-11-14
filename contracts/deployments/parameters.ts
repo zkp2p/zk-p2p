@@ -17,7 +17,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
 export const MAX_ONRAMP_AMOUNT: any = {
   "localhost": usdc(999),
   "goerli": usdc(999),
-  "base": usdc(999),
+  "base": usdc(250),
   "base_staging": usdc(999),
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
@@ -29,7 +29,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
 export const ONRAMP_COOL_DOWN_PERIOD: any = {
   "localhost": THREE_MINUTES_IN_SECONDS,
   "goerli": ONE_DAY_IN_SECONDS,
-  "base": ONE_DAY_IN_SECONDS,
+  "base": ONE_DAY_IN_SECONDS.div(4),
   "base_staging": BigNumber.from(180),
 };
 export const SUSTAINABILITY_FEE: any = {
@@ -56,5 +56,7 @@ export const USDC: any = {
   "base": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   "base_staging": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
 };
+
+// For Goerli and localhost
 export const USDC_MINT_AMOUNT = usdc(1000000);
 export const USDC_RECIPIENT = "0x1d2033DC6720e3eCC14aBB8C2349C7ED77E831ad";
