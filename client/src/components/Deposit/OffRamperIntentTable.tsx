@@ -65,6 +65,8 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositIntents, deposits]);
 
   /*

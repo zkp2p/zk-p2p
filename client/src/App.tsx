@@ -2,8 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Routes,
-  useNavigate
+  Routes
 } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 

@@ -1,16 +1,9 @@
 import { Link } from "react-router-dom";
-import React, { useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { MenuDropdown } from "../MenuDropdown"
 
-
-type Nav = {
-  name: string;
-  routeName: string;
-  href: string;
-  children?: Nav[];
-}
 
 interface NavItemProps {
   vertical?: boolean;
@@ -23,7 +16,7 @@ export const NavItem: React.FC<NavItemProps> = ({
   selectedItem,
   setSelectedItem
 }) => {
-  const [navigationItems, setNavigationItems] = useState<Nav[]>([
+  const navigationItems = [
     {
       name: 'Swap',
       routeName: 'swap',
@@ -39,7 +32,7 @@ export const NavItem: React.FC<NavItemProps> = ({
       routeName: 'register',
       href: '/register',
     }
-  ]);
+  ];
 
   return (
     <HeaderLinksBox vertical={vertical}>
