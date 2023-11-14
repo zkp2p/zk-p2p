@@ -35,7 +35,7 @@ export const MenuDropdown = () => {
         <NavDropdown>
           <NavDropdownItemContainer>
             <NavDropdownItem
-              href="https://zkp2p.gitbook.io/zkp2p/"
+              href="https://docs.zkp2p.xyz/zkp2p/"
               target="_blank"
               rel="noopener noreferrer">
                 <ThemedText.LabelSmall textAlign="left">

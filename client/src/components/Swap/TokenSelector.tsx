@@ -57,7 +57,7 @@ export const TokenSelector: React.FC = () => {
 
             <InstructionsLabel>
               We currently only support USDC, but will be adding support for other tokens. Please let us know which tokens
-              you are interested in seeing ZKP2P add support for. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+              you are interested in seeing ZKP2P add support for. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
                 Give feedback ↗
               </Link>
             </InstructionsLabel>

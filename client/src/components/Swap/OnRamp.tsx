@@ -192,7 +192,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             {PROOF_FORM_TITLE_SEND_INSTRUCTIONS}
-            <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
           </NumberedStep>
