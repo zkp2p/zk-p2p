@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import merge from 'lodash.merge';
+import { ethers } from 'ethers';
 
 import {
   WagmiConfig,
@@ -21,7 +22,6 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
 import App from "./App";
 
-
 const getChainsForEnvironment = (env) => {
   if (env === 'STAGING') {
     return [goerli, hardhat];
@@ -40,6 +40,9 @@ const { publicClient } = configureChains(
     publicProvider()
   ]
 );
+
+export const alchemyMainnetEthersProvider =
+  new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY)
 
 const { connectors } = getDefaultWallets({
   appName: 'ZK P2P On-Ramp',

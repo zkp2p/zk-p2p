@@ -197,6 +197,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }
 
   const generateFastProof = async () => {
+    setStatus("uploading-proof-files")
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     setStatus("generating-proof");
 
     console.time("remote-proof-gen");
@@ -205,8 +209,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }
 
   const processRemoteProofGenerationResponse = (response: any) => {
-    setStatus("verifying-proof");
-
     setAndStoreProvingState(response.proof, response.public_values)
 
     setStatus("transaction-configured");

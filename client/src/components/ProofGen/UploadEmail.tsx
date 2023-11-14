@@ -10,7 +10,7 @@ import { ThemedText } from '../../theme/text';
 import { NumberedStep } from "../common/NumberedStep";
 
 import { TextButton } from '@components/common/TextButton';
-import { INPUT_MODE_TOOLTIP, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
+import { INPUT_MODE_TOOLTIP, PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/constants";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import Link from '@mui/material/Link';
@@ -22,7 +22,7 @@ interface UploadEmailProps {
   handleVerifyEmailClicked: () => void;
   isProofModalOpen: boolean;
 }
- 
+
 export const UploadEmail: React.FC<UploadEmailProps> = ({
   email,
   setEmail,
@@ -122,8 +122,8 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         </TitleAndEmailSwitchRowContainer>
 
         <NumberedStep>
-          {PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS}
-          <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/manual-email-input" target="_blank">
+          {isInputModeDrag ? PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS : PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS}
+          <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping/manual-email-input#download-and-upload-email" target="_blank">
             Guide ↗
           </Link>
         </NumberedStep>
@@ -144,7 +144,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
           />
         )}
       </EmailTitleRowAndTextAreaContainer>
-      
+
       <ButtonContainer>
         <Button
           disabled={emailInput.length === 0}

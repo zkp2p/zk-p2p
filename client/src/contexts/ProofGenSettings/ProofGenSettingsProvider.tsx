@@ -15,17 +15,17 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   /*
    * State
    */
-  
+
   const storedProvingTypeSetting = localStorage.getItem('isProvingTypeRemote');
   const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   const storedEmailModeSetting = localStorage.getItem('isEmailModeAuth');
-  
+
   const [isProvingTypeRemote, setIsProvingTypeRemote] = useState<boolean>(
     storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
   );
 
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
-    storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : true
+    storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : false
   );
 
   const [isEmailModeAuth, setIsEmailModeAuth] = useState<boolean>(

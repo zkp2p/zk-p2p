@@ -202,7 +202,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             {fetchedEmails.length === 0 ? (
               <EmptyMailContainer>
                 <StyledInbox />
-                <ThemedText.LabelSmall textAlign="center">
+                <ThemedText.LabelSmall textAlign="center" lineHeight={1.3}>
                   No Venmo emails found.
                   Please ensure you are using an email attached to a valid Venmo account.
                 </ThemedText.LabelSmall>

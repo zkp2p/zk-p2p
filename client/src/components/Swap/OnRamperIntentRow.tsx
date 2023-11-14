@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
+import ellipsize from 'ellipsize';
+import { ENSName } from 'ethereum-ens-name';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
+import useSmartContracts from "@hooks/useSmartContracts";
+import { alchemyMainnetEthersProvider } from "index";
 
 
 interface IntentRowProps {
@@ -33,6 +37,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const [shouldShowSwapModal, setShouldShowSwapModal] = useState<boolean>(false);
+  const { blockscanUrl } = useSmartContracts()
 
   /*
    * Helpers
@@ -40,7 +45,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
-  const depositorEtherscanLink = `https://etherscan.io/address/${depositorAddress}`;
+  const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*
@@ -75,10 +80,14 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
           <AmountContainer>
-            <Label>Offramper:&nbsp;</Label>
+            <Label>Depositor:&nbsp;</Label>
             <Value>
               <Link href={depositorEtherscanLink} target="_blank">
-                Explorer ↗
+                <ENSName
+                  provider={alchemyMainnetEthersProvider}
+                  address={depositorAddress}
+                  customDisplay={(hash?: string) => ellipsize(hash, 9, { truncate: 'middle' })}
+                /> ↗
               </Link>
             </Value>
           </AmountContainer>

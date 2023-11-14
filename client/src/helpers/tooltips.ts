@@ -76,7 +76,11 @@ export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `
-  Select "Download message" and drag the .eml file here or "Show original" and paste the contents directly.
+  Follow this guide to download and upload the email.
+`;
+
+export const PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS = `
+  Follow this guide to copy and paste the email.
 `;
 
 /*
@@ -88,8 +92,16 @@ export const PROOF_MODAL_DOWNLOAD_TITLE = `
 `;
 
 export const PROOF_MODAL_DOWNLOAD_SUBTITLE = `
-  Keys download (1.7GB) will complete in 3 minutes
+Keys download (1.7GB) will complete in 3 minutes
 `;
+
+export const PROOF_MODAL_UPLOAD_TITLE = `
+  Uploading Emails
+`
+
+export const PROOF_MODAL_UPLOAD_SUBTITLE = `
+  Emails sent to remote server for proving
+`
 
 export const PROOF_MODAL_PROVE_TITLE = `
   Validating Payment
@@ -100,7 +112,7 @@ export const PROOF_MODAL_PROVE_SUBTITLE_PRIVATE = `
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_FAST = `
-  Fast validation will take approximately 30 seconds
+  Fast validation will take approximately 2-3 minutes
 `;
 
 export const PROOF_MODAL_VERIFY_TITLE = `

@@ -166,8 +166,8 @@ export const Modal: React.FC<ModalProps> = ({
     console.log('Status update: ', status);
 
     let downloadStepState = VerificationState.DEFAULT;
+    let uploadStepState = VerificationState.DEFAULT;
     let proveStepState = VerificationState.DEFAULT;
-    let verificationStepState = VerificationState.DEFAULT;
     let submitStepState = VerificationState.DEFAULT;
 
     switch (status) {
@@ -177,34 +177,34 @@ export const Modal: React.FC<ModalProps> = ({
         downloadStepState = VerificationState.LOADING;
         break;
 
-      case "generating-proof":
+      case "uploading-proof-files":
         downloadStepState = VerificationState.COMPLETE;
-        proveStepState = VerificationState.LOADING;
+        uploadStepState = VerificationState.LOADING;
         break;
 
-      case "verifying-proof":
+      case "generating-proof":
         downloadStepState = VerificationState.COMPLETE;
-        proveStepState = VerificationState.COMPLETE;
-        verificationStepState = VerificationState.LOADING;
+        uploadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.LOADING;
         break;
 
       case "transaction-configured":
         downloadStepState = VerificationState.COMPLETE;
+        uploadStepState = VerificationState.COMPLETE;
         proveStepState = VerificationState.COMPLETE;
-        verificationStepState = VerificationState.COMPLETE;
         break;
 
       case "transaction-mining":
         downloadStepState = VerificationState.COMPLETE;
+        uploadStepState = VerificationState.COMPLETE;
         proveStepState = VerificationState.COMPLETE;
-        verificationStepState = VerificationState.COMPLETE;
         submitStepState = VerificationState.LOADING;
         break;
 
       case "done":
         downloadStepState = VerificationState.COMPLETE;
+        uploadStepState = VerificationState.COMPLETE;
         proveStepState = VerificationState.COMPLETE;
-        verificationStepState = VerificationState.COMPLETE;
         submitStepState = VerificationState.COMPLETE;
         break;
     }
@@ -214,7 +214,7 @@ export const Modal: React.FC<ModalProps> = ({
     if (!isProvingTypeFast) {
       verificationStepRows.push(
         <VerificationStepRow
-          key={0}
+          key={VerificationStepType.DOWNLOAD}
           type={VerificationStepType.DOWNLOAD}
           progress={downloadStepState}
           circuitType={circuitType}
@@ -222,9 +222,20 @@ export const Modal: React.FC<ModalProps> = ({
       );
     }
 
+    if (isProvingTypeFast) {
+      verificationStepRows.push(
+        <VerificationStepRow
+          key={VerificationStepType.UPLOAD}
+          type={VerificationStepType.UPLOAD}
+          progress={uploadStepState}
+          circuitType={circuitType}
+        />
+      );
+    }
+
     verificationStepRows.push(
       <VerificationStepRow
-        key={1}
+        key={VerificationStepType.PROVE}
         type={VerificationStepType.PROVE}
         progress={proveStepState}
         circuitType={circuitType}
@@ -233,16 +244,7 @@ export const Modal: React.FC<ModalProps> = ({
 
     verificationStepRows.push(
       <VerificationStepRow
-        key={2}
-        type={VerificationStepType.VERIFY}
-        progress={verificationStepState}
-        circuitType={circuitType}
-      />
-    );
-
-    verificationStepRows.push(
-      <VerificationStepRow
-        key={3}
+        key={VerificationStepType.SUBMIT}
         type={VerificationStepType.SUBMIT}
         progress={submitStepState}
         circuitType={circuitType}

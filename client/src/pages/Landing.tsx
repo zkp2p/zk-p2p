@@ -124,7 +124,7 @@ const PageWrapper = styled.div`
 
 const Container = styled.div`
   width: 100%;
-  min-height: 535px;  
+  min-height: 535px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -156,7 +156,7 @@ const SwapPreviewContainer = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-  width: 150px;  
+  width: 150px;
   display: grid;
   padding-top: 1rem;
 `;
@@ -171,10 +171,11 @@ const HeroTextContainer = styled.div`
 
 const HeartIcon = styled.span`
   color: #DF2E2D;
+  margin-top: -2px;
 `;
 
 const LearnMoreContainer = styled.div`
-  display: flex;  
+  display: flex;
   align-items: center;
   color: rgb(94, 94, 94);
   cursor: pointer;
