@@ -57,6 +57,7 @@ export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, de
       return {
         depositId: storedDeposit.depositId,
         usdAmountToSend,
+        conversionRate,
       } as IndicativeQuote;
     }
   }

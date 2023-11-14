@@ -81,14 +81,14 @@ const LogoAndTokenLabel = styled.div`
   border-radius: 24px;
   background: #0D111C;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 4px 4px;
-  gap: 4px;
+  padding: 4px 6px 4px 4px;
+  gap: 6px;
 `;
 
 const TokenLabel = styled.div`
   display: flex;
   align-items: center;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #FFF;
   padding-top: 2px;
@@ -99,6 +99,8 @@ const StyledX = styled(X)`
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
+  width: 20px;
+  height: 20px;
   color: #FFF;
 `;
 

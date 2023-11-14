@@ -17,6 +17,7 @@ interface InputProps {
   inputLabel?: string;
   readOnly?: boolean;
   accessoryLabel?: string;
+  accessoryLabelAlignment?: 'left' | 'right';
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -31,61 +32,67 @@ export const Input: React.FC<InputProps> = ({
   type = "text",
   readOnly = false,
   accessoryLabel="",
+  accessoryLabelAlignment = "right",
 }: InputProps) => {
   Input.displayName = "Input";
 
   return (
     <Container>
-      <LabelAndInputContainer>
-        <Label htmlFor={name}>
-            {label}
-        </Label>
+      <LabelInputAndAccessoryContainer>
+        <LabelAndInputContainer>
+          <Label htmlFor={name}>
+              {label}
+          </Label>
 
-        <InputWrapper>
-          <StyledInput
-            type={type}
-            name={name}
-            id={name}
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
-            onFocus={onFocus}
-            onKeyDown={onKeyDown}
-            readOnly={readOnly}
-          />
-        </InputWrapper>
-      </LabelAndInputContainer>
+          <InputWrapper>
+            <StyledInput
+              type={type}
+              name={name}
+              id={name}
+              placeholder={placeholder}
+              value={value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onKeyDown={onKeyDown}
+              readOnly={readOnly}
+            />
+          </InputWrapper>
+        </LabelAndInputContainer>
 
-      <AccessoryAndInputLabelWrapper hasAccessoryLabel={accessoryLabel !== ""}>
-        {accessoryLabel !== "" && (
-          <AccessoryLabel>
-            {accessoryLabel}
-          </AccessoryLabel>
-        )}
-
-        {inputLabel ? (
-          <PlatformSelector/>
-        ) : (
-          <TokenSelector/>
-        )}
-      </AccessoryAndInputLabelWrapper>
+        <SelectorAccessory hasAccessoryLabel={accessoryLabel !== ""}>
+          {inputLabel ? (
+            <PlatformSelector/>
+          ) : (
+            <TokenSelector/>
+          )}
+        </SelectorAccessory>
+      </LabelInputAndAccessoryContainer>
+      
+      <AccessoryContainer alignment={accessoryLabelAlignment}>
+        {accessoryLabel}
+      </AccessoryContainer>
     </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  flex-direction: column;
   padding: 16px;
   border-radius: 16px;
   border: 1.5px solid #98a1c03d;
   background-color: #131A2A;
+  gap: 8px;
 
   &:focus-within {
     border-color: #CED4DA;
     border-width: 1px;
   }
+`;
+
+const LabelInputAndAccessoryContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 const LabelAndInputContainer = styled.div`
@@ -97,7 +104,6 @@ const Label = styled.label`
   display: flex;
   font-size: 14px;
   font-weight: 550;
-  margin-top: 8px;
   color: #CED4DA;
 `;
 
@@ -107,7 +113,7 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  margin-top: 8px;
+  padding-top: 8px;
 `;
 
 interface StyledInputProps {
@@ -148,20 +154,22 @@ const StyledInput = styled.input<StyledInputProps>`
   }
 `;
 
-interface AccessoryAndInputLabelWrapperProps {
+interface SelectorAccessoryProps {
   hasAccessoryLabel: boolean;
 }
 
-const AccessoryAndInputLabelWrapper = styled.div<AccessoryAndInputLabelWrapperProps>`
+const SelectorAccessory = styled.div<SelectorAccessoryProps>`
   display: flex;
   flex-direction: column;
-  justify-content: ${props => props.hasAccessoryLabel ? 'space-between' : 'center'};
+  justify-content: center;
   color: #CED4DA;
-  margin-top: 8px;
+  padding-top: 8px;
 `;
 
-const AccessoryLabel = styled.div`
+const AccessoryContainer = styled.div<{ alignment?: string }>`
+  padding-right: 4px;
   font-size: 14px;
-  text-align: right;
-  font-weight: 550;
+  text-align: ${({ alignment }) => alignment || 'right'};
+  font-weight: 500;
+  color: #6C757D;
 `;
