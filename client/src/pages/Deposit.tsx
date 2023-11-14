@@ -43,7 +43,8 @@ export const Deposit: React.FC<{}> = (props) => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px 0px;
+  padding: 12px 8px;
+  padding-bottom: 2rem;
 `;
 
 const Main = styled.div`

@@ -12,6 +12,7 @@ interface PositionRowProps {
   intentCount: string;
   conversionRate: string;
   rowIndex: number;
+  isCancelDepositLoading: boolean;
   handleWithdrawClick: () => void;
 }
 
@@ -22,6 +23,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   intentCount,
   conversionRate,
   rowIndex,
+  isCancelDepositLoading,
   handleWithdrawClick
 }: PositionRowProps) => {
   PositionRow.displayName = "PositionRow";
@@ -63,6 +65,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
         <AccessoryButton
           onClick={handleWithdrawClick}
           height={36}
+          loading={isCancelDepositLoading}
           title={'Withdraw'}
           icon={'logout'}/>
       </ActionsContainer>

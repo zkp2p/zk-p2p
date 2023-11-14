@@ -32,16 +32,6 @@ import "./styles.css";
 import useMediaQuery from '@hooks/useMediaQuery';
 
 
-const RedirectToSwap = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate('/swap');
-  }, [navigate]);
-
-  return null;
-};
-
 const ExternalRedirect: React.FC<{ url: string }> = ({ url }) => {
   useEffect(() => {
     window.location.href = url;
