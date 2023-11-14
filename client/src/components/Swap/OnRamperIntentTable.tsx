@@ -128,6 +128,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     } else {
       setIntentsRowData([]);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIntent, depositStore]);
 
   /*

@@ -17,7 +17,6 @@ import { MailRow } from './MailRow';
 import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
-import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { Inbox } from 'react-feather';
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
@@ -122,11 +121,15 @@ export const MailTable: React.FC<MailTableProps> = ({
     if (googleAuthToken && scopesApproved) {
       fetchData();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scopesApproved]);
 
   useEffect(() => {
     setSelectedIndex(null);
     setEmailFull('');
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedEmails]);
 
   /*
@@ -274,11 +277,6 @@ const ErrorContainer = styled.div`
   min-height: 25vh;
   line-height: 1.3;
   gap: 36px;
-`;
-
-const Icon = styled(SVGIconThemed)`
-  width: 36px;
-  height: 36px;
 `;
 
 const IconStyle = css`

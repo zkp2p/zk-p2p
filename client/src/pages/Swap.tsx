@@ -51,6 +51,8 @@ export const Swap: React.FC<{}> = (props) => {
     if (shouldFetchUsdcBalance) {
       refetchUsdcBalance?.();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /*

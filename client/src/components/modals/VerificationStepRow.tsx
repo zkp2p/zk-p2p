@@ -83,6 +83,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
       return () => clearTimeout(timeout);
     }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 

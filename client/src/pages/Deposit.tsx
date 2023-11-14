@@ -29,6 +29,8 @@ export const Deposit: React.FC<{}> = (props) => {
     if (shouldFetchDepositIntents) {
       refetchDepositIntents?.();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro'
 
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { PROVING_TYPE_TOOLTIP, UPLOAD_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 
  
@@ -13,9 +13,7 @@ export const ProofSettings: React.FC = () => {
 
   const {
     isProvingTypeFast,
-    isEmailModeAuth,
     setIsProvingTypeFast,
-    setIsEmailModeAuth,
   } = useProofGenSettings();
 
   /*
@@ -25,12 +23,6 @@ export const ProofSettings: React.FC = () => {
   const handleProvingTypeChanged = (checked: boolean) => {
     if (setIsProvingTypeFast) {
       setIsProvingTypeFast(checked);
-    }
-  };
-
-  const handleEmailModeChanged = (checked: boolean) => {
-    if (setIsEmailModeAuth) {
-      setIsEmailModeAuth(checked);
     }
   };
 

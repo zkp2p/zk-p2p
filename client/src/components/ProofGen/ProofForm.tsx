@@ -98,6 +98,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     if (remoteGenerateProofResponse) {
       processRemoteProofGenerationResponse(remoteGenerateProofResponse);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remoteGenerateProofResponse]);
 
   useEffect(() => {

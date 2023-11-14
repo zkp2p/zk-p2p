@@ -20,6 +20,8 @@ export const Registration: React.FC<{}> = (props) => {
     if (shouldFetchRegistration) {
       refetchRampAccount?.();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
