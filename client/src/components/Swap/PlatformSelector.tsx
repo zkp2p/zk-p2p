@@ -54,7 +54,7 @@ export const PlatformSelector: React.FC = () => {
 
             <InstructionsLabel>
               We currently only support Venmo, but are quickly expanding to other platforms. Please let us know which platforms
-              you are interested in seeing ZKP2P add support for. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+              you are interested in seeing ZKP2P add support for. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
                 Give feedback ↗
               </Link>
             </InstructionsLabel>

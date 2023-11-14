@@ -62,7 +62,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               <NumberedInputContainer>
                 <NumberedStep>
                   { REGISTRATION_INSTRUCTIONS }
-                  <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/registration " target="_blank">
+                  <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration " target="_blank">
                     Learn more ↗
                   </Link>
                 </NumberedStep>

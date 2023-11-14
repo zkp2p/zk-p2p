@@ -123,7 +123,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
         <NumberedStep>
           {PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS}
-          <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping/manual-email-input" target="_blank">
+          <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/manual-email-input" target="_blank">
             Guide ↗
           </Link>
         </NumberedStep>

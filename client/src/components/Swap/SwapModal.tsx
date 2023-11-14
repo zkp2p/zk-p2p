@@ -77,7 +77,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <InstructionsLabel>
             All transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
-            Payment receipt emails are required to complete the order. <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping" target="_blank">
+            Payment receipt emails are required to complete the order. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
           </InstructionsLabel>
