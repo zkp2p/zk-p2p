@@ -128,11 +128,11 @@ export const PROOF_MODAL_PROVE_TITLE = `
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_PRIVATE = `
-  Private validation will take approximately 9 minutes
+  Private validation will take approximately 10 minutes
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_FAST = `
-  Fast validation will take approximately 2-3 minutes
+  Fast validation will take approximately 30 seconds
 `;
 
 export const PROOF_MODAL_VERIFY_TITLE = `
