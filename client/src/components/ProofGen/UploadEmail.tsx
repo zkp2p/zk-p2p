@@ -10,7 +10,15 @@ import { ThemedText } from '../../theme/text';
 import { NumberedStep } from "../common/NumberedStep";
 
 import { TextButton } from '@components/common/TextButton';
-import { INPUT_MODE_TOOLTIP, PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
+import { 
+  INPUT_MODE_TOOLTIP, 
+  PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, 
+  PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS
+} from "@helpers/tooltips";
+import {
+  DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK, 
+  COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK 
+} from "@helpers/docUrls";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import Link from '@mui/material/Link';
@@ -123,7 +131,11 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
         <NumberedStep>
           {isInputModeDrag ? PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS : PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS}
-          <Link href="https://zkp2p.gitbook.io/zkp2p/user-guides/on-ramping/manual-email-input#download-and-upload-email" target="_blank">
+          <Link href={isInputModeDrag 
+            ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK
+            : COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK
+          }
+          target="_blank">
             Guide ↗
           </Link>
         </NumberedStep>

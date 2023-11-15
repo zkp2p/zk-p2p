@@ -7,6 +7,7 @@ import { ThemedText } from '../../theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import venmoLogo from '../../assets/images/venmo_logo.png';
+import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 
 
 export const PlatformSelector: React.FC = () => {
@@ -54,7 +55,7 @@ export const PlatformSelector: React.FC = () => {
 
             <InstructionsLabel>
               We currently only support Venmo, but are expanding to other platforms. Please let us know which platforms
-              you are interested in seeing ZKP2P add support for. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
+              you are interested in seeing ZKP2P add support for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
             </InstructionsLabel>

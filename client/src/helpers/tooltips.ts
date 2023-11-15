@@ -158,3 +158,4 @@ export const PROOF_MODAL_SUBMIT_SUBTITLE = `
 export const PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE = `
   Submit transaction to complete registration
 `;
+
