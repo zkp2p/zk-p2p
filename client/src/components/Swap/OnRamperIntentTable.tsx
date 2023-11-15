@@ -79,12 +79,6 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
   const handleCancelClick = async () => {
     setShouldConfigureCancelIntentWrite(true);
-
-    try {
-      await writeSubmitCancelIntentAsync?.();
-    } catch (error) {
-      console.log('writeSubmitCancelIntentAsync failed: ', error);
-    }
   };
 
   /*
@@ -131,6 +125,22 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIntent, depositStore]);
+
+  useEffect(() => {
+    const executeCancelIntent = async () => {
+      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync) {
+        try {
+          await writeSubmitCancelIntentAsync();
+        } catch (error) {
+          console.error('writeSubmitCancelIntentAsync failed: ', error);
+
+          setShouldConfigureCancelIntentWrite(false);
+        }
+      }
+    };
+  
+    executeCancelIntent();
+  }, [shouldConfigureCancelIntentWrite, writeSubmitCancelIntentAsync]);
 
   /*
     Helpers

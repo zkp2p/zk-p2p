@@ -60,39 +60,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const [shouldConfigureWithdrawWrite, setShouldConfigureWithdrawWrite] = useState<boolean>(false);
 
   /*
-   * Hooks
-   */
-
-  useEffect(() => {
-    if (!deposits) {
-      setPositionsRowData([]);  
-    } else {
-      var sanitizedPositions: DepositPrime[] = [];
-      sanitizedPositions = deposits.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
-        const deposit = depositWithLiquidity.deposit
-
-        const depositor = deposit.depositor;
-        const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity);
-        const totalDepositAmount = toUsdcString(deposit.depositAmount);
-        const intentCount = deposit.intentHashes.length.toString();
-        const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
-        const conversionRate = conversionRateToString(deposit.conversionRate);
-
-        return {
-          depositor,
-          availableDepositAmount,
-          totalDepositAmount,
-          outstandingIntentAmount,
-          intentCount,
-          conversionRate
-        };
-      });
-
-      setPositionsRowData(sanitizedPositions);
-    }
-  }, [deposits]);
-
-  /*
    * Contract Writes
    */
 
@@ -126,6 +93,55 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     },
   });
 
+    /*
+   * Hooks
+   */
+
+    useEffect(() => {
+      if (!deposits) {
+        setPositionsRowData([]);  
+      } else {
+        var sanitizedPositions: DepositPrime[] = [];
+        sanitizedPositions = deposits.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+          const deposit = depositWithLiquidity.deposit
+  
+          const depositor = deposit.depositor;
+          const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity);
+          const totalDepositAmount = toUsdcString(deposit.depositAmount);
+          const intentCount = deposit.intentHashes.length.toString();
+          const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
+          const conversionRate = conversionRateToString(deposit.conversionRate);
+  
+          return {
+            depositor,
+            availableDepositAmount,
+            totalDepositAmount,
+            outstandingIntentAmount,
+            intentCount,
+            conversionRate
+          };
+        });
+  
+        setPositionsRowData(sanitizedPositions);
+      }
+    }, [deposits]);
+  
+    useEffect(() => {
+      const executeCancelIntent = async () => {
+        if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync) {
+          try {
+            await writeSubmitWithdrawAsync?.();
+          } catch (error) {
+            console.log('writeSubmitWithdrawAsync failed: ', error);
+  
+            setShouldConfigureWithdrawWrite(false);
+          }
+        }
+      };
+    
+      executeCancelIntent();
+    }, [shouldConfigureWithdrawWrite, writeSubmitWithdrawAsync]);
+
   /*
    * Handlers
    */
@@ -142,12 +158,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       setSelectedRowIndexToWithdraw(rowIndex);
 
       setShouldConfigureWithdrawWrite(true);
-
-      try {
-        await writeSubmitWithdrawAsync?.();
-      } catch (error) {
-        console.log('writeSubmitWithdrawAsync failed: ', error);
-      }
     }
   };
   
