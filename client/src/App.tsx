@@ -13,6 +13,7 @@ import { Swap } from "./pages/Swap";
 import { Deposit } from "./pages/Deposit";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
+import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
 import AccountProvider from "./contexts/Account/AccountProvider";
 import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
@@ -66,8 +67,8 @@ const App = () => {
       <Router>
         <Providers>
           <div className="app-container">
+            <EnvironmentBanner />
             <TopNav />
-
             <div className="app-content">
               <Routes>
                 <Route path="/" element={<Landing />} />

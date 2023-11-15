@@ -23,12 +23,11 @@ import "./index.css";
 import App from "./App";
 
 const getChainsForEnvironment = (env) => {
-  if (env === 'STAGING') {
-    return [goerli, hardhat];
-  } else if (env === 'PRODUCTION') {
+  if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
+  } else {
+    return [base, goerli, hardhat];
   }
-  return [base, goerli, hardhat];
 };
 
 const env = process.env.DEPLOYMENT_ENVIRONMENT;

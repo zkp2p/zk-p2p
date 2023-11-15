@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
+};
 
 .app-content {
   flex-grow: 1;
-}
+};

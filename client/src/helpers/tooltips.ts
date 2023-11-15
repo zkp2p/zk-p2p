@@ -1,4 +1,24 @@
 /*
+ * Environment Banner
+ */
+
+export const LOCAL_ENV_BANNER = `
+  You are currently viewing the application on localhost
+`;
+
+export const STAGING_TESTNET_ENV_BANNER = `
+  You are currently viewing the staging-testnet application
+`;
+
+export const STAGING_ENV_BANNER = `
+  You are currently viewing the staging application
+`;
+
+export const PRODUCTION_ENV_BANNER = `
+  ZKP2P's Alpha Launch - 
+`;
+
+/*
  * Tooltips
  */
 
