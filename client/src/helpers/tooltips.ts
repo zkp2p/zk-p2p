@@ -3,7 +3,7 @@
  */
 
 export const LOCAL_ENV_BANNER = `
-  You are currently viewing the application on localhost
+  You are currently viewing the application on localhost –
 `;
 
 export const STAGING_TESTNET_ENV_BANNER = `
@@ -15,7 +15,7 @@ export const STAGING_ENV_BANNER = `
 `;
 
 export const PRODUCTION_ENV_BANNER = `
-  ZKP2P's Alpha Launch - 
+  ZKP2P's Alpha Launch —
 `;
 
 /*

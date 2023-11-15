@@ -320,7 +320,7 @@ const Swap: React.FC<SwapProps> = ({
 
   const bestAvailableRateLabel = useMemo(() => {
     if (currentQuote.conversionRate !== ZERO) {
-      return `Best available rate: -${conversionRateToString(currentQuote.conversionRate)}`
+      return `Best available rate: –${conversionRateToString(currentQuote.conversionRate)}`
     } else {
       return '';
     }
