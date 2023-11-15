@@ -156,15 +156,16 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    */
 
   function conversionRateToString(rate: bigint) {
-    const scaledValue = rate * (PRECISION); // 833333333333333333000000000000000000n
-    const reciprocal = (PRECISION * (100n * PRECISION)) / scaledValue; // 120n
-    const difference = reciprocal - 100n;
+    const scaledValue = rate * PRECISION;
+    const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
+    
+    const adjustedRate = Number(reciprocal - 10000n);
+    const percentage = adjustedRate / 100;
   
-    if (difference > 0n) {
-      return difference.toString() + '%';
-    } else {
-      return '1:1';
-    }
+    let percentageString = percentage.toFixed(2);
+    percentageString = percentageString.replace(/\.00$|0$/, '');
+  
+    return percentageString + '%';
   }
 
   return (

@@ -37,6 +37,13 @@ export type SwapQuote = {
   conversionRate: bigint;
 };
 
+const ZERO_QUOTE: SwapQuote = {
+  requestedUSDC: '',
+  fiatToSend: '',
+  depositId: ZERO,
+  conversionRate: ZERO
+};
+
 const QuoteState = {
   DEFAULT: 'default',
   EXCEEDS_ORDER_COUNT: 'exceeds-order-count',
@@ -73,9 +80,7 @@ const Swap: React.FC<SwapProps> = ({
    */
 
   const [quoteState, setQuoteState] = useState(QuoteState.DEFAULT);
-  const [currentQuote, setCurrentQuote] = useState<SwapQuote>(
-    { requestedUSDC: '', fiatToSend: '' , depositId: ZERO, conversionRate: ZERO }
-  );
+  const [currentQuote, setCurrentQuote] = useState<SwapQuote>(ZERO_QUOTE);
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
@@ -89,20 +94,9 @@ const Swap: React.FC<SwapProps> = ({
       const quoteCopy = {...currentQuote}
       setShouldConfigureSignalIntentWrite(false);
 
-      if (value === "") {
-        quoteCopy[field] = '';
-        quoteCopy.depositId = ZERO;
-        quoteCopy.conversionRate = ZERO;
-
-        setCurrentQuote(quoteCopy);
-      } else if (value === ".") {
-        quoteCopy[field] = "0.";
-        quoteCopy.depositId = ZERO;
-        quoteCopy.conversionRate = ZERO;
-
-        setCurrentQuote(quoteCopy);
-      }
-      else if (isValidInput(value)) {
+      if (value === "" || value === "0" || value === ".") {
+        setCurrentQuote(ZERO_QUOTE);
+      } else if (isValidInput(value)) {
         quoteCopy[field] = event.target.value;
 
         setCurrentQuote(quoteCopy);
@@ -130,7 +124,7 @@ const Swap: React.FC<SwapProps> = ({
     event.preventDefault();
 
     // Reset form fields
-    setCurrentQuote({ requestedUSDC: '', fiatToSend: '', depositId: ZERO, conversionRate: ZERO });
+    setCurrentQuote(ZERO_QUOTE);
   };
 
   /*
@@ -256,16 +250,14 @@ const Swap: React.FC<SwapProps> = ({
           updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
           setCurrentQuote(prevState => ({
             ...prevState,
-            fiatToSend: '',
-            depositId: ZERO
+            ZERO_QUOTE
           }));
         }
       } else {
         updateQuoteErrorState(QuoteState.DEFAULT);
         setCurrentQuote(prevState => ({
           ...prevState,
-          fiatToSend: '',
-          depositId: ZERO
+          ZERO_QUOTE
         }));
       }
     };
@@ -314,20 +306,21 @@ const Swap: React.FC<SwapProps> = ({
   }, [usdcBalance, isLoggedIn]);
 
   function conversionRateToString(rate: bigint) {
-    const scaledValue = rate * (PRECISION); // 833333333333333333000000000000000000n
-    const reciprocal = (PRECISION * (100n * PRECISION)) / scaledValue; // 120n
-    const difference = reciprocal - 100n;
+    const scaledValue = rate * PRECISION;
+    const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
+    
+    const adjustedRate = Number(reciprocal - 10000n);
+    const percentage = adjustedRate / 100;
   
-    if (difference > 0n) {
-      return difference.toString() + '%';
-    } else {
-      return '1:1';
-    }
+    let percentageString = percentage.toFixed(2);
+    percentageString = percentageString.replace(/\.00$|0$/, '');
+  
+    return percentageString + '%';
   }
 
   const bestAvailableRateLabel = useMemo(() => {
     if (currentQuote.conversionRate !== ZERO) {
-      return `Best available rate: ${conversionRateToString(currentQuote.conversionRate)}`
+      return `Best available rate: -${conversionRateToString(currentQuote.conversionRate)}`
     } else {
       return '';
     }

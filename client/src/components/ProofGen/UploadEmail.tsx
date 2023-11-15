@@ -11,7 +11,7 @@ import { NumberedStep } from "../common/NumberedStep";
 
 import { TextButton } from '@components/common/TextButton';
 import { INPUT_MODE_TOOLTIP, PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS } from "@helpers/tooltips";
-import { PLACEHOLDER_EMAIL_BODY } from "@helpers/constants";
+import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import Link from '@mui/material/Link';
 
