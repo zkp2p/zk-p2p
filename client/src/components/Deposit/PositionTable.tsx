@@ -93,7 +93,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     },
   });
 
-    /*
+  /*
    * Hooks
    */
 
@@ -127,10 +127,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }, [deposits]);
   
     useEffect(() => {
-      const executeCancelIntent = async () => {
-        if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync) {
+      const executeWithdrawDeposit = async () => {
+        if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync && !isSubmitWithdrawLoading) {
           try {
-            await writeSubmitWithdrawAsync?.();
+            await writeSubmitWithdrawAsync();
           } catch (error) {
             console.log('writeSubmitWithdrawAsync failed: ', error);
   
@@ -139,8 +139,12 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         }
       };
     
-      executeCancelIntent();
-    }, [shouldConfigureWithdrawWrite, writeSubmitWithdrawAsync]);
+      executeWithdrawDeposit();
+    }, [
+      shouldConfigureWithdrawWrite,
+      writeSubmitWithdrawAsync,
+      isSubmitWithdrawLoading,
+    ]);
 
   /*
    * Handlers

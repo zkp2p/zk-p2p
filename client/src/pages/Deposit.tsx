@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import DepositTable from "@components/Deposit"
 import useDeposits from '@hooks/useDeposits';
+import useBalances from '@hooks/useBalance';
 
 
 export const Deposit: React.FC<{}> = (props) => {
@@ -17,6 +18,8 @@ export const Deposit: React.FC<{}> = (props) => {
     shouldFetchDepositIntents,
   } = useDeposits();
 
+  const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
+
   /*
    * Hooks
    */
@@ -28,6 +31,10 @@ export const Deposit: React.FC<{}> = (props) => {
 
     if (shouldFetchDepositIntents) {
       refetchDepositIntents?.();
+    }
+
+    if (shouldFetchUsdcBalance) {
+      refetchUsdcBalance?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

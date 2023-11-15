@@ -128,7 +128,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
   useEffect(() => {
     const executeCancelIntent = async () => {
-      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync) {
+      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync && !isSubmitCancelIntentLoading) {
         try {
           await writeSubmitCancelIntentAsync();
         } catch (error) {
@@ -140,7 +140,11 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     };
   
     executeCancelIntent();
-  }, [shouldConfigureCancelIntentWrite, writeSubmitCancelIntentAsync]);
+  }, [
+    shouldConfigureCancelIntentWrite,
+    writeSubmitCancelIntentAsync,
+    isSubmitCancelIntentLoading,
+  ]);
 
   /*
     Helpers

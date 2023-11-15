@@ -9,8 +9,8 @@ import useRampState from '@hooks/useRampState';
 
 export const Swap: React.FC<{}> = (props) => {
   /*
-    Contexts
-  */
+   * Contexts
+   */
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
   const {
