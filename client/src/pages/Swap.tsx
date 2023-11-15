@@ -92,6 +92,7 @@ const PageWrapper = styled.div`
   padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
+  padding-bottom: 3rem;
 `;
 
 const OnRampContainer = styled.div`

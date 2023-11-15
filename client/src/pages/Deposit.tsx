@@ -46,7 +46,7 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 12px 8px;
-  padding-bottom: 2rem;
+  padding-bottom: 3rem;
 `;
 
 const Main = styled.div`
