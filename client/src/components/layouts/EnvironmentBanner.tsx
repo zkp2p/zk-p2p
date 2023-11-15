@@ -52,7 +52,7 @@ export const EnvironmentBanner: React.FC = () => {
     }
   };
 
-  const env = process.env.REACT_APP_ENV || 'LOCAL';
+  const env = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
   const isEnvProduction = env === 'PRODUCTION';
 
