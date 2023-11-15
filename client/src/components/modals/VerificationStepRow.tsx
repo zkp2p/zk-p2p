@@ -83,7 +83,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
       return () => clearTimeout(timeout);
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 
@@ -102,7 +102,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.UPLOAD:
         return 1000;
       case VerificationStepType.PROVE:
-        return isProvingTypeFast ? 150000 : 660000;
+        return isProvingTypeFast ? 60000 : 660000;
       default:
         return 0;
     }
