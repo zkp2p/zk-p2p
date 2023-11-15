@@ -1,13 +1,13 @@
 export const MAIN_CARDS = [
 	{
-		title: 'Simple',
-		description: 'Try out the app and see how simple it is for yourself',
+		title: 'Get Started',
+		description: 'Buy and sell USDC on-chain using Venmo. No additional KYC required.',
 		cta: 'Go to the App',
 		navigateTo: '/swap',
 	},
 	{
 		title: 'Documentation',
-		description: 'Interested in learning more about how the protocol works? Check out our docs',
+		description: 'Interested in learning more about how the protocol works?',
 		cta: 'Go to Docs',
 		navigateTo: 'https://docs.zkp2p.xyz/zkp2p/',
 	},
@@ -16,17 +16,17 @@ export const MAIN_CARDS = [
 export const SECONDARY_CARDS = [
 	{
 		title: 'Fast',
-		description: 'Get your USD from Venmo to on-chain fast using zero knowledge proofs',
+		description: 'Get your USD on-chain fast using Venmo and the magic of zero knowledge proofs',
 		icon: 'lightning',
 	},
 	{
 		title: 'Cheap',
-		description: 'Avoid paying high fees from using a direct onramp',
+		description: 'Transact entirely peer-to-peer and avoid paying high fees',
 		icon: 'cash',
 	},
 	{
 		title: 'Permissionless',
-		description: 'Global and permissionless from Day 1, anyone can use or integrate with the protocol',
+		description: 'Global from day one, anyone can interact or integrate with the protocol',
 		icon: 'padlock',
 	},
 ];

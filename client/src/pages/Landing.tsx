@@ -39,13 +39,13 @@ export const Landing: React.FC = () => {
 
           <HeroTextContainer>
             <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
-              Buy crypto with confidence
+              USD to USDC in 90 Seconds
             </ThemedText.Hero>
           </HeroTextContainer>
 
           <SubHeaderContainer>
             <ThemedText.SubHeaderLarge style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 20 : 24 }}>
-              Onramp and offramp USD peer-to-peer without trusting anyone
+              Buy and sell crypto peer-to-peer without trusting anyone
             </ThemedText.SubHeaderLarge>
           </SubHeaderContainer>
 
