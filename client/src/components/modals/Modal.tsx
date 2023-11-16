@@ -319,7 +319,7 @@ export const Modal: React.FC<ModalProps> = ({
             href={`${blockscanUrl}/tx/${transactionAddress}`}
             target="_blank"
             rel="noopener noreferrer">
-              <ThemedText.LabelSmall textAlign="left">
+              <ThemedText.LabelSmall textAlign="left" paddingBottom={"0.75rem"}>
                 View on Etherscan ↗
               </ThemedText.LabelSmall>
           </Link>
