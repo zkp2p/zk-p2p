@@ -24,14 +24,14 @@ interface ModalProps {
   proof: string;
   publicSignals: string;
   onBackClick: () => void
-  status: ProofGenerationStatus;
+  status: string;
   circuitType: CircuitType;
   buttonTitle: string;
   submitTransactionStatus: string;
   isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
-  setStatus?: (status: ProofGenerationStatus) => void;
+  setStatus?: (status: string) => void;
   onVerifyEmailCompletion?: () => void;
   transactionAddress?: string | null;
 }
@@ -86,12 +86,12 @@ export const Modal: React.FC<ModalProps> = ({
     if (setStatus) {
       switch (submitTransactionStatus) {
         case "error":
-          setStatus("transaction-configured");
+          setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
           setIsSubmitProcessing(false);
           break;
 
         case "loading":
-          setStatus("transaction-loading");
+          setStatus(ProofGenerationStatus.TRANSACTION_LOADING);
           setIsSubmitProcessing(true);
           break;
       }
@@ -100,7 +100,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     if (isSubmitMining && setStatus) {
-      setStatus("transaction-mining");
+      setStatus(ProofGenerationStatus.TRANSACTION_MINING);
     }
   }, [isSubmitMining, setStatus]);
 
@@ -112,25 +112,25 @@ export const Modal: React.FC<ModalProps> = ({
           setShowConfetti(false);
         }, 5000);
       }
-      setStatus("done");
+      setStatus(ProofGenerationStatus.DONE);
     }
   }, [isSubmitSuccessful, setStatus])
 
   useEffect(() => {
     switch (status) {
-      case "transaction-configured":
+      case ProofGenerationStatus.TRANSACTION_CONFIGURED:
         setCtaButtonTitle(buttonTitle);
         break;
 
-      case "transaction-loading":
+      case ProofGenerationStatus.TRANSACTION_LOADING:
         setCtaButtonTitle("Signing Transaction");
         break;
 
-      case "transaction-mining":
+      case ProofGenerationStatus.TRANSACTION_MINING:
         setCtaButtonTitle("Mining Transaction");
         break;
 
-      case "done":
+      case ProofGenerationStatus.DONE:
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
             setCtaButtonTitle('Go to Swap');

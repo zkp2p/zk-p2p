@@ -80,7 +80,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
-  const [status, setStatus] = useState<ProofGenerationStatus>("not-started");
+  const [status, setStatus] = useState(ProofGenerationStatus.NOT_STARTED);
   /*
    * Hooks
    */
@@ -133,7 +133,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
 
-      setStatus("transaction-configured");
+      setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
     } else {
       if (isProvingTypeFast) {
         await generateFastProof();
@@ -201,11 +201,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }
 
   const generateFastProof = async () => {
-    setStatus("uploading-proof-files")
+    setStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    setStatus("generating-proof");
+    setStatus(ProofGenerationStatus.GENERATING_PROOF);
 
     console.time("remote-proof-gen");
     await remoteGenerateProof();
@@ -215,26 +215,26 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const processRemoteProofGenerationResponse = (response: any) => {
     setAndStoreProvingState(response.proof, response.public_values)
 
-    setStatus("transaction-configured");
+    setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
   }
 
   const generatePrivateProof = async () => {
-    setStatus("generating-input");
+    setStatus(ProofGenerationStatus.GENERATING_INPUT);
 
     let input: ICircuitInputs | undefined;
     input = await generateCircuitInputs();
     if (!input) {
-      setStatus("error-bad-input");
+      setStatus(ProofGenerationStatus.ERROR_BAD_INPUT);
       return;
     }
 
-    setStatus("downloading-proof-files");
+    setStatus(ProofGenerationStatus.DOWNLOADING_PROOF_FILES);
     await downloadProvingKeys();
 
-    setStatus("generating-proof");
+    setStatus(ProofGenerationStatus.GENERATING_PROOF);
     const { proof, publicSignals } = await generateProofWithInputs(input);
     if (!proof || !publicSignals) {
-      setStatus("error-failed-to-prove");
+      setStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
       return;
     }
 
@@ -242,7 +242,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     const stringifiedSignals = JSON.stringify(publicSignals);
     setAndStoreProvingState(stringifiedProof, stringifiedSignals);
 
-    setStatus("transaction-configured");
+    setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
   }
 
   const generateCircuitInputs = async () => {
