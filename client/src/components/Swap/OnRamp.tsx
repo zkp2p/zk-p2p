@@ -104,7 +104,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   const {
     data: submitOnRampResult,
-    isLoading: isWriteSubmitOnRampLoading,
+    status: submitOnRampStatus,
     writeAsync: writeSubmitOnRampAsync
   } = useContractWrite(writeSubmitOnRampConfig);
 
@@ -211,7 +211,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
         setProof={setProof}
         setPublicSignals={setPublicSignals}
         onVerifyEmailCompletion={handleBackClick}
-        isSubmitProcessing={isSubmitOnRampMining || isWriteSubmitOnRampLoading}
+        submitTransactionStatus={submitOnRampStatus}
+        isSubmitMining={isSubmitOnRampMining}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         transactionAddress={submitOnRampTransactionHash}

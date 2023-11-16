@@ -43,7 +43,8 @@ const NewDepositState = {
   CONVENIENCE_FEE_INVALID: 'convenience_fee_invalid',
   MAX_INTENTS_REACHED: 'max_intents_reached',
   MIN_DEPOSIT_THRESHOLD_NOT_MET: 'min_deposit_threshold_not_met',
-  VALID: 'valid'
+  VALID: 'valid',
+  TRANSACTION_SUCCEEDED: 'transaction_succeeded'
 };
 
 interface NewPositionProps {
@@ -143,6 +144,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       
       refetchUsdcApprovalToRamp?.();
       refetchUsdcBalance?.();
+
+      setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
   });
 
@@ -311,6 +314,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositState.VALID:
         return 'Create Deposit';
 
+      case NewDepositState.TRANSACTION_SUCCEEDED:
+        return 'Go to Deposits';
+
       case NewDepositState.DEFAULT:
       default:
         return 'Input valid venmo id';
@@ -347,6 +353,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         } catch (error) {
           console.log('writeSubmitDepositAsync failed: ', error);
         }
+        break;
+
+      case NewDepositState.TRANSACTION_SUCCEEDED:
+        handleBackClick();
         break;
 
       default:

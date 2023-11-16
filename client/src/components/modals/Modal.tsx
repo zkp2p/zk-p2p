@@ -27,7 +27,8 @@ interface ModalProps {
   status: ProofGenerationStatus;
   circuitType: CircuitType;
   buttonTitle: string;
-  isSubmitProcessing: boolean;
+  submitTransactionStatus: string;
+  isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
   setStatus?: (status: ProofGenerationStatus) => void;
@@ -43,7 +44,8 @@ export const Modal: React.FC<ModalProps> = ({
   status,
   circuitType,
   buttonTitle,
-  isSubmitProcessing,
+  submitTransactionStatus,
+  isSubmitMining,
   isSubmitSuccessful,
   transactionAddress,
   setStatus,
@@ -66,6 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [isSubmitProcessing, setIsSubmitProcessing] = useState<boolean>(false);
 
   /*
    * Handlers
@@ -80,10 +83,26 @@ export const Modal: React.FC<ModalProps> = ({
    */
 
   useEffect(() => {
-    if (isSubmitProcessing && setStatus) {
+    if (setStatus) {
+      switch (submitTransactionStatus) {
+        case "error":
+          setStatus("transaction-configured");
+          setIsSubmitProcessing(false);
+          break;
+
+        case "loading":
+          setStatus("transaction-loading");
+          setIsSubmitProcessing(true);
+          break;
+      }
+    }
+  }, [submitTransactionStatus, setStatus]);
+
+  useEffect(() => {
+    if (isSubmitMining && setStatus) {
       setStatus("transaction-mining");
     }
-  }, [isSubmitProcessing, setStatus]);
+  }, [isSubmitMining, setStatus]);
 
   useEffect(() => {
     if (isSubmitSuccessful && setStatus) {
@@ -103,10 +122,24 @@ export const Modal: React.FC<ModalProps> = ({
         setCtaButtonTitle(buttonTitle);
         break;
 
-      case "done":
-        const buttonDoneTitle = getButtonDoneTitle();
+      case "transaction-loading":
+        setCtaButtonTitle("Signing Transaction");
+        break;
 
-        setCtaButtonTitle(buttonDoneTitle);
+      case "transaction-mining":
+        setCtaButtonTitle("Mining Transaction");
+        break;
+
+      case "done":
+        switch (circuitType) {
+          case CircuitType.EMAIL_VENMO_SEND:
+            setCtaButtonTitle('Go to Swap');
+            break;
+    
+          case CircuitType.EMAIL_VENMO_REGISTRATION:
+          default:
+            setCtaButtonTitle('Go to Registration');
+        };
         break;
 
       default:
@@ -149,17 +182,6 @@ export const Modal: React.FC<ModalProps> = ({
     }
   };
 
-  const getButtonDoneTitle = () => {
-    switch (circuitType) {
-      case CircuitType.EMAIL_VENMO_SEND:
-        return 'Go to Swap'
-
-      case CircuitType.EMAIL_VENMO_REGISTRATION:
-      default:
-        return 'Go to Registration'
-    }
-  };
-
   /*
    * Component
    */
@@ -196,6 +218,7 @@ export const Modal: React.FC<ModalProps> = ({
         proveStepState = VerificationState.COMPLETE;
         break;
 
+      case "transaction-loading":
       case "transaction-mining":
         downloadStepState = VerificationState.COMPLETE;
         uploadStepState = VerificationState.COMPLETE;
@@ -320,14 +343,13 @@ export const Modal: React.FC<ModalProps> = ({
             target="_blank"
             rel="noopener noreferrer">
               <ThemedText.LabelSmall textAlign="left" paddingBottom={"0.75rem"}>
-                View on Etherscan ↗
+                View on Explorer ↗
               </ThemedText.LabelSmall>
           </Link>
         ) : null}
 
         <Button
           disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
-          loading={isSubmitProcessing}
           onClick={getButtonHandler}
           fullWidth={true}
         >

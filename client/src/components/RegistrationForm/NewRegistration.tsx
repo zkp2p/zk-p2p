@@ -77,7 +77,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   const {
     data: submitRegistrationResult,
-    isLoading: isSubmitRegistrationLoading,
+    status: submitRegistrationStatus,
     writeAsync: writeSubmitRegistrationAsync
   } = useContractWrite(writeSubmitRegistrationConfig);
 
@@ -166,7 +166,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
-        isSubmitProcessing={isSubmitRegistrationLoading || isSubmitRegistrationMining}
+        submitTransactionStatus={submitRegistrationStatus}
+        isSubmitMining={isSubmitRegistrationMining}
         isSubmitSuccessful={isSubmitRegistrationSuccessful}
         handleSubmitVerificationClick={handleRegistrationSubmit}
         onVerifyEmailCompletion={handleBackClick}
