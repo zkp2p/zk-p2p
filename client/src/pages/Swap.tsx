@@ -58,6 +58,7 @@ export const Swap: React.FC<{}> = (props) => {
   /*
    * Handlers
    */
+
   const handleBackClick = () => {
     setSelectedIntentHash(null);
   }
@@ -67,6 +68,10 @@ export const Swap: React.FC<{}> = (props) => {
 
     setSelectedIntentHash(currentIntentHash);
   };
+
+  /*
+   * Component
+   */
 
   return (
     <PageWrapper>

@@ -94,6 +94,10 @@ export const Modal: React.FC<ModalProps> = ({
           setStatus(ProofGenerationStatus.TRANSACTION_LOADING);
           setIsSubmitProcessing(true);
           break;
+
+        default:
+          setIsSubmitProcessing(false);
+          break;
       }
     }
   }, [submitTransactionStatus, setStatus]);
