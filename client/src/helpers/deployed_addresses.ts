@@ -5,35 +5,29 @@ type Contracts = {
 };
 
 export const contractAddresses: Contracts = {
-  "hardhat": {
-    "ramp": '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
-    "fusdc": '0x5fbdb2315678afecb367f032d93f642f64180aa3',
-    "sendProcessor": '0x0165878a594ca255338adfa4d48449f69242eb8f',
-    "registrationProcessor": '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
+  "base_production": {
+    "ramp": '0xB084f36C5B7193af8Dd17025b36FBe2DD496a06f',
+    "fusdc": '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    "sendProcessor": '0x9011fC66C34546511cf1e514F248fB98Af95b96d',
+    "registrationProcessor": '0x71EAD6E8FC3331da65191BCbdD3BE81F04EAa3CA',
   },
-  "base": {
+  "base_staging": {
     "ramp": '0xa08d9952196ABECB2BaCD14188093314053f6335',
     "fusdc": '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
     "sendProcessor": '0x574ACe7463dD126D2D22825BAa846cf1B3d87D4F',
     "registrationProcessor": '0xEf15b6Fd708F35a85c19C30F78119Ff8595aD627',
   },
-  "goerli": {
-    "ramp": '0x3AcFEeFF0d80929f00143490af1ed7bf2836fcBD',
-    "fusdc": '0x4EA8130c89625AcFecdcac6CA2008967E31992e3',
-    "sendProcessor": '0x8f2Bdd3343cAa489696dFDBCae7262cEb6C247be',
-    "registrationProcessor": '0xbCC63C904898063fB04014189Ec1fB1628F7B6E1',
+  "goerli_staging": {
+    "ramp": '0x203A308F713e8638A3e782cECBC35e464Fc7a01d',
+    "fusdc": '0x854284C8516Fa6c7d18422942465534bd7ee3382',
+    "sendProcessor": '0x6AEd6eb9Ef152c95b55bF6d335ff68301E42f4f0',
+    "registrationProcessor": '0x584DADC1a399967E2B573DCc10c5B1B6989B128e',
   },
-  "goerli_0_0_8": {
-    "ramp": '0x1A2dcc7AfC7Bf09bE718E54466aA18166C00E4FD',
-    "fusdc": '0x0a5A6f847899e185a14e54266036CE8260142659',
-    "sendProcessor": '0x0a7537A73079C45f64623D213Cd284E9b55Fe0b7',
-    "registrationProcessor": '0x8D54b20922aEA549224D61501225a0DaB5bC3839',
-  },
-  "goerli_0_0_7": {
-    "ramp": '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
-    "fusdc": '0xbba5c9bd54a4293f4261b38e5ad41820ec41ed86',
-    "sendProcessor": '0x951E072a8eD9ad9F8dCe89a3Be274a96966097Bb',
-    "registrationProcessor": '0xAf0196f22a1383B779E3f833AD35BFf38722c8AD',
+  "localhardhat": {
+    "ramp": '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
+    "fusdc": '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+    "sendProcessor": '0x0165878a594ca255338adfa4d48449f69242eb8f',
+    "registrationProcessor": '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
   },
 };
 

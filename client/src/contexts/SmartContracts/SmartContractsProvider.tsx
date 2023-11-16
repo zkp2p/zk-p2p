@@ -11,6 +11,10 @@ import SmartContractsContext from './SmartContractsContext'
 import { Abi } from './types'
 
 
+const environmentNetworkMap = {
+
+};
+
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -35,20 +39,48 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
+    // const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
+    const networkName = network ? network : DEFAULT_NETWORK;
+    const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
+
+    let contractsForNetwork: { [contract: string]: string; };
+    switch (deploymentEnvironment) {
+      case 'PRODUCTION':
+        contractsForNetwork = contractAddresses['base_production'];
+        break;
+
+      case 'STAGING':
+      case 'LOCAL':
+      default:
+        switch (networkName) {
+          case 'base':
+            contractsForNetwork = contractAddresses['base_staging'];
+            break;
+
+          case 'goerli':
+            contractsForNetwork = contractAddresses['goerli_staging'];
+            break;
+
+          case 'hardhat':
+            contractsForNetwork = contractAddresses['localhardhat'];
+            break;
+        }
+        contractsForNetwork = contractAddresses[networkName];
+        break;
+    };
 
     if (contractsForNetwork) {
       setRampAddress(contractsForNetwork.ramp as Address);
       setUsdcAddress(contractsForNetwork.fusdc as Address);
       setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
       setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
-      setBlockscanUrl(blockExplorerUrls[network || DEFAULT_NETWORK]);
+      setBlockscanUrl(blockExplorerUrls[networkName]);
     } else {
       setRampAddress(null);
       setUsdcAddress(null);
       setSendProcessorAddress(null);
       setRegistrationProcessorAddress(null);
-      setBlockscanUrl(blockExplorerUrls[DEFAULT_NETWORK]);
+      setBlockscanUrl(blockExplorerUrls[networkName]);
     }
   }, [network]);
 
