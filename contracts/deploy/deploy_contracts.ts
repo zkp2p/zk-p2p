@@ -3,50 +3,33 @@ import "module-alias/register";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
-import { ONE_DAY_IN_SECONDS, THREE_MINUTES_IN_SECONDS } from "@utils/constants";
 
 const circom = require("circomlibjs");
 
-import { ether, usdc } from "../utils/common/units";
+import { Address } from "../utils/types";
+import {
+  FROM_EMAIL,
+  INTENT_EXPIRATION_PERIOD,
+  MAX_ONRAMP_AMOUNT,
+  MIN_DEPOSIT_AMOUNT,
+  MULTI_SIG,
+  ONRAMP_COOL_DOWN_PERIOD,
+  SERVER_KEY_HASH,
+  SUSTAINABILITY_FEE,
+  SUSTAINABILITY_FEE_RECIPIENT,
+  USDC,
+  USDC_MINT_AMOUNT,
+  USDC_RECIPIENT,
+} from "../deployments/parameters";
 
-const SERVER_KEY_HASH = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
-
-const FROM_EMAIL = "venmo@venmo.com";
-
-const MIN_DEPOSIT_AMOUNT = {
-  "localhost": usdc(20),
-  "goerli": usdc(20),
-};
-const MAX_ONRAMP_AMOUNT = {
-  "localhost": usdc(999),
-  "goerli": usdc(999),
-};
-const INTENT_EXPIRATION_PERIOD = {
-  "localhost": ONE_DAY_IN_SECONDS,
-  "goerli": ONE_DAY_IN_SECONDS,
-};
-const ONRAMP_COOL_DOWN_PERIOD = {
-  "localhost": THREE_MINUTES_IN_SECONDS,
-  "goerli": ONE_DAY_IN_SECONDS,
-};
-const SUSTAINABILITY_FEE = {
-  "localhost": ether(.001),
-  "goerli": ether(.001),
-};
-const SUSTAINABILITY_FEE_RECIPIENT = {
-  "localhost": "",
-  "goerli": "",
-};
-const USDC = {};
-const USDC_MINT_AMOUNT = usdc(1000000);
-const USDC_RECIPIENT = "0x1d2033DC6720e3eCC14aBB8C2349C7ED77E831ad";
-
+// Deployment Scripts
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
   const [ deployer ] = await hre.getUnnamedAccounts();
-  
+  const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
+
   let usdcAddress;
   if (!USDC[network]) {
     const usdcToken = await deploy("USDCMock", {
@@ -66,7 +49,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       bytecode: circom.poseidonContract.createCode(3),
     }
   });
-  console.log("Poseidon deployed...");
+  console.log("Poseidon deployed at ", poseidon.address);
 
   const ramp = await deploy("Ramp", {
     from: deployer,
@@ -82,27 +65,31 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       SUSTAINABILITY_FEE_RECIPIENT[network] != "" ? SUSTAINABILITY_FEE_RECIPIENT[network] : deployer,
     ],
   });
-  console.log("Ramp deployed...");
+  console.log("Ramp deployed at ", ramp.address);
 
   const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
     from: deployer,
     args: [SERVER_KEY_HASH],
   });
+  console.log("KeyHashAdapter deployed at ", keyHashAdapter.address);
 
   const nullifierRegistry = await deploy("NullifierRegistry", {
     from: deployer,
     args: [],
   });
+  console.log("Nullifier deployed at ", nullifierRegistry.address);
 
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
+  console.log("RegistrationProcessor deployed at ", registrationProcessor.address);
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL],
   });
+  console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
@@ -123,7 +110,40 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await usdcContract.transfer(USDC_RECIPIENT, USDC_MINT_AMOUNT);
   }
 
+  console.log("Transferring ownership of contracts...");
+  await setNewOwner(hre, rampContract, multiSig);
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("VenmoRegistrationProcessor", registrationProcessor.address),
+    multiSig
+  );
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("VenmoSendProcessor", sendProcessor.address),
+    multiSig
+  );
+  await setNewOwner(hre, nullifierRegistryContract, multiSig);
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("ManagedKeyHashAdapter", keyHashAdapter.address),
+    multiSig
+  );
+
   console.log("Deploy finished...");
 };
+
+export async function setNewOwner(hre: HardhatRuntimeEnvironment, contract: any, newOwner: Address): Promise<void> {
+  const currentOwner = await contract.owner();
+
+  if (currentOwner != newOwner) {
+    const data = contract.interface.encodeFunctionData("transferOwnership", [newOwner]);
+
+    await hre.deployments.rawTx({
+      from: currentOwner,
+      to: contract.address,
+      data
+    });
+  }
+}
 
 export default func;

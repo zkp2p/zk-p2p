@@ -32,18 +32,44 @@ const config: HardhatUserConfig = {
     localhost: {
       allowBlocksWithSameTimestamp: true,
     },
+    base_staging: {
+      url: "https://developer-access-mainnet.base.org",
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
+      ],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.basescan.org",
+          apiKey: process.env.BASESCAN_API_KEY
+        }
+      },
+    },
     goerli: {
       url: "https://goerli.infura.io/v3/" + process.env.INFURA_TOKEN,
       // @ts-ignore
       accounts: [
         `0x${process.env.GOERLI_DEPLOY_PRIVATE_KEY}`,
       ],
+      verify: {
+        etherscan: {
+          apiKey: process.env.ETHERSCAN_API_KEY
+        }
+      },
     },
-  },
-  verify: {
-    etherscan: {
-      apiKey: process.env.ETHERSCAN_API_KEY
-    }
+    base: {
+      url: "https://developer-access-mainnet.base.org",
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
+      ],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.basescan.org/",
+          apiKey: process.env.BASESCAN_API_KEY
+        }
+      },
+    },
   },
   // @ts-ignore
   typechain: {

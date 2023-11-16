@@ -1,0 +1,371 @@
+{
+  "address": "0x3DD68Da97Eaf62Dd5cdD0767AA20b5AF665D0a34",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "nullifier",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "writer",
+          "type": "address"
+        }
+      ],
+      "name": "NullifierAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "writer",
+          "type": "address"
+        }
+      ],
+      "name": "WriterAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "writer",
+          "type": "address"
+        }
+      ],
+      "name": "WriterRemoved",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_nullifier",
+          "type": "bytes32"
+        }
+      ],
+      "name": "addNullifier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newWriter",
+          "type": "address"
+        }
+      ],
+      "name": "addWritePermission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWriters",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isNullified",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "isWriter",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_removedWriter",
+          "type": "address"
+        }
+      ],
+      "name": "removeWritePermission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "writers",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xd7fb107671a992be9e8185170e8ee9ef39c4d12e1124f65a96ff901715a23c70",
+  "receipt": {
+    "to": null,
+    "from": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "contractAddress": "0x3DD68Da97Eaf62Dd5cdD0767AA20b5AF665D0a34",
+    "transactionIndex": 14,
+    "gasUsed": "610041",
+    "logsBloom": "0x00000020000000000000000000000000000000000000000000800000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000001000000000020000400000000000020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x9eb0a911a14e0c8fe2aeba1911f5f8ecf40c7e90f120a8a62c80ea286474adf8",
+    "transactionHash": "0xd7fb107671a992be9e8185170e8ee9ef39c4d12e1124f65a96ff901715a23c70",
+    "logs": [
+      {
+        "transactionIndex": 14,
+        "blockNumber": 6510426,
+        "transactionHash": "0xd7fb107671a992be9e8185170e8ee9ef39c4d12e1124f65a96ff901715a23c70",
+        "address": "0x3DD68Da97Eaf62Dd5cdD0767AA20b5AF665D0a34",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000dd93e0f5fc32c86a568d87cb4f08598f55e980f3"
+        ],
+        "data": "0x",
+        "logIndex": 18,
+        "blockHash": "0x9eb0a911a14e0c8fe2aeba1911f5f8ecf40c7e90f120a8a62c80ea286474adf8"
+      }
+    ],
+    "blockNumber": 6510426,
+    "cumulativeGasUsed": "2089033",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "3235f00afe52b593578a06ba6b1f711c",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.18+commit.87f61d96\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nullifier\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"writer\",\"type\":\"address\"}],\"name\":\"NullifierAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"writer\",\"type\":\"address\"}],\"name\":\"WriterAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"writer\",\"type\":\"address\"}],\"name\":\"WriterRemoved\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_nullifier\",\"type\":\"bytes32\"}],\"name\":\"addNullifier\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newWriter\",\"type\":\"address\"}],\"name\":\"addWritePermission\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getWriters\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"isNullified\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"isWriter\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_removedWriter\",\"type\":\"address\"}],\"name\":\"removeWritePermission\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"writers\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addNullifier(bytes32)\":{\"params\":{\"_nullifier\":\"The nullifier to store\"}},\"addWritePermission(address)\":{\"params\":{\"_newWriter\":\"The nullifier to store\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"removeWritePermission(address)\":{\"params\":{\"_removedWriter\":\"The nullifier to store\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addNullifier(bytes32)\":{\"notice\":\"ONLY WRITER: Only addresses with permission to write to this contract can call. Stores a nullifier for an email.\"},\"addWritePermission(address)\":{\"notice\":\"ONLY OWNER: Add address that has write permissions to the registry. Writer must not have been previously added.\"},\"removeWritePermission(address)\":{\"notice\":\"ONLY OWNER: Remove address that has write permissions to the registry. Writer must have been previously added.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/processors/nullifierRegistries/NullifierRegistry.sol\":\"NullifierRegistry\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"contracts/external/AddressArrayUtils.sol\":{\"content\":\"/*\\n    Copyright 2020 Set Labs Inc.\\n\\n    Licensed under the Apache License, Version 2.0 (the \\\"License\\\");\\n    you may not use this file except in compliance with the License.\\n    You may obtain a copy of the License at\\n\\n    http://www.apache.org/licenses/LICENSE-2.0\\n\\n    Unless required by applicable law or agreed to in writing, software\\n    distributed under the License is distributed on an \\\"AS IS\\\" BASIS,\\n    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n    See the License for the specific language governing permissions and\\n    limitations under the License.\\n\\n    SPDX-License-Identifier: MIT\\n*/\\n\\npragma solidity ^0.8.17;\\n\\n/**\\n * @title AddressArrayUtils\\n * @author Set Protocol\\n *\\n * Utility functions to handle Address Arrays\\n *\\n * CHANGELOG:\\n * - 4/21/21: Added validatePairsWithArray methods\\n */\\nlibrary AddressArrayUtils {\\n\\n    uint256 constant internal MAX_INT = 2**256 - 1;\\n\\n    /**\\n     * Finds the index of the first occurrence of the given element.\\n     * @param A The input array to search\\n     * @param a The value to find\\n     * @return Returns (index and isIn) for the first occurrence starting from index 0\\n     */\\n    function indexOf(address[] memory A, address a) internal pure returns (uint256, bool) {\\n        uint256 length = A.length;\\n        for (uint256 i = 0; i < length; i++) {\\n            if (A[i] == a) {\\n                return (i, true);\\n            }\\n        }\\n        return (MAX_INT, false);\\n    }\\n\\n    /**\\n    * Returns true if the value is present in the list. Uses indexOf internally.\\n    * @param A The input array to search\\n    * @param a The value to find\\n    * @return Returns isIn for the first occurrence starting from index 0\\n    */\\n    function contains(address[] memory A, address a) internal pure returns (bool) {\\n        (, bool isIn) = indexOf(A, a);\\n        return isIn;\\n    }\\n\\n    /**\\n    * Returns true if there are 2 elements that are the same in an array\\n    * @param A The input array to search\\n    * @return Returns boolean for the first occurrence of a duplicate\\n    */\\n    function hasDuplicate(address[] memory A) internal pure returns(bool) {\\n        require(A.length > 0, \\\"A is empty\\\");\\n\\n        for (uint256 i = 0; i < A.length - 1; i++) {\\n            address current = A[i];\\n            for (uint256 j = i + 1; j < A.length; j++) {\\n                if (current == A[j]) {\\n                    return true;\\n                }\\n            }\\n        }\\n        return false;\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The address to remove\\n     * @return Returns the array with the object removed.\\n     */\\n    function remove(address[] memory A, address a)\\n        internal\\n        pure\\n        returns (address[] memory)\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"Address not in array.\\\");\\n        } else {\\n            (address[] memory _A,) = pop(A, index);\\n            return _A;\\n        }\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The address to remove\\n     */\\n    function removeStorage(address[] storage A, address a)\\n        internal\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"Address not in array.\\\");\\n        } else {\\n            uint256 lastIndex = A.length - 1; // If the array would be empty, the previous line would throw, so no underflow here\\n            if (index != lastIndex) { A[index] = A[lastIndex]; }\\n            A.pop();\\n        }\\n    }\\n\\n    /**\\n    * Removes specified index from array\\n    * @param A The input array to search\\n    * @param index The index to remove\\n    * @return Returns the new array and the removed entry\\n    */\\n    function pop(address[] memory A, uint256 index)\\n        internal\\n        pure\\n        returns (address[] memory, address)\\n    {\\n        uint256 length = A.length;\\n        require(index < A.length, \\\"Index must be < A length\\\");\\n        address[] memory newAddresses = new address[](length - 1);\\n        for (uint256 i = 0; i < index; i++) {\\n            newAddresses[i] = A[i];\\n        }\\n        for (uint256 j = index + 1; j < length; j++) {\\n            newAddresses[j - 1] = A[j];\\n        }\\n        return (newAddresses, A[index]);\\n    }\\n}\\n\",\"keccak256\":\"0x486f1a373f33aa167227600ac2d0bf95b37685413d98a3e745107188f00ae405\",\"license\":\"MIT\"},\"contracts/processors/nullifierRegistries/INullifierRegistry.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.18;\\n\\ninterface INullifierRegistry {\\n    function addNullifier(bytes32 _nullifier) external;\\n    function isNullified(bytes32 _nullifier) external view returns(bool);\\n}\\n\",\"keccak256\":\"0x107164bc9a320938b513305878163b7fa884da4cdae58d0c8e81bfbb00c97c5e\",\"license\":\"MIT\"},\"contracts/processors/nullifierRegistries/NullifierRegistry.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\nimport { Ownable } from \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\nimport { AddressArrayUtils } from \\\"../../external/AddressArrayUtils.sol\\\";\\nimport { INullifierRegistry } from \\\"./INullifierRegistry.sol\\\";\\n\\npragma solidity ^0.8.18;\\n\\ncontract NullifierRegistry is Ownable, INullifierRegistry {\\n\\n    using AddressArrayUtils for address[];\\n    \\n    /* ============ Events ============ */\\n    event NullifierAdded(bytes32 nullifier, address indexed writer);\\n    event WriterAdded(address writer);\\n    event WriterRemoved(address writer);\\n\\n    /* ============ Modifiers ============ */\\n    modifier onlyWriter() {\\n        require(isWriter[msg.sender], \\\"Only addresses with write permissions can call\\\");\\n        _;\\n    }\\n\\n    /* ============ State Variables ============ */\\n    mapping(bytes32 => bool) public isNullified;\\n    mapping(address => bool) public isWriter;\\n    address[] public writers;\\n\\n    /* ============ Constructor ============ */\\n    constructor() Ownable() {}\\n    \\n    /* ============ External Functions ============ */\\n\\n    /**\\n     * ONLY WRITER: Only addresses with permission to write to this contract can call. Stores a nullifier for an email.\\n     *\\n     * @param _nullifier    The nullifier to store\\n     */\\n    function addNullifier(bytes32 _nullifier) external onlyWriter {\\n        require(!isNullified[_nullifier], \\\"Nullifier already exists\\\");\\n\\n        isNullified[_nullifier] = true;\\n\\n        emit NullifierAdded(_nullifier, msg.sender);\\n    }\\n\\n    /* ============ Admin Functions ============ */\\n\\n    /**\\n     * ONLY OWNER: Add address that has write permissions to the registry. Writer must not have been previously added.\\n     *\\n     * @param _newWriter    The nullifier to store\\n     */\\n    function addWritePermission(address _newWriter) external onlyOwner {\\n        require(!isWriter[_newWriter], \\\"Address is already a writer\\\");\\n\\n        isWriter[_newWriter] = true;\\n        writers.push(_newWriter);\\n\\n        emit WriterAdded(_newWriter);\\n    }\\n\\n    /**\\n     * ONLY OWNER: Remove address that has write permissions to the registry. Writer must have been previously added.\\n     *\\n     * @param _removedWriter    The nullifier to store\\n     */\\n    function removeWritePermission(address _removedWriter) external onlyOwner {\\n        require(isWriter[_removedWriter], \\\"Address is not a writer\\\");\\n\\n        isWriter[_removedWriter] = false;\\n        writers.removeStorage(_removedWriter);\\n\\n        emit WriterRemoved(_removedWriter);\\n    }\\n\\n    /* ============ External View Functions ============ */\\n\\n    function getWriters() external view returns(address[] memory) {\\n       return writers;\\n    }\\n}\\n\",\"keccak256\":\"0x20f773bb8f52b109301fca328369f2d5cebc8d105d2d0cf9588adccab2f9d1c8\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061001a3361001f565b61006f565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b61099f8061007e6000396000f3fe608060405234801561001057600080fd5b506004361061009e5760003560e01c8063715018a611610066578063715018a6146101515780638da5cb5b14610159578063cb01316c1461016a578063d6da03261461017f578063f2fde38b1461019257600080fd5b8063169394bb146100a3578063286f9201146100db5780632b29ba23146100f05780635bd4df321461011357806366a5267214610126575b600080fd5b6100c66100b136600461085f565b60016020526000908152604090205460ff1681565b60405190151581526020015b60405180910390f35b6100ee6100e9366004610878565b6101a5565b005b6100c66100fe366004610878565b60026020526000908152604090205460ff1681565b6100ee61012136600461085f565b610285565b61013961013436600461085f565b6103ad565b6040516001600160a01b0390911681526020016100d2565b6100ee6103d7565b6000546001600160a01b0316610139565b6101726103eb565b6040516100d291906108a8565b6100ee61018d366004610878565b61044d565b6100ee6101a0366004610878565b610554565b6101ad6105cd565b6001600160a01b03811660009081526002602052604090205460ff1661021a5760405162461bcd60e51b815260206004820152601760248201527f41646472657373206973206e6f7420612077726974657200000000000000000060448201526064015b60405180910390fd5b6001600160a01b0381166000908152600260205260409020805460ff19169055610245600382610627565b6040516001600160a01b03821681527f86e5bbceda94081c32220d685f37cc4e3ea7bb0be2dfbf0cb703579505a5390e906020015b60405180910390a150565b3360009081526002602052604090205460ff166102fb5760405162461bcd60e51b815260206004820152602e60248201527f4f6e6c79206164647265737365732077697468207772697465207065726d697360448201526d1cda5bdb9cc818d85b8818d85b1b60921b6064820152608401610211565b60008181526001602052604090205460ff161561035a5760405162461bcd60e51b815260206004820152601860248201527f4e756c6c696669657220616c72656164792065786973747300000000000000006044820152606401610211565b600081815260016020818152604092839020805460ff1916909217909155905182815233917f57d64412939564693aa1e17d56c93933396b3a990f47c84dfc16a201fc2f3f83910160405180910390a250565b600381815481106103bd57600080fd5b6000918252602090912001546001600160a01b0316905081565b6103df6105cd565b6103e9600061079a565b565b6060600380548060200260200160405190810160405280929190818152602001828054801561044357602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610425575b5050505050905090565b6104556105cd565b6001600160a01b03811660009081526002602052604090205460ff16156104be5760405162461bcd60e51b815260206004820152601b60248201527f4164647265737320697320616c726561647920612077726974657200000000006044820152606401610211565b6001600160a01b0381166000818152600260209081526040808320805460ff191660019081179091556003805491820181559093527fc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b90920180546001600160a01b0319168417905590519182527f6ff3aa2ea7b53070f6d9d07a445d338d89e8edef44250ffa8be19f53910d4a2e910161027a565b61055c6105cd565b6001600160a01b0381166105c15760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610211565b6105ca8161079a565b50565b6000546001600160a01b031633146103e95760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610211565b60008061068d8480548060200260200160405190810160405280929190818152602001828054801561068257602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610664575b5050505050846107ea565b91509150806106d65760405162461bcd60e51b815260206004820152601560248201527420b2323932b9b9903737ba1034b71030b93930bc9760591b6044820152606401610211565b83546000906106e79060019061090b565b90508083146107615784818154811061070257610702610924565b9060005260206000200160009054906101000a90046001600160a01b031685848154811061073257610732610924565b9060005260206000200160006101000a8154816001600160a01b0302191690836001600160a01b031602179055505b848054806107715761077161093a565b600082815260209020810160001990810180546001600160a01b03191690550190555050505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b81516000908190815b8181101561084c57846001600160a01b031686828151811061081757610817610924565b60200260200101516001600160a01b03160361083a579250600191506108589050565b8061084481610950565b9150506107f3565b50600019600092509250505b9250929050565b60006020828403121561087157600080fd5b5035919050565b60006020828403121561088a57600080fd5b81356001600160a01b03811681146108a157600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b818110156108e95783516001600160a01b0316835292840192918401916001016108c4565b50909695505050505050565b634e487b7160e01b600052601160045260246000fd5b8181038181111561091e5761091e6108f5565b92915050565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052603160045260246000fd5b600060018201610962576109626108f5565b506001019056fea264697066735822122007aca5bc38db42820b1db3f118969e99568c84a5e065fd384c1df67e3a504bca64736f6c63430008120033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061009e5760003560e01c8063715018a611610066578063715018a6146101515780638da5cb5b14610159578063cb01316c1461016a578063d6da03261461017f578063f2fde38b1461019257600080fd5b8063169394bb146100a3578063286f9201146100db5780632b29ba23146100f05780635bd4df321461011357806366a5267214610126575b600080fd5b6100c66100b136600461085f565b60016020526000908152604090205460ff1681565b60405190151581526020015b60405180910390f35b6100ee6100e9366004610878565b6101a5565b005b6100c66100fe366004610878565b60026020526000908152604090205460ff1681565b6100ee61012136600461085f565b610285565b61013961013436600461085f565b6103ad565b6040516001600160a01b0390911681526020016100d2565b6100ee6103d7565b6000546001600160a01b0316610139565b6101726103eb565b6040516100d291906108a8565b6100ee61018d366004610878565b61044d565b6100ee6101a0366004610878565b610554565b6101ad6105cd565b6001600160a01b03811660009081526002602052604090205460ff1661021a5760405162461bcd60e51b815260206004820152601760248201527f41646472657373206973206e6f7420612077726974657200000000000000000060448201526064015b60405180910390fd5b6001600160a01b0381166000908152600260205260409020805460ff19169055610245600382610627565b6040516001600160a01b03821681527f86e5bbceda94081c32220d685f37cc4e3ea7bb0be2dfbf0cb703579505a5390e906020015b60405180910390a150565b3360009081526002602052604090205460ff166102fb5760405162461bcd60e51b815260206004820152602e60248201527f4f6e6c79206164647265737365732077697468207772697465207065726d697360448201526d1cda5bdb9cc818d85b8818d85b1b60921b6064820152608401610211565b60008181526001602052604090205460ff161561035a5760405162461bcd60e51b815260206004820152601860248201527f4e756c6c696669657220616c72656164792065786973747300000000000000006044820152606401610211565b600081815260016020818152604092839020805460ff1916909217909155905182815233917f57d64412939564693aa1e17d56c93933396b3a990f47c84dfc16a201fc2f3f83910160405180910390a250565b600381815481106103bd57600080fd5b6000918252602090912001546001600160a01b0316905081565b6103df6105cd565b6103e9600061079a565b565b6060600380548060200260200160405190810160405280929190818152602001828054801561044357602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610425575b5050505050905090565b6104556105cd565b6001600160a01b03811660009081526002602052604090205460ff16156104be5760405162461bcd60e51b815260206004820152601b60248201527f4164647265737320697320616c726561647920612077726974657200000000006044820152606401610211565b6001600160a01b0381166000818152600260209081526040808320805460ff191660019081179091556003805491820181559093527fc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b90920180546001600160a01b0319168417905590519182527f6ff3aa2ea7b53070f6d9d07a445d338d89e8edef44250ffa8be19f53910d4a2e910161027a565b61055c6105cd565b6001600160a01b0381166105c15760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610211565b6105ca8161079a565b50565b6000546001600160a01b031633146103e95760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610211565b60008061068d8480548060200260200160405190810160405280929190818152602001828054801561068257602002820191906000526020600020905b81546001600160a01b03168152600190910190602001808311610664575b5050505050846107ea565b91509150806106d65760405162461bcd60e51b815260206004820152601560248201527420b2323932b9b9903737ba1034b71030b93930bc9760591b6044820152606401610211565b83546000906106e79060019061090b565b90508083146107615784818154811061070257610702610924565b9060005260206000200160009054906101000a90046001600160a01b031685848154811061073257610732610924565b9060005260206000200160006101000a8154816001600160a01b0302191690836001600160a01b031602179055505b848054806107715761077161093a565b600082815260209020810160001990810180546001600160a01b03191690550190555050505050565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b81516000908190815b8181101561084c57846001600160a01b031686828151811061081757610817610924565b60200260200101516001600160a01b03160361083a579250600191506108589050565b8061084481610950565b9150506107f3565b50600019600092509250505b9250929050565b60006020828403121561087157600080fd5b5035919050565b60006020828403121561088a57600080fd5b81356001600160a01b03811681146108a157600080fd5b9392505050565b6020808252825182820181905260009190848201906040850190845b818110156108e95783516001600160a01b0316835292840192918401916001016108c4565b50909695505050505050565b634e487b7160e01b600052601160045260246000fd5b8181038181111561091e5761091e6108f5565b92915050565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052603160045260246000fd5b600060018201610962576109626108f5565b506001019056fea264697066735822122007aca5bc38db42820b1db3f118969e99568c84a5e065fd384c1df67e3a504bca64736f6c63430008120033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addNullifier(bytes32)": {
+        "params": {
+          "_nullifier": "The nullifier to store"
+        }
+      },
+      "addWritePermission(address)": {
+        "params": {
+          "_newWriter": "The nullifier to store"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "removeWritePermission(address)": {
+        "params": {
+          "_removedWriter": "The nullifier to store"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "addNullifier(bytes32)": {
+        "notice": "ONLY WRITER: Only addresses with permission to write to this contract can call. Stores a nullifier for an email."
+      },
+      "addWritePermission(address)": {
+        "notice": "ONLY OWNER: Add address that has write permissions to the registry. Writer must not have been previously added."
+      },
+      "removeWritePermission(address)": {
+        "notice": "ONLY OWNER: Remove address that has write permissions to the registry. Writer must have been previously added."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 7,
+        "contract": "contracts/processors/nullifierRegistries/NullifierRegistry.sol:NullifierRegistry",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 5807,
+        "contract": "contracts/processors/nullifierRegistries/NullifierRegistry.sol:NullifierRegistry",
+        "label": "isNullified",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_bytes32,t_bool)"
+      },
+      {
+        "astId": 5811,
+        "contract": "contracts/processors/nullifierRegistries/NullifierRegistry.sol:NullifierRegistry",
+        "label": "isWriter",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 5814,
+        "contract": "contracts/processors/nullifierRegistries/NullifierRegistry.sol:NullifierRegistry",
+        "label": "writers",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_array(t_address)dyn_storage"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_address)dyn_storage": {
+        "base": "t_address",
+        "encoding": "dynamic_array",
+        "label": "address[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      }
+    }
+  }
+}
