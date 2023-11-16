@@ -320,7 +320,7 @@ export const Modal: React.FC<ModalProps> = ({
             target="_blank"
             rel="noopener noreferrer">
               <ThemedText.LabelSmall textAlign="left" paddingBottom={"0.75rem"}>
-                View on Etherscan ↗
+                View on Explorer ↗
               </ThemedText.LabelSmall>
           </Link>
         ) : null}
