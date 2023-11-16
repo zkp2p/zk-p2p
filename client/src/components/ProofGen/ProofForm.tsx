@@ -32,7 +32,8 @@ interface ProofGenerationFormProps {
   publicSignals: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
-  isSubmitProcessing: boolean;
+  submitTransactionStatus: string;
+  isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
   onVerifyEmailCompletion?: () => void;
@@ -48,7 +49,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   publicSignals,
   setProof,
   setPublicSignals,
-  isSubmitProcessing,
+  submitTransactionStatus,
+  isSubmitMining,
   isSubmitSuccessful,
   handleSubmitVerificationClick,
   onVerifyEmailCompletion,
@@ -319,7 +321,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             status={status}
             circuitType={circuitType}
             buttonTitle={getModalCtaTitle()}
-            isSubmitProcessing={isSubmitProcessing}
+            submitTransactionStatus={submitTransactionStatus}
+            isSubmitMining={isSubmitMining}
             isSubmitSuccessful={isSubmitSuccessful}
             setStatus={setStatus}
             handleSubmitVerificationClick={handleSubmitVerificationClick}

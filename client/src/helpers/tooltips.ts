@@ -120,7 +120,7 @@ export const PROOF_MODAL_UPLOAD_TITLE = `
 `
 
 export const PROOF_MODAL_UPLOAD_SUBTITLE = `
-  Emails sent to remote server for proving
+  Email is sent to remote server for proving
 `
 
 export const PROOF_MODAL_PROVE_TITLE = `
