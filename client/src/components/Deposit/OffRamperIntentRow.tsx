@@ -1,8 +1,7 @@
 import React from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
-import ellipsize from 'ellipsize';
-import { ENSName } from 'ethereum-ens-name';
+import { ENSName, AddressDisplayEnum } from 'ethereum-ens-name';
 
 import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
@@ -64,7 +63,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
                 <ENSName
                   provider={alchemyMainnetEthersProvider}
                   address={onRamper}
-                  customDisplay={(hash?: string) => ellipsize(hash, 9, { truncate: 'middle' })}
+                  displayType={AddressDisplayEnum.FIRST4_LAST4}
                 />
               </Link>
               {onRamperLinkLabel}

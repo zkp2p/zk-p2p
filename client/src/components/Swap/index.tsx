@@ -16,11 +16,14 @@ import { ThemedText } from '../../theme/text'
 import { IndicativeQuote } from '../../contexts/Deposits/types'
 import {
   DEPOSIT_REFETCH_INTERVAL,
-  PRECISION,
   VENMO_MAX_TRANSFER_SIZE,
   ZERO
 } from "@helpers/constants";
-import { toBigInt, toUsdcString } from '@helpers/units'
+import {
+  toBigInt,
+  toUsdcString,
+  conversionRateToString
+} from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
@@ -250,14 +253,16 @@ const Swap: React.FC<SwapProps> = ({
           updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
           setCurrentQuote(prevState => ({
             ...prevState,
-            ZERO_QUOTE
+            conversionRate: ZERO,
+            fiatToSend: '',
           }));
         }
       } else {
         updateQuoteErrorState(QuoteState.DEFAULT);
         setCurrentQuote(prevState => ({
           ...prevState,
-          ZERO_QUOTE
+          conversionRate: ZERO,
+          fiatToSend: '',
         }));
       }
     };
@@ -305,22 +310,9 @@ const Swap: React.FC<SwapProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
-  function conversionRateToString(rate: bigint) {
-    const scaledValue = rate * PRECISION;
-    const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
-    
-    const adjustedRate = Number(reciprocal - 10000n);
-    const percentage = adjustedRate / 100;
-  
-    let percentageString = percentage.toFixed(2);
-    percentageString = percentageString.replace(/\.00$|0$/, '');
-  
-    return percentageString + '%';
-  }
-
   const bestAvailableRateLabel = useMemo(() => {
     if (currentQuote.conversionRate !== ZERO) {
-      return `Best available rate: –${conversionRateToString(currentQuote.conversionRate)}`
+      return `Best available rate: ${conversionRateToString(currentQuote.conversionRate)}`
     } else {
       return '';
     }

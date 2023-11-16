@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
-import ellipsize from 'ellipsize';
-import { ENSName } from 'ethereum-ens-name';
+import { ENSName, AddressDisplayEnum } from 'ethereum-ens-name';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
@@ -91,7 +90,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
                 <ENSName
                   provider={alchemyMainnetEthersProvider}
                   address={depositorAddress}
-                  customDisplay={(hash?: string) => ellipsize(hash, 9, { truncate: 'middle' })}
+                  displayType={AddressDisplayEnum.FIRST4_LAST4}
                 />
               </Link>
             </Value>
