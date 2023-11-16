@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import merge from 'lodash.merge';
 import { ethers } from 'ethers';
-
 import {
   WagmiConfig,
   createConfig,
@@ -11,7 +10,6 @@ import {
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from "wagmi/providers/public";
 import { hardhat, goerli, base } from 'wagmi/chains'
-
 import {
   RainbowKitProvider,
   darkTheme,
@@ -21,6 +19,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import "./index.css";
 import App from "./App";
+
 
 const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
