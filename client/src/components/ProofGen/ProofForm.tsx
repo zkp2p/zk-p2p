@@ -16,7 +16,7 @@ import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
 
 import { HOSTED_FILES_PATH } from "@helpers/constants";
-import { downloadProofFiles } from "@helpers/zkp";
+import { downloadUnChunkedProvingKey } from "@helpers/zkp";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/useRegistration';
@@ -271,7 +271,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const downloadProvingKeys = async () => {
     console.time("download-keys");
-    await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {});
+    await downloadUnChunkedProvingKey(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {});
     console.timeEnd("download-keys");
   }
 

@@ -4,7 +4,7 @@ import { uncompressGz as uncompress } from "./uncompress";
 
 const snarkjs = require("snarkjs");
 
-const IS_FILE_COMPRESSED = true;
+const IS_FILE_COMPRESSED = false;
 
 const zkeyExtension = ".gz"
 const zkeyExtensionRegEx = new RegExp(`\\b${zkeyExtension}$\\b`, 'i') // = /.gz$/i
@@ -27,16 +27,19 @@ export async function downloadFromFilename(loadURL: string, filename: string, co
     });
     const zkeyBuff = await zkeyResp.arrayBuffer();
     if (!compressed) {
+      // store the uncompressed data
+      console.log("storing file in localforage", filename);
       await storeArrayBuffer(filename, zkeyBuff);
+      console.log("stored file in localforage", filename);
     } else {
       // uncompress the data
       const zkeyUncompressed = await uncompress(zkeyBuff);
       const rawFilename = filename.replace(zkeyExtensionRegEx, ""); // replace .gz with ""
+
       // store the uncompressed data
       console.log("storing file in localforage", rawFilename);
       await storeArrayBuffer(rawFilename, zkeyUncompressed);
       console.log("stored file in localforage", rawFilename);
-      // await localforage.setItem(filename, zkeyBuff);
     }
     console.log(`Storage of ${filename} successful!`);
   } catch (e) {
@@ -44,6 +47,17 @@ export async function downloadFromFilename(loadURL: string, filename: string, co
     console.log(e);
   }
 }
+
+export const downloadUnChunkedProvingKey = async function (loadURL: string, filename: string, onFileDownloaded: () => void) {
+  const targzFilename = `${filename}.zkey`;
+  const item = await localforage.getItem(`${filename}.zkey`);
+  if (item) {
+    console.log(`${filename}.zkey already found in localstorage!`);
+    onFileDownloaded();
+  } else {
+    await downloadFromFilename(loadURL, targzFilename, IS_FILE_COMPRESSED).then(() => onFileDownloaded());
+  }
+};
 
 export const downloadProofFiles = async function (loadURL: string, filename: string, onFileDownloaded: () => void) {
   const filePromises = [];

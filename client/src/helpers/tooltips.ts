@@ -112,7 +112,7 @@ export const PROOF_MODAL_DOWNLOAD_TITLE = `
 `;
 
 export const PROOF_MODAL_DOWNLOAD_SUBTITLE = `
-Keys download (1.7GB) will complete in 3 minutes
+  One time key download (4.1GB) will complete in 18 minutes
 `;
 
 export const PROOF_MODAL_UPLOAD_TITLE = `

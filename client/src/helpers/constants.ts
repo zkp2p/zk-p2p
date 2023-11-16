@@ -46,7 +46,7 @@ export const DEFAULT_NETWORK = "base";
 
 
 // Proving key paths
-export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p/v2/v0.0.10/";
+export const HOSTED_FILES_PATH = "https://s3.amazonaws.com/zk-p2p/v2/v0.1.0/";
 export const REGISTRATION_KEY_FILE_NAME = "venmo_registration/venmo_registration";
 export const SEND_KEY_FILE_NAME = "venmo_send/venmo_send";
 
