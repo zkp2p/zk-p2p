@@ -16,6 +16,9 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     using StringUtils for uint256[];
     using StringConversionUtils for string;
 
+    /* ============ Constants ============ */
+    uint256 constant public PACK_SIZE = 7;
+
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
@@ -73,6 +76,6 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToString();
+        return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
     }
 }
