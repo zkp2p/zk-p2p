@@ -123,6 +123,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                             href={ "https://bridge.base.org/deposit" }
                             target="_blank"
                             color="inherit"
+                            underline="none"
                           >
                             Bridge
                           </Link>

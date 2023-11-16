@@ -59,14 +59,21 @@ export const toUsdString = (amount: bigint): string => {
   return usdcString;
 };
 
-export function conversionRateToString(rate: bigint) {
+export function conversionRateToString(rate: bigint, premiumForOffRamper: boolean = false): string {
   const scaledValue = rate * PRECISION;
   const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
   
   const adjustedRate = Number(reciprocal - 10000n);
   const percentage = Math.abs(adjustedRate / 100);
 
-  let percentageString = (adjustedRate >= 0 ? "–" : "+") + percentage.toFixed(2);
+  let percentageSign;
+  if (premiumForOffRamper) {
+    percentageSign = adjustedRate >= 0 ? "+" : "–";
+  } else {
+    percentageSign = adjustedRate >= 0 ? "–" : "+";
+  }
+
+  let percentageString = percentageSign + percentage.toFixed(2);
   percentageString = percentageString.replace(/\.00$|0$/, '');
 
   return percentageString + '%';

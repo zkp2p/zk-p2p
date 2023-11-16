@@ -110,7 +110,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           const totalDepositAmount = toUsdcString(deposit.depositAmount);
           const intentCount = deposit.intentHashes.length.toString();
           const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
-          const conversionRate = conversionRateToString(deposit.conversionRate);
+          const conversionRate = conversionRateToString(deposit.conversionRate, true);
   
           return {
             depositor,
