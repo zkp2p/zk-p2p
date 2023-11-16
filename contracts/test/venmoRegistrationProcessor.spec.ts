@@ -65,12 +65,12 @@ describe("VenmoRegistrationProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x2ec1c16f1059e93453cac82c862c5501aaf3f710c5f23304471086c092eea31d"), BigNumber.from("0x2ee2e1580d07b81de93485e4c5739ad0fce01cd746d74ae6d38aed0e69d1a0d4")];
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x191e1b9bc41df5af8ee340c17b985e6568d07af205081006b58b051cfcb69747"), BigNumber.from("0x12bf495fd858d78c2c1afe44a54c1e2e14816bb08e38d65ad7e433097330b3da")];
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x09c9cc6565b20781dff26c1dcde589b6d9c2c10f5fdc9036dc2882342926c2fc"), BigNumber.from("0x1c2cb4270920c8747770a89a21cbe00ed1048d9f668ce711aa792d8464fa28d1")],
-        [BigNumber.from("0x00b1bc7261a4992e2396426285280d9c203e222d825bad49d15abff94cf68c66"), BigNumber.from("0x0e7e7432c90ce467211ec31d610b219252f385938053caa2c7054e9f1f5ff209")]
+        [BigNumber.from("0x3045cf6ba2aa61bc7b601e7d7a8ad40e4934e206e8e6649f28bf2bab5633539b"), BigNumber.from("0x12942590fa042c1852458a02ec03382fe954f41817bee90d00000f7c58813bbc")],
+        [BigNumber.from("0x22d6aaad8804724c0103be2ebce7168375f960d61169b9f3df2dcb269ed1e91a"), BigNumber.from("0x21afcce7edba700acadad481d70b3b987c6d66affee80165e9e37fc473e1cfe5")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x2f756bb42c2f70b554a9af6163056267f93a40396071ed0e676f916e100609a6"), BigNumber.from("0x1194696954bdc306464b86e5645bf096d03f3600e599cbca76dad98aff87893a")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x16c20e8962dccf386104148cf396cff59eb91df62e9b809f3844773901e360cb"), BigNumber.from("0x1a086c71446c21cb5a114200211bd69c87095f750cf09726ab50f8ad551ff911")];
       const signals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [BigNumber.from(rawSignals[0]), BigNumber.from(rawSignals[1]), BigNumber.from(rawSignals[2]), BigNumber.from(rawSignals[3]), BigNumber.from(rawSignals[4])];
 
       subjectProof = {

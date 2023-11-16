@@ -68,12 +68,12 @@ describe("VenmoSendProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x2a1eba4b96b534094d82a3b5624bb750af53aae2d21b90fbbe239d145b8983fd"), BigNumber.from("0x12e8698eac09b6b7861a168099242a8b3044c6b7720b4f453101a274bbdb2b94")]
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x26ff6d28e02f70b6504333c1c859568a9f9448687e8d2353be18e873c1a1fc80"), BigNumber.from("0x0c988ec5f63caf28e9b3e25b3282c717578a2dbb977029485acfff9cde455f21")]
       const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
-        [BigNumber.from("0x25a5073001984435c489b3318e07b93d1755a763889a734fb8cd2f6bb713006a"), BigNumber.from("0x1561b6ebd796ecc5b52cc6e6f7226f5c0a20e952cc4d1dcd0b3a3e23e116cf23")],
-        [BigNumber.from("0x2400aa61e06f1b046d184a33e44132ef2d3995f533e4967396cf9e59a5569747"), BigNumber.from("0x10f9d78505a387a15ad9b7bef2c5df65d349f31f2c396a6710dd4dfa1d8188a3")]
+        [BigNumber.from("0x02ce6de4c2c4c8a3d70b7dab7dbf910163845ee641f1abf24fcd6b7a4826d1f3"), BigNumber.from("0x1b020bfdf12db1398722b03bc62ebc164bb55ccdfc149f5293b87ce8b7ce2843")],
+        [BigNumber.from("0x1eb4a95382e681a3f1c878a8e438e60aaae1d31ac8af53819c95c0a8bc2363ce"), BigNumber.from("0x1c0b7e9cf0656f50e9efd851a58b8ad4da7e3bfa4656bac41e26e2d8e469743d")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x16492a341213d631c1d4edc4297c8b05a568be4e61ff7da61226e0e84f53fd1d"), BigNumber.from("0x1918f19b5cbed64abf968a3994b80f164c84681b4fe6cddbfe3e680b0e2d32bd")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x2a3469161eb3b8aad8a0b83638a78a69396bcf00453006a39fd123682e3d3fc2"), BigNumber.from("0x2f9bf3be48e9e31aed57dda963606c21e8ba543adbed6b163e5feaf60b622dea")];
       const signals: BigNumber[] = rawSignals.map((signal) => BigNumber.from(signal));
 
       subjectProof = {
