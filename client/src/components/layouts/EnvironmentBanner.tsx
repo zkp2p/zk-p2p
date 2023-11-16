@@ -66,7 +66,7 @@ export const EnvironmentBanner: React.FC = () => {
 
   return (
     <Container>
-      <div style={{ flex: 0.25 }}/>
+      <div style={{ flex: 0.1 }}/>
 
       <StyledLabel style={{ flex: '1', margin: 'auto'}}>
         {bannerCopyForEnv(env)}
@@ -91,7 +91,7 @@ const Container = styled.div`
   position: relative;
   align-items: center;
   text-align: center;
-  padding: 10px;
+  padding: 10px 0px;
   background-color: #df2e2d;
 `;
 
@@ -111,7 +111,7 @@ const StyledButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 0;
-  flex: 0.25;
+  flex: 0.1;
 `;
 
 const StyledX = styled(X)`
