@@ -123,8 +123,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                             href={ "https://bridge.base.org/deposit" }
                             target="_blank"
                             color="inherit"
-                            underline="none"
-                            
                           >
                             Bridge
                           </Link>
@@ -177,7 +175,7 @@ const AccountBalance = styled.div`
   font-family: 'Graphik';
   font-weight: 700;
   letter-spacing: 0.25px;
-  font-size: 16px;
+  font-size: 15px;
 `;
 
 const LoggedInBalanceAndAccount = styled.div`
@@ -200,7 +198,7 @@ const LoggedInButton = styled.button`
   color: #ffffff;
   font-family: 'Graphik';
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   align-self: stretch;
   padding: 0px 20px;
 `;
