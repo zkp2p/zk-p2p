@@ -11,10 +11,6 @@ import SmartContractsContext from './SmartContractsContext'
 import { Abi } from './types'
 
 
-const environmentNetworkMap = {
-
-};
-
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -39,7 +35,6 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    // const contractsForNetwork = network ? contractAddresses[network] : contractAddresses[DEFAULT_NETWORK];
     const networkName = network ? network : DEFAULT_NETWORK;
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
@@ -62,11 +57,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
             break;
 
           case 'hardhat':
+          default:
             contractsForNetwork = contractAddresses['localhardhat'];
             break;
         }
-        contractsForNetwork = contractAddresses[networkName];
-        break;
     };
 
     if (contractsForNetwork) {
