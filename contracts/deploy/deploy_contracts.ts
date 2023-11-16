@@ -93,10 +93,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Processors deployed...");
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
-  await rampContract.initialize(
-    registrationProcessor.address,
-    sendProcessor.address
-  );
+  // await rampContract.initialize(
+  //   registrationProcessor.address,
+  //   sendProcessor.address
+  // );
 
   console.log("Ramp initialized...");
 
