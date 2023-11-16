@@ -14,6 +14,9 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
 
     using StringUtils for uint256[];
 
+    /* ============ Constants ============ */
+    uint256 constant public PACK_SIZE = 7;
+    
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
@@ -56,6 +59,6 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
             signalArray[i - _from] = _signals[i];
         }
 
-        return signalArray.convertPackedBytesToString();
+        return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
     }
 }
