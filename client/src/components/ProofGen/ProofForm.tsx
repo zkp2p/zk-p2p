@@ -357,7 +357,7 @@ const Container = styled(Col)`
 `;
 
 const VerticalDivider = styled.div`
-  height: 32px;
+  height: 24px;
   border-left: 1px solid #98a1c03d;
   margin: 0 auto;
 `;
