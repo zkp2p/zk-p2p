@@ -43,7 +43,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
             <Button onClick={handleNewRegistrationClick} height={40}>
                 + Register
             </Button>
-          ) : null}
+          ) : (
+            <Button disabled={true} height={40}>
+                + Mint NFT (Coming Soon)
+            </Button>
+          )}
         </TitleRow>
 
         <Content>
