@@ -4,7 +4,7 @@ export const SECONDS_IN_DAY = BigInt(86400);
 
 export const VENMO_MAX_TRANSFER_SIZE = 2_000n;
 
-export const DEPOSIT_REFETCH_INTERVAL = 30000; // 0.5 minutes
+export const DEPOSIT_REFETCH_INTERVAL = 20000; // 0.3 minutes
 export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 export const FETCH_VENMO_EMAILS_AFTER_DATE = "2022/01/01"
 

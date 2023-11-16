@@ -250,14 +250,16 @@ const Swap: React.FC<SwapProps> = ({
           updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
           setCurrentQuote(prevState => ({
             ...prevState,
-            ZERO_QUOTE
+            conversionRate: ZERO,
+            fiatToSend: '',
           }));
         }
       } else {
         updateQuoteErrorState(QuoteState.DEFAULT);
         setCurrentQuote(prevState => ({
           ...prevState,
-          ZERO_QUOTE
+          conversionRate: ZERO,
+          fiatToSend: '',
         }));
       }
     };
