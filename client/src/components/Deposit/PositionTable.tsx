@@ -14,8 +14,7 @@ import { ThemedText } from '../../theme/text'
 import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
-import { toUsdcString } from '@helpers/units'
-import { PRECISION } from '@helpers/constants'
+import { toUsdcString, conversionRateToString } from '@helpers/units'
 import useAccount from '@hooks/useAccount'
 import useDeposits from '@hooks/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -166,21 +165,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   };
   
   /*
-   * Helpers
+   * Component
    */
-
-  function conversionRateToString(rate: bigint) {
-    const scaledValue = rate * PRECISION;
-    const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
-    
-    const adjustedRate = Number(reciprocal - 10000n);
-    const percentage = adjustedRate / 100;
-  
-    let percentageString = percentage.toFixed(2);
-    percentageString = percentageString.replace(/\.00$|0$/, '');
-  
-    return percentageString + '%';
-  }
 
   return (
     <Container>

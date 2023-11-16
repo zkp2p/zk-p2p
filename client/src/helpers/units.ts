@@ -1,9 +1,12 @@
+import { PRECISION } from "@helpers/constants";
+
+
 export const toBigInt = (amount: string): bigint => {
   const [whole, fraction = ''] = amount.split('.');
   const paddedFraction = (fraction + '000000').slice(0, 6);  // Pad or truncate fraction to 6 decimal places
   const integerRepresentation = whole + paddedFraction;
   return BigInt(integerRepresentation);
-}
+};
 
 export const toUsdcString = (amount: bigint): string => {
   let amountStr = amount.toString();
@@ -24,7 +27,7 @@ export const toUsdcString = (amount: bigint): string => {
 
   let result = `${wholePart}.${fractionalPart}`;
   return parseFloat(result).toString();
-}
+};
 
 export const toUsdString = (amount: bigint): string => {
   const usdcString = toUsdcString(amount);
@@ -54,4 +57,17 @@ export const toUsdString = (amount: bigint): string => {
   }
   
   return usdcString;
-}
+};
+
+export function conversionRateToString(rate: bigint) {
+  const scaledValue = rate * PRECISION;
+  const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
+  
+  const adjustedRate = Number(reciprocal - 10000n);
+  const percentage = Math.abs(adjustedRate / 100);
+
+  let percentageString = (adjustedRate >= 0 ? "–" : "+") + percentage.toFixed(2);
+  percentageString = percentageString.replace(/\.00$|0$/, '');
+
+  return percentageString + '%';
+};
