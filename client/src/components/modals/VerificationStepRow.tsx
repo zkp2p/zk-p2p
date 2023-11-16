@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro'
 import { Download, Cpu, Check, Circle, Play, Upload } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
-
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -57,29 +56,44 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
   const { isProvingTypeFast } = useProofGenSettings();
 
-  const [percentage, setPercentage] = useState(0);
+  /*
+   * State
+   */
+
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [progressTimer, setProgressTimer] = useState(0);
+  
+
+  /*
+   * Hooks
+   */
 
   useEffect(() => {
     if (progress === VerificationState.LOADING) {
-      const interval = getUpdateIntervalMs(); // Milliseconds between each progress update
-      const totalTime = getEstimatedTimesMs(); // Total time for the progress to go from 0 to 100
+      const interval = getUpdateIntervalMs();
+      const totalTime = getEstimatedTimesMs();
       const steps = totalTime / interval;
       const increment = 100 / steps;
-      let timeout: NodeJS.Timeout;
 
+      let timeout: NodeJS.Timeout;
       let currentPercentage = 0;
 
-      const updatePercentage = () => {
+      const updateProgressCircle = () => {
         if (currentPercentage < 100) {
-          setPercentage(currentPercentage);
-          currentPercentage += Math.round(increment);
-          timeout = setTimeout(updatePercentage, interval);
+          setProgressPercentage(currentPercentage);
+
+          const tick = Math.round(increment);
+          currentPercentage += tick;
+
+          setProgressTimer(currentPercentage / tick);
+
+          timeout = setTimeout(updateProgressCircle, interval);
         } else {
-          setPercentage(99);
+          setProgressPercentage(100);
         }
       };
 
-      updatePercentage();
+      updateProgressCircle();
 
       return () => clearTimeout(timeout);
     }
@@ -92,7 +106,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
    */
 
   const shouldShowProgressCircle = (percentage: number) => {
-    return percentage < 99 && type !== VerificationStepType.SUBMIT
+    return percentage < 100 && type !== VerificationStepType.SUBMIT;
   }
 
   const getEstimatedTimesMs = () => {
@@ -102,11 +116,11 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.UPLOAD:
         return 1000;
       case VerificationStepType.PROVE:
-        return isProvingTypeFast ? 60000 : 660000;
+        return isProvingTypeFast ? 40000 : 600000;
       default:
         return 0;
     }
-  }
+  };
 
   const getUpdateIntervalMs = () => {
     switch (type) {
@@ -119,7 +133,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       default:
         return 0;
     }
-  }
+  };
 
   const getLeftIcon = () => {
     switch (type) {
@@ -142,7 +156,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return <StyledCircle progress={progress} />;
 
       case VerificationState.LOADING:
-        return shouldShowProgressCircle(percentage) ? (
+        return shouldShowProgressCircle(progressPercentage) ? (
           <CircularProgressbarWithChildren
             maxValue={99}
             styles={{
@@ -159,13 +173,13 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
                 transition: 'none',
               }
             }}
-            value={percentage}
+            value={progressPercentage}
           >
-            <Percentage>{`${percentage}`}</Percentage>
+            <Percentage>{`${progressTimer}`}</Percentage>
           </CircularProgressbarWithChildren>
         ) : (
           <Spinner size={24} />
-        )
+        );
 
       case VerificationState.COMPLETE:
         return <StyledCheck progress={progress} />;
@@ -199,7 +213,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       default:
         return null;
     }
-  }
+  };
 
   const getSubTitle = () => {
     switch (type) {
@@ -229,7 +243,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       default:
         return null;
     }
-  }
+  };
 
   /*
    * Component

@@ -37,8 +37,8 @@ export const ProofSettings: React.FC = () => {
           <LabeledSwitch
             switchChecked={isProvingTypeFast ?? true}
             onSwitchChange={handleProvingTypeChanged}
-            checkedLabel={"Fast (Recommended)"}
-            uncheckedLabel={"Private (Experimental)"}
+            checkedLabel={"Fast"}
+            uncheckedLabel={"Private"}
             helperText={PROVING_TYPE_TOOLTIP}
           />
         </ToggleWrapper>
