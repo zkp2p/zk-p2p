@@ -1691,7 +1691,7 @@ export default {
       ]
     },
     "VenmoRegistrationProcessor": {
-      "address": "0xEf15b6Fd708F35a85c19C30F78119Ff8595aD627",
+      "address": "0xC536C23C2dc76be96eb25A444c857053a591923E",
       "abi": [
         {
           "inputs": [
@@ -1737,19 +1737,6 @@ export default {
           ],
           "name": "OwnershipTransferred",
           "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "PACK_SIZE",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
         },
         {
           "inputs": [],
@@ -1966,7 +1953,7 @@ export default {
       ]
     },
     "VenmoSendProcessor": {
-      "address": "0x574ACe7463dD126D2D22825BAa846cf1B3d87D4F",
+      "address": "0x38074075e15057C83f9A6A7E31C2eB74E6362c57",
       "abi": [
         {
           "inputs": [
@@ -2012,19 +1999,6 @@ export default {
           ],
           "name": "OwnershipTransferred",
           "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "PACK_SIZE",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
         },
         {
           "inputs": [],
