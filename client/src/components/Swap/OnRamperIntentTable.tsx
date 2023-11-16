@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction
-} from 'wagmi'
+} from 'wagmi';
 
-import { ThemedText } from '../../theme/text'
+import { ThemedText } from '../../theme/text';
 import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
-import { toUsdcString, toUsdString } from '@helpers/units'
-import { PRECISION, SECONDS_IN_DAY  } from '@helpers/constants'
+import { toUsdcString, toUsdString } from '@helpers/units';
+import { SECONDS_IN_DAY  } from '@helpers/constants';
 import useLiquidity from '@hooks/useLiquidity';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -28,7 +28,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
    */
 
  const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
- const { depositStore } = useLiquidity();
+ const { calculateUsdFromRequestedUSDC, depositStore } = useLiquidity();
  const { rampAddress, rampAbi } = useSmartContracts();
 
   /*
@@ -94,7 +94,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
       if (storedDeposit !== undefined) {
         const amountUSDC = currentIntent.intent.amount
         const conversionRate = storedDeposit.deposit.conversionRate;
-        const usdToSend = amountUSDC * PRECISION / conversionRate;
+
+        const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, conversionRate);
         const amountUSDToSend = toUsdString(usdToSend);
 
         const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);

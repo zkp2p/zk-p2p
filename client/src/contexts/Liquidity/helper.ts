@@ -42,7 +42,7 @@ export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint
   } else {
     return rawAmount;
   }
-}
+};
 
 export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, depositStore: StoredDeposit[]): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
@@ -51,6 +51,7 @@ export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, de
 
     if (storedDeposit.availableLiquidity >= requestedAmountBI) {
       const conversionRate = storedDeposit.deposit.conversionRate;
+      
       const usdToSend = calculateUsdFromRequestedUSDC(requestedAmountBI, conversionRate);
       const usdAmountToSend = toUsdString(usdToSend);
 
