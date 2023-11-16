@@ -1,6 +1,6 @@
 {
   "name": "@zkp2p/circuits-circom",
-  "version": "0.0.10-rc1",
+  "version": "0.1.0",
   "packageManager": "yarn@3.6.3",
   "description": "Circom circuits for ZKP2P",
   "contributors": [
