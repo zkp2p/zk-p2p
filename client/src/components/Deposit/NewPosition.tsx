@@ -112,6 +112,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
+
+      setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
   });
 
@@ -144,8 +146,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       
       refetchUsdcApprovalToRamp?.();
       refetchUsdcBalance?.();
-
-      setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
   });
 
