@@ -78,6 +78,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const {
     data: submitWithdrawResult,
     isLoading: isSubmitWithdrawLoading,
+    status: submitWithdrawStatus,
     writeAsync: writeSubmitWithdrawAsync,
   } = useContractWrite(writeWithdrawConfig);
 
@@ -127,7 +128,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   
     useEffect(() => {
       const executeWithdrawDeposit = async () => {
-        if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync && !isSubmitWithdrawLoading) {
+        if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync && submitWithdrawStatus === 'idle') {
           try {
             await writeSubmitWithdrawAsync();
           } catch (error) {
@@ -142,7 +143,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }, [
       shouldConfigureWithdrawWrite,
       writeSubmitWithdrawAsync,
-      isSubmitWithdrawLoading,
+      submitWithdrawStatus,
     ]);
 
   /*

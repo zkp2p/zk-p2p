@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import {
   useContractWrite,
   usePrepareContractWrite,
-  useWaitForTransaction
+  useWaitForTransaction,
 } from 'wagmi';
 
 import { ThemedText } from '../../theme/text';
@@ -59,6 +59,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   const {
     data: submitCancelIntentResult,
     isLoading: isSubmitCancelIntentLoading,
+    status: submitCancelStatus,
     writeAsync: writeSubmitCancelIntentAsync
   } = useContractWrite(writeCancelIntentConfig);
 
@@ -129,7 +130,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
   useEffect(() => {
     const executeCancelIntent = async () => {
-      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync && !isSubmitCancelIntentLoading) {
+      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync && submitCancelStatus === 'idle') {
         try {
           await writeSubmitCancelIntentAsync();
         } catch (error) {
@@ -144,7 +145,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   }, [
     shouldConfigureCancelIntentWrite,
     writeSubmitCancelIntentAsync,
-    isSubmitCancelIntentLoading,
+    submitCancelStatus,
   ]);
 
   /*
