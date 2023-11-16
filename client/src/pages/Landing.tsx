@@ -39,7 +39,7 @@ export const Landing: React.FC = () => {
 
           <HeroTextContainer>
             <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
-              USD to USDC in 90 Seconds
+              Onramp USD in 90 seconds
             </ThemedText.Hero>
           </HeroTextContainer>
 
