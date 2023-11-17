@@ -81,6 +81,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
   const [status, setStatus] = useState(ProofGenerationStatus.NOT_STARTED);
+
+  const [provingFailureErrorCode, setProvingFailureErrorCode] = useState<number | null>(null);
   /*
    * Hooks
    */
@@ -88,7 +90,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const {
     data: remoteGenerateProofResponse,
     loading: isRemoteGenerateProofLoading,
-    // error: remoteGenerateProofError,
+    error: remoteGenerateProofError,
     fetchData: remoteGenerateProof
   } = useRemoteProofGen({
     emailType: remoteProofGenEmailType,
@@ -103,6 +105,14 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [remoteGenerateProofResponse]);
+
+  useEffect(() => {
+    if (remoteGenerateProofError) {
+      setProvingFailureErrorCode(remoteGenerateProofError.code);
+
+      setStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
+    }
+  }, [remoteGenerateProofError]);
 
   useEffect(() => {
     if (emailFull) {
@@ -327,6 +337,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             setStatus={setStatus}
             handleSubmitVerificationClick={handleSubmitVerificationClick}
             transactionAddress={transactionAddress}
+            provingFailureErrorCode={provingFailureErrorCode}
           />
         )
       }
