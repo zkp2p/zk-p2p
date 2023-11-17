@@ -134,7 +134,7 @@ export const PROOF_MODAL_PROVE_SUBTITLE_PRIVATE = `
 `;
 
 export const PROOF_MODAL_PROVE_SUBTITLE_FAST = `
-  Fast validation will take approximately 45 seconds
+  Payment validation will take approximately 60 seconds
 `;
 
 export const PROOF_MODAL_VERIFY_TITLE = `
