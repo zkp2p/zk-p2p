@@ -11,9 +11,11 @@ import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
+import { ON_RAMPER_INTENT_INSTRUCTIONS } from '@helpers/tooltips';
 import useLiquidity from '@hooks/useLiquidity';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
+import QuestionHelper from '@components/common/QuestionHelper';
 
 
 interface OnRamperIntentTableProps {
@@ -175,9 +177,14 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     <Container>
       <TitleAndTableContainer>
         <IntentCountTitle>
-          <ThemedText.LabelSmall textAlign="left">
-            Current Order
-          </ThemedText.LabelSmall>
+          <TitleAndTooltip>
+            <ThemedText.LabelSmall textAlign="left">
+              Current Order
+            </ThemedText.LabelSmall>
+            <QuestionHelper
+                text={ON_RAMPER_INTENT_INSTRUCTIONS}
+              />
+          </TitleAndTooltip>
 
           <AccessoryButton
             onClick={handleCancelClick}
@@ -231,7 +238,13 @@ const IntentCountTitle = styled.div`
   padding: 1rem 1.5rem 0.75rem 1.5rem;
   border-bottom: 1px solid #98a1c03d;
   align-items: center;
-`
+`;
+
+const TitleAndTooltip = styled.div`
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+`;
 
 const Table = styled.div`
   width: 100%;
