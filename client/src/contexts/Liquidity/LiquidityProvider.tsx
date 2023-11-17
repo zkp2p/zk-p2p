@@ -5,7 +5,7 @@ import React, {
   ReactNode,
   useMemo
 } from 'react'
-import { useContractRead } from 'wagmi'
+import { readContract } from '@wagmi/core'
 
 import {
   Deposit,
@@ -17,9 +17,9 @@ import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
-  pruneDeposits,
+  filterOwnDeposits,
  } from './helper'
-import { esl, CALLER_ACCOUNT } from '@helpers/constants'
+import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
@@ -27,6 +27,9 @@ import useAccount from '@hooks/useAccount'
 
 import LiquidityContext from './LiquidityContext'
 
+
+const BATCH_SIZE = 50;
+const PRUNED_DEPOSITS_PREFIX = 'prunedDepositIds_';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -48,51 +51,146 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
 
+  const [prunedDepositIds, setPrunedDepositIds] = useState<bigint[]>(() => {
+    if (!rampAddress) {
+      return [];
+    } else {
+      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const storedIds = localStorage.getItem(storageKey);
+
+      if (storedIds) {
+        return JSON.parse(storedIds).map(BigInt);
+      } else {
+        return [];
+      }
+    }
+  });
+
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
   /*
    * Contract Reads
    */
 
+  const fetchDepositsBatched = useCallback(async (depositIdBatch: bigint[]) => {
+    try {
+      // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
+      const data = await readContract({
+        address: rampAddress,
+        abi: rampAbi,
+        functionName: 'getDepositFromIds',
+        args: [depositIdBatch],
+        account: CALLER_ACCOUNT,
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching deposits batch:', error);
+      
+      return [];
+    }
+  }, [rampAddress, rampAbi]);
+
   const depositIdsToFetch = useMemo(() => {
     if (depositCounter) {
+      const prunedIdsSet = new Set(prunedDepositIds.map(id => id.toString()));
       const depositIds = [];
+
       for (let i = 0; i < depositCounter; i++) {
-        depositIds.push(BigInt(i));
+        const depositId = BigInt(i).toString();
+        if (!prunedIdsSet.has(depositId)) {
+          depositIds.push(BigInt(depositId));
+        }
       }
-
-      /*
-      * TODO:
-      * Compare the depositCounter against list of ids stored in local storage to ignore
-      * that list should only contain Deposits that have no remaining liquidity
-      */
-
+  
       return depositIds;
     } else {
       return [];
     }
-  }, [depositCounter]);
+  }, [depositCounter, prunedDepositIds]);
 
-  // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
-  const {
-    data: depositsRaw,
-    // isLoading: isFetchDepositsLoading,
-    // isError: isFetchDepositsError,
-    refetch: refetchDeposits,
-  } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
-    functionName: 'getDepositFromIds',
-    args: [
-      depositIdsToFetch
-    ],
-    enabled: shouldFetchDeposits,
-    account: CALLER_ACCOUNT
-  })
+  const refetchDepositsBatched = useCallback(async () => {
+    const batchedDeposits: DepositWithAvailableLiquidity[] = [];
+    const depositIdsToPrune: bigint[] = [];
+    
+    for (let i = 0; i < depositIdsToFetch.length; i += BATCH_SIZE) {
+      const depositIdBatch = depositIdsToFetch.slice(i, i + BATCH_SIZE);
+      const rawDepositsData: any[] = await fetchDepositsBatched(depositIdBatch);
+      
+      const deposits = sanitizeRawDeposits(rawDepositsData);
+      for (let j = 0; j < deposits.length; j++) {
+        const deposit = deposits[j];
+
+        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
+        const orderHasNoOustandingIntent = deposit.deposit.outstandingIntentAmount === ZERO;
+        const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
+
+        if (orderIsFilled) {
+          depositIdsToPrune.push(deposit.depositId);
+        } else {
+          batchedDeposits.push(deposit);
+        }
+      }
+    }
+
+    const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
+    setPrunedDepositIds(newPrunedDepositIds);
+
+    setDeposits(batchedDeposits);
+  }, [depositIdsToFetch, fetchDepositsBatched, prunedDepositIds]);
+
+  const sanitizeRawDeposits = (rawDepositsData: any[]) => {
+    const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
+
+    for (let i = rawDepositsData.length - 1; i >= 0; i--) {
+      const depositWithAvailableLiquidityData = rawDepositsData[i];
+      
+      const depositData = depositWithAvailableLiquidityData.deposit;
+      const deposit: Deposit = {
+        depositor: depositData.depositor.toString(),
+        venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
+        depositAmount: depositData.depositAmount,
+        remainingDepositAmount: depositData.remainingDeposits,
+        outstandingIntentAmount: depositData.outstandingIntentAmount,
+        conversionRate: depositData.conversionRate,
+        intentHashes: depositData.intentHashes,
+      };
+
+      const depositWithLiquidity: DepositWithAvailableLiquidity = {
+        deposit,
+        availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
+        depositId: depositWithAvailableLiquidityData.depositId,
+      }
+
+      sanitizedDeposits.push(depositWithLiquidity);
+    }
+
+    return sanitizedDeposits;
+  };
 
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    if (rampAddress) {
+      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
+      localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
+    }
+  }, [prunedDepositIds, rampAddress]);
+
+  useEffect(() => {
+    const fetchDeposits = async () => {
+      if (shouldFetchDeposits) {
+        await refetchDepositsBatched();
+      }
+    };
+  
+    fetchDeposits();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchDeposits]);
 
   useEffect(() => {
     esl && console.log('shouldFetchDeposits_1');
@@ -114,66 +212,29 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [rampAddress, depositCounter]);
 
   useEffect(() => {
-    esl && console.log('liquidityDepositsRaw_1');
-    esl && console.log('checking depositsRaw: ', depositsRaw);
-
-    if (depositsRaw) {
-      esl && console.log('liquidityDepositsRaw_2');
-
-      const depositsArrayRaw = depositsRaw as any[];
-
-      const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
-      for (let i = depositsArrayRaw.length - 1; i >= 0; i--) {
-        const depositWithAvailableLiquidityData = depositsArrayRaw[i];
-        
-        const depositData = depositWithAvailableLiquidityData.deposit;
-        const deposit: Deposit = {
-          depositor: depositData.depositor.toString(),
-          venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
-          depositAmount: depositData.depositAmount,
-          remainingDepositAmount: depositData.remainingDeposits,
-          outstandingIntentAmount: depositData.outstandingIntentAmount,
-          conversionRate: depositData.conversionRate,
-          intentHashes: depositData.intentHashes,
-        };
-
-        const depositWithLiquidity: DepositWithAvailableLiquidity = {
-          deposit,
-          availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
-          depositId: depositWithAvailableLiquidityData.depositId,
-        }
-
-        sanitizedDeposits.push(depositWithLiquidity);
-      }
-
-      setDeposits(sanitizedDeposits);
-    } else {
-      esl && console.log('liquidityDepositsRaw_3');
-      
-      setDeposits(null);
-    }
-  }, [depositsRaw]);
-
-  useEffect(() => {
     esl && console.log('depositStore_1');
     esl && console.log('checking deposits: ', deposits);
-    esl && console.log('checking depositIdsToFetch: ', depositIdsToFetch);
     esl && console.log('loggedInEthereumAddress: ', loggedInEthereumAddress);
 
-    if (loggedInEthereumAddress && deposits && deposits.length > 0 && depositIdsToFetch.length > 0) {
+    if (deposits && deposits.length > 0) {
       esl && console.log('depositStore_2');
 
-      const prunedDeposits = pruneDeposits(deposits, loggedInEthereumAddress);
-
-      const newStore = createDepositsStore(prunedDeposits);
-
-      setDepositStore(newStore);
+      if (loggedInEthereumAddress) {
+        const prunedDeposits = filterOwnDeposits(deposits, loggedInEthereumAddress);
+        const newStore = createDepositsStore(prunedDeposits);
+        
+        setDepositStore(newStore);
+      } else {
+        const newStore = createDepositsStore(deposits);
+        
+        setDepositStore(newStore);
+      }
     } else {
       esl && console.log('depositStore_3');
 
       setDepositStore(null);
     }
-  }, [deposits, depositIdsToFetch, loggedInEthereumAddress]);
+  }, [deposits, loggedInEthereumAddress]);
 
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
     if (depositStore) {
@@ -191,7 +252,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposits,
         depositStore,
         getBestDepositForAmount,
-        refetchDeposits,
+        refetchDeposits: refetchDepositsBatched,
         shouldFetchDeposits,
         calculateUsdFromRequestedUSDC,
       }}

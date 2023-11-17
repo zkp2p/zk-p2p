@@ -68,6 +68,6 @@ export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, de
   } as IndicativeQuote;
 };
 
-export const pruneDeposits = (deposits: DepositWithAvailableLiquidity[], userAddress: Address): DepositWithAvailableLiquidity[] => {
+export const filterOwnDeposits = (deposits: DepositWithAvailableLiquidity[], userAddress: Address): DepositWithAvailableLiquidity[] => {
   return deposits.filter(deposit => deposit.deposit.depositor !== userAddress);
 };
