@@ -12,7 +12,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
-import { ProofSettings } from "@components/ProofGen/ProofSettings";
+// import { ProofSettings } from "@components/ProofGen/ProofSettings";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
@@ -152,8 +152,6 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
           <NumberedStep>
             {PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS}
           </NumberedStep>
-
-          <ProofSettings/>
         </InstructionsAndTogglesContainer>
       </TitleContainer>
 

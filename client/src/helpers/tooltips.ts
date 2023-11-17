@@ -88,11 +88,13 @@ export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
  */
 
 export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
-  Supply a previous transaction email from Venmo containing "You paid". Choose your input method and verification type below. Emails are never stored.
+  Provide any historical transaction email sent from Venmo containing "You paid" in the subject to complete registration.
+  You can sign in with Google to pull the emails or paste the contents directly.
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Supply the transaction email containing "You paid" to complete the order. Choose your verification type below.
+  Provide the transaction email containing "You paid" to complete the order. You can sign in with Google to pull the emails or
+  paste the contents directly.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `
