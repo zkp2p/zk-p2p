@@ -34,6 +34,7 @@ interface ModalProps {
   setStatus?: (status: string) => void;
   onVerifyEmailCompletion?: () => void;
   transactionAddress?: string | null;
+  provingFailureErrorCode: number | null;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -51,6 +52,7 @@ export const Modal: React.FC<ModalProps> = ({
   setStatus,
   handleSubmitVerificationClick = () => {},
   onVerifyEmailCompletion,
+  provingFailureErrorCode,
 }) => {
   /*
    * Context
@@ -134,6 +136,42 @@ export const Modal: React.FC<ModalProps> = ({
         setCtaButtonTitle("Mining Transaction");
         break;
 
+      case ProofGenerationStatus.ERROR_FAILED_TO_PROVE:
+        switch (provingFailureErrorCode) {
+          case 1: // INVALID_EMAIL_TYPE
+            setCtaButtonTitle("Validation Failed: Invalid Type");
+            break;
+          
+            case 2: // NOT_SEND_EMAIL
+            setCtaButtonTitle("Validation Failed: Invalid Email");
+            break;
+          
+            case 3: // INVALID_DOMAIN_KEY
+            setCtaButtonTitle("Validation Failed: Invalid Key");
+            break;
+            
+          case 4: // DKIM_VALIDATION_FAILED
+            setCtaButtonTitle("Validation Failed: Invalid Signature");
+            break;
+
+          case 5: // NOT_FROM_VENMO
+            setCtaButtonTitle("Validation Failed: Invalid Sender");
+            break;
+
+          case 6: // INVALID_TEMPLATE
+            setCtaButtonTitle("Validation Failed: Invalid Template");
+            break;
+
+          case 7: // PROOF_GEN_FAILED
+            setCtaButtonTitle("Validation Failed: Proving Errored");
+            break;
+
+          default:
+            setCtaButtonTitle("Validation Failed: Try Again Shortly");
+            break;
+        }
+        break;
+
       case ProofGenerationStatus.DONE:
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
@@ -214,6 +252,12 @@ export const Modal: React.FC<ModalProps> = ({
         downloadStepState = VerificationState.COMPLETE;
         uploadStepState = VerificationState.COMPLETE;
         proveStepState = VerificationState.LOADING;
+        break;
+
+      case "error-failed-to-prove":
+        downloadStepState = VerificationState.COMPLETE;
+        uploadStepState = VerificationState.COMPLETE;
+        proveStepState = VerificationState.DEFAULT;
         break;
 
       case "transaction-configured":

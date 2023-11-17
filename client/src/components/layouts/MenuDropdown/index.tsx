@@ -86,6 +86,10 @@ export const MenuDropdown = () => {
               icon={'telegram'}
               onClick={() => jumpToMedia('https://t.me/+XDj9FNnW-xs5ODNl')}
             />
+
+            <VersionLabel>
+              v0.0.11
+            </VersionLabel>
           </IconRow>
         </NavDropdown>
       )}
@@ -151,7 +155,8 @@ const IconRow = styled.div`
   display: flex;
   flex-direction: row;
   gap: 1rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
+  align-items: center;
 `;
 
 const Icon = styled(SVGIconThemed)`
@@ -163,4 +168,11 @@ const Icon = styled(SVGIconThemed)`
   &:hover {
     opacity: 0.6;
   }
+`;
+
+const VersionLabel = styled.div`
+  font-size: 14px;
+  color: #FFFFFF;
+  opacity: 0.3;
+  text-align: left;
 `;
