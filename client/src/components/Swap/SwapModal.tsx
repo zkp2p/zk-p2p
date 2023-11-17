@@ -128,6 +128,8 @@ const ModalContainer = styled.div`
   gap: 1.5rem;
   top: 20%;
   position: relative;
+  max-height: calc(100vh*.7);
+  overflow: auto;
 `;
 
 const QRContainer = styled.div`
