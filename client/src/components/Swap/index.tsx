@@ -87,6 +87,8 @@ const Swap: React.FC<SwapProps> = ({
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
+  const [onRampCoolDownTimeRemainingLabel, setOnRampCoolDownTimeRemainingLabel] = useState('Calculating...');
+
   /*
    * Event Handlers
    */
@@ -277,6 +279,32 @@ const Swap: React.FC<SwapProps> = ({
     ]
   );
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (coolDownTimeStamp) {
+        const nowTimestamp = BigInt(Date.now());
+        const timeRemaining = coolDownTimeStamp - nowTimestamp;
+
+        if (timeRemaining > 0) {
+          const timeRemainingInMinutes = timeRemaining / 60000n;
+          const hours = timeRemainingInMinutes / 60n;
+          const minutes = timeRemainingInMinutes % 60n;
+
+          const formattedTimeRemaining = `${hours}h ${minutes}m`;
+          setOnRampCoolDownTimeRemainingLabel(formattedTimeRemaining);
+        } else {
+          setOnRampCoolDownTimeRemainingLabel('Ready');
+
+          clearInterval(interval);
+        }
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRampCoolDownTimeRemainingLabel]);
+
   /*
    * Handlers
    */
@@ -318,10 +346,18 @@ const Swap: React.FC<SwapProps> = ({
     }
   }, [currentQuote.conversionRate]);
 
+  const coolDownTimeStamp = useMemo(() => {
+    if (lastOnRampTimestamp && onRampCooldownPeriod) {
+      return (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+    } else {
+      return null;
+    }
+  }, [lastOnRampTimestamp, onRampCooldownPeriod]);
+
   const getButtonText = () => {
     switch (quoteState) {
       case QuoteState.ORDER_COOLDOWN_PERIOD:
-        return 'Order cooldown not elapsed';
+        return 'Order cooldown not elapsed: ' + onRampCoolDownTimeRemainingLabel;
 
       case QuoteState.EXCEEDS_ORDER_COUNT:
         return 'Max one open order';
@@ -339,7 +375,7 @@ const Swap: React.FC<SwapProps> = ({
       default:
         return 'Start Order';
     }
-  }
+  };
 
   /*
    * Component
