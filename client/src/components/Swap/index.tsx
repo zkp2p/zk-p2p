@@ -87,7 +87,7 @@ const Swap: React.FC<SwapProps> = ({
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
-  const [onRampCoolDownTimeRemainingLabel, setOnRampCoolDownTimeRemainingLabel] = useState('Calculating...');
+  const [onRampTimeRemainingLabel, setOnRampTimeRemainingLabel] = useState('');
 
   /*
    * Event Handlers
@@ -280,30 +280,32 @@ const Swap: React.FC<SwapProps> = ({
   );
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (coolDownTimeStamp) {
-        const nowTimestamp = BigInt(Date.now());
-        const timeRemaining = coolDownTimeStamp - nowTimestamp;
+    const updateCooldownTime = () => {
+      if (lastOnRampTimestamp && onRampCooldownPeriod) {
+        const cooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+        const now = BigInt(Date.now());
+        const timeRemaining = cooldownEnd - now;
 
         if (timeRemaining > 0) {
-          const timeRemainingInMinutes = timeRemaining / 60000n;
-          const hours = timeRemainingInMinutes / 60n;
-          const minutes = timeRemainingInMinutes % 60n;
+          const timeRemainingInMinutes = Number(timeRemaining / 60000n);
+          const hours = Math.floor(timeRemainingInMinutes / 60);
+          const minutes = timeRemainingInMinutes % 60;
 
-          const formattedTimeRemaining = `${hours}h ${minutes}m`;
-          setOnRampCoolDownTimeRemainingLabel(formattedTimeRemaining);
+          setOnRampTimeRemainingLabel(`${hours}h ${minutes}m`);
         } else {
-          setOnRampCoolDownTimeRemainingLabel('Ready');
-
-          clearInterval(interval);
+          setOnRampTimeRemainingLabel('Cooldown complete');
         }
+      } else {
+        setOnRampTimeRemainingLabel('Calculating...');
       }
-    }, 60000);
+    };
 
-    return () => clearInterval(interval);
+    updateCooldownTime();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onRampCoolDownTimeRemainingLabel]);
+    const intervalId = setInterval(updateCooldownTime, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [lastOnRampTimestamp, onRampCooldownPeriod]);
 
   /*
    * Handlers
@@ -346,18 +348,10 @@ const Swap: React.FC<SwapProps> = ({
     }
   }, [currentQuote.conversionRate]);
 
-  const coolDownTimeStamp = useMemo(() => {
-    if (lastOnRampTimestamp && onRampCooldownPeriod) {
-      return (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
-    } else {
-      return null;
-    }
-  }, [lastOnRampTimestamp, onRampCooldownPeriod]);
-
   const getButtonText = () => {
     switch (quoteState) {
       case QuoteState.ORDER_COOLDOWN_PERIOD:
-        return 'Order cooldown not elapsed: ' + onRampCoolDownTimeRemainingLabel;
+        return 'Order cooldown not elapsed: ' + onRampTimeRemainingLabel;
 
       case QuoteState.EXCEEDS_ORDER_COUNT:
         return 'Max one open order';
