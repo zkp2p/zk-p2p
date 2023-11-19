@@ -146,8 +146,12 @@ export const MailTable: React.FC<MailTableProps> = ({
         break;
       
       case EmailInputStatus.INVALID_SIGNATURE:
-        setCtaButtonTitle("Invalid Email: See Guide");
-        break;
+      setCtaButtonTitle("Invalid email: must be from Venmo");
+      break;
+
+    case EmailInputStatus.INVALID_SUBJECT:
+      setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+      break;
 
       case EmailInputStatus.VALID:
       default:

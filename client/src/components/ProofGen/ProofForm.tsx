@@ -119,9 +119,17 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     async function verifyEmail() {
       if (emailFull) {
         try {
-          await performLocalEmailVerification(emailFull);
+          await validateDKIMSignature(emailFull);
         } catch (e) {
           setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+          return;
+        }
+
+        try {
+          validateEmailSubject(emailFull);
+        } catch (e) {
+          console.log('Invalid email subject');
+          setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
           return;
         }
   
@@ -216,11 +224,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     }
   };
 
-  /*
-   * Proof Generation
-   */
-
-  const performLocalEmailVerification = async (raw_email: string) => {
+  const validateDKIMSignature = async (raw_email: string) => {
     var result, email: Buffer;
     if (typeof raw_email === "string") {
       email = Buffer.from(raw_email);
@@ -247,6 +251,18 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
     return result;
   }
+
+  const validateEmailSubject = (emailFull: string) => {
+    const pattern = /Subject:\s*.*You paid.*\$\d{1,3}(,\d{3})*(\.\d{2})?/;
+  
+    if (!pattern.test(emailFull)) {
+      throw new Error(`Email subject does not match expected format: ${emailFull}`);
+    }
+  }
+
+  /*
+   * Proof Generation
+   */
 
   const generateFastProof = async () => {
     setProofGenStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
