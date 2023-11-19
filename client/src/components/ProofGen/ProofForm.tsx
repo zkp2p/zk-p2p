@@ -10,11 +10,11 @@ import { wrap } from 'comlink';
 import * as crypto from 'crypto';
 
 import { Col } from "../legacy/Layout";
-import { ProofGenerationStatus } from  "./types";
+import { EmailInputStatus, ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
-
+import { dkimVerify } from '@helpers/dkim';
 import { HOSTED_FILES_PATH } from "@helpers/constants";
 import { downloadProofFiles } from "@helpers/zkp";
 import useLocalStorage from '@hooks/useLocalStorage';
@@ -80,7 +80,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
-  const [status, setStatus] = useState(ProofGenerationStatus.NOT_STARTED);
+  const [emailInputStatus, setEmailInputStatus] = useState<string>(EmailInputStatus.DEFAULT);
+  const [proofGenStatus, setProofGenStatus] = useState(ProofGenerationStatus.NOT_STARTED);
 
   const [provingFailureErrorCode, setProvingFailureErrorCode] = useState<number | null>(null);
   /*
@@ -110,19 +111,34 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     if (remoteGenerateProofError) {
       setProvingFailureErrorCode(remoteGenerateProofError.code);
 
-      setStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
+      setProofGenStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
     }
   }, [remoteGenerateProofError]);
 
   useEffect(() => {
-    if (emailFull) {
-      performLocalDKIMVerification()
+    async function verifyEmail() {
+      if (emailFull) {
+        try {
+          await performLocalEmailVerification(emailFull);
+        } catch (e) {
+          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+          return;
+        }
+  
+        const hash = crypto.createHash('sha256');
+        hash.update(emailFull);
+        const hashedEmail = hash.digest('hex');
+        setEmailHash(hashedEmail);
 
-      const hash = crypto.createHash('sha256');
-      hash.update(emailFull);
-      const hashedEmail = hash.digest('hex');
-      setEmailHash(hashedEmail);
+        setEmailInputStatus(EmailInputStatus.VALID);
+      } else {
+        setEmailHash("");
+        setEmailInputStatus(EmailInputStatus.DEFAULT);
+      }
     }
+  
+    verifyEmail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emailFull]);
 
   useEffect(() => {
@@ -143,7 +159,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
 
-      setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+      setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
     } else {
       if (isProvingTypeFast) {
         await generateFastProof();
@@ -204,18 +220,40 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    * Proof Generation
    */
 
-  const performLocalDKIMVerification = () => {
-    // TODO: perform local verification of emails, everything before downloading files
+  const performLocalEmailVerification = async (raw_email: string) => {
+    var result, email: Buffer;
+    if (typeof raw_email === "string") {
+      email = Buffer.from(raw_email);
+    } else email = raw_email;
 
-    // no-op
+    result = await dkimVerify(email);
+
+    if (!result.results[0]) {
+      throw new Error(`No result found on dkim output ${result}`);
+    } else {
+      if (!result.results[0].publicKey) {
+        if (result.results[0].status.message) {
+          throw new Error(result.results[0].status.message);
+        } else {
+          throw new Error(`No public key found on generate_inputs result ${JSON.stringify(result)}`);
+        }
+      }
+    }
+
+    const { status } = result.results[0];
+    if (status.result !== "pass") {
+      throw new Error(`DKIM verification failed with message: ${status.comment}`);
+    }
+
+    return result;
   }
 
   const generateFastProof = async () => {
-    setStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
+    setProofGenStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
 
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    setStatus(ProofGenerationStatus.GENERATING_PROOF);
+    setProofGenStatus(ProofGenerationStatus.GENERATING_PROOF);
 
     console.time("remote-proof-gen");
     await remoteGenerateProof();
@@ -225,26 +263,26 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const processRemoteProofGenerationResponse = (response: any) => {
     setAndStoreProvingState(response.proof, response.public_values)
 
-    setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+    setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
   }
 
   const generatePrivateProof = async () => {
-    setStatus(ProofGenerationStatus.GENERATING_INPUT);
+    setProofGenStatus(ProofGenerationStatus.GENERATING_INPUT);
 
     let input: ICircuitInputs | undefined;
     input = await generateCircuitInputs();
     if (!input) {
-      setStatus(ProofGenerationStatus.ERROR_BAD_INPUT);
+      setProofGenStatus(ProofGenerationStatus.ERROR_BAD_INPUT);
       return;
     }
 
-    setStatus(ProofGenerationStatus.DOWNLOADING_PROOF_FILES);
+    setProofGenStatus(ProofGenerationStatus.DOWNLOADING_PROOF_FILES);
     await downloadProvingKeys();
 
-    setStatus(ProofGenerationStatus.GENERATING_PROOF);
+    setProofGenStatus(ProofGenerationStatus.GENERATING_PROOF);
     const { proof, publicSignals } = await generateProofWithInputs(input);
     if (!proof || !publicSignals) {
-      setStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
+      setProofGenStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
       return;
     }
 
@@ -252,7 +290,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     const stringifiedSignals = JSON.stringify(publicSignals);
     setAndStoreProvingState(stringifiedProof, stringifiedSignals);
 
-    setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+    setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
   }
 
   const generateCircuitInputs = async () => {
@@ -328,13 +366,13 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             publicSignals={publicSignals}
             onBackClick={handleModalBackClicked}
             onVerifyEmailCompletion={onVerifyEmailCompletion}
-            status={status}
+            status={proofGenStatus}
             circuitType={circuitType}
             buttonTitle={getModalCtaTitle()}
             submitTransactionStatus={submitTransactionStatus}
             isSubmitMining={isSubmitMining}
             isSubmitSuccessful={isSubmitSuccessful}
-            setStatus={setStatus}
+            setProofGenStatus={setProofGenStatus}
             handleSubmitVerificationClick={handleSubmitVerificationClick}
             transactionAddress={transactionAddress}
             provingFailureErrorCode={provingFailureErrorCode}
@@ -349,12 +387,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           <MailTable
             setEmailFull={setEmailAndToggleInputMode}
             handleVerifyEmailClicked={handleVerifyEmailClicked}
+            emailInputStatus={emailInputStatus}
+            isProofModalOpen={isRemoteGenerateProofLoading}
           />
         ) : (
           <UploadEmail
             email={emailFull}
             setEmail={setEmailFull}
             handleVerifyEmailClicked={handleVerifyEmailClicked}
+            emailInputStatus={emailInputStatus}
             isProofModalOpen={isRemoteGenerateProofLoading}
           />
         )

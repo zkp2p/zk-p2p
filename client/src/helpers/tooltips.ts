@@ -168,5 +168,5 @@ export const PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE = `
 export const ON_RAMPER_INTENT_INSTRUCTIONS = `
   You have been matched with the depositor below. To complete, the flow,
   you must send a payment for the correct amount on Venmo, and then validate
-  the payment by providing the transaction email.
+  the payment by providing the transaction email. Click Send to begin.
 `;

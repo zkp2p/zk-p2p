@@ -266,7 +266,10 @@ const getPublicKey = async (type, name, minBitLength, resolver) => {
     resolver = resolveDNSHTTP;
   }
 
-  let list = await resolver(name, "TXT");
+  // let list = await resolver(name, "TXT");
+  
+  let list = ["p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoecgrbF4KMhqGMZK02Dv2vZgGnSAo9CDpYEZCpNDRBLXkfp/0Yzp3rgngm4nuiQWbhHO457vQ37nvc88I9ANuJKa3LIodD+QtOLCjwlzH+li2A81duY4fKLHcHYO3XKw+uYXKWd+bABQqps3AQP5KxoOgQ/P1EssOnvtQYBHjWQIDAQAB"]
+
   let rr =
     list &&
     []

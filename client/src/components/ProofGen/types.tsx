@@ -12,3 +12,9 @@ export const ProofGenerationStatus = {
   ERROR_FAILED_TO_PROVE: "error-failed-to-prove",
   DONE: "done"
 };
+
+export const EmailInputStatus = {
+  DEFAULT: "default",
+  INVALID_SIGNATURE: "invalid-signature",
+  VALID: "valid"
+};

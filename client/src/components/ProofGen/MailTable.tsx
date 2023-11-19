@@ -14,6 +14,7 @@ import {
 import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
+import { EmailInputStatus } from  "../ProofGen/types";
 import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
@@ -21,11 +22,15 @@ import { Inbox } from 'react-feather';
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
+  emailInputStatus: string;
+  isProofModalOpen: boolean;
 }
 
 export const MailTable: React.FC<MailTableProps> = ({
   setEmailFull,
   handleVerifyEmailClicked,
+  emailInputStatus,
+  isProofModalOpen
 }) => {
   /*
    * Context
@@ -49,6 +54,8 @@ export const MailTable: React.FC<MailTableProps> = ({
   const [fetchedEmails, setFetchedEmails] = useState<RawEmailResponse[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
 
   /*
    * Handlers
@@ -131,6 +138,24 @@ export const MailTable: React.FC<MailTableProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedEmails]);
+
+  useEffect(() => {
+    switch (emailInputStatus) {
+      case EmailInputStatus.DEFAULT:
+        setCtaButtonTitle("Select Email");
+        break;
+      
+      case EmailInputStatus.INVALID_SIGNATURE:
+        setCtaButtonTitle("Invalid Email: See Guide");
+        break;
+
+      case EmailInputStatus.VALID:
+      default:
+        setCtaButtonTitle("Validate Email");
+        break;
+    }
+
+  }, [emailInputStatus]);
 
   /*
    * Component
@@ -228,11 +253,11 @@ export const MailTable: React.FC<MailTableProps> = ({
 
           <ButtonContainer>
             <Button
-              disabled={selectedIndex == null}
-              loading={false}
+              disabled={emailInputStatus !== EmailInputStatus.VALID}
+              loading={isProofModalOpen}
               onClick={handleVerifyEmailClicked}
             >
-              Verify Email
+              {ctaButtonTitle}
             </Button>
           </ButtonContainer>
         </LoggedInContainer>

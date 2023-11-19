@@ -10,6 +10,7 @@ import { ThemedText } from '../../theme/text';
 import { NumberedStep } from "../common/NumberedStep";
 
 import { TextButton } from '@components/common/TextButton';
+import { EmailInputStatus } from  "../ProofGen/types";
 import { 
   INPUT_MODE_TOOLTIP, 
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, 
@@ -28,6 +29,7 @@ interface UploadEmailProps {
   email: string;
   setEmail: (email: string) => void;
   handleVerifyEmailClicked: () => void;
+  emailInputStatus: string;
   isProofModalOpen: boolean;
 }
 
@@ -35,6 +37,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   email,
   setEmail,
   handleVerifyEmailClicked,
+  emailInputStatus,
   isProofModalOpen,
 }) => {
 
@@ -52,7 +55,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
    * State
    */
 
-  const [emailInput, setEmailInput] = useState<string>("");
+  const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
 
   /*
    * Handlers
@@ -75,16 +78,22 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
    */
 
   useEffect(() => {
-    if (emailInput && setEmail) {
-      setEmail(emailInput);
-    }
-  }, [emailInput, setEmail]);
+    switch (emailInputStatus) {
+      case EmailInputStatus.DEFAULT:
+        setCtaButtonTitle("Input Email");
+        break;
+      
+      case EmailInputStatus.INVALID_SIGNATURE:
+        setCtaButtonTitle("Invalid Email: See Guide");
+        break;
 
-  useEffect(() => {
-    if (email) {
-      setEmailInput(email);
+      case EmailInputStatus.VALID:
+      default:
+        setCtaButtonTitle("Validate Email");
+        break;
     }
-  }, [email]);
+
+  }, [emailInputStatus]);
 
   /*
    * Helpers
@@ -101,7 +110,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   };
 
   const setEmailAndToggleInputMode = (email: string) => {
-    setEmailInput(email);
+    setEmail(email);
 
     if (setIsInputModeDrag) {
       setIsInputModeDrag(false);
@@ -147,10 +156,10 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         ) : (
           <LabeledTextArea
             label=""
-            value={emailInput}
+            value={email}
             placeholder={PLACEHOLDER_EMAIL_BODY}
             onChange={(e) => {
-              setEmailInput(e.currentTarget.value);
+              setEmail(e.currentTarget.value);
             }}
             height={"28vh"}
           />
@@ -159,11 +168,11 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
       <ButtonContainer>
         <Button
-          disabled={emailInput.length === 0}
+          disabled={emailInputStatus !== EmailInputStatus.VALID}
           loading={isProofModalOpen}
           onClick={handleVerifyEmailClicked}
         >
-          Verify Email
+          {ctaButtonTitle}
         </Button>
 
       </ButtonContainer>

@@ -31,7 +31,7 @@ interface ModalProps {
   isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
   handleSubmitVerificationClick?: () => void;
-  setStatus?: (status: string) => void;
+  setProofGenStatus?: (status: string) => void;
   onVerifyEmailCompletion?: () => void;
   transactionAddress?: string | null;
   provingFailureErrorCode: number | null;
@@ -49,7 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
   isSubmitMining,
   isSubmitSuccessful,
   transactionAddress,
-  setStatus,
+  setProofGenStatus,
   handleSubmitVerificationClick = () => {},
   onVerifyEmailCompletion,
   provingFailureErrorCode,
@@ -85,15 +85,15 @@ export const Modal: React.FC<ModalProps> = ({
    */
 
   useEffect(() => {
-    if (setStatus) {
+    if (setProofGenStatus) {
       switch (submitTransactionStatus) {
         case "error":
-          setStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+          setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
           setIsSubmitProcessing(false);
           break;
 
         case "loading":
-          setStatus(ProofGenerationStatus.TRANSACTION_LOADING);
+          setProofGenStatus(ProofGenerationStatus.TRANSACTION_LOADING);
           setIsSubmitProcessing(true);
           break;
 
@@ -102,25 +102,25 @@ export const Modal: React.FC<ModalProps> = ({
           break;
       }
     }
-  }, [submitTransactionStatus, setStatus]);
+  }, [submitTransactionStatus, setProofGenStatus]);
 
   useEffect(() => {
-    if (isSubmitMining && setStatus) {
-      setStatus(ProofGenerationStatus.TRANSACTION_MINING);
+    if (isSubmitMining && setProofGenStatus) {
+      setProofGenStatus(ProofGenerationStatus.TRANSACTION_MINING);
     }
-  }, [isSubmitMining, setStatus]);
+  }, [isSubmitMining, setProofGenStatus]);
 
   useEffect(() => {
-    if (isSubmitSuccessful && setStatus) {
+    if (isSubmitSuccessful && setProofGenStatus) {
       if (process.env.SHOW_CONFETTI === 'true') {
         setShowConfetti(true);
         setTimeout(() => {
           setShowConfetti(false);
         }, 5000);
       }
-      setStatus(ProofGenerationStatus.DONE);
+      setProofGenStatus(ProofGenerationStatus.DONE);
     }
-  }, [isSubmitSuccessful, setStatus])
+  }, [isSubmitSuccessful, setProofGenStatus])
 
   useEffect(() => {
     switch (status) {
