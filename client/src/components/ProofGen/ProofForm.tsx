@@ -119,17 +119,20 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     async function verifyEmail() {
       if (emailFull) {
         try {
-          await validateDKIMSignature(emailFull);
+          const { sanitizedEmail, didSanitize } = validateAndSanitizeEmailSubject(emailFull);
+          if (didSanitize) {
+            setEmailFull(sanitizedEmail);
+            return;
+          };
         } catch (e) {
-          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+          setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
           return;
         }
 
         try {
-          validateEmailSubject(emailFull);
+          await validateDKIMSignature(emailFull);
         } catch (e) {
-          console.log('Invalid email subject');
-          setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
+          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
           return;
         }
   
@@ -252,12 +255,29 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     return result;
   }
 
-  const validateEmailSubject = (emailFull: string) => {
-    const pattern = /Subject:\s*.*You paid.*\$\d{1,3}(,\d{3})*(\.\d{2})?/;
-  
-    if (!pattern.test(emailFull)) {
-      throw new Error(`Email subject does not match expected format: ${emailFull}`);
+  function validateAndSanitizeEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {
+    const subjectLinePattern = /^Subject:.*$/m;
+    const subjectLineMatch = emailContent.match(subjectLinePattern);
+    if (!subjectLineMatch) {
+      throw new Error('No subject line found in the email content.');
     }
+    const subjectLine = subjectLineMatch[0];
+  
+    const validationPattern = /^Subject:\s*You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?$/;
+    const sanitizePattern = /^(Subject:)\s*(.*?)(You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?)$/;
+    const needsSanitization = !validationPattern.test(subjectLine);
+  
+    let sanitizedEmail = emailContent;
+    if (needsSanitization) {
+      sanitizedEmail = emailContent.replace(subjectLinePattern, subjectLine.replace(sanitizePattern, '$1 $3'));
+    }
+  
+    const didSanitize = sanitizedEmail !== emailContent;
+  
+    return {
+      sanitizedEmail,
+      didSanitize
+    };
   }
 
   /*
