@@ -134,7 +134,7 @@ const ModalContainer = styled.div`
 
 const QRContainer = styled.div`
   padding: 2rem;
-  border: 1.5px solid #98a1c03d;
+  border: 1px solid #98a1c03d;
   border-radius: 16px;
   background: #131A2A;
 `;

@@ -111,6 +111,6 @@ const NewPositionContainer = styled.div`
 
 const VerticalDivider = styled.div`
   height: 24px;
-  border-left: 1.5px solid #98a1c03d;
+  border-left: 1px solid #98a1c03d;
   margin: 0 auto;
 `;

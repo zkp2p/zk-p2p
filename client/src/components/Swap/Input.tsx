@@ -80,7 +80,7 @@ const Container = styled.div`
   flex-direction: column;
   padding: 16px;
   border-radius: 16px;
-  border: 1.5px solid #98a1c03d;
+  border: 1px solid #98a1c03d;
   background-color: #131A2A;
   gap: 8px;
 
