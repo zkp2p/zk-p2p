@@ -14,6 +14,7 @@ import { Button } from '@components/Button'
 import { CustomConnectButton } from "@components/common/ConnectButton"
 import { ThemedText } from '../../theme/text'
 import { IndicativeQuote } from '../../contexts/Deposits/types'
+import { InstructionDrawer } from '@components/Swap/InstructionDrawer'
 import {
   DEPOSIT_REFETCH_INTERVAL,
   VENMO_MAX_TRANSFER_SIZE,
@@ -52,6 +53,7 @@ const QuoteState = {
   EXCEEDS_ORDER_COUNT: 'exceeds-order-count',
   EXCEEDS_MAX_SIZE: 'exceeds-max-size',
   INSUFFICIENT_LIQUIDITY: 'insufficient-liquidity',
+  INVALID_RECIPIENT_ADDRESS: 'invalid-recipient-address',
   ORDER_COOLDOWN_PERIOD: 'order-cooldown-period',
   BLOCKED_BY_DEPOSITOR: 'blocked-by-depositor',
   SUCCESS: 'success',
@@ -84,6 +86,8 @@ const Swap: React.FC<SwapProps> = ({
 
   const [quoteState, setQuoteState] = useState(QuoteState.DEFAULT);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>(ZERO_QUOTE);
+
+  const [recipientAddress, setRecipientAddress] = useState<string>('');
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
@@ -146,7 +150,7 @@ const Swap: React.FC<SwapProps> = ({
     args: [
       currentQuote.depositId,
       toBigInt(currentQuote.requestedUSDC),
-      loggedInEthereumAddress
+      recipientAddress
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -243,9 +247,14 @@ const Swap: React.FC<SwapProps> = ({
               } else if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
                 updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
               } else {
-                setQuoteState(QuoteState.SUCCESS);
+                const isValidRecipientAddress = isValidAddress(recipientAddress);
+                if (isValidRecipientAddress) {
+                  setQuoteState(QuoteState.SUCCESS);
 
-                setShouldConfigureSignalIntentWrite(true);
+                  setShouldConfigureSignalIntentWrite(true);
+                } else {
+                  updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);      
+                }
               }
             }
           } else {
@@ -276,6 +285,7 @@ const Swap: React.FC<SwapProps> = ({
       currentIntentHash,
       lastOnRampTimestamp,
       onRampCooldownPeriod,
+      recipientAddress,
     ]
   );
 
@@ -307,6 +317,14 @@ const Swap: React.FC<SwapProps> = ({
     return () => clearInterval(intervalId);
   }, [lastOnRampTimestamp, onRampCooldownPeriod]);
 
+  useEffect(() => {
+    if (loggedInEthereumAddress) {
+      setRecipientAddress(loggedInEthereumAddress);
+    } else {
+      setRecipientAddress('');
+    }
+  }, [loggedInEthereumAddress]);
+
   /*
    * Handlers
    */
@@ -330,6 +348,10 @@ const Swap: React.FC<SwapProps> = ({
   function isValidInput(value) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
     return !isNaN(value) && parseFloat(value) >= 0 && isValid;
+  }
+
+  function isValidAddress(address: string) {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
   }
 
   const usdcBalanceLabel = useMemo(() => {
@@ -356,6 +378,9 @@ const Swap: React.FC<SwapProps> = ({
       case QuoteState.EXCEEDS_ORDER_COUNT:
         return 'Max one open order';
 
+      case QuoteState.INVALID_RECIPIENT_ADDRESS:
+        return 'Invalid recipient address';
+      
       case QuoteState.EXCEEDS_MAX_SIZE:
         return 'Exceeded USD transfer limit of 250';
 
@@ -434,6 +459,15 @@ const Swap: React.FC<SwapProps> = ({
           )}
         </MainContentWrapper>
       </SwapModalContainer>
+
+      <>
+        <VerticalDivider />
+        <InstructionDrawer
+          recipientAddress={recipientAddress}
+          setRecipientAddress={setRecipientAddress}
+          isLoggedIn={isLoggedIn}
+        />
+      </>
 
       {
         currentIntentHash && (
