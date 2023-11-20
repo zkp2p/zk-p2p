@@ -441,7 +441,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 };
 
 const Container = styled(Col)`
-  gap: 1rem;
 `;
 
 const VerticalDivider = styled.div`

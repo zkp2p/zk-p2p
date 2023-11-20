@@ -178,7 +178,6 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 `;
 
 const TitleContainer = styled.div`

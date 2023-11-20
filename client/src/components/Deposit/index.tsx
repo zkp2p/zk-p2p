@@ -69,7 +69,6 @@ export default function Deposit() {
         {depositIntents && depositIntents.length > 0 ? (
           <>
             <VerticalDivider />
-
             <OffRamperIntentTable/>
           </>
         ) : null}
@@ -90,7 +89,6 @@ const Wrapper = styled(AutoColumn)`
   max-width: 660px;
   width: 100%;
   padding-top: 1.5rem;
-  gap: 1rem;
 `
 
 const DepositAndIntentContainer = styled.div`
