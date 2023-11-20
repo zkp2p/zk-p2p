@@ -357,7 +357,7 @@ const Swap: React.FC<SwapProps> = ({
         return 'Max one open order';
 
       case QuoteState.EXCEEDS_MAX_SIZE:
-        return 'Exceeded USD transfer limit of 2,000';
+        return 'Exceeded USD transfer limit of 250';
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';
