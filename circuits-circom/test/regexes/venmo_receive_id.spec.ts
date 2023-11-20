@@ -154,7 +154,7 @@ describe("Venmo receive ids", function () {
                 + "                <!-- actor name -->\r\n"
                 + "                <a style=3D\"color:#0074DE; text-decoration:none\" href=3D\"ht=\r\n"
                 + "tps://venmo.com/code?user_id=3D1192345678912345678&actor_id=3D27443255215553=\r\n"
-                + "45553\">\r\n"
+                + "45553\"<\r\n" // update to a <
                 + "                    Steve A\r\n"
                 + "                </a>\r\n"
                 + "                <!-- action -->\r\n"
@@ -162,7 +162,7 @@ describe("Venmo receive ids", function () {
                 + "                    paid\r\n"
                 + "                </span>\r\n"
                 + "              =20\r\n"
-                + "                <!-- rpcipient name -->\r\n" // update to p
+                + "                <!-- recipient name -->\r\n"
                 + "                <a style=3D\"color:#0074DE; text-decoration:none\""
             )
         };

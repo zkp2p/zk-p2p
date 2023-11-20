@@ -1,65 +1,32 @@
 {
-    "parts": [
-      {
-        "is_public": false,
-        "regex_def": "<!-- actor name -->\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\" href=3D\"ht=\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "tps://venmo.com/code\\?user_id=3D"
-      },
-      {
-        "is_public": true,
-        "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
-      },
-      {
-        "is_public": false,
-        "regex_def": "&actor_id=3D"
-      },
-      {
-        "is_public": true,
-        "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+"
-      },
-      {
-        "is_public": false,
-        "regex_def": "\">\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                    [^\r\n]+\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                </a>\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                <!-- action -->\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                <span>\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                    paid\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                </span>\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "              =20\r\n"
-      },
-      {
-        "is_public": false,
-        "regex_def": "                <!-- recipient name -->\r\n"
-      }
-    ]
-  }
-  
+  "parts": [
+    {
+      "is_public": false,
+      "regex_def": "<!-- actor name -->\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\" href=3D\"ht=\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "tps://venmo.com/code\\?user_id=3D"
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": "&actor_id=3D"
+    },
+    {
+      "is_public": true,
+      "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+"
+    },
+    {
+      "is_public": false,
+      "regex_def": "\">\r\n"
+    }
+  ]
+}

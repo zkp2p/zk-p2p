@@ -90,6 +90,7 @@ export enum CircuitType {
   TEST = "test",
   EMAIL_VENMO_SEND = "venmo_send",
   EMAIL_VENMO_REGISTRATION = "venmo_registration",
+  EMAIL_VENMO_RECEIVE = "venmo_receive",
   EMAIL_HDFC_SEND = "hdfc_send",
   EMAIL_HDFC_REGISTRATION = "hdfc_registration"
 }
@@ -164,6 +165,9 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+  } else if (circuit === CircuitType.EMAIL_VENMO_RECEIVE) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- actor name -->";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6528;  // +320 (>280 limit for custom message)
   }
 
   // Derive modulus from signature
@@ -338,6 +342,33 @@ export async function getCircuitInputs(
       email_to_idx,
       hdfc_acc_num_idx
     }
+  } else if (circuit === CircuitType.EMAIL_VENMO_RECEIVE) {
+    const payee_id_selector = Buffer.from("actor_id=3D");
+    const venmo_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
+    const payer_id_selector = Buffer.from("user_id=3D");
+    const venmo_payer_id_idx = (Buffer.from(bodyRemaining).indexOf(payer_id_selector) + payer_id_selector.length).toString();
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
+    const venmo_amount_idx = (raw_header.length - trimStrByStr(email_subject, "$").length).toString();
+    console.log("Indexes into for venmo receive email are: ", email_from_idx, venmo_amount_idx, venmo_payee_id_idx, venmo_payer_id_idx, email_timestamp_idx);
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // venmo specific indices
+      venmo_amount_idx,
+      email_timestamp_idx,
+      venmo_payee_id_idx,
+      venmo_payer_id_idx,
+      email_from_idx,
+      // IDs
+      intent_hash,
+    };
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
