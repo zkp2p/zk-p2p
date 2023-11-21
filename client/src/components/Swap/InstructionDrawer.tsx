@@ -56,7 +56,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            Enter a USDC amount. Optionally, provide a different recipient address below to receive funds in another wallet
+            Enter an amount to receive a quote. Optionally, provide a recipient address below to receive funds in another wallet
           </InstructionStep>
 
           <InputWrapper>
