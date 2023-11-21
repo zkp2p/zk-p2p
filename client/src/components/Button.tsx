@@ -27,15 +27,25 @@ export const Button: React.FC<ButtonProps> = ({
     fullWidth={fullWidth}
     height={height}
     fontSize={fontSize}
-    disabled={disabled}
-    loading={loading}
+    $disabled={disabled}
+    $loading={loading}
     onClick={onClick}
   >
     {loading ? <Spinner /> : children}
   </BaseButton>
 );
 
-const BaseButton = styled.button<ButtonProps>`
+interface BaseButtonProps {
+  fullWidth?: boolean;
+  height?: number;
+  fontSize?: number;
+  $disabled?: boolean;
+  $loading?: boolean;
+  onClick?: () => void;
+  children?: React.ReactNode;
+}
+
+const BaseButton = styled.button<BaseButtonProps>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   background: #df2e2d;
@@ -61,8 +71,8 @@ const BaseButton = styled.button<ButtonProps>`
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
 
-  ${({ disabled }) => 
-    disabled && css`
+  ${({ $disabled }) => 
+    $disabled && css`
       opacity: 0.5;
       cursor: not-allowed;
       color: #6C757D;
@@ -70,8 +80,8 @@ const BaseButton = styled.button<ButtonProps>`
     `
   }
 
-  ${({ loading }) => 
-    loading && css`
+  ${({ $loading }) => 
+    $loading && css`
       cursor: wait;
       background: #df2e2d;
     `

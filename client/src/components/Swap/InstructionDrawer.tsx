@@ -2,7 +2,6 @@ import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
 import { useNavigate } from 'react-router-dom'
-import Link from '@mui/material/Link';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
@@ -48,11 +47,11 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         </TokenLabel>
         <StyledChevronDown
           onClick={toggleOpen}
-          isOpen={isOpen}
+          $isOpen={isOpen}
         />
       </TitleLabelAndDropdownIconContainer>
 
-      <InstructionsDropdown isOpen={isOpen}>
+      <InstructionsDropdown $isOpen={isOpen}>
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
@@ -120,7 +119,7 @@ const TokenLabel = styled.div`
 `;
 
 interface StyledChevronDownProps {
-  isOpen?: boolean;
+  $isOpen?: boolean;
 }
 
 const StyledChevronDown = styled(ChevronDown)<StyledChevronDownProps>`
@@ -129,7 +128,7 @@ const StyledChevronDown = styled(ChevronDown)<StyledChevronDownProps>`
   color: #CED4DA;
 
   transition: transform 0.4s;
-  transform: ${({ isOpen }) => isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
+  transform: ${({ $isOpen }) => $isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
 `;
 
 const HorizontalDivider = styled.div`
@@ -138,7 +137,7 @@ const HorizontalDivider = styled.div`
 `;
 
 interface InstructionsDropdownProps {
-  isOpen?: boolean;
+  $isOpen?: boolean;
 }
 
 const InstructionsDropdown = styled.div<InstructionsDropdownProps>`
@@ -151,7 +150,7 @@ const InstructionsDropdown = styled.div<InstructionsDropdownProps>`
   gap: 16px;
   overflow: hidden;
 
-  max-height: ${({ isOpen }) => isOpen ? '500px' : '0px'};
+  max-height: ${({ $isOpen }) => $isOpen ? '500px' : '0px'};
   transition: max-height 0.4s ease-out;
 `;
 
