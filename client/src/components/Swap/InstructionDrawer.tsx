@@ -42,7 +42,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
 
   return (
     <Wrapper ref={ref}>
-      <LabelAndDropdownIcon>
+      <TitleLabelAndDropdownIconContainer>
         <TokenLabel>
           Instructions
         </TokenLabel>
@@ -50,13 +50,17 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
           onClick={toggleOpen}
           isOpen={isOpen}
         />
-      </LabelAndDropdownIcon>
+      </TitleLabelAndDropdownIconContainer>
 
       <InstructionsDropdown isOpen={isOpen}>
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            Enter an amount to receive a quote. Optionally, provide a recipient address below to receive funds in another wallet
+            Enter an amount to receive a quote. You are assigned the best available rate for the requested amount.
+          </InstructionStep>
+
+          <InstructionStep step={2}>
+            Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
           </InstructionStep>
 
           <InputWrapper>
@@ -70,10 +74,6 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
             />
           </InputWrapper>
 
-          <InstructionStep step={2}>
-            You are assigned the best available rate for the requested amount. Submit transaction to start your order
-          </InstructionStep>
-
           <InstructionStep step={3}>
             Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
           </InstructionStep>
@@ -84,7 +84,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         </InstructionListContainer>
 
         <LiquidityLink onClick={navigateToSwapHandler}>
-          Interest in providing liquidity?
+          Interested in providing liquidity?
         </LiquidityLink>
       </InstructionsDropdown>
     </Wrapper>
@@ -103,21 +103,20 @@ const Wrapper = styled.div`
   overflow: hidden;
 `;
 
-const LabelAndDropdownIcon = styled.div`
+const TitleLabelAndDropdownIconContainer = styled.div`
   width: 100%;
   height: 24px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0px;
+  padding: 14px 0px 12px;
 `;
 
 const TokenLabel = styled.div`
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #CED4DA;
 `;
 
 interface StyledChevronDownProps {
