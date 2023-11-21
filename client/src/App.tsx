@@ -10,6 +10,7 @@ import { Landing } from "./pages/Landing";
 import { Permissions } from "./pages/Permissions";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
+import { Liquidity } from "./pages/Liquidity";
 import { Deposit } from "./pages/Deposit";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
@@ -53,6 +54,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/swap" element={<MobileLandingPage />} />
+                <Route path="/liquidity" element={<MobileLandingPage />} />
                 <Route path="/deposits" element={<MobileLandingPage />} />
                 <Route path="/register" element={<MobileLandingPage />} />
                 <Route path="/permissions" element={<MobileLandingPage />} />
@@ -73,6 +75,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/swap" element={<Swap />} />
+                <Route path="/liquidity" element={<Liquidity />} />
                 <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />

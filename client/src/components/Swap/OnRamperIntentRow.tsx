@@ -35,7 +35,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    * Context
    */
 
-  const { blockscanUrl } = useSmartContracts()
+  const { blockscanUrl } = useSmartContracts();
 
   /*
    * State
