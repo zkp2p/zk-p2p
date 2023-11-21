@@ -45,45 +45,43 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 
   return (
     <Container>
-      <SummaryLabelsAndIconContainer>
-        {rowIndex + 1}
+      {rowIndex + 1}
 
-        <SVGIconThemed icon={'usdc'} width={'28'} height={'28'}/>
+      <SVGIconThemed icon={'usdc'} width={'28'} height={'28'}/>
 
-        <LabelsContainer>
-          <LabelSubcontainer>
-            <SummaryLabel>
-              <SummaryLabelTitle>Depositor:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>
-                <Link href={depositorEtherscanLink} target="_blank">
-                  <ENSName
-                    provider={alchemyMainnetEthersProvider}
-                    address={depositorAddress}
-                    displayType={AddressDisplayEnum.FIRST4_LAST4}
-                  />
-                </Link>
-              </SummaryLabelValue>
-            </SummaryLabel>
+      <DetailsContainer>
+        <LabelContainers style={{ flex: 0.5 }}>
+          <TitleAndValueContainer>
+            <Label>Depositor:&nbsp;</Label>
+            <Value>
+              <Link href={depositorEtherscanLink} target="_blank">
+                <ENSName
+                  provider={alchemyMainnetEthersProvider}
+                  address={depositorAddress}
+                  displayType={AddressDisplayEnum.FIRST4_LAST4}
+                />
+              </Link>
+            </Value>
+          </TitleAndValueContainer>
 
-            <PercentageLabel>
-              <Label>Conversion Rate:</Label>
-              <Value>{conversionRate}</Value>
-            </PercentageLabel>
-          </LabelSubcontainer>
+          <PercentageLabel>
+            <Label>Conversion Rate:</Label>
+            <Value>{conversionRate}</Value>
+          </PercentageLabel>
+        </LabelContainers>
 
-          <LabelSubcontainer>
-            <SummaryLabel>
-              <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
-            </SummaryLabel>
+        <LabelContainers style={{ flex: 0.6 }}>
+          <TitleAndValueContainer>
+            <Label>Deposit Amount:&nbsp;</Label>
+            <Value>{originalAmountLabel}</Value>
+          </TitleAndValueContainer>
 
-            <SummaryLabel>
-              <SummaryLabelTitle>Remaining Liquidity:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
-            </SummaryLabel>
-          </LabelSubcontainer>
-        </LabelsContainer>
-      </SummaryLabelsAndIconContainer>
+          <TitleAndValueContainer>
+            <Label>Remaining Liquidity:&nbsp;</Label>
+            <Value>{depositRemainingLabel}</Value>
+          </TitleAndValueContainer>
+        </LabelContainers>
+      </DetailsContainer>
     </Container>
   );
 };
@@ -92,54 +90,40 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
-  align-items: flex-start;
-  padding: 1.5rem;
-`;
-
-const SummaryLabelsAndIconContainer = styled.div`
-  display: flex;
   align-items: center;
+  padding: 1rem 1.5rem;
   gap: 2rem;
 `;
 
-const LabelsContainer = styled.div`
-  width: 100%;
+const DetailsContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
   line-height: 24px;
-  gap: 2rem;
 `;
 
-const LabelSubcontainer = styled.div`
+const LabelContainers = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
 `;
 
-const SummaryLabel = styled.label`
+const TitleAndValueContainer = styled.label`
   display: flex;
   font-size: 15px;
   color: #FFFFFF;
   align-items: center;
 `;
 
-const SummaryLabelTitle = styled.span`
+const Label = styled.span`
   font-size: 15px;
   color: #6C757D;
-`;
-
-const SummaryLabelValue = styled.span`
-  font-size: 15px;
-  color: #FFFFFF;
 `;
 
 const PercentageLabel = styled.div`
   display: flex;
-`;
-
-const Label = styled.span`
-  color: #6C757D;
-  font-size: 15px;
 `;
 
 const Value = styled.span`

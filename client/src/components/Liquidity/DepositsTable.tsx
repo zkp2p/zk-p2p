@@ -10,6 +10,8 @@ import { toUsdcString, conversionRateToString } from '@helpers/units'
 import useLiquidity from '@hooks/useLiquidity';
 
 
+const ROWS_PER_PAGE = 5;
+
 export interface DepositPrime {
   depositor: string;
   availableDepositAmount: string;
@@ -29,6 +31,8 @@ export const DepositsTable: React.FC = () => {
    */
 
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(0);
 
   /*
    * Hooks
@@ -59,11 +63,25 @@ export const DepositsTable: React.FC = () => {
     }
   }, [depositStore]);
 
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [positionsRowData.length]);
+
   /*
    * Handlers
    */
 
-  // no-op
+  const handleChangePage = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  /*
+   * Helpers
+   */
+
+  const totalPages = Math.ceil(positionsRowData.length / ROWS_PER_PAGE);
+
+  const paginatedData = positionsRowData.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
   
   /*
    * Component
@@ -96,7 +114,7 @@ export const DepositsTable: React.FC = () => {
                 </ThemedText.LabelSmall>
               </PositionCountTitle>
               <Table>
-                {positionsRowData.map((positionRow, rowIndex) => (
+                {paginatedData.map((positionRow, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
                     <DepositsRow
                       availableDepositAmount={positionRow.availableDepositAmount}
@@ -111,6 +129,22 @@ export const DepositsTable: React.FC = () => {
             </PositionsContainer>
           )}
         </Content>
+
+        {positionsRowData.length > ROWS_PER_PAGE && (
+          <PaginationContainer>
+            <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
+              &#8249;
+            </PaginationButton>
+            <PageInfo>
+              {totalPages === 0 ? '0 of 0' : `${currentPage + 1} of ${totalPages}`}
+            </PageInfo>
+            <PaginationButton
+              disabled={currentPage === totalPages - 1 || totalPages === 0}
+              onClick={() => handleChangePage(currentPage + 1)}>  
+              &#8250;
+            </PaginationButton>
+          </PaginationContainer>
+        )}
       </Column>
     </Container>
   )
@@ -208,6 +242,39 @@ const Table = styled.div`
   & > *:last-child {
     border-bottom: none;
   }
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+`;
+
+const PaginationButton = styled.button`
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 8px 16px;
+  margin: 0 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+
+  &:disabled {
+    background-color: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+  }
+`;
+
+const PageInfo = styled.span`
+  color: rgba(255, 255, 255, 0.8);
+  word-spacing: 2px;
+  font-size: 16px;
 `;
 
 const PositionRowStyled = styled.div`
