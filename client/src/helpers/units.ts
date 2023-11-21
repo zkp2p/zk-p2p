@@ -8,14 +8,14 @@ export const toBigInt = (amount: string): bigint => {
   return BigInt(integerRepresentation);
 };
 
-export const toUsdcString = (amount: bigint): string => {
-  let amountStr = amount.toString();
+export const toUsdcString = (amount: bigint, includeCommas: boolean = false): string => {
+  let amountString = amount.toString();
   // Pad with leading zeros if necessary
-  amountStr = amountStr.padStart(7, '0');
+  amountString = amountString.padStart(7, '0');
 
   // Insert decimal point 6 places from the right
-  const wholePart = amountStr.slice(0, -6);
-  let fractionalPart = amountStr.slice(-6);
+  const wholePart = amountString.slice(0, -6);
+  let fractionalPart = amountString.slice(-6);
   
   // Trim trailing zeros from the fractional part
   fractionalPart = fractionalPart.replace(/0+$/, '');
@@ -25,8 +25,21 @@ export const toUsdcString = (amount: bigint): string => {
     fractionalPart = '0';
   }
 
-  let result = `${wholePart}.${fractionalPart}`;
-  return parseFloat(result).toString();
+  if (includeCommas) {
+    const formattedWholePart = new Intl.NumberFormat().format(parseInt(wholePart, 10));
+    if (fractionalPart === '0') {
+      return formattedWholePart;
+    }
+    
+    let result = `${formattedWholePart}.${fractionalPart}`;
+    result = result.replace(/^,/, '');
+
+    return result;
+  } else {
+    let result = `${wholePart}.${fractionalPart}`;
+
+    return parseFloat(result).toString(); 
+  }
 };
 
 export const toUsdString = (amount: bigint): string => {

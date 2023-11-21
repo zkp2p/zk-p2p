@@ -106,10 +106,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           const deposit = depositWithLiquidity.deposit
   
           const depositor = deposit.depositor;
-          const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity);
-          const totalDepositAmount = toUsdcString(deposit.depositAmount);
+          const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
+          const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
           const intentCount = deposit.intentHashes.length.toString();
-          const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount);
+          const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
           const conversionRate = conversionRateToString(deposit.conversionRate, true);
   
           return {

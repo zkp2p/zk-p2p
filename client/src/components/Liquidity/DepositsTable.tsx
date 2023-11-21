@@ -47,8 +47,8 @@ export const DepositsTable: React.FC = () => {
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
-        const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity);
-        const totalDepositAmount = toUsdcString(deposit.depositAmount);
+        const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
+        const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToString(deposit.conversionRate, true);
 
         return {

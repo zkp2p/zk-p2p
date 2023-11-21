@@ -356,7 +356,7 @@ const Swap: React.FC<SwapProps> = ({
 
   const usdcBalanceLabel = useMemo(() => {
     if (isLoggedIn && usdcBalance !== null) {
-      return `Balance: ${toUsdcString(usdcBalance)}`
+      return `Balance: ${toUsdcString(usdcBalance, true)}`
     } else {
       return '';
     }

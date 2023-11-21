@@ -101,7 +101,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, conversionRate);
         const amountUSDToSend = toUsdString(usdToSend);
 
-        const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount);
+        const amountUSDCToReceive = toUsdcString(currentIntent.intent.amount, true);
         const expirationTimestamp = formatExpiration(currentIntent.intent.timestamp);
         const venmoIdString = currentIntent.depositorVenmoId.toString();
         const depositorAddress = storedDeposit.deposit.depositor;

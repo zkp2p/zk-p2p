@@ -48,7 +48,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
 
         const onRamper = intent.onRamper;
         const amountUSDToReceive = toUsdString(usdToSend);
-        const amountUSDCToSend = toUsdcString(amountUSDC);
+        const amountUSDCToSend = toUsdcString(amountUSDC, true);
         const expirationTimestamp = formatExpiration(intent.timestamp);
         
         const sanitizedIntent: IntentRowData = {
