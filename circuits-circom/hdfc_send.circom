@@ -74,11 +74,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     signal amount_regex_out, amount_regex_reveal[max_body_bytes];
     (amount_regex_out, amount_regex_reveal) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
-    for (var i = 0; i < max_body_bytes; i++) {
-        if (amount_regex_reveal[i] != 0) {
-            log("amount", amount_regex_reveal[i]);
-        }
-    }
     amount_regex_out === 1;
     reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
@@ -92,11 +87,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     signal date_regex_out, date_regex_reveal[max_header_bytes];
     (date_regex_out, date_regex_reveal) <== HdfcDateRegex(max_header_bytes)(in_padded);
-    for (var i = 0; i < max_header_bytes; i++) {
-        if (date_regex_reveal[i] != 0) {
-            log("date", date_regex_reveal[i]);
-        }
-    }
     date_regex_out === 1;
 
     reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
@@ -109,11 +99,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== HdfcPayeeIdRegex(max_body_bytes)(in_body_padded);
     signal is_found_payee <== IsZero()(payee_regex_out);
-    for (var i = 0; i < max_body_bytes; i++) {
-        if (payee_regex_reveal[i] != 0) {
-            log("payee id", payee_regex_reveal[i]);
-        }
-    }   
     is_found_payee === 0;
 
     // PACKING
