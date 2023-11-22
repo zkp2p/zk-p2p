@@ -11,11 +11,9 @@ import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
-import { ON_RAMPER_INTENT_INSTRUCTIONS } from '@helpers/tooltips';
 import useLiquidity from '@hooks/useLiquidity';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
-import QuestionHelper from '@components/common/QuestionHelper';
 
 
 interface OnRamperIntentTableProps {
@@ -183,9 +181,6 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
             <ThemedText.LabelSmall textAlign="left">
               Current Order
             </ThemedText.LabelSmall>
-            <QuestionHelper
-                text={ON_RAMPER_INTENT_INSTRUCTIONS}
-              />
           </TitleAndTooltip>
 
           <AccessoryButton
