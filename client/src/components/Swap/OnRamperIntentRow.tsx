@@ -16,6 +16,7 @@ interface IntentRowProps {
   expirationTimestamp: string;
   depositorVenmoId: string;
   depositorAddress: string;
+  recipientAddress: string;
   handleCompleteOrderClick: () => void;
 }
 
@@ -27,6 +28,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   expirationTimestamp,
   depositorVenmoId,
   depositorAddress,
+  recipientAddress,
   handleCompleteOrderClick,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
@@ -51,6 +53,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
+  const recipientAddressLabel = `${blockscanUrl}/address/${recipientAddress}`;
 
   /*
    * Handlers
@@ -82,8 +85,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
       <IntentDetailsContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
-        <AmountLabelsContainer>
-          <AmountContainer>
+        <DetailsContainer>
+          <LabelContainer>
             <Label>Depositor:&nbsp;</Label>
             <Value>
               <Link href={depositorEtherscanLink} target="_blank">
@@ -94,23 +97,36 @@ export const IntentRow: React.FC<IntentRowProps> = ({
                 />
               </Link>
             </Value>
-          </AmountContainer>
+          </LabelContainer>
 
-          <AmountContainer>
+          <LabelContainer>
             <Label>Requested:&nbsp;</Label>
             <Value>{requestedAmountLabel}</Value>
-          </AmountContainer>
+          </LabelContainer>
 
-          <AmountContainer>
+          <LabelContainer>
             <Label>Send:&nbsp;</Label>
-            <Value>{amountUSDToSend} on Venmo</Value>
-          </AmountContainer>
+            <Value>${amountUSDToSend} on Venmo</Value>
+          </LabelContainer>
 
-          <AmountContainer>
+          <LabelContainer>
             <Label>Expires:&nbsp;</Label>
             <Value>{orderExpirationLabel}</Value>
-          </AmountContainer>
-        </AmountLabelsContainer>
+          </LabelContainer>
+
+          <LabelContainer>
+            <Label>Recipient:&nbsp;</Label>
+            <Value>
+              <Link href={depositorEtherscanLink} target="_blank">
+                <ENSName
+                  provider={alchemyMainnetEthersProvider}
+                  address={recipientAddress}
+                  displayType={AddressDisplayEnum.FIRST4_LAST4}
+                />
+              </Link>
+            </Value>
+          </LabelContainer>
+        </DetailsContainer>
       </IntentDetailsContainer>
 
       <ActionsContainer>
@@ -148,7 +164,7 @@ const ActionsContainer = styled.div`
   gap: 1rem;
 `;
 
-const AmountLabelsContainer = styled.div`
+const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
   gap: 2px;
@@ -156,7 +172,7 @@ const AmountLabelsContainer = styled.div`
   line-height: 24px;
 `;
 
-const AmountContainer = styled.div`
+const LabelContainer = styled.div`
   display: flex;
 `;
 
