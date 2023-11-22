@@ -26,7 +26,7 @@
     "gen-input:registration": "npx tsx ./scripts/generate_input.ts --email_file=emls/venmo_send.eml --email_type=registration",
     "gen-input:send:receive": "npx tsx ./scripts/generate_input.ts --email_file=emls/venmo_receive.eml --email_type=send --output_file=input_venmo_send_receive",
     "gen-input:registration:receive": "npx tsx ./scripts/generate_input.ts --email_file=emls/venmo_receive.eml --email_type=registration --output_file=input_venmo_registration_receive",
-    "gen-input:hdfc": "npx tsx ./scripts/generate_input.ts --email_file=emls/hdfc_send.eml --email_type=hdfc_send  --output_file=input_hdfc_send",
+    "gen-input:hdfc": "npx tsx ./scripts/generate_input.ts --email_file=emls/hdfc_send_sachin.eml --email_type=hdfc_send  --output_file=input_hdfc_send",
     "compile:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
     "compile:send:unsafe": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile_unsafe.sh && cd ..",
     "compile:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./1_compile.sh && cd ..",
