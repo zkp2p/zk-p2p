@@ -81,7 +81,8 @@ export enum CircuitType {
   TEST = "test",
   EMAIL_VENMO_SEND = "send",
   EMAIL_VENMO_REGISTRATION = "registration",
-  EMAIL_HDFC_SEND = "hdfc_send"
+  EMAIL_HDFC_SEND = "hdfc_send",
+  EMAIL_HDFC_REGISTRATION = "hdfc_registration"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -148,6 +149,9 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+  } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
   }
@@ -283,13 +287,37 @@ export async function getCircuitInputs(
       in_body_padded,
       in_body_len_padded_bytes,
       body_hash_idx,
-      // venmo specific indices
+      // hdfc specific indices
       hdfc_amount_idx,
       hdfc_payee_id_idx,
       email_date_idx,
       email_from_idx,
       // IDs
       intent_hash,
+    }
+  } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
+
+    const email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "from:"), "<").length;
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
+
+    console.log(bodyRemaining)
+
+    console.log("Indexes into for hdfc registration email are: ", email_from_idx, email_to_idx, hdfc_acc_num_idx)
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // hdfc specific indices
+      email_from_idx,
+      email_to_idx,
+      hdfc_acc_num_idx
     }
   }
   else {
