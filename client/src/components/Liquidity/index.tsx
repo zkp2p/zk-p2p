@@ -44,35 +44,17 @@ export default function Deposit() {
    * Component
    */
 
-  function renderContent() {
-    return (
-      <DepositAndIntentContainer>
-        <DepositsTable/>
-      </DepositAndIntentContainer>
-    );
-  };
-
   return (
     <Wrapper>
-      <Content>
-        {renderContent()}
-      </Content>
+      <main>
+        <DepositsTable/>
+      </main>
     </Wrapper>
   );
 };
 
 const Wrapper = styled(AutoColumn)`
-  max-width: 660px;
+  max-width: 920px;
   width: 100%;
   padding-top: 1.5rem;
-`;
-
-const DepositAndIntentContainer = styled.div`
-  display: grid;
-  gap: 1rem;
-  border-radius: 16px;
-`;
-
-const Content = styled.main`
-  gap: 1rem;
 `;

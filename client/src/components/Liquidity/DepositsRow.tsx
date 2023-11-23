@@ -45,69 +45,61 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 
   return (
     <Container>
-      {rowIndex + 1}
+      <div style={{ flex: 0.1 }}>
+        {rowIndex + 1}
+      </div>
 
-      <SVGIconThemed icon={'usdc'} width={'28'} height={'28'}/>
+      <IconAndTokenNameContainer>
+        <SVGIconThemed icon={'usdc'} width={'28'} height={'28'} />
+        USD Coin
+      </IconAndTokenNameContainer>
 
-      <DetailsContainer>
-        <LabelContainers style={{ flex: 0.5 }}>
-          <TitleAndValueContainer>
-            <Label>Depositor:&nbsp;</Label>
-            <Value>
-              <Link href={depositorEtherscanLink} target="_blank">
-                <ENSName
-                  provider={alchemyMainnetEthersProvider}
-                  address={depositorAddress}
-                  displayType={AddressDisplayEnum.FIRST4_LAST4}
-                />
-              </Link>
-            </Value>
-          </TitleAndValueContainer>
+      <TitleAndValueContainer>
+        <Value>
+          <Link href={depositorEtherscanLink} target="_blank">
+            <ENSName
+              provider={alchemyMainnetEthersProvider}
+              address={depositorAddress}
+              displayType={AddressDisplayEnum.FIRST4_LAST4}
+            />
+          </Link>
+        </Value>
+      </TitleAndValueContainer>
 
-          <PercentageLabel>
-            <Label>Conversion Rate:</Label>
-            <Value>{conversionRate}</Value>
-          </PercentageLabel>
-        </LabelContainers>
+      <TitleAndValueContainer>
+        <Value>{depositRemainingLabel}</Value>
+      </TitleAndValueContainer>
 
-        <LabelContainers style={{ flex: 0.6 }}>
-          <TitleAndValueContainer>
-            <Label>Deposit Amount:&nbsp;</Label>
-            <Value>{originalAmountLabel}</Value>
-          </TitleAndValueContainer>
+      <PercentageLabel>
+        <Value>{conversionRate}</Value>
+      </PercentageLabel>
 
-          <TitleAndValueContainer>
-            <Label>Remaining Liquidity:&nbsp;</Label>
-            <Value>{depositRemainingLabel}</Value>
-          </TitleAndValueContainer>
-        </LabelContainers>
-      </DetailsContainer>
+      <TitleAndValueContainer>
+        <Value>{originalAmountLabel}</Value>
+      </TitleAndValueContainer>
     </Container>
   );
 };
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
   height: 100%;
+  display: grid;
+  grid-template-columns: .2fr repeat(5, minmax(0,1fr));
+  gap: 8px;
+  flex-direction: row;
   align-items: center;
-  padding: 1rem 1.5rem;
-  gap: 2rem;
-`;
-
-const DetailsContainer = styled.div`
-  display: flex;
+  padding: 1.25rem 1.75rem;
   justify-content: space-between;
   align-items: flex-start;
-  width: 100%;
   line-height: 24px;
+  text-align: left;
 `;
 
-const LabelContainers = styled.div`
+const IconAndTokenNameContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
 `;
 
 const TitleAndValueContainer = styled.label`
@@ -115,11 +107,6 @@ const TitleAndValueContainer = styled.label`
   font-size: 15px;
   color: #FFFFFF;
   align-items: center;
-`;
-
-const Label = styled.span`
-  font-size: 15px;
-  color: #6C757D;
 `;
 
 const PercentageLabel = styled.div`

@@ -10,7 +10,7 @@ import { toUsdcString, conversionRateToString } from '@helpers/units'
 import useLiquidity from '@hooks/useLiquidity';
 
 
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 10;
 
 export interface DepositPrime {
   depositor: string;
@@ -49,7 +49,7 @@ export const DepositsTable: React.FC = () => {
         const depositor = deposit.depositor;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
-        const conversionRate = conversionRateToString(deposit.conversionRate, true);
+        const conversionRate = conversionRateToString(deposit.conversionRate);
 
         return {
           depositor,
@@ -88,8 +88,7 @@ export const DepositsTable: React.FC = () => {
    */
 
   return (
-    <Container>
-      <Column>
+    <>
         <TitleRow>
           <ThemedText.HeadlineMedium>
             Liquidity
@@ -107,12 +106,20 @@ export const DepositsTable: React.FC = () => {
               </ThemedText.DeprecatedBody>
             </ErrorContainer>
           ) : (
-            <PositionsContainer>
-              <PositionCountTitle>
-                <ThemedText.LabelSmall textAlign="left">
-                  Active global deposits
-                </ThemedText.LabelSmall>
-              </PositionCountTitle>
+            <TableContainer>
+              <TableHeaderRow>
+                <ColumnHeader>#</ColumnHeader>
+
+                <ColumnHeader>Token</ColumnHeader>
+
+                <ColumnHeader>Depositor</ColumnHeader>
+
+                <ColumnHeader>Available Amount</ColumnHeader>
+
+                <ColumnHeader>Conversion Rate</ColumnHeader>
+
+                <ColumnHeader>Deposit Amount</ColumnHeader>
+              </TableHeaderRow>
               <Table>
                 {paginatedData.map((positionRow, rowIndex) => (
                   <PositionRowStyled key={rowIndex}>
@@ -126,7 +133,7 @@ export const DepositsTable: React.FC = () => {
                   </PositionRowStyled>
                 ))}
               </Table>
-            </PositionsContainer>
+            </TableContainer>
           )}
         </Content>
 
@@ -145,22 +152,9 @@ export const DepositsTable: React.FC = () => {
             </PaginationButton>
           </PaginationContainer>
         )}
-      </Column>
-    </Container>
+    </>
   )
 };
-
-const Container = styled.div`
-  width: 100%;
-  gap: 1rem;
-`;
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
-  border-radius: 16px;
-  justify-content: center;
-`;
 
 const TitleRow = styled(RowBetween)`
   margin-bottom: 20px;
@@ -177,14 +171,11 @@ const TitleRow = styled(RowBetween)`
 `;
 
 const Content = styled.main`
-  display: flex;
   background-color: #0D111C;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
-  flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
-  overflow: hidden;
 `;
 
 const ErrorContainer = styled.div`
@@ -209,20 +200,16 @@ const ChainLinkIcon = styled(Link)`
   ${IconStyle}
 `;
 
-const PositionsContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 100%;
+const TableContainer = styled.div`
+  display: block;
 `;
 
-const PositionCountTitle = styled.div`
-  width: 100%;
+const TableHeaderRow = styled.div`
+  display: grid;
+  grid-template-columns: .2fr repeat(5, minmax(0,1fr));
+  gap: 8px;
   text-align: left;
-  padding-top: 1.25rem;
-  padding-bottom: 1rem;
-  padding-left: 1.5rem;
+  padding: 1.3rem 1.75rem 1rem 1.75rem;
   border-bottom: 1px solid #98a1c03d;
 `;
 
@@ -242,6 +229,13 @@ const Table = styled.div`
   & > *:last-child {
     border-bottom: none;
   }
+`;
+
+
+const ColumnHeader = styled.div`
+  text-align: left;
+  font-size: 14px;
+  opacity: 0.7;
 `;
 
 const PaginationContainer = styled.div`
