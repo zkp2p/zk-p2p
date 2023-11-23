@@ -2,7 +2,7 @@
 export const ZERO = BigInt(0);
 export const SECONDS_IN_DAY = BigInt(86400);
 
-export const VENMO_MAX_TRANSFER_SIZE = 250n;
+export const MAX_USDC_TRANSFER_SIZE = 250000000n;
 
 export const DEPOSIT_REFETCH_INTERVAL = 20000; // 0.3 minutes
 export const STATE_REFETCH_INTERVAL = 60000; // 1 minute

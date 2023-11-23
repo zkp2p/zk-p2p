@@ -17,7 +17,7 @@ import { IndicativeQuote } from '../../contexts/Deposits/types'
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer'
 import {
   DEPOSIT_REFETCH_INTERVAL,
-  VENMO_MAX_TRANSFER_SIZE,
+  MAX_USDC_TRANSFER_SIZE,
   ZERO
 } from "@helpers/constants";
 import {
@@ -244,7 +244,7 @@ const Swap: React.FC<SwapProps> = ({
 
               if (!onRampCooldownElapsed) {
                 updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
-              } else if (parseFloat(usdAmountToSend) > VENMO_MAX_TRANSFER_SIZE) {
+              } else if (toBigInt(requestedUsdcAmount) > MAX_USDC_TRANSFER_SIZE) {
                 updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
