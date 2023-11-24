@@ -108,76 +108,6 @@ describe("HDFC Registration", function () {
         });
     });
 
-
-    it("Should return the correct packed to email", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_registration.json");
-        const jsonString = fs.readFileSync(hdfc_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned packed from email
-        // Indexes 5 to 10 represent the packed from email (15 \ 7)
-        const packed_from_email = witness.slice(5, 10);
-
-        // Get expected packed to email
-        const regex_start = Number(input["email_to_idx"]);
-        const regex_start_sub_array = input["in_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
-        const to_email_array = regex_start_sub_array.slice(0, regex_end);
-
-        // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(to_email_array, 7, 35);
-
-        chunkedArrays.map((arr, i) => {
-            // Pack each chunk
-            let expectedValue = bytesToPacked(arr);
-
-            // Check packed email is the same
-            assert.equal(expectedValue, packed_from_email[i], true);
-        });
-    });
-
-    it("should return the correct packed account number", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_registration.json");
-        const jsonString = fs.readFileSync(hdfc_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned HDFC packed account number
-        // Indexes 10 to 11 represent the packed from email (7 \ 7)
-        const packed_account_number = witness.slice(10, 11);
-
-        // Get expected packed account number array
-        const regex_start = Number(input["hdfc_acc_num_idx"]);
-        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("32"); // Look for ` ` to end the from which is 32 in ascii.
-        const account_number_array = regex_start_sub_array.slice(0, regex_end);
-
-        // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(account_number_array, 7, 7);
-
-        chunkedArrays.map((arr, i) => {
-            // Pack each cunk
-            let expectedValue = bytesToPacked(arr);
-            console.log('arr', arr)
-            console.log('expectedValue', expectedValue)
-
-            // Check packed account number is the same
-            assert.equal(expectedValue, packed_account_number[i], true);
-        });
-    });
-
-
     it("Should return the correct hashed to email id + bank account number", async () => {
         const provider = new ethers.providers.Web3Provider(
             ganache.provider({
@@ -208,8 +138,8 @@ describe("HDFC Registration", function () {
         );
 
         // Get returned hashed registration id
-        // Indexes 11 represents the hashed registration id
-        const hashed_registration_id = witness[11];
+        // Indexes 5 represents the hashed registration id
+        const hashed_registration_id = witness[5];
 
         // Get expected packed to email
         const regex_start_to_email = Number(input["email_to_idx"]);

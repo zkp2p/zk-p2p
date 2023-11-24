@@ -52,6 +52,7 @@
     "test:send": "yarn test ./test/venmo_send.spec.ts",
     "test:registration": "yarn test ./test/venmo_registration.spec.ts",
     "test:hdfc:send": "yarn test ./test/hdfc_send.spec.ts",
+    "test:hdfc:registration": "yarn test ./test/hdfc_registration.spec.ts",
     "genverifier:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "genverifier:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "genverifier:hdfc:send": "CIRCUIT_NAME=hdfc_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
