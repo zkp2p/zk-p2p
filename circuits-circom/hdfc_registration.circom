@@ -66,7 +66,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     assert(max_email_to_packed_bytes < max_header_bytes);
 
     signal input email_to_idx;
-    signal output reveal_email_to_packed[max_email_to_packed_bytes]; // packed into 7-bytes
+    signal reveal_email_to_packed[max_email_to_packed_bytes]; // Not a public output
 
     signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegex(max_header_bytes)(in_padded);
     to_regex_out === 1;
@@ -76,7 +76,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     var max_acc_num_packed_bytes = count_packed(max_account_number_len, pack_size); // ceil(max_num_bytes / 7)
 
     signal input hdfc_acc_num_idx;
-    signal reveal_acc_num_packed[max_acc_num_packed_bytes];
+    signal reveal_acc_num_packed[max_acc_num_packed_bytes]; // Not a public output
 
     signal (acc_num_regex_out, acc_num_regex_reveal[max_body_bytes]) <== HdfcAccountNumberRegex(max_body_bytes)(in_body_padded);
     acc_num_regex_out === 1;
@@ -94,7 +94,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     }
     signal output packed_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 1156019
+    // TOTAL CONSTRAINTS: (WITH STUB): 780077
     // WITHOUT STUB: TODO
 }
 
