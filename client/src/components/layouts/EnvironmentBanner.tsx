@@ -76,7 +76,7 @@ export const EnvironmentBanner: React.FC = () => {
           </Link>
         )}
         &nbsp;&nbsp;{" | "}&nbsp;
-        {"Our Gitcoin Grant 19 Grant is live — "}
+        {"Our Gitcoin Grant is live — "}
         {isEnvProduction && (
           <Link href="https://explorer.gitcoin.co/#/round/424/0xd4cc0dd193c7dc1d665ae244ce12d7fab337a008/0xd4cc0dd193c7dc1d665ae244ce12d7fab337a008-189" color="inherit" target="_blank">
             Donate
