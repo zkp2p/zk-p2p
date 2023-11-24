@@ -11,6 +11,8 @@ include "./utils/hash_sign_gen_rand.circom";
 include "./regexes/from_regex.circom";
 include "./regexes/to_regex.circom";
 include "./regexes/hdfc/hdfc_accnum.circom";
+include "./regexes/hdfc/hdfc_upi_subject.circom";
+
 
 template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
@@ -49,6 +51,10 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     signal header_hash[256] <== EV.sha;
 
     modulus_hash <== EV.pubkey_hash;
+
+    // HDFC UPI EMAIL VERIFICATION REGEX (Check that regex matches)
+    signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
+    upi_subject_regex_out === 1;
 
     // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
@@ -94,7 +100,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     }
     signal output packed_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 780077
+    // TOTAL CONSTRAINTS: (WITH STUB): 941288
     // WITHOUT STUB: TODO
 }
 

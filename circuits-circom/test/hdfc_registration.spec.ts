@@ -169,17 +169,19 @@ describe("HDFC Registration", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_registration_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     });
 
-    // it("should fail to generate witness if receive email is provided", async () => {
-    //     // Generate inputs for this test using `yarn gen-input:registration:receive`
-    //     const venmo_path = path.join(__dirname, "../inputs/input_venmo_registration_receive.json");
-    //     const jsonString = fs.readFileSync(venmo_path, "utf8");
+    // Could not find another email from alerts@hdfcbank.net that fits inside the 3200 limit set by us for the UPI email
+    // it("should fail to generate witness if hdfc email does not has the right subject", async () => {
+    //     // Generate inputs for this test using `yarn gen-input:hdfc:registration:wrong-subject`
+    //     const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_registration_receive.json");
+    //     const jsonString = fs.readFileSync(hdfc_path, "utf8");
     //     const input = JSON.parse(jsonString);
     //     try {
     //         await cir.calculateWitness(input, true);
     //         assert.fail('Expected calculateWitness to throw an error');
     //     } catch (error) {
     //         assert.instanceOf(error, Error);
-    //         assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoRegistration_243 line: 65\n');
+    //         console.log(error.message);
+    //         // assert.equal(error.message, 'Error: Assert Failed.\nError in template HdfcRegistration_243 line: 65\n');
     //     }
     // });
 });
