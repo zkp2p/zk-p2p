@@ -53,7 +53,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
-  const recipientAddressLabel = `${blockscanUrl}/address/${recipientAddress}`;
 
   /*
    * Handlers
