@@ -33,11 +33,9 @@ describe("HDFC UPI Subject", function () {
     }
 
     it("Should generate witnesses", async () => {
-        // No commas in amount.
         const input = {
-            "msg": textToAsciiArray("Subject: =?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
         };
-
         const witness = await cir.calculateWitness(
             input,
             true
@@ -47,7 +45,7 @@ describe("HDFC UPI Subject", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Subject: =?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -58,7 +56,7 @@ describe("HDFC UPI Subject", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Subject: =?UTF-8?q?=E2=9D=97_You_have_done_a_API_txn._Check_details!?=\r\n")   // API instead of UPI
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_API_txn._Check_details!?=\r\n")   // API instead of UPI
         };
         const witness = await cir.calculateWitness(
             input,
