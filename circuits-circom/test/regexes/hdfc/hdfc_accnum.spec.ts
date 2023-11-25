@@ -37,7 +37,6 @@ describe("HDFC Account Number", function () {
         const input = {
             "msg": textToAsciiArray("**5678 to VPA")
         };
-        console.log(input.msg.length)
         const witness = await cir.calculateWitness(
             input,
             true

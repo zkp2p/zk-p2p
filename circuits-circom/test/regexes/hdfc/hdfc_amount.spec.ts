@@ -37,7 +37,6 @@ describe("HDFC amount", function () {
         const input = {
             "msg": textToAsciiArray("Dear Customer,<br> <br> Rs.1234.56 has been debited from")
         };
-        console.log(input.msg.length)
         const witness = await cir.calculateWitness(
             input,
             true

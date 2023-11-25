@@ -35,9 +35,8 @@ describe("Venmo Actor ID", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("to:abanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
+            "msg": textToAsciiArray("to:0xanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
         };
-        console.log(input.msg.length)
         const witness = await cir.calculateWitness(
             input,
             true
@@ -48,27 +47,26 @@ describe("Venmo Actor ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("to:abanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
+            "msg": textToAsciiArray("to:0xanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        console.log(witness);
 
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("to:abanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
+            "msg": textToAsciiArray("to:0xanonkumar2023@gmail.com\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
         const expected = Array(textToAsciiArray("to:").length).fill("0")
-            .concat(textToAsciiArray("abanonkumar2023@gmail"))
+            .concat(textToAsciiArray("0xanonkumar2023@gmail.com"))
             .concat(Array(textToAsciiArray("\r\nreply-to:Venmo No-re").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
@@ -77,7 +75,7 @@ describe("Venmo Actor ID", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("to:abanonkumarA2023gmail.com\r\nreply-to:Venmo No-re")
+            "msg": textToAsciiArray("to:0xanonkumarA2023gmail.com\r\nreply-to:Venmo No-re")
         };
         const witness = await cir.calculateWitness(
             input,
