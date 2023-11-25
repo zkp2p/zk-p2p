@@ -53,6 +53,8 @@
     "genkey:non-chunked:unsafe:hdfc:registration": "CIRCUIT_NAME=hdfc_registration && cd scripts && ./3_gen_zkey_unsafe.sh && cd ..",
     "uploadkeys:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./7_upload_to_s3.sh && cd ..",
     "uploadkeys:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./7_upload_to_s3.sh && cd ..",
+    "uploadkeys:hdfc:send": "CIRCUIT_NAME=hdfc_send && cd scripts && ./7_upload_to_s3.sh && cd ..",
+    "uploadkeys:hdfc:registration": "CIRCUIT_NAME=hdfc_registration && cd scripts && ./7_upload_to_s3.sh && cd ..",
     "test:send": "yarn test ./test/venmo_send.spec.ts",
     "test:registration": "yarn test ./test/venmo_registration.spec.ts",
     "test:hdfc:send": "yarn test ./test/hdfc_send.spec.ts",
