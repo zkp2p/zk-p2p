@@ -301,8 +301,6 @@ export async function getCircuitInputs(
     const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
     const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
 
-    console.log(bodyRemaining)
-
     console.log("Indexes into for hdfc registration email are: ", email_from_idx, email_to_idx, hdfc_acc_num_idx)
 
     circuitInputs = {
