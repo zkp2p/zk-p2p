@@ -127,7 +127,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 1317230
+    // TOTAL CONSTRAINTS: (WITH STUB): 1312182
     // WITHOUT STUB: TODO
 }
 
