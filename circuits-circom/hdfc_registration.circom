@@ -100,7 +100,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     }
     signal output packed_id_hashed <== hash.out;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 941288
+    // TOTAL CONSTRAINTS: (WITH STUB): 936240
     // WITHOUT STUB: TODO
 }
 
