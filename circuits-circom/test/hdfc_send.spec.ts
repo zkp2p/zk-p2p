@@ -166,7 +166,6 @@ describe("HDFC send WASM tester", function () {
         const regex_start_sub_array = input["in_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the timestamp which is 13 in ascii
         const date_array = regex_start_sub_array.slice(0, regex_end);
-        console.log(date_array)
 
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(date_array, 7, 31);
