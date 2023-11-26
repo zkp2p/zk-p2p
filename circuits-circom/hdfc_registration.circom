@@ -6,7 +6,7 @@ include "@zk-email/circuits/helpers/extract.circom";
 include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
-include "./utils/hdfc_utils.circom";
+include "./helpers/hdfc_helpers.circom";
 include "./regexes/from_regex.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
 

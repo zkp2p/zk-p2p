@@ -1,6 +1,6 @@
 pragma circom 2.1.5;
 
-include "./ceil.circom";
+include "../utils/ceil.circom";
 include "../regexes/from_regex.circom";
 include "../regexes/to_regex.circom";
 include "../regexes/hdfc/hdfc_amount.circom";
