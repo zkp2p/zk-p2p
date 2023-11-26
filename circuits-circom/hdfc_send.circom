@@ -8,10 +8,10 @@ include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
+include "./utils/hdfc_utils.circom";
 include "./regexes/from_regex.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_date.circom";
-include "./regexes/hdfc/hdfc_payee_id.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
 
 template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
@@ -22,7 +22,9 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (alerts@hdfcbank.net)
     var max_email_date_len = 31; // Sat, 14 Oct 2023 22:09:12 +0530
     // TODO: CHANGE THIS TO 50.
+    var max_email_to_len = ceil(35, pack_size); // TODO: Change this.
     var max_payee_len = ceil(42, pack_size);    // Max 50 characters in UPI ID  (TODO: CHANGE THIS TO 50)
+    var max_account_number_len = ceil(7, pack_size);    // TODO: Change this. Max is only 4 digits but set to 7 for now.
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -55,8 +57,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     modulus_hash <== EV.pubkey_hash;
 
     // HDFC UPI EMAIL VERIFICATION REGEX (Check that regex matches)
-    signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
-    upi_subject_regex_out === 1;
+    // signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
+    // upi_subject_regex_out === 1;
 
     // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
@@ -76,11 +78,9 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input hdfc_amount_idx;
     signal output reveal_email_amount_packed[max_email_amount_packed_bytes]; // packed into 7-bytes. TODO: make this rotate to take up even less space
 
-    signal amount_regex_out, amount_regex_reveal[max_body_bytes];
-    (amount_regex_out, amount_regex_reveal) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
+    signal (amount_regex_out, amount_regex_reveal[max_body_bytes]) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
     amount_regex_out === 1;
     reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_email_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
-
 
     // DATE REGEX
     var max_email_date_packed_bytes = count_packed(max_email_date_len, pack_size);
@@ -89,32 +89,28 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input email_date_idx;
     signal output reveal_email_date_packed[max_email_date_packed_bytes]; // packed into 7-bytes
 
-    signal date_regex_out, date_regex_reveal[max_header_bytes];
-    (date_regex_out, date_regex_reveal) <== HdfcDateRegex(max_header_bytes)(in_padded);
+    signal (date_regex_out, date_regex_reveal[max_header_bytes]) <== HdfcDateRegex(max_header_bytes)(in_padded);
     date_regex_out === 1;
-
     reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
 
-    // HDFC SEND PAYEE ID REGEX
-    var max_payee_packed_bytes = count_packed(max_payee_len, pack_size); // ceil(max_num_bytes / 7)
+    // Extract packed and hashed onramper id
+    // signal input email_to_idx;
+    // signal input hdfc_acc_num_idx;
+    // signal output onramper_id <== HdfcOnramperId(
+    //     max_email_to_len, 
+    //     max_header_bytes, 
+    //     max_account_number_len, 
+    //     max_body_bytes, 
+    //     pack_size
+    // )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
+    // Extract packed and hashed offramper id
     signal input hdfc_payee_id_idx;
-    signal reveal_payee_packed[max_payee_packed_bytes];
-
-    signal (payee_regex_out, payee_regex_reveal[max_body_bytes]) <== HdfcPayeeIdRegex(max_body_bytes)(in_body_padded);
-    signal is_found_payee <== IsZero()(payee_regex_out);
-    is_found_payee === 0;
-
-    // PACKING
-    reveal_payee_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_payee_len, pack_size)(payee_regex_reveal, hdfc_payee_id_idx);
-
-    // HASH OFFRAMPER ID
-    component hash = Poseidon(max_payee_packed_bytes);
-    assert(max_payee_packed_bytes < 16);
-    for (var i = 0; i < max_payee_packed_bytes; i++) {
-        hash.inputs[i] <== reveal_payee_packed[i];
-    }
-    signal output packed_offramper_id_hashed <== hash.out;
+    signal output offramper_id <== HdfcOfframperId(
+        max_payee_len, 
+        max_body_bytes, 
+        pack_size
+    )(in_body_padded, hdfc_payee_id_idx);
 
     // NULLIFIER
     signal output email_nullifier;
