@@ -283,7 +283,10 @@ export async function getCircuitInputs(
     const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
 
     const email_date_idx = (raw_header.length - trimStrByStr(raw_header, "date:").length).toString();
-    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx)
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
+
+    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx, email_to_idx, hdfc_acc_num_idx)
 
     circuitInputs = {
       in_padded,
@@ -299,12 +302,12 @@ export async function getCircuitInputs(
       hdfc_payee_id_idx,
       email_date_idx,
       email_from_idx,
+      email_to_idx,
+      hdfc_acc_num_idx,
       // IDs
       intent_hash,
     }
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
-
-    const email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "from:"), "<").length;
     const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
     const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
 

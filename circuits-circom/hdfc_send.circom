@@ -57,8 +57,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     modulus_hash <== EV.pubkey_hash;
 
     // HDFC UPI EMAIL VERIFICATION REGEX (Check that regex matches)
-    // signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
-    // upi_subject_regex_out === 1;
+    signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
+    upi_subject_regex_out === 1;
 
     // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
@@ -94,15 +94,15 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
 
     // Extract packed and hashed onramper id
-    // signal input email_to_idx;
-    // signal input hdfc_acc_num_idx;
-    // signal output onramper_id <== HdfcOnramperId(
-    //     max_email_to_len, 
-    //     max_header_bytes, 
-    //     max_account_number_len, 
-    //     max_body_bytes, 
-    //     pack_size
-    // )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
+    signal input email_to_idx;
+    signal input hdfc_acc_num_idx;
+    signal output onramper_id <== HdfcOnramperId(
+        max_email_to_len, 
+        max_header_bytes, 
+        max_account_number_len, 
+        max_body_bytes, 
+        pack_size
+    )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
     // Extract packed and hashed offramper id
     signal input hdfc_payee_id_idx;
@@ -123,7 +123,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 1312182
+    // TOTAL CONSTRAINTS: (WITH STUB): 1938510
     // WITHOUT STUB: TODO
 }
 
