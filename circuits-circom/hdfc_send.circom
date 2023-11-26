@@ -8,7 +8,7 @@ include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
-include "./utils/hdfc_utils.circom";
+include "./helpers/hdfc_helpers.circom";
 include "./regexes/from_regex.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_date.circom";
