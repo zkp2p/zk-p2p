@@ -179,6 +179,67 @@ describe("HDFC send WASM tester", function () {
         });
     });
 
+    it("should return the correct hashed onramper id", async () => {
+        const provider = new ethers.providers.Web3Provider(
+            ganache.provider({
+                logging: {
+                    logger: {
+                        log: () => { } // Turn off logging
+                    }
+                }
+            })
+        );
+        account = provider.getSigner(0);
+        const C6 = new ethers.ContractFactory(
+            generateABI(6),
+            createCode(6),
+            account
+        );
+
+        poseidonContract = await C6.deploy();
+
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned hashed registration id
+        // Indexes 5 represents the hashed registration id
+        const hashed_onramper_id = witness[12];
+
+        // Get expected packed to email
+        const regex_start_to_email = Number(input["email_to_idx"]);
+        const regex_start_sub_array_to_email = input["in_padded"].slice(regex_start_to_email);
+        const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
+        const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
+
+        // Get expected packed account number array
+        const regex_start_account_number = Number(input["hdfc_acc_num_idx"]);
+        const regex_start_sub_array_account_number = input["in_body_padded"].slice(regex_start_account_number);
+        const regex_end_account_number = regex_start_sub_array_account_number.indexOf("32"); // Look for ` ` to end the from which is 32 in ascii.
+        const account_number_array = regex_start_sub_array_account_number.slice(0, regex_end_account_number);
+
+
+        // Chunk bytes into 7 and pack
+        const toEmailChunkedArray = chunkArray(to_email_array, 7, 35);
+        const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
+
+        const accountNumberChunkedArray = chunkArray(account_number_array, 7, 7);
+        const packed_account_number_array = accountNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
+
+        const combinedArray = packed_to_email_array.concat(packed_account_number_array)
+        const expected_hash = poseidon(combinedArray);
+        const expected_hash_contract = await poseidonContract["poseidon(uint256[6])"](combinedArray);
+
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
+        assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
+    });
+
     it("Should return the correct hashed offramper id", async () => {
         const provider = new ethers.providers.Web3Provider(
             ganache.provider({
@@ -210,7 +271,7 @@ describe("HDFC send WASM tester", function () {
 
         // Get returned hashed offramper_id
         // Index 9 represents the hashed offramper_id
-        const hashed_offramper_id = witness[12];
+        const hashed_offramper_id = witness[13];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["hdfc_payee_id_idx"]);
@@ -242,7 +303,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[13];
+        const nullifier = witness[14];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -264,7 +325,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[14];
+        const intent_hash = witness[15];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
