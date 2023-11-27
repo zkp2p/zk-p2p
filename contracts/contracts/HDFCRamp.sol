@@ -78,7 +78,7 @@ contract HDFCRamp is Ownable {
 
     struct Deposit {
         address depositor;
-        string  upiId;
+        uint256[3] upiId;
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -112,7 +112,7 @@ contract HDFCRamp is Ownable {
 
     // A Global Account is defined as an account represented by one idHash. This is used to enforce limitations on actions across
     // all Ethereum addresses that are associated with that idHash. In this case we use it to enforce a cooldown period between on ramps,
-    // restrict each venmo account to one outstanding intent at a time, and to enforce deny lists.
+    // restrict each HDFC account to one outstanding intent at a time, and to enforce deny lists.
     struct GlobalAccountInfo {
         bytes32 currentIntentHash;          // Hash of the current open intent (if exists)
         uint256 lastOnrampTimestamp;        // Timestamp of the last on-ramp transaction used to check if cooldown period elapsed
@@ -201,7 +201,7 @@ contract HDFCRamp is Ownable {
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction. One venmo account can be registered to multiple Ethereum addresses.
+     * sender of the transaction. One HDFC account can be registered to multiple Ethereum addresses.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -234,7 +234,7 @@ contract HDFCRamp is Ownable {
      * @param _receiveAmount    The amount of USD to receive
      */
     function offRamp(
-        string memory _upiId,
+        uint256[3] memory _upiId,
         uint256 _depositAmount,
         uint256 _receiveAmount
     )
@@ -279,16 +279,16 @@ contract HDFCRamp is Ownable {
     function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
         bytes32 idHash = accounts[msg.sender].idHash;
         Deposit storage deposit = deposits[_depositId];
-        bytes32 depositorVenmoIdHash = accounts[deposit.depositor].idHash;
+        bytes32 depositorIdHash = accounts[deposit.depositor].idHash;
 
         // Caller validity checks
-        require(!globalAccount[depositorVenmoIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
+        require(!globalAccount[depositorIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
         require(
             globalAccount[idHash].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
             "On ramp cool down period not elapsed"
         );
         require(globalAccount[idHash].currentIntentHash == bytes32(0), "Intent still outstanding");
-        require(depositorVenmoIdHash != idHash, "Sender cannot be the depositor");
+        require(depositorIdHash != idHash, "Sender cannot be the depositor");
 
         // Intent information checks
         require(deposit.depositor != address(0), "Deposit does not exist");
@@ -556,7 +556,7 @@ contract HDFCRamp is Ownable {
         return accounts[_account];
     }
 
-    function getVenmoIdCurrentIntentHash(address _account) external view returns (bytes32) {
+    function getIdCurrentIntentHash(address _account) external view returns (bytes32) {
         return globalAccount[accounts[_account].idHash].currentIntentHash;
     }
 
@@ -716,7 +716,7 @@ contract HDFCRamp is Ownable {
     }
 
     /**
-     * @notice Validate venmo send payment email and check that it hasn't already been used (done on SendProcessor).
+     * @notice Validate send payment email and check that it hasn't already been used (done on SendProcessor).
      * Additionally, we validate that the offRamperIdHash matches the one from the specified intent and that enough
      * was paid off-chain inclusive of the conversionRate.
      */
@@ -755,7 +755,7 @@ contract HDFCRamp is Ownable {
     }
 
     /**
-     * @notice Validate the user has a venmo account, we do not nullify this email since it can be reused to register under
+     * @notice Validate the user has an HDFC account, we do not nullify this email since it can be reused to register under
      * different addresses.
      */
     function _verifyRegistrationProof(
