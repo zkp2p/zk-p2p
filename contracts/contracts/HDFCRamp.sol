@@ -8,7 +8,7 @@ import { Uint256ArrayUtils } from "./external/Uint256ArrayUtils.sol";
 
 import { IPoseidon } from "./interfaces/IPoseidon.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
-import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
+import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
 
 pragma solidity ^0.8.18;
 
@@ -134,7 +134,7 @@ contract HDFCRamp is Ownable {
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
-    ISendProcessor public sendProcessor;                            // Address of send processor contract, verifies onRamp emails
+    IHDFCSendProcessor public sendProcessor;                            // Address of send processor contract, verifies onRamp emails
 
     bool internal isInitialized;                                    // Indicates if contract has been initialized
 
@@ -186,7 +186,7 @@ contract HDFCRamp is Ownable {
      */
     function initialize(
         IRegistrationProcessor _registrationProcessor,
-        ISendProcessor _sendProcessor
+        IHDFCSendProcessor _sendProcessor
     )
         external
         onlyOwner
@@ -362,7 +362,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[14] memory _signals
     )
         external
     {
@@ -457,7 +457,7 @@ contract HDFCRamp is Ownable {
      *
      * @param _sendProcessor   New send proccesor address
      */
-    function setSendProcessor(ISendProcessor _sendProcessor) external onlyOwner {
+    function setSendProcessor(IHDFCSendProcessor _sendProcessor) external onlyOwner {
         sendProcessor = _sendProcessor;
         emit NewSendProcessorSet(address(_sendProcessor));
     }
@@ -724,7 +724,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[12] memory _signals
+        uint256[14] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -733,10 +733,9 @@ contract HDFCRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperIdHash,
-            bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
-            ISendProcessor.SendProof({
+            IHDFCSendProcessor.SendProof({
                 a: _a,
                 b: _b,
                 c: _c,
@@ -750,7 +749,6 @@ contract HDFCRamp is Ownable {
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accounts[deposit.depositor].idHash == offRamperIdHash, "Offramper id does not match");
-        require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);
