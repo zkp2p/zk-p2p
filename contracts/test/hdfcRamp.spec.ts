@@ -627,8 +627,7 @@ describe("HDFCRamp", () => {
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
           signals[2] = BigNumber.from(await calculateIdHash("1"));
-          signals[3] = BigNumber.from(await calculateIdHash("2"));
-          signals[4] = BigNumber.from(intentHash);
+          signals[3] = BigNumber.from(intentHash);
   
           const a: [BigNumber, BigNumber] = [ZERO, ZERO];
           const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
