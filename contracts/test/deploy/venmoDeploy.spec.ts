@@ -81,7 +81,7 @@ describe("System and Venmo Deploy", () => {
     const nullifierRegistryAddress  = await getDeployedContractAddress(network, "NullifierRegistry");
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
 
-    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "ManagedKeyHashAdapter");
+    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter");
     keyHashAdapter = new ManagedKeyHashAdapter__factory(deployer.wallet).attach(keyHashAdapterAddress);
   });
 
