@@ -8,3 +8,8 @@ export type GrothProof = {
   c: [BigNumber, BigNumber],
   signals: BigNumber[]
 }
+
+export enum PaymentProviders {
+  Venmo = "venmo",
+  HDFC = "hdfc",
+}
