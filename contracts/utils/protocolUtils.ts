@@ -18,15 +18,15 @@ export const calculateIntentHash = (
   return ethers.utils.hexZeroPad(BigNumber.from(intermediateHash).mod(CIRCOM_FIELD).toHexString(), 32);
 };
 
-export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
+export const calculateIdHash = async(venmoId: string): Promise<string> => {
   const poseidon = await buildPoseidon();
   
-  const packedVenmoId = calculatePackedVenmoId(venmoId);
+  const packedVenmoId = calculatePackedId(venmoId);
 
   return BigNumber.from(poseidon.F.toString(poseidon(packedVenmoId))).toHexString();
 }
 
-export const calculatePackedVenmoId = (venmoId: string): [BigNumber, BigNumber, BigNumber] => {
+export const calculatePackedId = (venmoId: string): [BigNumber, BigNumber, BigNumber] => {
   const venmoIdArray: number[] = venmoId.split('').map(char => char.charCodeAt(0));
 
   // Pad with zeros until length is 30
