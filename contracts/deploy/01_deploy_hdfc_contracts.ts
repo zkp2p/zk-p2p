@@ -48,7 +48,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("HDFCRamp deployed at ", hdfcRamp.address);
 
-  const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
+  const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
+    contract: "ManagedKeyHashAdapter",
     from: deployer,
     args: [SERVER_KEY_HASH[paymentProvider]],
   });

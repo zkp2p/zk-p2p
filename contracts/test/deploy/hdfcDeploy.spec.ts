@@ -81,11 +81,11 @@ describe("HDFC Deploy", () => {
     const nullifierRegistryAddress  = await getDeployedContractAddress(network, "NullifierRegistry");
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
 
-    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "ManagedKeyHashAdapter");
+    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter");
     keyHashAdapter = new ManagedKeyHashAdapter__factory(deployer.wallet).attach(keyHashAdapterAddress);
   });
 
-  describe("Ramp", async () => {
+  describe("HDFCRamp", async () => {
     it("should have the correct processors, usdc, and poseidon set", async () => {
       const actualRegistrationProcessor = await hdfcRamp.registrationProcessor();
       const actualSendProcessor = await hdfcRamp.sendProcessor();

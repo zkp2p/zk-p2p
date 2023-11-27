@@ -30,10 +30,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     HDFCRamp:                   ${getDeployedContractAddress(network, "HDFCRamp")}
     VenmoRegistrationProcessor: ${getDeployedContractAddress(network, "VenmoRegistrationProcessor")}
     VenmoSendProcessor:         ${getDeployedContractAddress(network, "VenmoSendProcessor")}
-    VenmoKeyHashAdapter:        ${getDeployedContractAddress(network, "ManagedKeyHashAdapter")}
+    VenmoKeyHashAdapter:        ${getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter")}
     HDFCRegistrationProcessor:  ${getDeployedContractAddress(network, "HDFCRegistrationProcessor")}
     HDFCSendProcessor:          ${getDeployedContractAddress(network, "HDFCSendProcessor")}
-    HDFCKeyHashAdapter:         ${getDeployedContractAddress(network, "ManagedKeyHashAdapter")}
+    HDFCKeyHashAdapter:         ${getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter")}
     NullifierRegistry:          ${getDeployedContractAddress(network, "NullifierRegistry")}
     USDC:                       ${USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock")}
     Poseidon:                   ${getDeployedContractAddress(network, "Poseidon")}

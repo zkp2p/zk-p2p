@@ -71,7 +71,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("Ramp deployed at ", ramp.address);
 
-  const keyHashAdapter = await deploy("ManagedKeyHashAdapter", {
+  const keyHashAdapter = await deploy("VenmoManagedKeyHashAdapter", {
+    contract: "ManagedKeyHashAdapter",
     from: deployer,
     args: [SERVER_KEY_HASH[paymentProvider]],
   });
