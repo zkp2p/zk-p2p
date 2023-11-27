@@ -14,7 +14,7 @@ import { ThemedText } from '../../theme/text'
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "../common/NumberedStep";
 import {
-  calculatePackedVenmoId,
+  calculatePackedId,
   isProvidedIdEqualToRegistration
 } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
@@ -91,7 +91,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: rampAbi,
     functionName: 'offRamp',
     args: [
-      calculatePackedVenmoId(venmoIdInput),
+      calculatePackedId(venmoIdInput),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],

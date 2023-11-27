@@ -1,7 +1,12 @@
 export {
-  Ramp,
+  HDFCRamp,
+  HDFCRegistrationProcessorMock,
+  HDFCRegistrationProcessor,
+  HDFCSendProcessorMock,
+  HDFCSendProcessor,
   ManagedKeyHashAdapter,
   NullifierRegistry,
+  Ramp,
   StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
