@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
-import { ENSName, AddressDisplayEnum } from 'ethereum-ens-name';
+import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';

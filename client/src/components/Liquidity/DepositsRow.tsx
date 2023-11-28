@@ -2,7 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { Check } from 'react-feather';
-import { ENSName, AddressDisplayEnum } from 'ethereum-ens-name';
+import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
