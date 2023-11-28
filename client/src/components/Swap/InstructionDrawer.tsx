@@ -18,8 +18,8 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
   setRecipientAddress,
   isLoggedIn,
 }) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const navigate = useNavigate()
+  const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   /*
    * State
@@ -45,6 +45,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         <TokenLabel>
           Instructions
         </TokenLabel>
+        
         <StyledChevronDown
           onClick={toggleOpen}
           $isOpen={isOpen}
