@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components/macro'
 
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
+import { Button } from "../Button";
 import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
 import { DepositsRow } from "./DepositsRow";
 import { toUsdcString, conversionRateToString } from '@helpers/units'
@@ -14,9 +15,11 @@ const ROWS_PER_PAGE = 10;
 
 export interface DepositPrime {
   depositor: string;
+  depositId: bigint;
   availableDepositAmount: string;
   totalDepositAmount: string;
   conversionRate: string;
+  targeted: boolean;
 }
 
 export const DepositsTable: React.FC = () => {
@@ -24,7 +27,7 @@ export const DepositsTable: React.FC = () => {
    * Contexts
    */
 
-  const { depositStore } = useLiquidity();
+  const { depositStore, targetedDepositIds, setTargetedDepositIds } = useLiquidity();
 
   /*
    * State
@@ -33,6 +36,8 @@ export const DepositsTable: React.FC = () => {
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
+
+  const [isTargetingDeposits, setIsTargetingDeposits] = useState<boolean>(false);
 
   /*
    * Hooks
@@ -47,21 +52,33 @@ export const DepositsTable: React.FC = () => {
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
+        const depositId = depositWithLiquidity.depositId;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToString(deposit.conversionRate);
 
+        let targeted = false;
+        if (targetedDepositIds) {
+          const targetedDepotiIdsSet = new Set(targetedDepositIds.map(id => id.toString()));
+
+          if (targetedDepotiIdsSet.has(depositWithLiquidity.depositId.toString())) {
+            targeted = true;
+          }
+        }
+
         return {
           depositor,
+          depositId,
           availableDepositAmount,
           totalDepositAmount,
-          conversionRate
+          conversionRate,
+          targeted
         };
       });
 
       setPositionsRowData(sanitizedPositions);
     }
-  }, [depositStore]);
+  }, [depositStore, isTargetingDeposits, targetedDepositIds]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -75,6 +92,29 @@ export const DepositsTable: React.FC = () => {
     setCurrentPage(newPage);
   };
 
+  const handleClickTargetDeposits = () => {
+    if (isTargetingDeposits) {
+      setIsTargetingDeposits(false);
+    } else {
+      setIsTargetingDeposits(true);
+    }
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint) => {
+    if (targetedDepositIds) {
+      const didSelectDeposit = event.target.checked;
+      if (didSelectDeposit) {
+        const depositIdsToStore = [...targetedDepositIds, depositId];
+
+        setTargetedDepositIds(depositIdsToStore);
+      } else {
+        const filteredTargetedDepositIds = targetedDepositIds.filter(id => id !== depositId);
+
+        setTargetedDepositIds(filteredTargetedDepositIds);
+      }
+    }
+};
+
   /*
    * Helpers
    */
@@ -82,6 +122,8 @@ export const DepositsTable: React.FC = () => {
   const totalPages = Math.ceil(positionsRowData.length / ROWS_PER_PAGE);
 
   const paginatedData = positionsRowData.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
+
+  const targetDepositsButtonText = isTargetingDeposits ? 'Save Selections' : '+ Target Deposits';
   
   /*
    * Component
@@ -89,69 +131,79 @@ export const DepositsTable: React.FC = () => {
 
   return (
     <>
-        <TitleRow>
-          <ThemedText.HeadlineMedium>
-            Liquidity
-          </ThemedText.HeadlineMedium>
-        </TitleRow>
+      <TitleRow>
+        <ThemedText.HeadlineMedium>
+          Liquidity
+        </ThemedText.HeadlineMedium>
 
-        <Content>
-          {positionsRowData.length === 0 ? (
-            <ErrorContainer>
-              <ThemedText.DeprecatedBody textAlign="center">
-                <ChainLinkIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-                <div>
-                  Fetching all active deposits.
-                </div>
-              </ThemedText.DeprecatedBody>
-            </ErrorContainer>
-          ) : (
-            <TableContainer>
-              <TableHeaderRow>
-                <ColumnHeader>#</ColumnHeader>
+        <Button onClick={handleClickTargetDeposits} height={40}>
+          {targetDepositsButtonText}
+        </Button>
+      </TitleRow>
 
-                <ColumnHeader>Token</ColumnHeader>
+      <Content>
+        {positionsRowData.length === 0 ? (
+          <ErrorContainer>
+            <ThemedText.DeprecatedBody textAlign="center">
+              <ChainLinkIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+              <div>
+                Fetching all active deposits.
+              </div>
+            </ThemedText.DeprecatedBody>
+          </ErrorContainer>
+        ) : (
+          <TableContainer>
+            <TableHeaderRow>
+              <ColumnHeader>#</ColumnHeader>
 
-                <ColumnHeader>Depositor</ColumnHeader>
+              <ColumnHeader>Token</ColumnHeader>
 
-                <ColumnHeader>Available Amount</ColumnHeader>
+              <ColumnHeader>Depositor</ColumnHeader>
 
-                <ColumnHeader>Conversion Rate</ColumnHeader>
+              <ColumnHeader>Available Amount</ColumnHeader>
 
-                <ColumnHeader>Deposit Amount</ColumnHeader>
-              </TableHeaderRow>
-              <Table>
-                {paginatedData.map((positionRow, rowIndex) => (
-                  <PositionRowStyled key={rowIndex}>
-                    <DepositsRow
-                      availableDepositAmount={positionRow.availableDepositAmount}
-                      totalDepositAmount={positionRow.totalDepositAmount}
-                      conversionRate={positionRow.conversionRate}
-                      depositorAddress={positionRow.depositor}
-                      rowIndex={rowIndex}
-                    />
-                  </PositionRowStyled>
-                ))}
-              </Table>
-            </TableContainer>
-          )}
-        </Content>
+              <ColumnHeader>Conversion Rate</ColumnHeader>
 
-        {positionsRowData.length > ROWS_PER_PAGE && (
-          <PaginationContainer>
-            <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
-              &#8249;
-            </PaginationButton>
-            <PageInfo>
-              {totalPages === 0 ? '0 of 0' : `${currentPage + 1} of ${totalPages}`}
-            </PageInfo>
-            <PaginationButton
-              disabled={currentPage === totalPages - 1 || totalPages === 0}
-              onClick={() => handleChangePage(currentPage + 1)}>  
-              &#8250;
-            </PaginationButton>
-          </PaginationContainer>
+              <ColumnHeader>Deposit Amount</ColumnHeader>
+
+              <ColumnHeader>Targeted</ColumnHeader>
+            </TableHeaderRow>
+            <Table>
+              {paginatedData.map((positionRow, rowIndex) => (
+                <PositionRowStyled key={rowIndex}>
+                  <DepositsRow
+                    availableDepositAmount={positionRow.availableDepositAmount}
+                    totalDepositAmount={positionRow.totalDepositAmount}
+                    conversionRate={positionRow.conversionRate}
+                    depositorAddress={positionRow.depositor}
+                    rowIndex={rowIndex}
+                    targeted={positionRow.targeted}
+                    isSelectingDeposits={isTargetingDeposits}
+                    depositId={positionRow.depositId}
+                    handleTargetLiquidityCheckboxChange={handleCheckboxChange}
+                  />
+                </PositionRowStyled>
+              ))}
+            </Table>
+          </TableContainer>
         )}
+      </Content>
+
+      {positionsRowData.length > ROWS_PER_PAGE && (
+        <PaginationContainer>
+          <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
+            &#8249;
+          </PaginationButton>
+          <PageInfo>
+            {totalPages === 0 ? '0 of 0' : `${currentPage + 1} of ${totalPages}`}
+          </PageInfo>
+          <PaginationButton
+            disabled={currentPage === totalPages - 1 || totalPages === 0}
+            onClick={() => handleChangePage(currentPage + 1)}>  
+            &#8250;
+          </PaginationButton>
+        </PaginationContainer>
+      )}
     </>
   )
 };
@@ -206,11 +258,15 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr repeat(5, minmax(0,1fr));
+  grid-template-columns: .2fr repeat(5, minmax(0,1fr)) .4fr;
   gap: 8px;
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
   border-bottom: 1px solid #98a1c03d;
+
+  & > *:last-child {
+    justify-self: center;
+  }
 `;
 
 const Table = styled.div`

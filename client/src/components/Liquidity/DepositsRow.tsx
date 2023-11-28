@@ -1,10 +1,12 @@
 import React from "react";
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
+import { Check } from 'react-feather';
 import { ENSName, AddressDisplayEnum } from 'ethereum-ens-name';
 
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
+import { CustomCheckbox } from "@components/common/Checkbox"
 import { alchemyMainnetEthersProvider } from "index";
 
 
@@ -14,6 +16,10 @@ interface DepositsRowProps {
   conversionRate: string;
   rowIndex: number;
   depositorAddress: string;
+  depositId: bigint;
+  targeted: boolean;
+  isSelectingDeposits: boolean;
+  handleTargetLiquidityCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint) => void;
 }
 
 export const DepositsRow: React.FC<DepositsRowProps> = ({
@@ -21,7 +27,11 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
   totalDepositAmount,
   conversionRate,
   rowIndex,
-  depositorAddress
+  depositorAddress,
+  depositId,
+  targeted,
+  isSelectingDeposits,
+  handleTargetLiquidityCheckboxChange
 }: DepositsRowProps) => {
   DepositsRow.displayName = "DepositsRow";
 
@@ -38,6 +48,14 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
   const depositRemainingLabel = `${availableDepositAmount}`;
   const originalAmountLabel = `${totalDepositAmount}`
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
+
+  /*
+   * Handlers
+   */
+
+  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleTargetLiquidityCheckboxChange(event, depositId);
+  };
 
   /*
    * Component
@@ -77,6 +95,17 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       <TitleAndValueContainer>
         <Value>{originalAmountLabel}</Value>
       </TitleAndValueContainer>
+
+      {isSelectingDeposits ? (
+        <CheckboxContainer>
+          <CustomCheckbox
+            checked={targeted}
+            onChange={onCheckboxChange}
+          />
+        </CheckboxContainer>
+      ) : targeted ? (
+        <StyledCheck />
+      ) : null}
     </Container>
   );
 };
@@ -84,14 +113,12 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 const Container = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: .2fr repeat(5, minmax(0,1fr));
+  grid-template-columns: .2fr repeat(5, minmax(0,1fr)) .4fr;
   gap: 8px;
   flex-direction: row;
   align-items: center;
   padding: 1.25rem 1.75rem;
   justify-content: space-between;
-  align-items: flex-start;
-  line-height: 24px;
   text-align: left;
 `;
 
@@ -116,5 +143,13 @@ const PercentageLabel = styled.div`
 const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
-  margin-left: 4px;
+`;
+
+const StyledCheck = styled(Check)`
+  color: #4BB543;
+  justify-self: center;
+`;
+
+const CheckboxContainer = styled.div`
+  margin: auto;
 `;

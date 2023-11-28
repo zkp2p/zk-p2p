@@ -203,6 +203,14 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [prunedDepositIds, rampAddress]);
 
   useEffect(() => {
+    if (rampAddress) {
+      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+      const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
+      localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
+    }
+  }, [targetedDepositIds, rampAddress]);
+
+  useEffect(() => {
     const fetchDeposits = async () => {
       if (shouldFetchDeposits) {
         await refetchDepositsBatched();
