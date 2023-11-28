@@ -7,7 +7,6 @@ import {
 } from "../Deposits/types";
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
-import { t } from 'msw/lib/glossary-de6278a9';
 
 
 export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {

@@ -52,35 +52,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
 
-  const [prunedDepositIds, setPrunedDepositIds] = useState<bigint[]>(() => {
-    if (!rampAddress) {
-      return [];
-    } else {
-      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
-      const storedIds = localStorage.getItem(storageKey);
-
-      if (storedIds) {
-        return JSON.parse(storedIds).map(BigInt);
-      } else {
-        return [];
-      }
-    }
-  });
-
-  const [targetedDepositIds, setTargetedDepositIds] = useState<bigint[]>(() => {
-    if (!rampAddress) {
-      return [];
-    } else {
-      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
-      const storedIds = localStorage.getItem(storageKey);
-
-      if (storedIds) {
-        return JSON.parse(storedIds).map(BigInt);
-      } else {
-        return [];
-      }
-    }
-  });
+  const [prunedDepositIds, setPrunedDepositIds] = useState<bigint[]>([]);
+  const [targetedDepositIds, setTargetedDepositIds] = useState<bigint[]>([]);
 
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
@@ -149,9 +122,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
-    // Update targeted deposit ids
-    filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds);
-
     // Persist pruned deposit ids
     const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
     setPrunedDepositIds(newPrunedDepositIds);
@@ -196,10 +166,29 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     if (rampAddress) {
+      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
+      setPrunedDepositIds(prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : []);
+
+      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+      const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
+      setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
+    } else {
+      setPrunedDepositIds([]);
+      setTargetedDepositIds([]);
+    }
+  }, [rampAddress]);
+
+  useEffect(() => {
+    if (rampAddress) {
       const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
       const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
+
+      filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prunedDepositIds, rampAddress]);
 
   useEffect(() => {
