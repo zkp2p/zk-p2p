@@ -65,6 +65,26 @@ export const Landing: React.FC = () => {
             Learn more
             <Icon icon="arrow-down" />
           </LearnMoreContainer>
+
+          <TosPPContainer>
+            <StyledLink
+              href={process.env.TOS_URL}
+              target="_blank"
+              rel="noopener noreferrer">
+                <ThemedText.LabelSmall textAlign="left">
+                  Terms of Service ↗
+                </ThemedText.LabelSmall>
+            </StyledLink>
+
+            <StyledLink
+              href={process.env.PP_URL}
+              target="_blank"
+              rel="noopener noreferrer">
+                <ThemedText.LabelSmall textAlign="left">
+                  Privacy Policy ↗
+                </ThemedText.LabelSmall>
+            </StyledLink>
+          </TosPPContainer>
         </HeroContainer>
 
         <CardContainer paddingHorizontal={currentDeviceSize === 'mobile' ? 24 : 96}>
@@ -159,6 +179,22 @@ const ButtonContainer = styled.div`
   width: 150px;
   display: grid;
   padding-top: 1rem;
+`;
+
+const TosPPContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+`;
+
+const StyledLink = styled.a`
+  color: #CED4DA;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const HeroTextContainer = styled.div`
