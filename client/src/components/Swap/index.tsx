@@ -8,13 +8,14 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import { Input } from "@components/Swap/Input";
-import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable'
-import { AutoColumn } from '@components/layouts/Column'
-import { Button } from '@components/Button'
-import { CustomConnectButton } from "@components/common/ConnectButton"
-import { ThemedText } from '../../theme/text'
-import { IndicativeQuote } from '../../contexts/Deposits/types'
-import { InstructionDrawer } from '@components/Swap/InstructionDrawer'
+import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
+import { AutoColumn } from '@components/layouts/Column';
+import { Button } from '@components/Button';
+import { CustomConnectButton } from "@components/common/ConnectButton";
+import { ThemedText } from '../../theme/text';
+import { IndicativeQuote } from '../../contexts/Deposits/types';
+import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
+import { SettingsDropdown } from './SettingsDropdown';
 import {
   DEPOSIT_REFETCH_INTERVAL,
   MAX_USDC_TRANSFER_SIZE,
@@ -407,6 +408,14 @@ const Swap: React.FC<SwapProps> = ({
           <ThemedText.HeadlineSmall>
             Swap
           </ThemedText.HeadlineSmall>
+
+          {isLoggedIn && (
+            <SettingsDropdown
+              recipientAddress={recipientAddress}
+              setRecipientAddress={setRecipientAddress}
+              isLoggedIn={isLoggedIn}
+            />
+          )}
         </TitleContainer>
 
         <MainContentWrapper>
@@ -503,7 +512,9 @@ const SwapModalContainer = styled(AutoColumn)`
 
 const TitleContainer = styled.div`
   display: flex;
-  margin-left: 0.75rem;
+  margin: 0rem 0.75rem;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const MainContentWrapper = styled.div`

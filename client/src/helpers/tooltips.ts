@@ -19,6 +19,14 @@ export const PRODUCTION_ENV_BANNER = `
 `;
 
 /*
+ * Swap Settings
+ */
+
+export const TARGETED_LIQUIDITY_DESCRIPTION = `
+  When enabled, you are targeting deposits for quotes that may not include the best available rate. Toggle here to select deposits
+`;
+
+/*
  * Tooltips
  */
 
