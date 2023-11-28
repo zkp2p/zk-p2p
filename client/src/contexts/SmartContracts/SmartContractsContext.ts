@@ -8,9 +8,10 @@ interface SmartContractsValues {
   rampAddress: Address | null;
   rampAbi: Abi | null;
   registrationProcessorAddress: Address | null;
-  // registrationProcessorAbi: Abi | null;
   sendProcessorAddress: Address | null;
   sendProcessorAbi: Abi | null;
+  venmoNftAddress: Address | null;
+  venmoNftAbi: Abi | null;
   usdcAddress: Address | null;
   usdcAbi?: Abi | null;
   blockscanUrl?: string | null;
@@ -20,9 +21,10 @@ const defaultValues: SmartContractsValues = {
   rampAddress: null,
   rampAbi: null,
   registrationProcessorAddress: null,
-  // registrationProcessorAbi: null,
   sendProcessorAddress: null,
   sendProcessorAbi: null,
+  venmoNftAddress: null,
+  venmoNftAbi: null,
   usdcAddress: null,
   usdcAbi: null,
   blockscanUrl: null,
