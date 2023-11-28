@@ -30,6 +30,7 @@ import LiquidityContext from './LiquidityContext'
 
 const BATCH_SIZE = 50;
 const PRUNED_DEPOSITS_PREFIX = 'prunedDepositIds_';
+const TARGETED_DEPOSITS_PREFIX = 'targetedDepositIds_';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -56,6 +57,21 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       return [];
     } else {
       const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const storedIds = localStorage.getItem(storageKey);
+
+      if (storedIds) {
+        return JSON.parse(storedIds).map(BigInt);
+      } else {
+        return [];
+      }
+    }
+  });
+
+  const [targetedDepositIds, setTargetedDepositIds] = useState<bigint[]>(() => {
+    if (!rampAddress) {
+      return [];
+    } else {
+      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
       const storedIds = localStorage.getItem(storageKey);
 
       if (storedIds) {
@@ -133,10 +149,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
+    // Update targeted deposit ids
+    filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds);
+
+    // Persist pruned deposit ids
     const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
     setPrunedDepositIds(newPrunedDepositIds);
 
     setDeposits(batchedDeposits);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositIdsToFetch, fetchDepositsBatched, prunedDepositIds]);
 
   const sanitizeRawDeposits = (rawDepositsData: any[]) => {
@@ -238,13 +260,25 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
     if (depositStore) {
-      return fetchBestDepositForAmount(requestedOnRampInputAmount, depositStore);
+      return fetchBestDepositForAmount(requestedOnRampInputAmount, depositStore, targetedDepositIds);
     } else {
       return {
         error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore]);
+  }, [depositStore, targetedDepositIds]);
+
+  /*
+   * Helpers
+   */
+
+  const filterPrunedDepositIdsFromTargetedDepositIds = (depositIdsToPrune: bigint[]) => {
+    const prunedIdsSet = new Set(depositIdsToPrune.map(id => id.toString()));
+
+    const targetedDepositIdsToKeep = targetedDepositIds.filter(id => !prunedIdsSet.has(id.toString()));
+
+    setTargetedDepositIds(targetedDepositIdsToKeep);
+  };
 
   return (
     <LiquidityContext.Provider
@@ -255,6 +289,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         refetchDeposits: refetchDepositsBatched,
         shouldFetchDeposits,
         calculateUsdFromRequestedUSDC,
+        targetedDepositIds,
+        setTargetedDepositIds,
       }}
     >
       {children}

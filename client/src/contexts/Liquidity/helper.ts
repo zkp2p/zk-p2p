@@ -7,6 +7,7 @@ import {
 } from "../Deposits/types";
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
+import { t } from 'msw/lib/glossary-de6278a9';
 
 
 export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
@@ -44,19 +45,30 @@ export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint
   }
 };
 
-export const fetchBestDepositForAmount = (requestedOnRampInputAmount: string, depositStore: StoredDeposit[]): IndicativeQuote => {
+export const fetchBestDepositForAmount = (
+  requestedOnRampInputAmount: string,
+  depositStore: StoredDeposit[],
+  targetedDepositIds: bigint[]
+): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 
-  for (const storedDeposit of depositStore) {
+  let depositsToSearch: StoredDeposit[] = [];
+  if (targetedDepositIds.length > 0) {
+    depositsToSearch = depositStore.filter(deposit => targetedDepositIds.includes(deposit.depositId));
+  } else {
+    depositsToSearch = depositStore;
+  }
 
-    if (storedDeposit.availableLiquidity >= requestedAmountBI) {
-      const conversionRate = storedDeposit.deposit.conversionRate;
+  for (const deposit of depositsToSearch) {
+
+    if (deposit.availableLiquidity >= requestedAmountBI) {
+      const conversionRate = deposit.deposit.conversionRate;
       
       const usdToSend = calculateUsdFromRequestedUSDC(requestedAmountBI, conversionRate);
       const usdAmountToSend = toUsdString(usdToSend);
 
       return {
-        depositId: storedDeposit.depositId,
+        depositId: deposit.depositId,
         usdAmountToSend,
         conversionRate,
       } as IndicativeQuote;
