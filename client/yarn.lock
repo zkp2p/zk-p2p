@@ -8587,14 +8587,6 @@ ethereum-cryptography@^0.1.3:
     secp256k1 "^4.0.1"
     setimmediate "^1.0.5"
 
-ethereum-ens-name@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/ethereum-ens-name/-/ethereum-ens-name-0.0.3.tgz#2b8661180a718119f3237b3701423a02eca8c0cd"
-  integrity sha512-saMj6ZE8TexxBvEF93Jf0WVQ662ccTnuTqYkv2vFob0d+C+hcCTuh+HDoRvQaluWno/P7pWdPo2GiIK5zsJiSA==
-  dependencies:
-    ethers "^5.4.5"
-    zustand "^3.5.9"
-
 ethereumjs-abi@^0.6.8:
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
@@ -15044,6 +15036,14 @@ react-dropzone@^12.0.4:
     attr-accept "^2.2.2"
     file-selector "^0.5.0"
     prop-types "^15.8.1"
+
+react-ens-name@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/react-ens-name/-/react-ens-name-0.2.5.tgz#5dde3ef425d42eb37bb3fd108bddf32a7c730ccb"
+  integrity sha512-iDIpAarm7VoSIrLctDzeWlEhUEIGzePqp3NQneHNQKHiJzvXnxTS5ow1BQr1ii8ldRxy1JN31vlk1TjLrTOkdg==
+  dependencies:
+    ethers "^5.4.5"
+    zustand "^3.5.9"
 
 react-error-overlay@6.0.9, react-error-overlay@^6.0.9:
   version "6.0.9"
