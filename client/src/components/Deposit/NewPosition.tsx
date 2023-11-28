@@ -63,7 +63,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState()
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances()
   const { refetchDeposits } = useDeposits()
-  const { extractedVenmoId, registrationHash } = useRegistration();
+  const { extractedVenmoId, registrationHash, setExtractedVenmoId } = useRegistration();
 
   /*
    * State
@@ -248,6 +248,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           const validVenmoInput = await isProvidedIdEqualToRegistration(venmoIdInput, registrationHash);
 
           setIsVenmoIdInputValid(validVenmoInput);
+
+          if (validVenmoInput && setExtractedVenmoId) {
+            setExtractedVenmoId(venmoIdInput);
+          };
         } else {
           setIsVenmoIdInputValid(false);
         }
@@ -255,7 +259,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     };
 
     verifyVenmoIdInput();
-  }, [venmoIdInput, registrationHash]);
+  }, [venmoIdInput, registrationHash, setExtractedVenmoId]);
 
   /*
    * Helpers
