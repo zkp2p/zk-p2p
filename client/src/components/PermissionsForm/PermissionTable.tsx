@@ -178,7 +178,7 @@ const ErrorContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   margin: auto;
-  padding: 36px 0px;
+  padding: 36px;
   max-width: 340px;
   min-height: 25vh;
   gap: 36px;

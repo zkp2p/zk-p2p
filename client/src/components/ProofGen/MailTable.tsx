@@ -301,11 +301,10 @@ const ErrorContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   margin: auto;
-  padding: 36px 0px;
+  padding: 36px;
   max-width: 50vh;
   min-height: 25vh;
   line-height: 1.3;
-  gap: 36px;
 `;
 
 const IconStyle = css`

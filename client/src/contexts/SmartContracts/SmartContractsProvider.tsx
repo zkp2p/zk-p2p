@@ -3,6 +3,7 @@ import { Address, erc20ABI } from 'wagmi';
 
 import { abi as rampAbi } from "@helpers/abi/ramp.abi";
 import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
+import { abi as venmoNftAbi } from "@helpers/abi/venmoNft.abi";
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { DEFAULT_NETWORK } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
@@ -27,6 +28,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [rampAddress, setRampAddress] = useState<Address | null>(null);
   const [sendProcessorAddress, setSendProcessorAddress] = useState<Address | null>(null);
   const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address | null>(null);
+  const [venmoNftAddress, setVenmoNftAddress] = useState<Address | null>(null);
   const [usdcAddress, setUsdcAddress] = useState<Address | null>(null);
   const [blockscanUrl, setBlockscanUrl] = useState<string>(blockExplorerUrls[DEFAULT_NETWORK]);
 
@@ -68,12 +70,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       setUsdcAddress(contractsForNetwork.fusdc as Address);
       setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
       setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
+      setVenmoNftAddress(contractsForNetwork.proofOfVenmoNFT as Address);
       setBlockscanUrl(blockExplorerUrls[networkName]);
     } else {
       setRampAddress(null);
       setUsdcAddress(null);
       setSendProcessorAddress(null);
       setRegistrationProcessorAddress(null);
+      setVenmoNftAddress(null);
       setBlockscanUrl(blockExplorerUrls[networkName]);
     }
   }, [network]);
@@ -86,6 +90,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         registrationProcessorAddress,
         sendProcessorAbi: sendProcessorAbi as Abi,
         sendProcessorAddress,
+        venmoNftAddress,
+        venmoNftAbi: venmoNftAbi as Abi,
         usdcAddress,
         usdcAbi: erc20ABI as any,
         blockscanUrl: blockscanUrl,
