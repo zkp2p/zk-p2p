@@ -134,7 +134,7 @@ contract HDFCRamp is Ownable {
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
-    IHDFCSendProcessor public sendProcessor;                            // Address of send processor contract, verifies onRamp emails
+    IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
     bool internal isInitialized;                                    // Indicates if contract has been initialized
 

@@ -2,14 +2,14 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
+import { DateTime } from "../external/DateTime.sol";
+
 import { BaseProcessor } from "./BaseProcessor.sol";
 import { Groth16Verifier } from "../verifiers/hdfc_send_verifier.sol";
 import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { IHDFCSendProcessor } from "../interfaces/IHDFCSendProcessor.sol";
 import { StringConversionUtils } from "../lib/StringConversionUtils.sol";
-
-import "hardhat/console.sol";
 
 pragma solidity ^0.8.18;
 
@@ -84,22 +84,21 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
     }
 
-    function _dateStringToTimestamp(string memory _dateString) internal view returns (uint256) {
+    function _dateStringToTimestamp(string memory _dateString) internal pure returns (uint256) {
         string[8] memory extractedStrings;
         uint256 breakCounter;
         uint256 lastBreak;
         for (uint256 i = 0; i < bytes(_dateString).length; i++) {
             if (bytes(_dateString)[i] == 0x20 || bytes(_dateString)[i] == 0x3a) {
-                extractedStrings[breakCounter] = _substring(_dateString, lastBreak, i);
-                console.logString(_substring(_dateString, lastBreak, i));
+                extractedStrings[breakCounter] = _dateString.substring(lastBreak, i);
                 lastBreak = i + 1;
                 breakCounter++;
             }
         }
 
-        return timestampFromDateTime(
+        return DateTime.timestampFromDateTime(
             extractedStrings[3].stringToUint(0), // year
-            11, // month
+            _parseMonth(extractedStrings[2]), // month
             extractedStrings[1].stringToUint(0), // day
             extractedStrings[4].stringToUint(0), // hour
             extractedStrings[5].stringToUint(0), // minute
@@ -107,56 +106,33 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         ) - IST_OFFSET;
     }
 
-    function _substring(string memory str, uint startIndex, uint endIndex) internal pure returns (string memory ) {
-        bytes memory strBytes = bytes(str);
-        bytes memory result = new bytes(endIndex-startIndex);
-        for(uint i = startIndex; i < endIndex; i++) {
-            result[i-startIndex] = strBytes[i];
+    function _parseMonth(string memory _month) internal pure returns (uint256) {
+        if (keccak256(abi.encodePacked(_month)) == keccak256("Jan")) {
+            return 1;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Feb")) {
+            return 2;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Mar")) {
+            return 3;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Apr")) {
+            return 4;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("May")) {
+            return 5;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Jun")) {
+            return 6;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Jul")) {
+            return 7;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Aug")) {
+            return 8;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Sep")) {
+            return 9;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Oct")) {
+            return 10;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Nov")) {
+            return 11;
+        } else if (keccak256(abi.encodePacked(_month)) == keccak256("Dec")) {
+            return 12;
+        } else {
+            revert("Invalid month");
         }
-        return string(result);
-    }
-
-    // From https://github.com/RollaProject/solidity-datetime/blob/master/contracts/DateTime.sol
-
-    // ------------------------------------------------------------------------
-    // Calculate the number of days from 1970/01/01 to year/month/day using
-    // the date conversion algorithm from
-    //   http://aa.usno.navy.mil/faq/docs/JD_Formula.php
-    // and subtracting the offset 2440588 so that 1970/01/01 is day 0
-    //
-    // days = day
-    //      - 32075
-    //      + 1461 * (year + 4800 + (month - 14) / 12) / 4
-    //      + 367 * (month - 2 - (month - 14) / 12 * 12) / 12
-    //      - 3 * ((year + 4900 + (month - 14) / 12) / 100) / 4
-    //      - offset
-    // ------------------------------------------------------------------------
-    function _daysFromDate(uint256 year, uint256 month, uint256 day) internal pure returns (uint256 _days) {
-        require(year >= 1970);
-        int256 _year = int256(year);
-        int256 _month = int256(month);
-        int256 _day = int256(day);
-
-        int256 __days = _day - 32075 + (1461 * (_year + 4800 + (_month - 14) / 12)) / 4
-            + (367 * (_month - 2 - ((_month - 14) / 12) * 12)) / 12
-            - (3 * ((_year + 4900 + (_month - 14) / 12) / 100)) / 4 - OFFSET19700101;
-
-        _days = uint256(__days);
-    }
-
-    function timestampFromDateTime(
-        uint256 year,
-        uint256 month,
-        uint256 day,
-        uint256 hour,
-        uint256 minute,
-        uint256 second
-    )
-        internal
-        pure
-        returns (uint256 timestamp)
-    {
-        timestamp = _daysFromDate(year, month, day) * SECONDS_PER_DAY + hour * SECONDS_PER_HOUR
-            + minute * SECONDS_PER_MINUTE + second;
     }
 }
