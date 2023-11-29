@@ -10,7 +10,12 @@ export const Registration: React.FC<{}> = (props) => {
    * Contexts
    */
 
-  const { refetchRampAccount, shouldFetchRegistration } = useRegistration();
+  const {
+    refetchRampAccount,
+    shouldFetchRegistration,
+    refetchVenmoNftId,
+    shouldFetchVenmoNftId
+  } = useRegistration();
 
   /*
    * Hooks
@@ -19,6 +24,10 @@ export const Registration: React.FC<{}> = (props) => {
   useEffect(() => {
     if (shouldFetchRegistration) {
       refetchRampAccount?.();
+    }
+
+    if (shouldFetchVenmoNftId) {
+      refetchVenmoNftId?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

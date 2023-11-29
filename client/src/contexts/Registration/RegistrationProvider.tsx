@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, rampAbi } = useSmartContracts()
+  const { rampAddress, rampAbi, venmoNftAddress, venmoNftAbi } = useSmartContracts()
 
   /*
    * State
@@ -34,7 +34,12 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     return null;
   });
 
+  const [venmoNftId, setVenmoNftId] = useState<bigint | null>(null);
+  const [venmoNftUri, setVenmoNftUri] = useState<string | null>(null);
+
   const [shouldFetchRegistration, setShouldFetchRegistration] = useState<boolean>(false);
+  const [shouldFetchVenmoNftId, setShouldFetchVenmoNftId] = useState<boolean>(false);
+  const [shouldFetchVenmoNftUri, setShouldFetchVenmoNftUri] = useState<boolean>(false);
 
   /*
    * Overridden Setters
@@ -58,11 +63,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
    */
 
-  // function getAccountVenmoId(address _account) external view returns (bytes32) {
+  // getAccountVenmoId(address _account) external view returns (bytes32)
   const {
     data: rampAccountRaw,
-    // isLoading: isFetchRampAccountLoading,
-    // isError: isRegistrationDataError,
     refetch: refetchRampAccount,
   } = useContractRead({
     address: rampAddress,
@@ -72,6 +75,34 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       loggedInEthereumAddress
     ],
     enabled: shouldFetchRegistration,
+  })
+
+  // getTokenId(address owner) public view returns (uint256)
+  const {
+    data: venmoNftIdRaw,
+    refetch: refetchVenmoNftId,
+  } = useContractRead({
+    address: venmoNftAddress,
+    abi: venmoNftAbi,
+    functionName: 'getTokenId',
+    args: [
+      loggedInEthereumAddress
+    ],
+    enabled: shouldFetchVenmoNftId,
+  })
+
+  // tokenURI(uint256 tokenId) public view override returns (string memory)
+  const {
+    data: venmoNftUriRaw,
+    // refetch: refetchVenmoNftUri,
+  } = useContractRead({
+    address: venmoNftAddress,
+    abi: venmoNftAbi,
+    functionName: 'tokenURI',
+    args: [
+      venmoNftId
+    ],
+    enabled: shouldFetchVenmoNftUri,
   })
 
   /*
@@ -92,9 +123,13 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       esl && console.log('shouldFetchRegistration_3');
       
       setShouldFetchRegistration(false);
+      setShouldFetchVenmoNftId(false);
+      setShouldFetchVenmoNftUri(false);
 
       setRegistrationHash(null);
       setExtractedVenmoId(null);
+      setVenmoNftUri(null);
+      setVenmoNftId(null);
     }
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress, setExtractedVenmoId]);
 
@@ -109,10 +144,14 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       const rampAccountProcessed = rampAccountData.venmoIdHash;
       
       setRegistrationHash(rampAccountProcessed);
+
+      setShouldFetchVenmoNftId(true);
     } else {
       esl && console.log('rampAccountRaw_3');
       
       setRegistrationHash(null);
+
+      setShouldFetchVenmoNftId(false);
     }
   }, [rampAccountRaw]);
 
@@ -151,6 +190,72 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     }
   }, [extractedVenmoIdStorageKey]);
 
+  useEffect(() => {
+    esl && console.log('venmoNftIdRaw_1');
+    esl && console.log('checking venmoNftIdRaw: ', venmoNftIdRaw);
+  
+    if (venmoNftIdRaw) { // we want ZERO to be falsy
+      esl && console.log('venmoNftIdRaw_2');
+
+      const venmoNftIdProcessed = (venmoNftIdRaw as bigint);
+      
+      setVenmoNftId(venmoNftIdProcessed);
+
+      setShouldFetchVenmoNftUri(true);
+    } else {
+      esl && console.log('venmoNftIdRaw_3');
+      
+      setVenmoNftId(null);
+
+      setShouldFetchVenmoNftUri(false);
+    }
+  }, [venmoNftIdRaw]);
+
+  useEffect(() => {
+    esl && console.log('venmoNftUriRaw_1');
+    esl && console.log('checking venmoNftUriRaw: ', venmoNftUriRaw);
+  
+    if (venmoNftUriRaw) {
+      esl && console.log('venmoNftUriRaw_2');
+
+      const venmoNftUriProcessed = (venmoNftUriRaw as string);
+      const svgString = extractSvg(venmoNftUriProcessed);
+      
+      setVenmoNftUri(svgString);
+    } else {
+      esl && console.log('venmoNftUriRaw_3');
+      
+      setVenmoNftUri(null);
+    }
+  }, [venmoNftUriRaw]);
+
+  /*
+   * Helpers
+   */
+
+  function extractSvg(jsonDataString: string): any {
+    const uriPrefix = "data:application/json;base64,";
+
+    let base64String = jsonDataString;
+    if (jsonDataString.startsWith(uriPrefix)) {
+      base64String = jsonDataString.substring(uriPrefix.length);
+    }
+
+    const decodedString = atob(base64String);
+    const nftData = JSON.parse(decodedString);
+    const svgData = nftData.image;
+
+    const imagePrefix = "data:image/svg+xml;base64,";
+
+    let svgBase64String = svgData;
+    if (svgData.startsWith(imagePrefix)) {
+      svgBase64String = svgData.substring(imagePrefix.length);
+    }
+
+    const svgString = atob(svgBase64String);
+    return svgString;
+  }
+
   /*
    * Provider
    */
@@ -161,6 +266,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         isRegistered,
         registrationHash,
         extractedVenmoId,
+        shouldFetchVenmoNftId,
+        venmoNftUri,
+        refetchVenmoNftId,
         setExtractedVenmoId,
         refetchRampAccount,
         shouldFetchRegistration,
