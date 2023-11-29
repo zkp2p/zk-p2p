@@ -14,10 +14,9 @@ include "./regexes/hdfc/hdfc_upi_subject.circom";
 template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA
 
-    // Rounded to the nearest multiple of pack_size for extra room in case of change of constants
-    var max_email_from_len = ceil(21, pack_size); // RFC 2821: requires length to be 254, but we can limit to 21 (alerts@hdfcbank.net)
-    var max_email_to_len = ceil(35, pack_size); // TODO: Change this.
-    var max_account_number_len = ceil(7, pack_size);    // TODO: Change this. Max is only 4 digits but set to 7 for now.
+    var max_email_from_len = 21; // Length of alerts@hdfcbank.net
+    var max_email_to_len = 56;  // RFC 2821: requires length to be 254, but 56 is safe max length of email to field (https://atdata.com/long-email-addresses/)
+    var max_account_number_len = 4; // Example: **1234
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -74,7 +73,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
     // TOTAL CONSTRAINTS: (WITH STUB): 936240
-    // WITHOUT STUB: TODO
+    // WITHOUT STUB: 3434154
 }
 
 // Args:
