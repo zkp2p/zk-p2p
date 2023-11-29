@@ -11,7 +11,7 @@ export default function QuestionHelper({ text }: { text: ReactNode; size?: numbe
   const open = useCallback(() => setShow(true), [setShow])
   const close = useCallback(() => setShow(false), [setShow])
   return (
-    <span style={{ display: 'flex', alignItems: 'center' }}>
+    <span style={{ verticalAlign: 'middle', alignItems: 'center' }}>
       <Tooltip text={text} show={show}>
         <QuestionWrapper onClick={open} onMouseEnter={open} onMouseLeave={close}>
           <QuestionMark>
@@ -45,9 +45,8 @@ const QuestionWrapper = styled.div`
 `
 
 const QuestionMark = styled.span`
+  margin: auto;
   font-size: 14px;
   align-items: center;
   color: ${({ theme }) => theme.textSecondary};
-  margin-top: 2.5px;
-  margin-left: 4px;
-`
+`;

@@ -88,6 +88,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitRegistrationAsync successful: ', data);
+      
       refetchRampAccount?.();
     },
   });
