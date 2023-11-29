@@ -6,6 +6,7 @@ import { ThemedText } from '../../theme/text';
 import { Button } from '../Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
+import googleButtonSvg from '../../assets/images/google_dark_button.svg';
 import {
   fetchEmailsRaw,
   fetchVenmoEmailList,
@@ -187,6 +188,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             <Button
               onClick={googleLogIn}
               height={48}
+              svg={googleButtonSvg}
             >
               Sign in with Google
             </Button>

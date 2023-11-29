@@ -10,6 +10,7 @@ interface ButtonProps {
   fontSize?: number;
   disabled?: boolean;
   loading?: boolean;
+  svg?: string;
   onClick?: () => void;
   children?: React.ReactNode;
 }
@@ -20,6 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
   fontSize = 16,
   disabled = false,
   loading = false,
+  svg,
   onClick,
   children
 }) => (
@@ -32,6 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
     onClick={onClick}
   >
     {loading ? <Spinner /> : children}
+    {svg && <SVGOverlay src={svg} />}
   </BaseButton>
 );
 
@@ -61,6 +64,7 @@ const BaseButton = styled.button<BaseButtonProps>`
   display: inline-block;
   transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   border: none;
+  position: relative;
 
   &:hover:not([disabled]) {
     background: #ca2221;
@@ -86,4 +90,13 @@ const BaseButton = styled.button<BaseButtonProps>`
       background: #df2e2d;
     `
   }
+`;
+
+const SVGOverlay = styled.img`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); // Center the SVG
+  height: 100%; // Adjust this to control the size of the SVG
+  pointer-events: none;
 `;

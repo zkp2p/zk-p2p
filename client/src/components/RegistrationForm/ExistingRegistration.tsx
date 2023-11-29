@@ -158,10 +158,10 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                       <Button
                         loading={isSubmitMintSbtMining || isSubmitMintSbtLoading}
                         height={40}
-                        onClick={handleMintSbtSubmit}
+                        onClick={() => {}}
                         fullWidth={true}
                       >
-                        Mint NFT
+                        Coming Soon
                       </Button>
                     </MintNftContainer>
                   )}
