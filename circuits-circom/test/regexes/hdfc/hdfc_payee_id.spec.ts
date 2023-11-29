@@ -54,6 +54,38 @@ describe("HDFC payer id", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
+    it("Should match regex once when there is hyphen (-) in the UPI ID", async () => {
+        const input = {
+            "msg": textToAsciiArray("5678 to VPA sachin1234-1@paytm on 28-10-")
+        };
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+    });
+
+    it("Should match regex once when there is dot (.) in the UPI ID", async () => {
+        const input = {
+            "msg": textToAsciiArray("5678 to VPA sachin1234.1@paytm on 28-10-")
+        };
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+    });
+
+    it("Should match regex once when there is underscore (_) in the UPI ID", async () => {
+        const input = {
+            "msg": textToAsciiArray("5678 to VPA sachin1234_1@paytm on 28-10-")
+        };
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+    });
 
     it("Should reveal regex correctly", async () => {
         const input = {
