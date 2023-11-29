@@ -233,6 +233,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    * Helpers
    */
 
+  function decodeBase64Utf8(base64Str: string) {
+    const binaryString = window.atob(base64Str);
+
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(bytes);
+  }
+
   function extractSvg(jsonDataString: string): any {
     const uriPrefix = "data:application/json;base64,";
 
@@ -252,7 +264,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       svgBase64String = svgData.substring(imagePrefix.length);
     }
 
-    const svgString = atob(svgBase64String);
+    const svgString = decodeBase64Utf8(svgBase64String);
+
     return svgString;
   }
 
