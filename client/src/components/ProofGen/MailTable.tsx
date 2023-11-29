@@ -305,6 +305,7 @@ const ErrorContainer = styled.div`
   max-width: 50vh;
   min-height: 25vh;
   line-height: 1.3;
+  gap: 36px;
 `;
 
 const IconStyle = css`
