@@ -23,7 +23,18 @@ export const PRODUCTION_ENV_BANNER = `
  */
 
 export const TARGETED_LIQUIDITY_DESCRIPTION = `
-  When enabled, you are targeting deposits for quotes that may not include the best available rate. Toggle here to select deposits
+  When enabled, you are targeting deposits for quotes that may not include the best available rate.
+  Toggle here to select deposits
+`;
+
+/*
+ * Registration NFT Tooltip
+ */
+
+export const REGISTRATION_NFT_TOOLTIP = `
+  Mint a soulbound NFT that proves you own a registered Venmo account without revealing any other
+  information. The NFT has no value and cannot be transferred. This is optional and does not affect
+  protocol usage.
 `;
 
 /*
@@ -36,7 +47,8 @@ export const PROVING_TYPE_TOOLTIP = `
 `;
 
 export const UPLOAD_TYPE_TOOLTIP = `
-  Login uses Google authentication to pull in your past Venmo transaction emails. Data is NEVER stored.
+  Login uses Google authentication to pull in your past Venmo transaction emails.
+  Data is NEVER stored.
   Upload requires you to manually input the .eml file.
 `;
 
@@ -59,12 +71,14 @@ export const PROOF_TOOLTIP = `
  */
 
 export const REGISTRATION_INSTRUCTIONS = `
-  You must register in order to use ZKP2P. Registration requires a confirmation email from Venmo with subject "You paid", which
-  is used to prove you own a Venmo account. Your Venmo ID is hashed to conceal your identity.
+  You must register in order to use ZKP2P. Registration requires a confirmation email from Venmo
+  with subject "You paid", which is used to prove you own a Venmo account. Your Venmo ID is
+  hashed to conceal your identity.
 `;
 
 export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
-  Sign in with Google to pull in your Venmo transaction emails. The emails are not stored and never leave your browser. Read more:
+  Sign in with Google to pull in your Venmo transaction emails. The emails are not stored and never
+  leave your browser. Read more:
 `;
 
 /*
@@ -72,8 +86,9 @@ export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
 */
 
 export const NEW_DEPOSIT_INSTRUCTIONS = `
-  Creating a new deposit requires you to submit your Venmo ID, the USDC liquidity to deposit and desired USD conversion rate.
-  Your Venmo ID must match the ID you registered with. Instructions on how to fetch you Venmo ID can be found here.
+  Creating a new deposit requires you to submit your Venmo ID, the USDC liquidity to deposit and
+  desired USD conversion rate. Your Venmo ID must match the ID you registered with. Instructions
+  on how to fetch you Venmo ID can be found here.
 `
 
 export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
@@ -96,13 +111,14 @@ export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
  */
 
 export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
-  Provide any historical transaction email sent from Venmo containing "You paid" in the subject to complete registration.
-  You can sign in with Google to pull the emails or paste the contents directly.
+  Provide any historical transaction email sent from Venmo containing "You paid" in the subject to
+  complete registration. You can sign in with Google to pull the emails or paste the contents
+  directly.
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
-  Provide the transaction email containing "You paid" to complete the order. You can sign in with Google to pull the emails or
-  paste the contents directly.
+  Provide the transaction email containing "You paid" to complete the order. You can sign in with
+  Google to pull the emails or paste the contents directly.
 `;
 
 export const PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS = `
