@@ -56,7 +56,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   const {
     data: submitMintSbtResult,
     isLoading: isSubmitMintSbtLoading,
-    // writeAsync: writeSubmitMintSbtAsync,
+    writeAsync: writeSubmitMintSbtAsync,
   } = useContractWrite(writeSubmitSbtConfig);
 
   const {
@@ -74,13 +74,13 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    * Handlers
    */
 
-  // const handleMintSbtSubmit = async () => {
-  //   try {
-  //     await writeSubmitMintSbtAsync?.();
-  //   } catch (error) {
-  //     console.log('writeSubmitMintSbtAsync failed: ', error);
-  //   }
-  // };
+  const handleMintSbtSubmit = async () => {
+    try {
+      await writeSubmitMintSbtAsync?.();
+    } catch (error) {
+      console.log('writeSubmitMintSbtAsync failed: ', error);
+    }
+  };
 
   /*
    * Hooks
@@ -155,13 +155,14 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                           <QuestionHelper text={REGISTRATION_NFT_TOOLTIP} />
                         </DescriptionAndHelperContainer>
                       </ThemedText.DeprecatedBody>
+
                       <Button
                         loading={isSubmitMintSbtMining || isSubmitMintSbtLoading}
                         height={40}
-                        onClick={() => {}}
+                        onClick={handleMintSbtSubmit}
                         fullWidth={true}
                       >
-                        Coming Soon
+                        Mint
                       </Button>
                     </MintNftContainer>
                   )}
