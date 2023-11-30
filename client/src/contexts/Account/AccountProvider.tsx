@@ -11,7 +11,7 @@ interface ProvidersProps {
 }
 
 const AccountProvider = ({ children }: ProvidersProps) => {
-  const { address, isDisconnected, status } = useAccount();
+  const { address, status } = useAccount();
   const { chain } = useNetwork();
   const { disconnect } = useDisconnect();
 
