@@ -8,17 +8,18 @@ import {
   useWaitForTransaction
 } from 'wagmi'
 
-import { Button } from '../Button'
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
+import { Button } from '../Button';
+import { RowBetween } from '../layouts/Row';
+import { ThemedText } from '../../theme/text';
 import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
 import { PositionRow } from "./PositionRow";
-import { CustomConnectButton } from "../common/ConnectButton"
-import { toUsdcString, conversionRateToString } from '@helpers/units'
-import useAccount from '@hooks/useAccount'
+import { CustomConnectButton } from "../common/ConnectButton";
+import { toUsdcString, conversionRateToString } from '@helpers/units';
+import useAccount from '@hooks/useAccount';
 import useDeposits from '@hooks/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration'
+import useRegistration from '@hooks/useRegistration';
+import useBalances from '@hooks/useBalance';
 
 
 export interface DepositPrime {
@@ -47,6 +48,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const { isLoggedIn } = useAccount();
   const { deposits, refetchDeposits } = useDeposits();
   const { rampAddress, rampAbi } = useSmartContracts();
+  const { refetchUsdcBalance } = useBalances();
 
   /*
    * State
@@ -90,6 +92,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       console.log('writeSubmitWithdrawAsync successful: ', data);
       
       refetchDeposits?.();
+
+      refetchUsdcBalance?.();
     },
   });
 
