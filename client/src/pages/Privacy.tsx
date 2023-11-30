@@ -372,12 +372,6 @@ const PolicyContentHeader = styled.div`
   text-align: left;
 `;
 
-const PolicyContentSubHeader = styled.div`
-  font-size: 18px;
-  padding-bottom: 1rem;
-  text-align: left;
-`;
-
 const PolicyContentSection = styled.div`
   font-size: 16px;
   padding-bottom: 1rem;
