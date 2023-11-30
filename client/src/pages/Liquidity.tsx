@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import DepositTable from "@components/Liquidity"
 import useRampState from '@hooks/useRampState';
+import useDeposits from '@hooks/useDeposits';
 
 
 export const Liquidity: React.FC<{}> = (props) => {
@@ -10,10 +11,8 @@ export const Liquidity: React.FC<{}> = (props) => {
    * Contexts
    */
 
-  const {
-    refetchDepositCounter,
-    shouldFetchRampState
-  } = useRampState();
+  const { refetchDepositCounter, shouldFetchRampState } = useRampState();
+  const { refetchDeposits, shouldFetchDeposits } = useDeposits();
 
   /*
    * Hooks
@@ -22,6 +21,10 @@ export const Liquidity: React.FC<{}> = (props) => {
   useEffect(() => {
     if (shouldFetchRampState) {
       refetchDepositCounter?.();
+    }
+
+    if (shouldFetchDeposits) {
+      refetchDeposits?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
