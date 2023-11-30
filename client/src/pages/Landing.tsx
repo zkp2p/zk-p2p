@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { Link } from 'react-router-dom';
 
 import { MAIN_CARDS, SECONDARY_CARDS } from '../helpers/cards'
 import { Button } from '../components/Button'
@@ -68,22 +69,16 @@ export const Landing: React.FC = () => {
           </LearnMoreContainer>
 
           <TosPPContainer>
-            <StyledLink
-              href={process.env.TOS_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  Terms of Service ↗
-                </ThemedText.LabelSmall>
+            <StyledLink as={Link} to="/tos">
+              <ThemedText.LabelSmall textAlign="left">
+                Terms of Service ↗
+              </ThemedText.LabelSmall>
             </StyledLink>
 
-            <StyledLink
-              href={process.env.PP_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  Privacy Policy ↗
-                </ThemedText.LabelSmall>
+            <StyledLink as={Link} to="/pp">
+              <ThemedText.LabelSmall textAlign="left">
+                Privacy Policy ↗
+              </ThemedText.LabelSmall>
             </StyledLink>
           </TosPPContainer>
         </HeroContainer>
@@ -189,7 +184,7 @@ const TosPPContainer = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: #CED4DA;
+  color: inherit;
   text-decoration: none;
   cursor: pointer;
 
