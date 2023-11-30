@@ -94,7 +94,6 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   // tokenURI(uint256 tokenId) public view override returns (string memory)
   const {
     data: venmoNftUriRaw,
-    // refetch: refetchVenmoNftUri,
   } = useContractRead({
     address: venmoNftAddress,
     abi: venmoNftAbi,
@@ -227,6 +226,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       
       setVenmoNftUri(null);
     }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venmoNftUriRaw]);
 
   /*

@@ -56,7 +56,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   const {
     data: submitMintSbtResult,
     isLoading: isSubmitMintSbtLoading,
-    writeAsync: writeSubmitMintSbtAsync,
+    // writeAsync: writeSubmitMintSbtAsync,
   } = useContractWrite(writeSubmitSbtConfig);
 
   const {
@@ -74,13 +74,13 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    * Handlers
    */
 
-  const handleMintSbtSubmit = async () => {
-    try {
-      await writeSubmitMintSbtAsync?.();
-    } catch (error) {
-      console.log('writeSubmitMintSbtAsync failed: ', error);
-    }
-  };
+  // const handleMintSbtSubmit = async () => {
+  //   try {
+  //     await writeSubmitMintSbtAsync?.();
+  //   } catch (error) {
+  //     console.log('writeSubmitMintSbtAsync failed: ', error);
+  //   }
+  // };
 
   /*
    * Hooks
@@ -238,21 +238,21 @@ const ErrorContainer = styled.div`
   max-width: 340px;
   min-height: 25vh;
   gap: 36px;
-`
+`;
 
 const IconStyle = css`
   width: 48px;
   height: 48px;
   margin-bottom: 0.5rem;
-`
+`;
 
 const CheckCircleIcon = styled(CheckCircle)`
   ${IconStyle}
-`
+`;
 
 const BoxIcon = styled(Box)`
   ${IconStyle}
-`
+`;
 
 const Body = styled.div`
   display: flex;
