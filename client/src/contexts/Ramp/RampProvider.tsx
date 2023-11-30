@@ -35,9 +35,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
   // uint256 public minDepositAmount;
   const {
     data: minimumDepositAmountRaw,
-    // isLoading: isMinimumDepositAmountLoading,
-    // isError: isMinimumDepositAmountError,
-    // refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,
@@ -49,8 +46,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
   // uint256 public depositCounter;
   const {
     data: depositCounterRaw,
-    // isLoading: isDepositCounterLoading,
-    // isError: isDepositCounterError,
     refetch: refetchDepositCounter,
   } = useContractRead({
     address: rampAddress,
@@ -63,8 +58,6 @@ const RampProvider = ({ children }: ProvidersProps) => {
   // uint256 public onRampCooldownPeriod;
   const {
     data: onRampCooldownPeriodRaw,
-    // isLoading: isonRampCooldownPeriodLoading,
-    // isError: isonRampCooldownPeriodError,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,

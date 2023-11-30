@@ -43,8 +43,6 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   // getVenmoIdCurrentIntentHash(address _account) external view returns (bytes32)
   const {
     data: intentHashRaw,
-    // isLoading: isFetchIntentHashLoading,
-    // isError: isFetchIntentHashError,
     refetch: refetchIntentHash,
   } = useContractRead({
     address: rampAddress,
@@ -73,9 +71,6 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   // mapping(bytes32 => Intent) public intents;
   const {
     data: intentRaw,
-    // isLoading: isFetchIntentLoading,
-    // isError: isFetchIntentError,
-    // refetch: refetchIntent,
   } = useContractRead({
     address: rampAddress,
     abi: rampAbi,

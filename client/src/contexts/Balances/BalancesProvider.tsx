@@ -38,31 +38,22 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
   const {
     data: ethBalanceRaw,
-    // isLoading: isFetchEthBalanceLoading,
-    // isError: isFetchEthBalanceError,
-    // refetch: refetchEthBalance,
   } = useBalance({
     address: loggedInEthereumAddress ?? ZERO_ADDRESS,
-    // cacheTime: 20_000,
     enabled: shouldFetchEthBalance,
   });
 
   const {
     data: usdcBalanceRaw,
-    // isLoading: isFetchUsdcBalanceLoading,
-    // isError: isFetchUsdcBalanceError,
     refetch: refetchUsdcBalance,
   } = useBalance({
     address: loggedInEthereumAddress ?? ZERO_ADDRESS,
     token: usdcAddress,
-    // cacheTime: 20_000,
     enabled: shouldFetchUsdcBalance,
   })
 
   const {
     data: usdcApprovalToRampRaw,
-    // isLoading: isFetchUsdcApprovalToRampLoading,
-    // isError: isFetchUsdcApprovalToRampError,
     refetch: refetchUsdcApprovalToRamp,
   } = useContractRead({
     address: usdcAddress,
@@ -72,7 +63,6 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
       loggedInEthereumAddress ?? ZERO_ADDRESS,
       rampAddress
     ],
-    // cacheTime: 20_000,
     enabled: shouldFetchUsdcApprovalToRamp,
   });
 

@@ -41,8 +41,6 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   // function getAccountDeposits(address _account)
   const {
     data: depositsRaw,
-    // isLoading: isFetchDepositsLoading,
-    // isError: isFetchDepositsError,
     refetch: refetchDeposits,
   } = useContractRead({
     address: rampAddress,
@@ -57,8 +55,6 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   // getIntentsWithOnRamperId(bytes32[] calldata _intentHashes)
   const {
     data: depositIntentsRaw,
-    // isLoading: isFetchDepositIntentsLoading,
-    // isError: isFetchDepositIntentsError,
     refetch: refetchDepositIntents,
   } = useContractRead({
     address: rampAddress,
