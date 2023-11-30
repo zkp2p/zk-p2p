@@ -32,9 +32,8 @@ export const TARGETED_LIQUIDITY_DESCRIPTION = `
  */
 
 export const REGISTRATION_NFT_TOOLTIP = `
-  Mint a soulbound NFT that proves you own a registered Venmo account without revealing any other
-  information. The NFT has no value and cannot be transferred. This is optional and does not affect
-  protocol usage.
+  Mint a Soulbound NFT that proves you successfully registered passing the on chain verifier. The
+  NFT has no value and cannot be transferred. This is optional and does not affect protocol usage.
 `;
 
 /*

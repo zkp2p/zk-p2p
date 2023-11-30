@@ -151,7 +151,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                       <ThemedText.DeprecatedBody textAlign="center">
                         <BoxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                         <DescriptionAndHelperContainer>
-                          Your ZKP2P Proof of Venmo NFT will appear here&nbsp;
+                          Your ZKP2P Proof of Registration NFT will appear here&nbsp;
                           <QuestionHelper text={REGISTRATION_NFT_TOOLTIP} />
                         </DescriptionAndHelperContainer>
                       </ThemedText.DeprecatedBody>
