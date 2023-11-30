@@ -31,7 +31,9 @@ export const PlatformSelector: React.FC = () => {
   return (
     <Wrapper ref={ref}>
       <LogoAndTokenLabel onClick={toggleOpen}>
-        <Logo src={venmoLogo} alt="Venmo" />
+        <PlatformLabel>
+          Venmo
+        </PlatformLabel>
         <StyledChevronDown/>
       </LogoAndTokenLabel>
 
@@ -83,10 +85,11 @@ const LogoAndTokenLabel = styled.div`
   gap: 4px;
 `;
 
-const Logo = styled.img`
-  width: 64px;
-  padding-top: 1px;
-  height: auto;
+const PlatformLabel = styled.div`
+  color: #FFF;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0px 5px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
