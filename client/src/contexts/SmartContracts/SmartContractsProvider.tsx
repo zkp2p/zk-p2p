@@ -70,7 +70,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       setUsdcAddress(contractsForNetwork.fusdc as Address);
       setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
       setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
-      setVenmoNftAddress(contractsForNetwork.proofOfVenmoNFT as Address);
+      setVenmoNftAddress(contractsForNetwork.proofOfP2pNft as Address);
       setBlockscanUrl(blockExplorerUrls[networkName]);
     } else {
       setRampAddress(null);
