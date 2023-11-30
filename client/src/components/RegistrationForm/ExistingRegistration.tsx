@@ -14,6 +14,7 @@ import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
+import { PlatformSelector } from '@components/Swap/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../theme/text';
 import { REGISTRATION_INSTRUCTIONS, REGISTRATION_NFT_TOOLTIP } from '@helpers/tooltips';
@@ -126,6 +127,10 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
             </ErrorContainer>
           ) : (
             <Body>
+              <PlatformSelectorContainer>
+                <PlatformSelector />
+              </PlatformSelectorContainer>
+
               { !isRegistered && (
                 <NumberedInputContainer>
                   <NumberedStep>
@@ -262,6 +267,12 @@ const Body = styled.div`
   padding: 1.5rem;
   background-color: #0D111C;
   border-radius: 16px;
+`;
+
+const PlatformSelectorContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 `;
 
 const InputsContainer = styled.div`
