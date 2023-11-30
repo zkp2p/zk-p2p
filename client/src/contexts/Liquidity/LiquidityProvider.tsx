@@ -4,8 +4,8 @@ import React, {
   useState,
   ReactNode,
   useMemo
-} from 'react'
-import { readContract } from '@wagmi/core'
+} from 'react';
+import { readContract } from '@wagmi/core';
 
 import {
   Deposit,
@@ -17,7 +17,6 @@ import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
-  filterOwnDeposits,
  } from './helper'
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
@@ -239,8 +238,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       esl && console.log('depositStore_2');
 
       if (loggedInEthereumAddress) {
-        const prunedDeposits = filterOwnDeposits(deposits, loggedInEthereumAddress);
-        const newStore = createDepositsStore(prunedDeposits);
+        const newStore = createDepositsStore(deposits);
         
         setDepositStore(newStore);
       } else {
@@ -257,13 +255,18 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
     if (depositStore) {
-      return fetchBestDepositForAmount(requestedOnRampInputAmount, depositStore, targetedDepositIds);
+      return fetchBestDepositForAmount(
+        requestedOnRampInputAmount,
+        depositStore,
+        targetedDepositIds,
+        loggedInEthereumAddress
+      );
     } else {
       return {
         error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore, targetedDepositIds]);
+  }, [depositStore, targetedDepositIds, loggedInEthereumAddress]);
 
   /*
    * Helpers

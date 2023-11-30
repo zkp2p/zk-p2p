@@ -47,7 +47,8 @@ export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint
 export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
-  targetedDepositIds: bigint[]
+  targetedDepositIds: bigint[],
+  loggedInUserAddress: Address
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 
@@ -59,8 +60,11 @@ export const fetchBestDepositForAmount = (
   }
 
   for (const deposit of depositsToSearch) {
+    const isUserDepositor = deposit.deposit.depositor === loggedInUserAddress;
 
-    if (deposit.availableLiquidity >= requestedAmountBI) {
+    const isSufficientLiquidity = deposit.availableLiquidity >= requestedAmountBI;
+
+    if (isSufficientLiquidity && !isUserDepositor) {
       const conversionRate = deposit.deposit.conversionRate;
       
       const usdToSend = calculateUsdFromRequestedUSDC(requestedAmountBI, conversionRate);
@@ -77,8 +81,4 @@ export const fetchBestDepositForAmount = (
   return {
     error: "No deposits available to fulfill requested amount"
   } as IndicativeQuote;
-};
-
-export const filterOwnDeposits = (deposits: DepositWithAvailableLiquidity[], userAddress: Address): DepositWithAvailableLiquidity[] => {
-  return deposits.filter(deposit => deposit.deposit.depositor !== userAddress);
 };
