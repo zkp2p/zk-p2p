@@ -1,5 +1,6 @@
 import { useRef, useReducer } from 'react';
 import { MoreHorizontal } from 'react-feather';
+import { Link } from 'react-router-dom';
 import styled from "styled-components";
 
 import { SVGIconThemed } from '../../SVGIcon/SVGIconThemed';
@@ -52,22 +53,16 @@ export const MenuDropdown = () => {
                 </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem
-              href={process.env.TOS_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  Terms of Service ↗
-                </ThemedText.LabelSmall>
+            <NavDropdownItem as={Link} to="/tos">
+              <ThemedText.LabelSmall textAlign="left">
+                Terms of Service ↗
+              </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem
-              href={process.env.PP_URL}
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  Privacy Policy ↗
-                </ThemedText.LabelSmall>
+            <NavDropdownItem as={Link} to="/pp">
+              <ThemedText.LabelSmall textAlign="left">
+                Privacy Policy ↗
+              </ThemedText.LabelSmall>
             </NavDropdownItem>
           </NavDropdownItemContainer>
 

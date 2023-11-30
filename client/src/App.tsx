@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -12,6 +12,8 @@ import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Liquidity } from "./pages/Liquidity";
 import { Deposit } from "./pages/Deposit";
+import { Privacy } from "./pages/Privacy";
+import { Tos } from "./pages/Tos";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
@@ -33,14 +35,6 @@ import "./styles.css";
 import useMediaQuery from '@hooks/useMediaQuery';
 
 
-const ExternalRedirect: React.FC<{ url: string }> = ({ url }) => {
-  useEffect(() => {
-    window.location.href = url;
-  }, [url]);
-
-  return null;
-};
-
 const App = () => {
   const currentDeviceSize = useMediaQuery();
 
@@ -58,6 +52,8 @@ const App = () => {
                 <Route path="/deposits" element={<MobileLandingPage />} />
                 <Route path="/register" element={<MobileLandingPage />} />
                 <Route path="/permissions" element={<MobileLandingPage />} />
+                <Route path="/pp" element={<Privacy />} />
+                <Route path="/tos" element={<Tos />} />
               </Routes>
             </div>
           </div>
@@ -79,8 +75,8 @@ const App = () => {
                 <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />
-                <Route path="/pp" element={<ExternalRedirect url={process.env.PP_URL || ""} />} />
-                <Route path="/tos" element={<ExternalRedirect url={process.env.TOS_URL || ""} />} />
+                <Route path="/pp" element={<Privacy />} />
+                <Route path="/tos" element={<Tos />} />
                 <Route element={<>Not found</>} />
               </Routes>
             </div>
