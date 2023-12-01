@@ -20,6 +20,8 @@ import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
 import { Inbox } from 'react-feather';
+
+
 interface MailTableProps {
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
@@ -113,8 +115,6 @@ export const MailTable: React.FC<MailTableProps> = ({
         const emails = await fetchEmailsRaw(googleAuthToken.access_token, emailIds);
 
         setFetchedEmails(emails);
-
-        console.log('Fetched Emails:', emails);
       }
     } catch (error) {
       console.error('Error in fetching data:', error);
