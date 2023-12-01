@@ -132,17 +132,17 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         }
 
         // validateEmailDomainKey
-        try {
-          const emailReceivedYear = validateEmailDomainKey(emailFull);
+        // try {
+        //   const emailReceivedYear = validateEmailDomainKey(emailFull);
 
-          if (emailReceivedYear.emailRaw !== "2023") {
-            setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
-            return;
-          }
-        } catch (e) {
-          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
-          return;
-        }
+        //   if (emailReceivedYear.emailRaw !== "2023") {
+        //     setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
+        //     return;
+        //   }
+        // } catch (e) {
+        //   setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+        //   return;
+        // }
 
         // validateDKIMSignature
         try {
