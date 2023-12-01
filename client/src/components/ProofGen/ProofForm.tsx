@@ -132,17 +132,17 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         }
 
         // validateEmailDomainKey
-        // try {
-        //   const emailReceivedYear = validateEmailDomainKey(emailFull);
+        try {
+          const emailReceivedYear = validateEmailDomainKey(emailFull);
 
-        //   if (emailReceivedYear.emailRaw !== "2023") {
-        //     setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
-        //     return;
-        //   }
-        // } catch (e) {
-        //   setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
-        //   return;
-        // }
+          if (emailReceivedYear.emailRaw !== "2023") {
+            setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
+            return;
+          }
+        } catch (e) {
+          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+          return;
+        }
 
         // validateDKIMSignature
         try {
@@ -272,7 +272,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }
 
   function validateEmailDomainKey(emailContent: string) {
-    const regexPattern = /Date:.*\d{2}\s+\w{3}\s+(\d{4})\s+/;
+    const regexPattern = /Date:.*\d{1,2}\s+\w{3}\s+(\d{4})\s+/;
 
     const match = emailContent.match(regexPattern);
     if (!match) {

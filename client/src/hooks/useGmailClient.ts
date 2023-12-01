@@ -15,7 +15,6 @@ export async function fetchProfile(
 
   if (response.ok) {
     const data = await response.json();
-    console.log('Emails:', data);
 
     return data.emailAddress;
   } else {
@@ -59,7 +58,7 @@ export async function fetchVenmoEmailList(
 
   if (response.ok) {
     const data: GmailMessagesListResponse = await response.json();
-    console.log('Emails:', data);
+
     return data;
   } else {
     console.error('Failed to fetch emails:', response);
@@ -119,8 +118,6 @@ export async function fetchEmailsRaw(
     });
 
     const results = await Promise.all(fetchPromises);
-
-    console.log('Decoded Emails:', results);
 
     return results;
   } catch (error) {
