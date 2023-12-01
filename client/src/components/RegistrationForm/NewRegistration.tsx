@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import Link from '@mui/material/Link';
 import {
   useContractWrite,
   usePrepareContractWrite,
@@ -12,7 +13,6 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
-// import { ProofSettings } from "@components/ProofGen/ProofSettings";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
@@ -152,6 +152,11 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             {PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS}
+            <Link
+              href={"https://bridge.base.org/deposit"}
+              target="_blank">
+                Base Bridge ↗
+            </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>
       </TitleContainer>

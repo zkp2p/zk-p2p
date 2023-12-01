@@ -111,8 +111,7 @@ export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
 
 export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
   Provide any historical transaction email sent from Venmo containing "You paid" in the subject to
-  complete registration. You can sign in with Google to pull the emails or paste the contents
-  directly.
+  complete registration. Base ETH is required to submit a registration transaction.
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
