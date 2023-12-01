@@ -154,7 +154,11 @@ export const MailTable: React.FC<MailTableProps> = ({
       setCtaButtonTitle("Invalid email: must contain 'You Paid'");
       break;
 
-      case EmailInputStatus.VALID:
+    case EmailInputStatus.INVALID_DOMAIN_KEY:
+      setCtaButtonTitle("Invalid email: must be from 2023");
+      break;
+
+    case EmailInputStatus.VALID:
       default:
         setCtaButtonTitle("Validate Email");
         break;
