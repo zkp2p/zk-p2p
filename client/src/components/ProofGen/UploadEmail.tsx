@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Col } from "../legacy/Layout";
@@ -22,7 +23,6 @@ import {
 } from "@helpers/docUrls";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import useProofGenSettings from '@hooks/useProofGenSettings';
-import Link from '@mui/material/Link';
 
 
 interface UploadEmailProps {
@@ -148,12 +148,13 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
         <NumberedStep>
           {isInputModeDrag ? PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS : PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS}
-          <Link href={isInputModeDrag 
-            ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK
-            : COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK
-          }
-          target="_blank">
-            Guide ↗
+          <Link
+            href={isInputModeDrag 
+              ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK
+              : COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK
+            }
+            target="_blank">
+              Guide ↗
           </Link>
         </NumberedStep>
 
