@@ -6,7 +6,6 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '../../theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
-import venmoLogo from '../../assets/images/venmo_logo.png';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 
 

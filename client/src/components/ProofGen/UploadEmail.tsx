@@ -91,6 +91,10 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         setCtaButtonTitle("Invalid email: must contain 'You Paid'");
         break;
 
+      case EmailInputStatus.INVALID_DOMAIN_KEY:
+        setCtaButtonTitle("Invalid email: must be from 2023");
+        break;
+
       case EmailInputStatus.VALID:
       default:
         setCtaButtonTitle("Validate Email");

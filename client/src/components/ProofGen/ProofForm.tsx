@@ -118,8 +118,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   useEffect(() => {
     async function verifyEmail() {
       if (emailFull) {
+        // validateAndSanitizeEmailSubject
         try {
           const { sanitizedEmail, didSanitize } = validateAndSanitizeEmailSubject(emailFull);
+
           if (didSanitize) {
             setEmailFull(sanitizedEmail);
             return;
@@ -129,6 +131,20 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           return;
         }
 
+        // validateEmailDomainKey
+        try {
+          const emailReceivedYear = validateEmailDomainKey(emailFull);
+
+          if (emailReceivedYear.emailRaw !== "2023") {
+            setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
+            return;
+          }
+        } catch (e) {
+          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+          return;
+        }
+
+        // validateDKIMSignature
         try {
           await validateDKIMSignature(emailFull);
         } catch (e) {
@@ -255,21 +271,39 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     return result;
   }
 
+  function validateEmailDomainKey(emailContent: string) {
+    const regexPattern = /Date:.*\d{2}\s+\w{3}\s+(\d{4})\s+/;
+
+    const match = emailContent.match(regexPattern);
+    if (!match) {
+      throw new Error("Year not found in the email content.");
+    }
+
+    const year = match[1];
+    return { emailRaw: year };
+  }
+
   function validateAndSanitizeEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {
     const subjectLinePattern = /^Subject:.*$/m;
     const subjectLineMatch = emailContent.match(subjectLinePattern);
+    
     if (!subjectLineMatch) {
       throw new Error('No subject line found in the email content.');
     }
+    
     const subjectLine = subjectLineMatch[0];
   
     const validationPattern = /^Subject:\s*You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?$/;
     const sanitizePattern = /^(Subject:)\s*(.*?)(You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?)$/;
-    const needsSanitization = !validationPattern.test(subjectLine);
+
+    const isValid = validationPattern.test(subjectLine);
+    const needsSanitization = sanitizePattern.test(subjectLine);
   
     let sanitizedEmail = emailContent;
     if (needsSanitization) {
       sanitizedEmail = emailContent.replace(subjectLinePattern, subjectLine.replace(sanitizePattern, '$1 $3'));
+    } else if (!isValid) {
+      throw new Error('The subject line is invalid and could not be sanitized.');
     }
   
     const didSanitize = sanitizedEmail !== emailContent;

@@ -16,6 +16,7 @@ export const ProofGenerationStatus = {
 export const EmailInputStatus = {
   DEFAULT: "default",
   INVALID_SIGNATURE: "invalid-signature",
+  INVALID_DOMAIN_KEY: "invalid-domain-key",
   INVALID_SUBJECT: "invalid-subject",
   VALID: "valid"
 };
