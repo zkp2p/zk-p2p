@@ -28,7 +28,8 @@ describe("HDFC send WASM tester", function () {
     let poseidon;
     let mimcSponge;
     let account;
-    let poseidonContract;
+    let poseidonContract1;
+    let poseidonContract2;
 
     beforeAll(async () => {
         cir = await wasm_tester(
@@ -195,8 +196,14 @@ describe("HDFC send WASM tester", function () {
             createCode(6),
             account
         );
+        const C3 = new ethers.ContractFactory(
+            generateABI(3),
+            createCode(3),
+            account
+        );
 
-        poseidonContract = await C6.deploy();
+        poseidonContract1 = await C6.deploy();
+        poseidonContract2 = await C3.deploy();
 
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -226,15 +233,16 @@ describe("HDFC send WASM tester", function () {
 
 
         // Chunk bytes into 7 and pack
-        const toEmailChunkedArray = chunkArray(to_email_array, 7, 35);
+        const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
         const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
 
         const accountNumberChunkedArray = chunkArray(account_number_array, 7, 7);
         const packed_account_number_array = accountNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
 
         const combinedArray = packed_to_email_array.concat(packed_account_number_array)
-        const expected_hash = poseidon(combinedArray);
-        const expected_hash_contract = await poseidonContract["poseidon(uint256[6])"](combinedArray);
+        const expected_hash = poseidon([poseidon(combinedArray.slice(0, 6))].concat(combinedArray.slice(6, 8)))
+        const temp_contract_hash_out = await poseidonContract1["poseidon(uint256[6])"](combinedArray.slice(0, 6));
+        const expected_hash_contract = await poseidonContract2["poseidon(uint256[3])"]([temp_contract_hash_out].concat(combinedArray.slice(6, 8)));
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
@@ -256,8 +264,14 @@ describe("HDFC send WASM tester", function () {
             createCode(6),
             account
         );
+        const C3 = new ethers.ContractFactory(
+            generateABI(3),
+            createCode(3),
+            account
+        );
 
-        poseidonContract = await C6.deploy();
+        poseidonContract1 = await C6.deploy();
+        poseidonContract2 = await C3.deploy();
 
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -280,11 +294,12 @@ describe("HDFC send WASM tester", function () {
         const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        const chunkedArrays = chunkArray(offramper_id_array, 7, 42);
+        const chunkedArrays = chunkArray(offramper_id_array, 7, 56);
 
         const packed_offramper_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
-        const expected_hash = poseidon(packed_offramper_id);
-        const expected_hash_contract = await poseidonContract["poseidon(uint256[6])"](packed_offramper_id);
+        const expected_hash = poseidon([poseidon(packed_offramper_id.slice(0, 6))].concat(packed_offramper_id.slice(6, 8)));
+        const temp_contract_hash_out = await poseidonContract1["poseidon(uint256[6])"](packed_offramper_id.slice(0, 6));
+        const expected_hash_contract = await poseidonContract2["poseidon(uint256[3])"]([temp_contract_hash_out].concat(packed_offramper_id.slice(6, 8)));
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(expected_hash), true);
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);

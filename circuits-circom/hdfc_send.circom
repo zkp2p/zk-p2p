@@ -1,9 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// include "./utils/email_verifier.circom";
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
+include "./utils/email_verifier.circom";
+// include "@zk-email/circuits/helpers/extract.circom";
+// include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
@@ -15,14 +15,11 @@ include "./regexes/hdfc/hdfc_date.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
 
 template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
-    assert(n * k > 1024); // constraints for 1024 bit RSA
+    assert(n * k > 2048); // constraints for 2048 bit RSA
 
     var max_email_from_len = 21; // Length of alerts@hdfcbank.net
-    var max_email_to_len = 56;  // Safe max length of email to field (https://atdata.com/long-email-addresses/)
     var max_email_date_len = 31; // Sat, 14 Oct 2023 22:09:12 +0530
     var max_amount_len = 8; // Allowing max 5 fig amount + one decimal point + 2 decimal places. e.g. 99999.00
-    var max_account_number_len = 4; // Example: **1234
-    var max_payee_len = 50;    // Max 50 characters in UPI ID (https://www.deutschebank.co.in/en/connect-with-us/upi.html)
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -55,8 +52,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     modulus_hash <== EV.pubkey_hash;
 
     // HDFC UPI EMAIL VERIFICATION REGEX (Check that regex matches)
-    // signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
-    // upi_subject_regex_out === 1;
+    signal upi_subject_regex_out <== HdfcUpiSubjectRegex(max_header_bytes)(in_padded);
+    upi_subject_regex_out === 1;
 
     // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
@@ -65,9 +62,9 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input email_from_idx;
     signal output reveal_email_from_packed[max_email_from_packed_bytes]; // packed into 7-bytes
 
-    // signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegex(max_header_bytes)(in_padded);
-    // from_regex_out === 1;
-    // reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
+    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegex(max_header_bytes)(in_padded);
+    from_regex_out === 1;
+    reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // HDFC SEND AMOUNT REGEX
     var max_email_amount_packed_bytes = count_packed(max_amount_len, pack_size);
@@ -76,9 +73,9 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input hdfc_amount_idx;
     signal output reveal_email_amount_packed[max_email_amount_packed_bytes]; // packed into 7-bytes. TODO: make this rotate to take up even less space
 
-    // signal (amount_regex_out, amount_regex_reveal[max_body_bytes]) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
-    // amount_regex_out === 1;
-    // reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
+    signal (amount_regex_out, amount_regex_reveal[max_body_bytes]) <== HdfcAmountRegex(max_body_bytes)(in_body_padded);
+    amount_regex_out === 1;
+    reveal_email_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_amount_len, pack_size)(amount_regex_reveal, hdfc_amount_idx);
 
     // DATE REGEX
     var max_email_date_packed_bytes = count_packed(max_email_date_len, pack_size);
@@ -87,34 +84,30 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input email_date_idx;
     signal output reveal_email_date_packed[max_email_date_packed_bytes]; // packed into 7-bytes
 
-    // signal (date_regex_out, date_regex_reveal[max_header_bytes]) <== HdfcDateRegex(max_header_bytes)(in_padded);
-    // date_regex_out === 1;
-    // reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
+    signal (date_regex_out, date_regex_reveal[max_header_bytes]) <== HdfcDateRegex(max_header_bytes)(in_padded);
+    date_regex_out === 1;
+    reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
 
     // Extract packed and hashed onramper id
     signal input email_to_idx;
     signal input hdfc_acc_num_idx;
-    signal output onramper_id;
-    // signal output onramper_id <== HdfcOnramperId(
-    //     max_email_to_len, 
-    //     max_header_bytes, 
-    //     max_account_number_len, 
-    //     max_body_bytes, 
-    //     pack_size
-    // )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
+    signal output onramper_id <== HdfcOnramperId(
+        max_header_bytes, 
+        max_body_bytes, 
+        pack_size
+    )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
     // Extract packed and hashed offramper id
     signal input hdfc_payee_id_idx;
-    // signal output offramper_id <== HdfcOfframperId(
-    //     max_payee_len, 
-    //     max_body_bytes, 
-    //     pack_size
-    // )(in_body_padded, hdfc_payee_id_idx);
+    signal output offramper_id <== HdfcOfframperId(
+        max_body_bytes, 
+        pack_size
+    )(in_body_padded, hdfc_payee_id_idx);
 
     // NULLIFIER
-    // signal output email_nullifier;
-    // signal cm_rand <== HashSignGenRand(n, k)(signature);
-    // email_nullifier <== EmailNullifier()(header_hash, cm_rand);
+    signal output email_nullifier;
+    signal cm_rand <== HashSignGenRand(n, k)(signature);
+    email_nullifier <== EmailNullifier()(header_hash, cm_rand);
 
     // The following signals do not take part in any computation, but tie the proof to a specific intent_hash & claim_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
@@ -122,8 +115,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 1938510
-    // WITHOUT STUB: TODO
+    // TOTAL CONSTRAINTS: 4456198
 }
 
 // Args:
