@@ -20,10 +20,6 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
 
     /* ============ Constants ============ */
     uint256 constant PACK_SIZE = 7;
-    uint256 constant SECONDS_PER_DAY = 24 * 60 * 60;
-    uint256 constant SECONDS_PER_HOUR = 60 * 60;
-    uint256 constant SECONDS_PER_MINUTE = 60;
-    int256 constant OFFSET19700101 = 2440588;
     uint256 constant IST_OFFSET = 19800;
 
     /* ============ Constructor ============ */
@@ -84,6 +80,11 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
     }
 
+    /**
+     * @notice Iterates through every character in the date string and splits the string at each space or colon. Function will revert
+     * if there are not 8 substrings formed from the split. The substrings are then converted to uints and passed to the DateTime lib
+     * to get the unix timestamp.
+     */
     function _dateStringToTimestamp(string memory _dateString) internal pure returns (uint256) {
         string[8] memory extractedStrings;
         uint256 breakCounter;
@@ -95,6 +96,8 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
                 breakCounter++;
             }
         }
+        // Check that exactly 8 substrings were found
+        require(breakCounter == 8, "Invalid date string");
 
         return DateTime.timestampFromDateTime(
             extractedStrings[3].stringToUint(0), // year
