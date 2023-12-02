@@ -139,7 +139,7 @@ function replaceMessageIdWithXGoogleOriginalMessageId(str) {
   console.log("Message ID: ", messageId);
 
   const xMessageIdStart = str.indexOf(xGoogleMessageIdLabel) + xGoogleMessageIdLabel.length;
-  const xMessageIdEnd = str.indexOf("\n", xMessageIdStart);
+  const xMessageIdEnd = str.indexOf("\r", xMessageIdStart);
   const xMessageId = str.substring(xMessageIdStart, xMessageIdEnd);
 
   console.log("X-Google-Original-Message-ID: ", xMessageId);
