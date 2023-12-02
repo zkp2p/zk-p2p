@@ -127,6 +127,18 @@ function padWithZero(arr: Uint8Array, length: number) {
   }
   return arr;
 }
+
+function replaceMessageIdWithXGoogleOriginalMessageId(str: string) {
+  const message_id_start = str.indexOf("Message-ID: <");
+  const message_id_end = str.indexOf(">", message_id_start);
+  const message_id = str.substring(message_id_start, message_id_end + 1);
+  const x_message_id_start = str.indexOf("X-Google-Original-Message-ID: <");
+  const x_message_id_end = str.indexOf(">", x_message_id_start);
+  const x_message_id = str.substring(x_message_id_start, x_message_id_end + 1);
+  // Replace "message-id: <text>" with "message-id: <x-message-id>"
+  return str.replace(message_id, x_message_id);
+}
+
 export async function getCircuitInputs(
   rsa_signature: BigInt,
   rsa_modulus: BigInt,
@@ -158,9 +170,14 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+
+    message = Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(message.toString()));
+
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+
+    message = Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(message.toString()));
   }
 
   // Derive modulus from signature
@@ -359,7 +376,7 @@ export async function generate_inputs(
   console.log("DKIM verification starting");
   result = await dkimVerify(email);
   // console.log("From:", result.headerFrom);
-  // console.log("Results:", result.results[0]);
+  console.log("Results:", result.results[0]);
   if (!result.results[0]) {
     throw new Error(`No result found on dkim output ${result}`);
   } else {
