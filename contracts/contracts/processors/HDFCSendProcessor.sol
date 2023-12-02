@@ -96,8 +96,8 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
                 breakCounter++;
             }
         }
-        // Check that exactly 8 substrings were found
-        require(breakCounter == 8, "Invalid date string");
+        // Check that exactly 8 substrings were found (string is split at 7 different places)
+        require(breakCounter == 7, "Invalid date string");
 
         return DateTime.timestampFromDateTime(
             extractedStrings[3].stringToUint(0), // year
