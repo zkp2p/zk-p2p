@@ -1,9 +1,9 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// include "./utils/email_verifier.circom";
-include "@zk-email/circuits/helpers/extract.circom";
-include "./stubs/email-verifier.circom";
+include "./utils/email_verifier.circom";
+// include "@zk-email/circuits/helpers/extract.circom";
+// include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./helpers/hdfc_helpers.circom";
@@ -12,12 +12,10 @@ include "./regexes/hdfc/hdfc_upi_subject.circom";
 
 
 template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
-    assert(n * k > 1024); // constraints for 1024 bit RSA
+    assert(n * k > 2048); // constraints for 2048 bit RSA
 
     var max_email_from_len = 21; // Length of alerts@hdfcbank.net
-    var max_email_to_len = 56;  // RFC 2821: requires length to be 254, but 56 is safe max length of email to field (https://atdata.com/long-email-addresses/)
-    var max_account_number_len = 4; // Example: **1234
-
+    
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
     signal input signature[k]; // rsa signature. split up into k parts of n bits each.
@@ -65,15 +63,12 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
     signal input email_to_idx;
     signal input hdfc_acc_num_idx;
     signal output onramper_id <== HdfcOnramperId(
-        max_email_to_len, 
         max_header_bytes, 
-        max_account_number_len, 
         max_body_bytes, 
         pack_size
     )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
-    // TOTAL CONSTRAINTS: (WITH STUB): 936240
-    // WITHOUT STUB: 3434154
+    // TOTAL CONSTRAINTS: 3434240
 }
 
 // Args:
