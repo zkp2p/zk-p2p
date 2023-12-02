@@ -128,15 +128,24 @@ function padWithZero(arr: Uint8Array, length: number) {
   return arr;
 }
 
-function replaceMessageIdWithXGoogleOriginalMessageId(str: string) {
-  const message_id_start = str.indexOf("Message-ID: <");
-  const message_id_end = str.indexOf(">", message_id_start);
-  const message_id = str.substring(message_id_start, message_id_end + 1);
-  const x_message_id_start = str.indexOf("X-Google-Original-Message-ID: <");
-  const x_message_id_end = str.indexOf(">", x_message_id_start);
-  const x_message_id = str.substring(x_message_id_start, x_message_id_end + 1);
-  // Replace "message-id: <text>" with "message-id: <x-message-id>"
-  return str.replace(message_id, x_message_id);
+function replaceMessageIdWithXGoogleOriginalMessageId(str) {
+  const messageIdLabel = "Message-ID: <";
+  const xGoogleMessageIdLabel = "X-Google-Original-Message-ID: ";
+
+  const messageIdStart = str.indexOf(messageIdLabel) + messageIdLabel.length;
+  const messageIdEnd = str.indexOf(">", messageIdStart);
+  const messageId = str.substring(messageIdStart, messageIdEnd);
+
+  console.log("Message ID: ", messageId);
+
+  const xMessageIdStart = str.indexOf(xGoogleMessageIdLabel) + xGoogleMessageIdLabel.length;
+  const xMessageIdEnd = str.indexOf("\n", xMessageIdStart);
+  const xMessageId = str.substring(xMessageIdStart, xMessageIdEnd);
+
+  console.log("X-Google-Original-Message-ID: ", xMessageId);
+
+  // Replace "<message-id>" with "x-message-id"
+  return str.replace("<" + messageId + ">", xMessageId);
 }
 
 export async function getCircuitInputs(
@@ -170,14 +179,9 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
-
-    message = Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(message.toString()));
-
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
-
-    message = Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(message.toString()));
   }
 
   // Derive modulus from signature
@@ -372,9 +376,11 @@ export async function generate_inputs(
   if (typeof raw_email === "string") {
     email = Buffer.from(raw_email);
   } else email = raw_email;
-
+  // console.log(email.toString());
+  const processed_email = preProcessEmail(email, type);
+  console.log(processed_email.toString());
   console.log("DKIM verification starting");
-  result = await dkimVerify(email);
+  result = await dkimVerify(processed_email);
   // console.log("From:", result.headerFrom);
   console.log("Results:", result.results[0]);
   if (!result.results[0]) {
@@ -426,6 +432,18 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
     j++;
   }
   return ret.slice(0, j);
+}
+
+
+
+function preProcessEmail(email: Buffer, type: CircuitType): Buffer {
+
+  if (type === CircuitType.EMAIL_HDFC_REGISTRATION || type === CircuitType.EMAIL_HDFC_SEND) {
+    console.log("Preprocessing HDFC email. Updating message-id with x-google-original-message-id");
+    return Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(email.toString()));
+
+  }
+  return email;
 }
 
 // Only called when the whole function is called from the command line, to read inputs
