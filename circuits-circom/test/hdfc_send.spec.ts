@@ -306,7 +306,7 @@ describe("HDFC send WASM tester", function () {
     });
 
     // NOTE: WOULD FAIL IF WE ARE USING STUB.
-    it.skip("Should return the correct nullifier", async () => {
+    it("Should return the correct nullifier", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
         const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
