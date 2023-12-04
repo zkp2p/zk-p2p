@@ -436,7 +436,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.3rem;
-  top: 22%;
+  top: 20%;
   position: relative;
 `;
 
