@@ -65,6 +65,11 @@ export const PROOF_TOOLTIP = `
   and signatures that exist in the email.
 `;
 
+export const PAY_MODAL_INSTRUCTIONS = `
+  All transactions are peer-to-peer. Review all of the requirements below before sending a payment
+  to prevent loss of funds.
+`;
+
 /*
  * Instructions
  */

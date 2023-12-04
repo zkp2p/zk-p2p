@@ -6,6 +6,8 @@ import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
+import { PAY_MODAL_INSTRUCTIONS } from '@helpers/tooltips';
+import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { ThemedText } from '../../theme/text';
 
 interface SwapModalProps {
@@ -76,12 +78,14 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </InstructionsTitle>
 
           <InstructionsLabel>
-            All transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
-            Payment receipt emails are required to complete the order. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
+            { PAY_MODAL_INSTRUCTIONS }
+            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
           </InstructionsLabel>
         </InstructionsContainer>
+
+        <PaymentRequirementDrawer />
 
         <ButtonContainer>
           <Button
