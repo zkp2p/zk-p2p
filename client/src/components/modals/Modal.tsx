@@ -329,7 +329,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <ModalAndOverlayContainer>
-      <Overlay onClick={handleOverlayClick}/>
+      <Overlay />
 
       {showConfetti ? (
         <ConfettiContainer>
