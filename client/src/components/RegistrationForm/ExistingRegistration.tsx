@@ -35,7 +35,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { registrationHash, isRegistered, venmoNftUri, refetchVenmoNftId } = useRegistration();
+  const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
   const { venmoNftAddress, venmoNftAbi } = useSmartContracts();
 
   const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
@@ -81,6 +81,14 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
     } catch (error) {
       console.log('writeSubmitMintSbtAsync failed: ', error);
     }
+  };
+
+  /*
+   * Helpers
+   */
+
+  const openSeaNftLink = () => {
+    return "https://opensea.io/assets/base/" + venmoNftAddress + "/" + venmoNftId;
   };
 
   /*
@@ -148,7 +156,10 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               { (shouldConfigureMintSbtWrite || venmoNftUri) && (
                 <RegistrationNftContainer>
                   {venmoNftUri && (
-                    <div dangerouslySetInnerHTML={{ __html: venmoNftUri }} />
+                    <NftAndLinkContainer>
+                      <div dangerouslySetInnerHTML={{ __html: venmoNftUri }} />
+                      <Link href={ openSeaNftLink() } target="_blank"> View on Opensea ↗</Link>
+                    </NftAndLinkContainer>
                   )}
 
                   {shouldConfigureMintSbtWrite && (
@@ -289,6 +300,15 @@ const RegistrationNftContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const NftAndLinkContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  padding-bottom: 4px;
 `;
 
 const MintNftContainer = styled.div`
