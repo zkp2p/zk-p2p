@@ -35,7 +35,7 @@ describe("HDFC payment ID", function () {
     it("Should generate witnesses", async () => {
         // No commas in payment_id.
         const input = {
-            "msg": textToAsciiArray("Your UPI tr=\r\nansaction reference number is 123123123123.<br>")
+            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -46,7 +46,7 @@ describe("HDFC payment ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Your UPI tr=\r\nansaction reference number is 123123123123.<br>")
+            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -58,15 +58,15 @@ describe("HDFC payment ID", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("Your UPI tr=\r\nansaction reference number is 123123123123.<br>")
+            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray("Your UPI tr=\r\nansaction reference number is ").length).fill("0")
+        const expected = Array(textToAsciiArray("\r\nansaction reference number is ").length).fill("0")
             .concat(textToAsciiArray("123123123123"))
-            .concat(Array(textToAsciiArray(".<br>").length).fill("0"));
+            .concat(Array(textToAsciiArray(".<br> <br> Please").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -74,7 +74,7 @@ describe("HDFC payment ID", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Your UPI transaction reference number i=\r\ns 123123123123.<br>")
+            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> PLease")
         };
         const witness = await cir.calculateWitness(
             input,
