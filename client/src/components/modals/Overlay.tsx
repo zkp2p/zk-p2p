@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 
@@ -9,6 +9,23 @@ interface OverlayProps {
 export const Overlay: React.FC<OverlayProps> = ({
   onClick 
 }) => {
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  /*
+   * Component
+   */
+
   return (
     <OverlayContainer onClick={onClick} />
   );

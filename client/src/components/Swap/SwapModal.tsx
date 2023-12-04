@@ -64,7 +64,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         <QRContainer>
           <QRCode
             value={link}
-            size={196}/>
+            size={192}/>
         </QRContainer>
         <QRLabel>
           <Link href={link} target="_blank">
@@ -132,12 +132,13 @@ const ModalContainer = styled.div`
   gap: 1.5rem;
   top: 20%;
   position: relative;
+  height: 516px;
+  overflow-y: auto;
   max-height: calc(100vh*.7);
-  overflow: auto;
 `;
 
 const QRContainer = styled.div`
-  padding: 2rem;
+  padding: 1.4rem 1.5rem 1.2rem;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   background: #131A2A;

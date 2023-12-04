@@ -64,7 +64,6 @@ const Wrapper = styled.div`
   border-radius: 16px;
   border: 1px solid #98a1c03d;
   background: #0D111C;
-  overflow: hidden;
 `;
 
 const TitleLabelAndDropdownIconContainer = styled.div`
