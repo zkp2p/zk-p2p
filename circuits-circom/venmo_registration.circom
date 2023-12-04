@@ -4,9 +4,9 @@ include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
-include "./regexes/from_regex.circom";
-include "./regexes/venmo_actor_id.circom";
-include "./regexes/venmo_send_amount.circom";
+include "./regexes/common/from_regex.circom";
+include "./regexes/venmo/venmo_actor_id.circom";
+include "./regexes/venmo/venmo_send_amount.circom";
 
 template VenmoRegistration(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 1024); // constraints for 1024 bit RSA

@@ -2,14 +2,12 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
-// include "@zk-email/circuits/helpers/extract.circom";
-// include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./helpers/hdfc_helpers.circom";
-include "./regexes/from_regex.circom";
+include "./regexes/common/from_regex.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_date.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
@@ -19,7 +17,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     var max_email_from_len = 21; // Length of alerts@hdfcbank.net
     var max_email_date_len = 31; // Sat, 14 Oct 2023 22:09:12 +0530
-    var max_amount_len = 8; // Allowing max 5 fig amount + one decimal point + 2 decimal places. e.g. 99999.00
+    var max_amount_len = 9; // Max UPI transaction size is ₹1 Lakh. Max 6 fig amount + one decimal point + 2 decimal places. e.g. 999999.00
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.

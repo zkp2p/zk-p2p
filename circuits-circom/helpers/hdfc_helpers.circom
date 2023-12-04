@@ -1,8 +1,8 @@
 pragma circom 2.1.5;
 
 include "../utils/ceil.circom";
-include "../regexes/from_regex.circom";
-include "../regexes/to_regex.circom";
+include "../regexes/common/from_regex.circom";
+include "../regexes/common/to_regex.circom";
 include "../regexes/hdfc/hdfc_amount.circom";
 include "../regexes/hdfc/hdfc_accnum.circom";
 include "../regexes/hdfc/hdfc_date.circom";
@@ -20,6 +20,7 @@ template HdfcOnramperId(
     assert(pack_size == 7);
 
     // TO HEADER REGEX
+    // NOTE: this does not work for hotmail users
     var max_email_to_packed_bytes = count_packed(max_email_to_len, pack_size);
     assert(max_email_to_packed_bytes < max_header_bytes);
     assert(max_email_to_packed_bytes == 7);
@@ -32,6 +33,7 @@ template HdfcOnramperId(
     reveal_email_to_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_to_len, pack_size)(to_regex_reveal, email_to_idx);
 
     // HDFC ACCOUNT NUMBER REGEX
+    // NOTE: Protonmail encrypts the email body, so we can't regex this
     var max_acc_num_packed_bytes = count_packed(max_account_number_len, pack_size);
     assert(max_acc_num_packed_bytes < max_body_bytes);
     assert(max_acc_num_packed_bytes == 1);

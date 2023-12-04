@@ -2,12 +2,9 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
-// include "@zk-email/circuits/helpers/extract.circom";
-// include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./helpers/hdfc_helpers.circom";
-include "./regexes/from_regex.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
 
 
