@@ -166,6 +166,10 @@ export const Modal: React.FC<ModalProps> = ({
             setCtaButtonTitle("Validation Failed: Proving Errored");
             break;
 
+          case 8: // MERCHANT_SEND_EMAIL
+            setCtaButtonTitle("Validation Failed: Invalid Payment");
+            break;
+
           default:
             setCtaButtonTitle("Validation Failed: Try Again Shortly");
             break;
