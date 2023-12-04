@@ -19,6 +19,7 @@ import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/src/shaHash";
 import { dkimVerify } from "@zk-email/helpers/src/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
+import { replaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
 
 async function getArgs() {
   const args = process.argv.slice(2);
@@ -67,6 +68,7 @@ export interface ICircuitInputs {
   venmo_actor_id_idx?: string;
   hdfc_payee_id_idx?: string;
   hdfc_amount_idx?: string;
+  hdfc_payment_id_idx?: string;
   email_date_idx?: string;
   intent_hash?: string;
 
@@ -126,26 +128,6 @@ function padWithZero(arr: Uint8Array, length: number) {
     arr = mergeUInt8Arrays(arr, int8toBytes(0));
   }
   return arr;
-}
-
-function replaceMessageIdWithXGoogleOriginalMessageId(str) {
-  const messageIdLabel = "Message-ID: <";
-  const xGoogleMessageIdLabel = "X-Google-Original-Message-ID: ";
-
-  const messageIdStart = str.indexOf(messageIdLabel) + messageIdLabel.length;
-  const messageIdEnd = str.indexOf(">", messageIdStart);
-  const messageId = str.substring(messageIdStart, messageIdEnd);
-
-  console.log("Message ID: ", messageId);
-
-  const xMessageIdStart = str.indexOf(xGoogleMessageIdLabel) + xGoogleMessageIdLabel.length;
-  const xMessageIdEnd = str.indexOf("\r", xMessageIdStart);
-  const xMessageId = str.substring(xMessageIdStart, xMessageIdEnd);
-
-  console.log("X-Google-Original-Message-ID: ", xMessageId);
-
-  // Replace "<message-id>" with "x-message-id"
-  return str.replace("<" + messageId + ">", xMessageId);
 }
 
 export async function getCircuitInputs(
@@ -302,12 +284,19 @@ export async function getCircuitInputs(
 
     const hdfc_amount_selector = Buffer.from("Dear Customer,<br> <br> Rs.");
     const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
+    
+    const bodyRemainingString = Buffer.from(bodyRemaining).toString();
+    const paymentIdRegex = /is ([0-9]+).<br/;
+    const match = bodyRemainingString.match(paymentIdRegex);
+    const hdfc_payment_id_selector = Buffer.from(match ? match[0] : "NOT A MATCH");
+    // NOTE: add 3 to skip "is " 
+    const hdfc_payment_id_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_payment_id_selector) + 3).toString();
 
     const email_date_idx = (raw_header.length - trimStrByStr(raw_header, "date:").length).toString();
     const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
     const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
 
-    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx, email_to_idx, hdfc_acc_num_idx)
+    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx, email_to_idx, hdfc_acc_num_idx, hdfc_payment_id_idx)
 
     circuitInputs = {
       in_padded,
@@ -325,6 +314,7 @@ export async function getCircuitInputs(
       email_from_idx,
       email_to_idx,
       hdfc_acc_num_idx,
+      hdfc_payment_id_idx,
       // IDs
       intent_hash,
     }

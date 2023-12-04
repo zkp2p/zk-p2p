@@ -7,10 +7,10 @@ include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./helpers/hdfc_helpers.circom";
-include "./regexes/common/from_regex.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_date.circom";
 include "./regexes/hdfc/hdfc_upi_subject.circom";
+include "./regexes/hdfc/hdfc_payment_id.circom";
 
 template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 2048); // constraints for 2048 bit RSA
@@ -18,6 +18,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_email_from_len = 21; // Length of alerts@hdfcbank.net
     var max_email_date_len = 31; // Sat, 14 Oct 2023 22:09:12 +0530
     var max_amount_len = 9; // Max UPI transaction size is ₹1 Lakh. Max 6 fig amount + one decimal point + 2 decimal places. e.g. 999999.00
+    var max_payment_id_len = 14; // Current payment ID length is 12, but account for 2 extra bytes for future proofing
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
     signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
@@ -86,6 +87,8 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     date_regex_out === 1;
     reveal_email_date_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_date_len, pack_size)(date_regex_reveal, email_date_idx);
 
+    // HDFC ONRAMPER ID REGEX
+
     // Extract packed and hashed onramper id
     signal input email_to_idx;
     signal input hdfc_acc_num_idx;
@@ -102,10 +105,27 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(in_body_padded, hdfc_payee_id_idx);
 
-    // NULLIFIER
+    // NULLIFIER: EMAIL SIGNATURE HASH
     signal output email_nullifier;
     signal cm_rand <== HashSignGenRand(n, k)(signature);
     email_nullifier <== EmailNullifier()(header_hash, cm_rand);
+
+    // NULLIFIER: PAYMENT ID HASH
+    var max_payment_id_packed_bytes = count_packed(max_payment_id_len, pack_size);
+    assert(max_payment_id_packed_bytes < max_body_bytes);
+
+    signal input hdfc_payment_id_idx;
+    signal reveal_payment_id_packed[max_payment_id_packed_bytes]; // packed into 7-bytes
+
+    signal (payment_regex_out, payment_regex_reveal[max_body_bytes]) <== HdfcPaymentIdRegex(max_body_bytes)(in_body_padded);
+    payment_regex_out === 1;
+    reveal_payment_id_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_payment_id_len, pack_size)(payment_regex_reveal, hdfc_payment_id_idx);
+    
+    component hash_payment_id = Poseidon(max_payment_id_packed_bytes);
+    for (var i = 0; i < max_payment_id_packed_bytes; i++) {
+        hash_payment_id.inputs[i] <== reveal_payment_id_packed[i];
+    }
+    signal output payment_id_nullifier <== hash_payment_id.out;
 
     // The following signals do not take part in any computation, but tie the proof to a specific intent_hash & claim_id to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
@@ -113,7 +133,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4456198
+    // TOTAL CONSTRAINTS: 4706189
 }
 
 // Args:

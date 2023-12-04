@@ -3,11 +3,8 @@ pragma circom 2.1.5;
 include "../utils/ceil.circom";
 include "../regexes/common/from_regex.circom";
 include "../regexes/common/to_regex.circom";
-include "../regexes/hdfc/hdfc_amount.circom";
 include "../regexes/hdfc/hdfc_accnum.circom";
-include "../regexes/hdfc/hdfc_date.circom";
 include "../regexes/hdfc/hdfc_payee_id.circom";
-include "../regexes/hdfc/hdfc_upi_subject.circom";
 
 
 template HdfcOnramperId(
