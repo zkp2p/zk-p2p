@@ -281,6 +281,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         registrationHash,
         extractedVenmoId,
         shouldFetchVenmoNftId,
+        venmoNftId,
         venmoNftUri,
         refetchVenmoNftId,
         setExtractedVenmoId,

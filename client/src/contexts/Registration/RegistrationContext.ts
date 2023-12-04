@@ -6,6 +6,7 @@ interface RegistrationValues {
   registrationHash: string | null;
   extractedVenmoId: string | null;
   shouldFetchVenmoNftId: boolean;
+  venmoNftId: bigint | null;
   venmoNftUri: string | null;
   refetchVenmoNftId: (() => void) | null;
   setExtractedVenmoId: ((venmoId: string) => void) | null;
@@ -18,6 +19,7 @@ const defaultValues: RegistrationValues = {
   registrationHash: null,
   extractedVenmoId: null,
   shouldFetchVenmoNftId: false,
+  venmoNftId: null,
   venmoNftUri: null,
   refetchVenmoNftId: null,
   setExtractedVenmoId: null,
