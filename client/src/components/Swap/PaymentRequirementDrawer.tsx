@@ -1,39 +1,18 @@
 import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
-import { useNavigate } from 'react-router-dom'
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
-import { Input } from "@components/common/Input";
 
 
-interface InstructionDrawerProps {
-  recipientAddress?: string;
-  setRecipientAddress: (address: string) => void;
-  isLoggedIn: boolean;
-}
-
-export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
-  recipientAddress,
-  setRecipientAddress,
-  isLoggedIn,
-}) => {
+export const PaymentRequirementDrawer: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   /*
    * State
    */
 
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
-
-  /*
-   * Handlers
-   */
-
-  const navigateToSwapHandler = () => {
-    navigate('/deposits');
-  };
 
   /*
    * Component
@@ -43,7 +22,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
     <Wrapper ref={ref}>
       <TitleLabelAndDropdownIconContainer>
         <TokenLabel>
-          Instructions
+          Review Requirements
         </TokenLabel>
         
         <StyledChevronDown
@@ -56,36 +35,21 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+            Email notifications are enabled in your Venmo notifications settings
           </InstructionStep>
 
           <InstructionStep step={2}>
-            Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+            Amount USD to send, which may not match your requested USDC amount, is double checked
           </InstructionStep>
-
-          <InputWrapper>
-            <Input
-              label="Recipient"
-              name="recipientAddress"
-              value={recipientAddress}
-              onChange={(e) => setRecipientAddress(e.target.value)}
-              placeholder={!isLoggedIn ? 'Wallet disconnected' : 'Recipient address'}
-              readOnly={!isLoggedIn}
-            />
-          </InputWrapper>
 
           <InstructionStep step={3}>
-            Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
-          </InstructionStep>
-
-          <InstructionStep step={4}>
-            Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+            'Turn on for purchases' at the payment screen is toggled off
           </InstructionStep>
         </InstructionListContainer>
 
-        <LiquidityLink onClick={navigateToSwapHandler}>
-          Interested in providing liquidity?
-        </LiquidityLink>
+        <DisclaimerLabel>
+          Failure to meet requirements results in loss of funds
+        </DisclaimerLabel>
       </InstructionsDropdown>
     </Wrapper>
   );
@@ -100,7 +64,6 @@ const Wrapper = styled.div`
   border-radius: 16px;
   border: 1px solid #98a1c03d;
   background: #0D111C;
-  overflow: hidden;
 `;
 
 const TitleLabelAndDropdownIconContainer = styled.div`
@@ -162,20 +125,14 @@ const InstructionListContainer = styled.div`
   gap: 12px;
 `;
 
-const InputWrapper = styled.div`
-  padding: 0 20px;
-`;
-
-const LiquidityLink = styled.button`
+const DisclaimerLabel = styled.button`
   font-size: 14px;
   font-family: 'Graphik';
-  color: #FFFFFF;
-  opacity: 0.3;
+  color: #df2e2d;
+  font-weight: 600;
+  line-height: 1.3;
   text-align: center;
   padding-bottom: 20px;
   background: none;
   border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  display: inline;
 `;
