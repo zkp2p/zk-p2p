@@ -2,7 +2,7 @@
     "parts": [
         {
             "is_public": false,
-            "regex_def": "is "
+            "regex_def": "number is "
         },
         {
             "is_public": true,
@@ -10,7 +10,7 @@
         },
         {
             "is_public": false,
-            "regex_def": ".<br"
+            "regex_def": ".<br>"
         }
     ]
 }

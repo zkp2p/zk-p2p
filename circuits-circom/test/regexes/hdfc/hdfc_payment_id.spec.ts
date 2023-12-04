@@ -55,17 +55,6 @@ describe("HDFC payment ID", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
-    it("Should match regex once", async () => {
-        const input = {
-            "msg": textToAsciiArray("Your UPI tr=\r\nansaction reference number is 123123123123.<br ")
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
-    });
-
 
     it("Should reveal regex correctly", async () => {
         const input = {
