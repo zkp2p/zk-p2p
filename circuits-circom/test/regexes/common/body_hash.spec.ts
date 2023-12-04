@@ -22,10 +22,10 @@ describe("Body Hash  Regex", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_body_hash_regex.circom"),
+            path.join(__dirname, "../../mocks/common/test_body_hash_regex.circom"),
             {
-                include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_body_hash_regex"),
+                include: path.join(__dirname, "../../../node_modules"),
+                output: path.join(__dirname, "../../../build/test_body_hash_regex"),
                 recompile: true,
                 verbose: true,
             }

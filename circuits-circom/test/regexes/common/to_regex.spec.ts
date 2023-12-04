@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo Actor ID", function () {
+describe("To regex", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -22,10 +22,10 @@ describe("Venmo Actor ID", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_to_regex.circom"),
+            path.join(__dirname, "../../mocks/common/test_to_regex.circom"),
             {
-                include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_to_regex"),
+                include: path.join(__dirname, "../../../node_modules"),
+                output: path.join(__dirname, "../../../build/test_to_regex"),
                 recompile: true,
                 verbose: true,
             }

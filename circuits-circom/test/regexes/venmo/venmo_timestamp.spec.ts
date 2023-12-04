@@ -18,10 +18,10 @@ describe("Venmo timestamp", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_venmo_timestamp.circom"),
+            path.join(__dirname, "../../mocks/venmo/test_venmo_timestamp.circom"),
             {
-                include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_venmo_timestamp"),
+                include: path.join(__dirname, "../../../node_modules"),
+                output: path.join(__dirname, "../../../build/test_venmo_timestamp"),
                 recompile: true,
                 verbose: true,
             }
