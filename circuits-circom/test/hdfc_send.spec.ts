@@ -49,8 +49,8 @@ describe("HDFC send WASM tester", function () {
     it("Should generate witnesses", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -63,8 +63,8 @@ describe("HDFC send WASM tester", function () {
     it("Should return the correct modulus hash", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -83,8 +83,8 @@ describe("HDFC send WASM tester", function () {
     it("Should return the correct packed from email", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -117,8 +117,8 @@ describe("HDFC send WASM tester", function () {
     it("Should return the correct packed amount", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -150,8 +150,8 @@ describe("HDFC send WASM tester", function () {
     it("Should return the correct packed date", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo receive payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -275,8 +275,8 @@ describe("HDFC send WASM tester", function () {
 
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -306,11 +306,11 @@ describe("HDFC send WASM tester", function () {
     });
 
     // NOTE: WOULD FAIL IF WE ARE USING STUB.
-    it("Should return the correct nullifier", async () => {
+    it("Should return the correct email nullifier", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -328,11 +328,39 @@ describe("HDFC send WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
+    it("Should return the correct payment ID nullifier", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
+        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned nullifier
+        const nullifier = witness[15];
+
+        // Get expected packed offramper_id
+        const regex_start = Number(input["hdfc_payment_id_idx"]);
+        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("46");  // Look for `.` to end the payment_id which is 46 in ascii
+        const payment_id_array = regex_start_sub_array.slice(0, regex_end);
+
+        // Chunk bytes into 7 and pack
+        const chunkedArrays = chunkArray(payment_id_array, 7, 14);
+        const packed_payment_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
+
+        const expected_nullifier = poseidon(packed_payment_id)
+        assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
+    });
+
     it("Should return the correct intent hash", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const venmo_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
+        const jsonString = fs.readFileSync(hdfc_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
             input,
@@ -340,7 +368,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[15];
+        const intent_hash = witness[16];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
