@@ -1,0 +1,53 @@
+{
+    "parts": [
+      {
+        "is_public": false,
+        "regex_def": "<!-- recipient name -->\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                   =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                    href=3D\"https://venmo.com/code\\?user_id=3D"
+      },
+      {
+        "is_public": false,
+        "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+&actor_id=3D"
+      },
+      {
+        "is_public": true,
+        "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+      },
+      {
+        "is_public": false,
+        "regex_def": "\">\r\n                   =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                    [^\r\n]+\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "                </a>\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "               =20\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "            </div>\r\n"
+      },
+      {
+        "is_public": false,
+        "regex_def": "            <!-- note -->\r\n"
+      }
+    ]
+  }
+  
