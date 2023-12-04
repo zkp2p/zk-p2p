@@ -6,6 +6,8 @@ import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
+import { PAY_MODAL_INSTRUCTIONS } from '@helpers/tooltips';
+import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { ThemedText } from '../../theme/text';
 
 interface SwapModalProps {
@@ -62,7 +64,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         <QRContainer>
           <QRCode
             value={link}
-            size={196}/>
+            size={192}/>
         </QRContainer>
         <QRLabel>
           <Link href={link} target="_blank">
@@ -76,12 +78,14 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </InstructionsTitle>
 
           <InstructionsLabel>
-            All transactions are peer-to-peer. You are transacting directly with a counterparty without needing to trust them.
-            Payment receipt emails are required to complete the order. <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
+            { PAY_MODAL_INSTRUCTIONS }
+            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
           </InstructionsLabel>
         </InstructionsContainer>
+
+        <PaymentRequirementDrawer />
 
         <ButtonContainer>
           <Button
@@ -128,12 +132,13 @@ const ModalContainer = styled.div`
   gap: 1.5rem;
   top: 20%;
   position: relative;
+  height: 516px;
+  overflow-y: auto;
   max-height: calc(100vh*.7);
-  overflow: auto;
 `;
 
 const QRContainer = styled.div`
-  padding: 2rem;
+  padding: 1.4rem 1.5rem 1.2rem;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   background: #131A2A;
