@@ -362,7 +362,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[16] memory _signals
     )
         external
     {
@@ -724,7 +724,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[14] memory _signals
+        uint256[16] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)

@@ -8,7 +8,7 @@ interface IHDFCSendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[14] signals;
+        uint256[16] signals;
     }
 
     function processProof(
