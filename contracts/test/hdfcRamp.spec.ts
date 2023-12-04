@@ -623,7 +623,7 @@ describe("HDFCRamp", () => {
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
   
-          const signals = new Array<BigNumber>(14).fill(ZERO);
+          const signals = new Array<BigNumber>(16).fill(ZERO);
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
           signals[2] = BigNumber.from(await calculateIdHash("1"));
@@ -785,7 +785,7 @@ describe("HDFCRamp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(14).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(16).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = currentTimestamp;
         subjectSignals[2] = BigNumber.from(await calculateIdHash("1"));
