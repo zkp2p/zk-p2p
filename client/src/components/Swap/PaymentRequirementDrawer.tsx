@@ -48,7 +48,7 @@ export const PaymentRequirementDrawer: React.FC = () => {
         </InstructionListContainer>
 
         <DisclaimerLabel>
-          Failure to meet requirements results in loss of funds
+          Not meeting requirements will lead to lost funds
         </DisclaimerLabel>
       </InstructionsDropdown>
     </Wrapper>
