@@ -19,25 +19,33 @@ import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/src/shaHash";
 import { dkimVerify } from "@zk-email/helpers/src/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
+import { replaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
 
 async function getArgs() {
   const args = process.argv.slice(2);
   const emailFileArg = args.find((arg) => arg.startsWith("--email_file="));
-  const emailTypeArg = args.find((arg) => arg.startsWith("--email_type="));
+  const paymentTypeArg = args.find((arg) => arg.startsWith("--payment_type="));
+  const circuitTypeArg = args.find((arg) => arg.startsWith("--circuit_type="));
   const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
   const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="))
 
+  if (!emailFileArg || !paymentTypeArg || !circuitTypeArg) {
+    console.log("Usage: npx ts-node generate_inputs.ts --email_file=emls/venmo_send.eml --payment_type=venmo --circuit_type=send --intent_hash=12345 --nonce=1 --output_file=inputs/input_venmo_send.json");
+    process.exit(1);
+  }
 
-  const email_file = emailFileArg ? emailFileArg.split("=")[1] : `emls/test.eml`;
-  const email_type = emailTypeArg ? emailTypeArg.split("=")[1] : "test";
+  const email_file = emailFileArg.split("=")[1];
+  const payment_type = paymentTypeArg.split("=")[1];
+  const circuit_type = circuitTypeArg.split("=")[1];
   const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
+
   const email_file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
-  const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_venmo_${email_type}_${nonce}` : `input_venmo_${email_type}`
+  const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_${payment_type}_${circuit_type}_${nonce}` : `input_${payment_type}_${circuit_type}`;
   const output_file_path = `${email_file_dir}/../inputs/${outputFileName}.json`;
 
-  return { email_file, email_type, intentHash, nonce, output_file_path };
+  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path };
 }
 
 export interface ICircuitInputs {
@@ -58,6 +66,10 @@ export interface ICircuitInputs {
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
   venmo_actor_id_idx?: string;
+  hdfc_payee_id_idx?: string;
+  hdfc_amount_idx?: string;
+  hdfc_payment_id_idx?: string;
+  email_date_idx?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -76,8 +88,10 @@ export enum CircuitType {
   RSA = "rsa",
   SHA = "sha",
   TEST = "test",
-  EMAIL_VENMO_SEND = "send",
-  EMAIL_VENMO_REGISTRATION = "registration"
+  EMAIL_VENMO_SEND = "venmo_send",
+  EMAIL_VENMO_REGISTRATION = "venmo_registration",
+  EMAIL_HDFC_SEND = "hdfc_send",
+  EMAIL_HDFC_REGISTRATION = "hdfc_registration"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -115,6 +129,7 @@ function padWithZero(arr: Uint8Array, length: number) {
   }
   return arr;
 }
+
 export async function getCircuitInputs(
   rsa_signature: BigInt,
   rsa_modulus: BigInt,
@@ -143,6 +158,12 @@ export async function getCircuitInputs(
     // IMPORTANT: Only send payment email can be used to register
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
+  } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+  } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
   }
 
   // Derive modulus from signature
@@ -256,7 +277,69 @@ export async function getCircuitInputs(
       venmo_actor_id_idx,
       email_from_idx,
     };
-  } else {
+  } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
+
+    const payee_id_selector = Buffer.from("to VPA ");
+    const hdfc_payee_id_idx = (Buffer.from(bodyRemaining).indexOf(payee_id_selector) + payee_id_selector.length).toString();
+
+    const hdfc_amount_selector = Buffer.from("Dear Customer,<br> <br> Rs.");
+    const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
+    
+    const bodyRemainingString = Buffer.from(bodyRemaining).toString();
+    const paymentIdRegex = /is ([0-9]+).<br/;
+    const match = bodyRemainingString.match(paymentIdRegex);
+    const hdfc_payment_id_selector = Buffer.from(match ? match[0] : "NOT A MATCH");
+    // NOTE: add 3 to skip "is " 
+    const hdfc_payment_id_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_payment_id_selector) + 3).toString();
+
+    const email_date_idx = (raw_header.length - trimStrByStr(raw_header, "date:").length).toString();
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
+
+    console.log("Indexes into for hdfc send email are: ", email_from_idx, hdfc_payee_id_idx, hdfc_amount_idx, email_date_idx, email_to_idx, hdfc_acc_num_idx, hdfc_payment_id_idx)
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // hdfc specific indices
+      hdfc_amount_idx,
+      hdfc_payee_id_idx,
+      email_date_idx,
+      email_from_idx,
+      email_to_idx,
+      hdfc_acc_num_idx,
+      hdfc_payment_id_idx,
+      // IDs
+      intent_hash,
+    }
+  } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const hdfc_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(Buffer.from("**")) + Buffer.from("**").length).toString();
+
+    console.log("Indexes into for hdfc registration email are: ", email_from_idx, email_to_idx, hdfc_acc_num_idx)
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // hdfc specific indices
+      email_from_idx,
+      email_to_idx,
+      hdfc_acc_num_idx
+    }
+  }
+  else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
     circuitInputs = {
       in_padded,
@@ -283,11 +366,13 @@ export async function generate_inputs(
   if (typeof raw_email === "string") {
     email = Buffer.from(raw_email);
   } else email = raw_email;
-
+  // console.log(email.toString());
+  const processed_email = preProcessEmail(email, type);
+  console.log(processed_email.toString());
   console.log("DKIM verification starting");
-  result = await dkimVerify(email);
+  result = await dkimVerify(processed_email);
   // console.log("From:", result.headerFrom);
-  // console.log("Results:", result.results[0]);
+  console.log("Results:", result.results[0]);
   if (!result.results[0]) {
     throw new Error(`No result found on dkim output ${result}`);
   } else {
@@ -339,18 +424,29 @@ export async function insert13Before10(a: Uint8Array): Promise<Uint8Array> {
   return ret.slice(0, j);
 }
 
+
+
+function preProcessEmail(email: Buffer, type: CircuitType): Buffer {
+
+  if (type === CircuitType.EMAIL_HDFC_REGISTRATION || type === CircuitType.EMAIL_HDFC_SEND) {
+    console.log("Preprocessing HDFC email. Updating message-id with x-google-original-message-id");
+    return Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(email.toString()));
+
+  }
+  return email;
+}
+
 // Only called when the whole function is called from the command line, to read inputs
 async function test_generate(writeToFile: boolean = true) {
   const args = await getArgs();
+  console.log(`Generating inputs for ${args.payment_type} ${args.circuit_type} with email file ${args.email_file} and output file ${args.output_file_path}`)
   const email = fs.readFileSync(args.email_file.trim());
   console.log("Email file read");
-  const type = args.email_type as CircuitType;
-  console.log("Email file type:", args.email_type)
-  console.log("Intent Hash", args.intentHash)
+
+  const type = `${args.payment_type}_${args.circuit_type}` as CircuitType;
   const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
   console.log("Input generation successful");
   if (writeToFile) {
-    console.log(`Writing to default file ${args.output_file_path}`);
     fs.writeFileSync(args.output_file_path, JSON.stringify(gen_inputs), { flag: "w" });
   }
   return gen_inputs;

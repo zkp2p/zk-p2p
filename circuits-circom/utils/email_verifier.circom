@@ -6,7 +6,7 @@ include "circomlib/circuits/mimcsponge.circom";
 include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/rsa.circom";
 include "@zk-email/circuits/helpers/base64.circom";
-include "../regexes/body_hash_regex.circom";
+include "../regexes/common/body_hash_regex.circom";
 include "./extract.circom";
 
 // Here, n and k are the biginteger parameters for RSA

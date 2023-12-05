@@ -1,0 +1,8 @@
+{
+  "parts": [
+    {
+      "is_public": false,
+      "regex_def": "subject:=\\?UTF-8\\?q\\?=E2=9D=97_You_have_done_a_UPI_txn\\._Check_details\\!\\?=\r\n"
+    }
+  ]
+}
