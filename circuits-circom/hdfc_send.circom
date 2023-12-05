@@ -3,9 +3,7 @@ pragma circom 2.1.5;
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
 include "./utils/ceil.circom";
-include "./utils/email_nullifier.circom";
 include "./utils/extract.circom";
-include "./utils/hash_sign_gen_rand.circom";
 include "./helpers/hdfc_helpers.circom";
 include "./regexes/hdfc/hdfc_amount.circom";
 include "./regexes/hdfc/hdfc_date.circom";
@@ -46,7 +44,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     EV.precomputed_sha <== precomputed_sha;
     EV.in_body_padded <== in_body_padded;
     EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
-    signal header_hash[256] <== EV.sha;
 
     modulus_hash <== EV.pubkey_hash;
 
@@ -105,11 +102,6 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(in_body_padded, hdfc_payee_id_idx);
 
-    // NULLIFIER: EMAIL SIGNATURE HASH
-    signal output email_nullifier;
-    signal cm_rand <== HashSignGenRand(n, k)(signature);
-    email_nullifier <== EmailNullifier()(header_hash, cm_rand);
-
     // NULLIFIER: PAYMENT ID HASH
     var max_payment_id_packed_bytes = count_packed(max_payment_id_len, pack_size);
     assert(max_payment_id_packed_bytes < max_body_bytes);
@@ -133,7 +125,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4658890
+    // TOTAL CONSTRAINTS: 4762997
 }
 
 // Args:
