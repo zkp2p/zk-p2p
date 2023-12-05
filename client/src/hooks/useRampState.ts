@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { RampContext } from '../contexts/Ramp'
+import { RampContext } from '../contexts/venmo/Ramp'
 
 const useRampState = () => {
   return { ...useContext(RampContext) }

@@ -5,7 +5,7 @@ import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
 import { toUsdString, toUsdcString  } from '@helpers/units'
 import { SECONDS_IN_DAY  } from '@helpers/constants'
-import { DepositIntent } from "../../contexts/Deposits/types";
+import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import useDeposits from '@hooks/useDeposits';
 import useLiquidity from '@hooks/useLiquidity';
 

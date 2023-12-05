@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { DepositsContext } from '../contexts/Deposits'
+import { DepositsContext } from '../contexts/venmo/Deposits'
 
 const useDeposits = () => {
   return { ...useContext(DepositsContext) }

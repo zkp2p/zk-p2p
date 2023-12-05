@@ -12,7 +12,7 @@ import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
   StoredDeposit
-} from '../Deposits/types'
+} from '../../venmo/Deposits/types'
 import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
