@@ -25,6 +25,7 @@ import RampProvider  from './contexts/Ramp/RampProvider';
 import RegistrationProvider  from './contexts/Registration/RegistrationProvider';
 import DepositsProvider  from './contexts/Deposits/DepositsProvider';
 import PermissionsProvider from './contexts/Permissions/PermissionsProvider';
+import PlatformSettings from './contexts/PlatformSettings/PlatformSettingsProvider';
 import OnRamperIntentsProvider  from './contexts/OnRamperIntents/OnRamperIntentsProvider';
 import LiquidityProvider from './contexts/Liquidity/LiquidityProvider';
 import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
@@ -103,11 +104,13 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                   <LiquidityProvider>
                     <OnRamperIntentsProvider>
                       <ProofGenSettingsProvider>
-                        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                          <GoogleAuthProvider>
-                            { children }
-                          </GoogleAuthProvider>
-                        </GoogleOAuthProvider>
+                        <PlatformSettings>
+                          <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                            <GoogleAuthProvider>
+                              { children }
+                            </GoogleAuthProvider>
+                          </GoogleOAuthProvider>
+                        </PlatformSettings>
                       </ProofGenSettingsProvider>
                     </OnRamperIntentsProvider>
                   </LiquidityProvider>
