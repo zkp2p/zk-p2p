@@ -5,8 +5,11 @@ import Link from '@mui/material/Link';
 
 import { ThemedText } from '../../theme/text'
 import { Overlay } from '@components/modals/Overlay';
+import { PlatformRow } from '@components/modals/PlatformRow';
+import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '../../contexts/PlatformSettings/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
+import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
 export const PlatformSelector: React.FC = () => {
@@ -16,11 +19,25 @@ export const PlatformSelector: React.FC = () => {
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
 
   /*
+   * Contexts
+   */
+
+  const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+
+  /*
    * Handlers
    */
 
   const handleOverlayClick = () => {
     toggleOpen();
+  };
+
+  const handleSelectPlatform = (platform: PaymentPlatformType) => {
+    if (setPaymentPlatform) {
+      setPaymentPlatform(platform);
+
+      toggleOpen();
+    }
   };
 
   /*
@@ -31,7 +48,7 @@ export const PlatformSelector: React.FC = () => {
     <Wrapper ref={ref}>
       <LogoAndTokenLabel onClick={toggleOpen}>
         <PlatformLabel>
-          Venmo
+          {paymentPlatformInfo[paymentPlatform].platformName}
         </PlatformLabel>
         <StyledChevronDown/>
       </LogoAndTokenLabel>
@@ -41,9 +58,9 @@ export const PlatformSelector: React.FC = () => {
           <Overlay onClick={handleOverlayClick}/>
 
           <ModalContainer>
-            <RowBetween>
+            <TableHeader>
               <ThemedText.SubHeader style={{ textAlign: 'left' }}>
-                Select a Platform
+                Select a platform
               </ThemedText.SubHeader>
 
               <button
@@ -52,14 +69,30 @@ export const PlatformSelector: React.FC = () => {
               >
                 <StyledX/>
               </button>
-            </RowBetween>
+            </TableHeader>
 
-            <InstructionsLabel>
-              We currently only support Venmo, but are expanding to other platforms. Please let us know which platforms
-              you are interested in seeing ZKP2P add support for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
+            <HorizontalDivider/>
+
+            <Table>
+              {paymentPlatforms.map((platform, index) => (
+                <PlatformRow
+                  key={index}
+                  platformName={paymentPlatformInfo[platform].platformName}
+                  platformCurrency={paymentPlatformInfo[platform].platformCurrency}
+                  flagSvg={paymentPlatformInfo[platform].flagSvg}
+                  isSelected={paymentPlatform === platform}
+                  isLastRow={index === paymentPlatforms.length - 1}
+                  onRowClick={() => handleSelectPlatform(platform)}
+                />
+              ))}
+            </Table>
+
+            <TableFooter>
+              Let us know which platforms you are interested in seeing ZKP2P add support
+              for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
-            </InstructionsLabel>
+            </TableFooter>
           </ModalContainer>
         </ModalAndOverlayContainer>
       )}
@@ -86,7 +119,7 @@ const LogoAndTokenLabel = styled.div`
 
 const PlatformLabel = styled.div`
   color: #FFF;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   padding: 0px 5px;
 `;
@@ -115,29 +148,39 @@ const ModalContainer = styled.div`
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem;
   background: #0D111C;
   color: #FFF;
   align-items: center;
   z-index: 20;
-  gap: 1.5rem;
   top: 33%;
   position: relative;
 `;
 
-const RowBetween = styled.div`
+const TableHeader = styled.div`
+  box-sizing: border-box;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
+  padding: 20px 16px 16px 20px;
+`;
+
+const HorizontalDivider = styled.div`
+  width: 100%;
+  border-top: 1px solid #98a1c03d;
 `;
 
 const StyledX = styled(X)`
   color: #FFF;
 `;
 
-const InstructionsLabel = styled.div`
+const Table = styled.div`
+  width: 100%;
+  color: #616161;
+`;
+
+const TableFooter = styled.div`
+  padding: 16px 20px 20px 20px;
   font-size: 14px;
   text-align: left;
   line-height: 1.5;

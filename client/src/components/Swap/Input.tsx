@@ -2,7 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
 import { TokenSelector } from './TokenSelector';
-import { PlatformSelector } from './PlatformSelector';
+import { PlatformSelector } from '../modals/PlatformSelector';
 
 
 interface InputProps {

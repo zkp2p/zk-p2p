@@ -14,7 +14,7 @@ import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
-import { PlatformSelector } from '@components/Swap/PlatformSelector';
+import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../theme/text';
 import { REGISTRATION_INSTRUCTIONS, REGISTRATION_NFT_TOOLTIP } from '@helpers/tooltips';
