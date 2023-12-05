@@ -362,7 +362,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[16] memory _signals
+        uint256[15] memory _signals
     )
         external
     {
@@ -724,7 +724,7 @@ contract HDFCRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[16] memory _signals
+        uint256[15] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -733,6 +733,7 @@ contract HDFCRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperIdHash,
+            bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
             IHDFCSendProcessor.SendProof({
@@ -749,6 +750,7 @@ contract HDFCRamp is Ownable {
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accounts[deposit.depositor].idHash == offRamperIdHash, "Offramper id does not match");
+        require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);

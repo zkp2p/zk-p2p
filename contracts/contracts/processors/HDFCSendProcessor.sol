@@ -40,7 +40,13 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         public
         override
         onlyRamp
-        returns(uint256 amount, uint256 timestamp, bytes32 offRamperIdHash, bytes32 intentHash)
+        returns(
+            uint256 amount,
+            uint256 timestamp,
+            bytes32 offRamperIdHash,
+            bytes32 onRamperIdHash,
+            bytes32 intentHash
+        )
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
@@ -59,19 +65,22 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         string memory rawTimestamp = _parseSignalArray(_proof.signals, 6, 11);
         timestamp = _dateStringToTimestamp(rawTimestamp);
 
-        // Signals [11] is the packed offRamperIdHash
-        offRamperIdHash = bytes32(_proof.signals[11]);
+        // Signals [11] is the packed onRamperIdHash
+        onRamperIdHash = bytes32(_proof.signals[11]);
+
+        // Signals [12] is the packed offRamperIdHash
+        offRamperIdHash = bytes32(_proof.signals[12]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        _validateAndAddNullifier(bytes32(_proof.signals[12]));
+        _validateAndAddNullifier(bytes32(_proof.signals[13]));
 
-        // Signals [13] is intentHash
-        intentHash = bytes32(_proof.signals[13]);
+        // Signals [14] is intentHash
+        intentHash = bytes32(_proof.signals[14]);
     }
 
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[16] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[15] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
         uint256[] memory signalArray = new uint256[](_to - _from);
         for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];

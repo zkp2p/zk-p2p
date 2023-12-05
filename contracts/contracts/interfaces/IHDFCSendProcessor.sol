@@ -8,12 +8,12 @@ interface IHDFCSendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[16] signals;
+        uint256[15] signals;
     }
 
     function processProof(
         SendProof calldata _proof
     )
         external
-    returns(uint256, uint256, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32, bytes32);
 }

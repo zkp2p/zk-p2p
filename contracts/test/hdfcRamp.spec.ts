@@ -623,11 +623,12 @@ describe("HDFCRamp", () => {
           const currentTimestamp = await blockchain.getCurrentTimestamp();
           const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
   
-          const signals = new Array<BigNumber>(16).fill(ZERO);
+          const signals = new Array<BigNumber>(15).fill(ZERO);
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
           signals[2] = BigNumber.from(await calculateIdHash("1"));
-          signals[3] = BigNumber.from(intentHash);
+          signals[3] = BigNumber.from(await calculateIdHash("2"));
+          signals[4] = BigNumber.from(intentHash);
   
           const a: [BigNumber, BigNumber] = [ZERO, ZERO];
           const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
@@ -785,11 +786,12 @@ describe("HDFCRamp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
 
-        subjectSignals = new Array<BigNumber>(16).fill(ZERO);
+        subjectSignals = new Array<BigNumber>(15).fill(ZERO);
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = currentTimestamp;
         subjectSignals[2] = BigNumber.from(await calculateIdHash("1"));
-        subjectSignals[3] = BigNumber.from(intentHash);
+        subjectSignals[3] = BigNumber.from(await calculateIdHash("2"));
+        subjectSignals[4] = BigNumber.from(intentHash);
 
         subjectA = [ZERO, ZERO];
         subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
@@ -902,7 +904,7 @@ describe("HDFCRamp", () => {
           intentHash = calculateIntentHash(await calculateIdHash("2"), depositId, currentTimestamp);
 
           subjectSignals[1] = currentTimestamp;
-          subjectSignals[3] = BigNumber.from(intentHash);
+          subjectSignals[4] = BigNumber.from(intentHash);
         });
 
         it("should prune the deposit", async () => {
@@ -959,6 +961,16 @@ describe("HDFCRamp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Offramper id does not match");
+        });
+      });
+
+      describe("when the onRamperIdHash doesn't match the intent", async () => {
+        beforeEach(async () => {
+          subjectSignals[3] = BigNumber.from(await calculateIdHash("3"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Onramper id does not match");
         });
       });
     });
