@@ -43,8 +43,8 @@ export const TokenSelector: React.FC = () => {
 
           <ModalContainer>
             <RowBetween>
-              <ThemedText.SubHeader>
-                Select a Token
+              <ThemedText.SubHeader style={{ textAlign: 'left' }}>
+                Select a token
               </ThemedText.SubHeader>
 
               <button
@@ -122,7 +122,7 @@ const ModalContainer = styled.div`
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem;
+  padding: 20px;
   background: #0D111C;
   color: #FFF;
   align-items: center;
