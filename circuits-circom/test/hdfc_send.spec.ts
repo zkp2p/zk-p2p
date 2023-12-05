@@ -305,29 +305,6 @@ describe("HDFC send WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_offramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     });
 
-    // NOTE: WOULD FAIL IF WE ARE USING STUB.
-    it("Should return the correct email nullifier", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const hdfc_path = path.join(__dirname, "../inputs/input_hdfc_send.json");
-        const jsonString = fs.readFileSync(hdfc_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned nullifier
-        const nullifier = witness[14];
-
-        // Get expected nullifier
-        const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
-        const packed_nullifier = packNullifier(sha_out);
-        const cm_rand = hashSignatureGenRand(input["signature"], N, K, poseidon);
-        const expected_nullifier = poseidon([cm_rand, packed_nullifier])
-        assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
-    });
-
     it("Should return the correct payment ID nullifier", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -340,7 +317,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[15];
+        const nullifier = witness[14];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["hdfc_payment_id_idx"]);
@@ -368,7 +345,7 @@ describe("HDFC send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[16];
+        const intent_hash = witness[15];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
