@@ -121,7 +121,7 @@ const PlatformLabel = styled.div`
   color: #FFF;
   font-weight: 700;
   letter-spacing: 0.02em;
-  padding: 0px 5px;
+  padding: 1px 5px 0px 5px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
