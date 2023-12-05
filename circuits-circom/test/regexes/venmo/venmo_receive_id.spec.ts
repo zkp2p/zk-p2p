@@ -22,10 +22,10 @@ describe("Venmo receive ids", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_venmo_receive_id.circom"),
+            path.join(__dirname, "../../mocks/venmo/test_venmo_receive_id.circom"),
             {
-                include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_venmo_receive_id"),
+                include: path.join(__dirname, "../../../node_modules"),
+                output: path.join(__dirname, "../../../build/test_venmo_receive_id"),
                 recompile: true,
                 verbose: true,
             }

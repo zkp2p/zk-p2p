@@ -22,10 +22,10 @@ describe("Venmo receive amount", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_venmo_receive_amount.circom"),
+            path.join(__dirname, "../../mocks/venmo/test_venmo_receive_amount.circom"),
             {
-                include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_venmo_receive_amount"),
+                include: path.join(__dirname, "../../../node_modules"),
+                output: path.join(__dirname, "../../../build/test_venmo_receive_amount"),
                 recompile: true,
                 verbose: true,
             }
