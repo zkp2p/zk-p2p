@@ -5,6 +5,11 @@ import { Abi } from './types'
 
 
 interface SmartContractsValues {
+  blockscanUrl?: string | null;
+  usdcAddress: Address | null;
+  usdcAbi?: Abi | null;
+  
+  // venmo
   rampAddress: Address | null;
   rampAbi: Abi | null;
   registrationProcessorAddress: Address | null;
@@ -12,12 +17,20 @@ interface SmartContractsValues {
   sendProcessorAbi: Abi | null;
   venmoNftAddress: Address | null;
   venmoNftAbi: Abi | null;
-  usdcAddress: Address | null;
-  usdcAbi?: Abi | null;
-  blockscanUrl?: string | null;
+  
+  // hdfc
+  hdfcRampAddress: Address | null;
+  hdfcRampAbi: Abi | null;
+  hdfcSendProcessorAddress: Address | null;
+  hdfcSendProcessorAbi: Abi | null;
 }
 
 const defaultValues: SmartContractsValues = {
+  blockscanUrl: null,
+  usdcAddress: null,
+  usdcAbi: null,
+  
+  // venmo
   rampAddress: null,
   rampAbi: null,
   registrationProcessorAddress: null,
@@ -25,9 +38,12 @@ const defaultValues: SmartContractsValues = {
   sendProcessorAbi: null,
   venmoNftAddress: null,
   venmoNftAbi: null,
-  usdcAddress: null,
-  usdcAbi: null,
-  blockscanUrl: null,
+  
+  // hdfc
+  hdfcRampAddress: null,
+  hdfcRampAbi: null,
+  hdfcSendProcessorAddress: null,
+  hdfcSendProcessorAbi: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)
