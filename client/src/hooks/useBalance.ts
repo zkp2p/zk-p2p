@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { BalancesContext } from '../contexts/Balances'
+import { BalancesContext } from '../contexts/common/Balances'
 
 const useBalances = () => {
   return { ...useContext(BalancesContext) }

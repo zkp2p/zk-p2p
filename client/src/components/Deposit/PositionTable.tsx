@@ -11,7 +11,7 @@ import {
 import { Button } from '../Button';
 import { RowBetween } from '../layouts/Row';
 import { ThemedText } from '../../theme/text';
-import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
+import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
 import { PositionRow } from "./PositionRow";
 import { CustomConnectButton } from "../common/ConnectButton";
 import { toUsdcString, conversionRateToString } from '@helpers/units';

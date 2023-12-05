@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { ProofGenSettingsContext } from '../contexts/ProofGenSettings'
+import { ProofGenSettingsContext } from '../contexts/common/ProofGenSettings'
 
 const useProofGenSettings = () => {
   return { ...useContext(ProofGenSettingsContext) }

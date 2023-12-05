@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { SmartContractsContext } from '../contexts/SmartContracts'
+import { SmartContractsContext } from '../contexts/common/SmartContracts'
 
 const useSmartContracts = () => {
   return { ...useContext(SmartContractsContext) }

@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components/macro'
 import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { Button } from "../Button";
-import { DepositWithAvailableLiquidity } from "../../contexts/Deposits/types";
+import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
 import { DepositsRow } from "./DepositsRow";
 import { toUsdcString, conversionRateToString } from '@helpers/units'
 import useLiquidity from '@hooks/useLiquidity';
