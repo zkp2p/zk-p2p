@@ -22,21 +22,22 @@ import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 import AccountProvider from "./contexts/common/Account/AccountProvider";
 import BalancesProvider from "./contexts/common/Balances/BalancesProvider";
 import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider';
-import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
 import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 
 // Venmo Contexts
 import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
+import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
 import OnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
 import PermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
 import RampProvider  from './contexts/venmo/Ramp/RampProvider';
 import RegistrationProvider from './contexts/venmo/Registration/RegistrationProvider';
 
 // HDFC Contexts
-import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
 import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
+import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
+import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -111,17 +112,19 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                   <HdfcDepositsProvider>
                     <PermissionsProvider>
                       <LiquidityProvider>
-                        <OnRamperIntentsProvider>
-                          <ProofGenSettingsProvider>
-                            <PlatformSettings>
-                              <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                                <GoogleAuthProvider>
-                                  { children }
-                                </GoogleAuthProvider>
-                              </GoogleOAuthProvider>
-                            </PlatformSettings>
-                          </ProofGenSettingsProvider>
-                        </OnRamperIntentsProvider>
+                        <HdfcLiquidityProvider>
+                          <OnRamperIntentsProvider>
+                            <ProofGenSettingsProvider>
+                              <PlatformSettings>
+                                <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                  <GoogleAuthProvider>
+                                    { children }
+                                  </GoogleAuthProvider>
+                                </GoogleOAuthProvider>
+                              </PlatformSettings>
+                            </ProofGenSettingsProvider>
+                          </OnRamperIntentsProvider>
+                        </HdfcLiquidityProvider>
                       </LiquidityProvider>
                     </PermissionsProvider>
                   </HdfcDepositsProvider>
