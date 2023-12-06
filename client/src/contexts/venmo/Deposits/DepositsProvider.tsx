@@ -1,19 +1,19 @@
-import React, { useEffect, useState, ReactNode } from 'react'
-import { useContractRead } from 'wagmi'
+import React, { useEffect, useState, ReactNode } from 'react';
+import { useContractRead } from 'wagmi';
 
 import {
   Deposit,
   DepositWithAvailableLiquidity,
   Intent,
   DepositIntent
-} from './types'
-import { PaymentPlatform } from '../../common/PlatformSettings/types'
-import { esl } from '@helpers/constants'
-import { unpackPackedVenmoId } from '@helpers/poseidonHash'
-import useAccount from '@hooks/useAccount'
+} from './types';
+import { PaymentPlatform } from '../../common/PlatformSettings/types';
+import { esl } from '@helpers/constants';
+import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 
-import DepositsContext from './DepositsContext'
+import DepositsContext from './DepositsContext';
 
 
 interface ProvidersProps {

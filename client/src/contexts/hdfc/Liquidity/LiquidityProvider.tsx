@@ -12,12 +12,12 @@ import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
   StoredDeposit
-} from '../Deposits/types';
+} from '../../venmo/Deposits/types';
 import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
- } from './helper';
+ } from '../../venmo/Liquidity/helper';
  import { PaymentPlatform } from '../../common/PlatformSettings/types';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
@@ -29,8 +29,8 @@ import LiquidityContext from './LiquidityContext';
 
 
 const BATCH_SIZE = 50;
-const PRUNED_DEPOSITS_PREFIX = 'prunedDepositIds_';
-const TARGETED_DEPOSITS_PREFIX = 'targetedDepositIds_';
+const PRUNED_DEPOSITS_PREFIX = 'prunedHdfcDepositIds_';
+const TARGETED_DEPOSITS_PREFIX = 'targetedHdfcDepositIds_';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -41,7 +41,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
   const { loggedInEthereumAddress } = useAccount();
 
@@ -65,8 +65,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     try {
       // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
       const data = await readContract({
-        address: rampAddress,
-        abi: rampAbi,
+        address: hdfcRampAddress,
+        abi: hdfcRampAbi,
         functionName: 'getDepositFromIds',
         args: [depositIdBatch],
         account: CALLER_ACCOUNT,
@@ -78,7 +78,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       
       return [];
     }
-  }, [rampAddress, rampAbi]);
+  }, [hdfcRampAddress, hdfcRampAbi]);
 
   const depositIdsToFetch = useMemo(() => {
     if (depositCounter) {
@@ -139,7 +139,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       
       const depositData = depositWithAvailableLiquidityData.deposit;
       const deposit: Deposit = {
-        platformType: PaymentPlatform.VENMO,
+        platformType: PaymentPlatform.HDFC,
         depositor: depositData.depositor.toString(),
         venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
         depositAmount: depositData.depositAmount,
@@ -166,23 +166,23 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    if (rampAddress) {
-      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+    if (hdfcRampAddress) {
+      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
       setPrunedDepositIds(prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : []);
 
-      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
       setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
     } else {
       setPrunedDepositIds([]);
       setTargetedDepositIds([]);
     }
-  }, [rampAddress]);
+  }, [hdfcRampAddress]);
 
   useEffect(() => {
-    if (rampAddress) {
-      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+    if (hdfcRampAddress) {
+      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
 
@@ -190,15 +190,15 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prunedDepositIds, rampAddress]);
+  }, [prunedDepositIds, hdfcRampAddress]);
 
   useEffect(() => {
-    if (rampAddress) {
-      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+    if (hdfcRampAddress) {
+      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
     }
-  }, [targetedDepositIds, rampAddress]);
+  }, [targetedDepositIds, hdfcRampAddress]);
 
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -214,10 +214,10 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     esl && console.log('shouldFetchDeposits_1');
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking hdfcRampAddress: ', hdfcRampAddress);
     esl && console.log('checking depositCounter: ', depositCounter);
 
-    if (rampAddress && depositCounter) {
+    if (hdfcRampAddress && depositCounter) {
       esl && console.log('shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
@@ -229,7 +229,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       setDeposits(null);
       setDepositStore(null);
     }
-  }, [rampAddress, depositCounter]);
+  }, [hdfcRampAddress, depositCounter]);
 
   useEffect(() => {
     esl && console.log('depositStore_1');
@@ -300,4 +300,4 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default LiquidityProvider
+export default LiquidityProvider;
