@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
+import {
+  PAYMENT_REQUIREMENT_STEP_ONE,
+  PAYMENT_REQUIREMENT_STEP_TWO,
+  PAYMENT_REQUIREMENT_STEP_THREE,
+} from "@helpers/tooltips";
 
 
 export const PaymentRequirementDrawer: React.FC = () => {
@@ -35,15 +40,15 @@ export const PaymentRequirementDrawer: React.FC = () => {
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            Email notifications are enabled in your Venmo notifications settings
+            { PAYMENT_REQUIREMENT_STEP_ONE }
           </InstructionStep>
 
           <InstructionStep step={2}>
-            Amount USD to send, which may not match your requested USDC amount, is double checked
+            { PAYMENT_REQUIREMENT_STEP_TWO }
           </InstructionStep>
 
           <InstructionStep step={3}>
-            'Turn on for purchases' at the payment screen is toggled off
+            { PAYMENT_REQUIREMENT_STEP_THREE }
           </InstructionStep>
         </InstructionListContainer>
 

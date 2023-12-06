@@ -197,3 +197,39 @@ export const ON_RAMPER_INTENT_INSTRUCTIONS = `
   you must send a payment for the correct amount on Venmo, and then validate
   the payment by providing the transaction email. Click Send to begin.
 `;
+
+/*
+ * Instruction Drawer
+ */
+
+export const INSTRUCTION_DRAWER_STEP_ONE = `
+  Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+`;
+
+export const INSTRUCTION_DRAWER_STEP_TWO = `
+  Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+`;
+
+export const INSTRUCTION_DRAWER_STEP_THREE = `
+  Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
+`;
+
+export const INSTRUCTION_DRAWER_STEP_FOUR = `
+  Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+`;
+
+/*
+ * Payment Requirements
+ */
+
+export const PAYMENT_REQUIREMENT_STEP_ONE = `
+  Email notifications are enabled in your Venmo notifications settings
+`;
+
+export const PAYMENT_REQUIREMENT_STEP_TWO = `
+  Amount USD to send, which may not match your requested USDC amount, is double checked
+`;
+
+export const PAYMENT_REQUIREMENT_STEP_THREE = `
+  'Turn on for purchases' at the payment screen is toggled off
+`;
