@@ -4,7 +4,7 @@ import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
   StoredDeposit
-} from "../../venmo/Deposits/types";
+} from "../Deposits/types";
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
 
