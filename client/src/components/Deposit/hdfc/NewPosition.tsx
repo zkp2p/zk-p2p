@@ -8,35 +8,32 @@ import {
   useWaitForTransaction
 } from 'wagmi'
 
-import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
+import { Button } from "../../Button";
+import { RowBetween } from '../../layouts/Row'
+import { ThemedText } from '../../../theme/text'
 import { Input } from "@components/Deposit/Input";
-import { NumberedStep } from "../common/NumberedStep";
-import {
-  calculatePackedId,
-  isProvidedIdEqualToRegistration
-} from '@helpers/poseidonHash'
+import { NumberedStep } from "../../common/NumberedStep";
+import { calculatePackedId } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
 import {
-  NEW_DEPOSIT_VENMO_ID_TOOLTIP,
+  NEW_DEPOSIT_UPI_ID_TOOLTIP,
   NEW_DEPOSIT_DEPOSIT_TOOLTIP,
   NEW_DEPOSIT_RECEIVE_TOOLTIP,
   NEW_DEPOSIT_INSTRUCTIONS,
-} from '@helpers/tooltips'
+} from '@helpers/strings/hdfc';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
-import useDeposits from '@hooks/useDeposits';
 import useRampState from '@hooks/useRampState'
-import useRegistration from '@hooks/useRegistration';
+import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
+import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
 const NewDepositState = {
   MISSING_REGISTRATION: 'missing_registration',
   DEFAULT: 'default',
-  INVALID_VENMO_ID: 'invalid_venmo_id',
+  INVALID_UPI_ID: 'invalid_upi_id',
   MISSING_AMOUNTS: 'missing_amounts',
   INSUFFICIENT_BALANCE: 'insufficient_balance',
   APPROVAL_REQUIRED: 'approval_required',
@@ -59,21 +56,21 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
-  const { minimumDepositAmount } = useRampState()
-  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances()
-  const { refetchDeposits } = useDeposits()
-  const { extractedVenmoId, registrationHash, setExtractedVenmoId } = useRegistration();
+  const { hdfcRampAddress, hdfcRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
+  const { minimumDepositAmount } = useRampState();
+  const { usdcApprovalToHdfcRamp, usdcBalance, refetchUsdcApprovalToHdfcRamp, refetchUsdcBalance } = useBalances();
+  const { refetchDeposits } = useHdfcDeposits();
+  const { registrationHash } = useHdfcRegistration();
 
   /*
    * State
    */
   const [depositState, setDepositState] = useState(NewDepositState.DEFAULT);
-  const [venmoIdInput, setVenmoIdInput] = useState<string>('');
+  const [upiIdInput, setUpiIdInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
 
-  const [isVenmoIdInputValid, setIsVenmoIdInputValid] = useState<boolean>(false);
+  const [isUpiIdInputValid, setIsUpiInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
@@ -84,14 +81,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   //
-  // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount)
+  // offRamp(bytes32 _upiId, uint256 _depositAmount, uint256 _receiveAmount)
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: hdfcRampAddress,
+    abi: hdfcRampAbi,
     functionName: 'offRamp',
     args: [
-      calculatePackedId(venmoIdInput),
+      calculatePackedId(upiIdInput),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],
@@ -125,7 +122,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: usdcAbi,
     functionName: "approve",
     args: [
-      rampAddress,
+      hdfcRampAddress,
       amountToApprove
     ],
     enabled: shouldConfigureApprovalWrite
@@ -144,7 +141,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     onSuccess(data) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
-      refetchUsdcApprovalToRamp?.();
+      refetchUsdcApprovalToHdfcRamp?.();
       refetchUsdcBalance?.();
     },
   });
@@ -158,21 +155,22 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       if(!registrationHash) {
         setDepositState(NewDepositState.MISSING_REGISTRATION);
       } else {
-        if (!venmoIdInput) { 
+        if (!upiIdInput) { 
           setDepositState(NewDepositState.DEFAULT);
         } else {
-          if (!isVenmoIdInputValid) {
-            setDepositState(NewDepositState.INVALID_VENMO_ID);
+          if (!isUpiIdInputValid) {
+            setDepositState(NewDepositState.INVALID_UPI_ID);
           } else {
             const usdcBalanceLoaded = usdcBalance !== null;
-            const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
+            const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null;
             const minimumDepositAmountLoaded = minimumDepositAmount !== null;
+
   
             if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
               const depositAmountBI = toBigInt(depositAmountInput);
               const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
               const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
+              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToHdfcRamp;
         
               if (isDepositAmountGreaterThanBalance) {
                 setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
@@ -197,14 +195,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
     updateDepositState();
   }, [
-      venmoIdInput,
+      upiIdInput,
       registrationHash,
       depositAmountInput,
       receiveAmountInput,
       minimumDepositAmount,
       usdcBalance,
-      usdcApprovalToRamp,
-      isVenmoIdInputValid,
+      usdcApprovalToHdfcRamp,
+      isUpiIdInputValid,
     ]
   );
 
@@ -216,12 +214,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [depositState]);
 
   useEffect(() => {
-    const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
+    const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null && usdcApprovalToHdfcRamp !== undefined;
 
     if (!depositAmountInput || !usdcApprovalToRampLoaded) {
       setAmountToApprove(ZERO);
     } else {
-      const approvalDifference = toBigInt(depositAmountInput.toString()) - usdcApprovalToRamp;
+      const approvalDifference = toBigInt(depositAmountInput.toString()) - usdcApprovalToHdfcRamp;
       if (approvalDifference > ZERO) {
         setAmountToApprove(approvalDifference);
       } else {
@@ -229,41 +227,24 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       }
     }
     
-  }, [depositAmountInput, usdcApprovalToRamp]);
+  }, [depositAmountInput, usdcApprovalToHdfcRamp]);
 
   useEffect(() => {
-    if (extractedVenmoId) {
-      setVenmoIdInput(extractedVenmoId);
-    } else {
-      setVenmoIdInput('');
-    }
-  }, [extractedVenmoId]);
-
-  useEffect(() => {
-    const verifyVenmoIdInput = async () => {
-      if (venmoIdInput.length < 18) {
-        setIsVenmoIdInputValid(false);
-      } else {
-        if (registrationHash) {
-          const validVenmoInput = await isProvidedIdEqualToRegistration(venmoIdInput, registrationHash);
-
-          setIsVenmoIdInputValid(validVenmoInput);
-
-          if (validVenmoInput && setExtractedVenmoId) {
-            setExtractedVenmoId(venmoIdInput);
-          };
-        } else {
-          setIsVenmoIdInputValid(false);
-        }
-      }
-    };
-
-    verifyVenmoIdInput();
-  }, [venmoIdInput, registrationHash, setExtractedVenmoId]);
+    const validUpiInput = isValidUpiId(upiIdInput);
+  
+    setIsUpiInputValid(validUpiInput);
+  }, [upiIdInput]);
 
   /*
    * Helpers
    */
+
+  function isValidUpiId(value: string) {
+    // Regular expression to match the UPI ID format
+    const upiRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
+
+    return upiRegex.test(value);
+}
 
   function isValidInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
@@ -274,7 +255,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const ctaDisabled = (): boolean => {
     switch (depositState) {
       case NewDepositState.DEFAULT:
-      case NewDepositState.INVALID_VENMO_ID:
+      case NewDepositState.INVALID_UPI_ID:
       case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
       case NewDepositState.CONVENIENCE_FEE_INVALID:
       case NewDepositState.INSUFFICIENT_BALANCE:
@@ -297,8 +278,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositState.MISSING_REGISTRATION:
         return 'Missing registration';
 
-      case NewDepositState.INVALID_VENMO_ID:
-        return 'Venmo id does not match registration';
+      case NewDepositState.INVALID_UPI_ID:
+        return 'UPI id does not match registration';
 
       case NewDepositState.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
@@ -312,7 +293,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return `Minimum deposit amount is ${minimumDepositAmountString}`;
 
       case NewDepositState.APPROVAL_REQUIRED:
-        const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp) : '0';
+        const usdcApprovalToRampString = usdcApprovalToHdfcRamp ? toUsdcString(usdcApprovalToHdfcRamp) : '0';
         return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
 
       case NewDepositState.VALID:
@@ -323,7 +304,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewDepositState.DEFAULT:
       default:
-        return 'Input valid Venmo Id';
+        return 'Input valid UPI Id';
 
     }
   }
@@ -414,19 +395,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           <NumberedStep>
             { NEW_DEPOSIT_INSTRUCTIONS }
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
-              Fetch Your Venmo ID ↗
+              Fetch Your UPI ID ↗
             </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>
         <InputsContainer>
           <Input
-            label="Venmo ID"
-            name={`venmoId`}
-            value={venmoIdInput}
-            onChange={(e) => {setVenmoIdInput(e.currentTarget.value)}}
-            type="number"
-            placeholder="215524379021315184"
-            helperText={NEW_DEPOSIT_VENMO_ID_TOOLTIP}
+            label="UPI ID"
+            name={`upiId`}
+            value={upiIdInput}
+            onChange={(e) => {setUpiIdInput(e.currentTarget.value)}}
+            type="text"
+            placeholder="90876543@okicici"
+            helperText={NEW_DEPOSIT_UPI_ID_TOOLTIP}
           />
 
           <Input

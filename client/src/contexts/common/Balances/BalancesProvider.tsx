@@ -18,7 +18,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, usdcAddress } = useSmartContracts()
+  const { rampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts()
 
   /*
    * State
@@ -27,6 +27,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [ethBalance, setEthBalance] = useState<bigint | null>(null);
   const [usdcBalance, setUsdcBalance] = useState<bigint | null>(null);
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
+  const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
 
   const [shouldFetchEthBalance, setShouldFetchEthBalance] = useState<boolean>(false);
   const [shouldFetchUsdcBalance, setShouldFetchUsdcBalance] = useState<boolean>(false);
@@ -62,6 +63,20 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     args: [
       loggedInEthereumAddress ?? ZERO_ADDRESS,
       rampAddress
+    ],
+    enabled: shouldFetchUsdcApprovalToRamp,
+  });
+
+  const {
+    data: usdcApprovalToHdfcRampRaw,
+    refetch: refetchUsdcApprovalToHdfcRamp,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+      hdfcRampAddress
     ],
     enabled: shouldFetchUsdcApprovalToRamp,
   });
@@ -163,6 +178,21 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     }
   }, [usdcApprovalToRampRaw]);
 
+  useEffect(() => {
+    esl && console.log('usdcApprovalToHdfcRampRaw_1');
+    esl && console.log('checking usdcApprovalToHdfcRampRaw: ', usdcApprovalToHdfcRampRaw);
+  
+    if (usdcApprovalToHdfcRampRaw || usdcApprovalToHdfcRampRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToHdfcRampRaw_2');
+
+      setUsdcApprovalToHdfcRamp(usdcApprovalToHdfcRampRaw);
+    } else {
+      esl && console.log('usdcApprovalToHdfcRampRaw_3');
+      
+      setUsdcApprovalToHdfcRamp(null);
+    }
+  }, [usdcApprovalToHdfcRampRaw]);
+
   return (
     <BalancesContext.Provider
       value={{
@@ -172,6 +202,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToRamp,
         refetchUsdcBalance,
         shouldFetchUsdcBalance,
+        usdcApprovalToHdfcRamp,
+        refetchUsdcApprovalToHdfcRamp,
       }}
     >
       {children}

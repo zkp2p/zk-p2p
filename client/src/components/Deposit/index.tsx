@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 
 import { AutoColumn } from '../layouts/Column'
-import { NewPosition } from './NewPosition'
+import { NewPosition as VenmoNewPosition } from './NewPosition'
+import { NewPosition as HdfcNewPosition } from './hdfc/NewPosition'
 import { PositionTable } from './PositionTable'
 import { OffRamperIntentTable } from './OffRamperIntentTable'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 export default function Deposit() {
@@ -14,7 +16,8 @@ export default function Deposit() {
    * Contexts
    */
 
-  const { depositIntents, refetchDeposits, shouldFetchDeposits } = useDeposits()
+  const { depositIntents, refetchDeposits, shouldFetchDeposits } = useDeposits();
+  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
   /*
    * State
@@ -41,6 +44,7 @@ export default function Deposit() {
   /*
    * Handlers
    */
+
   const handleUpdateClick = () => {
     setIsAddPosition(true);
   }
@@ -49,15 +53,31 @@ export default function Deposit() {
     setIsAddPosition(false);
   }
 
+  /*
+   * Component
+   */
+
   function renderContent() {
     if (isAddPosition) {
-      return (
-        <NewPositionContainer>
-          <NewPosition
-            handleBackClick={handleBackClickOnNewDeposit}
-          />
-        </NewPositionContainer>
-      );
+      switch (paymentPlatform) {
+        case PaymentPlatform.VENMO:
+          return (
+            <NewPositionContainer>
+              <VenmoNewPosition
+                handleBackClick={handleBackClickOnNewDeposit}
+              />
+            </NewPositionContainer>
+          );
+
+        case PaymentPlatform.HDFC:
+          return (
+            <NewPositionContainer>
+              <HdfcNewPosition
+                handleBackClick={handleBackClickOnNewDeposit}
+              />
+            </NewPositionContainer>
+          );
+      }
     }
   
     return (
