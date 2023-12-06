@@ -39,7 +39,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  // getAccountVenmoId(address _account) external view returns (bytes32)
+  // getAccountInfo(address _account) external view returns (bytes32)
   const {
     data: hdfcRampAccountRaw,
     refetch: refetchHdfcRampAccount,
@@ -84,7 +84,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       esl && console.log('hdfcRampAccountRaw_2');
 
       const rampAccountData = hdfcRampAccountRaw as any;
-      const rampAccountProcessed = rampAccountData.venmoIdHash;
+      const rampAccountProcessed = rampAccountData.idHash;
       
       setRegistrationHash(rampAccountProcessed);
     } else {

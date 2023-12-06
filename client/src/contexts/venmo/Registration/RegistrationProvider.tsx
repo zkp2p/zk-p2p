@@ -63,7 +63,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
    */
 
-  // getAccountVenmoId(address _account) external view returns (bytes32)
+  // getAccountInfo(address _account) external view returns (bytes32)
   const {
     data: rampAccountRaw,
     refetch: refetchRampAccount,
