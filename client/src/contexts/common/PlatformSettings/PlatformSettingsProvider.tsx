@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { PaymentPlatform, PaymentPlatformType } from './types';
+import { PaymentPlatform, PaymentPlatformType, paymentPlatforms } from './types';
 
 import PlatformSettingsContext from './PlatformSettingsContext'
 
@@ -38,7 +38,9 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
     <PlatformSettingsContext.Provider
       value={{
         paymentPlatform,
-        setPaymentPlatform
+        setPaymentPlatform,
+        PaymentPlatform,
+        paymentPlatforms
       }}
     >
       {children}

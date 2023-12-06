@@ -142,11 +142,21 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
       
-      setRegistrationHash(rampAccountProcessed);
+      if (rampAccountProcessed !== ZERO_ADDRESS) {
+        esl && console.log('rampAccountRaw_3');
 
-      setShouldFetchVenmoNftId(true);
+        setRegistrationHash(rampAccountProcessed);
+
+        setShouldFetchVenmoNftId(true); 
+      } else {
+        esl && console.log('rampAccountRaw_4');
+
+        setRegistrationHash(null);
+
+        setShouldFetchVenmoNftId(false);
+      }
     } else {
-      esl && console.log('rampAccountRaw_3');
+      esl && console.log('rampAccountRaw_5');
       
       setRegistrationHash(null);
 
