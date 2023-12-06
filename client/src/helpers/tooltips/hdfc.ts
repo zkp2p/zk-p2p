@@ -32,7 +32,7 @@ export const INSTRUCTION_DRAWER_STEP_TWO = `
 `;
 
 export const INSTRUCTION_DRAWER_STEP_THREE = `
-  Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
+  Click 'Send' and complete the payment on any UPI app linked to your HDFC account. Ensure you have email notifications from HDFC enabled.
 `;
 
 export const INSTRUCTION_DRAWER_STEP_FOUR = `
@@ -44,7 +44,7 @@ export const INSTRUCTION_DRAWER_STEP_FOUR = `
  */
 
 export const PAYMENT_REQUIREMENT_STEP_ONE = `
-  Email notifications are enabled in your Venmo notifications settings
+  Email notifications are enabled in your HDFC account notifications settings
 `;
 
 export const PAYMENT_REQUIREMENT_STEP_TWO = `
@@ -63,18 +63,10 @@ export const PAYMENT_REQUIREMENT_STEP_THREE = `
 
 export const ON_RAMPER_INTENT_INSTRUCTIONS = `
   You have been matched with the depositor below. To complete, the flow,
-  you must send a payment for the correct amount on Venmo, and then validate
+  you must send a payment for the correct amount on UPI, and then validate
   the payment by providing the transaction email. Click Send to begin.
 `;
 
-/*
- * Proof Form
- */
-
-export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
-  Provide any historical transaction email sent from HDFC containing "❗ You have done a UPI txn. Check details!" in the
-  subject to complete registration. Base ETH is required to submit a registration transaction.
-`;
 
 /*
  * Instructions
@@ -117,8 +109,8 @@ export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
  */
 
 export const PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS = `
-  Provide any historical transaction email sent from Venmo containing "You paid" in the subject to
-  complete registration. Base ETH is required to submit a registration transaction.
+  Provide any historical transaction email sent from HDFC containing "❗ You have done a UPI txn. Check details!" in the
+  subject to complete registration. Base ETH is required to submit a registration transaction.
 `;
 
 export const PROOF_FORM_TITLE_SEND_INSTRUCTIONS = `
