@@ -36,6 +36,7 @@ import RegistrationProvider from './contexts/venmo/Registration/RegistrationProv
 
 // HDFC Contexts
 import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
+import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -107,21 +108,23 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
             <RegistrationProvider>
               <HdfcRegistrationProvider>
                 <DepositsProvider>
-                  <PermissionsProvider>
-                    <LiquidityProvider>
-                      <OnRamperIntentsProvider>
-                        <ProofGenSettingsProvider>
-                          <PlatformSettings>
-                            <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                              <GoogleAuthProvider>
-                                { children }
-                              </GoogleAuthProvider>
-                            </GoogleOAuthProvider>
-                          </PlatformSettings>
-                        </ProofGenSettingsProvider>
-                      </OnRamperIntentsProvider>
-                    </LiquidityProvider>
-                  </PermissionsProvider>
+                  <HdfcDepositsProvider>
+                    <PermissionsProvider>
+                      <LiquidityProvider>
+                        <OnRamperIntentsProvider>
+                          <ProofGenSettingsProvider>
+                            <PlatformSettings>
+                              <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                <GoogleAuthProvider>
+                                  { children }
+                                </GoogleAuthProvider>
+                              </GoogleOAuthProvider>
+                            </PlatformSettings>
+                          </ProofGenSettingsProvider>
+                        </OnRamperIntentsProvider>
+                      </LiquidityProvider>
+                    </PermissionsProvider>
+                  </HdfcDepositsProvider>
                 </DepositsProvider>
               </HdfcRegistrationProvider>
             </RegistrationProvider>
