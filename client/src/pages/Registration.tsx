@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import { RegistrationForm } from "@components/RegistrationForm"
 import useRegistration from '@hooks/useRegistration';
+import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 export const Registration: React.FC<{}> = (props) => {
@@ -11,23 +13,46 @@ export const Registration: React.FC<{}> = (props) => {
    */
 
   const {
-    refetchRampAccount,
-    shouldFetchRegistration,
+    refetchRampAccount: refetchVenmoAccount,
+    shouldFetchRegistration: shouldFetchVenmoRegistration,
     refetchVenmoNftId,
     shouldFetchVenmoNftId
   } = useRegistration();
+
+  const {
+    refetchRampAccount: refetchHdfcAccount,
+    shouldFetchRegistration: shouldFetchHdfcRegistration,
+  } = useHdfcRegistration();
+
+  const {
+    PaymentPlatform,
+    paymentPlatform
+  } = usePlatformSettings();
 
   /*
    * Hooks
    */
 
   useEffect(() => {
-    if (shouldFetchRegistration) {
-      refetchRampAccount?.();
-    }
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        if (shouldFetchVenmoRegistration) {
+          refetchVenmoAccount?.();
+        }
+    
+        if (shouldFetchVenmoNftId) {
+          refetchVenmoNftId?.();
+        }
+        break;
 
-    if (shouldFetchVenmoNftId) {
-      refetchVenmoNftId?.();
+      case PaymentPlatform.HDFC:
+        if (shouldFetchHdfcRegistration) {
+          refetchHdfcAccount?.();
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
