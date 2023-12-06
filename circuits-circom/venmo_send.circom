@@ -8,6 +8,7 @@ include "./utils/extract.circom";
 include "./utils/hash_sign_gen_rand.circom";
 include "./regexes/common/from_regex.circom";
 include "./regexes/venmo/venmo_send_amount.circom";
+include "./regexes/venmo/venmo_p2p_check.circom";
 include "./regexes/venmo/venmo_payee_id.circom";
 include "./regexes/venmo/venmo_timestamp.circom";
 
@@ -123,6 +124,11 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     }
     signal output packed_onramper_id_hashed <== hash_payer.out;
 
+    // P2P PAYMENT CHECK REGEX
+    signal venmo_p2p_check_regex_out;
+    venmo_p2p_check_regex_out <== VenmoP2PCheckRegex(max_body_bytes)(in_body_padded);
+    venmo_p2p_check_regex_out === 0;
+
     // NULLIFIER
     signal output email_nullifier;
     signal cm_rand <== HashSignGenRand(n, k)(signature);
@@ -134,7 +140,7 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 7849887
+    // TOTAL CONSTRAINTS: 6685875
 }
 
 // Args:
