@@ -24,7 +24,7 @@ import {
 } from '@helpers/strings/hdfc';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
-import useRampState from '@hooks/useRampState'
+import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
 import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -57,7 +57,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const { isLoggedIn } = useAccount();
   const { hdfcRampAddress, hdfcRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
-  const { minimumDepositAmount } = useRampState();
+  const { minimumDepositAmount } = useHdfcRampState();
   const { usdcApprovalToHdfcRamp, usdcBalance, refetchUsdcApprovalToHdfcRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useHdfcDeposits();
   const { registrationHash } = useHdfcRegistration();
