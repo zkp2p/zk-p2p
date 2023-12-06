@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo payee id", function () {
+describe("Venmo send id", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -22,10 +22,10 @@ describe("Venmo payee id", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/venmo/test_venmo_payee_id.circom"),
+            path.join(__dirname, "../../mocks/venmo/test_venmo_send_id.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_venmo_payee_id"),
+                output: path.join(__dirname, "../../../build/test_venmo_send_id"),
                 recompile: true,
                 verbose: true,
             }
@@ -146,7 +146,7 @@ describe("Venmo payee id", function () {
     it("Should fail to match regex", async () => {
         const input = {
             "msg": textToAsciiArray(
-                "EEEEEEEEEEE<!-- recipient name -->\r\n"  // Update to `p`
+                "EEEEEEEEEEE<!-- recipient name -->\r\n"
                 + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
                 + "                   =20\r\n"
                 + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
@@ -156,7 +156,7 @@ describe("Venmo payee id", function () {
                 + "                </a>\r\n"
                 + "               =20\r\n"
                 + "            </div>\r\n"
-                + "            <!-- n0te -->\r\n"
+                + "            <!-- note -->\r\n"
                 + "            <div>\r\n"
                 + "               <p>"
             )
