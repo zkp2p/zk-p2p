@@ -16,7 +16,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts()
+  const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
 
   /*
    * State

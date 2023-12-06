@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
+import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
 import {
   INSTRUCTION_DRAWER_STEP_ONE,
   INSTRUCTION_DRAWER_STEP_TWO,
@@ -17,7 +18,7 @@ interface InstructionDrawerProps {
   recipientAddress?: string;
   setRecipientAddress: (address: string) => void;
   isLoggedIn: boolean;
-  paymentPlatform: 
+  paymentPlatform: PaymentPlatformType
 }
 
 export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
