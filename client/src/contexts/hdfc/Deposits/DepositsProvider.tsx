@@ -7,6 +7,7 @@ import {
   DepositWithAvailableLiquidity,
   Intent
 } from '../../venmo/Deposits/types';
+import { PaymentPlatform } from '../../common/PlatformSettings/types'
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
@@ -130,6 +131,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
         const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
+          platformType: PaymentPlatform.VENMO,
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.upiId),
           depositAmount: depositData.depositAmount,
