@@ -92,7 +92,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
     /**
      * @notice Iterates through every character in the date string and splits the string at each space or colon. Function will revert
      * if there are not 8 substrings formed from the split. The substrings are then converted to uints and passed to the DateTime lib
-     * to get the unix timestamp.
+     * to get the unix timestamp. This function is specific to the date format used by HDFC, not suitable for use with other date formats.
      */
     function _dateStringToTimestamp(string memory _dateString) internal pure returns (uint256) {
         string[8] memory extractedStrings;
