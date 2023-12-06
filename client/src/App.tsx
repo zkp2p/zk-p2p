@@ -22,7 +22,7 @@ import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 import AccountProvider from "./contexts/common/Account/AccountProvider";
 import BalancesProvider from "./contexts/common/Balances/BalancesProvider";
 import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider';
-import LiquidityProvider from './contexts/common/Liquidity/LiquidityProvider';
+import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
 import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
