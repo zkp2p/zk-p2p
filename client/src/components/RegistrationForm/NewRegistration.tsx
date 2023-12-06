@@ -13,6 +13,7 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
+import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
@@ -162,6 +163,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       </TitleContainer>
 
       <ProofGenerationForm
+        paymentPlatformType={PaymentPlatform.VENMO}
         circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
         circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
         circuitInputs={"1"} // Arbitrary value, unused for registration
