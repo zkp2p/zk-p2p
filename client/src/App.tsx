@@ -25,6 +25,7 @@ import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider'
 import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
+import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 
 // Venmo Contexts
 import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
@@ -118,15 +119,17 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                           <HdfcLiquidityProvider>
                             <OnRamperIntentsProvider>
                               <HdfcOnRamperIntentsProvider>
-                                <ProofGenSettingsProvider>
-                                  <PlatformSettings>
-                                    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                                      <GoogleAuthProvider>
-                                        { children }
-                                      </GoogleAuthProvider>
-                                    </GoogleOAuthProvider>
-                                  </PlatformSettings>
-                                </ProofGenSettingsProvider>
+                                <SwapQuoteProvider>
+                                  <ProofGenSettingsProvider>
+                                    <PlatformSettings>
+                                      <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                        <GoogleAuthProvider>
+                                          { children }
+                                        </GoogleAuthProvider>
+                                      </GoogleOAuthProvider>
+                                    </PlatformSettings>
+                                  </ProofGenSettingsProvider>
+                                </SwapQuoteProvider>
                               </HdfcOnRamperIntentsProvider>
                             </OnRamperIntentsProvider>
                           </HdfcLiquidityProvider>

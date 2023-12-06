@@ -22,7 +22,7 @@ import {
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRampState from '@hooks/hdfc/useHdfcRampState';
+import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
 import useAccount from '@hooks/useAccount';
 
 import LiquidityContext from './LiquidityContext';
@@ -42,7 +42,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
-  const { depositCounter } = useRampState();
+  const { depositCounter } = useHdfcRampState();
   const { loggedInEthereumAddress } = useAccount();
 
   /*
