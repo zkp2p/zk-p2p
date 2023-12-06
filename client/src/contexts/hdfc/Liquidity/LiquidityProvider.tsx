@@ -21,9 +21,9 @@ import {
  import { PaymentPlatform } from '../../common/PlatformSettings/types';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
-import useAccount from '@hooks/useAccount';
 
 import LiquidityContext from './LiquidityContext';
 
@@ -141,7 +141,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       const deposit: Deposit = {
         platformType: PaymentPlatform.HDFC,
         depositor: depositData.depositor.toString(),
-        venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
+        venmoId: unpackPackedVenmoId(depositData.upiId),
         depositAmount: depositData.depositAmount,
         remainingDepositAmount: depositData.remainingDeposits,
         outstandingIntentAmount: depositData.outstandingIntentAmount,
