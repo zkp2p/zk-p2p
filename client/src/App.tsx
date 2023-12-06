@@ -38,6 +38,7 @@ import RegistrationProvider from './contexts/venmo/Registration/RegistrationProv
 import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
 import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
 import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
+import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -106,31 +107,33 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
       <SmartContractsProvider>
         <BalancesProvider>
           <RampProvider>
-            <RegistrationProvider>
-              <HdfcRegistrationProvider>
-                <DepositsProvider>
-                  <HdfcDepositsProvider>
-                    <PermissionsProvider>
-                      <LiquidityProvider>
-                        <HdfcLiquidityProvider>
-                          <OnRamperIntentsProvider>
-                            <ProofGenSettingsProvider>
-                              <PlatformSettings>
-                                <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                                  <GoogleAuthProvider>
-                                    { children }
-                                  </GoogleAuthProvider>
-                                </GoogleOAuthProvider>
-                              </PlatformSettings>
-                            </ProofGenSettingsProvider>
-                          </OnRamperIntentsProvider>
-                        </HdfcLiquidityProvider>
-                      </LiquidityProvider>
-                    </PermissionsProvider>
-                  </HdfcDepositsProvider>
-                </DepositsProvider>
-              </HdfcRegistrationProvider>
-            </RegistrationProvider>
+            <HdfcRampProvider>
+              <RegistrationProvider>
+                <HdfcRegistrationProvider>
+                  <DepositsProvider>
+                    <HdfcDepositsProvider>
+                      <PermissionsProvider>
+                        <LiquidityProvider>
+                          <HdfcLiquidityProvider>
+                            <OnRamperIntentsProvider>
+                              <ProofGenSettingsProvider>
+                                <PlatformSettings>
+                                  <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                    <GoogleAuthProvider>
+                                      { children }
+                                    </GoogleAuthProvider>
+                                  </GoogleOAuthProvider>
+                                </PlatformSettings>
+                              </ProofGenSettingsProvider>
+                            </OnRamperIntentsProvider>
+                          </HdfcLiquidityProvider>
+                        </LiquidityProvider>
+                      </PermissionsProvider>
+                    </HdfcDepositsProvider>
+                  </DepositsProvider>
+                </HdfcRegistrationProvider>
+              </RegistrationProvider>
+            </HdfcRampProvider>
           </RampProvider>
         </BalancesProvider>
       </SmartContractsProvider>
