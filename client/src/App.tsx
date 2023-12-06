@@ -37,6 +37,7 @@ import RegistrationProvider from './contexts/venmo/Registration/RegistrationProv
 // HDFC Contexts
 import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
 import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
+import HdfcOnRamperIntentsProvider  from './contexts/hdfc/OnRamperIntents/OnRamperIntentsProvider';
 import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
 import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
@@ -116,15 +117,17 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
                         <LiquidityProvider>
                           <HdfcLiquidityProvider>
                             <OnRamperIntentsProvider>
-                              <ProofGenSettingsProvider>
-                                <PlatformSettings>
-                                  <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                                    <GoogleAuthProvider>
-                                      { children }
-                                    </GoogleAuthProvider>
-                                  </GoogleOAuthProvider>
-                                </PlatformSettings>
-                              </ProofGenSettingsProvider>
+                              <HdfcOnRamperIntentsProvider>
+                                <ProofGenSettingsProvider>
+                                  <PlatformSettings>
+                                    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                      <GoogleAuthProvider>
+                                        { children }
+                                      </GoogleAuthProvider>
+                                    </GoogleOAuthProvider>
+                                  </PlatformSettings>
+                                </ProofGenSettingsProvider>
+                              </HdfcOnRamperIntentsProvider>
                             </OnRamperIntentsProvider>
                           </HdfcLiquidityProvider>
                         </LiquidityProvider>
