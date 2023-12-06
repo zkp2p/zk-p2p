@@ -11,13 +11,14 @@ import {
   INSTRUCTION_DRAWER_STEP_THREE,
   INSTRUCTION_DRAWER_STEP_FOUR
 } from "@helpers/tooltips";
+import { PaymentPlatform } from "contexts/common/PlatformSettings/types";
 
 
 interface InstructionDrawerProps {
   recipientAddress?: string;
   setRecipientAddress: (address: string) => void;
   isLoggedIn: boolean;
-  paymentPlatform: 
+  paymentPlatform: typeof PaymentPlatform;
 }
 
 export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
