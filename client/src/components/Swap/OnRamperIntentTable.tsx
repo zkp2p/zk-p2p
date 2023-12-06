@@ -83,8 +83,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   };
 
   /*
-    Hooks
-  */
+   * Hooks
+   */
  
   useEffect(() => {
     if (currentIntent && depositStore) {
@@ -151,8 +151,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   ]);
 
   /*
-    Helpers
-  */
+   * Helpers
+   */
 
   function calculateExpiration(unixTimestamp: bigint, timePeriod: bigint): bigint {
     return unixTimestamp + timePeriod;

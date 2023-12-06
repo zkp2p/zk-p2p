@@ -10,6 +10,7 @@ import { PAY_MODAL_INSTRUCTIONS } from '@helpers/tooltips';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { ThemedText } from '../../theme/text';
 
+
 interface SwapModalProps {
   link: string;
   amount: string;
