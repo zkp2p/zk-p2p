@@ -14,6 +14,7 @@ import { EmailInputStatus, ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
+import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
 import { dkimVerify } from '@helpers/dkim';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
 // import { downloadProofFiles } from "@helpers/zkp";
@@ -24,6 +25,7 @@ import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
+  paymentPlatformType: PaymentPlatformType;
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
   circuitInputs: string;
@@ -41,6 +43,7 @@ interface ProofGenerationFormProps {
 }
 
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
+  paymentPlatformType,
   circuitType,
   circuitRemoteFilePath,
   circuitInputs,
@@ -94,7 +97,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     error: remoteGenerateProofError,
     fetchData: remoteGenerateProof
   } = useRemoteProofGen({
-    emailType: remoteProofGenEmailType,
+    paymentType: paymentPlatformType,
+    circuitType: remoteProofGenEmailType,
     emailBody: emailFull,
     intentHash: circuitInputs,
   });
