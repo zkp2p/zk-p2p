@@ -1,7 +1,13 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Deposit, DepositWithAvailableLiquidity, Intent, DepositIntent } from './types'
+import {
+  Deposit,
+  DepositWithAvailableLiquidity,
+  Intent,
+  DepositIntent
+} from './types'
+import { PaymentPlatform } from '../../common/PlatformSettings/types'
 import { esl } from '@helpers/constants'
 import { unpackPackedVenmoId } from '@helpers/poseidonHash'
 import useAccount from '@hooks/useAccount'
@@ -125,6 +131,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
         const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
+          platformType: PaymentPlatform.VENMO,
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
           depositAmount: depositData.depositAmount,

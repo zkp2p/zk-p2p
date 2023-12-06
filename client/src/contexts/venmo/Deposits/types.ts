@@ -1,3 +1,6 @@
+import { PaymentPlatformType } from '../../common/PlatformSettings/types';
+
+
 // struct Deposit {
 //   address depositor;
 //   uint256[5] packedVenmoId;
@@ -8,6 +11,7 @@
 //   bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
 // }
 export interface Deposit {
+  platformType: PaymentPlatformType;
   depositor: string;
   venmoId: string;
   depositAmount: bigint;
