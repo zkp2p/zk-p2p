@@ -18,18 +18,24 @@ import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
+// Common Contexts
 import AccountProvider from "./contexts/common/Account/AccountProvider";
-import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import BalancesProvider from "./contexts/common/Balances/BalancesProvider";
-import RampProvider  from './contexts/venmo/Ramp/RampProvider';
-import RegistrationProvider  from './contexts/venmo/Registration/RegistrationProvider';
-import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
-import PermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
-import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
-import OnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
-import LiquidityProvider from './contexts/common/Liquidity/LiquidityProvider';
-import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider';
+import LiquidityProvider from './contexts/common/Liquidity/LiquidityProvider';
+import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
+import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
+import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
+
+// Venmo Contexts
+import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
+import OnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
+import PermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
+import RampProvider  from './contexts/venmo/Ramp/RampProvider';
+import RegistrationProvider from './contexts/venmo/Registration/RegistrationProvider';
+
+// HDFC Contexts
+import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -99,23 +105,25 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
         <BalancesProvider>
           <RampProvider>
             <RegistrationProvider>
-              <DepositsProvider>
-                <PermissionsProvider>
-                  <LiquidityProvider>
-                    <OnRamperIntentsProvider>
-                      <ProofGenSettingsProvider>
-                        <PlatformSettings>
-                          <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                            <GoogleAuthProvider>
-                              { children }
-                            </GoogleAuthProvider>
-                          </GoogleOAuthProvider>
-                        </PlatformSettings>
-                      </ProofGenSettingsProvider>
-                    </OnRamperIntentsProvider>
-                  </LiquidityProvider>
-                </PermissionsProvider>
-              </DepositsProvider>
+              <HdfcRegistrationProvider>
+                <DepositsProvider>
+                  <PermissionsProvider>
+                    <LiquidityProvider>
+                      <OnRamperIntentsProvider>
+                        <ProofGenSettingsProvider>
+                          <PlatformSettings>
+                            <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                              <GoogleAuthProvider>
+                                { children }
+                              </GoogleAuthProvider>
+                            </GoogleOAuthProvider>
+                          </PlatformSettings>
+                        </ProofGenSettingsProvider>
+                      </OnRamperIntentsProvider>
+                    </LiquidityProvider>
+                  </PermissionsProvider>
+                </DepositsProvider>
+              </HdfcRegistrationProvider>
             </RegistrationProvider>
           </RampProvider>
         </BalancesProvider>
