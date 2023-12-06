@@ -2,6 +2,14 @@
   "parts": [
     {
       "is_public": false,
+      "regex_def": "<!-- recipient name -->\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
+    },
+    {
+      "is_public": false,
       "regex_def": "                   =20\r\n"
     },
     {
@@ -23,6 +31,30 @@
     {
       "is_public": false,
       "regex_def": "\">\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                   =20\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                    [^\r\n]+\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "                </a>\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "               =20\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "            </div>\r\n"
+    },
+    {
+      "is_public": false,
+      "regex_def": "            <!-- note -->\r\n"
     }
   ]
 }
