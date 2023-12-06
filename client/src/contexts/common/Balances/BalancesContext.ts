@@ -9,6 +9,8 @@ const defaultValues: ContextValues = {
   refetchUsdcApprovalToRamp: null,
   refetchUsdcBalance: null,
   shouldFetchUsdcBalance: null,
+  usdcApprovalToHdfcRamp: null,
+  refetchUsdcApprovalToHdfcRamp: null,
 };
 
 const BalancesContext = createContext<ContextValues>(defaultValues)
