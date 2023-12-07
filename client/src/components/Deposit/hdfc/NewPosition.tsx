@@ -13,7 +13,7 @@ import { RowBetween } from '../../layouts/Row'
 import { ThemedText } from '../../../theme/text'
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "../../common/NumberedStep";
-import { calculatePackedId } from '@helpers/poseidonHash'
+import { calculatePackedUPIId } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
 import {
@@ -88,7 +88,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: hdfcRampAbi,
     functionName: 'offRamp',
     args: [
-      calculatePackedId(upiIdInput),
+      calculatePackedUPIId(upiIdInput),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],

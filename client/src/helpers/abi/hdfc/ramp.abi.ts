@@ -12,6 +12,16 @@ export const abi = [
         "type": "address"
       },
       {
+        "internalType": "contract IPoseidon3",
+        "name": "_poseidon3",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IPoseidon6",
+        "name": "_poseidon6",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_minDepositAmount",
         "type": "uint256"
@@ -521,9 +531,9 @@ export const abi = [
                 "type": "address"
               },
               {
-                "internalType": "uint256[3]",
+                "internalType": "uint256[8]",
                 "name": "upiId",
-                "type": "uint256[3]"
+                "type": "uint256[8]"
               },
               {
                 "internalType": "uint256",
@@ -637,9 +647,9 @@ export const abi = [
             "type": "address"
           },
           {
-            "internalType": "uint256[3]",
+            "internalType": "uint256[8]",
             "name": "upiId",
-            "type": "uint256[3]"
+            "type": "uint256[8]"
           },
           {
             "internalType": "uint256",
@@ -700,9 +710,9 @@ export const abi = [
                 "type": "address"
               },
               {
-                "internalType": "uint256[3]",
+                "internalType": "uint256[8]",
                 "name": "upiId",
-                "type": "uint256[3]"
+                "type": "uint256[8]"
               },
               {
                 "internalType": "uint256",
@@ -967,9 +977,9 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "uint256[3]",
+        "internalType": "uint256[8]",
         "name": "_upiId",
-        "type": "uint256[3]"
+        "type": "uint256[8]"
       },
       {
         "internalType": "uint256",
@@ -1034,6 +1044,32 @@ export const abi = [
     "outputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poseidon3",
+    "outputs": [
+      {
+        "internalType": "contract IPoseidon3",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poseidon6",
+    "outputs": [
+      {
+        "internalType": "contract IPoseidon6",
         "name": "",
         "type": "address"
       }
@@ -1307,4 +1343,4 @@ export const abi = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-];
+]
