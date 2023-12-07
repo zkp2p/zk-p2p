@@ -11,8 +11,13 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
     
     using Bytes32ArrayUtils for bytes32[];
 
+    /* ============ Events ============ */
+    event MailServerKeyHashAdded(bytes32 mailserverKeyHash);
+    event MailServerKeyHashRemoved(bytes32 mailserverKeyHash);
+
     /* ============ State Variables ============ */
 
+    mapping(bytes32 => bool) public isMailServerKeyHash;
     bytes32[] public mailserverKeyHashes;
 
     /* ============ Constructor ============ */
@@ -30,15 +35,21 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
     /* ============ External Functions ============ */
 
     function addMailServerKeyHash(bytes32 _mailserverKeyHash) external onlyOwner {
+        require(!isMailServerKeyHash[_mailserverKeyHash], "Key hash already added");
+
+        isMailServerKeyHash[_mailserverKeyHash] = true;
         mailserverKeyHashes.push(_mailserverKeyHash);
+
+        emit MailServerKeyHashAdded(_mailserverKeyHash);
     }
 
     function removeMailServerKeyHash(bytes32 _mailserverKeyHash) external onlyOwner {
-        mailserverKeyHashes.removeStorage(_mailserverKeyHash);
-    }
+        require(isMailServerKeyHash[_mailserverKeyHash], "Key hash not added");
 
-    function isMailServerKeyHash(bytes32 _mailserverKeyHash) external view returns (bool) {
-        return mailserverKeyHashes.contains(_mailserverKeyHash);
+        isMailServerKeyHash[_mailserverKeyHash] = false;
+        mailserverKeyHashes.removeStorage(_mailserverKeyHash);
+
+        emit MailServerKeyHashRemoved(_mailserverKeyHash);
     }
 
     /* ============ External Getter Functions ============ */

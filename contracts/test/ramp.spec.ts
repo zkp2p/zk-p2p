@@ -61,7 +61,7 @@ describe("Ramp", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    const poseidonContract = await deployer.deployPoseidon();
+    const poseidonContract = await deployer.deployPoseidon3();
 
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
     registrationProcessor = await deployer.deployVenmoRegistrationProcessorMock();

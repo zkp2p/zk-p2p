@@ -5,8 +5,8 @@ import { ManagedKeyHashAdapterV2 } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
-    getWaffleExpect,
-    getAccounts
+  getWaffleExpect,
+  getAccounts
 } from "@utils/test/index";
 
 const expect = getWaffleExpect();
@@ -14,67 +14,144 @@ const expect = getWaffleExpect();
 const keyHash1 = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 const keyHash2 = "0x1cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-describe("ManagedKeyHashAdapterV2", () => {
-    let owner: Account;
-    let attacker: Account;
+describe.only("ManagedKeyHashAdapterV2", () => {
+  let owner: Account;
+  let attacker: Account;
 
-    let keyHashAdapter: ManagedKeyHashAdapterV2;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
 
-    let deployer: DeployHelper;
+  let deployer: DeployHelper;
+
+  beforeEach(async () => {
+    [
+        owner,
+        attacker,
+    ] = await getAccounts();
+
+    deployer = new DeployHelper(owner.wallet);
+
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([keyHash1, keyHash2]);
+  });
+
+  describe("#constructor", async () => {
+    it("should have the correct key hash", async () => {
+        const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+        expect(keyHashes[0]).to.eq(keyHash1);
+        expect(keyHashes[1]).to.eq(keyHash2);
+    });
+
+    it("should have the correct owner set", async () => {
+        const _owner = await keyHashAdapter.owner();
+        expect(_owner).to.eq(owner.address);
+    });
+  });
+
+  describe("#addMailserverKeyHash", async () => {
+    let subjectMailServerKeyHash: string;
+    let subjectCaller: Account;
 
     beforeEach(async () => {
-        [
-            owner,
-            attacker,
-        ] = await getAccounts();
+      subjectCaller = owner;
 
-        deployer = new DeployHelper(owner.wallet);
-
-        keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([keyHash1, keyHash2]);
+      subjectMailServerKeyHash = "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa";
     });
 
-    describe("#constructor", async () => {
-        it("should have the correct key hash", async () => {
-            const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
-            expect(keyHashes[0]).to.eq(keyHash1);
-            expect(keyHashes[1]).to.eq(keyHash2);
-        });
+    async function subject(): Promise<any> {
+      return await keyHashAdapter.connect(subjectCaller.wallet).addMailServerKeyHash(subjectMailServerKeyHash);
+    }
 
-        it("should have the correct owner set", async () => {
-            const _owner = await keyHashAdapter.owner();
-            expect(_owner).to.eq(owner.address);
-        });
+    it("should set the correct venmo keys", async () => {
+      await subject();
+
+      const isKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
+      const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+
+      expect(isKeyHash).to.be.true;
+      expect(keyHashes).to.contain(subjectMailServerKeyHash);
     });
 
-    // describe("#setMailserverKeyHash", async () => {
-    //     let subjectVenmoMailserverKeyHash: string;
-    //     let subjectCaller: Account;
+    it("should emit the correct MailServerKeyHashAdded event", async () => {
+      await expect(subject()).to.emit(keyHashAdapter, "MailServerKeyHashAdded").withArgs(
+          subjectMailServerKeyHash
+      );
+    });
 
-    //     beforeEach(async () => {
-    //         subjectCaller = owner;
+    describe("when the key hash has already been added", async () => {
+      beforeEach(async () => {
+          await subject();
+      });
 
-    //         subjectVenmoMailserverKeyHash = "0x2db6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
-    //     });
+      it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Key hash already added");
+      });
+    });
 
-    //     async function subject(): Promise<any> {
-    //         return await keyHashAdapter.connect(subjectCaller.wallet).setMailserverKeyHash(subjectVenmoMailserverKeyHash);
-    //     }
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+          subjectCaller = attacker;
+      });
 
-    //     it("should set the correct venmo keys", async () => {
-    //         await subject();
+      it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
 
-    //         const keyHash1 = await keyHashAdapter.mailserverKeyHash();
-    //         expect(keyHash1).to.equal(subjectVenmoMailserverKeyHash);
-    //     });
+  describe("#removeMailserverKeyHash", async () => {
+    let subjectMailServerKeyHash: string;
+    let subjectCaller: Account;
 
-    //     describe("when the caller is not the owner", async () => {
-    //         beforeEach(async () => {
-    //             subjectCaller = attacker;
-    //         });
+    beforeEach(async () => {
+      subjectMailServerKeyHash = "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa";
 
-    //         it("should revert", async () => {
-    //             await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
-    //         });
-    //     });
-    // });
+      await keyHashAdapter.addMailServerKeyHash(subjectMailServerKeyHash);
+
+      subjectCaller = owner;
+    });
+
+    async function subject(): Promise<any> {
+      return await keyHashAdapter.connect(subjectCaller.wallet).removeMailServerKeyHash(subjectMailServerKeyHash);
+    }
+
+    it("should set the correct venmo keys", async () => {
+      const preIsKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
+      const preKeyHashes = await keyHashAdapter.getMailserverKeyHashes();
+      expect(preIsKeyHash).to.be.true;
+      expect(preKeyHashes).to.contain(subjectMailServerKeyHash);
+
+      await subject();
+
+      const isKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
+      const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+
+      expect(isKeyHash).to.be.false;
+      expect(keyHashes).to.not.contain(subjectMailServerKeyHash);
+    });
+
+    it("should emit the correct MailServerKeyHashRemoved event", async () => {
+      await expect(subject()).to.emit(keyHashAdapter, "MailServerKeyHashRemoved").withArgs(
+        subjectMailServerKeyHash
+      );
+    });
+
+    describe("when the key hash has already been removed", async () => {
+      beforeEach(async () => {
+        await subject();
+      });
+
+      it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Key hash not added");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
 });
