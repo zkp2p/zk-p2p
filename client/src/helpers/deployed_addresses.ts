@@ -32,9 +32,9 @@ export const contractAddresses: Contracts = {
     "sendProcessor": '0x0165878a594ca255338adfa4d48449f69242eb8f',
     "registrationProcessor": '0x5fc8d32690cc91d4c39d9d3abcbd16989f875707',
     "proofOfP2pNft": '0xa85233c63b9ee964add6f2cffe00fd84eb32338f',
-    "hdfcRamp": '0x9A676e781A523b5d0C0e43731313A708CB607508',
-    "hdfcSendProcessor": '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
-    "hdfcRegistrationProcessor": '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1',
+    "hdfcRamp": '0x0B306BF915C4d645ff596e518fAf3F9669b97016',
+    "hdfcSendProcessor": '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
+    "hdfcRegistrationProcessor": '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
   },
 };
 
