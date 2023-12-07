@@ -13,7 +13,6 @@ import {
   getAccounts
 } from "@utils/test/index";
 import { usdc } from "@utils/common";
-import { ZERO_BYTES32 } from "@utils/constants";
 
 const expect = getWaffleExpect();
 

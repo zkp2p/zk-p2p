@@ -28,7 +28,11 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
         Ownable()
     {
         for (uint256 i = 0; i < _mailserverKeyHashes.length; i++) {
-            mailserverKeyHashes.push(_mailserverKeyHashes[i]);
+            bytes32 mailserverKeyHash = _mailserverKeyHashes[i];
+            require(!isMailServerKeyHash[mailserverKeyHash], "Key hash already added");
+            
+            isMailServerKeyHash[mailserverKeyHash] = true;
+            mailserverKeyHashes.push(mailserverKeyHash);
         }
     }
 

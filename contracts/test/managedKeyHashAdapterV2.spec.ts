@@ -36,13 +36,29 @@ describe("ManagedKeyHashAdapterV2", () => {
   describe("#constructor", async () => {
     it("should have the correct key hash", async () => {
         const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
-        expect(keyHashes[0]).to.eq(keyHash1);
-        expect(keyHashes[1]).to.eq(keyHash2);
+
+        const isKeyHashOne = await keyHashAdapter.isMailServerKeyHash(keyHash1);
+        const isKeyHashTwo = await keyHashAdapter.isMailServerKeyHash(keyHash2);
+
+        expect(isKeyHashOne).to.be.true;
+        expect(isKeyHashTwo).to.be.true;
+        expect(keyHashes).to.contain(keyHash1);
+        expect(keyHashes).to.contain(keyHash2);
     });
 
     it("should have the correct owner set", async () => {
         const _owner = await keyHashAdapter.owner();
         expect(_owner).to.eq(owner.address);
+    });
+
+    describe("when duplicate keyHashes are passed", async () => {
+      async function subject(): Promise<any> {
+        keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([keyHash1, keyHash1]);
+      };
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Key hash already added");
+      });
     });
   });
 
