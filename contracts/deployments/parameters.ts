@@ -7,7 +7,8 @@ import { ether, usdc } from "@utils/common/units";
 export const SERVER_KEY_HASH = {
   "venmo": "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f",
   "hdfc": [
-    "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa"
+    "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", // acls01
+    "0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8" // acls03
   ]
 };
 
