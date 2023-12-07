@@ -61,7 +61,7 @@ export const RegistrationForm: React.FC = () => {
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
-  }
+  };
 
   return (
     <Wrapper>

@@ -107,41 +107,41 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <AccountProvider>
       <SmartContractsProvider>
-        <BalancesProvider>
-          <RampProvider>
-            <HdfcRampProvider>
-              <RegistrationProvider>
-                <HdfcRegistrationProvider>
-                  <DepositsProvider>
-                    <HdfcDepositsProvider>
-                      <PermissionsProvider>
-                        <LiquidityProvider>
-                          <HdfcLiquidityProvider>
-                            <OnRamperIntentsProvider>
-                              <HdfcOnRamperIntentsProvider>
-                                <SwapQuoteProvider>
-                                  <ProofGenSettingsProvider>
-                                    <PlatformSettings>
+        <PlatformSettings>
+          <BalancesProvider>
+            <RampProvider>
+              <HdfcRampProvider>
+                <RegistrationProvider>
+                  <HdfcRegistrationProvider>
+                    <DepositsProvider>
+                      <HdfcDepositsProvider>
+                        <PermissionsProvider>
+                          <LiquidityProvider>
+                            <HdfcLiquidityProvider>
+                              <OnRamperIntentsProvider>
+                                <HdfcOnRamperIntentsProvider>
+                                  <SwapQuoteProvider>
+                                    <ProofGenSettingsProvider>
                                       <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
                                         <GoogleAuthProvider>
                                           { children }
                                         </GoogleAuthProvider>
                                       </GoogleOAuthProvider>
-                                    </PlatformSettings>
-                                  </ProofGenSettingsProvider>
-                                </SwapQuoteProvider>
-                              </HdfcOnRamperIntentsProvider>
-                            </OnRamperIntentsProvider>
-                          </HdfcLiquidityProvider>
-                        </LiquidityProvider>
-                      </PermissionsProvider>
-                    </HdfcDepositsProvider>
-                  </DepositsProvider>
-                </HdfcRegistrationProvider>
-              </RegistrationProvider>
-            </HdfcRampProvider>
-          </RampProvider>
-        </BalancesProvider>
+                                    </ProofGenSettingsProvider>
+                                  </SwapQuoteProvider>
+                                </HdfcOnRamperIntentsProvider>
+                              </OnRamperIntentsProvider>
+                            </HdfcLiquidityProvider>
+                          </LiquidityProvider>
+                        </PermissionsProvider>
+                      </HdfcDepositsProvider>
+                    </DepositsProvider>
+                  </HdfcRegistrationProvider>
+                </RegistrationProvider>
+              </HdfcRampProvider>
+            </RampProvider>
+          </BalancesProvider>
+        </PlatformSettings>
       </SmartContractsProvider>
     </AccountProvider>
   )

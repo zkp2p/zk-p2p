@@ -11,6 +11,7 @@ import { alchemyMainnetEthersProvider } from "index";
 
 
 interface IntentRowProps {
+  isVenmo: boolean;
   amountUSDCToReceive: string;
   amountUSDToSend: string;
   expirationTimestamp: string;
@@ -23,6 +24,7 @@ interface IntentRowProps {
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
+  isVenmo,
   amountUSDCToReceive,
   amountUSDToSend,
   expirationTimestamp,
@@ -50,9 +52,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
-  const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
+  
+  const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
+  const hdfcLink = `upi://pay?pa=${depositorVenmoId}&pn=${recipientAddress}&tn=${''}&am=${amountUSDToSend}&cu=INR`;
+  const qrLink = isVenmo ? venmoLink : hdfcLink;
 
   /*
    * Handlers
@@ -75,10 +80,11 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       {
         shouldShowSwapModal && (
           <SwapModal
-            link={venmoLink}
+            link={qrLink}
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}
-            onCompleteClick={handleCompleteOrderClick} />
+            onCompleteClick={handleCompleteOrderClick}
+          />
         )
       }
 

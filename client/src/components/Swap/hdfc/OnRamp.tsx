@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/macro';
+import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
@@ -8,19 +8,20 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction
-} from 'wagmi';
+} from 'wagmi'
 
-import { RowBetween } from '../layouts/Row';
-import { ThemedText } from '../../theme/text';
-import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { NumberedStep } from "../common/NumberedStep";
+import { RowBetween } from '../../layouts/Row'
+import { ThemedText } from '../../../theme/text'
+import { ProofGenerationForm } from "../../ProofGen/ProofForm";
+import { NumberedStep } from "../../common/NumberedStep";
 // import { ProofSettings } from "@components/ProofGen/ProofSettings";
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { PROOF_FORM_TITLE_SEND_INSTRUCTIONS } from "@helpers/tooltips";
 import { reformatProofForChain } from "@helpers/submitProof";
+
 import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -38,10 +39,10 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   const {
-    rampAddress,
-    rampAbi,
-    sendProcessorAddress,
-    sendProcessorAbi,
+    hdfcRampAddress,
+    hdfcRampAbi,
+    hdfcSendProcessorAddress,
+    hdfcSendProcessorAbi
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
@@ -72,8 +73,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const {
     data: verifyProofRaw,
   } = useContractRead({
-    address: sendProcessorAddress,
-    abi: sendProcessorAbi,
+    address: hdfcSendProcessorAddress,
+    abi: hdfcSendProcessorAbi,
     functionName: "verifyProof",
     args: [
       ...reformatProofForChain(proof),
@@ -90,8 +91,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: hdfcRampAddress,
+    abi: hdfcRampAbi,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),
@@ -201,7 +202,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
       </TitleContainer>
 
       <ProofGenerationForm
-        paymentPlatformType={PaymentPlatform.VENMO}
+        paymentPlatformType={PaymentPlatform.HDFC}
         circuitType={CircuitType.EMAIL_VENMO_SEND}
         circuitRemoteFilePath={SEND_KEY_FILE_NAME}
         circuitInputs={selectedIntentHash}
