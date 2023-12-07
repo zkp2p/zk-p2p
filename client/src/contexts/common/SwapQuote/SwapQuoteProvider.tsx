@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { IndicativeQuote } from '../../venmo/Deposits/types';
+// import { IndicativeQuote } from '../../venmo/Deposits/types';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
@@ -30,43 +30,47 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
   // Venmo
-  const { isRegistered: isRegisteredOnVenmo } = useVenmoRegistration();
   const {
-    refetchDeposits: refetchVenmoDeposits,
-    getBestDepositForAmount: getBestVenmoDepositForAmount,
+    isRegistered: isRegisteredOnVenmo
+  } = useVenmoRegistration();
+  const {
+    // refetchDeposits: refetchVenmoDeposits,
+    // getBestDepositForAmount: getBestVenmoDepositForAmount,
     shouldFetchDeposits: shouldFetchVenmoDeposits
   } = useLiquidity();
   const {
-    refetchDepositCounter: refetchVenmoDepositCounter,
+    // refetchDepositCounter: refetchVenmoDepositCounter,
     shouldFetchRampState: shouldFetchVenmoRampState,
     onRampCooldownPeriod: venmoOnRampCooldownPeriod
   } = useRampState();
   const {
     currentIntentHash: currentVenmoIntentHash,
-    refetchIntentHash: refetchVenmoIntentHash,
+    // refetchIntentHash: refetchVenmoIntentHash,
     shouldFetchIntentHash: shouldFetchVenmoIntentHash,
     lastOnRampTimestamp: lastVenmoOnRampTimestamp,
-    refetchLastOnRampTimestamp: refetchVenmoLastOnRampTimestamp
+    // refetchLastOnRampTimestamp: refetchVenmoLastOnRampTimestamp
   } = useOnRamperIntents();
 
   // Hdfc
-  const { isRegistered: isRegisteredOnHdfc } = useHdfcRegistration();
   const {
-    refetchDeposits: refetchHdfcDeposits,
-    getBestDepositForAmount: getBestHdfcDepositForAmount,
+    isRegistered: isRegisteredOnHdfc
+  } = useHdfcRegistration();
+  const {
+    // refetchDeposits: refetchHdfcDeposits,
+    // getBestDepositForAmount: getBestHdfcDepositForAmount,
     shouldFetchDeposits: shouldFetchHdfcDeposits
   } = useHdfcLiquidity();
   const {
-    refetchDepositCounter: refetchHdfcDepositCounter,
+    // refetchDepositCounter: refetchHdfcDepositCounter,
     shouldFetchRampState: shouldFetchHdfcRampState,
     onRampCooldownPeriod: hdfcOnRampCooldownPeriod
   } = useHdfcRampState();
   const {
     currentIntentHash: currentHdfcIntentHash,
-    refetchIntentHash: refetchHdfcIntentHash,
+    // refetchIntentHash: refetchHdfcIntentHash,
     shouldFetchIntentHash: shouldFetchHdfcIntentHash,
     lastOnRampTimestamp: lastHdfcOnRampTimestamp,
-    refetchLastOnRampTimestamp: refetchHdfcLastOnRampTimestamp
+    // refetchLastOnRampTimestamp: refetchHdfcLastOnRampTimestamp
   } = useHdfcOnRamperIntents();
 
   /*
@@ -74,23 +78,29 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
    */
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
-  const [refetchDeposits, setRefetchDeposits] = useState<(() => void) | null>(null);
-  const [getBestDepositForAmount, setGetBestDepositForAmount] = useState<((requestedOnRampInputAmount: string) => IndicativeQuote) | null>(null);
+
+  // const [refetchDeposits, setRefetchDeposits] = useState<(() => void) | null>(null);
+  // const [getBestDepositForAmount, setGetBestDepositForAmount] = useState<((requestedOnRampInputAmount: string) => IndicativeQuote) | null>(null);
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
-  const [refetchDepositCounter, setRefetchDepositCounter] = useState<(() => void) | null>(null);
+
+  // const [refetchDepositCounter, setRefetchDepositCounter] = useState<(() => void) | null>(null);
   const [shouldFetchRampState, setShouldFetchRampState] = useState<boolean>(false);
   const [onRampCooldownPeriod, setOnRampCooldownPeriod] = useState<bigint | null>(null);
+  
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
-  const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
+  // const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
   const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
-  const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
+  // const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
 
   /*
    * Registration
    */
 
   useEffect(() => {
+    console.log('isRegisteredOnVenmo: ', isRegisteredOnVenmo);
+    console.log('isRegisteredOnHdfc: ', isRegisteredOnHdfc);
+
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setIsRegistered(isRegisteredOnVenmo);
@@ -112,41 +122,44 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
    * Liquidity
    */
 
+  // useEffect(() => {
+  //   switch (paymentPlatform) {
+  //     case PaymentPlatform.VENMO:
+  //       setRefetchDeposits(refetchVenmoDeposits);
+  //       break;
+
+  //     case PaymentPlatform.HDFC:
+  //       setRefetchDeposits(refetchHdfcDeposits);
+  //       break;
+
+  //     default:
+  //       throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits]);
+
+  // useEffect(() => {
+  //   switch (paymentPlatform) {
+  //     case PaymentPlatform.VENMO:
+  //       setGetBestDepositForAmount(getBestVenmoDepositForAmount);
+  //       break;
+
+  //     case PaymentPlatform.HDFC:
+  //       setGetBestDepositForAmount(getBestHdfcDepositForAmount);
+  //       break;
+
+  //     default:
+  //       throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentPlatform, getBestVenmoDepositForAmount, getBestHdfcDepositForAmount]);
+
   useEffect(() => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setRefetchDeposits(refetchVenmoDeposits);
-        break;
+    console.log('shouldFetchVenmoDeposits: ', shouldFetchVenmoDeposits);
+    console.log('shouldFetchHdfcDeposits: ', shouldFetchHdfcDeposits);
 
-      case PaymentPlatform.HDFC:
-        setRefetchDeposits(refetchHdfcDeposits);
-        break;
-
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits]);
-
-  useEffect(() => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setGetBestDepositForAmount(getBestVenmoDepositForAmount);
-        break;
-
-      case PaymentPlatform.HDFC:
-        setGetBestDepositForAmount(getBestHdfcDepositForAmount);
-        break;
-
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, getBestVenmoDepositForAmount, getBestHdfcDepositForAmount]);
-
-  useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setShouldFetchDeposits(shouldFetchVenmoDeposits);
@@ -169,6 +182,9 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
+    console.log('currentVenmoIntentHash: ', currentVenmoIntentHash);
+    console.log('currentHdfcIntentHash: ', currentHdfcIntentHash);
+
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setCurrentIntentHash(currentVenmoIntentHash);
@@ -185,24 +201,27 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash]);
 
+  // useEffect(() => {
+  //   switch (paymentPlatform) {
+  //     case PaymentPlatform.VENMO:
+  //       setRefetchIntentHash(refetchVenmoIntentHash);
+  //       break;
+
+  //     case PaymentPlatform.HDFC:
+  //       setRefetchIntentHash(refetchHdfcIntentHash);
+  //       break;
+
+  //     default:
+  //       throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash]);
+
   useEffect(() => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setRefetchIntentHash(refetchVenmoIntentHash);
-        break;
+    console.log('shouldFetchVenmoIntentHash: ', shouldFetchVenmoIntentHash);
+    console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
 
-      case PaymentPlatform.HDFC:
-        setRefetchIntentHash(refetchHdfcIntentHash);
-        break;
-
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash]);
-
-  useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setShouldFetchIntentHash(shouldFetchVenmoIntentHash);
@@ -220,6 +239,9 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   }, [paymentPlatform, shouldFetchVenmoIntentHash, shouldFetchHdfcIntentHash]);
 
   useEffect(() => {
+    console.log('lastVenmoOnRampTimestamp: ', lastVenmoOnRampTimestamp);
+    console.log('lastHdfcOnRampTimestamp: ', lastHdfcOnRampTimestamp);
+
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setLastOnRampTimestamp(lastVenmoOnRampTimestamp);
@@ -236,44 +258,44 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentPlatform, lastVenmoOnRampTimestamp, lastHdfcOnRampTimestamp]);
 
-  useEffect(() => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setRefetchLastOnRampTimestamp(refetchVenmoLastOnRampTimestamp);
-        break;
+  // useEffect(() => {
+  //   switch (paymentPlatform) {
+  //     case PaymentPlatform.VENMO:
+  //       setRefetchLastOnRampTimestamp(refetchVenmoLastOnRampTimestamp);
+  //       break;
 
-      case PaymentPlatform.HDFC:
-        setRefetchLastOnRampTimestamp(refetchHdfcLastOnRampTimestamp);
-        break;
+  //     case PaymentPlatform.HDFC:
+  //       setRefetchLastOnRampTimestamp(refetchHdfcLastOnRampTimestamp);
+  //       break;
 
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
+  //     default:
+  //       throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+  //   }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoLastOnRampTimestamp, refetchHdfcLastOnRampTimestamp]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentPlatform, refetchVenmoLastOnRampTimestamp, refetchHdfcLastOnRampTimestamp]);
 
 
   /*
    * Ramp State
    */
 
-  useEffect(() => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setRefetchDepositCounter(refetchVenmoDepositCounter);
-        break;
+  // useEffect(() => {
+  //   switch (paymentPlatform) {
+  //     case PaymentPlatform.VENMO:
+  //       setRefetchDepositCounter(refetchVenmoDepositCounter);
+  //       break;
 
-      case PaymentPlatform.HDFC:
-        setRefetchDepositCounter(refetchHdfcDepositCounter);
-        break;
+  //     case PaymentPlatform.HDFC:
+  //       setRefetchDepositCounter(refetchHdfcDepositCounter);
+  //       break;
 
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
+  //     default:
+  //       throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+  //   }
     
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoDepositCounter, refetchHdfcDepositCounter]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [paymentPlatform, refetchVenmoDepositCounter, refetchHdfcDepositCounter]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -313,15 +335,15 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     <SwapQuoteContext.Provider
       value={{
         isRegistered,
-        refetchDeposits,
-        getBestDepositForAmount,
+        // refetchDeposits,
+        // getBestDepositForAmount,
         shouldFetchDeposits,
         currentIntentHash,
-        refetchIntentHash,
+        // refetchIntentHash,
         shouldFetchIntentHash,
         lastOnRampTimestamp,
-        refetchLastOnRampTimestamp,
-        refetchDepositCounter,
+        // refetchLastOnRampTimestamp,
+        // refetchDepositCounter,
         shouldFetchRampState,
         onRampCooldownPeriod
       }}

@@ -1,6 +1,6 @@
-import { createContext } from 'react'
+import { createContext } from 'react';
 
-import { OnRamperIntent } from '../Deposits/types'
+import { OnRamperIntent } from '../Deposits/types';
 
 
 interface OnRamperIntentsValues {
@@ -10,7 +10,7 @@ interface OnRamperIntentsValues {
   lastOnRampTimestamp: bigint | null;
   refetchLastOnRampTimestamp: (() => void) | null;
   shouldFetchIntentHash: boolean;
-}
+};
 
 const defaultValues: OnRamperIntentsValues = {
   currentIntent: null,
@@ -21,6 +21,6 @@ const defaultValues: OnRamperIntentsValues = {
   shouldFetchIntentHash: false
 };
 
-const OnRamperIntentsContext = createContext<OnRamperIntentsValues>(defaultValues)
+const OnRamperIntentsContext = createContext<OnRamperIntentsValues>(defaultValues);
 
-export default OnRamperIntentsContext
+export default OnRamperIntentsContext;

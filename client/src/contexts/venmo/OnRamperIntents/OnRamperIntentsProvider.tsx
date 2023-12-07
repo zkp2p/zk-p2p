@@ -20,10 +20,10 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
-  const { rampAddress, rampAbi } = useSmartContracts()
-  const { depositStore } = useLiquidity()
+  const { rampAddress, rampAbi } = useSmartContracts();
+  const { depositStore } = useLiquidity();
 
   /*
    * State

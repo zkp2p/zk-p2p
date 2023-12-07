@@ -115,6 +115,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
 
         if (orderIsFilled) {
+          console.log('pruning deposit: ', deposit);
           depositIdsToPrune.push(deposit.depositId);
         } else {
           batchedDeposits.push(deposit);

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
-import SwapModal from "@components/Swap"
-import { OnRamp } from '@components/Swap/OnRamp'
+import SwapModal from "@components/Swap";
+import { OnRamp as VenmoOnRamp } from '@components/Swap/OnRamp';
+import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
+
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useRampState from '@hooks/useRampState';
+
+import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
+import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
+import usePlatformSettings from '@hooks/usePlatformSettings';
+
 
 export const Swap: React.FC<{}> = (props) => {
   /*
@@ -25,6 +32,23 @@ export const Swap: React.FC<{}> = (props) => {
     shouldFetchRampState
   } = useRampState();
 
+  const {
+    currentIntentHash: currentHdfcIntentHash,
+    refetchIntentHash: refetchHdfcIntentHash,
+    shouldFetchIntentHash: shouldFetchHdfcIntentHash,
+    refetchLastOnRampTimestamp: refetchLastHdfcOnRampTimestamp
+  } = useHdfcOnRamperIntents();
+
+  const {
+    refetchDepositCounter: refetchHdfcDepositCounter,
+    shouldFetchRampState: shouldFetchHdfcRampState,
+  } = useHdfcRampState();
+
+  const {
+    PaymentPlatform,
+    paymentPlatform
+  } = usePlatformSettings();
+
   /*
    * State
    */
@@ -38,9 +62,6 @@ export const Swap: React.FC<{}> = (props) => {
   useEffect(() => {
     if (shouldFetchIntentHash) {
       refetchIntentHash?.();
-    }
-
-    if (shouldFetchIntentHash) {
       refetchLastOnRampTimestamp?.();
     }
 
@@ -50,6 +71,19 @@ export const Swap: React.FC<{}> = (props) => {
 
     if (shouldFetchUsdcBalance) {
       refetchUsdcBalance?.();
+    }
+
+    console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
+
+    if (shouldFetchHdfcIntentHash) {
+      refetchHdfcIntentHash?.();
+      refetchLastHdfcOnRampTimestamp?.();
+    }
+
+    console.log('shouldFetchHdfcRampState: ', shouldFetchHdfcRampState);
+
+    if (shouldFetchHdfcRampState) {
+      refetchHdfcDepositCounter?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,14 +98,41 @@ export const Swap: React.FC<{}> = (props) => {
   }
 
   const handleIntentClick = () => {
-    console.log('selectedIntentHash', currentIntentHash);
+    // console.log('selectedVenmoIntentHash', currentIntentHash);
 
-    setSelectedIntentHash(currentIntentHash);
+    console.log('selectedHdfcIntentHash', currentHdfcIntentHash);
+
+    // setSelectedIntentHash(currentIntentHash);
+
+    setSelectedIntentHash(currentHdfcIntentHash);
   };
 
   /*
    * Component
    */
+
+  const onRampComponent = () => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return (
+          <VenmoOnRamp
+            handleBackClick={handleBackClick}
+            selectedIntentHash={selectedIntentHash}
+          />
+        );
+
+      case PaymentPlatform.HDFC:
+        return (
+          <HdfcOnRamp
+            handleBackClick={handleBackClick}
+            selectedIntentHash={selectedIntentHash}
+          />
+        );
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+  };
 
   return (
     <PageWrapper>
@@ -79,12 +140,9 @@ export const Swap: React.FC<{}> = (props) => {
         <SwapModal
           onIntentTableRowClick={handleIntentClick}
         />
-        ) : (
+      ) : (
         <OnRampContainer>
-          <OnRamp
-            handleBackClick={handleBackClick}
-            selectedIntentHash={selectedIntentHash}
-          />
+          {onRampComponent()}
         </OnRampContainer>
       )}
     </PageWrapper>
