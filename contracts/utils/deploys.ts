@@ -106,6 +106,7 @@ export default class DeployHelper {
     public async deployHDFCRamp(
       owner: Address,
       usdcToken: Address,
+      poseidon: Address,
       minDepositAmount: BigNumber,
       maxOnRampAmount: BigNumber,
       intentExpirationPeriod: BigNumber,
@@ -116,6 +117,7 @@ export default class DeployHelper {
       return await new HDFCRamp__factory(this._deployerSigner).deploy(
         owner,
         usdcToken,
+        poseidon,
         minDepositAmount,
         maxOnRampAmount,
         intentExpirationPeriod,

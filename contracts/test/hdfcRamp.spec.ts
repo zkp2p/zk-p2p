@@ -61,6 +61,8 @@ describe("HDFCRamp", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
+    const poseidonContract = await deployer.deployPoseidon();
+
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
     registrationProcessor = await deployer.deployHDFCRegistrationProcessorMock();
     sendProcessor = await deployer.deployHDFCSendProcessorMock();
@@ -70,6 +72,7 @@ describe("HDFCRamp", () => {
     ramp = await deployer.deployHDFCRamp(
       owner.address,
       usdcToken.address,
+      poseidonContract.address,
       usdc(20),                          // $20 min deposit amount
       usdc(999),
       ONE_DAY_IN_SECONDS,
@@ -167,7 +170,7 @@ describe("HDFCRamp", () => {
 
       subjectSignals = [ZERO, ZERO, ZERO, ZERO, ZERO];
       subjectSignals[0] = BigNumber.from(1);
-      subjectSignals[1] = BigNumber.from(await calculateIdHash("1"));
+      subjectSignals[1] = BigNumber.from(await calculateIdHash("21"));
 
       subjectA = [ZERO, ZERO];
       subjectB = [[ZERO, ZERO], [ZERO, ZERO]];
@@ -197,7 +200,7 @@ describe("HDFCRamp", () => {
       beforeEach(async () => {
         await subject();
 
-        subjectSignals[1] = BigNumber.from(await calculateIdHash("3"));
+        subjectSignals[1] = BigNumber.from(await calculateIdHash("23"));
       });
 
       it("should revert", async () => {
@@ -219,10 +222,10 @@ describe("HDFCRamp", () => {
       const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
       const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-      signalsOffRamp = [ZERO, BigNumber.from(await calculateIdHash("1")), ZERO, ZERO, ZERO];
-      signalsOnRamp = [ZERO, BigNumber.from(await calculateIdHash("2")), ZERO, ZERO, ZERO];
-      signalsOnRampTwo = [ZERO, BigNumber.from(await calculateIdHash("3")), ZERO, ZERO, ZERO];
-      signalsMaliciousOnRamp = [ZERO, BigNumber.from(await calculateIdHash("2")), ZERO, ZERO, ZERO];
+      signalsOffRamp = [ZERO, BigNumber.from(await calculateIdHash("21")), ZERO, ZERO, ZERO];
+      signalsOnRamp = [ZERO, BigNumber.from(await calculateIdHash("22")), ZERO, ZERO, ZERO];
+      signalsOnRampTwo = [ZERO, BigNumber.from(await calculateIdHash("23")), ZERO, ZERO, ZERO];
+      signalsMaliciousOnRamp = [ZERO, BigNumber.from(await calculateIdHash("22")), ZERO, ZERO, ZERO];
 
       await ramp.connect(offRamper.wallet).register(
         _a,
@@ -308,7 +311,7 @@ describe("HDFCRamp", () => {
 
         await expect(subject()).to.emit(ramp, "DepositReceived").withArgs(
           ZERO,
-          await calculateIdHash("1"),
+          await calculateIdHash("21"),
           subjectDepositAmount,
           conversionRate
         );
@@ -386,7 +389,7 @@ describe("HDFCRamp", () => {
         await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(await calculateIdHash("22"), subjectDepositId, currentTimestamp);
 
         const intent = await ramp.intents(intentHash);
 
@@ -402,7 +405,7 @@ describe("HDFCRamp", () => {
 
         await subject();
 
-        const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, await blockchain.getCurrentTimestamp());
+        const intentHash = calculateIntentHash(await calculateIdHash("22"), subjectDepositId, await blockchain.getCurrentTimestamp());
 
         const postDeposit = await ramp.getDeposit(subjectDepositId);
 
@@ -415,7 +418,7 @@ describe("HDFCRamp", () => {
         await subject();
 
         const expectedIntentHash = calculateIntentHash(
-          await calculateIdHash("2"),
+          await calculateIdHash("22"),
           subjectDepositId,
           await blockchain.getCurrentTimestamp()
         );
@@ -429,12 +432,12 @@ describe("HDFCRamp", () => {
         const txn = await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(await calculateIdHash("22"), subjectDepositId, currentTimestamp);
 
         expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
           intentHash,
           subjectDepositId,
-          await calculateIdHash("2"),
+          await calculateIdHash("22"),
           subjectTo,
           subjectAmount,
           currentTimestamp
@@ -453,7 +456,7 @@ describe("HDFCRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          oldIntentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
+          oldIntentHash = calculateIntentHash(await calculateIdHash("22"), subjectDepositId, currentTimestamp);
 
           await blockchain.increaseTimeAsync(timeJump);
 
@@ -468,7 +471,7 @@ describe("HDFCRamp", () => {
 
           await subject();
 
-          const newIntentHash = calculateIntentHash(await calculateIdHash("3"), subjectDepositId, await blockchain.getCurrentTimestamp());
+          const newIntentHash = calculateIntentHash(await calculateIdHash("23"), subjectDepositId, await blockchain.getCurrentTimestamp());
           const postDeposit = await ramp.getDeposit(subjectDepositId);
 
           expect(postDeposit.outstandingIntentAmount).to.eq(subjectAmount);
@@ -492,7 +495,7 @@ describe("HDFCRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(await calculateIdHash("3"), subjectDepositId, currentTimestamp);
+          const intentHash = calculateIntentHash(await calculateIdHash("23"), subjectDepositId, currentTimestamp);
 
           const intent = await ramp.intents(intentHash);
 
@@ -506,7 +509,7 @@ describe("HDFCRamp", () => {
           await subject();
 
           const expectedIntentHash = calculateIntentHash(
-            await calculateIdHash("3"),
+            await calculateIdHash("23"),
             subjectDepositId,
             await blockchain.getCurrentTimestamp()
           );
@@ -537,7 +540,7 @@ describe("HDFCRamp", () => {
 
       describe("when the caller is on the depositor's denylist", async () => {
         beforeEach(async () => {
-          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateIdHash("2"));
+          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateIdHash("22"));
         });
 
         it("should revert", async () => {
@@ -621,13 +624,13 @@ describe("HDFCRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(await calculateIdHash("2"), subjectDepositId, currentTimestamp);
+          const intentHash = calculateIntentHash(await calculateIdHash("22"), subjectDepositId, currentTimestamp);
   
           const signals = new Array<BigNumber>(15).fill(ZERO);
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
           signals[2] = BigNumber.from(await calculateIdHash("1"));
-          signals[3] = BigNumber.from(await calculateIdHash("2"));
+          signals[3] = BigNumber.from(await calculateIdHash("22"));
           signals[4] = BigNumber.from(intentHash);
   
           const a: [BigNumber, BigNumber] = [ZERO, ZERO];
@@ -688,7 +691,7 @@ describe("HDFCRamp", () => {
           usdc(101)
         );
 
-        const idHash = await calculateIdHash("2");
+        const idHash = await calculateIdHash("22");
         depositId = ZERO;
 
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
@@ -780,7 +783,7 @@ describe("HDFCRamp", () => {
 
         depositId = (await ramp.depositCounter()).sub(1);
 
-        const idHash = await calculateIdHash("2");
+        const idHash = await calculateIdHash("22");
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
@@ -790,7 +793,7 @@ describe("HDFCRamp", () => {
         subjectSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         subjectSignals[1] = currentTimestamp;
         subjectSignals[2] = BigNumber.from(await calculateIdHash("1"));
-        subjectSignals[3] = BigNumber.from(await calculateIdHash("2"));
+        subjectSignals[3] = BigNumber.from(await calculateIdHash("22"));
         subjectSignals[4] = BigNumber.from(intentHash);
 
         subjectA = [ZERO, ZERO];
@@ -901,7 +904,7 @@ describe("HDFCRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          intentHash = calculateIntentHash(await calculateIdHash("2"), depositId, currentTimestamp);
+          intentHash = calculateIntentHash(await calculateIdHash("22"), depositId, currentTimestamp);
 
           subjectSignals[1] = currentTimestamp;
           subjectSignals[4] = BigNumber.from(intentHash);
@@ -956,7 +959,7 @@ describe("HDFCRamp", () => {
 
       describe("when the offRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectSignals[2] = BigNumber.from(await calculateIdHash("2"));
+          subjectSignals[2] = BigNumber.from(await calculateIdHash("22"));
         });
 
         it("should revert", async () => {
@@ -966,7 +969,7 @@ describe("HDFCRamp", () => {
 
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectSignals[3] = BigNumber.from(await calculateIdHash("3"));
+          subjectSignals[3] = BigNumber.from(await calculateIdHash("23"));
         });
 
         it("should revert", async () => {
@@ -1173,7 +1176,7 @@ describe("HDFCRamp", () => {
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        subjectDeniedUser = await calculateIdHash("2");
+        subjectDeniedUser = await calculateIdHash("22");
         subjectCaller = offRamper;
       });
 
@@ -1195,8 +1198,8 @@ describe("HDFCRamp", () => {
         const tx = await subject();
 
         expect(tx).to.emit(ramp, "UserAddedToDenylist").withArgs(
-          await calculateIdHash("1"),
-          await calculateIdHash("2")
+          await calculateIdHash("21"),
+          await calculateIdHash("22")
         );
       });
 
@@ -1226,9 +1229,9 @@ describe("HDFCRamp", () => {
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        await ramp.connect(offRamper.wallet).addAccountToDenylist(await calculateIdHash("2"));
+        await ramp.connect(offRamper.wallet).addAccountToDenylist(await calculateIdHash("22"));
 
-        subjectApprovedUser = await calculateIdHash("2");
+        subjectApprovedUser = await calculateIdHash("22");
         subjectCaller = offRamper;
       });
 
@@ -1254,8 +1257,8 @@ describe("HDFCRamp", () => {
         const tx = await subject();
 
         expect(tx).to.emit(ramp, "UserRemovedFromDenylist").withArgs(
-          await calculateIdHash("1"),
-          await calculateIdHash("2")
+          await calculateIdHash("21"),
+          await calculateIdHash("22")
         );
       });
 
@@ -1673,7 +1676,7 @@ describe("HDFCRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(await calculateIdHash("2"), ONE, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(await calculateIdHash("22"), ONE, await blockchain.getCurrentTimestamp());
 
         subjectAccount = offRamper.address;
       });
@@ -1737,7 +1740,7 @@ describe("HDFCRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(await calculateIdHash("2"), ONE, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(await calculateIdHash("22"), ONE, await blockchain.getCurrentTimestamp());
 
         subjectDepositIds = [ZERO, ONE];
       });
@@ -1793,9 +1796,9 @@ describe("HDFCRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
-        const intentHashOne = calculateIntentHash(await calculateIdHash("2"), ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashOne = calculateIntentHash(await calculateIdHash("22"), ZERO, await blockchain.getCurrentTimestamp());
         await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40), receiver.address);
-        const intentHashTwo = calculateIntentHash(await calculateIdHash("3"), ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashTwo = calculateIntentHash(await calculateIdHash("23"), ZERO, await blockchain.getCurrentTimestamp());
 
         subjectIntentHashes = [intentHashOne, intentHashTwo];
       });
@@ -1813,8 +1816,8 @@ describe("HDFCRamp", () => {
         expect(intents[1].intent.deposit).to.eq(ZERO);
         expect(intents[0].intent.amount).to.eq(usdc(50));
         expect(intents[1].intent.amount).to.eq(usdc(40));
-        expect(intents[0].onRamperIdHash).to.eq(await calculateIdHash("2"));
-        expect(intents[1].onRamperIdHash).to.eq(await calculateIdHash("3"));
+        expect(intents[0].onRamperIdHash).to.eq(await calculateIdHash("22"));
+        expect(intents[1].onRamperIdHash).to.eq(await calculateIdHash("23"));
       });
     });
   });

@@ -10,11 +10,12 @@ export const calculateIntentHash = (
   depositId: BigNumber,
   timestamp: BigNumber
 ): string => {
+
   const intermediateHash = ethers.utils.solidityKeccak256(
     ["bytes32", "uint256", "uint256"],
     [venmoId, depositId, timestamp]
   );
-  
+
   return ethers.utils.hexZeroPad(BigNumber.from(intermediateHash).mod(CIRCOM_FIELD).toHexString(), 32);
 };
 

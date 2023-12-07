@@ -133,6 +133,7 @@ contract HDFCRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
+    IPoseidon public immutable poseidon;                            // Poseidon hashing contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
     IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
@@ -156,6 +157,7 @@ contract HDFCRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
+        IPoseidon _poseidon,
         uint256 _minDepositAmount,
         uint256 _maxOnRampAmount,
         uint256 _intentExpirationPeriod,
@@ -166,6 +168,7 @@ contract HDFCRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
+        poseidon = _poseidon;
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
         intentExpirationPeriod = _intentExpirationPeriod;
@@ -749,7 +752,7 @@ contract HDFCRamp is Ownable {
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[deposit.depositor].idHash == offRamperIdHash, "Offramper id does not match");
+        require(bytes32(poseidon.poseidon(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
