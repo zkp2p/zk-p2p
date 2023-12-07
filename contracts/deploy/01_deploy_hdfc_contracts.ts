@@ -25,11 +25,29 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
-  const [ deployer ] = await hre.getUnnamedAccounts();
+  const [deployer] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
   const paymentProvider = PaymentProviders.HDFC;
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
+
+  const poseidon3 = await deploy("Poseidon", {
+    from: deployer,
+    contract: {
+      abi: circom.poseidonContract.generateABI(3),
+      bytecode: circom.poseidonContract.createCode(3),
+    }
+  });
+  console.log("Poseidon deployed at ", poseidon3.address);
+
+  const poseidon6 = await deploy("Poseidon", {
+    from: deployer,
+    contract: {
+      abi: circom.poseidonContract.generateABI(6),
+      bytecode: circom.poseidonContract.createCode(6),
+    }
+  });
+  console.log("Poseidon6 deployed at ", poseidon6.address);
 
   const hdfcRamp = await deploy("HDFCRamp", {
     from: deployer,
@@ -37,13 +55,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       deployer,
       usdcAddress,
       getDeployedContractAddress(network, "Poseidon"),
+      poseidon3.address,
+      poseidon6.address,
       MIN_DEPOSIT_AMOUNT[paymentProvider][network],
       MAX_ONRAMP_AMOUNT[paymentProvider][network],
       INTENT_EXPIRATION_PERIOD[paymentProvider][network],
       ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
       SUSTAINABILITY_FEE[paymentProvider][network],
-      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != "" 
-        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] 
+      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
         : deployer,
     ],
   });
