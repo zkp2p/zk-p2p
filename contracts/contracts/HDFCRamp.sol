@@ -6,7 +6,8 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Bytes32ArrayUtils } from "./external/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "./external/Uint256ArrayUtils.sol";
 
-import { IPoseidon } from "./interfaces/IPoseidon.sol";
+import { IPoseidon3 } from "./interfaces/IPoseidon3.sol";
+import { IPoseidon6 } from "./interfaces/IPoseidon6.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
 
@@ -78,7 +79,7 @@ contract HDFCRamp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[3] upiId;
+        uint256[8] upiId;
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -133,7 +134,8 @@ contract HDFCRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
-    IPoseidon public immutable poseidon;                            // Poseidon hashing contract
+    IPoseidon3 public immutable poseidon3;                           // Poseidon hashing contract
+    IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
     IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
@@ -157,7 +159,8 @@ contract HDFCRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
-        IPoseidon _poseidon,
+        IPoseidon3 _poseidon3,
+        IPoseidon6 _poseidon6,
         uint256 _minDepositAmount,
         uint256 _maxOnRampAmount,
         uint256 _intentExpirationPeriod,
@@ -168,7 +171,8 @@ contract HDFCRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
-        poseidon = _poseidon;
+        poseidon3 = _poseidon3;
+        poseidon6 = _poseidon6;
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
         intentExpirationPeriod = _intentExpirationPeriod;
@@ -237,7 +241,7 @@ contract HDFCRamp is Ownable {
      * @param _receiveAmount    The amount of USD to receive
      */
     function offRamp(
-        uint256[3] memory _upiId,
+        uint256[8] memory _upiId,
         uint256 _depositAmount,
         uint256 _receiveAmount
     )
@@ -752,7 +756,7 @@ contract HDFCRamp is Ownable {
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(bytes32(poseidon.poseidon(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
+        require(bytes32(_getUpiIdHash(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
@@ -783,5 +787,22 @@ contract HDFCRamp is Ownable {
         );
 
         return idHash;
+    }
+
+    /**
+     * @notice Returns the poseidon hash of the given raw UPI ID    
+     */
+    function _getUpiIdHash(uint256[8] memory _upiId) internal view returns (bytes32) {
+        uint256[6] memory temp1;
+        uint256[3] memory temp2;
+
+        for (uint256 i = 0; i < 6; ++i) {
+            temp1[i] = _upiId[i];
+        }
+        temp2[0] = poseidon6.poseidon(temp1);
+        temp2[1] = _upiId[6];
+        temp2[2] = _upiId[7];
+
+        return bytes32(poseidon3.poseidon(temp2));
     }
 }
