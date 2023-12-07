@@ -35,7 +35,7 @@ describe("ManagedKeyHashAdapterV2", () => {
 
   describe("#constructor", async () => {
     it("should have the correct key hash", async () => {
-        const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+        const keyHashes = await keyHashAdapter.getMailServerKeyHashes();
 
         const isKeyHashOne = await keyHashAdapter.isMailServerKeyHash(keyHash1);
         const isKeyHashTwo = await keyHashAdapter.isMailServerKeyHash(keyHash2);
@@ -62,7 +62,7 @@ describe("ManagedKeyHashAdapterV2", () => {
     });
   });
 
-  describe("#addMailserverKeyHash", async () => {
+  describe("#addMailServerKeyHash", async () => {
     let subjectMailServerKeyHash: string;
     let subjectCaller: Account;
 
@@ -80,7 +80,7 @@ describe("ManagedKeyHashAdapterV2", () => {
       await subject();
 
       const isKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
-      const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+      const keyHashes = await keyHashAdapter.getMailServerKeyHashes();
 
       expect(isKeyHash).to.be.true;
       expect(keyHashes).to.contain(subjectMailServerKeyHash);
@@ -113,7 +113,7 @@ describe("ManagedKeyHashAdapterV2", () => {
     });
   });
 
-  describe("#removeMailserverKeyHash", async () => {
+  describe("#removeMailServerKeyHash", async () => {
     let subjectMailServerKeyHash: string;
     let subjectCaller: Account;
 
@@ -131,14 +131,14 @@ describe("ManagedKeyHashAdapterV2", () => {
 
     it("should set the correct venmo keys", async () => {
       const preIsKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
-      const preKeyHashes = await keyHashAdapter.getMailserverKeyHashes();
+      const preKeyHashes = await keyHashAdapter.getMailServerKeyHashes();
       expect(preIsKeyHash).to.be.true;
       expect(preKeyHashes).to.contain(subjectMailServerKeyHash);
 
       await subject();
 
       const isKeyHash = await keyHashAdapter.isMailServerKeyHash(subjectMailServerKeyHash);
-      const keyHashes = await keyHashAdapter.getMailserverKeyHashes();
+      const keyHashes = await keyHashAdapter.getMailServerKeyHashes();
 
       expect(isKeyHash).to.be.false;
       expect(keyHashes).to.not.contain(subjectMailServerKeyHash);

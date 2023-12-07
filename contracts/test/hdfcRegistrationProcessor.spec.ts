@@ -11,7 +11,6 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { ZERO_BYTES32 } from "@utils/constants";
 import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
@@ -51,7 +50,7 @@ describe("HDFCRegistrationProcessor", () => {
   describe("#constructor", async () => {
     it("should set the correct state", async () => {
       const rampAddress = await registrationProcessor.ramp();
-      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
+      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailServerKeyHashAdapter();
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(ramp.address);
@@ -150,7 +149,7 @@ describe("HDFCRegistrationProcessor", () => {
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await registrationProcessor.mailServerKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 

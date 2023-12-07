@@ -53,7 +53,7 @@ describe("HDFCSendProcessor", () => {
   describe("#constructor", async () => {
     it("should set the correct state", async () => {
       const rampAddress = await sendProcessor.ramp();
-      const venmoKeyHashAdapter = await sendProcessor.mailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await sendProcessor.mailServerKeyHashAdapter();
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(ramp.address);
@@ -185,7 +185,7 @@ describe("HDFCSendProcessor", () => {
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await sendProcessor.mailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await sendProcessor.mailServerKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 

@@ -50,7 +50,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(IKeyHashAdapterV2(mailserverKeyHashAdapter).isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
+        require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);

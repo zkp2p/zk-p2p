@@ -17,29 +17,29 @@ contract BaseProcessorV2 is Ownable {
 
     /* ============ State Variables ============ */
     address public immutable ramp;
-    IKeyHashAdapterV2 public mailserverKeyHashAdapter;
+    IKeyHashAdapterV2 public mailServerKeyHashAdapter;
     INullifierRegistry public nullifierRegistry;
     bytes public emailFromAddress;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapterV2 _mailserverKeyHashAdapter,
+        IKeyHashAdapterV2 _mailServerKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Ownable()
     {
         ramp = _ramp;
-        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
+        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
         nullifierRegistry = _nullifierRegistry;
         emailFromAddress = bytes(_emailFromAddress);
     }
 
     /* ============ External Functions ============ */
 
-    function setMailserverKeyHashAdapter(IKeyHashAdapterV2 _mailserverKeyHashAdapter) external onlyOwner {
-        mailserverKeyHashAdapter = _mailserverKeyHashAdapter;
+    function setMailserverKeyHashAdapter(IKeyHashAdapterV2 _mailServerKeyHashAdapter) external onlyOwner {
+        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
     }
 
     /**
@@ -58,8 +58,8 @@ contract BaseProcessorV2 is Ownable {
         return emailFromAddress;
     }
 
-    function getMailserverKeyHashes() public view returns (bytes32[] memory) {
-        return IKeyHashAdapterV2(mailserverKeyHashAdapter).getMailserverKeyHashes();
+    function isMailServerKeyHash(bytes32 _keyHash) public view returns (bool) {
+        return IKeyHashAdapterV2(mailServerKeyHashAdapter).isMailServerKeyHash(_keyHash);
     }
 
     /* ============ Internal Functions ============ */

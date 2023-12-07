@@ -131,7 +131,7 @@ describe("HDFC Deploy", () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await hdfcRegistrationProcessor.ramp();
       const actualOwner = await hdfcRegistrationProcessor.owner();
-      const actualKeyHashAdapter = await hdfcRegistrationProcessor.mailserverKeyHashAdapter();
+      const actualKeyHashAdapter = await hdfcRegistrationProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await hdfcRegistrationProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcRegistrationProcessor.emailFromAddress();
 
@@ -147,7 +147,7 @@ describe("HDFC Deploy", () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await hdfcSendProcessor.ramp();
       const actualOwner = await hdfcSendProcessor.owner();
-      const actualKeyHashAdapter = await hdfcSendProcessor.mailserverKeyHashAdapter();
+      const actualKeyHashAdapter = await hdfcSendProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await hdfcSendProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcSendProcessor.emailFromAddress();
 

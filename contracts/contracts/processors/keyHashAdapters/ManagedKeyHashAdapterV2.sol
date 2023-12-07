@@ -18,21 +18,21 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
     /* ============ State Variables ============ */
 
     mapping(bytes32 => bool) public isMailServerKeyHash;
-    bytes32[] public mailserverKeyHashes;
+    bytes32[] public mailServerKeyHashes;
 
     /* ============ Constructor ============ */
 
     constructor(
-        bytes32[] memory _mailserverKeyHashes
+        bytes32[] memory _mailServerKeyHashes
     )
         Ownable()
     {
-        for (uint256 i = 0; i < _mailserverKeyHashes.length; i++) {
-            bytes32 mailserverKeyHash = _mailserverKeyHashes[i];
+        for (uint256 i = 0; i < _mailServerKeyHashes.length; i++) {
+            bytes32 mailserverKeyHash = _mailServerKeyHashes[i];
             require(!isMailServerKeyHash[mailserverKeyHash], "Key hash already added");
             
             isMailServerKeyHash[mailserverKeyHash] = true;
-            mailserverKeyHashes.push(mailserverKeyHash);
+            mailServerKeyHashes.push(mailserverKeyHash);
         }
     }
 
@@ -42,7 +42,7 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
         require(!isMailServerKeyHash[_mailserverKeyHash], "Key hash already added");
 
         isMailServerKeyHash[_mailserverKeyHash] = true;
-        mailserverKeyHashes.push(_mailserverKeyHash);
+        mailServerKeyHashes.push(_mailserverKeyHash);
 
         emit MailServerKeyHashAdded(_mailserverKeyHash);
     }
@@ -51,14 +51,14 @@ contract ManagedKeyHashAdapterV2 is Ownable, IKeyHashAdapterV2 {
         require(isMailServerKeyHash[_mailserverKeyHash], "Key hash not added");
 
         isMailServerKeyHash[_mailserverKeyHash] = false;
-        mailserverKeyHashes.removeStorage(_mailserverKeyHash);
+        mailServerKeyHashes.removeStorage(_mailserverKeyHash);
 
         emit MailServerKeyHashRemoved(_mailserverKeyHash);
     }
 
     /* ============ External Getter Functions ============ */
 
-    function getMailserverKeyHashes() external view override returns (bytes32[] memory) {
-        return mailserverKeyHashes;
+    function getMailServerKeyHashes() external view override returns (bytes32[] memory) {
+        return mailServerKeyHashes;
     }
 }
