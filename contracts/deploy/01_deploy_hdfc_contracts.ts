@@ -31,15 +31,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const poseidon3 = await deploy("Poseidon3", {
-    from: deployer,
-    contract: {
-      abi: circom.poseidonContract.generateABI(3),
-      bytecode: circom.poseidonContract.createCode(3),
-    }
-  });
-  console.log("Poseidon deployed at ", poseidon3.address);
-
   const poseidon6 = await deploy("Poseidon6", {
     from: deployer,
     contract: {
@@ -54,8 +45,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [
       deployer,
       usdcAddress,
-      getDeployedContractAddress(network, "Poseidon"),
-      poseidon3.address,
+      getDeployedContractAddress(network, "Poseidon3"),
       poseidon6.address,
       MIN_DEPOSIT_AMOUNT[paymentProvider][network],
       MAX_ONRAMP_AMOUNT[paymentProvider][network],

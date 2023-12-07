@@ -3,14 +3,14 @@ import "module-alias/register";
 import { deployments, ethers } from "hardhat";
 
 import {
-  ManagedKeyHashAdapter,
+  ManagedKeyHashAdapterV2,
   NullifierRegistry,
   HDFCRamp,
   HDFCRegistrationProcessor,
   HDFCSendProcessor,
 } from "../../utils/contracts"
 import {
-  ManagedKeyHashAdapter__factory,
+  ManagedKeyHashAdapterV2__factory,
   NullifierRegistry__factory,
   HDFCRamp__factory,
   HDFCRegistrationProcessor__factory,
@@ -54,7 +54,7 @@ describe("HDFC Deploy", () => {
   let hdfcRegistrationProcessor: HDFCRegistrationProcessor;
   let hdfcSendProcessor: HDFCSendProcessor;
   let nullifierRegistry: NullifierRegistry;
-  let keyHashAdapter: ManagedKeyHashAdapter;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
 
   const network: string = deployments.getNetworkName();
 
@@ -82,7 +82,7 @@ describe("HDFC Deploy", () => {
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
 
     const keyHashAdapterAddress  = await getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter");
-    keyHashAdapter = new ManagedKeyHashAdapter__factory(deployer.wallet).attach(keyHashAdapterAddress);
+    keyHashAdapter = new ManagedKeyHashAdapterV2__factory(deployer.wallet).attach(keyHashAdapterAddress);
   });
 
   describe("HDFCRamp", async () => {
@@ -90,14 +90,16 @@ describe("HDFC Deploy", () => {
       const actualRegistrationProcessor = await hdfcRamp.registrationProcessor();
       const actualSendProcessor = await hdfcRamp.sendProcessor();
       const actualUsdc = await hdfcRamp.usdc();
-      const actualPoseidon = await hdfcRamp.poseidon();
+      const actualPoseidon3 = await hdfcRamp.poseidon3();
+      const actualPoseidon6 = await hdfcRamp.poseidon6();
 
       const expectedUsdc = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
       expect(actualRegistrationProcessor).to.eq(hdfcRegistrationProcessor.address);
       expect(actualSendProcessor).to.eq(hdfcSendProcessor.address);
       expect(actualUsdc).to.eq(expectedUsdc);
-      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon"));
+      expect(actualPoseidon3).to.eq(await getDeployedContractAddress(network, "Poseidon3"));
+      expect(actualPoseidon6).to.eq(await getDeployedContractAddress(network, "Poseidon6"));
     });
 
     it("should have the correct limitations set", async () => {
@@ -159,13 +161,14 @@ describe("HDFC Deploy", () => {
     });
   });
 
-  describe("ManagedKeyHashAdapter", async () => {
+  describe("ManagedKeyHashAdapterV2", async () => {
     it("should have the correct parameters set", async () => {
       const actualOwner = await keyHashAdapter.owner();
-      const actualMailserverKeyHash = await keyHashAdapter.mailserverKeyHash();
+      const actualMailserverKeyHashes = await keyHashAdapter.getMailServerKeyHashes();
 
       expect(actualOwner).to.eq(multiSig);
-      expect(actualMailserverKeyHash).to.eq(SERVER_KEY_HASH[paymentProvider]);
+      expect(actualMailserverKeyHashes).to.contain(SERVER_KEY_HASH[paymentProvider][0]);
+      expect(actualMailserverKeyHashes).to.contain(SERVER_KEY_HASH[paymentProvider][1]);
     });
   });
 

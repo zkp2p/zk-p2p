@@ -96,7 +96,7 @@ describe("System and Venmo Deploy", () => {
 
       expect(actualRegistrationProcessor).to.eq(venmoRegistrationProcessor.address);
       expect(actualSendProcessor).to.eq(venmoSendProcessor.address);
-      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon"));
+      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon3"));
       expect(actualUsdc).to.eq(expectedUsdc);
     });
 

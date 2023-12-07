@@ -44,14 +44,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     usdcAddress = USDC[network];
   }
 
-  const poseidon = await deploy("Poseidon", {
+  const poseidon = await deploy("Poseidon3", {
     from: deployer,
     contract: {
       abi: circom.poseidonContract.generateABI(3),
       bytecode: circom.poseidonContract.createCode(3),
     }
   });
-  console.log("Poseidon deployed at ", poseidon.address);
+  console.log("Poseidon3 deployed at ", poseidon.address);
 
   const ramp = await deploy("Ramp", {
     from: deployer,
