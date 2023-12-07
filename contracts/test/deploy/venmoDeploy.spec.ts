@@ -67,7 +67,7 @@ describe("System and Venmo Deploy", () => {
       deployer,
     ] = await getAccounts();
 
-    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
+    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer.address;
 
     const rampAddress  = await getDeployedContractAddress(network, "Ramp");
     ramp = new Ramp__factory(deployer.wallet).attach(rampAddress);

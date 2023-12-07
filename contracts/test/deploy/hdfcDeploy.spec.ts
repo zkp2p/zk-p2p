@@ -67,7 +67,7 @@ describe("HDFC Deploy", () => {
       deployer,
     ] = await getAccounts();
 
-    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
+    multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer.address;
 
     const hdfcRampAddress  = await getDeployedContractAddress(network, "HDFCRamp");
     hdfcRamp = new HDFCRamp__factory(deployer.wallet).attach(hdfcRampAddress);
@@ -90,12 +90,14 @@ describe("HDFC Deploy", () => {
       const actualRegistrationProcessor = await hdfcRamp.registrationProcessor();
       const actualSendProcessor = await hdfcRamp.sendProcessor();
       const actualUsdc = await hdfcRamp.usdc();
+      const actualPoseidon = await hdfcRamp.poseidon();
 
       const expectedUsdc = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
       expect(actualRegistrationProcessor).to.eq(hdfcRegistrationProcessor.address);
       expect(actualSendProcessor).to.eq(hdfcSendProcessor.address);
       expect(actualUsdc).to.eq(expectedUsdc);
+      expect(actualPoseidon).to.eq(await getDeployedContractAddress(network, "Poseidon"));
     });
 
     it("should have the correct limitations set", async () => {
