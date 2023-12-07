@@ -160,10 +160,10 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
   }
 
   // Derive modulus from signature
