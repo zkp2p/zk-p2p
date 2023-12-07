@@ -19,7 +19,7 @@ import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/src/shaHash";
 import { dkimVerify } from "@zk-email/helpers/src/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
-import { replaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
+import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
 
 async function getArgs() {
   const args = process.argv.slice(2);
@@ -160,10 +160,10 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3200;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
   }
 
   // Derive modulus from signature
@@ -201,6 +201,7 @@ export async function getCircuitInputs(
   const precomputeText = bodyPadded.slice(0, shaCutoffIndex);
   let bodyRemaining = bodyPadded.slice(shaCutoffIndex);
   const bodyRemainingLen = bodyPaddedLen - precomputeText.length;
+  console.log(bodyRemainingLen, " bytes remaining in body");
   assert(bodyRemainingLen < MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE, "Invalid slice");
   assert(bodyRemaining.length % 64 === 0, "Not going to be padded correctly with int64s");
   bodyRemaining = padWithZero(bodyRemaining, MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE);
@@ -284,7 +285,7 @@ export async function getCircuitInputs(
 
     const hdfc_amount_selector = Buffer.from("Dear Customer,<br> <br> Rs.");
     const hdfc_amount_idx = (Buffer.from(bodyRemaining).indexOf(hdfc_amount_selector) + hdfc_amount_selector.length).toString();
-    
+
     const bodyRemainingString = Buffer.from(bodyRemaining).toString();
     const paymentIdRegex = /is ([0-9]+).<br/;
     const match = bodyRemainingString.match(paymentIdRegex);
@@ -430,7 +431,7 @@ function preProcessEmail(email: Buffer, type: CircuitType): Buffer {
 
   if (type === CircuitType.EMAIL_HDFC_REGISTRATION || type === CircuitType.EMAIL_HDFC_SEND) {
     console.log("Preprocessing HDFC email. Updating message-id with x-google-original-message-id");
-    return Buffer.from(replaceMessageIdWithXGoogleOriginalMessageId(email.toString()));
+    return Buffer.from(hdfcReplaceMessageIdWithXGoogleOriginalMessageId(email.toString()));
 
   }
   return email;

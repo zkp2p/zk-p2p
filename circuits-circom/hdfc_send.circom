@@ -125,13 +125,13 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4762997
+    // TOTAL CONSTRAINTS: 5873770
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 3200 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 4352 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ intent_hash ] } = HdfcSendEmail(1024, 3200, 121, 17, 7);
+component main { public [ intent_hash ] } = HdfcSendEmail(1024, 4352, 121, 17, 7);
