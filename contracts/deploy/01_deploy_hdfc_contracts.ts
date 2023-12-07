@@ -31,7 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const poseidon3 = await deploy("Poseidon", {
+  const poseidon3 = await deploy("Poseidon3", {
     from: deployer,
     contract: {
       abi: circom.poseidonContract.generateABI(3),
@@ -40,7 +40,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("Poseidon deployed at ", poseidon3.address);
 
-  const poseidon6 = await deploy("Poseidon", {
+  const poseidon6 = await deploy("Poseidon6", {
     from: deployer,
     contract: {
       abi: circom.poseidonContract.generateABI(6),
@@ -69,7 +69,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("HDFCRamp deployed at ", hdfcRamp.address);
 
   const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
-    contract: "ManagedKeyHashAdapter",
+    contract: "ManagedKeyHashAdapterV2",
     from: deployer,
     args: [SERVER_KEY_HASH[paymentProvider]],
   });

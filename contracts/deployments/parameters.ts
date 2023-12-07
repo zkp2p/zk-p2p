@@ -6,7 +6,9 @@ import { ether, usdc } from "@utils/common/units";
 // Deployment Parameters
 export const SERVER_KEY_HASH = {
   "venmo": "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f",
-  "hdfc": "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa",
+  "hdfc": [
+    "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa"
+  ]
 };
 
 export const FROM_EMAIL = {

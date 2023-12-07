@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
-  const [ deployer ] = await hre.getUnnamedAccounts();
+  const [deployer] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
 
   console.log(
@@ -37,7 +37,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     HDFCKeyHashAdapter:         ${getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter")}
     NullifierRegistry:          ${getDeployedContractAddress(network, "NullifierRegistry")}
     USDC:                       ${USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock")}
-    Poseidon:                   ${getDeployedContractAddress(network, "Poseidon")}
+    Poseidon3:                  ${getDeployedContractAddress(network, "Poseidon3")}
+    Poseidon6:                  ${getDeployedContractAddress(network, "Poseidon6")}
     `
   );
 };
