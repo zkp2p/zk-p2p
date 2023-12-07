@@ -163,7 +163,7 @@ export default class DeployHelper {
     return await new ManagedKeyHashAdapter__factory(this._deployerSigner).deploy(venmoKeyHash);
   }
 
-  public async deployManagedKeyHashAdapterV2(keyHashes: string[]): Promise<ManagedKeyHashAdapteV2> {
+  public async deployManagedKeyHashAdapterV2(keyHashes: string[]): Promise<ManagedKeyHashAdapterV2> {
     return await new ManagedKeyHashAdapterV2__factory(this._deployerSigner).deploy(keyHashes);
   }
 

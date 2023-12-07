@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapter, NullifierRegistry, HDFCRegistrationProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapterV2, NullifierRegistry, HDFCRegistrationProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -16,14 +16,14 @@ import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
+const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", "0x0000000000000000000000000000000000000000000000000040737472656c61", "0x000000000000000000000000000000000000000000000000006e616263666468", "0x00000000000000000000000000000000000000000000000000000074656e2e6b", "0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
 
-describe("HDFCRegistrationProcessor", () => {
+describe.only("HDFCRegistrationProcessor", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
 
-  let keyHashAdapter: ManagedKeyHashAdapter;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
   let nullifierRegistry: NullifierRegistry;
   let registrationProcessor: HDFCRegistrationProcessor;
 
@@ -38,7 +38,7 @@ describe("HDFCRegistrationProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([rawSignals[0]]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
     registrationProcessor = await deployer.deployHDFCRegistrationProcessor(
       ramp.address,
@@ -66,7 +66,7 @@ describe("HDFCRegistrationProcessor", () => {
 
     beforeEach(async () => {
       const a: [BigNumber, BigNumber] = [BigNumber.from("0x1ac7f73df1c3e588f3f2e737db7687c48c0714feb11fd75d7338213b4bfe864e"), BigNumber.from("0x1df991c9b756f71237b83bbdfda00b41b66a05faa0e13f9cac9c2f57cbc7cc70")];
-      const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
+      const b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
         [BigNumber.from("0x1a1b2e29898f8432944f3c01ac132b35cc0d69d40beabea61174681491cfee03"), BigNumber.from("0x25e155983d41ab5d8d86b082dc35699e46f805cfafdf6813e42a6ec78b9bc446")],
         [BigNumber.from("0x2dedba03e1eec70caad450667dfaadd3d73d465c4c476245d445cae6ce3eee42"), BigNumber.from("0x04c348e01dc6566775621d90807b30937604bd5701befca9d63f70610d0bd1f5")]
       ];
@@ -114,7 +114,7 @@ describe("HDFCRegistrationProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.removeMailServerKeyHash(rawSignals[0]);
       });
 
       it("should revert", async () => {
