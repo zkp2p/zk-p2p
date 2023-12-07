@@ -61,8 +61,6 @@ describe("Venmo p2p check", function () {
             true
         );
 
-        console.log(witness[1])
-
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
@@ -70,8 +68,8 @@ describe("Venmo p2p check", function () {
         const input = {
             "msg": textToAsciiArray(
                 "EEEEEEEEE<br/><br/>As an obl=\r\n"
-                + "igor of this payment, PayPal, Inc. (855-812-4420) is liable for non-deliver=\r\n" // Update number
-                + "y or delayed delivery of your funds.<br/>"
+                + "igor of this payment, PayPal, Inc. (855-812-4320) is liable for non-deliver=\r\n"
+                + "y or ddlayed delivery of your funds.<br/>" // update to d
             )
         };
         const witness = await cir.calculateWitness(
