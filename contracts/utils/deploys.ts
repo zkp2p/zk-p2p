@@ -102,30 +102,32 @@ export default class DeployHelper {
     );
   }
 
-    // HDFC Contracts
-    public async deployHDFCRamp(
-      owner: Address,
-      usdcToken: Address,
-      poseidon: Address,
-      minDepositAmount: BigNumber,
-      maxOnRampAmount: BigNumber,
-      intentExpirationPeriod: BigNumber,
-      onRampCoolDownPeriod: BigNumber,
-      sustainabilityFee: BigNumber,
-      sustainabilityFeeRecipient: Address,
-    ): Promise<HDFCRamp> {
-      return await new HDFCRamp__factory(this._deployerSigner).deploy(
-        owner,
-        usdcToken,
-        poseidon,
-        minDepositAmount,
-        maxOnRampAmount,
-        intentExpirationPeriod,
-        onRampCoolDownPeriod,
-        sustainabilityFee,
-        sustainabilityFeeRecipient
-      );
-    }
+  // HDFC Contracts
+  public async deployHDFCRamp(
+    owner: Address,
+    usdcToken: Address,
+    poseidon3: Address,
+    poseidon6: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<HDFCRamp> {
+    return await new HDFCRamp__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      poseidon3,
+      poseidon6,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
 
   public async deployHDFCRegistrationProcessor(
     ramp: Address,
@@ -179,7 +181,7 @@ export default class DeployHelper {
     return await new HDFCRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
 
-  public async deployPoseidon(): Promise<any> {
+  public async deployPoseidon3(): Promise<any> {
     const contract = new ethers.ContractFactory(
       circom.poseidonContract.generateABI(3),
       circom.poseidonContract.createCode(3),
@@ -188,6 +190,16 @@ export default class DeployHelper {
 
     return await contract.deploy();
   }
+
+  public async deployPoseidon6(): Promise<any> {
+    const contract = new ethers.ContractFactory(
+      circom.poseidonContract.generateABI(6),
+      circom.poseidonContract.createCode(6),
+      this._deployerSigner
+    );
+
+    return await contract.deploy();
+  };
 
   public async deployStringConversionUtilsMock(): Promise<StringConversionUtilsMock> {
     return await new StringConversionUtilsMock__factory(this._deployerSigner).deploy();
