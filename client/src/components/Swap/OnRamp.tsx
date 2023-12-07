@@ -222,7 +222,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   padding-bottom: 4rem;
 `;
 
