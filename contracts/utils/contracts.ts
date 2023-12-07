@@ -5,6 +5,7 @@ export {
   HDFCSendProcessorMock,
   HDFCSendProcessor,
   ManagedKeyHashAdapter,
+  ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
   StringConversionUtilsMock,

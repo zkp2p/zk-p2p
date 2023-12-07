@@ -11,6 +11,7 @@ import {
   HDFCSendProcessorMock,
   HDFCSendProcessor,
   ManagedKeyHashAdapter,
+  ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
   StringConversionUtilsMock,
@@ -36,6 +37,7 @@ import {
   VenmoSendProcessor__factory
 } from "../typechain/factories/contracts/processors";
 import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
+import { ManagedKeyHashAdapterV2__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
 import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
 
 export default class DeployHelper {
@@ -159,6 +161,10 @@ export default class DeployHelper {
 
   public async deployManagedKeyHashAdapter(venmoKeyHash: string): Promise<ManagedKeyHashAdapter> {
     return await new ManagedKeyHashAdapter__factory(this._deployerSigner).deploy(venmoKeyHash);
+  }
+
+  public async deployManagedKeyHashAdapterV2(keyHashes: string[]): Promise<ManagedKeyHashAdapteV2> {
+    return await new ManagedKeyHashAdapterV2__factory(this._deployerSigner).deploy(keyHashes);
   }
 
   public async deployNullifierRegistry(): Promise<NullifierRegistry> {
