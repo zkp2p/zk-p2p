@@ -142,9 +142,9 @@ export const abi = [
             "type": "uint256[2]"
           },
           {
-            "internalType": "uint256[16]",
+            "internalType": "uint256[15]",
             "name": "signals",
-            "type": "uint256[16]"
+            "type": "uint256[15]"
           }
         ],
         "internalType": "struct IHDFCSendProcessor.SendProof",
@@ -167,6 +167,11 @@ export const abi = [
       {
         "internalType": "bytes32",
         "name": "offRamperIdHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "onRamperIdHash",
         "type": "bytes32"
       },
       {
@@ -255,9 +260,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[16]",
+        "internalType": "uint256[15]",
         "name": "_pubSignals",
-        "type": "uint256[16]"
+        "type": "uint256[15]"
       }
     ],
     "name": "verifyProof",
