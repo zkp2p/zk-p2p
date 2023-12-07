@@ -14,7 +14,7 @@ const expect = getWaffleExpect();
 const keyHash1 = "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 const keyHash2 = "0x1cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f";
 
-describe.only("ManagedKeyHashAdapterV2", () => {
+describe("ManagedKeyHashAdapterV2", () => {
     let owner: Account;
     let attacker: Account;
 

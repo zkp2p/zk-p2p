@@ -6,4 +6,5 @@ interface IKeyHashAdapterV2 {
     function addMailServerKeyHash(bytes32 _mailserverKeyHash) external;
     function removeMailServerKeyHash(bytes32 _mailserverKeyHash) external;
     function getMailserverKeyHashes() external view returns (bytes32[] memory);
+    function isMailServerKeyHash(bytes32 _mailserverKeyHash) external view returns (bool);
 }

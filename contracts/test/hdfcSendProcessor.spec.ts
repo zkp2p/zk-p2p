@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapter, NullifierRegistry, HDFCSendProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapterV2, NullifierRegistry, HDFCSendProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 import { GrothProof } from "@utils/types";
 
@@ -17,14 +17,14 @@ import { ZERO_BYTES32 } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x0000000000000000000000000000000000000000000000000000000030302e32","0x0000000000000000000000000000000000000000000000000000000000000000","0x000000000000000000000000000000000000000000000000003132202c657554","0x00000000000000000000000000000000000000000000000000303220766f4e20","0x00000000000000000000000000000000000000000000000000353a3131203332","0x00000000000000000000000000000000000000000000000000302b2038303a38","0x0000000000000000000000000000000000000000000000000000000000303335","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7","0x2e77b67e4f7d868c763d4539ca8483672e522d3aafb015f27aef9090f6790a18","0x0bd3bb4a2060e5b6d300226add771815983afad1c596b4cf191639ccd74874a9","0x0000000000000000000000000000000000000000000000000000000000003039"];
+const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", "0x0000000000000000000000000000000000000000000000000040737472656c61", "0x000000000000000000000000000000000000000000000000006e616263666468", "0x00000000000000000000000000000000000000000000000000000074656e2e6b", "0x0000000000000000000000000000000000000000000000000000000030302e32", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x000000000000000000000000000000000000000000000000003132202c657554", "0x00000000000000000000000000000000000000000000000000303220766f4e20", "0x00000000000000000000000000000000000000000000000000353a3131203332", "0x00000000000000000000000000000000000000000000000000302b2038303a38", "0x0000000000000000000000000000000000000000000000000000000000303335", "0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7", "0x2e77b67e4f7d868c763d4539ca8483672e522d3aafb015f27aef9090f6790a18", "0x0bd3bb4a2060e5b6d300226add771815983afad1c596b4cf191639ccd74874a9", "0x0000000000000000000000000000000000000000000000000000000000003039"];
 
-describe("HDFCSendProcessor", () => {
+describe.only("HDFCSendProcessor", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
 
-  let keyHashAdapter: ManagedKeyHashAdapter;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
   let nullifierRegistry: NullifierRegistry;
   let sendProcessor: HDFCSendProcessor;
 
@@ -39,7 +39,7 @@ describe("HDFCSendProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([rawSignals[0]]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
     sendProcessor = await deployer.deployHDFCSendProcessor(
       ramp.address,
@@ -69,7 +69,7 @@ describe("HDFCSendProcessor", () => {
 
     beforeEach(async () => {
       const a: [BigNumber, BigNumber] = [BigNumber.from("0x01334bb73919e2905a4610c0367b0100a9fd34688bb39203b0fcfc2debdc9806"), BigNumber.from("0x27f52a89e2e05e0f55d2ac70df0b1170f252d3d537020f4e19117361690bffb7")]
-      const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
+      const b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
         [BigNumber.from("0x1e769479e9ac6ea605c6191175b5bacaf11050916e707a8ba5c5c1390789b9cb"), BigNumber.from("0x00baf45aa456d7f0503204b910bfa50136afd383fbe7d3d398b860a3c18338c2")],
         [BigNumber.from("0x2f35b4c36bb9025737526fcfcf73288d0207871cb105ad7d1c06215a80a3842b"), BigNumber.from("0x2873d615f840baa48f643a790ee2c91d28f866b655e08da8c818184b4563176c")]
       ];
@@ -102,7 +102,7 @@ describe("HDFCSendProcessor", () => {
         onRamperIdHash,
         intentHash
       } = await subjectCallStatic();
-      
+
       expect(amount).to.eq(usdc(2));
       expect(timestamp).to.eq(BigNumber.from(1700548088));
       expect(offRamperIdHash).to.eq(rawSignals[12]);
@@ -140,7 +140,7 @@ describe("HDFCSendProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.removeMailServerKeyHash(rawSignals[0]);
       });
 
       it("should revert", async () => {

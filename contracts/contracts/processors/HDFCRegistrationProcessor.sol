@@ -2,15 +2,15 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { BaseProcessor } from "./BaseProcessor.sol";
+import { BaseProcessorV2 } from "./BaseProcessorV2.sol";
 import { Groth16Verifier } from "../verifiers/hdfc_registration_verifier.sol";
-import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
+import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
 
 pragma solidity ^0.8.18;
 
-contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, BaseProcessor {
+contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, BaseProcessorV2 {
 
     using StringUtils for uint256[];
 
@@ -20,12 +20,12 @@ contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, B
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _hdfcMailserverKeyHashAdapter,
+        IKeyHashAdapterV2 _hdfcMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _hdfcMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(_ramp, _hdfcMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
 
     /* ============ External Functions ============ */
@@ -41,7 +41,7 @@ contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, B
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
+        require(IKeyHashAdapterV2(mailserverKeyHashAdapter).isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
