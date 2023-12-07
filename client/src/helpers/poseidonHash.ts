@@ -28,7 +28,7 @@ export const poseidonK = (ar: (number | bigint | string)[]): string => {
 };
 
 export const isProvidedIdEqualToRegistration = async(input: string, registrationHash: string): Promise<boolean> => {
-  const venmoHashFromInput = await calculateIdHash(input);
+  const venmoHashFromInput = await calculateVenmoIdHash(input);
   const venmoHashFromInputNumber = BigNumber.from(venmoHashFromInput);
 
   const existingRegistrationNumber = BigNumber.from(registrationHash);
@@ -36,16 +36,16 @@ export const isProvidedIdEqualToRegistration = async(input: string, registration
   return existingRegistrationNumber.eq(venmoHashFromInputNumber);
 }
 
-export const calculateIdHash = async(venmoId: string): Promise<string> => {
+export const calculateVenmoIdHash = async(venmoId: string): Promise<string> => {
   const poseidon = await buildPoseidon();
 
-  const packedVenmoId = calculatePackedId(venmoId);
+  const packedVenmoId = calculatePackedVenmoId(venmoId);
 
   const bigIntResult = BigInt(poseidon.F.toString(poseidon(packedVenmoId)));
   return "0x" + bigIntResult.toString(16);
 }
 
-export const calculatePackedId = (venmoId: string): [bigint, bigint, bigint] => {
+export const calculatePackedVenmoId = (venmoId: string): [bigint, bigint, bigint] => {
   const venmoIdArray: number[] = venmoId.split('').map(char => char.charCodeAt(0));
 
   // Pad with zeros until length is 21

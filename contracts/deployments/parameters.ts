@@ -38,8 +38,8 @@ export const MAX_ONRAMP_AMOUNT: any = {
   "hdfc": {
     "localhost": usdc(998),
     "goerli": usdc(999),
-    "base": usdc(250),
-    "base_staging": usdc(999),
+    "base": usdc(25),
+    "base_staging": usdc(25),
   },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
@@ -51,9 +51,9 @@ export const INTENT_EXPIRATION_PERIOD: any = {
   },
   "hdfc": {
     "localhost": ONE_DAY_IN_SECONDS.sub(1),
-    "goerli": ONE_DAY_IN_SECONDS,
+    "goerli": BigNumber.from(300),
     "base": ONE_DAY_IN_SECONDS,
-    "base_staging": BigNumber.from(180),
+    "base_staging": BigNumber.from(300),
   },
 };
 export const ONRAMP_COOL_DOWN_PERIOD: any = {
