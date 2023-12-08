@@ -15,7 +15,7 @@ import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", "0x0000000000000000000000000000000000000000000000000040737472656c61", "0x000000000000000000000000000000000000000000000000006e616263666468", "0x00000000000000000000000000000000000000000000000000000074656e2e6b", "0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
+const rawSignals = ["0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
 
 describe("HDFCRegistrationProcessor", () => {
   let owner: Account;
@@ -64,12 +64,12 @@ describe("HDFCRegistrationProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x1ac7f73df1c3e588f3f2e737db7687c48c0714feb11fd75d7338213b4bfe864e"), BigNumber.from("0x1df991c9b756f71237b83bbdfda00b41b66a05faa0e13f9cac9c2f57cbc7cc70")];
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0aaf5c1ba1f7e33793fb9b625ef97bbceb5a4ff88eaf1a1aad9ce0d18689172b"), BigNumber.from("0x2d7402776d962249864b627030d4a2c7702037cabbb074cb506f9952f0f595c8")];
       const b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
-        [BigNumber.from("0x1a1b2e29898f8432944f3c01ac132b35cc0d69d40beabea61174681491cfee03"), BigNumber.from("0x25e155983d41ab5d8d86b082dc35699e46f805cfafdf6813e42a6ec78b9bc446")],
-        [BigNumber.from("0x2dedba03e1eec70caad450667dfaadd3d73d465c4c476245d445cae6ce3eee42"), BigNumber.from("0x04c348e01dc6566775621d90807b30937604bd5701befca9d63f70610d0bd1f5")]
+        [BigNumber.from("0x20ff247aedbfa29e3f1cb8ca82dc6e3feb83d0ed56ca603f07e5226e18b7ca51"), BigNumber.from("0x07cb515fcb9d0feda50d42d1e5effe5cddf2e8b0a922f820a1f10cf828ed5db8")],
+        [BigNumber.from("0x20108a3012b7585d92c69706c315c7a764436251ba1a0c599a59c8da5f455c13"), BigNumber.from("0x1c7883ebff8bdc3ea2b03f327f7e9d87f79db84bf3eebe0d5eb97c4ada4739f0")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x21d1429cdf748fb0ef18f11d928240934d7795c83b887e5740bfceff20a7f7e4"), BigNumber.from("0x1a4e18301da5746741f127f50aa2604bdcdb666b5b7655a4234f6bbc4515fe47")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x224cebf90888229bc9fbbe04bc868f41549f7fb055e0b6d7711df76cf558223c"), BigNumber.from("0x303a4c96fce908c05cf5fe21b84db342123fb73c8b66725e0e7eb4354ac0c7ba")];
       const signals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [BigNumber.from(rawSignals[0]), BigNumber.from(rawSignals[1]), BigNumber.from(rawSignals[2]), BigNumber.from(rawSignals[3]), BigNumber.from(rawSignals[4])];
 
       subjectProof = {
