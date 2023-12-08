@@ -18,6 +18,7 @@ import {
 import "@rainbow-me/rainbowkit/styles.css";
 
 import "./index.css";
+import ErrorBoundary from './ErrorBoundary';
 import App from "./App";
 
 
@@ -71,11 +72,13 @@ const zkp2pTheme = merge(darkTheme(), {
 
 ReactDOM.render(
   <React.StrictMode>
-    <WagmiConfig config={config}>
-      <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
-        <App />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <ErrorBoundary>
+      <WagmiConfig config={config}>
+        <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
+          <App />
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")
 );
