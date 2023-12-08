@@ -160,7 +160,13 @@ checkBrowsers(paths.appPath, isInteractive)
   })
   .catch(err => {
     if (err && err.message) {
-      console.log(err.message);
+      if (process.env.NODE_ENV === 'development') {
+        // Detailed error messages in development
+        console.log(err.message);
+      } else {
+        // Generic error message in production
+        console.log('An error occurred. Please try again later.');
+      }
     }
     process.exit(1);
   });

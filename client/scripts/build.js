@@ -127,7 +127,13 @@ checkBrowsers(paths.appPath, isInteractive)
   )
   .catch(err => {
     if (err && err.message) {
-      console.log(err.message);
+      if (process.env.NODE_ENV === 'production') {
+        // Generic error message in production
+        console.log('An error occurred during the build process.');
+      } else {
+        // Detailed error messages in development
+        console.log(err.message);
+      }
     }
     process.exit(1);
   });
