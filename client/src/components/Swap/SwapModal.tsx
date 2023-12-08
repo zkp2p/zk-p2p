@@ -12,6 +12,7 @@ import { ThemedText } from '../../theme/text';
 
 
 interface SwapModalProps {
+  isVenmo: boolean;
   link: string;
   amount: string;
   onBackClick: () => void
@@ -19,6 +20,7 @@ interface SwapModalProps {
 }
 
 export const SwapModal: React.FC<SwapModalProps> = ({
+  isVenmo,
   link,
   amount,
   onBackClick,
@@ -35,6 +37,13 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const handleCompleteClick = () => {
     onCompleteClick();
   };
+
+  /*
+   * Helpers
+   */
+
+  const currencySymbol = isVenmo ? '$' : '₹';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'UPI';
 
   /*
    * Component
@@ -56,7 +65,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            Send Venmo Payment
+            Send {paymentPlatformName} Payment
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
@@ -75,7 +84,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         <InstructionsContainer>
           <InstructionsTitle>
-            Scan and send ${amount}
+            Scan and send {currencySymbol}{amount}
           </InstructionsTitle>
 
           <InstructionsLabel>
@@ -133,7 +142,7 @@ const ModalContainer = styled.div`
   gap: 1.5rem;
   top: 20%;
   position: relative;
-  height: 516px;
+  height: 528px;
   overflow-y: auto;
   max-height: calc(100vh*.7);
 `;

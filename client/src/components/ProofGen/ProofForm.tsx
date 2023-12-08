@@ -14,7 +14,6 @@ import { EmailInputStatus, ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
-import { dkimVerify } from '@helpers/dkim';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
 // import { downloadProofFiles } from "@helpers/zkp";
 import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';

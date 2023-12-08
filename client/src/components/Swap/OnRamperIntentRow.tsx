@@ -51,6 +51,9 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    * Helpers
    */
 
+  const currencySymbol = isVenmo ? '$' : '₹';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'UPI';
+
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
@@ -80,6 +83,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       {
         shouldShowSwapModal && (
           <SwapModal
+            isVenmo={isVenmo}
             link={qrLink}
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}
@@ -111,7 +115,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
           <LabelContainer>
             <Label>Send:&nbsp;</Label>
-            <Value>${amountUSDToSend} on Venmo</Value>
+            <Value>{currencySymbol}{amountUSDToSend} on {paymentPlatformName}</Value>
           </LabelContainer>
 
           <LabelContainer>
