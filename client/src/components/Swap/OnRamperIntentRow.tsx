@@ -52,7 +52,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const currencySymbol = isVenmo ? '$' : '₹';
-  const paymentPlatformName = isVenmo ? 'Venmo' : 'UPI';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
 
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;

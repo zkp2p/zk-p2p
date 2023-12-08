@@ -43,7 +43,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
    */
 
   const currencySymbol = isVenmo ? '$' : '₹';
-  const paymentPlatformName = isVenmo ? 'Venmo' : 'UPI';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
 
   /*
    * Component

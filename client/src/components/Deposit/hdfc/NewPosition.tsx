@@ -428,7 +428,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={receiveAmountInput}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
             type="number"
-            inputLabel="USD"
+            inputLabel="INR"
             placeholder="1050"
             helperText={NEW_DEPOSIT_RECEIVE_TOOLTIP}
           />

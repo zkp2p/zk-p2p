@@ -39,5 +39,5 @@ export const NEW_DEPOSIT_DEPOSIT_TOOLTIP = `
 `;
 
 export const NEW_DEPOSIT_RECEIVE_TOOLTIP = `
-  This is the amount of USD you will receive if your entire deposit is claimed.
+  This is the amount of INR you will receive if your entire deposit is claimed.
 `;
