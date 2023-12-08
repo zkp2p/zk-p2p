@@ -34,8 +34,13 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
  const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
  const { calculateUsdFromRequestedUSDC, depositStore } = useLiquidity();
- const { rampAddress, rampAbi } = useSmartContracts();
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
+ 
+//  const { rampAddress, rampAbi } = useSmartContracts();
+ const {
+  hdfcRampAddress: rampAddress,
+  hdfcRampAbi: rampAbi
+} = useSmartContracts();
 
   /*
    * State
