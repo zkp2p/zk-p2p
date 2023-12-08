@@ -6,7 +6,7 @@ import {
   insert13Before10,
   ICircuitInputs
 } from '@zkp2p/circuits-circom/scripts/generate_input';
-import { wrap } from 'comlink';
+// import { wrap } from 'comlink';
 import * as crypto from 'crypto';
 
 import { Col } from "../legacy/Layout";
@@ -15,8 +15,8 @@ import { Modal } from '@components/modals/Modal';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
 import { dkimVerify } from '@helpers/dkim';
-import { HOSTED_FILES_PATH } from "@helpers/constants";
-import { downloadProofFiles } from "@helpers/zkp";
+// import { HOSTED_FILES_PATH } from "@helpers/constants";
+// import { downloadProofFiles } from "@helpers/zkp";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/useRegistration';
@@ -391,7 +391,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const downloadProvingKeys = async () => {
     console.time("download-keys");
-    await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {});
+    // await downloadProofFiles(HOSTED_FILES_PATH, circuitRemoteFilePath, () => {});
     console.timeEnd("download-keys");
   }
 
@@ -399,9 +399,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     console.time("client-proof-gen");
 
     // Create worker and run async
-    const worker = new Worker('./ProvingWorker', { name: 'runGenerateProofWorker', type: 'module' })
-    const { generateProof } = wrap<import('./ProvingWorker').RunGenerateProofWorker>(worker)
-    const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath);
+    // const worker = new Worker('./ProvingWorker', { name: 'runGenerateProofWorker', type: 'module' })
+    // const { generateProof } = wrap<import('./ProvingWorker').RunGenerateProofWorker>(worker)
+    // const { proof, publicSignals } = await generateProof(input, circuitRemoteFilePath);
 
     console.timeEnd("client-proof-gen");
 
