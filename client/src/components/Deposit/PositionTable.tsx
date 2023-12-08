@@ -210,7 +210,9 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   useEffect(() => {
     const executeWithdrawDeposit = async () => {
-      if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync && submitWithdrawStatus === 'idle') {
+      const requiredStatusForExecution = submitWithdrawStatus === 'idle' || submitWithdrawStatus === 'error';
+
+      if (shouldConfigureWithdrawWrite && writeSubmitWithdrawAsync && requiredStatusForExecution) {
         try {
           await writeSubmitWithdrawAsync();
         } catch (error) {
