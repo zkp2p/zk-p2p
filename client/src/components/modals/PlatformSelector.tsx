@@ -81,7 +81,6 @@ export const PlatformSelector: React.FC = () => {
                   platformCurrency={paymentPlatformInfo[platform].platformCurrency}
                   flagSvg={paymentPlatformInfo[platform].flagSvg}
                   isSelected={paymentPlatform === platform}
-                  isLastRow={index === paymentPlatforms.length - 1}
                   onRowClick={() => handleSelectPlatform(platform)}
                 />
               ))}
@@ -180,7 +179,7 @@ const Table = styled.div`
 `;
 
 const TableFooter = styled.div`
-  padding: 16px 20px 20px 20px;
+  padding: 20px;
   font-size: 14px;
   text-align: left;
   line-height: 1.5;

@@ -6,7 +6,6 @@ interface PlatformRowProps {
   platformName: string;
   platformCurrency: string;
   isSelected: boolean;
-  isLastRow: boolean;
   flagSvg: string;
   onRowClick: () => void;
 }
@@ -15,7 +14,6 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
   platformName,
   platformCurrency,
   isSelected,
-  isLastRow,
   flagSvg,
   onRowClick,
 }: PlatformRowProps) => {
@@ -25,7 +23,6 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
     <Container
       onClick={onRowClick}
       selected={isSelected}
-      isLastRow={isLastRow}
     >
       <DetailsContainer>
         <FlagSvg src={flagSvg} />
@@ -38,11 +35,10 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
   );
 };
 
-const Container = styled.div<{ selected: boolean; isLastRow: boolean }>`
+const Container = styled.div<{ selected: boolean }>`
   display: flex;
   flex-direction: row;
   height: 100%;
-  border-radius: ${({ isLastRow }) => isLastRow ? "0 0 8px 8px" : "0"};
   padding: 12px 24px 12px 20px;
 
   ${({ selected }) => selected && `
@@ -50,10 +46,9 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean }>`
     box-shadow: none;
   `}
 
-  ${({ selected, isLastRow }) => !selected && `
+  ${({ selected }) => !selected && `
     &:hover {
       background-color: #191D28;
-      border-radius: ${isLastRow ? "0 0 8px 8px" : "0"};
       box-shadow: none;
     }
   `}
