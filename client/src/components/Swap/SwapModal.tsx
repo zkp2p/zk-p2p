@@ -140,11 +140,10 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 20%;
+  top: 12%;
   position: relative;
-  height: 528px;
+  height: 600px;
   overflow-y: auto;
-  max-height: calc(100vh*.7);
 `;
 
 const QRContainer = styled.div`
