@@ -4,8 +4,12 @@ import styled from 'styled-components/macro'
 import { AutoColumn } from '../layouts/Column'
 import { DepositsTable } from './DepositsTable'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
-import useLiquidity from '@hooks/useLiquidity';
-import useRampState from '@hooks/useRampState';
+
+import useVenmoLiquidity from '@hooks/useLiquidity';
+import useVenmoRampState from '@hooks/useRampState';
+
+import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
+import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 
 export default function Deposit() {
@@ -13,32 +17,67 @@ export default function Deposit() {
    * Contexts
    */
 
-  const { refetchDepositCounter, shouldFetchRampState } = useRampState();
-  const { refetchDeposits, shouldFetchDeposits } = useLiquidity();
+  const {
+    refetchDepositCounter: refetchVenmoDepositCounter,
+    shouldFetchRampState: shouldFetchVenmoRampState
+  } = useVenmoRampState();
+  const {
+    refetchDeposits: refetchVenmoDeposits,
+    shouldFetchDeposits: shouldFetchVenmoDeposits
+  } = useVenmoLiquidity();
+
+  const {
+    refetchDepositCounter: refetchHdfcDepositCounter,
+    shouldFetchRampState: shouldFetchHdfcRampState
+  } = useHdfcRampState();
+  const {
+    refetchDeposits: refetchHdfcDeposits,
+    shouldFetchDeposits: shouldFetchHdfcDeposits
+  } = useHdfcLiquidity();
 
   /*
    * Hooks
    */
 
   useEffect(() => {
-    if (shouldFetchDeposits) {
+    if (shouldFetchVenmoDeposits) {
       const intervalId = setInterval(() => {
-        refetchDeposits?.();
+        refetchVenmoDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchDeposits, refetchDeposits]);
+  }, [shouldFetchVenmoDeposits, refetchVenmoDeposits]);
 
   useEffect(() => {
-    if (shouldFetchRampState) {
+    if (shouldFetchVenmoRampState) {
       const intervalId = setInterval(() => {
-        refetchDepositCounter?.();
+        refetchVenmoDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchRampState, refetchDepositCounter]);
+  }, [shouldFetchVenmoRampState, refetchVenmoDepositCounter]);
+
+  useEffect(() => {
+    if (shouldFetchHdfcDeposits) {
+      const intervalId = setInterval(() => {
+        refetchHdfcDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchHdfcDeposits, refetchHdfcDeposits]);
+
+  useEffect(() => {
+    if (shouldFetchHdfcRampState) {
+      const intervalId = setInterval(() => {
+        refetchHdfcDepositCounter?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchHdfcRampState, refetchHdfcDepositCounter]);
 
   /*
    * Component
@@ -46,9 +85,7 @@ export default function Deposit() {
 
   return (
     <Wrapper>
-      <main>
-        <DepositsTable/>
-      </main>
+      <DepositsTable/>
     </Wrapper>
   );
 };

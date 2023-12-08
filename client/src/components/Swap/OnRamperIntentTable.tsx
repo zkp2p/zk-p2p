@@ -145,7 +145,9 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
 
   useEffect(() => {
     const executeCancelIntent = async () => {
-      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync && submitCancelStatus === 'idle') {
+      const statusForExecution = submitCancelStatus === 'idle' || submitCancelStatus === 'error';
+
+      if (shouldConfigureCancelIntentWrite && writeSubmitCancelIntentAsync && statusForExecution) {
         try {
           await writeSubmitCancelIntentAsync();
         } catch (error) {
