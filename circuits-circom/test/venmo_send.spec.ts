@@ -345,7 +345,7 @@ describe("Venmo send WASM tester", function () {
             assert.fail('Expected calculateWitness to throw an error');
         } catch (error) {
             assert.instanceOf(error, Error);
-            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_404 line: 130\n');
+            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_404 line: 77\nError in template VenmoSendEmail_404 line: 130\n');
         }
     });
 
