@@ -27,8 +27,14 @@ export default function useRemoteProofGen({ emailType, emailBody, intentHash }: 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<RemoteProofError | null>(null);
 
+  const generateNonce = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  }
+
   const fetchData = async () => {
     setLoading(true);
+
+    const nonce = generateNonce();
 
     try {
       const response = await fetch(REMOTE_PROOF_API_URL, {
@@ -40,6 +46,7 @@ export default function useRemoteProofGen({ emailType, emailBody, intentHash }: 
           "email_type": emailType,
           "email": emailBody,
           "intent_hash": intentHash,
+          "nonce": nonce,
         })
       });
 
