@@ -34,7 +34,7 @@ export const contractAddresses: Contracts = {
     'fusdc': '0x5FbDB2315678afecb367f032d93F642f64180aa3',
     'sendProcessor': '0x0165878A594ca255338adfa4d48449f69242Eb8F',
     'registrationProcessor': '0x5FC8d32690cc91D4c39d9d3abcBD16989F875707',
-    'proofOfP2pNft': '0x4A679253410272dd5232B3Ff7cF5dbB88f295319',
+    'proofOfP2pNft': '0xa85233C63b9Ee964Add6F2cffe00Fd84eb32338f',
     'hdfcRamp': '0x0B306BF915C4d645ff596e518fAf3F9669b97016',
     'hdfcSendProcessor': '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
     'hdfcRegistrationProcessor': '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
