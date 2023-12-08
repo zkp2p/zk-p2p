@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { PaymentPlatformType } from '../contexts/common/PlatformSettings/types';
+
 
 const REMOTE_PROOF_API_URL = process.env.REMOTE_PROOF_API_URL;
 if (!REMOTE_PROOF_API_URL) {
@@ -7,7 +9,8 @@ if (!REMOTE_PROOF_API_URL) {
 }
 
 type ProofGenParams = {
-  emailType: string;
+  paymentType: PaymentPlatformType;
+  circuitType: string;
   emailBody: string;
   intentHash: string;
 }
@@ -22,7 +25,7 @@ type RemoteProofError = {
   message: string;
 };
 
-export default function useRemoteProofGen({ emailType, emailBody, intentHash }: ProofGenParams) {
+export default function useRemoteProofGen({ paymentType, circuitType, emailBody, intentHash }: ProofGenParams) {
   const [data, setData] = useState<RemoteProofResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<RemoteProofError | null>(null);
@@ -43,7 +46,8 @@ export default function useRemoteProofGen({ emailType, emailBody, intentHash }: 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "email_type": emailType,
+          "payment_type": paymentType,
+          "circuit_type": circuitType,
           "email": emailBody,
           "intent_hash": intentHash,
           "nonce": nonce,

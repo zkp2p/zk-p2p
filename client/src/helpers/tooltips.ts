@@ -86,13 +86,13 @@ export const SIGN_IN_WITH_GOOGLE_INSTRUCTIONS = `
 `;
 
 /*
-* New Deposit
-*/
+ * New Deposit
+ */
 
 export const NEW_DEPOSIT_INSTRUCTIONS = `
   Creating a new deposit requires you to submit your Venmo ID, the USDC liquidity to deposit and
   desired USD conversion rate. Your Venmo ID must match the ID you registered with. Instructions
-  on how to fetch you Venmo ID can be found here.
+  on how to fetch your Venmo ID can be found here.
 `
 
 export const NEW_DEPOSIT_VENMO_ID_TOOLTIP = `
@@ -196,4 +196,40 @@ export const ON_RAMPER_INTENT_INSTRUCTIONS = `
   You have been matched with the depositor below. To complete, the flow,
   you must send a payment for the correct amount on Venmo, and then validate
   the payment by providing the transaction email. Click Send to begin.
+`;
+
+/*
+ * Instruction Drawer
+ */
+
+export const INSTRUCTION_DRAWER_STEP_ONE = `
+  Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+`;
+
+export const INSTRUCTION_DRAWER_STEP_TWO = `
+  Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+`;
+
+export const INSTRUCTION_DRAWER_STEP_THREE = `
+  Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
+`;
+
+export const INSTRUCTION_DRAWER_STEP_FOUR = `
+  Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+`;
+
+/*
+ * Payment Requirements
+ */
+
+export const PAYMENT_REQUIREMENT_STEP_ONE = `
+  Email notifications are enabled in your Venmo notifications settings
+`;
+
+export const PAYMENT_REQUIREMENT_STEP_TWO = `
+  Amount USD to send, which may not match your requested USDC amount, is double checked
+`;
+
+export const PAYMENT_REQUIREMENT_STEP_THREE = `
+  'Turn on for purchases' at the payment screen is toggled off
 `;

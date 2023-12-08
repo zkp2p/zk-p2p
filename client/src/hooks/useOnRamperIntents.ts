@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 
-import { OnRamperIntentsContext } from '../contexts/OnRamperIntents'
+import { OnRamperIntentsContext } from '../contexts/venmo/OnRamperIntents'
 
 const useOnRamperIntents = () => {
   return { ...useContext(OnRamperIntentsContext) }

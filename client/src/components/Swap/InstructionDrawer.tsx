@@ -5,12 +5,20 @@ import { useNavigate } from 'react-router-dom'
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
+import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import {
+  INSTRUCTION_DRAWER_STEP_ONE,
+  INSTRUCTION_DRAWER_STEP_TWO,
+  INSTRUCTION_DRAWER_STEP_THREE,
+  INSTRUCTION_DRAWER_STEP_FOUR
+} from "@helpers/tooltips";
 
 
 interface InstructionDrawerProps {
   recipientAddress?: string;
   setRecipientAddress: (address: string) => void;
   isLoggedIn: boolean;
+  paymentPlatform: PaymentPlatformType
 }
 
 export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
@@ -56,11 +64,11 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+            { INSTRUCTION_DRAWER_STEP_ONE }
           </InstructionStep>
 
           <InstructionStep step={2}>
-            Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+            { INSTRUCTION_DRAWER_STEP_TWO }
           </InstructionStep>
 
           <InputWrapper>
@@ -75,11 +83,11 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
           </InputWrapper>
 
           <InstructionStep step={3}>
-            Click 'Send' and complete the payment on Venmo. Ensure you have email notifications from Venmo enabled
+            { INSTRUCTION_DRAWER_STEP_THREE }
           </InstructionStep>
 
           <InstructionStep step={4}>
-            Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+            { INSTRUCTION_DRAWER_STEP_FOUR }
           </InstructionStep>
         </InstructionListContainer>
 

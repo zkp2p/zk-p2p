@@ -11,9 +11,14 @@ import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
-import useLiquidity from '@hooks/useLiquidity';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
+import usePlatformSettings from '@hooks/usePlatformSettings';
+
+// import useLiquidity from '@hooks/useLiquidity';
+// import useOnRamperIntents from '@hooks/useOnRamperIntents';
+
+import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
+import useLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 
 interface OnRamperIntentTableProps {
@@ -30,6 +35,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
  const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
  const { calculateUsdFromRequestedUSDC, depositStore } = useLiquidity();
  const { rampAddress, rampAbi } = useSmartContracts();
+ const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
   /*
    * State
@@ -83,8 +89,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   };
 
   /*
-    Hooks
-  */
+   * Hooks
+   */
  
   useEffect(() => {
     if (currentIntent && depositStore) {
@@ -104,8 +110,10 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const venmoIdString = currentIntent.depositorVenmoId.toString();
         const depositorAddress = storedDeposit.deposit.depositor;
         const recipientAddress = currentIntent.intent.to;
+        const isVenmo = paymentPlatform === PaymentPlatform.VENMO;
 
         const sanitizedIntent: IntentRowData = {
+          isVenmo,
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
@@ -151,8 +159,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   ]);
 
   /*
-    Helpers
-  */
+   * Helpers
+   */
 
   function calculateExpiration(unixTimestamp: bigint, timePeriod: bigint): bigint {
     return unixTimestamp + timePeriod;
@@ -194,6 +202,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         <Table>
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
+              isVenmo={intentsRow.isVenmo}
               key={rowIndex}
               amountUSDCToReceive={intentsRow.amountUSDCToReceive}
               amountUSDToSend={intentsRow.amountUSDToSend}

@@ -10,7 +10,9 @@ import { PAY_MODAL_INSTRUCTIONS } from '@helpers/tooltips';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { ThemedText } from '../../theme/text';
 
+
 interface SwapModalProps {
+  isVenmo: boolean;
   link: string;
   amount: string;
   onBackClick: () => void
@@ -18,6 +20,7 @@ interface SwapModalProps {
 }
 
 export const SwapModal: React.FC<SwapModalProps> = ({
+  isVenmo,
   link,
   amount,
   onBackClick,
@@ -34,6 +37,13 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const handleCompleteClick = () => {
     onCompleteClick();
   };
+
+  /*
+   * Helpers
+   */
+
+  const currencySymbol = isVenmo ? '$' : '₹';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
 
   /*
    * Component
@@ -55,7 +65,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            Send Venmo Payment
+            Send {paymentPlatformName} Payment
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
@@ -74,7 +84,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         <InstructionsContainer>
           <InstructionsTitle>
-            Scan and send ${amount}
+            Scan and send {currencySymbol}{amount}
           </InstructionsTitle>
 
           <InstructionsLabel>
@@ -130,11 +140,10 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 20%;
+  top: 12%;
   position: relative;
-  height: 516px;
+  height: 600px;
   overflow-y: auto;
-  max-height: calc(100vh*.7);
 `;
 
 const QRContainer = styled.div`

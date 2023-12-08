@@ -13,7 +13,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { Button } from '@components/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '../../theme/text';
-import { IndicativeQuote } from '../../contexts/Deposits/types';
+import { IndicativeQuote } from '../../contexts/venmo/Deposits/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { SettingsDropdown } from './SettingsDropdown';
 import {
@@ -28,12 +28,19 @@ import {
 } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
-import useRampState from "@hooks/useRampState";
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLiquidity from '@hooks/useLiquidity';
-import useRegistration from "@hooks/useRegistration";
+import useSwapQuote from '@hooks/useSwapQuote';
 
+// testing
+// import useRampState from '@hooks/useRampState';
+// import useOnRamperIntents from "@hooks/useOnRamperIntents";
+// import useDeposits from "@hooks/useDeposits";
+// import useLiquidity from "@hooks/useLiquidity";
+
+import useRampState from '@hooks/hdfc/useHdfcRampState';
+import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
+import useDeposits from '@hooks/hdfc/useHdfcDeposits';
+import useLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 export type SwapQuote = {
   requestedUSDC: string;
@@ -75,11 +82,32 @@ const Swap: React.FC<SwapProps> = ({
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { usdcBalance } = useBalances();
-  const { isRegistered } = useRegistration();
-  const { currentIntentHash, refetchIntentHash, shouldFetchIntentHash, lastOnRampTimestamp, refetchLastOnRampTimestamp } = useOnRamperIntents();
-  const { refetchDeposits, getBestDepositForAmount, shouldFetchDeposits } = useLiquidity();
-  const { rampAddress, rampAbi } = useSmartContracts();
+  // const { rampAddress, rampAbi } = useSmartContracts();
+  const {
+    hdfcRampAddress: rampAddress,
+    hdfcRampAbi: rampAbi
+  } = useSmartContracts();
+  
+  const { 
+    isRegistered,
+    // refetchDeposits,
+    // getBestDepositForAmount,
+    // shouldFetchDeposits,
+    // refetchDepositCounter,
+    // shouldFetchRampState,
+    // onRampCooldownPeriod,
+    // currentIntentHash,
+    // refetchIntentHash,
+    // shouldFetchIntentHash,
+    // lastOnRampTimestamp,
+    // refetchLastOnRampTimestamp
+  } = useSwapQuote();
+
+  // Test
   const { refetchDepositCounter, shouldFetchRampState, onRampCooldownPeriod } = useRampState();
+  const { refetchIntentHash, refetchLastOnRampTimestamp, currentIntentHash, shouldFetchIntentHash, lastOnRampTimestamp } = useOnRamperIntents();
+  const { refetchDeposits, shouldFetchDeposits } = useDeposits();
+  const { getBestDepositForAmount } = useLiquidity();
 
   /*
    * State
@@ -254,7 +282,7 @@ const Swap: React.FC<SwapProps> = ({
 
                   setShouldConfigureSignalIntentWrite(true);
                 } else {
-                  updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);      
+                  updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);
                 }
               }
             }
@@ -472,6 +500,7 @@ const Swap: React.FC<SwapProps> = ({
       <>
         <VerticalDivider />
         <InstructionDrawer
+          paymentPlatform={'venmo'}
           recipientAddress={recipientAddress}
           setRecipientAddress={setRecipientAddress}
           isLoggedIn={isLoggedIn}

@@ -3,7 +3,9 @@ import styled from "styled-components";
 
 import DepositTable from "@components/Deposit"
 import useDeposits from '@hooks/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useBalances from '@hooks/useBalance';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 export const Deposit: React.FC<{}> = (props) => {
@@ -12,25 +14,54 @@ export const Deposit: React.FC<{}> = (props) => {
    */
 
   const {
-    refetchDeposits,
-    shouldFetchDeposits,
-    refetchDepositIntents,
-    shouldFetchDepositIntents,
+    refetchDeposits: refetchVenmoDeposits,
+    shouldFetchDeposits: shouldFetchVenmoDeposits,
+    refetchDepositIntents: refetchVenmoDepositIntents,
+    shouldFetchDepositIntents: shouldFetchVenmoDepositIntents,
   } = useDeposits();
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
+
+  const {
+    refetchDeposits: refetchHdfcDeposits,
+    shouldFetchDeposits: shouldFetchHdfcDeposits,
+    refetchDepositIntents: refetchHdfcDepositIntents,
+    shouldFetchDepositIntents: shouldFetchHdfcDepositIntents,
+  } = useHdfcDeposits();
+
+  const {
+    PaymentPlatform,
+    paymentPlatform
+  } = usePlatformSettings();
 
   /*
    * Hooks
    */
 
   useEffect(() => {
-    if (shouldFetchDeposits) {
-      refetchDeposits?.();
-    }
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        if (shouldFetchVenmoDeposits) {
+          refetchVenmoDeposits?.();
+        }
 
-    if (shouldFetchDepositIntents) {
-      refetchDepositIntents?.();
+        if (shouldFetchVenmoDepositIntents) {
+          refetchVenmoDepositIntents?.();
+        }
+        break;
+
+      case PaymentPlatform.HDFC:
+        if (shouldFetchHdfcDeposits) {
+          refetchHdfcDeposits?.();
+        }
+
+        if (shouldFetchHdfcDepositIntents) {
+          refetchHdfcDepositIntents?.();
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     if (shouldFetchUsdcBalance) {

@@ -14,9 +14,14 @@ import { EmailInputStatus, ProofGenerationStatus } from  "./types";
 import { Modal } from '@components/modals/Modal';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
-import { dkimVerify } from '@helpers/dkim';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
 // import { downloadProofFiles } from "@helpers/zkp";
+import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import {
+  validateAndSanitizeEmailSubject,
+  validateEmailDomainKey,
+  validateDKIMSignature
+} from './validation/venmo';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/useRegistration';
@@ -24,6 +29,7 @@ import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
 interface ProofGenerationFormProps {
+  paymentPlatformType: PaymentPlatformType;
   circuitType: CircuitType;
   circuitRemoteFilePath: string;
   circuitInputs: string;
@@ -41,6 +47,7 @@ interface ProofGenerationFormProps {
 }
 
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
+  paymentPlatformType,
   circuitType,
   circuitRemoteFilePath,
   circuitInputs,
@@ -84,6 +91,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const [proofGenStatus, setProofGenStatus] = useState(ProofGenerationStatus.NOT_STARTED);
 
   const [provingFailureErrorCode, setProvingFailureErrorCode] = useState<number | null>(null);
+
   /*
    * Hooks
    */
@@ -94,7 +102,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     error: remoteGenerateProofError,
     fetchData: remoteGenerateProof
   } = useRemoteProofGen({
-    emailType: remoteProofGenEmailType,
+    paymentType: paymentPlatformType,
+    circuitType: remoteProofGenEmailType,
     emailBody: emailFull,
     intentHash: circuitInputs,
   });
@@ -118,38 +127,46 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   useEffect(() => {
     async function verifyEmail() {
       if (emailFull) {
-        // validateAndSanitizeEmailSubject
-        try {
-          const { sanitizedEmail, didSanitize } = validateAndSanitizeEmailSubject(emailFull);
+        switch (paymentPlatformType) {
+          case PaymentPlatform.VENMO:
+            // validateAndSanitizeEmailSubject
+            try {
+              const { sanitizedEmail, didSanitize } = validateAndSanitizeEmailSubject(emailFull);
+    
+              if (didSanitize) {
+                setEmailFull(sanitizedEmail);
+                return;
+              };
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
+              return;
+            }
+    
+            // validateEmailDomainKey
+            try {
+              const emailReceivedYear = validateEmailDomainKey(emailFull);
+    
+              if (emailReceivedYear.emailRaw !== "2023") {
+                setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
+                return;
+              }
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+              return;
+            }
+    
+            // validateDKIMSignature
+            try {
+              await validateDKIMSignature(emailFull);
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+              return;
+            }
+            break;
 
-          if (didSanitize) {
-            setEmailFull(sanitizedEmail);
-            return;
-          };
-        } catch (e) {
-          setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
-          return;
-        }
-
-        // validateEmailDomainKey
-        try {
-          const emailReceivedYear = validateEmailDomainKey(emailFull);
-
-          if (emailReceivedYear.emailRaw !== "2023") {
-            setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
-            return;
-          }
-        } catch (e) {
-          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
-          return;
-        }
-
-        // validateDKIMSignature
-        try {
-          await validateDKIMSignature(emailFull);
-        } catch (e) {
-          setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
-          return;
+          case PaymentPlatform.HDFC:
+            // no-op
+            break;
         }
   
         const hash = crypto.createHash('sha256');
@@ -242,77 +259,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setIsInputModeDrag(false);
     }
   };
-
-  const validateDKIMSignature = async (raw_email: string) => {
-    var result, email: Buffer;
-    if (typeof raw_email === "string") {
-      email = Buffer.from(raw_email);
-    } else email = raw_email;
-
-    result = await dkimVerify(email);
-
-    if (!result.results[0]) {
-      throw new Error(`No result found on dkim output ${result}`);
-    } else {
-      if (!result.results[0].publicKey) {
-        if (result.results[0].status.message) {
-          throw new Error(result.results[0].status.message);
-        } else {
-          throw new Error(`No public key found on generate_inputs result ${JSON.stringify(result)}`);
-        }
-      }
-    }
-
-    const { status } = result.results[0];
-    if (status.result !== "pass") {
-      throw new Error(`DKIM verification failed with message: ${status.comment}`);
-    }
-
-    return result;
-  }
-
-  function validateEmailDomainKey(emailContent: string) {
-    const regexPattern = /Date:.*\d{1,2}\s+\w{3}\s+(\d{4})\s+/;
-
-    const match = emailContent.match(regexPattern);
-    if (!match) {
-      throw new Error("Year not found in the email content.");
-    }
-
-    const year = match[1];
-    return { emailRaw: year };
-  }
-
-  function validateAndSanitizeEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {
-    const subjectLinePattern = /^Subject:.*$/m;
-    const subjectLineMatch = emailContent.match(subjectLinePattern);
-    
-    if (!subjectLineMatch) {
-      throw new Error('No subject line found in the email content.');
-    }
-    
-    const subjectLine = subjectLineMatch[0];
-  
-    const validationPattern = /^Subject:\s*You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?$/;
-    const sanitizePattern = /^(Subject:)\s*(.*?)(You paid.*\$\d{1,3}(,\d{3})*(\.\d{0,2})?)$/;
-
-    const isValid = validationPattern.test(subjectLine);
-    const needsSanitization = sanitizePattern.test(subjectLine);
-  
-    let sanitizedEmail = emailContent;
-    if (needsSanitization) {
-      sanitizedEmail = emailContent.replace(subjectLinePattern, subjectLine.replace(sanitizePattern, '$1 $3'));
-    } else if (!isValid) {
-      throw new Error('The subject line is invalid and could not be sanitized.');
-    }
-  
-    const didSanitize = sanitizedEmail !== emailContent;
-  
-    return {
-      sanitizedEmail,
-      didSanitize
-    };
-  }
 
   /*
    * Proof Generation

@@ -18,17 +18,29 @@ import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
-import AccountProvider from "./contexts/Account/AccountProvider";
-import SmartContractsProvider from './contexts/SmartContracts/SmartContractsProvider';
-import BalancesProvider from "./contexts/Balances/BalancesProvider";
-import RampProvider  from './contexts/Ramp/RampProvider';
-import RegistrationProvider  from './contexts/Registration/RegistrationProvider';
-import DepositsProvider  from './contexts/Deposits/DepositsProvider';
-import PermissionsProvider from './contexts/Permissions/PermissionsProvider';
-import OnRamperIntentsProvider  from './contexts/OnRamperIntents/OnRamperIntentsProvider';
-import LiquidityProvider from './contexts/Liquidity/LiquidityProvider';
-import ProofGenSettingsProvider from "./contexts/ProofGenSettings/ProofGenSettingsProvider";
-import GoogleAuthProvider from './contexts/GoogleAuth/GoogleAuthProvider';
+// Common Contexts
+import AccountProvider from "./contexts/common/Account/AccountProvider";
+import BalancesProvider from "./contexts/common/Balances/BalancesProvider";
+import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider';
+import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
+import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
+import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
+import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
+
+// Venmo Contexts
+import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
+import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
+import OnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
+import PermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
+import RampProvider  from './contexts/venmo/Ramp/RampProvider';
+import RegistrationProvider from './contexts/venmo/Registration/RegistrationProvider';
+
+// HDFC Contexts
+import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
+import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
+import HdfcOnRamperIntentsProvider  from './contexts/hdfc/OnRamperIntents/OnRamperIntentsProvider';
+import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
+import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -95,27 +107,41 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
   return (
     <AccountProvider>
       <SmartContractsProvider>
-        <BalancesProvider>
-          <RampProvider>
-            <RegistrationProvider>
-              <DepositsProvider>
-                <PermissionsProvider>
-                  <LiquidityProvider>
-                    <OnRamperIntentsProvider>
-                      <ProofGenSettingsProvider>
-                        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                          <GoogleAuthProvider>
-                            { children }
-                          </GoogleAuthProvider>
-                        </GoogleOAuthProvider>
-                      </ProofGenSettingsProvider>
-                    </OnRamperIntentsProvider>
-                  </LiquidityProvider>
-                </PermissionsProvider>
-              </DepositsProvider>
-            </RegistrationProvider>
-          </RampProvider>
-        </BalancesProvider>
+        <PlatformSettings>
+          <BalancesProvider>
+            <RampProvider>
+              <HdfcRampProvider>
+                <RegistrationProvider>
+                  <HdfcRegistrationProvider>
+                    <DepositsProvider>
+                      <HdfcDepositsProvider>
+                        <PermissionsProvider>
+                          <LiquidityProvider>
+                            <HdfcLiquidityProvider>
+                              <OnRamperIntentsProvider>
+                                <HdfcOnRamperIntentsProvider>
+                                  <SwapQuoteProvider>
+                                    <ProofGenSettingsProvider>
+                                      <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
+                                        <GoogleAuthProvider>
+                                          { children }
+                                        </GoogleAuthProvider>
+                                      </GoogleOAuthProvider>
+                                    </ProofGenSettingsProvider>
+                                  </SwapQuoteProvider>
+                                </HdfcOnRamperIntentsProvider>
+                              </OnRamperIntentsProvider>
+                            </HdfcLiquidityProvider>
+                          </LiquidityProvider>
+                        </PermissionsProvider>
+                      </HdfcDepositsProvider>
+                    </DepositsProvider>
+                  </HdfcRegistrationProvider>
+                </RegistrationProvider>
+              </HdfcRampProvider>
+            </RampProvider>
+          </BalancesProvider>
+        </PlatformSettings>
       </SmartContractsProvider>
     </AccountProvider>
   )

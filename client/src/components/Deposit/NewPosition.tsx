@@ -323,7 +323,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewDepositState.DEFAULT:
       default:
-        return 'Input valid venmo id';
+        return 'Input valid Venmo Id';
 
     }
   }

@@ -39,7 +39,7 @@ const OverlayContainer = styled.div`
   position: fixed;
   display: block;
   background-color: #0D111C;
-  opacity: 0.84;
+  opacity: 0.88;
   overflow: hidden;
   z-index: 10;
 `;
