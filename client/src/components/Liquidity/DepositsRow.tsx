@@ -11,20 +11,20 @@ import { alchemyMainnetEthersProvider } from "index";
 
 
 interface DepositsRowProps {
+  isVenmo: boolean;
   availableDepositAmount: string;
-  totalDepositAmount: string;
   conversionRate: string;
   rowIndex: number;
   depositorAddress: string;
   depositId: bigint;
   targeted: boolean;
   isSelectingDeposits: boolean;
-  handleTargetLiquidityCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint) => void;
+  handleTargetLiquidityCheckboxChange: (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint, isVenmo: boolean) => void;
 }
 
 export const DepositsRow: React.FC<DepositsRowProps> = ({
+  isVenmo,
   availableDepositAmount,
-  totalDepositAmount,
   conversionRate,
   rowIndex,
   depositorAddress,
@@ -46,7 +46,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
    */
 
   const depositRemainingLabel = `${availableDepositAmount}`;
-  const originalAmountLabel = `${totalDepositAmount}`
+  const platformLabel = isVenmo ? 'Venmo' : 'HDFC';
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
 
   /*
@@ -54,7 +54,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
    */
 
   const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleTargetLiquidityCheckboxChange(event, depositId);
+    handleTargetLiquidityCheckboxChange(event, depositId, isVenmo);
   };
 
   /*
@@ -71,6 +71,10 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
         <SVGIconThemed icon={'usdc'} width={'28'} height={'28'} />
         USD Coin
       </IconAndTokenNameContainer>
+
+      <TitleAndValueContainer>
+        <Value>{platformLabel}</Value>
+      </TitleAndValueContainer>
 
       <TitleAndValueContainer>
         <Value>
@@ -92,10 +96,6 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
         <Value>{conversionRate}</Value>
       </PercentageLabel>
 
-      <TitleAndValueContainer>
-        <Value>{originalAmountLabel}</Value>
-      </TitleAndValueContainer>
-
       {isSelectingDeposits ? (
         <CheckboxContainer>
           <CustomCheckbox
@@ -113,7 +113,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 const Container = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: .2fr repeat(5, minmax(0,1fr)) .4fr;
+  grid-template-columns: .2fr 1fr .7fr repeat(3, minmax(0,1fr)) .4fr;
   gap: 8px;
   flex-direction: row;
   align-items: center;

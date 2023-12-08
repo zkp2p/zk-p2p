@@ -6,14 +6,18 @@ import { RowBetween } from '../layouts/Row'
 import { ThemedText } from '../../theme/text'
 import { Button } from "../Button";
 import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
+import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { DepositsRow } from "./DepositsRow";
 import { toUsdcString, conversionRateToString } from '@helpers/units'
-import useLiquidity from '@hooks/useLiquidity';
+
+import useVenmoLiquidity from '@hooks/useLiquidity';
+import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 
 const ROWS_PER_PAGE = 10;
 
 export interface DepositPrime {
+  platformType: PaymentPlatformType,
   depositor: string;
   depositId: bigint;
   availableDepositAmount: string;
@@ -27,13 +31,24 @@ export const DepositsTable: React.FC = () => {
    * Contexts
    */
 
-  const { depositStore, targetedDepositIds, setTargetedDepositIds } = useLiquidity();
+  const {
+    depositStore: venmoDepositStore,
+    targetedDepositIds: venmoTargetedDepositIds,
+    setTargetedDepositIds: setVenmoTargetedDepositIds
+  } = useVenmoLiquidity();
+
+  const {
+    depositStore: hdfcDepositStore,
+    targetedDepositIds: hdfcTargetedDepositIds,
+    setTargetedDepositIds: setHdfcTargetedDepositIds
+  } = useHdfcLiquidity();
 
   /*
    * State
    */
 
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
+  const [combinedDepositStore, setCombinedDepositStore] = useState<DepositWithAvailableLiquidity[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -44,13 +59,25 @@ export const DepositsTable: React.FC = () => {
    */
 
   useEffect(() => {
-    if (!depositStore) {
+    if (venmoDepositStore && hdfcDepositStore) {
+      const combinedDepositStore = [...venmoDepositStore, ...hdfcDepositStore];
+
+      setCombinedDepositStore(combinedDepositStore);
+    } else if (venmoDepositStore) {
+      setCombinedDepositStore(venmoDepositStore);
+    } else if (hdfcDepositStore) {
+      setCombinedDepositStore(hdfcDepositStore);
+    }
+  }, [venmoDepositStore, hdfcDepositStore]);
+
+  useEffect(() => {
+    if (combinedDepositStore.length === 0) {
       setPositionsRowData([]);  
     } else {
-      var sanitizedPositions: DepositPrime[] = [];
-      sanitizedPositions = depositStore.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      var sanitizedDeposits: DepositPrime[] = [];
+      sanitizedDeposits = combinedDepositStore.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
         const deposit = depositWithLiquidity.deposit
-
+        const platformType = deposit.platformType
         const depositor = deposit.depositor;
         const depositId = depositWithLiquidity.depositId;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
@@ -58,16 +85,23 @@ export const DepositsTable: React.FC = () => {
         const conversionRate = conversionRateToString(deposit.conversionRate);
 
         let targeted = false;
-        if (targetedDepositIds) {
-          const targetedDepotiIdsSet = new Set(targetedDepositIds.map(id => id.toString()));
+        if (platformType === PaymentPlatform.VENMO && venmoTargetedDepositIds) {
+          const targetedDepositIdsSet = new Set(venmoTargetedDepositIds.map(id => id.toString()));
 
-          if (targetedDepotiIdsSet.has(depositWithLiquidity.depositId.toString())) {
+          if (targetedDepositIdsSet.has(depositWithLiquidity.depositId.toString())) {
+            targeted = true;
+          }
+        } else if (platformType === PaymentPlatform.HDFC && hdfcTargetedDepositIds) {
+          const targetedDepositIdsSet = new Set(hdfcTargetedDepositIds.map(id => id.toString()));
+
+          if (targetedDepositIdsSet.has(depositWithLiquidity.depositId.toString())) {
             targeted = true;
           }
         }
 
         return {
           depositor,
+          platformType,
           depositId,
           availableDepositAmount,
           totalDepositAmount,
@@ -76,9 +110,14 @@ export const DepositsTable: React.FC = () => {
         };
       });
 
-      setPositionsRowData(sanitizedPositions);
+      setPositionsRowData(sanitizedDeposits);
     }
-  }, [depositStore, isTargetingDeposits, targetedDepositIds]);
+  }, [
+    combinedDepositStore,
+    isTargetingDeposits,
+    venmoTargetedDepositIds,
+    hdfcTargetedDepositIds,
+  ]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -100,17 +139,32 @@ export const DepositsTable: React.FC = () => {
     }
   };
 
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint) => {
-    if (targetedDepositIds) {
-      const didSelectDeposit = event.target.checked;
-      if (didSelectDeposit) {
-        const depositIdsToStore = [...targetedDepositIds, depositId];
-
-        setTargetedDepositIds(depositIdsToStore);
-      } else {
-        const filteredTargetedDepositIds = targetedDepositIds.filter(id => id !== depositId);
-
-        setTargetedDepositIds(filteredTargetedDepositIds);
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint, isVenmo: boolean) => {
+    if (isVenmo) {
+      if (venmoTargetedDepositIds) {
+        const didSelectDeposit = event.target.checked;
+        if (didSelectDeposit) {
+          const depositIdsToStore = [...venmoTargetedDepositIds, depositId];
+  
+          setVenmoTargetedDepositIds(depositIdsToStore);
+        } else {
+          const filteredTargetedDepositIds = venmoTargetedDepositIds.filter(id => id !== depositId);
+  
+          setVenmoTargetedDepositIds(filteredTargetedDepositIds);
+        }
+      }
+    } else {
+      if (hdfcTargetedDepositIds) {
+        const didSelectDeposit = event.target.checked;
+        if (didSelectDeposit) {
+          const depositIdsToStore = [...hdfcTargetedDepositIds, depositId];
+  
+          setHdfcTargetedDepositIds(depositIdsToStore);
+        } else {
+          const filteredTargetedDepositIds = hdfcTargetedDepositIds.filter(id => id !== depositId);
+  
+          setHdfcTargetedDepositIds(filteredTargetedDepositIds);
+        }
       }
     }
 };
@@ -158,13 +212,13 @@ export const DepositsTable: React.FC = () => {
 
               <ColumnHeader>Token</ColumnHeader>
 
+              <ColumnHeader>Platform</ColumnHeader>
+
               <ColumnHeader>Depositor</ColumnHeader>
 
               <ColumnHeader>Available Amount</ColumnHeader>
 
               <ColumnHeader>Conversion Rate</ColumnHeader>
-
-              <ColumnHeader>Deposit Amount</ColumnHeader>
 
               <ColumnHeader>Targeted</ColumnHeader>
             </TableHeaderRow>
@@ -172,8 +226,8 @@ export const DepositsTable: React.FC = () => {
               {paginatedData.map((positionRow, rowIndex) => (
                 <PositionRowStyled key={rowIndex}>
                   <DepositsRow
+                    isVenmo={positionRow.platformType === PaymentPlatform.VENMO}
                     availableDepositAmount={positionRow.availableDepositAmount}
-                    totalDepositAmount={positionRow.totalDepositAmount}
                     conversionRate={positionRow.conversionRate}
                     depositorAddress={positionRow.depositor}
                     rowIndex={rowIndex}
@@ -258,7 +312,7 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr repeat(5, minmax(0,1fr)) .4fr;
+  grid-template-columns: .2fr 1fr .7fr repeat(3, minmax(0,1fr)) .4fr;
   gap: 8px;
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
