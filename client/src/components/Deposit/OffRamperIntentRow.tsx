@@ -9,6 +9,7 @@ import { alchemyMainnetEthersProvider } from "index";
 
 
 interface IntentRowProps {
+  isVenmo: boolean;
   onRamper: string;
   amountUSDToReceive: string;
   amountUSDCToSend: string;
@@ -18,6 +19,7 @@ interface IntentRowProps {
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
+  isVenmo,
   onRamper,
   amountUSDToReceive,
   amountUSDCToSend,
@@ -35,10 +37,13 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    * Helpers
    */
 
+  const currencySymbol = isVenmo ? '$' : '₹';
+  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
+
   const requestedAmountLabel = `${amountUSDCToSend} USDC`;
-  const onRamperHashLabel = `$${amountUSDToReceive} from `;
+  const onRamperHashLabel = `${currencySymbol}${amountUSDToReceive} from `;
   const onRamperEtherscanLink = `${blockscanUrl}/address/${onRamper}`;
-  const onRamperLinkLabel = ` on Venmo`;
+  const onRamperLinkLabel = ` on ${paymentPlatformName}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
 
   /*

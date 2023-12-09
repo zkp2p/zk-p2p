@@ -12,6 +12,7 @@ import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/useRegistration';
 
 import DepositsContext from './DepositsContext';
 
@@ -25,8 +26,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, rampAbi } = useSmartContracts()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { rampAddress, rampAbi } = useSmartContracts();
+  const { isRegistered } = useRegistration();
 
   /*
    * State
@@ -81,8 +83,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking isRegistered: ', isRegistered);
 
-    if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && rampAddress && isRegistered) {
       esl && console.log('shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
@@ -94,7 +97,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       setDeposits(null);
       setDepositIntents(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, rampAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, rampAddress, isRegistered]);
 
   useEffect(() => {
     esl && console.log('shouldFetchDepositIntents_1');

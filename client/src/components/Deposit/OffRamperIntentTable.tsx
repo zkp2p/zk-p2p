@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 
 import { ThemedText } from '../../theme/text'
 import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
-import { toUsdString, toUsdcString  } from '@helpers/units'
-import { SECONDS_IN_DAY  } from '@helpers/constants'
+import { toUsdString, toUsdcString } from '@helpers/units';
+import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { DepositIntent } from "../../contexts/venmo/Deposits/types";
-import useDeposits from '@hooks/useDeposits';
+import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import useVenmoDeposits from '@hooks/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useLiquidity from '@hooks/useLiquidity';
 
 
@@ -23,7 +25,12 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
    * Contexts
    */
 
-  const { deposits, depositIntents } = useDeposits();
+  const {
+    depositIntents: venmoDepositIntents
+  } = useVenmoDeposits();
+  const {
+    depositIntents: hdfcDepositIntents
+  } = useHdfcDeposits();
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
   /*
@@ -32,12 +39,26 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
  
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
+  const [depositIntents, setDepositIntents] = useState<DepositIntent[]>([]);
+
   /*
    * Hooks
    */
 
   useEffect(() => {
-    if (depositIntents && deposits) {
+    if (venmoDepositIntents && hdfcDepositIntents) {
+      const combinedDepositIntents = [...venmoDepositIntents, ...hdfcDepositIntents];
+
+      setDepositIntents(combinedDepositIntents);
+    } else if (venmoDepositIntents) {
+      setDepositIntents(venmoDepositIntents);
+    } else if (hdfcDepositIntents) {
+      setDepositIntents(hdfcDepositIntents);
+    }
+  }, [venmoDepositIntents, hdfcDepositIntents]);
+
+  useEffect(() => {
+    if (depositIntents) {
       var sanitizedIntents: IntentRowData[] = [];
       sanitizedIntents = depositIntents.map((depositIntent: DepositIntent, index: number) => {
         const intent = depositIntent.intent;
@@ -46,12 +67,14 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
 
+        const isVenmo = deposit.platformType === PaymentPlatform.VENMO;
         const onRamper = intent.onRamper;
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC, true);
         const expirationTimestamp = formatExpiration(intent.timestamp);
         
         const sanitizedIntent: IntentRowData = {
+          isVenmo,
           onRamper,
           amountUSDToReceive,
           amountUSDCToSend,
@@ -67,7 +90,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositIntents, deposits]);
+  }, [depositIntents]);
 
   /*
    * Helpers
@@ -105,6 +128,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
               key={rowIndex}
+              isVenmo={intentsRow.isVenmo}
               amountUSDToReceive={intentsRow.amountUSDToReceive}
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
