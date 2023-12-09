@@ -12,6 +12,7 @@ import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/hdfc/useHdfcRegistration';
 
 import DepositsContext from './DepositsContext';
 
@@ -27,6 +28,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
+  const { isRegistered } = useRegistration();
 
   /*
    * State
@@ -81,8 +83,9 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking hdfcRampAddress: ', hdfcRampAddress);
+    esl && console.log('checking isRegistered: ', isRegistered);
 
-    if (isLoggedIn && loggedInEthereumAddress && hdfcRampAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && hdfcRampAddress && isRegistered) {
       esl && console.log('shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
@@ -94,7 +97,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       setDeposits(null);
       setDepositIntents(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress, isRegistered]);
 
   useEffect(() => {
     esl && console.log('shouldFetchDepositIntents_1');
@@ -131,7 +134,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
         const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
-          platformType: PaymentPlatform.VENMO,
+          platformType: PaymentPlatform.HDFC,
           depositor: depositData.depositor.toString(),
           venmoId: unpackPackedVenmoId(depositData.upiId),
           depositAmount: depositData.depositAmount,

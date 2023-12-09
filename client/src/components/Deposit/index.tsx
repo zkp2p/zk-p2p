@@ -6,8 +6,10 @@ import { NewPosition as VenmoNewPosition } from './NewPosition'
 import { NewPosition as HdfcNewPosition } from './hdfc/NewPosition'
 import { PositionTable } from './PositionTable'
 import { OffRamperIntentTable } from './OffRamperIntentTable'
+import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 import useDeposits from '@hooks/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -16,7 +18,22 @@ export default function Deposit() {
    * Contexts
    */
 
-  const { depositIntents, refetchDeposits, shouldFetchDeposits } = useDeposits();
+  const {
+    refetchDeposits: refetchVenmoDeposits,
+    shouldFetchDeposits: shouldFetchVenmoDeposits,
+    depositIntents: venmoDepositIntents,
+    shouldFetchDepositIntents: shouldFetchVenmoDepositIntents,
+    refetchDepositIntents: refetchVenmoDepositIntents,
+  } = useDeposits();
+
+  const {
+    refetchDeposits: refetchHdfcDeposits,
+    shouldFetchDeposits: shouldFetchHdfcDeposits,
+    depositIntents: hdfcDepositIntents,
+    shouldFetchDepositIntents: shouldFetchHdfcDepositIntents,
+    refetchDepositIntents: refetchHdfcDepositIntents,
+  } = useHdfcDeposits();
+
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
   /*
@@ -25,21 +42,80 @@ export default function Deposit() {
 
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
+  const [depositIntents, setDepositIntents] = useState<DepositIntent[]>([]);
+
   /*
    * Hooks
    */
 
   useEffect(() => {
-    if (shouldFetchDeposits) {
+    if (shouldFetchVenmoDeposits) {
       const intervalId = setInterval(() => {
-        refetchDeposits?.();
+        refetchVenmoDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchDeposits]);
+  }, [shouldFetchVenmoDeposits]);
+
+  useEffect(() => {
+    if (shouldFetchHdfcDeposits) {
+      const intervalId = setInterval(() => {
+        refetchHdfcDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchHdfcDeposits]);
+
+  useEffect(() => {
+    if (shouldFetchVenmoDepositIntents) {
+      const intervalId = setInterval(() => {
+        refetchVenmoDepositIntents?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchVenmoDepositIntents]);
+
+  useEffect(() => {
+    if (shouldFetchHdfcDepositIntents) {
+      const intervalId = setInterval(() => {
+        refetchHdfcDepositIntents?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchHdfcDepositIntents]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        if (venmoDepositIntents) {
+          setDepositIntents(venmoDepositIntents);
+        }
+        break;
+
+      case PaymentPlatform.HDFC:
+        if (hdfcDepositIntents) {
+          setDepositIntents(hdfcDepositIntents);
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, venmoDepositIntents, hdfcDepositIntents]);
 
   /*
    * Handlers
@@ -86,7 +162,7 @@ export default function Deposit() {
           handleNewPositionClick={handleUpdateClick}
         />
 
-        {depositIntents && depositIntents.length > 0 ? (
+        {depositIntents.length > 0 ? (
           <>
             <VerticalDivider />
             <OffRamperIntentTable/>
@@ -113,7 +189,6 @@ const Wrapper = styled(AutoColumn)`
 
 const DepositAndIntentContainer = styled.div`
   display: grid;
-  gap: 1rem;
   border-radius: 16px;
 `;
 

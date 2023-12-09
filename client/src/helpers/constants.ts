@@ -6,6 +6,8 @@ export const MAX_USDC_TRANSFER_SIZE = 250000000n;
 
 export const DEPOSIT_REFETCH_INTERVAL = 20000; // 0.3 minutes
 export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
+// export const DEPOSIT_REFETCH_INTERVAL = 2000000; // 30 minutes
+// export const STATE_REFETCH_INTERVAL = 6000000; // 100 minute
 export const FETCH_VENMO_EMAILS_AFTER_DATE = "2022/01/01"
 
 export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
@@ -42,7 +44,7 @@ export const STRING_PRESELECTOR = "<!-- recipient name -->";
 export const UINT256_MAX = "0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000000000000000000000000000";
 export const CALLER_ACCOUNT = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-export const DEFAULT_NETWORK = "base_production";
+export const DEFAULT_NETWORK = "base";
 
 
 // Proving key paths
