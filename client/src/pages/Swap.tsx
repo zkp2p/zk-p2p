@@ -14,22 +14,23 @@ import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-export const Swap: React.FC<{}> = (props) => {
+export const Swap: React.FC = () => {
   /*
    * Contexts
    */
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
+  
   const {
-    currentIntentHash,
-    refetchIntentHash,
-    shouldFetchIntentHash,
-    refetchLastOnRampTimestamp
+    currentIntentHash: currentVenmoIntentHash,
+    refetchIntentHash: refetchVenmoIntentHash,
+    shouldFetchIntentHash: shouldFetchVenmoIntentHash,
+    refetchLastOnRampTimestamp: refetchLastVenmoOnRampTimestamp
   } = useOnRamperIntents();
 
   const {
-    refetchDepositCounter,
-    shouldFetchRampState
+    refetchDepositCounter: refetchVenmoDepositCounter,
+    shouldFetchRampState: shouldFetchVenmoRampState,
   } = useRampState();
 
   const {
@@ -60,27 +61,23 @@ export const Swap: React.FC<{}> = (props) => {
    */
 
   useEffect(() => {
-    if (shouldFetchIntentHash) {
-      refetchIntentHash?.();
-      refetchLastOnRampTimestamp?.();
+    if (shouldFetchVenmoIntentHash) {
+      refetchVenmoIntentHash?.();
+      refetchLastVenmoOnRampTimestamp?.();
     }
 
-    if (shouldFetchRampState) {
-      refetchDepositCounter?.();
+    if (shouldFetchVenmoRampState) {
+      refetchVenmoDepositCounter?.();
     }
 
     if (shouldFetchUsdcBalance) {
       refetchUsdcBalance?.();
     }
 
-    console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
-
     if (shouldFetchHdfcIntentHash) {
       refetchHdfcIntentHash?.();
       refetchLastHdfcOnRampTimestamp?.();
     }
-
-    console.log('shouldFetchHdfcRampState: ', shouldFetchHdfcRampState);
 
     if (shouldFetchHdfcRampState) {
       refetchHdfcDepositCounter?.();
@@ -98,13 +95,19 @@ export const Swap: React.FC<{}> = (props) => {
   }
 
   const handleIntentClick = () => {
-    // console.log('selectedVenmoIntentHash', currentIntentHash);
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        console.log('selectedVenmoIntentHash', currentVenmoIntentHash);
 
-    console.log('selectedHdfcIntentHash', currentHdfcIntentHash);
+        setSelectedIntentHash(currentVenmoIntentHash);
+        break;
+      
+      case PaymentPlatform.HDFC:
+        console.log('selectedHdfcIntentHash', currentHdfcIntentHash);
 
-    // setSelectedIntentHash(currentIntentHash);
-
-    setSelectedIntentHash(currentHdfcIntentHash);
+        setSelectedIntentHash(currentHdfcIntentHash);
+        break;
+    }
   };
 
   /*
