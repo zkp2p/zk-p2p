@@ -68,7 +68,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
                 <ENSName
                   provider={alchemyMainnetEthersProvider}
                   address={onRamper}
-                  displayType={AddressDisplayEnum.FIRST4_LAST4}
+                  displayType={AddressDisplayEnum.FIRST6}
                 />
               </Link>
               {onRamperLinkLabel}
