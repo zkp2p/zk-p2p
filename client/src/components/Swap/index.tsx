@@ -31,14 +31,6 @@ import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useSwapQuote from '@hooks/useSwapQuote';
 
-// testing
-// import useRampState from '@hooks/useRampState';
-// import useOnRamperIntents from "@hooks/useOnRamperIntents";
-// import useLiquidity from "@hooks/useLiquidity";
-
-import useRampState from '@hooks/hdfc/useHdfcRampState';
-import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 export type SwapQuote = {
   requestedUSDC: string;
@@ -88,23 +80,18 @@ const Swap: React.FC<SwapProps> = ({
   
   const { 
     isRegistered,
-    // refetchDeposits,
-    // getBestDepositForAmount,
-    // shouldFetchDeposits,
-    // refetchDepositCounter,
-    // shouldFetchRampState,
-    // onRampCooldownPeriod,
-    // currentIntentHash,
-    // refetchIntentHash,
-    // shouldFetchIntentHash,
-    // lastOnRampTimestamp,
-    // refetchLastOnRampTimestamp
+    refetchDeposits,
+    getBestDepositForAmount,
+    shouldFetchDeposits,
+    refetchDepositCounter,
+    shouldFetchRampState,
+    onRampCooldownPeriod,
+    currentIntentHash,
+    refetchIntentHash,
+    shouldFetchIntentHash,
+    lastOnRampTimestamp,
+    refetchLastOnRampTimestamp
   } = useSwapQuote();
-
-  // Test
-  const { refetchDepositCounter, shouldFetchRampState, onRampCooldownPeriod } = useRampState();
-  const { refetchIntentHash, refetchLastOnRampTimestamp, currentIntentHash, shouldFetchIntentHash, lastOnRampTimestamp } = useOnRamperIntents();
-  const { getBestDepositForAmount, shouldFetchDeposits, refetchDeposits } = useLiquidity();
 
   /*
    * State
