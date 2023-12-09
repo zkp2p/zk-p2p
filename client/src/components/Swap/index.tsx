@@ -34,12 +34,10 @@ import useSwapQuote from '@hooks/useSwapQuote';
 // testing
 // import useRampState from '@hooks/useRampState';
 // import useOnRamperIntents from "@hooks/useOnRamperIntents";
-// import useDeposits from "@hooks/useDeposits";
 // import useLiquidity from "@hooks/useLiquidity";
 
 import useRampState from '@hooks/hdfc/useHdfcRampState';
 import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 export type SwapQuote = {
@@ -106,8 +104,7 @@ const Swap: React.FC<SwapProps> = ({
   // Test
   const { refetchDepositCounter, shouldFetchRampState, onRampCooldownPeriod } = useRampState();
   const { refetchIntentHash, refetchLastOnRampTimestamp, currentIntentHash, shouldFetchIntentHash, lastOnRampTimestamp } = useOnRamperIntents();
-  const { refetchDeposits, shouldFetchDeposits } = useDeposits();
-  const { getBestDepositForAmount } = useLiquidity();
+  const { getBestDepositForAmount, shouldFetchDeposits, refetchDeposits } = useLiquidity();
 
   /*
    * State
