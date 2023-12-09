@@ -101,17 +101,17 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('shouldFetchIntentHash_hdfc_1');
-    console.log('checking isLoggedIn: ', isLoggedIn);
-    console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    console.log('checking isRegistered: ', isRegistered);
+    esl && console.log('shouldFetchIntentHash_hdfc_1');
+    esl && console.log('checking isLoggedIn: ', isLoggedIn);
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking isRegistered: ', isRegistered);
 
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      console.log('shouldFetchIntentHash_hdfc_2');
+      esl && console.log('shouldFetchIntentHash_hdfc_2');
 
       setShouldFetchIntentHash(true);
     } else {
-      console.log('shouldFetchIntentHash_hdfc_3');
+      esl && console.log('shouldFetchIntentHash_hdfc_3');
 
       setShouldFetchIntentHash(false);
 
@@ -121,15 +121,15 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    console.log('shouldFetchIntent_hdfc_1');
-    console.log('checking currentIntentHash: ', currentIntentHash);
+    esl && console.log('shouldFetchIntent_hdfc_1');
+    esl && console.log('checking currentIntentHash: ', currentIntentHash);
     
     if (currentIntentHash) {
-      console.log('shouldFetchIntent_hdfc_2');
+      esl && console.log('shouldFetchIntent_hdfc_2');
 
       setShouldFetchIntent(true);
     } else {
-      console.log('shouldFetchIntent_hdfc_3');
+      esl && console.log('shouldFetchIntent_hdfc_3');
 
       setShouldFetchIntent(false);
       
@@ -138,44 +138,44 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [currentIntentHash]);
 
   useEffect(() => {
-    console.log('intentHashRaw_hdfc_1');
-    console.log('checking intentHashRaw: ', intentHashRaw);
+    esl && console.log('intentHashRaw_hdfc_1');
+    esl && console.log('checking intentHashRaw: ', intentHashRaw);
   
     if (intentHashRaw !== ZERO_ADDRESS) {
-      console.log('intentHashRaw_hdfc_2');
+      esl && console.log('intentHashRaw_hdfc_2');
       
       const intentHashProcessed = intentHashRaw as string;
 
       setCurrentIntentHash(intentHashProcessed);
     } else {
-      console.log('intentHashRaw_hdfc_3');
+      esl && console.log('intentHashRaw_hdfc_3');
 
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
 
   useEffect(() => {
-    console.log('lastOnRampTimeStampRaw_hdfc_1');
-    console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
+    esl && console.log('lastOnRampTimeStampRaw_hdfc_1');
+    esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
   
     if (lastOnRampTimeStampRaw || lastOnRampTimeStampRaw === ZERO) {
-      console.log('lastOnRampTimeStampRaw_hdfc_2');
+      esl && console.log('lastOnRampTimeStampRaw_hdfc_2');
 
       setLastOnRampTimestamp(lastOnRampTimeStampRaw as bigint);
     } else {
-      console.log('lastOnRampTimeStampRaw_hdfc_3');
+      esl && console.log('lastOnRampTimeStampRaw_hdfc_3');
 
       setLastOnRampTimestamp(null);
     }
   }, [lastOnRampTimeStampRaw]);
 
   useEffect(() => {
-    console.log('intentRaw_hdfc_1');
-    console.log('checking intentRaw: ', intentRaw);
-    console.log('checking depositStore: ', depositStore);
+    esl && console.log('intentRaw_hdfc_1');
+    esl && console.log('checking intentRaw: ', intentRaw);
+    esl && console.log('checking depositStore: ', depositStore);
   
     if (intentRaw && depositStore && depositStore.length > 0) {
-      console.log('intentRaw_hdfc_2');
+      esl && console.log('intentRaw_hdfc_2');
 
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
@@ -195,12 +195,12 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   
         setCurrentIntent(onRampIntentProcessed);
       } else {
-        console.log('intentRaw_hdfc_3');
+        esl && console.log('intentRaw_hdfc_3');
 
         setCurrentIntent(null);
       }
     } else {
-      console.log('intentRaw_hdfc_3');
+      esl && console.log('intentRaw_hdfc_3');
 
       setCurrentIntent(null);
     }
