@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import crypto from 'crypto';
 
 import { PaymentPlatformType } from '../contexts/common/PlatformSettings/types';
 
@@ -31,7 +32,7 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
   const [error, setError] = useState<RemoteProofError | null>(null);
 
   const generateNonce = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+    return crypto.randomBytes(16).toString('hex');
   }
 
   const fetchData = async () => {
@@ -97,4 +98,4 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
   };
 
   return { data, loading, error, fetchData };
-}
+};
