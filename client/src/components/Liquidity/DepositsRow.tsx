@@ -82,7 +82,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
             <ENSName
               provider={alchemyMainnetEthersProvider}
               address={depositorAddress}
-              displayType={AddressDisplayEnum.FIRST4_LAST4}
+              displayType={AddressDisplayEnum.FIRST6}
             />
           </Link>
         </Value>
@@ -113,7 +113,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 const Container = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: .2fr 1fr .7fr repeat(3, minmax(0,1fr)) .4fr;
+  grid-template-columns: .2fr .9fr .6fr .8fr repeat(2, minmax(0,1fr)) .4fr;
   gap: 8px;
   flex-direction: row;
   align-items: center;

@@ -312,7 +312,7 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr 1fr .7fr repeat(3, minmax(0,1fr)) .4fr;
+  grid-template-columns: .2fr .9fr .6fr .8fr repeat(2, minmax(0,1fr)) .4fr;
   gap: 8px;
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
