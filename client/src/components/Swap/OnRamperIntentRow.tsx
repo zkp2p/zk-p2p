@@ -6,6 +6,7 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
+import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
 
@@ -40,6 +41,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const { blockscanUrl } = useSmartContracts();
+  const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
 
   /*
    * State
@@ -88,6 +90,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}
             onCompleteClick={handleCompleteOrderClick}
+            paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
           />
         )
       }

@@ -8,6 +8,7 @@ import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
+import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
 import { ThemedText } from '../../theme/text';
 
 
@@ -17,6 +18,7 @@ interface SwapModalProps {
   amount: string;
   onBackClick: () => void
   onCompleteClick: () => void
+  paymentPlatform: PaymentPlatformType
 }
 
 export const SwapModal: React.FC<SwapModalProps> = ({
@@ -24,7 +26,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   link,
   amount,
   onBackClick,
-  onCompleteClick
+  onCompleteClick,
+  paymentPlatform
 }) => {
   /*
    * Handlers

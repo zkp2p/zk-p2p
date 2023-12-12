@@ -47,15 +47,29 @@ const strings: PlatformStrings = {
   `,
 
   // Instruction Drawer
-  INSTRUCTION_DRAWER_STEP_ONE: ``,
-  INSTRUCTION_DRAWER_STEP_TWO: ``,
-  INSTRUCTION_DRAWER_STEP_THREE: ``,
-  INSTRUCTION_DRAWER_STEP_FOUR: ``,
+  INSTRUCTION_DRAWER_STEP_ONE: `
+    Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+  `,
+  INSTRUCTION_DRAWER_STEP_TWO: `
+    Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+  `,
+  INSTRUCTION_DRAWER_STEP_THREE: `
+    Click 'Send' and complete the payment on HDFC. Ensure you have email notifications from HDFC enabled
+  `,
+  INSTRUCTION_DRAWER_STEP_FOUR: `
+    Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+  `,
 
   // Payment Requirements
-  PAYMENT_REQUIREMENT_STEP_ONE: ``,
-  PAYMENT_REQUIREMENT_STEP_TWO: ``,
-  PAYMENT_REQUIREMENT_STEP_THREE: ``,
+  PAYMENT_REQUIREMENT_STEP_ONE: `
+    Email notifications are enabled in your HDFC notifications settings
+  `,
+  PAYMENT_REQUIREMENT_STEP_TWO: `
+    Amount INR to send, which may not match your requested USDC amount, is double checked
+  `,
+  PAYMENT_REQUIREMENT_STEP_THREE: `
+    [Do we need a 3rd step?]
+  `,
 };
 
 export default strings;

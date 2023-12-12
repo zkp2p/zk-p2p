@@ -508,7 +508,7 @@ const Swap: React.FC<SwapProps> = ({
       <>
         <VerticalDivider />
         <InstructionDrawer
-          paymentPlatform={'venmo'}
+          paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
           recipientAddress={recipientAddress}
           setRecipientAddress={setRecipientAddress}
           isLoggedIn={isLoggedIn}

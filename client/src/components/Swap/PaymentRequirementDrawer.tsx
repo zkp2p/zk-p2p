@@ -3,10 +3,17 @@ import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
-import { venmoStrings } from "@helpers/strings";
+import { platformStrings } from "@helpers/strings";
+import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
 
 
-export const PaymentRequirementDrawer: React.FC = () => {
+interface PaymentRequirementDrawerProps {
+  paymentPlatform: PaymentPlatformType
+}
+
+export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> = ({
+  paymentPlatform
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   /*
@@ -36,15 +43,15 @@ export const PaymentRequirementDrawer: React.FC = () => {
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_ONE') }
+            { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_ONE') }
           </InstructionStep>
 
           <InstructionStep step={2}>
-            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_TWO') }
+            { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_TWO') }
           </InstructionStep>
 
           <InstructionStep step={3}>
-            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_THREE') }
+            { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
           </InstructionStep>
         </InstructionListContainer>
 
