@@ -98,7 +98,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </InstructionsLabel>
         </InstructionsContainer>
 
-        <PaymentRequirementDrawer />
+        <PaymentRequirementDrawer
+          paymentPlatform={paymentPlatform}
+        />
 
         <ButtonContainer>
           <Button

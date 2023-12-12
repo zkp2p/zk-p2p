@@ -190,7 +190,6 @@ const Container = styled.button<AccessoryButtonProps & { $loading: boolean }>`
   ${({ $loading }) =>
     $loading && css`
       cursor: wait;
-      background: #dedede;
     `
   }
 `;
