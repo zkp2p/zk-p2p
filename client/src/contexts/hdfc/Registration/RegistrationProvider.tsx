@@ -58,17 +58,17 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchHdfcRegistration_1');
+    esl && console.log('hdfc_shouldFetchHdfcRegistration_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking hdfcRampAddress: ', hdfcRampAddress);
     
     if (isLoggedIn && loggedInEthereumAddress && hdfcRampAddress) {
-      esl && console.log('shouldFetchHdfcRegistration_2');
+      esl && console.log('hdfc_shouldFetchHdfcRegistration_2');
 
       setShouldFetchHdfcRegistration(true);
     } else {
-      esl && console.log('shouldFetchHdfcRegistration_3');
+      esl && console.log('hdfc_shouldFetchHdfcRegistration_3');
       
       setShouldFetchHdfcRegistration(false);
 
@@ -77,18 +77,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress]);
 
   useEffect(() => {
-    esl && console.log('hdfcRampAccountRaw_1');
+    esl && console.log('hdfc_hdfcRampAccountRaw_1');
     esl && console.log('checking hdfcRampAccountRaw: ', hdfcRampAccountRaw);
   
     if (hdfcRampAccountRaw) {
-      esl && console.log('hdfcRampAccountRaw_2');
+      esl && console.log('hdfc_hdfcRampAccountRaw_2');
 
       const rampAccountData = hdfcRampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.idHash;
       
       setRegistrationHash(rampAccountProcessed);
     } else {
-      esl && console.log('hdfcRampAccountRaw_3');
+      esl && console.log('hdfc_hdfcRampAccountRaw_3');
       
       setRegistrationHash(null);
     }

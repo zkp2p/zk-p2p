@@ -71,15 +71,15 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchRampState_1');
+    esl && console.log('hdfc_shouldFetchRampState_1');
     esl && console.log('checking hdfcRampAddress: ', hdfcRampAddress);
 
     if (hdfcRampAddress) {
-      esl && console.log('shouldFetchRampState_2');
+      esl && console.log('hdfc_shouldFetchRampState_2');
 
       setShouldFetchRampState(true);
     } else {
-      esl && console.log('shouldFetchRampState_3');
+      esl && console.log('hdfc_shouldFetchRampState_3');
 
       setShouldFetchRampState(false);
 
@@ -89,47 +89,47 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [hdfcRampAddress]);
 
   useEffect(() => {
-    esl && console.log('minDepositAmountRaw_1');
+    esl && console.log('hdfc_minDepositAmountRaw_1');
     esl && console.log('checking minimumDepositAmountRaw: ', minimumDepositAmountRaw);
   
     if (minimumDepositAmountRaw) {
-      esl && console.log('minDepositAmountRaw_2');
+      esl && console.log('hdfc_minDepositAmountRaw_2');
 
       const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      esl && console.log('minDepositAmountRaw_3');
+      esl && console.log('hdfc_minDepositAmountRaw_3');
 
       setMinimumDepositAmount(null);
     }
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    esl && console.log('depositCounterRaw_1');
+    esl && console.log('hdfc_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
     if (depositCounterRaw || depositCounterRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('depositCounterRaw_2');
+      esl && console.log('hdfc_depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);
     } else {
-      esl && console.log('depositCounterRaw_3');
+      esl && console.log('hdfc_depositCounterRaw_3');
       
       setDepositCounter(null);
     }
   }, [depositCounterRaw]);
 
   useEffect(() => {
-    esl && console.log('onRampCooldownPeriodRaw_1');
+    esl && console.log('hdfc_onRampCooldownPeriodRaw_1');
     esl && console.log('checking onRampCooldownPeriodRaw: ', onRampCooldownPeriodRaw);
   
     if (onRampCooldownPeriodRaw || onRampCooldownPeriodRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('onRampCooldownPeriodRaw_2');
+      esl && console.log('hdfc_onRampCooldownPeriodRaw_2');
       
       setOnRampCooldownPeriod(onRampCooldownPeriodRaw as bigint);
     } else {
-      esl && console.log('onRampCooldownPeriodRaw_3');
+      esl && console.log('hdfc_onRampCooldownPeriodRaw_3');
       
       setOnRampCooldownPeriod(null);
     }

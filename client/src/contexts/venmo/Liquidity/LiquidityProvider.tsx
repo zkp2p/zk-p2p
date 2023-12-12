@@ -213,16 +213,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [shouldFetchDeposits]);
 
   useEffect(() => {
-    esl && console.log('shouldFetchDeposits_1');
+    esl && console.log('venmo_shouldFetchDeposits_1');
     esl && console.log('checking rampAddress: ', rampAddress);
     esl && console.log('checking depositCounter: ', depositCounter);
 
     if (rampAddress && depositCounter) {
-      esl && console.log('shouldFetchDeposits_2');
+      esl && console.log('venmo_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      esl && console.log('shouldFetchDeposits_3');
+      esl && console.log('venmo_shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
@@ -232,12 +232,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [rampAddress, depositCounter]);
 
   useEffect(() => {
-    esl && console.log('depositStore_1');
+    esl && console.log('venmo_depositStore_1');
     esl && console.log('checking deposits: ', deposits);
-    esl && console.log('loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('venmo_loggedInEthereumAddress: ', loggedInEthereumAddress);
 
     if (deposits && deposits.length > 0) {
-      esl && console.log('depositStore_2');
+      esl && console.log('venmo_depositStore_2');
 
       if (loggedInEthereumAddress) {
         const newStore = createDepositsStore(deposits);
@@ -249,7 +249,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         setDepositStore(newStore);
       }
     } else {
-      esl && console.log('depositStore_3');
+      esl && console.log('venmo_depositStore_3');
 
       setDepositStore(null);
     }

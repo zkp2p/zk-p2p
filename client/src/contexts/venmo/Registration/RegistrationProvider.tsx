@@ -109,17 +109,17 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchRegistration_1');
+    esl && console.log('venmo_shouldFetchRegistration_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking rampAddress: ', rampAddress);
     
     if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
-      esl && console.log('shouldFetchRegistration_2');
+      esl && console.log('venmo_shouldFetchRegistration_2');
 
       setShouldFetchRegistration(true);
     } else {
-      esl && console.log('shouldFetchRegistration_3');
+      esl && console.log('venmo_shouldFetchRegistration_3');
       
       setShouldFetchRegistration(false);
       setShouldFetchVenmoNftId(false);
@@ -133,30 +133,30 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, rampAddress, setExtractedVenmoId]);
 
   useEffect(() => {
-    esl && console.log('rampAccountRaw_1');
+    esl && console.log('venmo_rampAccountRaw_1');
     esl && console.log('checking rampAccountRaw: ', rampAccountRaw);
   
     if (rampAccountRaw) {
-      esl && console.log('rampAccountRaw_2');
+      esl && console.log('venmo_rampAccountRaw_2');
 
       const rampAccountData = rampAccountRaw as any;
       const rampAccountProcessed = rampAccountData.venmoIdHash;
       
       if (rampAccountProcessed !== ZERO_ADDRESS) {
-        esl && console.log('rampAccountRaw_3');
+        esl && console.log('venmo_rampAccountRaw_3');
 
         setRegistrationHash(rampAccountProcessed);
 
         setShouldFetchVenmoNftId(true); 
       } else {
-        esl && console.log('rampAccountRaw_4');
+        esl && console.log('venmo_rampAccountRaw_4');
 
         setRegistrationHash(null);
 
         setShouldFetchVenmoNftId(false);
       }
     } else {
-      esl && console.log('rampAccountRaw_5');
+      esl && console.log('venmo_rampAccountRaw_5');
       
       setRegistrationHash(null);
 
@@ -165,26 +165,26 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [rampAccountRaw]);
 
   useEffect(() => {
-    esl && console.log('extractedVenmoIdStorageKey_1');
+    esl && console.log('venmo_extractedVenmoIdStorageKey_1');
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
 
     if (loggedInEthereumAddress) {
-      esl && console.log('extractedVenmoIdStorageKey_2');
+      esl && console.log('venmo_extractedVenmoIdStorageKey_2');
 
       setExtractedVenmoIdStorageKey(`extractedVenmoId_${loggedInEthereumAddress}`);
     } else {
-      esl && console.log('extractedVenmoIdStorageKey_3');
+      esl && console.log('venmo_extractedVenmoIdStorageKey_3');
 
       setExtractedVenmoIdStorageKey(null);
     }
   }, [loggedInEthereumAddress]);
 
   useEffect(() => {
-    esl && console.log('extractedVenmoId_1');
+    esl && console.log('venmo_extractedVenmoId_1');
     esl && console.log('checking extractedVenmoIdStorageKey: ', extractedVenmoIdStorageKey);
 
     if (extractedVenmoIdStorageKey) {
-      esl && console.log('extractedVenmoId_2');
+      esl && console.log('venmo_extractedVenmoId_2');
 
       const storedValue = localStorage.getItem(extractedVenmoIdStorageKey);
       if (storedValue !== null) {
@@ -193,18 +193,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         _setExtractedVenmoId(null);
       }
     } else {
-      esl && console.log('extractedVenmoId_3');
+      esl && console.log('venmo_extractedVenmoId_3');
 
       _setExtractedVenmoId(null);
     }
   }, [extractedVenmoIdStorageKey]);
 
   useEffect(() => {
-    esl && console.log('venmoNftIdRaw_1');
+    esl && console.log('venmo_venmoNftIdRaw_1');
     esl && console.log('checking venmoNftIdRaw: ', venmoNftIdRaw);
   
     if (venmoNftIdRaw) { // we want ZERO to be falsy
-      esl && console.log('venmoNftIdRaw_2');
+      esl && console.log('venmo_venmoNftIdRaw_2');
 
       const venmoNftIdProcessed = (venmoNftIdRaw as bigint);
       
@@ -212,7 +212,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
       setShouldFetchVenmoNftUri(true);
     } else {
-      esl && console.log('venmoNftIdRaw_3');
+      esl && console.log('venmo_venmoNftIdRaw_3');
       
       setVenmoNftId(null);
 
@@ -221,18 +221,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [venmoNftIdRaw]);
 
   useEffect(() => {
-    esl && console.log('venmoNftUriRaw_1');
+    esl && console.log('venmo_venmoNftUriRaw_1');
     esl && console.log('checking venmoNftUriRaw: ', venmoNftUriRaw);
   
     if (venmoNftUriRaw) {
-      esl && console.log('venmoNftUriRaw_2');
+      esl && console.log('venmo_venmoNftUriRaw_2');
 
       const venmoNftUriProcessed = (venmoNftUriRaw as string);
       const svgString = extractSvg(venmoNftUriProcessed);
       
       setVenmoNftUri(svgString);
     } else {
-      esl && console.log('venmoNftUriRaw_3');
+      esl && console.log('venmo_venmoNftUriRaw_3');
       
       setVenmoNftUri(null);
     }

@@ -79,18 +79,18 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchDeposits_1');
+    esl && console.log('hdfc_shouldFetchDeposits_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking hdfcRampAddress: ', hdfcRampAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
     if (isLoggedIn && loggedInEthereumAddress && hdfcRampAddress && isRegistered) {
-      esl && console.log('shouldFetchDeposits_2');
+      esl && console.log('hdfc_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      esl && console.log('shouldFetchDeposits_3');
+      esl && console.log('hdfc_shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
@@ -100,15 +100,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress, isRegistered]);
 
   useEffect(() => {
-    esl && console.log('shouldFetchDepositIntents_1');
+    esl && console.log('hdfc_shouldFetchDepositIntents_1');
     esl && console.log('checking uniqueIntentHashes: ', uniqueIntentHashes);
 
     if (uniqueIntentHashes.length > 0) {
-      esl && console.log('shouldFetchDepositIntents_2');
+      esl && console.log('hdfc_shouldFetchDepositIntents_2');
 
       setShouldFetchDepositIntents(true);
     } else {
-      esl && console.log('shouldFetchDepositIntents_3');
+      esl && console.log('hdfc_shouldFetchDepositIntents_3');
 
       setShouldFetchDepositIntents(false);
 
@@ -117,11 +117,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [uniqueIntentHashes]);
 
   useEffect(() => {
-    esl && console.log('depositsRaw_1');
+    esl && console.log('hdfc_depositsRaw_1');
     esl && console.log('checking depositsRaw: ', depositsRaw);
 
     if (depositsRaw) {
-      esl && console.log('depositsRaw_2');
+      esl && console.log('hdfc_depositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
 
@@ -177,7 +177,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       }
       setIntentIndexDepositMap(intentIndexDepositMap);
     } else {
-      esl && console.log('depositsRaw_3');
+      esl && console.log('hdfc_depositsRaw_3');
 
       setDeposits(null);
       setUniqueIntentHashes([]);
@@ -185,11 +185,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [depositsRaw]);
 
   useEffect(() => {
-    esl && console.log('depositsIntentsRaw_1');
+    esl && console.log('hdfc_depositsIntentsRaw_1');
     esl && console.log('checking depositIntentsRaw: ', depositIntentsRaw);
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      esl && console.log('depositsIntentsRaw_2');
+      esl && console.log('hdfc_depositsIntentsRaw_2');
 
       const depositIntentsArray = depositIntentsRaw as any[];
 
@@ -223,7 +223,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       setDepositIntents(sanitizedIntents);
     } else {
-      esl && console.log('depositsIntentsRaw_3');
+      esl && console.log('hdfc_depositsIntentsRaw_3');
       
       setDepositIntents([]);
     }

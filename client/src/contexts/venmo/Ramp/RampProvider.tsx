@@ -71,15 +71,15 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchRampState_1');
+    esl && console.log('venmo_shouldFetchRampState_1');
     esl && console.log('checking rampAddress: ', rampAddress);
 
     if (rampAddress) {
-      esl && console.log('shouldFetchRampState_2');
+      esl && console.log('venmo_shouldFetchRampState_2');
 
       setShouldFetchRampState(true);
     } else {
-      esl && console.log('shouldFetchRampState_3');
+      esl && console.log('venmo_shouldFetchRampState_3');
 
       setShouldFetchRampState(false);
 
@@ -89,47 +89,47 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [rampAddress]);
 
   useEffect(() => {
-    esl && console.log('minDepositAmountRaw_1');
+    esl && console.log('venmo_minDepositAmountRaw_1');
     esl && console.log('checking minimumDepositAmountRaw: ', minimumDepositAmountRaw);
   
     if (minimumDepositAmountRaw) {
-      esl && console.log('minDepositAmountRaw_2');
+      esl && console.log('venmo_minDepositAmountRaw_2');
 
       const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      esl && console.log('minDepositAmountRaw_3');
+      esl && console.log('venmo_minDepositAmountRaw_3');
 
       setMinimumDepositAmount(null);
     }
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    esl && console.log('depositCounterRaw_1');
+    esl && console.log('venmo_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
     if (depositCounterRaw || depositCounterRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('depositCounterRaw_2');
+      esl && console.log('venmo_depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);
     } else {
-      esl && console.log('depositCounterRaw_3');
+      esl && console.log('venmo_depositCounterRaw_3');
       
       setDepositCounter(null);
     }
   }, [depositCounterRaw]);
 
   useEffect(() => {
-    esl && console.log('onRampCooldownPeriodRaw_1');
+    esl && console.log('venmo_onRampCooldownPeriodRaw_1');
     esl && console.log('checking onRampCooldownPeriodRaw: ', onRampCooldownPeriodRaw);
   
     if (onRampCooldownPeriodRaw || onRampCooldownPeriodRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('onRampCooldownPeriodRaw_2');
+      esl && console.log('venmo_onRampCooldownPeriodRaw_2');
       
       setOnRampCooldownPeriod(onRampCooldownPeriodRaw as bigint);
     } else {
-      esl && console.log('onRampCooldownPeriodRaw_3');
+      esl && console.log('venmo_onRampCooldownPeriodRaw_3');
       
       setOnRampCooldownPeriod(null);
     }

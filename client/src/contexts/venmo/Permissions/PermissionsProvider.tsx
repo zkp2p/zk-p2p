@@ -61,17 +61,17 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('shouldFetchDeniedUsers_1');
+    esl && console.log('venmo_shouldFetchDeniedUsers_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      esl && console.log('shouldFetchDeniedUsers_2');
+      esl && console.log('venmo_shouldFetchDeniedUsers_2');
 
       setShouldFetchDeniedUsers(true);
     } else {
-      esl && console.log('shouldFetchDeniedUsers_3');
+      esl && console.log('venmo_shouldFetchDeniedUsers_3');
 
       setShouldFetchDeniedUsers(false);
 
@@ -80,17 +80,17 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    esl && console.log('deniedUsersRaw_1');
+    esl && console.log('venmo_deniedUsersRaw_1');
     esl && console.log('checking deniedUsersRaw: ', deniedUsersRaw);
   
     if (deniedUsersRaw && deniedUsersRaw.length > 0) {
-      esl && console.log('deniedUsersRaw_2');
+      esl && console.log('venmo_deniedUsersRaw_2');
 
       const deniedUsersProcessed = deniedUsersRaw as Address[];
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
-      esl && console.log('deniedUsersRaw_3');
+      esl && console.log('venmo_deniedUsersRaw_3');
       
       setDeniedUsers(null);
     }
