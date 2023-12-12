@@ -11,14 +11,17 @@ import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
+import { OnRamperIntent, StoredDeposit } from '../../contexts/venmo/Deposits/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
-// import useLiquidity from '@hooks/useLiquidity';
-// import useOnRamperIntents from '@hooks/useOnRamperIntents';
+// Venmo
+import useVenmoOnRamperIntents from '@hooks/useOnRamperIntents';
+import useVenmoLiquidity from '@hooks/useLiquidity';
 
-import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+// Hdfc
+import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
+import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 
 interface OnRamperIntentTableProps {
@@ -32,22 +35,47 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
    * Contexts
    */
 
- const { currentIntentHash, currentIntent, refetchIntentHash } = useOnRamperIntents();
- const { calculateUsdFromRequestedUSDC, depositStore } = useLiquidity();
+ const {
+    currentIntentHash: currentVenmoIntentHash,
+    currentIntent: currentVenmoIntent,
+    refetchIntentHash: refetchVenmoIntentHash
+  } = useVenmoOnRamperIntents();
+ const {
+  calculateUsdFromRequestedUSDC,
+  depositStore: venmoDepositStore
+} = useVenmoLiquidity();
+
+ const {
+    currentIntentHash: currentHdfcIntentHash,
+    currentIntent: currentHdfcIntent,
+    refetchIntentHash: refetchHdfcIntentHash
+  } = useHdfcOnRamperIntents();
+ const {
+  depositStore: hdfcDepositStore
+} = useHdfcLiquidity();
+
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
  
-//  const { rampAddress, rampAbi } = useSmartContracts();
  const {
-  hdfcRampAddress: rampAddress,
-  hdfcRampAbi: rampAbi
+  rampAddress: venmoRampAddress,
+  rampAbi: venmoRampAbi,
+  hdfcRampAddress,
+  hdfcRampAbi
 } = useSmartContracts();
 
   /*
    * State
    */
 
+  const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
+  const [currentIntent, setCurrentIntent] = useState<OnRamperIntent | null>(null);
+  const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
+  const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
+
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
+  const [rampAddress, setRampAddress] = useState<string | null>(null);
+  const [rampAbi, setRampAbi] = useState<string | null>(null);
   const [shouldConfigureCancelIntentWrite, setShouldConfigureCancelIntentWrite] = useState<boolean>(false);
 
   /*
@@ -96,6 +124,97 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setRampAddress(venmoRampAddress);
+        setRampAbi(venmoRampAbi);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setRampAddress(hdfcRampAddress);
+        setRampAbi(hdfcRampAbi);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        console.log('currentVenmoIntentHash', currentVenmoIntentHash);  
+        setCurrentIntentHash(currentVenmoIntentHash);
+        break;
+
+      case PaymentPlatform.HDFC:
+        console.log('currentHdfcIntentHash', currentHdfcIntentHash);  
+        setCurrentIntentHash(currentHdfcIntentHash);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setDepositStore(venmoDepositStore);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setDepositStore(hdfcDepositStore);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, venmoDepositStore, hdfcDepositStore]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        console.log('currentVenmoIntent', currentVenmoIntent);
+        setCurrentIntent(currentVenmoIntent);
+        break;
+
+      case PaymentPlatform.HDFC:
+        console.log('currentHdfcIntent', currentHdfcIntent);
+        setCurrentIntent(currentHdfcIntent);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, currentVenmoIntent, currentHdfcIntent]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setRefetchIntentHash(() => refetchVenmoIntentHash);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setRefetchIntentHash(() => refetchHdfcIntentHash);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash]);
  
   useEffect(() => {
     if (currentIntent && depositStore) {
