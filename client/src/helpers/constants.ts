@@ -9,8 +9,8 @@ export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 // export const DEPOSIT_REFETCH_INTERVAL = 2000000; // 30 minutes
 // export const STATE_REFETCH_INTERVAL = 6000000; // 100 minute
 
-export const VENMO_EMAIL_FILTER = `"from:venmo@venmo.com subject:"You paid" after:2023/01/01"`;
-export const HDFC_EMAIL_FULTER = `"from:alerts@hdfcbank.net subject:"You_have_done_a_UPI_txn" after:2023/01/01"`;
+export const VENMO_EMAIL_FILTER = `from:venmo@venmo.com subject:"You paid" after:2023/01/01`;
+export const HDFC_EMAIL_FULTER = `from:alerts@hdfcbank.net subject:"You_have_done_a_UPI_txn" after:2023/01/01`;
 
 export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
 export const USDC_UNITS = BigInt(1_000_000); // 6
