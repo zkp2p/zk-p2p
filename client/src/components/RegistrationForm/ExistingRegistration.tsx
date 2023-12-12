@@ -128,7 +128,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               <ThemedText.DeprecatedBody textAlign="center">
                 <CheckCircleIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  Your Venmo registration will appear here.
+                  Your platform registrations will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
