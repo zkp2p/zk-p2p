@@ -12,8 +12,7 @@ import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../../theme/text';
-import { REGISTRATION_NFT_TOOLTIP } from '@helpers/tooltips';
-import { REGISTRATION_INSTRUCTIONS } from '@helpers/strings/hdfc';
+import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/hdfc/useHdfcRegistration';
 
@@ -71,7 +70,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               { !isRegistered && (
                 <NumberedInputContainer>
                   <NumberedStep>
-                    { REGISTRATION_INSTRUCTIONS }
+                    { hdfcStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
                       href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration"
                       target="_blank"
@@ -89,7 +88,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                         <BoxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                         <DescriptionAndHelperContainer>
                           Your ZKP2P Proof of Registration NFT will appear here&nbsp;
-                          <QuestionHelper text={REGISTRATION_NFT_TOOLTIP} />
+                          <QuestionHelper text={commonStrings.get('REGISTRATION_NFT_TOOLTIP')} />
                         </DescriptionAndHelperContainer>
                       </ThemedText.DeprecatedBody>
 

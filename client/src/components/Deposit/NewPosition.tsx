@@ -19,12 +19,7 @@ import {
 } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
-import {
-  NEW_DEPOSIT_VENMO_ID_TOOLTIP,
-  NEW_DEPOSIT_DEPOSIT_TOOLTIP,
-  NEW_DEPOSIT_RECEIVE_TOOLTIP,
-  NEW_DEPOSIT_INSTRUCTIONS,
-} from '@helpers/tooltips'
+import { venmoStrings } from '@helpers/strings'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
 import useDeposits from '@hooks/useDeposits';
@@ -412,7 +407,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       <Body>
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { NEW_DEPOSIT_INSTRUCTIONS }
+            { venmoStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
               Fetch Your Venmo ID ↗
             </Link>
@@ -426,7 +421,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             onChange={(e) => {setVenmoIdInput(e.currentTarget.value)}}
             type="number"
             placeholder="215524379021315184"
-            helperText={NEW_DEPOSIT_VENMO_ID_TOOLTIP}
+            helperText={venmoStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
           />
 
           <Input
@@ -438,7 +433,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             inputLabel="USDC"
             placeholder="1000"
             accessoryLabel={usdcBalanceLabel}
-            helperText={NEW_DEPOSIT_DEPOSIT_TOOLTIP}
+            helperText={venmoStrings.get('NEW_DEPOSIT_AMOUNT_TOOLTIP')}
           />
 
           <Input
@@ -449,7 +444,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="USD"
             placeholder="1050"
-            helperText={NEW_DEPOSIT_RECEIVE_TOOLTIP}
+            helperText={venmoStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 
           <ButtonContainer>
@@ -492,7 +487,7 @@ const ButtonContainer = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
-`
+`;
 
 const InstructionsAndTogglesContainer = styled.div`
   display: grid;

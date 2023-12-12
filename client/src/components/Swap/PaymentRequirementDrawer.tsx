@@ -3,11 +3,7 @@ import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
-import {
-  PAYMENT_REQUIREMENT_STEP_ONE,
-  PAYMENT_REQUIREMENT_STEP_TWO,
-  PAYMENT_REQUIREMENT_STEP_THREE,
-} from "@helpers/tooltips";
+import { venmoStrings } from "@helpers/strings";
 
 
 export const PaymentRequirementDrawer: React.FC = () => {
@@ -40,15 +36,15 @@ export const PaymentRequirementDrawer: React.FC = () => {
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            { PAYMENT_REQUIREMENT_STEP_ONE }
+            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_ONE') }
           </InstructionStep>
 
           <InstructionStep step={2}>
-            { PAYMENT_REQUIREMENT_STEP_TWO }
+            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_TWO') }
           </InstructionStep>
 
           <InstructionStep step={3}>
-            { PAYMENT_REQUIREMENT_STEP_THREE }
+            { venmoStrings.get('PAYMENT_REQUIREMENT_STEP_THREE') }
           </InstructionStep>
         </InstructionListContainer>
 

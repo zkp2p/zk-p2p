@@ -16,12 +16,7 @@ import { NumberedStep } from "../../common/NumberedStep";
 import { calculatePackedUPIId } from '@helpers/poseidonHash'
 import { toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants'
-import {
-  NEW_DEPOSIT_UPI_ID_TOOLTIP,
-  NEW_DEPOSIT_DEPOSIT_TOOLTIP,
-  NEW_DEPOSIT_RECEIVE_TOOLTIP,
-  NEW_DEPOSIT_INSTRUCTIONS,
-} from '@helpers/strings/hdfc';
+import { hdfcStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
 import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
@@ -393,7 +388,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       <Body>
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { NEW_DEPOSIT_INSTRUCTIONS }
+            { hdfcStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
               Fetch Your UPI ID ↗
             </Link>
@@ -407,7 +402,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             onChange={(e) => {setUpiIdInput(e.currentTarget.value)}}
             type="text"
             placeholder="90876543@okicici"
-            helperText={NEW_DEPOSIT_UPI_ID_TOOLTIP}
+            helperText={hdfcStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
           />
 
           <Input
@@ -419,7 +414,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             inputLabel="USDC"
             placeholder="1000"
             accessoryLabel={usdcBalanceLabel}
-            helperText={NEW_DEPOSIT_DEPOSIT_TOOLTIP}
+            helperText={hdfcStrings.get('NEW_DEPOSIT_AMOUNT_TOOLTIP')}
           />
 
           <Input
@@ -430,7 +425,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="INR"
             placeholder="1050"
-            helperText={NEW_DEPOSIT_RECEIVE_TOOLTIP}
+            helperText={hdfcStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 
           <ButtonContainer>
@@ -473,7 +468,7 @@ const ButtonContainer = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
-`
+`;
 
 const InstructionsAndTogglesContainer = styled.div`
   display: grid;

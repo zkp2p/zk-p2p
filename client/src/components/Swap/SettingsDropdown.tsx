@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { Input } from "@components/common/Input";
-import { TARGETED_LIQUIDITY_DESCRIPTION } from "@helpers/tooltips";
+import { commonStrings } from "@helpers/strings";
 import useLiquidity from '@hooks/useLiquidity';
 
 
@@ -94,7 +94,7 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps>= ({
               <ItemLabel>
                 Targeted liquidity
                 <ItemDescription>
-                  {TARGETED_LIQUIDITY_DESCRIPTION}
+                  {commonStrings.get('TARGETED_LIQUIDITY_DESCRIPTION')}
                 </ItemDescription>
               </ItemLabel>
 

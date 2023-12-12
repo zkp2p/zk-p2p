@@ -9,7 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { LabeledSwitch } from "../common/LabeledSwitch";
 import { Overlay } from '@components/modals/Overlay';
 import { TitleCenteredRow } from '@components/layouts/Row';
-import { PROOF_TOOLTIP } from "@helpers/tooltips";
+import { commonStrings } from "@helpers/strings";
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import { ProofGenerationStatus } from  "../ProofGen/types";
 
@@ -363,7 +363,7 @@ export const Modal: React.FC<ModalProps> = ({
             switchChecked={shouldShowProofAndSignals}
             checkedLabel={"Hide"}
             uncheckedLabel={"Show"}
-            helperText={PROOF_TOOLTIP}
+            helperText={commonStrings.get('PROOF_TOOLTIP')}
             onSwitchChange={(checked: boolean) => setShouldShowProofAndSignals(checked)}/>
         </TitleCenteredRow>
 

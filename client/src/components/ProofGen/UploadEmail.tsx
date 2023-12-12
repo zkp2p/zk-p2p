@@ -12,11 +12,7 @@ import { NumberedStep } from "../common/NumberedStep";
 
 import { TextButton } from '@components/common/TextButton';
 import { EmailInputStatus } from  "../ProofGen/types";
-import { 
-  INPUT_MODE_TOOLTIP, 
-  PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS, 
-  PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS
-} from "@helpers/tooltips";
+import { commonStrings } from "@helpers/strings";
 import {
   DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK, 
   COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK 
@@ -142,12 +138,16 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
             onSwitchChange={handleEmailInputTypeChanged}
             checkedLabel={"Drag"}
             uncheckedLabel={"Paste"}
-            helperText={INPUT_MODE_TOOLTIP}
+            helperText={commonStrings.get('INPUT_MODE_TOOLTIP')}
           />
         </TitleAndEmailSwitchRowContainer>
 
         <NumberedStep>
-          {isInputModeDrag ? PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS : PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS}
+          {
+            isInputModeDrag ?
+            commonStrings.get('PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS') :
+            commonStrings.get('PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS')
+          }
           <Link
             href={isInputModeDrag 
               ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK

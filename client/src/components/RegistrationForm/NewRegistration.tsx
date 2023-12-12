@@ -15,7 +15,7 @@ import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
-import { PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS } from "@helpers/tooltips";
+import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/useRegistration';
@@ -152,7 +152,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            {PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS}
+            { venmoStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
             <Link
               href={"https://bridge.base.org/deposit"}
               target="_blank">
