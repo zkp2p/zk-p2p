@@ -30,6 +30,7 @@ import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useSwapQuote from '@hooks/useSwapQuote';
+import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
 export type SwapQuote = {
@@ -72,11 +73,13 @@ const Swap: React.FC<SwapProps> = ({
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { usdcBalance } = useBalances();
-  // const { rampAddress, rampAbi } = useSmartContracts();
   const {
-    hdfcRampAddress: rampAddress,
-    hdfcRampAbi: rampAbi
+    rampAddress: venmoRampAddress,
+    rampAbi: venmoRampAbi,
+    hdfcRampAddress: hdfcRampAddress,
+    hdfcRampAbi: hdfcRampAbi
   } = useSmartContracts();
+  const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
   
   const { 
     isRegistered,
@@ -102,6 +105,8 @@ const Swap: React.FC<SwapProps> = ({
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
 
+  const [rampAddress, setRampAddress] = useState<string | null>(null);
+  const [rampAbi, setRampAbi] = useState<string | null>(null);
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
   const [onRampTimeRemainingLabel, setOnRampTimeRemainingLabel] = useState('');
@@ -192,6 +197,23 @@ const Swap: React.FC<SwapProps> = ({
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setRampAddress(venmoRampAddress);
+        setRampAbi(venmoRampAbi);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setRampAddress(hdfcRampAddress);
+        setRampAbi(hdfcRampAbi);
+        break;
+
+      default:
+        break;
+    }
+  }, [paymentPlatform]);
 
   useEffect(() => {
     if (shouldFetchIntentHash) {
