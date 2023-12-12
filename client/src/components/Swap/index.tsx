@@ -76,8 +76,8 @@ const Swap: React.FC<SwapProps> = ({
   const {
     rampAddress: venmoRampAddress,
     rampAbi: venmoRampAbi,
-    hdfcRampAddress: hdfcRampAddress,
-    hdfcRampAbi: hdfcRampAbi
+    hdfcRampAddress,
+    hdfcRampAbi
   } = useSmartContracts();
   const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
   
@@ -213,7 +213,9 @@ const Swap: React.FC<SwapProps> = ({
       default:
         break;
     }
-  }, [paymentPlatform]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress]);
 
   useEffect(() => {
     if (shouldFetchIntentHash) {
