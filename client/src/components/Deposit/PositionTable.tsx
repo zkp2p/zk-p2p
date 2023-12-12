@@ -292,10 +292,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         </TitleRow>
 
         <Content>
-          <PlatformSelectorContainer>
-            <PlatformSelector />
-          </PlatformSelectorContainer>
-
           {!isLoggedIn ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
@@ -308,6 +304,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             </ErrorContainer>
           ) : !isRegistered ? (
             <ErrorContainer>
+              <PlatformSelectorContainer>
+                <PlatformSelector />
+              </PlatformSelectorContainer>
+
               <ThemedText.DeprecatedBody textAlign="center">
                 <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
@@ -322,6 +322,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             </ErrorContainer>
           ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
+              <PlatformSelectorContainer>
+                <PlatformSelector />
+              </PlatformSelectorContainer>
+
               <ThemedText.DeprecatedBody textAlign="center">
                 <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
@@ -331,6 +335,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
             </ErrorContainer>
           ) : (
             <PositionsContainer>
+              <PlatformSelectorContainer>
+                <PlatformSelector />
+              </PlatformSelectorContainer>
+              
               <PositionCountTitle>
                 <ThemedText.LabelSmall textAlign="left">
                   Your active deposits ({positionsRowData.length})
