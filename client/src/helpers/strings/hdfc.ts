@@ -1,4 +1,4 @@
-import { PlatformStrings } from './strings';
+import { PlatformStrings } from './platform';
 
 const strings: PlatformStrings = {
   // Proof Form

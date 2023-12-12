@@ -36,12 +36,10 @@ export interface PlatformStrings {
   PAYMENT_REQUIREMENT_STEP_THREE: string,
 }
 
-class PlatformStringProvider {
-  private platformType: PaymentPlatformType;
+export class PlatformStringProvider {
   private strings: PlatformStrings;
 
   constructor(platformType: PaymentPlatformType) {
-    this.platformType = platformType;
     if (platformType === PaymentPlatform.VENMO) {
       this.strings = venmoCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
@@ -51,13 +49,19 @@ class PlatformStringProvider {
     }
   }
 
-  getString(key: keyof PlatformStrings): string {
+  get(key: keyof PlatformStrings): string {
     return this.strings[key];
   }
-}
 
-export const venmoStrings = new PlatformStringProvider(PaymentPlatform.VENMO);
-export const hdfcStrings = new PlatformStringProvider(PaymentPlatform.HDFC);
-
-
-// Common strings
+  static getForPlatform(platformType: PaymentPlatformType, key: keyof PlatformStrings): string {
+    let strings: PlatformStrings;
+    if (platformType === PaymentPlatform.VENMO) {
+      strings = venmoCopy;
+    } else if (platformType === PaymentPlatform.HDFC) {
+      strings = hdfcCopy;
+    } else {
+      throw new Error('Invalid platform type');
+    }
+    return strings[key];
+  }
+};

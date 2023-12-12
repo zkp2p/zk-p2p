@@ -6,12 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
 import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
-import {
-  INSTRUCTION_DRAWER_STEP_ONE,
-  INSTRUCTION_DRAWER_STEP_TWO,
-  INSTRUCTION_DRAWER_STEP_THREE,
-  INSTRUCTION_DRAWER_STEP_FOUR
-} from "@helpers/tooltips";
+import { platformStrings } from "@helpers/strings";
 
 
 interface InstructionDrawerProps {
@@ -25,6 +20,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
   recipientAddress,
   setRecipientAddress,
   isLoggedIn,
+  paymentPlatform,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -64,11 +60,11 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
         <HorizontalDivider/>
         <InstructionListContainer>
           <InstructionStep step={1}>
-            { INSTRUCTION_DRAWER_STEP_ONE }
+            { platformStrings.getForPlatform(paymentPlatform, 'INSTRUCTION_DRAWER_STEP_ONE') }
           </InstructionStep>
 
           <InstructionStep step={2}>
-            { INSTRUCTION_DRAWER_STEP_TWO }
+            { platformStrings.getForPlatform(paymentPlatform, 'INSTRUCTION_DRAWER_STEP_TWO') }
           </InstructionStep>
 
           <InputWrapper>
@@ -83,11 +79,11 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
           </InputWrapper>
 
           <InstructionStep step={3}>
-            { INSTRUCTION_DRAWER_STEP_THREE }
+            { platformStrings.getForPlatform(paymentPlatform, 'INSTRUCTION_DRAWER_STEP_THREE') }
           </InstructionStep>
 
           <InstructionStep step={4}>
-            { INSTRUCTION_DRAWER_STEP_FOUR }
+            { platformStrings.getForPlatform(paymentPlatform, 'INSTRUCTION_DRAWER_STEP_FOUR') }
           </InstructionStep>
         </InstructionListContainer>
 

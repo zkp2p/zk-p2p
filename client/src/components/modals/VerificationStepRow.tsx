@@ -5,19 +5,7 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-import {
-  PROOF_MODAL_DOWNLOAD_TITLE,
-  PROOF_MODAL_DOWNLOAD_SUBTITLE,
-  PROOF_MODAL_PROVE_TITLE,
-  PROOF_MODAL_PROVE_SUBTITLE_PRIVATE,
-  PROOF_MODAL_PROVE_SUBTITLE_FAST,
-  PROOF_MODAL_SUBMIT_TITLE,
-  PROOF_MODAL_SUBMIT_SUBTITLE,
-  PROOF_MODAL_REGISTRATION_SUBMIT_TITLE,
-  PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE,
-  PROOF_MODAL_UPLOAD_SUBTITLE,
-  PROOF_MODAL_UPLOAD_TITLE
-} from "@helpers/tooltips"
+import { commonStrings } from "@helpers/strings"
 import useProofGenSettings from "@hooks/useProofGenSettings"
 import Spinner from "@components/common/Spinner";
 
@@ -192,22 +180,22 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   const getTitle = () => {
     switch (type) {
       case VerificationStepType.DOWNLOAD:
-        return PROOF_MODAL_DOWNLOAD_TITLE;
+        return commonStrings.get('PROOF_MODAL_DOWNLOAD_TITLE');
 
       case VerificationStepType.UPLOAD:
-        return PROOF_MODAL_UPLOAD_TITLE;
+        return commonStrings.get('PROOF_MODAL_UPLOAD_TITLE');
 
       case VerificationStepType.PROVE:
-        return PROOF_MODAL_PROVE_TITLE;
+        return commonStrings.get('PROOF_MODAL_PROVE_TITLE');
 
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_REGISTRATION:
-            return PROOF_MODAL_REGISTRATION_SUBMIT_TITLE;
+            return commonStrings.get('PROOF_MODAL_REGISTRATION_SUBMIT_TITLE');
 
           case CircuitType.EMAIL_VENMO_SEND:
           default:
-            return PROOF_MODAL_SUBMIT_TITLE;
+            return commonStrings.get('PROOF_MODAL_SUBMIT_TITLE');
         }
 
       default:
@@ -218,26 +206,26 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   const getSubTitle = () => {
     switch (type) {
       case VerificationStepType.DOWNLOAD:
-        return PROOF_MODAL_DOWNLOAD_SUBTITLE;
+        return commonStrings.get('PROOF_MODAL_DOWNLOAD_SUBTITLE');
 
       case VerificationStepType.UPLOAD:
-        return PROOF_MODAL_UPLOAD_SUBTITLE;
+        return commonStrings.get('PROOF_MODAL_UPLOAD_SUBTITLE');
 
       case VerificationStepType.PROVE:
         if (isProvingTypeFast) {
-          return PROOF_MODAL_PROVE_SUBTITLE_FAST;
+          return commonStrings.get('PROOF_MODAL_PROVE_SUBTITLE_FAST');
         } else {
-          return PROOF_MODAL_PROVE_SUBTITLE_PRIVATE;
+          return commonStrings.get('PROOF_MODAL_PROVE_SUBTITLE_PRIVATE');
         }
 
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_REGISTRATION:
-            return PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE;
+            return commonStrings.get('PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE');
 
           case CircuitType.EMAIL_VENMO_SEND:
           default:
-            return PROOF_MODAL_SUBMIT_SUBTITLE;
+            return commonStrings.get('PROOF_MODAL_SUBMIT_SUBTITLE');
         }
 
       default:
@@ -311,7 +299,7 @@ const Percentage = styled.div`
   font-size: 12px;
   color: #4BB543;
   margin-top: 1px;
-`
+`;
 
 const StyledDownload = styled(IconBase).attrs({ as: Download })``;
 const StyledCpu = styled(IconBase).attrs({ as: Cpu })``;

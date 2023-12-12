@@ -16,7 +16,7 @@ import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
 import { EmailInputStatus } from  "../ProofGen/types";
-import { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS } from "@helpers/tooltips";
+import { venmoStrings } from "@helpers/strings";
 import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
 import Link from '@mui/material/Link';
 import { Inbox } from 'react-feather';
@@ -178,7 +178,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
             <div>
-             { SIGN_IN_WITH_GOOGLE_INSTRUCTIONS }
+             { venmoStrings.get('SIGN_IN_WITH_GOOGLE_INSTRUCTIONS') }
               <Link
                 href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
                 target="_blank"

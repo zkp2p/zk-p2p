@@ -6,7 +6,7 @@ import Link from '@mui/material/Link';
 
 import { Button } from "../Button";
 import { Overlay } from '@components/modals/Overlay';
-import { PAY_MODAL_INSTRUCTIONS } from '@helpers/tooltips';
+import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { ThemedText } from '../../theme/text';
 
@@ -88,7 +88,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </InstructionsTitle>
 
           <InstructionsLabel>
-            { PAY_MODAL_INSTRUCTIONS }
+            { commonStrings.get('PAY_MODAL_INSTRUCTIONS') }
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>

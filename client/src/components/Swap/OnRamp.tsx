@@ -17,7 +17,7 @@ import { NumberedStep } from "../common/NumberedStep";
 // import { ProofSettings } from "@components/ProofGen/ProofSettings";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
-import { PROOF_FORM_TITLE_SEND_INSTRUCTIONS } from "@helpers/tooltips";
+import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/useOnRamperIntents';
@@ -192,7 +192,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            {PROOF_FORM_TITLE_SEND_INSTRUCTIONS}
+            {venmoStrings.get('PROOF_FORM_TITLE_SEND_INSTRUCTIONS')}
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>

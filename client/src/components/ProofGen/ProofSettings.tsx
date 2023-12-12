@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components/macro'
 
 import { LabeledSwitch } from "../common/LabeledSwitch";
-import { PROVING_TYPE_TOOLTIP } from "@helpers/tooltips";
+import { commonStrings } from "@helpers/strings";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 
  
@@ -39,7 +39,7 @@ export const ProofSettings: React.FC = () => {
             onSwitchChange={handleProvingTypeChanged}
             checkedLabel={"Fast"}
             uncheckedLabel={"Private"}
-            helperText={PROVING_TYPE_TOOLTIP}
+            helperText={commonStrings.get('PROVING_TYPE_TOOLTIP')}
           />
         </ToggleWrapper>
       </TogglesContainer>

@@ -1,4 +1,3 @@
-// Common strings
 export interface CommonStrings {
   // Environment Banner
   LOCAL_ENV_BANNER: string,
@@ -141,4 +140,14 @@ const strings: CommonStrings = {
   `,
 };
 
-export default strings;
+export class CommonStringProvider {
+  private strings: CommonStrings;
+
+  constructor() {
+    this.strings = strings;
+  }
+
+  get(key: keyof CommonStrings): string {
+    return this.strings[key];
+  }
+};

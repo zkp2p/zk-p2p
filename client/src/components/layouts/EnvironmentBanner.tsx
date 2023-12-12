@@ -3,12 +3,7 @@ import styled from "styled-components";
 import Link from '@mui/material/Link';
 import { X } from 'react-feather';
 
-import {
-  LOCAL_ENV_BANNER,
-  STAGING_TESTNET_ENV_BANNER,
-  STAGING_ENV_BANNER,
-  PRODUCTION_ENV_BANNER
-} from '@helpers/tooltips';
+import { commonStrings } from '@helpers/strings';
 
 
 export const EnvironmentBanner: React.FC = () => {
@@ -39,16 +34,16 @@ export const EnvironmentBanner: React.FC = () => {
   const bannerCopyForEnv = (env: string) => {
     switch (env) {
       case 'PRODUCTION':
-        return PRODUCTION_ENV_BANNER
+        return commonStrings.get('PRODUCTION_ENV_BANNER');
   
       case 'STAGING_TESTNET':
-        return STAGING_TESTNET_ENV_BANNER;;
+        return commonStrings.get('STAGING_TESTNET_ENV_BANNER');
   
       case 'STAGING':
-        return STAGING_ENV_BANNER;
+        return commonStrings.get('STAGING_ENV_BANNER');
       
       default:
-        return LOCAL_ENV_BANNER;
+        return commonStrings.get('LOCAL_ENV_BANNER');
     }
   };
 
