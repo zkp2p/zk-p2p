@@ -130,6 +130,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
       fullWidth={fullWidth}
       height={height}
       disabled={disabled || loading}
+      $loading={loading}
       backgroundColor={shouldUsePrimaryColors ? primaryColors.backgroundColor : secondaryColors.backgroundColor}
       borderColor={shouldUsePrimaryColors ? primaryColors.borderColor : secondaryColors.borderColor}
       hoverColor={shouldUsePrimaryColors ? primaryColors.hoverColor : secondaryColors.hoverColor}
@@ -139,7 +140,10 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
       spinnerColor={shouldUsePrimaryColors ? primaryColors.spinnerColor : secondaryColors.spinnerColor}
       onClick={onClick}
     >
-      <ButtonAndLabelContainer color={shouldUsePrimaryColors ? primaryColors.textColor : secondaryColors.textColor} loading={loading}>
+      <ButtonAndLabelContainer
+        color={shouldUsePrimaryColors ? primaryColors.textColor : secondaryColors.textColor}
+        $loading={loading}
+      >
         {
           loading ? (
             <Spinner color={shouldUsePrimaryColors ? primaryColors.spinnerColor : secondaryColors.spinnerColor}/>
@@ -156,7 +160,7 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
   );
 };
 
-const Container = styled.button<AccessoryButtonProps>`
+const Container = styled.button<AccessoryButtonProps & { $loading: boolean }>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
   height: ${({ height }) => height}px;
   border-radius: 18px;
@@ -183,19 +187,19 @@ const Container = styled.button<AccessoryButtonProps>`
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
 
-  ${({ loading }) =>
-    loading && css`
+  ${({ $loading }) =>
+    $loading && css`
       cursor: wait;
       background: #dedede;
     `
   }
 `;
 
-const ButtonAndLabelContainer = styled.div<{ color: string, loading?: boolean  }>`
+const ButtonAndLabelContainer = styled.div<{ color: string, $loading: boolean  }>`
   width: 100%;  
   display: flex;
   align-items: center;
-  justify-content: ${({ loading }) => loading ? 'center' : 'flex-start'};
+  justify-content: ${({ $loading }) => $loading ? 'center' : 'flex-start'};
   font-size: 13px;
   font-family: 'Graphik';
   font-weight: 600;
