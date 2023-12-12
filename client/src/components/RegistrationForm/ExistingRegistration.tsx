@@ -123,22 +123,22 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
         </TitleRow>
 
         <Content>
-          <PlatformSelectorContainer>
-            <PlatformSelector />
-          </PlatformSelectorContainer>
-
           {!isLoggedIn ? (
             <ErrorContainer>
               <ThemedText.DeprecatedBody textAlign="center">
                 <CheckCircleIcon strokeWidth={1} style={{ marginTop: '2em' }} />
                 <div>
-                  Your Venmo registration will appear here.
+                  Your platform registrations will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
               <CustomConnectButton />
             </ErrorContainer>
           ) : (
             <Body>
+              <PlatformSelectorContainer>
+                <PlatformSelector />
+              </PlatformSelectorContainer>
+
               { !isRegistered && (
                 <NumberedInputContainer>
                   <NumberedStep>
@@ -243,7 +243,6 @@ const Content = styled.main`
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
   overflow: hidden;
-  position: relative;
 `;
 
 const ErrorContainer = styled.div`
@@ -285,10 +284,6 @@ const PlatformSelectorContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 1.5rem;
 `;
 
 const InputsContainer = styled.div`
