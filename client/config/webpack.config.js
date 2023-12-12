@@ -624,6 +624,7 @@ module.exports = function (webpackEnv) {
         'process.env.WALLET_CONNECT_PROJECT_ID': JSON.stringify(process.env.WALLET_CONNECT_PROJECT_ID),
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
         'process.env.REMOTE_PROOF_API_URL': JSON.stringify(process.env.REMOTE_PROOF_API_URL),
+        'process.env.REMOTE_PROOF_UPI_API_URL': JSON.stringify(process.env.REMOTE_PROOF_UPI_API_URL),
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),

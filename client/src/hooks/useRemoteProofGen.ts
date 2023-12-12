@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import crypto from 'crypto';
 
-import { PaymentPlatformType } from '../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType, PaymentPlatform } from '../contexts/common/PlatformSettings/types';
 
 
 const REMOTE_PROOF_API_URL = process.env.REMOTE_PROOF_API_URL;
 if (!REMOTE_PROOF_API_URL) {
     throw new Error("REMOTE_PROOF_API_URL environment variable is not defined.");
+}
+
+const REMOTE_PROOF_UPI_API_URL = process.env.REMOTE_PROOF_UPI_API_URL;
+if (!REMOTE_PROOF_UPI_API_URL) {
+    throw new Error("REMOTE_PROOF_UPI_API_URL environment variable is not defined.");
 }
 
 type ProofGenParams = {
@@ -39,15 +44,20 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
     setLoading(true);
 
     const nonce = generateNonce();
+    const apiUrl = paymentType === PaymentPlatform.VENMO ? REMOTE_PROOF_API_URL : REMOTE_PROOF_UPI_API_URL;
+    if (!apiUrl) {
+      throw new Error("Invalid proving url.");
+    }
 
     try {
-      const response = await fetch(REMOTE_PROOF_API_URL, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           "payment_type": paymentType,
+          "email_type": circuitType, // legacy_parameter
           "circuit_type": circuitType,
           "email": emailBody,
           "intent_hash": intentHash,
