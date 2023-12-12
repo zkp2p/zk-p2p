@@ -7,7 +7,7 @@ import { abi as venmoNftAbi } from "@helpers/abi/venmoNft.abi";
 import { abi as hdfcRampAbi } from "@helpers/abi/hdfc/ramp.abi";
 import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
-import { DEFAULT_NETWORK } from '@helpers/constants'
+import { esl, DEFAULT_NETWORK } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'
@@ -46,6 +46,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
+    esl && console.log('smartContracts_1');
+    esl && console.log('checking network: ', network);
+
     const networkName = network ? network : DEFAULT_NETWORK;
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 

@@ -166,22 +166,40 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
+    esl && console.log('venmo_storedPrunedIds_1');
+    esl && console.log('checking rampAddress: ', rampAddress);
+
     if (rampAddress) {
+      esl && console.log('venmo_storedPrunedIds_2');
+
       const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
       const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
-      setPrunedDepositIds(prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : []);
+      const prunedIdsFromStorageParsed = prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : [];
+
+      esl && console.log('prunedIdsStorageKey: ', prunedIdsStorageKey);
+      esl && console.log('prunedIdsFromStorage: ', prunedIdsFromStorage);
+      esl && console.log('prunedIdsFromStorageParsed: ', prunedIdsFromStorageParsed);
+
+      setPrunedDepositIds(prunedIdsFromStorageParsed);
 
       const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
       const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
       setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
     } else {
+      esl && console.log('venmo_storedPrunedIds_3');
+
       setPrunedDepositIds([]);
       setTargetedDepositIds([]);
     }
   }, [rampAddress]);
 
   useEffect(() => {
+    esl && console.log('venmo_filterPrunedDepositIdsFromTargetedDepositIds_1');
+    esl && console.log('checking rampAddress: ', rampAddress);
+
     if (rampAddress) {
+      esl && console.log('venmo_filterPrunedDepositIdsFromTargetedDepositIds_2');
+
       const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
       const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
@@ -193,7 +211,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [prunedDepositIds, rampAddress]);
 
   useEffect(() => {
+    esl && console.log('venmo_storeTargetedIds_1');
+    esl && console.log('checking rampAddress: ', rampAddress);
+
     if (rampAddress) {
+      esl && console.log('venmo_storedTargetedIds_2');
+
       const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
       const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
@@ -300,4 +323,4 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default LiquidityProvider
+export default LiquidityProvider;

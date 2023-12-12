@@ -115,7 +115,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
 
         if (orderIsFilled) {
-          console.log('pruning deposit: ', deposit);
+          esl && console.log('pruning deposit: ', deposit);
           depositIdsToPrune.push(deposit.depositId);
         } else {
           batchedDeposits.push(deposit);
@@ -167,7 +167,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
+    esl && console.log('hdfc_storedPrunedIds_1');
+    esl && console.log('checking rampAddress: ', hdfcRampAddress);
+
     if (hdfcRampAddress) {
+      esl && console.log('hdfc_storedPrunedIds_2');
+
       const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
       setPrunedDepositIds(prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : []);
@@ -176,13 +181,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
       setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
     } else {
+      esl && console.log('hdfc_storedPrunedIds_3');
+
       setPrunedDepositIds([]);
       setTargetedDepositIds([]);
     }
   }, [hdfcRampAddress]);
 
   useEffect(() => {
+    esl && console.log('hdfc_filterPrunedDepositIdsFromTargetedDepositIds_1');
+    esl && console.log('checking rampAddress: ', hdfcRampAddress);
+
     if (hdfcRampAddress) {
+      esl && console.log('hdfc_filterPrunedDepositIdsFromTargetedDepositIds_2');
+
       const storageKey = `${PRUNED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
@@ -194,7 +206,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [prunedDepositIds, hdfcRampAddress]);
 
   useEffect(() => {
+    esl && console.log('hdfc_storeTargetedIds_1');
+    esl && console.log('checking rampAddress: ', hdfcRampAddress);
+
     if (hdfcRampAddress) {
+      esl && console.log('hdfc_storeTargetedIds_2');
+
       const storageKey = `${TARGETED_DEPOSITS_PREFIX}${hdfcRampAddress}`;
       const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
