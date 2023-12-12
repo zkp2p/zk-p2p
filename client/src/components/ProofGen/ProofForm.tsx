@@ -401,6 +401,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       {
         isEmailModeAuth ? (
           <MailTable
+            paymentPlatform={paymentPlatformType}
             setEmailFull={setEmailAndToggleInputMode}
             handleVerifyEmailClicked={handleVerifyEmailClicked}
             emailInputStatus={emailInputStatus}

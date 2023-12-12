@@ -9,20 +9,22 @@ import { TextButton } from '@components/common/TextButton';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
 import {
   fetchEmailsRaw,
-  fetchVenmoEmailList,
+  fetchEmailList,
   RawEmailResponse
 } from '@hooks/useGmailClient';
 import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { MailRow } from './MailRow';
 import { EmailInputStatus } from  "../ProofGen/types";
-import { venmoStrings } from "@helpers/strings";
-import { FETCH_VENMO_EMAILS_AFTER_DATE } from '@helpers/constants';
+import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { platformStrings } from "@helpers/strings";
+import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER } from '@helpers/constants';
 import Link from '@mui/material/Link';
 import { Inbox } from 'react-feather';
 
 
 interface MailTableProps {
+  paymentPlatform: PaymentPlatformType;
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
   emailInputStatus: string;
@@ -30,6 +32,7 @@ interface MailTableProps {
 }
 
 export const MailTable: React.FC<MailTableProps> = ({
+  paymentPlatform,
   setEmailFull,
   handleVerifyEmailClicked,
   emailInputStatus,
@@ -105,16 +108,21 @@ export const MailTable: React.FC<MailTableProps> = ({
   }
 
   async function fetchData() {
+    const filter = paymentPlatform === PaymentPlatform.VENMO ? VENMO_EMAIL_FILTER : HDFC_EMAIL_FULTER;
+
     try {
-      const emailListResponse = await fetchVenmoEmailList(googleAuthToken.access_token, {
-        'q': `from:venmo@venmo.com subject:"You paid" after:${FETCH_VENMO_EMAILS_AFTER_DATE}`
+      const emailListResponse = await fetchEmailList(googleAuthToken.access_token, {
+        'q': filter
       });
 
-      const emailIds = emailListResponse.messages.map(message => message.id);
-      if (emailIds.length > 0) {
+      const emailResponseMessages = emailListResponse.messages;
+      if (emailResponseMessages?.length > 0) {
+        const emailIds = emailResponseMessages.map(message => message.id);
         const emails = await fetchEmailsRaw(googleAuthToken.access_token, emailIds);
 
         setFetchedEmails(emails);
+      } else {
+        setFetchedEmails([]);
       }
     } catch (error) {
       console.error('Error in fetching data:', error);
@@ -178,7 +186,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
             <div>
-             { venmoStrings.get('SIGN_IN_WITH_GOOGLE_INSTRUCTIONS') }
+             { platformStrings.getForPlatform(paymentPlatform, 'SIGN_IN_WITH_GOOGLE_INSTRUCTIONS') }
               <Link
                 href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
                 target="_blank"
@@ -241,8 +249,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               <EmptyMailContainer>
                 <StyledInbox />
                 <ThemedText.LabelSmall textAlign="center" lineHeight={1.3}>
-                  No Venmo emails found.
-                  Please ensure you are using an email attached to a valid Venmo account.
+                  { platformStrings.getForPlatform(paymentPlatform, 'NO_EMAILS_ERROR') }
                 </ThemedText.LabelSmall>
               </EmptyMailContainer>
             ) : (

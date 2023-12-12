@@ -12,6 +12,10 @@ const strings: PlatformStrings = {
     Sign in with Google to pull in your Venmo transaction emails. The emails are not stored and never
     leave your browser. Read more:
   `,
+  NO_EMAILS_ERROR: `
+    No Venmo emails found.
+    Please ensure you are using an email attached to a valid Venmo account.
+  `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `

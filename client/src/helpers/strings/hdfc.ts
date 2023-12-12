@@ -3,17 +3,24 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide any historical transaction email sent from HDFC containing "x" in the subject to
+    Provide any historical transaction email sent from HDFC containing "You_have_done_a_UPI" in the subject to
     complete registration. Base ETH is required to submit a registration transaction.
   `,
 
   // Mail Instructions
-  SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: ``,
+  SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: `
+    Sign in with Google to pull in your HDFC transaction emails. The emails are not stored and never
+    leave your browser. Read more:
+  `,
+  NO_EMAILS_ERROR: `
+    No HDFC emails found.
+    Please ensure you are using an email attached to a valid HDFC account.
+  `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from HDFC
-    with subject "x", which is used to prove you own a HDFC account. Your HDFC ID is
+    with subject "You_have_done_a_UPI", which is used to prove you own a HDFC account. Your HDFC ID is
     hashed to conceal your identity.
   `,
 

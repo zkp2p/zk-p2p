@@ -37,7 +37,7 @@ export type GmailMessagesListResponse = {
   resultSizeEstimate?: number;
 };
 
-export async function fetchVenmoEmailList(
+export async function fetchEmailList(
   accessToken: string, 
   queryParams: any
 ): Promise<GmailMessagesListResponse> {
