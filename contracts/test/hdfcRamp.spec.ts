@@ -980,7 +980,7 @@ describe("HDFCRamp", () => {
       });
     });
 
-    describe.only("#releaseFundsToOnramper", async () => {
+    describe("#releaseFundsToOnramper", async () => {
       let subjectIntentHash: string;
       let subjectCaller: Account;
 
