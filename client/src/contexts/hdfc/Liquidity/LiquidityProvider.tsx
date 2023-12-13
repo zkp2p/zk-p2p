@@ -98,7 +98,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter, prunedDepositIds]);
 
-  const refetchDepositsBatched = useCallback(async (currentRampAddress: string | null = rampAddress) => {
+  const refetchDepositsBatched = useCallback(async (currentRampAddress: string | null = hdfcRampAddress) => {
     if (!currentRampAddress) {
       return;
     }
