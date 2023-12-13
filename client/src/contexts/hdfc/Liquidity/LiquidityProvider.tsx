@@ -5,7 +5,6 @@ import React, {
   ReactNode,
   useMemo
 } from 'react';
-import { Address } from 'wagmi';
 import { readContract } from '@wagmi/core';
 
 import {
@@ -99,7 +98,11 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter, prunedDepositIds]);
 
-  const refetchDepositsBatched = useCallback(async (currentRampAddress: Address = hdfcRampAddress) => {
+  const refetchDepositsBatched = useCallback(async (currentRampAddress: string | null = rampAddress) => {
+    if (!currentRampAddress) {
+      return;
+    }
+    
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
     
