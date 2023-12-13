@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useMemo
 } from 'react';
+import { Address } from 'wagmi';
 import { readContract } from '@wagmi/core';
 
 import {
@@ -98,7 +99,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter, prunedDepositIds]);
 
-  const refetchDepositsBatched = useCallback(async () => {
+  const refetchDepositsBatched = useCallback(async (currentRampAddress: Address = hdfcRampAddress) => {
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
     
@@ -123,11 +124,13 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
-    // Persist pruned deposit ids
-    const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
-    setPrunedDepositIds(newPrunedDepositIds);
+    // Persist pruned deposit ids and set deposits
+    if (currentRampAddress === hdfcRampAddress) {
+      const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
+      setPrunedDepositIds(newPrunedDepositIds);
 
-    setDeposits(batchedDeposits);
+      setDeposits(batchedDeposits);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositIdsToFetch, fetchDepositsBatched, prunedDepositIds]);

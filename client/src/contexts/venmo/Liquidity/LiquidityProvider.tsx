@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useMemo
 } from 'react';
+import { Address } from 'wagmi';
 import { readContract } from '@wagmi/core';
 
 import {
@@ -98,7 +99,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter, prunedDepositIds]);
 
-  const refetchDepositsBatched = useCallback(async () => {
+  const refetchDepositsBatched = useCallback(async (currentRampAddress: Address = rampAddress) => {
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
     
@@ -122,11 +123,13 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
-    // Persist pruned deposit ids
-    const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
-    setPrunedDepositIds(newPrunedDepositIds);
+    // Persist pruned deposit ids and set deposits
+    if (currentRampAddress === rampAddress) {
+      const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
+      setPrunedDepositIds(newPrunedDepositIds);
 
-    setDeposits(batchedDeposits);
+      setDeposits(batchedDeposits);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositIdsToFetch, fetchDepositsBatched, prunedDepositIds]);
@@ -226,7 +229,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     const fetchDeposits = async () => {
       if (shouldFetchDeposits) {
-        await refetchDepositsBatched();
+        await refetchDepositsBatched(rampAddress);
       }
     };
   
