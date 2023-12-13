@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Address, useAccount, useDisconnect, useNetwork } from 'wagmi';
+import { useAccount, useDisconnect, useNetwork } from 'wagmi';
 
 import { esl, DEFAULT_NETWORK } from '@helpers/constants'
 
@@ -19,7 +19,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    * State
    */
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<Address | null>(null);
+  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
   /*

@@ -1,10 +1,9 @@
 import { createContext } from 'react'
-import { Address } from 'wagmi';
 
 
 interface AccountValues {
   isLoggedIn: boolean;
-  loggedInEthereumAddress: Address | null;
+  loggedInEthereumAddress: string | null;
   network: string | null;
 }
 

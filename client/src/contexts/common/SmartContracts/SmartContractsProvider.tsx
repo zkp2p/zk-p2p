@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Address, erc20ABI } from 'wagmi';
+import { erc20ABI } from 'wagmi';
 
 import { abi as rampAbi } from "@helpers/abi/ramp.abi";
 import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
@@ -28,18 +28,18 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [usdcAddress, setUsdcAddress] = useState<Address | null>(null);
+  const [usdcAddress, setUsdcAddress] = useState<string | null>(null);
   const [blockscanUrl, setBlockscanUrl] = useState<string>(blockExplorerUrls[DEFAULT_NETWORK]);
 
   // Venmo
-  const [rampAddress, setRampAddress] = useState<Address | null>(null);
-  const [sendProcessorAddress, setSendProcessorAddress] = useState<Address | null>(null);
-  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address | null>(null);
-  const [venmoNftAddress, setVenmoNftAddress] = useState<Address | null>(null);
+  const [rampAddress, setRampAddress] = useState<string | null>(null);
+  const [sendProcessorAddress, setSendProcessorAddress] = useState<string | null>(null);
+  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<string | null>(null);
+  const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
 
   // HDFC
-  const [hdfcRampAddress, setHdfcRampAddress] = useState<Address | null>(null);
-  const [hdfcSendProcessorAddress, setHdfcSendProcessorAddress] = useState<Address | null>(null);
+  const [hdfcRampAddress, setHdfcRampAddress] = useState<string | null>(null);
+  const [hdfcSendProcessorAddress, setHdfcSendProcessorAddress] = useState<string | null>(null);
 
   /*
    * Hooks

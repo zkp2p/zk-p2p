@@ -17,8 +17,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { rampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts();
 
   /*
    * State
