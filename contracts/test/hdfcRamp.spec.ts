@@ -1141,7 +1141,7 @@ describe("HDFCRamp", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Sender must be the depositor");
+          await expect(subject()).to.be.revertedWith("Caller must be the depositor");
         });
       });
     });

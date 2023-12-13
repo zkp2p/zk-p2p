@@ -390,7 +390,7 @@ contract HDFCRamp is Ownable {
 
     /**
      * @notice Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement
-     * between the two parties. Upon submission we check to make sure the msg.sener is the depositor, the  intent is removed, and 
+     * between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and 
      * deposit state is updated. USDC is transferred to the on-ramper.
      *
      * @param _intentHash        Hash of intent to resolve by releasing the funds
@@ -400,7 +400,7 @@ contract HDFCRamp is Ownable {
         Deposit storage deposit = deposits[intent.deposit];
 
         require(intent.onRamper != address(0), "Intent does not exist");
-        require(deposit.depositor == msg.sender, "Sender must be the depositor");
+        require(deposit.depositor == msg.sender, "Caller must be the depositor");
 
         _pruneIntent(deposit, _intentHash);
 
