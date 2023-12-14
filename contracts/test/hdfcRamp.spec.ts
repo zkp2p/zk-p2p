@@ -980,6 +980,172 @@ describe("HDFCRamp", () => {
       });
     });
 
+    describe("#releaseFundsToOnramper", async () => {
+      let subjectIntentHash: string;
+      let subjectCaller: Account;
+
+      let depositId: BigNumber;
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          await calculatePackedUPIId("1"),
+          usdc(100),
+          usdc(101)
+        );
+
+        depositId = (await ramp.depositCounter()).sub(1);
+
+        const idHash = await calculateUpiIdHash("22");
+        await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
+
+        const currentTimestamp = await blockchain.getCurrentTimestamp();
+        subjectIntentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
+        subjectCaller = offRamper;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).releaseFundsToOnramper(subjectIntentHash);
+      }
+
+      it("should transfer the usdc correctly to all parties", async () => {
+        const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
+        const rampPreBalance = await usdcToken.balanceOf(ramp.address);
+
+        await subject();
+
+        const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
+        const rampPostBalance = await usdcToken.balanceOf(ramp.address);
+
+        expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(50)));
+        expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
+      });
+
+      it("should delete the intent from the intents mapping", async () => {
+        await subject();
+
+        const intent = await ramp.intents(subjectIntentHash);
+
+        expect(intent.onRamper).to.eq(ADDRESS_ZERO);
+        expect(intent.to).to.eq(ADDRESS_ZERO);
+        expect(intent.deposit).to.eq(ZERO_BYTES32);
+        expect(intent.amount).to.eq(ZERO);
+        expect(intent.intentTimestamp).to.eq(ZERO);
+      });
+
+      it("should correctly update state in the deposit mapping", async () => {
+        const preDeposit = await ramp.getDeposit(depositId);
+
+        await subject();
+
+        const postDeposit = await ramp.getDeposit(depositId);
+
+        expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
+        expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
+        expect(postDeposit.intentHashes).to.not.include(subjectIntentHash);
+      });
+
+      it("should log the block timestamp for user's lastOnrampTimestamp", async () => {
+        await subject();
+
+        const expectedLastOnRampTimestamp = await blockchain.getCurrentTimestamp();
+        const lastOnRampTimestamp = await ramp.getLastOnRampTimestamp(onRamper.address);
+
+        expect(lastOnRampTimestamp).to.eq(expectedLastOnRampTimestamp);
+      });
+
+      it("should emit an IntentFulfilled event", async () => {
+        await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
+          subjectIntentHash,
+          depositId,
+          onRamper.address,
+          receiver.address,
+          usdc(50),
+          ZERO
+        );
+      });
+
+      describe("when a sustainability fee is defined", async () => {
+        beforeEach(async () => {
+          await ramp.connect(owner.wallet).setSustainabilityFee(ether(0.01));
+        });
+
+        it("should transfer the usdc correctly to all parties", async () => {
+          const receiverPreBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPreBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPreBalance = await usdcToken.balanceOf(feeRecipient.address);
+
+          await subject();
+
+          const receiverPostBalance = await usdcToken.balanceOf(receiver.address);
+          const rampPostBalance = await usdcToken.balanceOf(ramp.address);
+          const feeRecipientPostBalance = await usdcToken.balanceOf(feeRecipient.address);
+
+          expect(receiverPostBalance).to.eq(receiverPreBalance.add(usdc(49.5)));
+          expect(rampPostBalance).to.eq(rampPreBalance.sub(usdc(50)));
+          expect(feeRecipientPostBalance).to.eq(feeRecipientPreBalance.add(usdc(0.5)));
+        });
+
+        it("should emit an IntentFulfilled event", async () => {
+          await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
+            subjectIntentHash,
+            depositId,
+            onRamper.address,
+            receiver.address,
+            usdc(49.5),
+            usdc(0.5)
+          );
+        });
+      });
+
+      describe("when the intent zeroes out the deposit", async () => {
+        beforeEach(async () => {
+          await subject();
+
+          await blockchain.increaseTimeAsync(ONE_DAY_IN_SECONDS.add(10).toNumber());
+
+          await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
+          const currentTimestamp = await blockchain.getCurrentTimestamp();
+          subjectIntentHash = calculateIntentHash(await calculateUpiIdHash("22"), depositId, currentTimestamp);
+        });
+
+        it("should prune the deposit", async () => {
+          await subject();
+
+          const accountInfo = await ramp.getAccountInfo(offRamper.address);
+          const deposit = await ramp.getDeposit(depositId);
+
+          expect(accountInfo.deposits).to.not.include(depositId);
+          expect(deposit.remainingDeposits).to.eq(ZERO);
+          expect(deposit.outstandingIntentAmount).to.eq(ZERO);
+          expect(deposit.intentHashes).to.not.include(subjectIntentHash);
+        });
+
+        it("should emit a DepositClosed event", async () => {
+          await expect(subject()).to.emit(ramp, "DepositClosed").withArgs(depositId, offRamper.address);
+        });
+      });
+
+      describe("when the intent does not exist", async () => {
+        beforeEach(async () => {
+          subjectIntentHash = calculateIntentHash(await calculateUpiIdHash("22"), depositId, ONE);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Intent does not exist");
+        });
+      });
+
+      describe("when the sender is not the depositor", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be the depositor");
+        });
+      });
+    });
+
     describe("#withdrawDeposit", async () => {
       let subjectDepositIds: BigNumber[];
       let subjectCaller: Account;

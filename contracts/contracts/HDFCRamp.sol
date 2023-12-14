@@ -389,6 +389,29 @@ contract HDFCRamp is Ownable {
     }
 
     /**
+     * @notice Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement
+     * between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and 
+     * deposit state is updated. USDC is transferred to the on-ramper.
+     *
+     * @param _intentHash        Hash of intent to resolve by releasing the funds
+     */
+    function releaseFundsToOnramper(bytes32 _intentHash) external {
+        Intent memory intent = intents[_intentHash];
+        Deposit storage deposit = deposits[intent.deposit];
+
+        require(intent.onRamper != address(0), "Intent does not exist");
+        require(deposit.depositor == msg.sender, "Caller must be the depositor");
+
+        _pruneIntent(deposit, _intentHash);
+
+        deposit.outstandingIntentAmount -= intent.amount;
+        globalAccount[accounts[intent.onRamper].idHash].lastOnrampTimestamp = block.timestamp;
+        _closeDepositIfNecessary(intent.deposit, deposit);
+
+        _transferFunds(_intentHash, intent);
+    }
+
+    /**
      * @notice Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all
      * remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be
      * returned. Deposit will be deleted as long as there are no more outstanding intents.
