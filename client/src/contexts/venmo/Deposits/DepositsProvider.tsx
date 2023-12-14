@@ -27,7 +27,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { isRegistered } = useRegistration();
 
   /*
@@ -51,8 +51,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     data: depositsRaw,
     refetch: refetchDeposits,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'getAccountDeposits',
     args: [
       loggedInEthereumAddress
@@ -65,8 +65,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     data: depositIntentsRaw,
     refetch: refetchDepositIntents,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'getIntentsWithOnRamperId',
     args: [
       uniqueIntentHashes
@@ -82,10 +82,10 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('venmo_shouldFetchDeposits_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
-    if (isLoggedIn && loggedInEthereumAddress && rampAddress && isRegistered) {
+    if (isLoggedIn && loggedInEthereumAddress && venmoRampAddress && isRegistered) {
       esl && console.log('venmo_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
@@ -97,7 +97,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       setDeposits(null);
       setDepositIntents(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, rampAddress, isRegistered]);
+  }, [isLoggedIn, loggedInEthereumAddress, venmoRampAddress, isRegistered]);
 
   useEffect(() => {
     esl && console.log('venmo_shouldFetchDepositIntents_1');

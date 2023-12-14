@@ -19,6 +19,7 @@ import {
   fetchBestDepositForAmount,
  } from './helper';
  import { PaymentPlatform } from '../../common/PlatformSettings/types';
+ import { Abi } from '../../common/SmartContracts/types';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -41,7 +42,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
   const { loggedInEthereumAddress } = useAccount();
 
@@ -61,12 +62,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  const fetchDepositsBatched = useCallback(async (depositIdBatch: bigint[]) => {
+  const fetchDepositsBatched = async (
+    depositIdBatch: bigint[],
+    venmoRampAddress: string,
+    venmoRampAbi: Abi
+  ) => {
     try {
       // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
       const data = await readContract({
-        address: rampAddress,
-        abi: rampAbi,
+        address: venmoRampAddress as `0x${string}`,
+        abi: venmoRampAbi,
         functionName: 'getDepositFromIds',
         args: [depositIdBatch],
         account: CALLER_ACCOUNT,
@@ -78,7 +83,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       
       return [];
     }
-  }, [rampAddress, rampAbi]);
+  };
 
   const depositIdsToFetch = useMemo(() => {
     if (depositCounter) {
@@ -98,7 +103,10 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositCounter, prunedDepositIds]);
 
-  const refetchDepositsBatched = useCallback(async (currentRampAddress: string | null = rampAddress) => {
+  const refetchDepositsBatched = useCallback(async (currentRampAddress: string | null = venmoRampAddress) => {
+    console.log('currentRampAddress_1: ', currentRampAddress);
+    console.log('venmoRampAddress_1: ', venmoRampAddress);
+    
     if (!currentRampAddress) {
       return;
     }
@@ -108,7 +116,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     
     for (let i = 0; i < depositIdsToFetch.length; i += BATCH_SIZE) {
       const depositIdBatch = depositIdsToFetch.slice(i, i + BATCH_SIZE);
-      const rawDepositsData: any[] = await fetchDepositsBatched(depositIdBatch);
+      const rawDepositsData: any[] = await fetchDepositsBatched(depositIdBatch, currentRampAddress, venmoRampAbi);
       
       const deposits = sanitizeRawDeposits(rawDepositsData);
       for (let j = 0; j < deposits.length; j++) {
@@ -126,8 +134,11 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
+    console.log('currentRampAddress_2: ', currentRampAddress);
+    console.log('venmoRampAddress_2: ', venmoRampAddress);
+
     // Persist pruned deposit ids and set deposits
-    if (currentRampAddress === rampAddress) {
+    if (currentRampAddress === venmoRampAddress) {
       const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
       setPrunedDepositIds(newPrunedDepositIds);
 
@@ -173,12 +184,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     esl && console.log('venmo_storedPrunedIds_1');
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
 
-    if (rampAddress) {
+    if (venmoRampAddress) {
       esl && console.log('venmo_storedPrunedIds_2');
 
-      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${venmoRampAddress}`;
       const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
       const prunedIdsFromStorageParsed = prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : [];
 
@@ -188,7 +199,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       setPrunedDepositIds(prunedIdsFromStorageParsed);
 
-      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${venmoRampAddress}`;
       const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
       setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
     } else {
@@ -197,16 +208,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       setPrunedDepositIds([]);
       setTargetedDepositIds([]);
     }
-  }, [rampAddress]);
+  }, [venmoRampAddress]);
 
   useEffect(() => {
     esl && console.log('venmo_filterPrunedDepositIdsFromTargetedDepositIds_1');
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
 
-    if (rampAddress) {
+    if (venmoRampAddress) {
       esl && console.log('venmo_filterPrunedDepositIdsFromTargetedDepositIds_2');
 
-      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${venmoRampAddress}`;
       const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
 
@@ -214,25 +225,25 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prunedDepositIds, rampAddress]);
+  }, [prunedDepositIds, venmoRampAddress]);
 
   useEffect(() => {
     esl && console.log('venmo_storeTargetedIds_1');
     esl && console.log('checking rampAddress: ', rampAddress);
 
-    if (rampAddress) {
+    if (venmoRampAddress) {
       esl && console.log('venmo_storedTargetedIds_2');
 
-      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${venmoRampAddress}`;
       const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
       localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
     }
-  }, [targetedDepositIds, rampAddress]);
+  }, [targetedDepositIds, venmoRampAddress]);
 
   useEffect(() => {
     const fetchDeposits = async () => {
       if (shouldFetchDeposits) {
-        await refetchDepositsBatched(rampAddress);
+        await refetchDepositsBatched(venmoRampAddress);
       }
     };
   
@@ -246,7 +257,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     esl && console.log('checking rampAddress: ', rampAddress);
     esl && console.log('checking depositCounter: ', depositCounter);
 
-    if (rampAddress && depositCounter) {
+    if (venmoRampAddress && depositCounter) {
       esl && console.log('venmo_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
@@ -258,7 +269,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       setDeposits(null);
       setDepositStore(null);
     }
-  }, [rampAddress, depositCounter]);
+  }, [venmoRampAddress, depositCounter]);
 
   useEffect(() => {
     esl && console.log('venmo_depositStore_1');

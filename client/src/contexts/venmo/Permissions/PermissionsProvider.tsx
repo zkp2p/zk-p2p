@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Address, useContractRead } from 'wagmi';
+import { useContractRead } from 'wagmi';
 
 import { esl } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
@@ -18,15 +18,15 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, rampAbi } = useSmartContracts()
-  const { isRegistered } = useRegistration()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { isRegistered } = useRegistration();
 
   /*
    * State
    */
 
-  const [deniedUsers, setDeniedUsers] = useState<Address[] | null>(null);
+  const [deniedUsers, setDeniedUsers] = useState<string[] | null>(null);
 
   const [shouldFetchDeniedUsers, setShouldFetchDeniedUsers] = useState<boolean>(false);
 
@@ -41,8 +41,8 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     data: deniedUsersRaw,
     refetch: refetchDeniedUsers,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: "getDeniedUsers",
     args: [
       loggedInEthereumAddress
@@ -86,7 +86,7 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     if (deniedUsersRaw && deniedUsersRaw.length > 0) {
       esl && console.log('venmo_deniedUsersRaw_2');
 
-      const deniedUsersProcessed = deniedUsersRaw as Address[];
+      const deniedUsersProcessed = deniedUsersRaw as string[];
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
@@ -109,4 +109,4 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default PermissionsProvider
+export default PermissionsProvider;

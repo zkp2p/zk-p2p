@@ -9,11 +9,11 @@ interface SmartContractsValues {
   usdcAbi?: Abi | null;
   
   // venmo
-  rampAddress: string | null;
-  rampAbi: Abi | null;
-  registrationProcessorAddress: string | null;
-  sendProcessorAddress: string | null;
-  sendProcessorAbi: Abi | null;
+  venmoRampAddress: string | null;
+  venmoRampAbi: Abi | null;
+  venmoRegistrationProcessorAddress: string | null;
+  venmoSendProcessorAddress: string | null;
+  venmoSendProcessorAbi: Abi | null;
   venmoNftAddress: string | null;
   venmoNftAbi: Abi | null;
   
@@ -30,11 +30,11 @@ const defaultValues: SmartContractsValues = {
   usdcAbi: null,
   
   // venmo
-  rampAddress: null,
-  rampAbi: null,
-  registrationProcessorAddress: null,
-  sendProcessorAddress: null,
-  sendProcessorAbi: null,
+  venmoRampAddress: null,
+  venmoRampAbi: null,
+  venmoRegistrationProcessorAddress: null,
+  venmoSendProcessorAddress: null,
+  venmoSendProcessorAbi: null,
   venmoNftAddress: null,
   venmoNftAbi: null,
   

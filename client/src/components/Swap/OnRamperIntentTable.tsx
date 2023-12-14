@@ -57,8 +57,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
  
  const {
-  rampAddress: venmoRampAddress,
-  rampAbi: venmoRampAbi,
+  venmoRampAddress,
+  venmoRampAbi,
   hdfcRampAddress,
   hdfcRampAbi
 } = useSmartContracts();

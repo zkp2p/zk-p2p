@@ -22,7 +22,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { depositStore } = useLiquidity();
 
   /*
@@ -45,8 +45,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     data: intentHashRaw,
     refetch: refetchIntentHash,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'getVenmoIdCurrentIntentHash',
     args: [
       loggedInEthereumAddress
@@ -59,8 +59,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     data: lastOnRampTimeStampRaw,
     refetch: refetchLastOnRampTimestamp,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'getLastOnRampTimestamp',
     args: [
       loggedInEthereumAddress
@@ -72,8 +72,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   const {
     data: intentRaw,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'intents',
     args: [
       currentIntentHash

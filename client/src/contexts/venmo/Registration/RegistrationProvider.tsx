@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, rampAbi, venmoNftAddress, venmoNftAbi } = useSmartContracts()
+  const { venmoRampAddress, venmoRampAbi, venmoNftAddress, venmoNftAbi } = useSmartContracts()
 
   /*
    * State
@@ -68,8 +68,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: rampAccountRaw,
     refetch: refetchRampAccount,
   } = useContractRead({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'getAccountInfo',
     args: [
       loggedInEthereumAddress
@@ -112,9 +112,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     esl && console.log('venmo_shouldFetchRegistration_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
     
-    if (isLoggedIn && loggedInEthereumAddress && rampAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && venmoRampAddress) {
       esl && console.log('venmo_shouldFetchRegistration_2');
 
       setShouldFetchRegistration(true);
@@ -130,7 +130,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setVenmoNftUri(null);
       setVenmoNftId(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, rampAddress, setExtractedVenmoId]);
+  }, [isLoggedIn, loggedInEthereumAddress, venmoRampAddress, setExtractedVenmoId]);
 
   useEffect(() => {
     esl && console.log('venmo_rampAccountRaw_1');

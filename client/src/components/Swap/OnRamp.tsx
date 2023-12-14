@@ -38,8 +38,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   const {
-    rampAddress,
-    rampAbi,
+    venmoRampAddress,
+    venmoRampAbi,
     sendProcessorAddress,
     sendProcessorAbi,
   } = useSmartContracts();
@@ -90,8 +90,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'onRamp',
     args: [
       ...reformatProofForChain(proof),

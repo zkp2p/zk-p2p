@@ -32,7 +32,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    * Context
    */
 
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
@@ -63,8 +63,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'register',
     args: [
       ...reformatProofForChain(proof),
