@@ -235,11 +235,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   function isValidUpiId(value: string) {
-    // Regular expression to match the UPI ID format
-    const upiRegex = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+$/;
+    const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
 
     return upiRegex.test(value);
-}
+  }
 
   function isValidInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
