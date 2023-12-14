@@ -331,7 +331,21 @@ describe("Venmo send WASM tester", function () {
             assert.fail('Expected calculateWitness to throw an error');
         } catch (error) {
             assert.instanceOf(error, Error);
-            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_402 line: 76\n');
+            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_404 line: 77\n');
+        }
+    });
+
+    it("Should not generate witnesses for a merchant email", async () => {
+        // Generate input with receive email using yarn gen-input:send:merchant
+        const venmo_path = path.join(__dirname, "../inputs/input_venmo_send_merchant.json");
+        const jsonString = fs.readFileSync(venmo_path, "utf8");
+        const input = JSON.parse(jsonString);
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(error.message, 'Error: Assert Failed.\nError in template VenmoSendEmail_404 line: 77\nError in template VenmoSendEmail_404 line: 130\n');
         }
     });
 
