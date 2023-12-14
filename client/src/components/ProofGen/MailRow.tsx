@@ -3,6 +3,7 @@ import styled from 'styled-components/macro'
 
 
 interface MailRowProps {
+  platformText: string;
   subjectText: string;
   dateText: string;
   isSelected: boolean;
@@ -11,6 +12,7 @@ interface MailRowProps {
 }
 
 export const MailRow: React.FC<MailRowProps> = ({
+  platformText,
   subjectText,
   dateText,
   isSelected,
@@ -22,22 +24,25 @@ export const MailRow: React.FC<MailRowProps> = ({
   const subjectLabel = `${subjectText}`;
   const dateLabel = `${dateText}`;
 
+  const isPlatformTextLong = subjectText.length > 40;
+
   return (
     <Container
       onClick={onRowClick}
       selected={isSelected}
       isLastRow={isLastRow}
+      isPlatformTextLong={isPlatformTextLong}
     >
-      <VenmoLabel> Venmo </VenmoLabel>
+      <PlatformLabel> {platformText} </PlatformLabel>
       <SubjectLabel> {subjectLabel} </SubjectLabel>
       <DateLabel> {dateLabel} </DateLabel>
     </Container>
   );
 };
 
-const Container = styled.div<{ selected: boolean; isLastRow: boolean }>`
+const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatformTextLong: boolean}>`
   display: grid;
-  grid-template-columns: 1.5fr 3fr 1fr;
+  grid-template-columns: ${({ isPlatformTextLong }) => isPlatformTextLong ? '1.5fr 7fr 1.25fr' : '1.5fr 3fr 1fr'};
   grid-gap: 1px;
   padding: 0.99rem 1.49rem;
   font-size: 14px;
@@ -59,10 +64,12 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean }>`
   `}
 `;
 
-const VenmoLabel = styled.label`
+const PlatformLabel = styled.label`
+  text-align: left;
 `;
 
 const SubjectLabel = styled.label`
+  text-align: left;
 `;
 
 const DateLabel = styled.label`

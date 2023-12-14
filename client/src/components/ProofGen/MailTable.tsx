@@ -107,6 +107,41 @@ export const MailTable: React.FC<MailTableProps> = ({
     }
   }
 
+  const rowPlatformText = () => {
+   switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return 'Venmo';
+
+      case PaymentPlatform.HDFC:
+        return 'HDFC';
+
+      default:
+        return '';
+    } 
+  }
+
+  const rowSubjectText = (rawEmail: RawEmailResponse) => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return rawEmail.subject;
+
+      case PaymentPlatform.HDFC:
+        const parsedAmountRegex = /Rs\.(\d+\.\d+)/;
+        const parsedRecipientRegex = /to VPA (\S+?@paytm)/;
+
+        const parsedAmountMatch = rawEmail.decodedContents.match(parsedAmountRegex);
+        const parsedRecipientMatch = rawEmail.decodedContents.match(parsedRecipientRegex);
+
+        const parsedAmount = parsedAmountMatch ? parsedAmountMatch[1] : "Amount not found";
+        const parsedRecipient = parsedRecipientMatch ? parsedRecipientMatch[1] : "Recipient not found";
+
+        return `You have done a UPI txn (${parsedRecipient}: ₹${parsedAmount})`;
+
+      default:
+        return '';
+    }
+  }
+
   async function fetchData() {
     const filter = paymentPlatform === PaymentPlatform.VENMO ? VENMO_EMAIL_FILTER : HDFC_EMAIL_FULTER;
 
@@ -257,7 +292,8 @@ export const MailTable: React.FC<MailTableProps> = ({
                 {fetchedEmails.map((email, index) => (
                   <MailRow
                     key={index}
-                    subjectText={email.subject}
+                    platformText={rowPlatformText()}
+                    subjectText={rowSubjectText(email)}
                     dateText={formatDateTime(email.internalDate)}
                     isSelected={index === selectedIndex}
                     isLastRow={index === fetchedEmails.length - 1}
