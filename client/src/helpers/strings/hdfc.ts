@@ -25,7 +25,11 @@ const strings: PlatformStrings = {
   `,
 
   // On Ramp Instructions
-  PROOF_FORM_TITLE_SEND_INSTRUCTIONS: ``,
+  PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
+    Provide the transaction alert email you received from HDFC containing "You have done a UPI txn"
+    to complete the order. You can sign in with Google to pull the email or manually upload/paste
+    the email.
+  `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
