@@ -127,7 +127,7 @@ export const MailTable: React.FC<MailTableProps> = ({
 
       case PaymentPlatform.HDFC:
         const parsedAmountRegex = /Rs\.(\d+\.\d+)/;
-        const parsedRecipientRegex = /to VPA (\S+?@paytm)/;
+        const parsedRecipientRegex = /to VPA (\S+?@\S+?) /;
 
         const parsedAmountMatch = rawEmail.decodedContents.match(parsedAmountRegex);
         const parsedRecipientMatch = rawEmail.decodedContents.match(parsedRecipientRegex);

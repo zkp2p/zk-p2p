@@ -3,7 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide any historical transaction email sent from HDFC containing "You_have_done_a_UPI" in the subject to
+    Provide any historical transaction email sent from HDFC InstaAlerts containing "You have done a UPI" in the subject to
     complete registration. Base ETH is required to submit a registration transaction.
   `,
 
@@ -20,7 +20,7 @@ const strings: PlatformStrings = {
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from HDFC
-    with subject "You_have_done_a_UPI", which is used to prove you own a HDFC account. Your HDFC ID is
+    with subject "You have done a UPI txn", which is used to prove you own a HDFC account. Your HDFC ID is
     hashed to conceal your identity.
   `,
 
@@ -54,7 +54,7 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment on HDFC. Ensure you have email notifications from HDFC enabled
+    Click 'Send' and complete the payment on any UPI ID linked to your HDFC bank account. Ensure you have email notifications from HDFC InstaAlerts enabled
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
     Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
@@ -62,14 +62,15 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Email notifications are enabled in your HDFC notifications settings
+    Please send the payment only from the UPI ID linked to your HDFC bank account. Please don't send payment from UPI Lite or any other UPI ID  
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Amount INR to send, which may not match your requested USDC amount, is double checked
+    HDFC InstaAlert email notifications are enabled in your bank account notification settings  
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    [Do we need a 3rd step?]
+    Amount INR to send, which may not match your requested USDC amount, is double checked
   `,
+
 };
 
 export default strings;
