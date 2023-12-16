@@ -130,6 +130,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Hdfc
     setHdfcRampAddress(null); 
     setHdfcSendProcessorAddress(null);
+
+    esl && console.log('Set venmoRampAddress: null');
   };
 
   const setAddressWithNetworkEnvKey = (networkEnvKey: string) => {
@@ -147,6 +149,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Hdfc
     setHdfcRampAddress(contractsForNetwork.hdfcRamp);
     setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor);
+
+    esl && console.log('Set venmoRampAddress to: ', contractsForNetwork.ramp);
   };
 
   return (
