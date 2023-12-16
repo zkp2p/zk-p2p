@@ -50,7 +50,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { rampAddress, rampAbi, hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -83,8 +83,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const [selectedDepositIdToWithdraw, setSelectedDepositIdToWithdraw] = useState<bigint>(0n);
   const [selectedRowIndexToWithdraw, setSelectedRowIndexToWithdraw] = useState<number>(0);
 
-  const [withdrawRampAddress, setWithdrawRampAddress] = useState<string>(rampAddress);
-  const [withdrawRampAbi, setWithdrawRampAbi] = useState<Abi>(rampAbi);
+  const [withdrawRampAddress, setWithdrawRampAddress] = useState<string>(venmoRampAddress);
+  const [withdrawRampAbi, setWithdrawRampAbi] = useState<Abi>(venmoRampAbi);
 
   const [shouldConfigureWithdrawWrite, setShouldConfigureWithdrawWrite] = useState<boolean>(false);
 
@@ -247,8 +247,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
           setSelectedRowIndexToWithdraw(rowIndex);
 
-          setWithdrawRampAddress(rampAddress);
-          setWithdrawRampAbi(rampAbi);
+          setWithdrawRampAddress(venmoRampAddress);
+          setWithdrawRampAbi(venmoRampAbi);
 
           setShouldConfigureWithdrawWrite(true);
         }

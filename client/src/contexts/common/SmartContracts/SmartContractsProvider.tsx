@@ -1,13 +1,13 @@
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Address, erc20ABI } from 'wagmi';
+import { erc20ABI } from 'wagmi';
 
-import { abi as rampAbi } from "@helpers/abi/ramp.abi";
+import { abi as venmoRampAbi } from "@helpers/abi/ramp.abi";
 import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
 import { abi as venmoNftAbi } from "@helpers/abi/venmoNft.abi";
 import { abi as hdfcRampAbi } from "@helpers/abi/hdfc/ramp.abi";
 import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
-import { DEFAULT_NETWORK } from '@helpers/constants'
+import { esl, DEFAULT_NETWORK } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 
 import SmartContractsContext from './SmartContractsContext'
@@ -22,86 +22,132 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   /*
    * Context
    */
-  const { network } = useAccount();
+
+  const { network, isLoggedIn, accountStatus, connectStatus, disconnectStatus } = useAccount();
 
   /*
    * State
    */
 
-  const [usdcAddress, setUsdcAddress] = useState<Address | null>(null);
+  const [usdcAddress, setUsdcAddress] = useState<string | null>(null);
   const [blockscanUrl, setBlockscanUrl] = useState<string>(blockExplorerUrls[DEFAULT_NETWORK]);
 
   // Venmo
-  const [rampAddress, setRampAddress] = useState<Address | null>(null);
-  const [sendProcessorAddress, setSendProcessorAddress] = useState<Address | null>(null);
-  const [registrationProcessorAddress, setRegistrationProcessorAddress] = useState<Address | null>(null);
-  const [venmoNftAddress, setVenmoNftAddress] = useState<Address | null>(null);
+  const [venmoRampAddress, setVenmoRampAddress] = useState<string | null>(null);
+  const [venmoSendProcessorAddress, setVenmoSendProcessorAddress] = useState<string | null>(null);
+  const [venmoRegistrationProcessorAddress, setVenmoRegistrationProcessorAddress] = useState<string | null>(null);
+  const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
 
   // HDFC
-  const [hdfcRampAddress, setHdfcRampAddress] = useState<Address | null>(null);
-  const [hdfcSendProcessorAddress, setHdfcSendProcessorAddress] = useState<Address | null>(null);
+  const [hdfcRampAddress, setHdfcRampAddress] = useState<string | null>(null);
+  const [hdfcSendProcessorAddress, setHdfcSendProcessorAddress] = useState<string | null>(null);
 
   /*
    * Hooks
    */
 
   useEffect(() => {
-    const networkName = network ? network : DEFAULT_NETWORK;
+    esl && console.log('smartContracts_1');
+    esl && console.log('checking network: ', network);
+    esl && console.log('isLoggedIn: ', isLoggedIn);
+    esl && console.log('accountStatus: ', accountStatus);
+    esl && console.log('connectStatus: ', connectStatus);
+    esl && console.log('disconnectStatus: ', disconnectStatus);
+
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
-    let contractsForNetwork: { [contract: string]: string; };
-    switch (deploymentEnvironment) {
-      case 'PRODUCTION':
-        contractsForNetwork = contractAddresses['base_production'];
-        break;
+    let networkToUse = null;
+    if (isLoggedIn) {
+      const isAccountStatusValid = accountStatus === 'connected';
+      const isConnectStatusValid = connectStatus === 'idle';
+      const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
+      const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      case 'STAGING':
-      case 'LOCAL':
-      default:
-        switch (networkName) {
-          case 'base':
-            contractsForNetwork = contractAddresses['base_staging'];
-            break;
+      if (validLoggedInState) {
+        networkToUse = network;
+      }
 
-          case 'goerli':
-            contractsForNetwork = contractAddresses['goerli_staging'];
-            break;
+      const isAccountStatusValidTwo = accountStatus === 'disconnected'; 
+      const isConnectStatusValidTwo = connectStatus === 'idle';
+      const isDisconnectStatusValidTwo = disconnectStatus === 'idle';
+      const validLoggedOutState = isAccountStatusValidTwo && isConnectStatusValidTwo && isDisconnectStatusValidTwo;
 
-          case 'hardhat':
-          default:
-            contractsForNetwork = contractAddresses['localhardhat'];
-            break;
-        }
-    };
-
-    if (contractsForNetwork) {
-      setBlockscanUrl(blockExplorerUrls[networkName]);
-      setUsdcAddress(contractsForNetwork.fusdc as Address);
-
-      // Venmo
-      setRampAddress(contractsForNetwork.ramp as Address);
-      setSendProcessorAddress(contractsForNetwork.sendProcessor as Address);
-      setRegistrationProcessorAddress(contractsForNetwork.registrationProcessor as Address);
-      setVenmoNftAddress(contractsForNetwork.proofOfP2pNft as Address);
-
-      // Hdfc
-      setHdfcRampAddress(contractsForNetwork.hdfcRamp as Address);
-      setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor as Address);
+      if (validLoggedOutState) {
+        networkToUse = DEFAULT_NETWORK;
+      }
     } else {
-      setBlockscanUrl(blockExplorerUrls[networkName]);
-      setUsdcAddress(null);
+      const isAccountStatusValid = accountStatus === 'connecting';
+      const isConnectStatusValid = connectStatus === 'idle';
+      const isDisconnectStatusValid = disconnectStatus === 'idle';
+      const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      // Venmo
-      setRampAddress(null);
-      setSendProcessorAddress(null);
-      setRegistrationProcessorAddress(null);
-      setVenmoNftAddress(null);
-
-      // Hdfc
-      setHdfcRampAddress(null);
-      setHdfcSendProcessorAddress(null);
+      if (validLoggedInState) {
+        networkToUse = DEFAULT_NETWORK;
+      }
     }
-  }, [network]);
+
+    if (networkToUse) {
+      switch (deploymentEnvironment) {
+        case 'PRODUCTION':
+          setAddressWithNetworkEnvKey('base_production');
+          break;
+  
+        default:
+          switch (networkToUse) {
+            case 'base':
+              setAddressWithNetworkEnvKey('base_staging');
+              break;
+  
+            case 'goerli':
+              setAddressWithNetworkEnvKey('goerli_staging');
+              break;
+  
+            case 'hardhat':
+            default:
+              setAddressWithNetworkEnvKey('localhardhat');
+              break;
+          }
+        }
+    } else {
+      setEmptyAddresses();
+    }
+  }, [network, isLoggedIn, accountStatus, connectStatus, disconnectStatus]);
+
+  /*
+   * Helpers
+   */
+
+  const setEmptyAddresses = () => {
+    setBlockscanUrl(blockExplorerUrls['base']);
+    setUsdcAddress(null);
+
+    // Venmo
+    setVenmoRampAddress(null);
+    setVenmoSendProcessorAddress(null);
+    setVenmoRegistrationProcessorAddress(null);
+    setVenmoNftAddress(null);
+
+    // Hdfc
+    setHdfcRampAddress(null); 
+    setHdfcSendProcessorAddress(null);
+  };
+
+  const setAddressWithNetworkEnvKey = (networkEnvKey: string) => {
+    const contractsForNetwork = contractAddresses[networkEnvKey];
+
+    setBlockscanUrl(blockExplorerUrls[networkEnvKey]);
+    setUsdcAddress(contractsForNetwork.fusdc);
+
+    // Venmo
+    setVenmoRampAddress(contractsForNetwork.ramp);
+    setVenmoSendProcessorAddress(contractsForNetwork.sendProcessor);
+    setVenmoRegistrationProcessorAddress(contractsForNetwork.registrationProcessor);
+    setVenmoNftAddress(contractsForNetwork.proofOfP2pNft);
+
+    // Hdfc
+    setHdfcRampAddress(contractsForNetwork.hdfcRamp);
+    setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor);
+  };
 
   return (
     <SmartContractsContext.Provider
@@ -111,11 +157,11 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         blockscanUrl: blockscanUrl,
 
         // Venmo
-        rampAddress,
-        rampAbi: rampAbi as Abi,
-        registrationProcessorAddress,
-        sendProcessorAbi: sendProcessorAbi as Abi,
-        sendProcessorAddress,
+        venmoRampAddress,
+        venmoRampAbi: venmoRampAbi as Abi,
+        venmoRegistrationProcessorAddress,
+        venmoSendProcessorAbi: sendProcessorAbi as Abi,
+        venmoSendProcessorAddress,
         venmoNftAddress,
         venmoNftAbi: venmoNftAbi as Abi,
 
@@ -131,4 +177,4 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default SmartContractsProvider
+export default SmartContractsProvider;

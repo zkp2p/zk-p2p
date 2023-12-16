@@ -1,9 +1,9 @@
-import React, { useEffect, useState, ReactNode } from 'react'
-import { Address, useAccount, useDisconnect, useNetwork } from 'wagmi';
+import React, { useEffect, useState, ReactNode } from 'react';
+import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 
-import { esl, DEFAULT_NETWORK } from '@helpers/constants'
+import { esl } from '@helpers/constants';
 
-import AccountContext from './AccountContext'
+import AccountContext from './AccountContext';
 
 
 interface ProvidersProps {
@@ -11,15 +11,17 @@ interface ProvidersProps {
 }
 
 const AccountProvider = ({ children }: ProvidersProps) => {
-  const { address, status } = useAccount();
+  const { address, status: accountStatus } = useAccount();
   const { chain } = useNetwork();
-  const { disconnect } = useDisconnect();
+  const { disconnect, status: disconnectStatus } = useDisconnect();
+  const { status: connectStatus } = useConnect();
 
   /*
    * State
    */
+
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<Address | null>(null);
+  const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
   /*
@@ -54,15 +56,15 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       esl && console.log('networkRaw_3');
 
-      setNetwork(DEFAULT_NETWORK);
+      setNetwork(null);
     }
   }, [chain]);
 
   useEffect(() => {
     esl && console.log('status_1');
-    esl && console.log('status: ', status);
+    esl && console.log('checking accountStatus: ', accountStatus);
 
-    if (status === 'reconnecting') {
+    if (accountStatus === 'reconnecting') {
       esl && console.log('status_2');
 
       disconnect();
@@ -72,7 +74,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       esl && console.log('status_3');
     }
-  }, [status, disconnect]);
+  }, [accountStatus, disconnect]);
 
   return (
     <AccountContext.Provider
@@ -80,6 +82,9 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         isLoggedIn,
         loggedInEthereumAddress,
         network,
+        accountStatus,
+        connectStatus,
+        disconnectStatus,
       }}
     >
       {children}
@@ -87,4 +92,4 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default AccountProvider
+export default AccountProvider;

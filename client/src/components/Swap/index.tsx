@@ -74,8 +74,8 @@ const Swap: React.FC<SwapProps> = ({
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { usdcBalance } = useBalances();
   const {
-    rampAddress: venmoRampAddress,
-    rampAbi: venmoRampAbi,
+    venmoRampAddress,
+    venmoRampAbi,
     hdfcRampAddress,
     hdfcRampAbi
   } = useSmartContracts();

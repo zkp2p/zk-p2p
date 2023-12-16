@@ -27,8 +27,8 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
     Contexts
   */
 
-  const { rampAddress, rampAbi } = useSmartContracts()
-  const { refetchDeniedUsers } = usePermissions()
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { refetchDeniedUsers } = usePermissions();
   
   /*
    * State
@@ -46,8 +46,8 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
   // addAccountToDenylist(bytes32 _deniedUser)
   //
   const { config: writePermissionConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'addAccountToDenylist',
     args: [
       userHashInput,

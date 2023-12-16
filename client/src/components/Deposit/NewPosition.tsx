@@ -54,10 +54,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { rampAddress, rampAbi, usdcAddress, usdcAbi } = useSmartContracts()
-  const { minimumDepositAmount } = useRampState()
-  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances()
-  const { refetchDeposits } = useDeposits()
+  const { venmoRampAddress, venmoRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
+  const { minimumDepositAmount } = useRampState();
+  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
+  const { refetchDeposits } = useDeposits();
   const { extractedVenmoId, registrationHash, setExtractedVenmoId } = useRegistration();
 
   /*
@@ -82,8 +82,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount)
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
-    address: rampAddress,
-    abi: rampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'offRamp',
     args: [
       calculatePackedVenmoId(venmoIdInput),
@@ -120,7 +120,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: usdcAbi,
     functionName: "approve",
     args: [
-      rampAddress,
+      venmoRampAddress,
       amountToApprove
     ],
     enabled: shouldConfigureApprovalWrite

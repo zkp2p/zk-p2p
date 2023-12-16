@@ -1,19 +1,24 @@
-import { createContext } from 'react'
-import { Address } from 'wagmi';
+import { createContext } from 'react';
 
 
 interface AccountValues {
   isLoggedIn: boolean;
-  loggedInEthereumAddress: Address | null;
+  loggedInEthereumAddress: string | null;
   network: string | null;
-}
+  accountStatus: string | null;
+  connectStatus: string | null;
+  disconnectStatus: string | null;
+};
 
 const defaultValues: AccountValues = {
   isLoggedIn: false,
   loggedInEthereumAddress: null,
   network: null,
+  accountStatus: null,
+  connectStatus: null,
+  disconnectStatus: null
 };
 
-const AccountContext = createContext<AccountValues>(defaultValues)
+const AccountContext = createContext<AccountValues>(defaultValues);
 
-export default AccountContext
+export default AccountContext;

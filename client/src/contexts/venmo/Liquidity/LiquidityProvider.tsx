@@ -1,9 +1,9 @@
 import React, {
-  useCallback,
   useEffect,
+  useCallback,
+  useRef,
   useState,
   ReactNode,
-  useMemo
 } from 'react';
 import { readContract } from '@wagmi/core';
 
@@ -19,16 +19,17 @@ import {
   fetchBestDepositForAmount,
  } from './helper';
  import { PaymentPlatform } from '../../common/PlatformSettings/types';
+ import { Abi } from '../../common/SmartContracts/types';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/useRampState';
-import useAccount from '@hooks/useAccount';
 
 import LiquidityContext from './LiquidityContext';
 
 
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 30;
 const PRUNED_DEPOSITS_PREFIX = 'prunedDepositIds_';
 const TARGETED_DEPOSITS_PREFIX = 'targetedDepositIds_';
 
@@ -41,13 +42,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { rampAddress, rampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
-  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State
    */
+
+  const currentRampAddressRef = useRef(venmoRampAddress);
+
+  const [fetchDepositsTrigger, setFetchDepositsTrigger] = useState(0);
 
   const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
@@ -61,50 +65,17 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  const fetchDepositsBatched = useCallback(async (depositIdBatch: bigint[]) => {
-    try {
-      // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
-      const data = await readContract({
-        address: rampAddress,
-        abi: rampAbi,
-        functionName: 'getDepositFromIds',
-        args: [depositIdBatch],
-        account: CALLER_ACCOUNT,
-      });
+  const fetchAndPruneDeposits = async (depositCounter: bigint, rampAddress: string) => {
+    const existingPrunedIds = fetchStoredPrunedDepositIds(rampAddress);
+    const existingTargetedIds = fetchStoredTargetedDepositIds(rampAddress);
+    const depositIdsToFetch = initializeDepositIdsToFetch(depositCounter, existingPrunedIds);
 
-      return data;
-    } catch (error) {
-      console.error('Error fetching deposits batch:', error);
-      
-      return [];
-    }
-  }, [rampAddress, rampAbi]);
-
-  const depositIdsToFetch = useMemo(() => {
-    if (depositCounter) {
-      const prunedIdsSet = new Set(prunedDepositIds.map(id => id.toString()));
-      const depositIds = [];
-
-      for (let i = 0; i < depositCounter; i++) {
-        const depositId = BigInt(i).toString();
-        if (!prunedIdsSet.has(depositId)) {
-          depositIds.push(BigInt(depositId));
-        }
-      }
-  
-      return depositIds;
-    } else {
-      return [];
-    }
-  }, [depositCounter, prunedDepositIds]);
-
-  const refetchDepositsBatched = useCallback(async () => {
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
     
     for (let i = 0; i < depositIdsToFetch.length; i += BATCH_SIZE) {
       const depositIdBatch = depositIdsToFetch.slice(i, i + BATCH_SIZE);
-      const rawDepositsData: any[] = await fetchDepositsBatched(depositIdBatch);
+      const rawDepositsData = await fetchDepositBatch(depositIdBatch);
       
       const deposits = sanitizeRawDeposits(rawDepositsData);
       for (let j = 0; j < deposits.length; j++) {
@@ -122,14 +93,52 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       }
     }
 
-    // Persist pruned deposit ids
-    const newPrunedDepositIds = [...prunedDepositIds, ...depositIdsToPrune];
-    setPrunedDepositIds(newPrunedDepositIds);
+    if (currentRampAddressRef.current === rampAddress) {
+      const newPrunedDepositIds = [...existingPrunedIds, ...depositIdsToPrune];
+      updateStoredPrunedIds(rampAddress, newPrunedDepositIds, existingTargetedIds);
+  
+      setTargetedDepositIds(existingTargetedIds);
+  
+      setDeposits(batchedDeposits);
+    }
+  };
 
-    setDeposits(batchedDeposits);
+  const initializeDepositIdsToFetch = (currentDepositCounter: bigint, storedDepositIdsToPrune: bigint[]): bigint[] => {
+    if (currentDepositCounter) {
+      const prunedIdsSet = new Set(storedDepositIdsToPrune.map(id => id.toString()));
+      const depositIds = [];
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositIdsToFetch, fetchDepositsBatched, prunedDepositIds]);
+      for (let i = 0; i < currentDepositCounter; i++) {
+        const depositId = BigInt(i).toString();
+        if (!prunedIdsSet.has(depositId)) {
+          depositIds.push(BigInt(depositId));
+        }
+      }
+  
+      return depositIds;
+    } else {
+      return [];
+    }
+  };
+
+  const fetchDepositBatch = async (depositIdBatch: bigint[]) => {
+    try {
+      // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
+      const data = await readContract({
+        address: venmoRampAddress as `0x${string}`,
+        abi: venmoRampAbi as Abi,
+        functionName: 'getDepositFromIds',
+        args: [depositIdBatch],
+        account: CALLER_ACCOUNT,
+      });
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching deposits batch:', error);
+      
+      return [];
+    }
+  };
 
   const sanitizeRawDeposits = (rawDepositsData: any[]) => {
     const sanitizedDeposits: DepositWithAvailableLiquidity[] = [];
@@ -166,120 +175,131 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    if (rampAddress) {
-      const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
-      const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
-      setPrunedDepositIds(prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : []);
-
-      const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
-      const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
-      setTargetedDepositIds(targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : []);
-    } else {
-      setPrunedDepositIds([]);
-      setTargetedDepositIds([]);
-    }
-  }, [rampAddress]);
-
-  useEffect(() => {
-    if (rampAddress) {
-      const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
-      const prunedDepositIdsForStorage = prunedDepositIds.map(id => id.toString());
-      localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
-
-      filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prunedDepositIds, rampAddress]);
-
-  useEffect(() => {
-    if (rampAddress) {
-      const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
-      const targetedDepositIdsForStorage = targetedDepositIds.map(id => id.toString());
-      localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
-    }
-  }, [targetedDepositIds, rampAddress]);
-
-  useEffect(() => {
-    const fetchDeposits = async () => {
-      if (shouldFetchDeposits) {
-        await refetchDepositsBatched();
-      }
-    };
-  
-    fetchDeposits();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchDeposits]);
+    currentRampAddressRef.current = venmoRampAddress;
+  }, [venmoRampAddress]);
 
   useEffect(() => {
     esl && console.log('venmo_shouldFetchDeposits_1');
-    esl && console.log('checking rampAddress: ', rampAddress);
     esl && console.log('checking depositCounter: ', depositCounter);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
 
-    if (rampAddress && depositCounter) {
-      esl && console.log('venmo_shouldFetchDeposits_2');
+    const fetchData = async () => {
+      if (depositCounter && venmoRampAddress) {
+        esl && console.log('venmo_shouldFetchDeposits_2');
+  
+        setShouldFetchDeposits(true);
 
-      setShouldFetchDeposits(true);
-    } else {
-      esl && console.log('venmo_shouldFetchDeposits_3');
+        await fetchAndPruneDeposits(depositCounter, venmoRampAddress);
+      } else {
+        esl && console.log('venmo_shouldFetchDeposits_3');
+  
+        setShouldFetchDeposits(false);
+  
+        setDeposits(null);
+        setDepositStore(null);
+  
+        setPrunedDepositIds([]);
+        setTargetedDepositIds([]);
+      }
+    };
+  
+    fetchData();
 
-      setShouldFetchDeposits(false);
-
-      setDeposits(null);
-      setDepositStore(null);
-    }
-  }, [rampAddress, depositCounter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [depositCounter, venmoRampAddress, fetchDepositsTrigger]);
 
   useEffect(() => {
     esl && console.log('venmo_depositStore_1');
     esl && console.log('checking deposits: ', deposits);
-    esl && console.log('venmo_loggedInEthereumAddress: ', loggedInEthereumAddress);
 
     if (deposits && deposits.length > 0) {
       esl && console.log('venmo_depositStore_2');
 
-      if (loggedInEthereumAddress) {
-        const newStore = createDepositsStore(deposits);
-        
-        setDepositStore(newStore);
-      } else {
-        const newStore = createDepositsStore(deposits);
-        
-        setDepositStore(newStore);
-      }
+      const newStore = createDepositsStore(deposits);
+
+      setDepositStore(newStore);
     } else {
       esl && console.log('venmo_depositStore_3');
 
       setDepositStore(null);
     }
-  }, [deposits, loggedInEthereumAddress]);
+  }, [deposits]);
 
-  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string): IndicativeQuote => {
+  /*
+   * Public
+   */
+
+  const refetchDeposits = () => {
+    setFetchDepositsTrigger(prev => prev + 1);
+  };
+
+  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, onRamperAddress: string): IndicativeQuote => {
     if (depositStore) {
-      return fetchBestDepositForAmount(
-        requestedOnRampInputAmount,
-        depositStore,
-        targetedDepositIds,
-        loggedInEthereumAddress
-      );
+        return fetchBestDepositForAmount(
+            requestedOnRampInputAmount,
+            depositStore,
+            targetedDepositIds,
+            onRamperAddress
+        );
     } else {
-      return {
-        error: 'No deposits available'
-      } as IndicativeQuote;
+        return {
+            error: 'No deposits available'
+        } as IndicativeQuote;
     }
-  }, [depositStore, targetedDepositIds, loggedInEthereumAddress]);
+  }, [depositStore, targetedDepositIds]);
+
+  const updateTargetedDepositIds = useCallback((targetedDepositIdsToStore: bigint[]) => {
+    if (venmoRampAddress) {
+      updateStoredTargetedIds(venmoRampAddress, targetedDepositIdsToStore);
+    }
+  }, [venmoRampAddress]);
 
   /*
    * Helpers
    */
 
-  const filterPrunedDepositIdsFromTargetedDepositIds = (depositIdsToPrune: bigint[]) => {
+  const filterPrunedDepositIdsFromTargetedDepositIds = (depositIdsToPrune: bigint[], existingTargetedIds: bigint[]) => {
     const prunedIdsSet = new Set(depositIdsToPrune.map(id => id.toString()));
 
-    const targetedDepositIdsToKeep = targetedDepositIds.filter(id => !prunedIdsSet.has(id.toString()));
+    const targetedDepositIdsToKeep = existingTargetedIds.filter(id => !prunedIdsSet.has(id.toString()));
 
     setTargetedDepositIds(targetedDepositIdsToKeep);
+  };
+
+  const fetchStoredPrunedDepositIds = (contractAddress: string) => {
+    const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${contractAddress}`;
+    const prunedIdsFromStorage = localStorage.getItem(prunedIdsStorageKey);
+    const prunedIdsFromStorageParsed = prunedIdsFromStorage ? JSON.parse(prunedIdsFromStorage).map(BigInt) : [];
+
+    return prunedIdsFromStorageParsed;
+  };
+
+  const fetchStoredTargetedDepositIds = (contractAddress: string) => {
+    const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${contractAddress}`;
+    const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
+    const targetedIdsFromStorageParsed = targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : [];
+
+    return targetedIdsFromStorageParsed;
+  };
+
+  const updateStoredTargetedIds = (rampAddress: string, targetedDepositIdsToStore: bigint[]) => {
+    const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
+    const targetedDepositIdsForStorage = targetedDepositIdsToStore.map(id => id.toString());
+    localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
+
+    setTargetedDepositIds(targetedDepositIdsToStore);
+  };
+
+  const updateStoredPrunedIds = (rampAddress: string, prunedDepositIdsToStore: bigint[], existingTargetedIds: bigint[]) => {
+    esl && console.log('updateStoredPrunedIds_1: ', rampAddress);
+
+    const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
+    const prunedDepositIdsForStorage = prunedDepositIdsToStore.map(id => id.toString());
+    localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
+
+    setPrunedDepositIds(prunedDepositIdsToStore);
+
+    filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds, existingTargetedIds);
   };
 
   return (
@@ -288,11 +308,11 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposits,
         depositStore,
         getBestDepositForAmount,
-        refetchDeposits: refetchDepositsBatched,
+        refetchDeposits,
         shouldFetchDeposits,
         calculateUsdFromRequestedUSDC,
         targetedDepositIds,
-        setTargetedDepositIds,
+        updateTargetedDepositIds,
       }}
     >
       {children}
@@ -300,4 +320,4 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default LiquidityProvider
+export default LiquidityProvider;

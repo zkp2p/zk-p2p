@@ -1,27 +1,26 @@
 import { createContext } from 'react'
-import { Address } from 'wagmi';
 
 import { Abi } from './types'
 
 
 interface SmartContractsValues {
   blockscanUrl?: string | null;
-  usdcAddress: Address | null;
+  usdcAddress: string | null;
   usdcAbi?: Abi | null;
   
   // venmo
-  rampAddress: Address | null;
-  rampAbi: Abi | null;
-  registrationProcessorAddress: Address | null;
-  sendProcessorAddress: Address | null;
-  sendProcessorAbi: Abi | null;
-  venmoNftAddress: Address | null;
+  venmoRampAddress: string | null;
+  venmoRampAbi: Abi | null;
+  venmoRegistrationProcessorAddress: string | null;
+  venmoSendProcessorAddress: string | null;
+  venmoSendProcessorAbi: Abi | null;
+  venmoNftAddress: string | null;
   venmoNftAbi: Abi | null;
   
   // hdfc
-  hdfcRampAddress: Address | null;
+  hdfcRampAddress: string | null;
   hdfcRampAbi: Abi | null;
-  hdfcSendProcessorAddress: Address | null;
+  hdfcSendProcessorAddress: string | null;
   hdfcSendProcessorAbi: Abi | null;
 }
 
@@ -31,11 +30,11 @@ const defaultValues: SmartContractsValues = {
   usdcAbi: null,
   
   // venmo
-  rampAddress: null,
-  rampAbi: null,
-  registrationProcessorAddress: null,
-  sendProcessorAddress: null,
-  sendProcessorAbi: null,
+  venmoRampAddress: null,
+  venmoRampAbi: null,
+  venmoRegistrationProcessorAddress: null,
+  venmoSendProcessorAddress: null,
+  venmoSendProcessorAbi: null,
   venmoNftAddress: null,
   venmoNftAbi: null,
   

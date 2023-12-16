@@ -1,5 +1,3 @@
-import { Address } from 'wagmi';
-
 import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
@@ -48,7 +46,7 @@ export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
   targetedDepositIds: bigint[],
-  loggedInUserAddress: Address
+  loggedInUserAddress: string = ''
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 

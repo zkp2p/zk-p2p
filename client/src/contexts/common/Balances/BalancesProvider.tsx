@@ -17,8 +17,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { rampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts()
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { venmoRampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts();
 
   /*
    * State
@@ -62,7 +62,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     functionName: "allowance",
     args: [
       loggedInEthereumAddress ?? ZERO_ADDRESS,
-      rampAddress
+      venmoRampAddress
     ],
     enabled: shouldFetchUsdcApprovalToRamp,
   });
@@ -109,10 +109,10 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchUsdcBalanceAndApproval_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking rampAddress: ', rampAddress);
+    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
     esl && console.log('checking usdcAddress: ', usdcAddress);
 
-    if (isLoggedIn && loggedInEthereumAddress && rampAddress && usdcAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && venmoRampAddress && usdcAddress) {
       esl && console.log('shouldFetchUsdcBalanceAndApproval_2');
 
       setShouldFetchUsdcBalance(true);
@@ -127,7 +127,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
       setUsdcBalance(null);
       setUsdcApprovalToRamp(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, rampAddress, usdcAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, venmoRampAddress, usdcAddress]);
   
   useEffect(() => {
     esl && console.log('ethBalanceRaw_1');

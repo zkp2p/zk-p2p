@@ -1,9 +1,8 @@
 import { createContext } from 'react'
-import { Address } from 'wagmi';
 
 
 interface PermissionsValues {
-  deniedUsers: Address[] | null;
+  deniedUsers: string[] | null;
   refetchDeniedUsers: (() => void) | null;
   shouldFetchDeniedUsers: boolean;
 }
