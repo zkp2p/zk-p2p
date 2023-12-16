@@ -14,12 +14,12 @@ import {
 interface LiquidityValues {
   deposits: DepositWithAvailableLiquidity[] | null;
   depositStore: StoredDeposit[] | null;
-  getBestDepositForAmount: ((requestedOnRampInputAmount: string) => IndicativeQuote) | null;
+  getBestDepositForAmount: ((requestedOnRampInputAmount: string, onRamperAddress: string) => IndicativeQuote) | null;
   refetchDeposits: (() => void) | null;
   shouldFetchDeposits: boolean;
   calculateUsdFromRequestedUSDC: (requestedOnRampInputAmount: bigint, conversionRate: bigint) => bigint;
   targetedDepositIds: bigint[] | null;
-  setTargetedDepositIds: (targetedDepositIds: bigint[]) => void;
+  updateTargetedDepositIds: (targetedDepositIds: bigint[]) => void;
 }
 
 const defaultValues: LiquidityValues = {
@@ -30,7 +30,7 @@ const defaultValues: LiquidityValues = {
   shouldFetchDeposits: false,
   calculateUsdFromRequestedUSDC,
   targetedDepositIds: null,
-  setTargetedDepositIds: () => {}
+  updateTargetedDepositIds: () => {}
 };
 
 const LiquidityContext = createContext<LiquidityValues>(defaultValues)

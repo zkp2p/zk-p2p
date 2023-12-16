@@ -46,7 +46,7 @@ export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
   targetedDepositIds: bigint[],
-  loggedInUserAddress: string
+  loggedInUserAddress: string = ''
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 

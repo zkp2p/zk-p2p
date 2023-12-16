@@ -23,7 +23,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    * Context
    */
 
-  const { network } = useAccount();
+  const { network, isLoggedIn, accountStatus, connectStatus, disconnectStatus } = useAccount();
 
   /*
    * State
@@ -49,63 +49,105 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     esl && console.log('smartContracts_1');
     esl && console.log('checking network: ', network);
+    esl && console.log('isLoggedIn: ', isLoggedIn);
+    esl && console.log('accountStatus: ', accountStatus);
+    esl && console.log('connectStatus: ', connectStatus);
+    esl && console.log('disconnectStatus: ', disconnectStatus);
 
-    const networkName = network ? network : DEFAULT_NETWORK;
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
-    let contractsForNetwork: { [contract: string]: string; };
-    switch (deploymentEnvironment) {
-      case 'PRODUCTION':
-        contractsForNetwork = contractAddresses['base_production'];
-        break;
+    let networkToUse = null;
+    if (isLoggedIn) {
+      const isAccountStatusValid = accountStatus === 'connected';
+      const isConnectStatusValid = connectStatus === 'idle';
+      const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
+      const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      case 'STAGING':
-      case 'LOCAL':
-      default:
-        switch (networkName) {
-          case 'base':
-            contractsForNetwork = contractAddresses['base_staging'];
-            break;
+      if (validLoggedInState) {
+        networkToUse = network;
+      }
 
-          case 'goerli':
-            contractsForNetwork = contractAddresses['goerli_staging'];
-            break;
+      const isAccountStatusValidTwo = accountStatus === 'disconnected'; 
+      const isConnectStatusValidTwo = connectStatus === 'idle';
+      const isDisconnectStatusValidTwo = disconnectStatus === 'idle';
+      const validLoggedOutState = isAccountStatusValidTwo && isConnectStatusValidTwo && isDisconnectStatusValidTwo;
 
-          case 'hardhat':
-          default:
-            contractsForNetwork = contractAddresses['localhardhat'];
-            break;
-        }
-    };
-
-    if (contractsForNetwork) {
-      setBlockscanUrl(blockExplorerUrls[networkName]);
-      setUsdcAddress(contractsForNetwork.fusdc);
-
-      // Venmo
-      setVenmoRampAddress(contractsForNetwork.ramp);
-      setVenmoSendProcessorAddress(contractsForNetwork.sendProcessor);
-      setVenmoRegistrationProcessorAddress(contractsForNetwork.registrationProcessor);
-      setVenmoNftAddress(contractsForNetwork.proofOfP2pNft);
-
-      // Hdfc
-      setHdfcRampAddress(contractsForNetwork.hdfcRamp);
-      setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor);
+      if (validLoggedOutState) {
+        networkToUse = DEFAULT_NETWORK;
+      }
     } else {
-      setBlockscanUrl(blockExplorerUrls[networkName]);
-      setUsdcAddress(null);
+      const isAccountStatusValid = accountStatus === 'connecting';
+      const isConnectStatusValid = connectStatus === 'idle';
+      const isDisconnectStatusValid = disconnectStatus === 'idle';
+      const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      // Venmo
-      setVenmoRampAddress(null);
-      setVenmoSendProcessorAddress(null);
-      setVenmoRegistrationProcessorAddress(null);
-      setVenmoNftAddress(null);
-
-      // Hdfc
-      setHdfcRampAddress(null);
-      setHdfcSendProcessorAddress(null);
+      if (validLoggedInState) {
+        networkToUse = DEFAULT_NETWORK;
+      }
     }
-  }, [network]);
+
+    if (networkToUse) {
+      switch (deploymentEnvironment) {
+        case 'PRODUCTION':
+          setAddressWithNetworkEnvKey('base_production');
+          break;
+  
+        default:
+          switch (networkToUse) {
+            case 'base':
+              setAddressWithNetworkEnvKey('base_staging');
+              break;
+  
+            case 'goerli':
+              setAddressWithNetworkEnvKey('goerli_staging');
+              break;
+  
+            case 'hardhat':
+            default:
+              setAddressWithNetworkEnvKey('localhardhat');
+              break;
+          }
+        }
+    } else {
+      setEmptyAddresses();
+    }
+  }, [network, isLoggedIn, accountStatus, connectStatus, disconnectStatus]);
+
+  /*
+   * Helpers
+   */
+
+  const setEmptyAddresses = () => {
+    setBlockscanUrl(blockExplorerUrls['base']);
+    setUsdcAddress(null);
+
+    // Venmo
+    setVenmoRampAddress(null);
+    setVenmoSendProcessorAddress(null);
+    setVenmoRegistrationProcessorAddress(null);
+    setVenmoNftAddress(null);
+
+    // Hdfc
+    setHdfcRampAddress(null); 
+    setHdfcSendProcessorAddress(null);
+  };
+
+  const setAddressWithNetworkEnvKey = (networkEnvKey: string) => {
+    const contractsForNetwork = contractAddresses[networkEnvKey];
+
+    setBlockscanUrl(blockExplorerUrls[networkEnvKey]);
+    setUsdcAddress(contractsForNetwork.fusdc);
+
+    // Venmo
+    setVenmoRampAddress(contractsForNetwork.ramp);
+    setVenmoSendProcessorAddress(contractsForNetwork.sendProcessor);
+    setVenmoRegistrationProcessorAddress(contractsForNetwork.registrationProcessor);
+    setVenmoNftAddress(contractsForNetwork.proofOfP2pNft);
+
+    // Hdfc
+    setHdfcRampAddress(contractsForNetwork.hdfcRamp);
+    setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor);
+  };
 
   return (
     <SmartContractsContext.Provider

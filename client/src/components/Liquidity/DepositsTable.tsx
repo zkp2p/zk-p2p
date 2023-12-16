@@ -34,13 +34,13 @@ export const DepositsTable: React.FC = () => {
   const {
     depositStore: venmoDepositStore,
     targetedDepositIds: venmoTargetedDepositIds,
-    setTargetedDepositIds: setVenmoTargetedDepositIds
+    updateTargetedDepositIds: updateVenmoTargetedDepositIds
   } = useVenmoLiquidity();
 
   const {
     depositStore: hdfcDepositStore,
     targetedDepositIds: hdfcTargetedDepositIds,
-    setTargetedDepositIds: setHdfcTargetedDepositIds
+    updateTargetedDepositIds: updateHdfcTargetedDepositIds
   } = useHdfcLiquidity();
 
   /*
@@ -48,7 +48,6 @@ export const DepositsTable: React.FC = () => {
    */
 
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
-  const [combinedDepositStore, setCombinedDepositStore] = useState<DepositWithAvailableLiquidity[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -59,18 +58,15 @@ export const DepositsTable: React.FC = () => {
    */
 
   useEffect(() => {
+    let combinedDepositStore: DepositWithAvailableLiquidity[] = [];
     if (venmoDepositStore && hdfcDepositStore) {
-      const combinedDepositStore = [...venmoDepositStore, ...hdfcDepositStore];
-
-      setCombinedDepositStore(combinedDepositStore);
+      combinedDepositStore = [...venmoDepositStore, ...hdfcDepositStore];
     } else if (venmoDepositStore) {
-      setCombinedDepositStore(venmoDepositStore);
+      combinedDepositStore = venmoDepositStore;
     } else if (hdfcDepositStore) {
-      setCombinedDepositStore(hdfcDepositStore);
+      combinedDepositStore = hdfcDepositStore;
     }
-  }, [venmoDepositStore, hdfcDepositStore]);
 
-  useEffect(() => {
     if (combinedDepositStore.length === 0) {
       setPositionsRowData([]);  
     } else {
@@ -87,14 +83,18 @@ export const DepositsTable: React.FC = () => {
         let targeted = false;
         if (platformType === PaymentPlatform.VENMO && venmoTargetedDepositIds) {
           const targetedDepositIdsSet = new Set(venmoTargetedDepositIds.map(id => id.toString()));
+          const shouldBeTargeted = targetedDepositIdsSet.has(depositId.toString());
 
-          if (targetedDepositIdsSet.has(depositWithLiquidity.depositId.toString())) {
+
+          if (shouldBeTargeted) {
             targeted = true;
           }
-        } else if (platformType === PaymentPlatform.HDFC && hdfcTargetedDepositIds) {
+        }
+        
+        if (platformType === PaymentPlatform.HDFC && hdfcTargetedDepositIds) {
           const targetedDepositIdsSet = new Set(hdfcTargetedDepositIds.map(id => id.toString()));
 
-          if (targetedDepositIdsSet.has(depositWithLiquidity.depositId.toString())) {
+          if (targetedDepositIdsSet.has(depositId.toString())) {
             targeted = true;
           }
         }
@@ -112,12 +112,7 @@ export const DepositsTable: React.FC = () => {
 
       setPositionsRowData(sanitizedDeposits);
     }
-  }, [
-    combinedDepositStore,
-    isTargetingDeposits,
-    venmoTargetedDepositIds,
-    hdfcTargetedDepositIds,
-  ]);
+  }, [venmoDepositStore, hdfcDepositStore, isTargetingDeposits, venmoTargetedDepositIds, hdfcTargetedDepositIds]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -146,11 +141,11 @@ export const DepositsTable: React.FC = () => {
         if (didSelectDeposit) {
           const depositIdsToStore = [...venmoTargetedDepositIds, depositId];
   
-          setVenmoTargetedDepositIds(depositIdsToStore);
+          updateVenmoTargetedDepositIds(depositIdsToStore);
         } else {
           const filteredTargetedDepositIds = venmoTargetedDepositIds.filter(id => id !== depositId);
   
-          setVenmoTargetedDepositIds(filteredTargetedDepositIds);
+          updateVenmoTargetedDepositIds(filteredTargetedDepositIds);
         }
       }
     } else {
@@ -159,11 +154,11 @@ export const DepositsTable: React.FC = () => {
         if (didSelectDeposit) {
           const depositIdsToStore = [...hdfcTargetedDepositIds, depositId];
   
-          setHdfcTargetedDepositIds(depositIdsToStore);
+          updateHdfcTargetedDepositIds(depositIdsToStore);
         } else {
           const filteredTargetedDepositIds = hdfcTargetedDepositIds.filter(id => id !== depositId);
   
-          setHdfcTargetedDepositIds(filteredTargetedDepositIds);
+          updateHdfcTargetedDepositIds(filteredTargetedDepositIds);
         }
       }
     }
