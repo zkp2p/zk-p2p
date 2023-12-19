@@ -49,7 +49,6 @@ export default function PermissionsForm() {
 const Wrapper = styled(AutoColumn)`
   max-width: 660px;
   width: 100%;
-  padding-top: 1.5rem;
 `
 
 const Column = styled.div`

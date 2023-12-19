@@ -184,7 +184,6 @@ export default function Deposit() {
 const Wrapper = styled(AutoColumn)`
   max-width: 660px;
   width: 100%;
-  padding-top: 1.5rem;
 `
 
 const DepositAndIntentContainer = styled.div`

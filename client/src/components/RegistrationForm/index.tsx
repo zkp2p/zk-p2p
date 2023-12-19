@@ -77,5 +77,4 @@ export const RegistrationForm: React.FC = () => {
 const Wrapper = styled.div`
   max-width: 660px;
   width: 100%;
-  padding-top: 1.5rem;
 `;
