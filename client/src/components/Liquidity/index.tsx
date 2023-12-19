@@ -93,5 +93,4 @@ export default function Deposit() {
 const Wrapper = styled(AutoColumn)`
   max-width: 920px;
   width: 100%;
-  padding-top: 1.5rem;
 `;
