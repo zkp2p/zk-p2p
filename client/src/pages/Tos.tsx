@@ -6,11 +6,11 @@ export const Tos: React.FC = () => {
   return (
     <PageWrapper>
       <TermsHeader>ZKP2P Terms of Service</TermsHeader>
-      <TermsSubheader>Last modified: November 15th, 2023</TermsSubheader>
+      <TermsSubheader>Last modified: December 19th, 2023</TermsSubheader>
       <TermsContent>
         <TermsContentSection>
           These Terms of Service (the "Agreement") explain the terms and conditions by which you may
-          access and use the Products provided by us (referred to herein as "we", "our", or "us"). The
+          access and use the Products provided by us (referred to herein as "P2P Labs", "we", "our", or "us"). The
           Products shall include, but shall not necessarily be limited to, (a) zkp2p.xyz, a website-hosted
           user interface (the "Interface" or "App"). You must read this Agreement carefully as it governs
           your use of the Products. By accessing or using any of the Products, you signify that you have
