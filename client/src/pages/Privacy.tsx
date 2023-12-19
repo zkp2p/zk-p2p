@@ -6,10 +6,10 @@ export const Privacy: React.FC = () => {
   return (
     <PageWrapper>
       <PolicyHeader>ZKP2P Privacy Policy</PolicyHeader>
-      <PolicySubheader>Last modified: November 15th, 2023</PolicySubheader>
+      <PolicySubheader>Last modified: December 19th, 2023</PolicySubheader>
       <PolicyContent>
         <PolicyContentSection>
-          This Privacy Policy (the “Policy”) describes how we (“we”, “us” or “our”) collects, uses, and
+          This Privacy Policy (the “Policy”) describes how P2P Labs Inc. (“P2P Labs“, the “Company“, “we”, “us” or “our”) collects, uses, and
           shares data in connection with the zkp2p web app (zkp2p.xyz) and all of our other properties,
           products, and services (the “Services”). Your use of the Services is subject to this Policy as well
           as our Terms of Service.
