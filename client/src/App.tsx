@@ -99,52 +99,62 @@ const App = () => {
   }
 };
 
+type ProvidersType = [React.ElementType, Record<string, unknown>];
+type ChildrenType = {
+  children: Array<React.ElementType>;
+};
+
+export const buildProvidersTree = (
+  componentsWithProps: Array<ProvidersType>,
+) => {
+  const initialComponent = ({children}: ChildrenType) => <>{children}</>;
+  return componentsWithProps.reduce(
+    (
+      AccumulatedComponents: React.ElementType,
+      [Provider, props = {}]: ProvidersType,
+    ) => {
+      return ({children}: ChildrenType) => {
+        return (
+          <AccumulatedComponents>
+            <Provider {...props}>{children}</Provider>
+          </AccumulatedComponents>
+        );
+      };
+    },
+    initialComponent,
+  );
+};
+
+const providersWithProps: ProvidersType[] = [
+  [AccountProvider, {}],
+  [SmartContractsProvider, {}],
+  [PlatformSettings, {}],
+  [BalancesProvider, {}],
+  [RampProvider, {}],
+  [HdfcRampProvider, {}],
+  [RegistrationProvider, {}],
+  [HdfcRegistrationProvider, {}],
+  [DepositsProvider, {}],
+  [HdfcDepositsProvider, {}],
+  [PermissionsProvider, {}],
+  [LiquidityProvider, {}],
+  [HdfcLiquidityProvider, {}],
+  [OnRamperIntentsProvider, {}],
+  [HdfcOnRamperIntentsProvider, {}],
+  [SwapQuoteProvider, {}],
+  [ProofGenSettingsProvider, {}],
+  [GoogleOAuthProvider, { clientId: process.env.GOOGLE_CLIENT_ID || "" }],
+  [GoogleAuthProvider, {}],
+];
+
+const ProviderTree = buildProvidersTree(providersWithProps);
+
 interface ProvidersProps {
   children: ReactNode;
 }
 
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
-  return (
-    <AccountProvider>
-      <SmartContractsProvider>
-        <PlatformSettings>
-          <BalancesProvider>
-            <RampProvider>
-              <HdfcRampProvider>
-                <RegistrationProvider>
-                  <HdfcRegistrationProvider>
-                    <DepositsProvider>
-                      <HdfcDepositsProvider>
-                        <PermissionsProvider>
-                          <LiquidityProvider>
-                            <HdfcLiquidityProvider>
-                              <OnRamperIntentsProvider>
-                                <HdfcOnRamperIntentsProvider>
-                                  <SwapQuoteProvider>
-                                    <ProofGenSettingsProvider>
-                                      <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID || ""}>
-                                        <GoogleAuthProvider>
-                                          { children }
-                                        </GoogleAuthProvider>
-                                      </GoogleOAuthProvider>
-                                    </ProofGenSettingsProvider>
-                                  </SwapQuoteProvider>
-                                </HdfcOnRamperIntentsProvider>
-                              </OnRamperIntentsProvider>
-                            </HdfcLiquidityProvider>
-                          </LiquidityProvider>
-                        </PermissionsProvider>
-                      </HdfcDepositsProvider>
-                    </DepositsProvider>
-                  </HdfcRegistrationProvider>
-                </RegistrationProvider>
-              </HdfcRampProvider>
-            </RampProvider>
-          </BalancesProvider>
-        </PlatformSettings>
-      </SmartContractsProvider>
-    </AccountProvider>
-  )
+  return <ProviderTree>{children}</ProviderTree>;
 }
 
 export default App;
