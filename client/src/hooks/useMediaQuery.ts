@@ -28,4 +28,4 @@ const useMediaQuery = () => {
   return deviceSize;
 };
 
-export default useMediaQuery
+export default useMediaQuery;
