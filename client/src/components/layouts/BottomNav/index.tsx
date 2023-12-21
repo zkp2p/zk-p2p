@@ -34,10 +34,9 @@ export const BottomNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
-  align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 0px 20px 20px 20px;
+  padding-bottom: 1.5rem;
 
   position: fixed;
   bottom: 0;

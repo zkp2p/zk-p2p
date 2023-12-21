@@ -168,7 +168,7 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
-  padding-bottom: ${props => props.$isMobile ? '4rem' : '0rem'};
+  padding-bottom: ${props => props.$isMobile ? '4.5rem' : '0rem'};
 `;
 
 const Container = styled.div`
@@ -199,6 +199,10 @@ const SwapPreviewContainer = styled.div`
   margin-bottom: 520px;
   cursor: pointer;
   padding: 0px 48px;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
 `;
 
 const ButtonContainer = styled.div`
