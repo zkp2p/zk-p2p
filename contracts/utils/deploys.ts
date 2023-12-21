@@ -14,10 +14,12 @@ import {
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
+  RampV2,
   StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
+  VenmoRegistrationProcessorV2,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
 } from "./contracts";
@@ -33,6 +35,10 @@ import {
   VenmoSendProcessor__factory,
   mocks as venmoMocks
 } from "../typechain/factories/contracts/ramps/venmo-v1";
+import {
+  RampV2__factory,
+  VenmoRegistrationProcessorV2__factory,
+} from "../typechain/factories/contracts/ramps/venmo-v2";
 import {
   StringConversionUtilsMock__factory,
   USDCMock__factory,
@@ -54,7 +60,7 @@ export default class DeployHelper {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
   }
 
-  // Venmo Contracts
+  // Venmo-V1 Contracts
   public async deployRamp(
     owner: Address,
     usdcToken: Address,
@@ -100,6 +106,45 @@ export default class DeployHelper {
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
     return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
+  }
+
+  // Venmo-V2 Contracts
+  public async deployRampV2(
+    owner: Address,
+    usdcToken: Address,
+    poseidon: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<RampV2> {
+    return await new RampV2__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      poseidon,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  public async deployVenmoRegistrationProcessorV2(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    emailFromAddress: string,
+  ): Promise<VenmoRegistrationProcessorV2> {
+    return await new VenmoRegistrationProcessorV2__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
