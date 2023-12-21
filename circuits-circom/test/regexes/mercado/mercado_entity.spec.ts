@@ -159,7 +159,7 @@ describe("Mercado Entity Regex", () => {
             assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
         });
 
-        it("Entidad: = <=strong> Mercado Pago", async () => {
+        it("Entidad: =<=strong> Mercado Pago", async () => {
             const input = {
                 "msg": textToAsciiArray("Entidad: =\r\n <=\r\nstrong> Mercado Pago")
             };
@@ -183,7 +183,216 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <st=rong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<st=\r\nrong> Mercado Pago")
+                "msg": textToAsciiArray("Entidad: =\r\n <st=\r\nrong> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <str=ong> Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <str=\r\nong> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <stro=ng> Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <stro=\r\nng> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <stron=g> Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <stron=\r\ng> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong=> Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong=\r\n> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong>= Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong>=\r\n Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> =Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\nMercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = =Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\nMercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = M=ercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n M=\r\nercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Me=rcado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Me=\r\nrcado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mer=cado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mer=\r\ncado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Merc=ado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Merc=\r\nado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercad=o Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mercad=\r\no Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado= Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mercado=\r\n Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado =Pago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado =\r\nPago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado P=ago", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado P=\r\nago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado Pa=go", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pa=\r\ngo")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = <strong> = = Mercado Pag=o", async () => {
+            const input = {
+                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pag=\r\no")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -195,7 +404,7 @@ describe("Mercado Entity Regex", () => {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Entity: <strong>")
+            "msg": textToAsciiArray("Entity: <strong> Mercado Pago")
         };
         const witness = await cir.calculateWitness(
             input,
