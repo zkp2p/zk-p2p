@@ -33,6 +33,7 @@ describe("HDFCRamp", () => {
   let offRamper: Account;
   let offRamperNewAcct: Account;
   let onRamper: Account;
+  let onRamperOtherAddress: Account;
   let onRamperTwo: Account;
   let receiver: Account;
   let maliciousOnRamper: Account;
@@ -51,6 +52,7 @@ describe("HDFCRamp", () => {
       owner,
       offRamper,
       onRamper,
+      onRamperOtherAddress,
       onRamperTwo,
       receiver,
       maliciousOnRamper,
@@ -743,6 +745,60 @@ describe("HDFCRamp", () => {
 
       it("should emit an IntentPruned event", async () => {
         await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(subjectIntentHash, depositId);
+      });
+
+      describe("when the call comes from a different Eth address tied to the same venmoIdHash", async () => {
+        beforeEach(async () => {
+          const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
+
+          await ramp.connect(onRamperOtherAddress.wallet).register(
+            _a,
+            _b,
+            _c,
+            signalsOnRamp
+          );
+
+          subjectCaller = onRamperOtherAddress;
+        });
+
+        it("should prune the intent and update the rest of the deposit mapping correctly", async () => {
+          const preDeposit = await ramp.getDeposit(depositId);
+  
+          expect(preDeposit.intentHashes).to.include(subjectIntentHash);
+  
+          await subject();
+  
+          const postDeposit = await ramp.getDeposit(depositId);
+  
+          expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
+          expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits.add(usdc(50))); // 10 usdc difference between old and new intent
+          expect(postDeposit.intentHashes).to.not.include(subjectIntentHash);
+        });
+  
+        it("should delete the original intent from the intents mapping", async () => {
+          await subject();
+  
+          const intent = await ramp.intents(subjectIntentHash);
+  
+          expect(intent.onRamper).to.eq(ADDRESS_ZERO);
+          expect(intent.deposit).to.eq(ZERO_BYTES32);
+          expect(intent.amount).to.eq(ZERO);
+          expect(intent.intentTimestamp).to.eq(ZERO);
+        });
+  
+        it("should update the accounts current intent hash", async () => {
+          await subject();
+  
+          const intentHash = await ramp.getIdCurrentIntentHash(onRamper.address);
+  
+          expect(intentHash).to.eq(ZERO_BYTES32);
+        });
+  
+        it("should emit an IntentPruned event", async () => {
+          await expect(subject()).to.emit(ramp, "IntentPruned").withArgs(subjectIntentHash, depositId);
+        });
       });
 
       describe("when the intentHash does not exist", async () => {

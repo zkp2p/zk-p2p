@@ -15,5 +15,6 @@ interface IRegistrationProcessor {
         RegistrationProof calldata _proof
     )
         external
+        view
     returns (bytes32);
 }

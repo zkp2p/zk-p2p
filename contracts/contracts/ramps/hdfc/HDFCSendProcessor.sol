@@ -2,14 +2,14 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { DateTime } from "../external/DateTime.sol";
+import { DateTime } from "../../external/DateTime.sol";
 
-import { BaseProcessorV2 } from "./BaseProcessorV2.sol";
-import { Groth16Verifier } from "../verifiers/hdfc_send_verifier.sol";
-import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
-import { IHDFCSendProcessor } from "../interfaces/IHDFCSendProcessor.sol";
-import { StringConversionUtils } from "../lib/StringConversionUtils.sol";
+import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
+import { Groth16Verifier } from "../../verifiers/hdfc_send_verifier.sol";
+import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
+import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
+import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
+import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 

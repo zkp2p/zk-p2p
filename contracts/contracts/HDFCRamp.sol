@@ -3,11 +3,11 @@
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { Bytes32ArrayUtils } from "./external/Bytes32ArrayUtils.sol";
-import { Uint256ArrayUtils } from "./external/Uint256ArrayUtils.sol";
+import { Bytes32ArrayUtils } from "../../external/Bytes32ArrayUtils.sol";
+import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
-import { IPoseidon3 } from "./interfaces/IPoseidon3.sol";
-import { IPoseidon6 } from "./interfaces/IPoseidon6.sol";
+import { IPoseidon3 } from "../../interfaces/IPoseidon3.sol";
+import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
 
@@ -345,7 +345,10 @@ contract HDFCRamp is Ownable {
         Intent memory intent = intents[_intentHash];
         
         require(intent.intentTimestamp != 0, "Intent does not exist");
-        require(intent.onRamper == msg.sender, "Sender must be the on-ramper");
+        require(
+            accounts[intent.onRamper].idHash == accounts[msg.sender].idHash,
+            "Sender must be the on-ramper"
+        );
 
         Deposit storage deposit = deposits[intent.deposit];
 
@@ -797,7 +800,6 @@ contract HDFCRamp is Ownable {
         uint256[5] memory _signals
     )
         internal
-        view
         returns(bytes32)
     {
         bytes32 idHash = registrationProcessor.processProof(

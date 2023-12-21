@@ -2,12 +2,12 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { BaseProcessor } from "./BaseProcessor.sol";
-import { Groth16Verifier } from "../verifiers/venmo_send_verifier.sol";
-import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
-import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
-import { StringConversionUtils } from "../lib/StringConversionUtils.sol";
+import { BaseProcessor } from "../../processors/BaseProcessor.sol";
+import { Groth16Verifier } from "../../verifiers/venmo_send_verifier.sol";
+import { IKeyHashAdapter } from "../../processors/keyHashAdapters/IKeyHashAdapter.sol";
+import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
+import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
+import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 

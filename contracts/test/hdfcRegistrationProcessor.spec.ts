@@ -14,6 +14,7 @@ import {
 import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
+const abiCoder = new ethers.utils.AbiCoder();
 
 const rawSignals = ["0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
 
@@ -45,6 +46,8 @@ describe("HDFCRegistrationProcessor", () => {
       nullifierRegistry.address,
       "alerts@hdfcbank.net"
     );
+
+    await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
   });
 
   describe("#constructor", async () => {
@@ -85,10 +88,38 @@ describe("HDFCRegistrationProcessor", () => {
       return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
+    async function subjectCallStatic(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
+    }
+
     it("should process the proof", async () => {
-      const onRamperIdHash = await subject();
+      const onRamperIdHash = await subjectCallStatic();
 
       expect(onRamperIdHash).to.eq(subjectProof.signals[4]);
+    });
+
+    it("should add the hash of the proof inputs to the nullifier registry", async () => {
+      await subject();
+
+      const expectedNullifier = ethers.utils.keccak256(
+        abiCoder.encode(
+          ["tuple(uint256[2],uint256[2][2],uint256[2],uint256[5])"],
+          [[subjectProof.a, subjectProof.b, subjectProof.c, subjectProof.signals]]
+        )
+      );
+      const isNullified = await nullifierRegistry.isNullified(expectedNullifier);
+
+      expect(isNullified).to.be.true;
+    });
+
+    describe("when the email has been used previously", async () => {
+      beforeEach(async () => {
+        await subject();
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Nullifier has already been used");
+      });
     });
 
     describe("when the proof is invalid", async () => {
