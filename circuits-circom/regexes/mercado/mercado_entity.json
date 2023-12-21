@@ -2,11 +2,7 @@
     "parts": [
         {
             "is_public": false,
-            "regex_def": "E(=\r\n)?n(=\r\n)?t(=\r\n)?i(=\r\n)?d(=\r\n)?a(=\r\n)?d(=\r\n)?\\:(=\r\n)?"
-        },
-        {
-            "is_public": false,
-            "regex_def": " (=\r\n)?( )?"
+            "regex_def": "E(=\r\n)?n(=\r\n)?t(=\r\n)?i(=\r\n)?d(=\r\n)?a(=\r\n)?d(=\r\n)?\\:(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?<(=\r\n)?s(=\r\n)?t(=\r\n)?r(=\r\n)?o(=\r\n)?n(=\r\n)?g(=\r\n)?>(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?M(=\r\n)?e(=\r\n)?r(=\r\n)?c(=\r\n)?a(=\r\n)?d(=\r\n)?o(=\r\n)? (=\r\n)?P(=\r\n)?a(=\r\n)?g(=\r\n)?o"
         }
     ]
 }
