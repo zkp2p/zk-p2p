@@ -16,7 +16,9 @@ import { Deposit } from "./pages/Deposit";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
 import { TopNav } from "@components/layouts/TopNav";
+import { BottomNav } from "@components/layouts/BottomNav";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 // Common Contexts
 import AccountProvider from "./contexts/common/Account/AccountProvider";
@@ -51,6 +53,12 @@ import "./styles.css";
 
 
 const App = () => {
+  /*
+   * Context
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
   return (
     <Router>
       <Providers>
@@ -71,6 +79,9 @@ const App = () => {
               <Route element={<>Not found</>} />
             </Routes>
           </div>
+          {( currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile') &&
+            <BottomNav />
+          }
         </div>
       </Providers>
     </Router>

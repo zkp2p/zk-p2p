@@ -4,11 +4,26 @@ import styled from "styled-components";
 
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NavItem } from "@components/layouts/TopNav/NavItem";
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
+  /*
+   * Context
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
+  /*
+   * State
+   */
+
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState<string>('Landing');
+
+  /*
+   * Hooks
+   */
 
   useEffect(() => {
     const routeName = location.pathname.split('/')[1];
@@ -29,7 +44,9 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
             <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
           </Logo>
 
-          <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+          { currentDeviceSize === 'laptop' && (
+            <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+          )}
         </LogoAndNavItems>
       )}
 
@@ -49,7 +66,7 @@ const NavBar = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30px;
+  padding: 20px;
 `;
 
 const Logo = styled(Link)<{ size?: number }>`

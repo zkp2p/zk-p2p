@@ -57,7 +57,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                     onClick={openConnectModal}
                     height={height}
                   >
-                    {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
+                    {currentDeviceSize === 'tablet' ? 'Connect' : 'Connect Wallet'}
                   </Button>
                 );
               }
