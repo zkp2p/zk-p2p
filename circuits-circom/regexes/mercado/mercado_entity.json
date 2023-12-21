@@ -1,0 +1,12 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "E(=\r\n)?n(=\r\n)?t(=\r\n)?i(=\r\n)?d(=\r\n)?a(=\r\n)?d(=\r\n)?\\:(=\r\n)?"
+        },
+        {
+            "is_public": false,
+            "regex_def": " (=\r\n)?( )?"
+        }
+    ]
+}

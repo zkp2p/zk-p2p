@@ -91,7 +91,8 @@ export enum CircuitType {
   EMAIL_VENMO_SEND = "venmo_send",
   EMAIL_VENMO_REGISTRATION = "venmo_registration",
   EMAIL_HDFC_SEND = "hdfc_send",
-  EMAIL_HDFC_REGISTRATION = "hdfc_registration"
+  EMAIL_HDFC_REGISTRATION = "hdfc_registration",
+  EMAIL_MERCADO_SEND = "mercado_send"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -164,6 +165,9 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_HDFC_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Los";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10496 is the max observed body length for one email
   }
 
   // Derive modulus from signature
@@ -338,6 +342,15 @@ export async function getCircuitInputs(
       email_to_idx,
       hdfc_acc_num_idx
     }
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    // Iterate over in_body_padded and convert each int to a char
+    for (let i = 0; i < in_body_padded.length; i++) {
+      in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    }
+    // log in_body_padded
+    console.log(in_body_padded.join(''));
+
+
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
@@ -368,7 +381,7 @@ export async function generate_inputs(
   } else email = raw_email;
   // console.log(email.toString());
   const processed_email = preProcessEmail(email, type);
-  console.log(processed_email.toString());
+  // console.log(processed_email.toString());
   console.log("DKIM verification starting");
   result = await dkimVerify(processed_email);
   // console.log("From:", result.headerFrom);
