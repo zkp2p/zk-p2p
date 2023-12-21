@@ -1,23 +1,20 @@
-import { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import TextTransition, { presets } from 'react-text-transition';
 
 import { Button } from '@components/common/Button';
+import { MAIN_CARDS, SECONDARY_CARDS } from '@helpers/cards';
 import Card from '@components/common/Card';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import SwapPreview from '@components/Landing/SwapPreview';
-import { MAIN_CARDS, SECONDARY_CARDS } from '@helpers/cards';
-import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 const CURRENCIES = ['USD', 'INR'];
 
 export const Landing: React.FC = () => {
-  const currentDeviceSize = useMediaQuery();
-
   const cardsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -40,6 +37,12 @@ export const Landing: React.FC = () => {
   }, []);
 
   /*
+   * Contexts
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
+  /*
    * Handlers
    */
 
@@ -52,15 +55,15 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
-        <HeroContainer style={{ width: currentDeviceSize === 'mobile' ? '90%' : '50%' }}>
+        <HeroContainer style={{ width: currentDeviceSize === 'tablet' ? '90%' : '50%' }}>
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
 
           <HeroTextContainer>
-            <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
+            <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'tablet' ? 44 : 60, fontWeight: 600 }}>
               <span>Onramp </span>
               <TextTransition 
                 springConfig={presets.stiff}
@@ -75,7 +78,7 @@ export const Landing: React.FC = () => {
           </HeroTextContainer>
 
           <SubHeaderContainer>
-            <ThemedText.SubHeaderLarge style={{ textAlign: 'center', lineHeight: '1.3', fontSize: currentDeviceSize === 'mobile' ? 20 : 24 }}>
+            <ThemedText.SubHeaderLarge style={{ textAlign: 'center', lineHeight: '1.3', fontSize: currentDeviceSize === 'tablet' ? 20 : 24 }}>
               Completely peer-to-peer without trusting anyone
             </ThemedText.SubHeaderLarge>
           </SubHeaderContainer>
@@ -112,8 +115,8 @@ export const Landing: React.FC = () => {
           </TosPPContainer>
         </HeroContainer>
 
-        <CardContainer paddingHorizontal={currentDeviceSize === 'mobile' ? 24 : 96}>
-          <CardGrid cols={currentDeviceSize === 'mobile' ? 1 : SECONDARY_CARDS.length} ref={cardsRef}>
+        <CardContainer paddingHorizontal={currentDeviceSize === 'tablet' ? 24 : 96}>
+          <CardGrid cols={currentDeviceSize === 'tablet' ? 1 : SECONDARY_CARDS.length} ref={cardsRef}>
             {SECONDARY_CARDS.map(card => (
               <Card
                 {...card}
@@ -121,7 +124,7 @@ export const Landing: React.FC = () => {
               />
             ))}
           </CardGrid>
-          <CardGrid cols={currentDeviceSize === 'mobile' ? 1 : MAIN_CARDS.length}>
+          <CardGrid cols={currentDeviceSize === 'tablet' ? 1 : MAIN_CARDS.length}>
             {MAIN_CARDS.map(card => (
               <Card
                 {...card}
@@ -159,12 +162,13 @@ export const Landing: React.FC = () => {
   )
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
+  padding-bottom: ${props => props.$isMobile ? '4rem' : '0rem'};
 `;
 
 const Container = styled.div`

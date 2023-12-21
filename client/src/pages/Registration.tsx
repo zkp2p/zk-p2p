@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
+import useMediaQuery from '@hooks/useMediaQuery';
 
 import { RegistrationForm } from "@components/Registration"
 import useRegistration from '@hooks/venmo/useRegistration';
@@ -11,6 +12,8 @@ export const Registration: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const {
     refetchRampAccount: refetchVenmoAccount,
@@ -65,7 +68,7 @@ export const Registration: React.FC = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Main>
         <RegistrationForm />
       </Main>
@@ -73,11 +76,11 @@ export const Registration: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 12px 8px 0px;
-  padding-bottom: 3rem;
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '4rem'};
 `;
 
 const Main = styled.div`

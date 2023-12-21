@@ -8,12 +8,15 @@ import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Deposit: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const {
     isRegistered: isRegisteredOnVenmo
@@ -86,7 +89,7 @@ export const Deposit: React.FC = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Main>
         <DepositTable />
       </Main>
@@ -94,11 +97,11 @@ export const Deposit: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 12px 8px;
-  padding-bottom: 3rem;
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '4rem'};
 `;
 
 const Main = styled.div`

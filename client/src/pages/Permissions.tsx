@@ -3,12 +3,15 @@ import styled from "styled-components";
 
 import PermissionsForm from "@components/Permissions"
 import usePermissions from "@hooks/usePermissions";
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Permissions: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const { refetchDeniedUsers, shouldFetchDeniedUsers } = usePermissions();
 
@@ -25,7 +28,7 @@ export const Permissions: React.FC = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Main>
         <PermissionsForm />
       </Main>
@@ -33,11 +36,11 @@ export const Permissions: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 12px 8px 0px;
-  padding-bottom: 3rem;
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '4rem'};
 `;
 
 const Main = styled.div`

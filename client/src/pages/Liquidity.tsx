@@ -6,12 +6,15 @@ import useVenmoRampState from '@hooks/venmo/useRampState';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Liquidity: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const {
     refetchDepositCounter: refetchVenmoDepositCounter,
@@ -56,7 +59,7 @@ export const Liquidity: React.FC = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Main>
         <DepositTable />
       </Main>
@@ -64,11 +67,11 @@ export const Liquidity: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   padding: 12px 8px;
-  padding-bottom: 3rem;
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '4rem'};
 `;
 
 const Main = styled.div`

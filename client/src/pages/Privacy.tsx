@@ -1,10 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import useMediaQuery from '@hooks/useMediaQuery';
+
 
 export const Privacy: React.FC = () => {
+  /*
+   * Contexts
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <PolicyHeader>ZKP2P Privacy Policy</PolicyHeader>
       <PolicySubheader>Last modified: December 19th, 2023</PolicySubheader>
       <PolicyContent>
@@ -333,13 +341,13 @@ export const Privacy: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   padding: 12px 8px 0px;
-  padding-bottom: 3rem;
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '4rem'};
   margin: auto;
   max-width: 660px;
   width: 100%;
