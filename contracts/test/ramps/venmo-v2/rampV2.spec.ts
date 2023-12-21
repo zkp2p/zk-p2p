@@ -1059,7 +1059,7 @@ describe("RampV2", () => {
 
         depositId = (await ramp.depositCounter()).sub(1);
 
-        const idHash = await calculateIdHash("22");
+        const idHash = await calculateIdHash("2");
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
@@ -1169,7 +1169,7 @@ describe("RampV2", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          subjectIntentHash = calculateIntentHash(await calculateIdHash("22"), depositId, currentTimestamp);
+          subjectIntentHash = calculateIntentHash(await calculateIdHash("2"), depositId, currentTimestamp);
         });
 
         it("should prune the deposit", async () => {
