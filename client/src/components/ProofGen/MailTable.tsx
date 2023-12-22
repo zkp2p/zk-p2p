@@ -6,6 +6,7 @@ import { ThemedText } from '../../theme/text';
 import { Button } from '../Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
+import { CustomCheckbox } from "@components/common/Checkbox"
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
 import {
   fetchEmailsRaw,
@@ -51,7 +52,11 @@ export const MailTable: React.FC<MailTableProps> = ({
     googleLogOut,
   } = useGoogleAuth();
 
-  const { setIsEmailModeAuth } = useProofGenSettings();
+  const {
+    isAutoSelectEmailEnabled,
+    setIsAutoSelectEmailEnabled,
+    setIsEmailModeAuth
+  } = useProofGenSettings();
 
   /*
    * State
@@ -79,6 +84,10 @@ export const MailTable: React.FC<MailTableProps> = ({
     if (setIsEmailModeAuth) {
       setIsEmailModeAuth(checked);
     }
+  };
+
+  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsAutoSelectEmailEnabled(event.target.checked);
   };
 
   /*
@@ -271,7 +280,6 @@ export const MailTable: React.FC<MailTableProps> = ({
                 </EmailLabel>
               </EmailAddressTitle>
 
-
               <AccessoryButton
                 onClick={fetchData}
                 height={36}
@@ -303,6 +311,16 @@ export const MailTable: React.FC<MailTableProps> = ({
               </Table>
             )}
           </TitleAndTableContainer>
+
+          <CheckboxContainer>
+            <CustomCheckbox
+              checked={isAutoSelectEmailEnabled}
+              onChange={onCheckboxChange}
+            />
+            <CheckboxInstructionsLabel>
+              Auto select email
+            </CheckboxInstructionsLabel>
+          </CheckboxContainer>
 
           <ButtonContainer>
             <Button
@@ -426,6 +444,25 @@ const Table = styled.div`
   color: #616161;
 `;
 
+const StyledInbox = styled(Inbox)`
+  color: #FFF;
+  height: 28px;
+  width: 28px;
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: auto;
+  gap: 0.75rem;
+`;
+
+const CheckboxInstructionsLabel = styled.div`
+  padding-top: 2px;
+  font-size: 15px;
+  color: #6C757D;
+`;
+
 const ButtonContainer = styled.div`
   display: grid;
   padding-top: 1rem;
@@ -438,7 +475,3 @@ const LoginOrUploadButtonContainer = styled.div`
   margin: auto;
   gap: 1rem;
 `;
-
-const StyledInbox = styled(Inbox)`
-  color: #FFF;
-`

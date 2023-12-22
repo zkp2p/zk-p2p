@@ -33,7 +33,7 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
 
   const storedAutoSelectEmailEnabled = localStorage.getItem('isAutoSelectEmailEnabled');
   const [isAutoSelectEmailEnabled, setIsAutoSelectEmailEnabled] = useState<boolean>(
-    storedAutoSelectEmailEnabled !== null ? JSON.parse(storedAutoSelectEmailEnabled) : true
+    storedAutoSelectEmailEnabled !== null ? JSON.parse(storedAutoSelectEmailEnabled) : false
   );
 
   /*
