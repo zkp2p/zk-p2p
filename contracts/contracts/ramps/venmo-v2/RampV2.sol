@@ -7,6 +7,7 @@ import { Bytes32ArrayUtils } from "../../external/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
 import { IPoseidon } from "../../interfaces/IPoseidon.sol";
+import { IRamp } from "./interfaces/IRamp.sol";
 import { IRegistrationProcessorV2 } from "./interfaces/IRegistrationProcessorV2.sol";
 import { ISendProcessor } from "../venmo-v1/interfaces/ISendProcessor.sol";
 
@@ -121,7 +122,7 @@ contract RampV2 is Ownable {
 
     /* ============ Modifiers ============ */
     modifier onlyRegisteredUser() {
-        require(accounts[msg.sender].venmoIdHash != bytes32(0), "Caller must be registered user");
+        require(getAccountVenmoIdHash(msg.sender) != bytes32(0), "Caller must be registered user");
         _;
     }
 
@@ -134,7 +135,8 @@ contract RampV2 is Ownable {
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
     IPoseidon public immutable poseidon;                            // Poseidon hashing contract
-    IRegistrationProcessorV2 public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
+    IRamp public immutable ramp;                                    // V1 Ramp contract, used to share registration state
+    IRegistrationProcessorV2 public registrationProcessor;          // Address of registration processor contract, verifies registration e-mails
     ISendProcessor public sendProcessor;                            // Address of send processor contract, verifies onRamp emails
 
     bool internal isInitialized;                                    // Indicates if contract has been initialized
@@ -156,6 +158,7 @@ contract RampV2 is Ownable {
     /* ============ Constructor ============ */
     constructor(
         address _owner,
+        IRamp _ramp,
         IERC20 _usdc,
         IPoseidon _poseidon,
         uint256 _minDepositAmount,
@@ -168,6 +171,7 @@ contract RampV2 is Ownable {
         Ownable()
     {
         usdc = _usdc;
+        ramp = _ramp;
         poseidon = _poseidon;
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
@@ -219,7 +223,7 @@ contract RampV2 is Ownable {
     )
         external
     {
-        require(accounts[msg.sender].venmoIdHash == bytes32(0), "Account already associated with venmoId");
+        require(getAccountVenmoIdHash(msg.sender) == bytes32(0), "Account already associated with venmoId");
         bytes32 venmoIdHash = _verifyRegistrationProof(_a, _b, _c, _signals);
 
         accounts[msg.sender].venmoIdHash = venmoIdHash;
@@ -246,7 +250,7 @@ contract RampV2 is Ownable {
     {
         bytes32 venmoIdHash = bytes32(poseidon.poseidon(_packedVenmoId));
 
-        require(accounts[msg.sender].venmoIdHash == venmoIdHash, "Sender must be the account owner");
+        require(getAccountVenmoIdHash(msg.sender) == venmoIdHash, "Sender must be the account owner");
         require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -282,9 +286,9 @@ contract RampV2 is Ownable {
      * @param _to           Address to forward funds to (can be same as onRamper)
      */
     function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
-        bytes32 venmoIdHash = accounts[msg.sender].venmoIdHash;
+        bytes32 venmoIdHash = getAccountVenmoIdHash(msg.sender);
         Deposit storage deposit = deposits[_depositId];
-        bytes32 depositorVenmoIdHash = accounts[deposit.depositor].venmoIdHash;
+        bytes32 depositorVenmoIdHash = getAccountVenmoIdHash(deposit.depositor);
 
         // Caller validity checks
         require(!globalAccount[depositorVenmoIdHash].denyList.isDenied[venmoIdHash], "Onramper on depositor's denylist");
@@ -344,7 +348,7 @@ contract RampV2 is Ownable {
         
         require(intent.intentTimestamp != 0, "Intent does not exist");
         require(
-            accounts[intent.onRamper].venmoIdHash == accounts[msg.sender].venmoIdHash,
+            getAccountVenmoIdHash(intent.onRamper) == getAccountVenmoIdHash(msg.sender),
             "Sender must be the on-ramper"
         );
 
@@ -383,7 +387,7 @@ contract RampV2 is Ownable {
         _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
-        globalAccount[accounts[intent.onRamper].venmoIdHash].lastOnrampTimestamp = block.timestamp;
+        globalAccount[getAccountVenmoIdHash(intent.onRamper)].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         _transferFunds(intentHash, intent);
@@ -406,7 +410,7 @@ contract RampV2 is Ownable {
         _pruneIntent(deposit, _intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
-        globalAccount[accounts[intent.onRamper].venmoIdHash].lastOnrampTimestamp = block.timestamp;
+        globalAccount[getAccountVenmoIdHash(intent.onRamper)].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         _transferFunds(_intentHash, intent);
@@ -455,7 +459,7 @@ contract RampV2 is Ownable {
      * @param _deniedUser   Poseidon hash of the venmoId being banned
      */
     function addAccountToDenylist(bytes32 _deniedUser) external onlyRegisteredUser {
-        bytes32 denyingUser = accounts[msg.sender].venmoIdHash;
+        bytes32 denyingUser = getAccountVenmoIdHash(msg.sender);
 
         require(!globalAccount[denyingUser].denyList.isDenied[_deniedUser], "User already on denylist");
 
@@ -471,7 +475,7 @@ contract RampV2 is Ownable {
      * @param _approvedUser   Poseidon hash of the venmoId being approved
      */
     function removeAccountFromDenylist(bytes32 _approvedUser) external onlyRegisteredUser {
-        bytes32 approvingUser = accounts[msg.sender].venmoIdHash;
+        bytes32 approvingUser = getAccountVenmoIdHash(msg.sender);
 
         require(globalAccount[approvingUser].denyList.isDenied[_approvedUser], "User not on denylist");
 
@@ -584,23 +588,32 @@ contract RampV2 is Ownable {
     }
 
     function getAccountInfo(address _account) external view returns (AccountInfo memory) {
-        return accounts[_account];
+        return AccountInfo({
+            venmoIdHash: getAccountVenmoIdHash(_account),
+            deposits: accounts[_account].deposits
+        });
+    }
+
+    function getAccountVenmoIdHash(address _account) public view returns (bytes32) {
+        return accounts[_account].venmoIdHash == bytes32(0) ?
+            ramp.getAccountInfo(_account).venmoIdHash :
+            accounts[_account].venmoIdHash;
     }
 
     function getVenmoIdCurrentIntentHash(address _account) external view returns (bytes32) {
-        return globalAccount[accounts[_account].venmoIdHash].currentIntentHash;
+        return globalAccount[getAccountVenmoIdHash(_account)].currentIntentHash;
     }
 
     function getLastOnRampTimestamp(address _account) external view returns (uint256) {
-        return globalAccount[accounts[_account].venmoIdHash].lastOnrampTimestamp;
+        return globalAccount[getAccountVenmoIdHash(_account)].lastOnrampTimestamp;
     }
 
     function getDeniedUsers(address _account) external view returns (bytes32[] memory) {
-        return globalAccount[accounts[_account].venmoIdHash].denyList.deniedUsers;
+        return globalAccount[getAccountVenmoIdHash(_account)].denyList.deniedUsers;
     }
 
     function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {
-        return globalAccount[accounts[_account].venmoIdHash].denyList.isDenied[_deniedUser];
+        return globalAccount[getAccountVenmoIdHash(_account)].denyList.isDenied[_deniedUser];
     }
 
     function getIntentsWithOnRamperId(bytes32[] calldata _intentHashes) external view returns (IntentWithOnRamperId[] memory) {
@@ -610,7 +623,7 @@ contract RampV2 is Ownable {
             Intent memory intent = intents[_intentHashes[i]];
             intentsWithOnRamperId[i] = IntentWithOnRamperId({
                 intent: intent,
-                onRamperIdHash: accounts[intent.onRamper].venmoIdHash
+                onRamperIdHash: getAccountVenmoIdHash(intent.onRamper)
             });
         }
 
@@ -709,7 +722,7 @@ contract RampV2 is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
 
-        delete globalAccount[accounts[intent.onRamper].venmoIdHash].currentIntentHash;
+        delete globalAccount[getAccountVenmoIdHash(intent.onRamper)].currentIntentHash;
         delete intents[_intentHash];
         _deposit.intentHashes.removeStorage(_intentHash);
 
@@ -780,8 +793,8 @@ contract RampV2 is Ownable {
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[deposit.depositor].venmoIdHash == offRamperIdHash, "Offramper id does not match");
-        require(accounts[intent.onRamper].venmoIdHash == onRamperIdHash, "Onramper id does not match");
+        require(getAccountVenmoIdHash(deposit.depositor) == offRamperIdHash, "Offramper id does not match");
+        require(getAccountVenmoIdHash(intent.onRamper) == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);

@@ -7,6 +7,7 @@ import {
 } from "@utils/types";
 import { Account } from "@utils/test/types";
 import {
+  Ramp,
   RampV2,
   USDCMock,
   VenmoRegistrationProcessorMock,
@@ -28,7 +29,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("RampV2", () => {
+describe.only("RampV2", () => {
   let owner: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
@@ -37,9 +38,11 @@ describe("RampV2", () => {
   let onRamperTwo: Account;
   let receiver: Account;
   let maliciousOnRamper: Account;
+  let oldRampUser: Account;
   let unregisteredUser: Account;
   let feeRecipient: Account;
 
+  let oldRamp: Ramp;
   let ramp: RampV2;
   let usdcToken: USDCMock;
   let registrationProcessor: VenmoRegistrationProcessorMock;
@@ -56,6 +59,7 @@ describe("RampV2", () => {
       onRamperTwo,
       receiver,
       maliciousOnRamper,
+      oldRampUser,
       unregisteredUser,
       offRamperNewAcct,
       feeRecipient
@@ -71,8 +75,21 @@ describe("RampV2", () => {
 
     await usdcToken.transfer(offRamper.address, usdc(10000));
 
+    oldRamp = await deployer.deployRamp(
+      owner.address,
+      usdcToken.address,
+      poseidonContract.address,
+      usdc(20),                          // $20 min deposit amount
+      usdc(999),
+      ONE_DAY_IN_SECONDS,
+      ONE_DAY_IN_SECONDS,               // On ramp cooldown period
+      ZERO,                             // Sustainability fee
+      feeRecipient.address
+    );
+
     ramp = await deployer.deployRampV2(
       owner.address,
+      oldRamp.address,
       usdcToken.address,
       poseidonContract.address,
       usdc(20),                          // $20 min deposit amount
@@ -93,6 +110,11 @@ describe("RampV2", () => {
     it("should set the correct usdc", async () => {
       const usdcAddress: Address = await ramp.usdc();
       expect(usdcAddress).to.eq(usdcToken.address);
+    });
+
+    it("should set the correct old ramp address", async () => {
+      const oldRampAddress: Address = await ramp.ramp();
+      expect(oldRampAddress).to.eq(oldRamp.address);
     });
 
     it("should set the correct min deposit amount", async () => {
@@ -203,6 +225,18 @@ describe("RampV2", () => {
         await subject();
 
         subjectSignals[1] = BigNumber.from(await calculateIdHash("3"));
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Account already associated with venmoId");
+      });
+    });
+
+
+    describe("when the caller is already registered on the old ramp contract", async () => {
+      beforeEach(async () => {
+        await oldRamp.initialize(registrationProcessor.address, sendProcessor.address);
+        await oldRamp.connect(subjectCaller.wallet).register(subjectA, subjectB, subjectC, subjectSignals);
       });
 
       it("should revert", async () => {
@@ -2050,6 +2084,147 @@ describe("RampV2", () => {
         expect(intents[1].intent.amount).to.eq(usdc(40));
         expect(intents[0].onRamperIdHash).to.eq(await calculateIdHash("2"));
         expect(intents[1].onRamperIdHash).to.eq(await calculateIdHash("3"));
+      });
+    });
+
+    describe.only("#getAccountInfo", async () => {
+      let subjectAccount: Address;
+
+      beforeEach(async () => {
+        await ramp.connect(offRamper.wallet).offRamp(
+          calculatePackedId("1"),
+          usdc(100),
+          usdc(101)
+        );
+        subjectAccount = offRamper.address;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.getAccountInfo(subjectAccount);
+      }
+
+      it("should return the expected account info", async () => {
+        const accountInfo = await subject();
+
+        expect(accountInfo.venmoIdHash).to.eq(await calculateIdHash("1"));
+        expect(accountInfo.deposits[0]).to.eq(ZERO);
+      });
+
+      describe("when the account is not registered on either ramp contract", async () => {
+        beforeEach(async () => {
+          subjectAccount = unregisteredUser.address;
+        });
+
+        it("should return a null hash", async () => {
+          const accountInfo = await subject();
+
+          expect(accountInfo.venmoIdHash).to.eq(ZERO_BYTES32);
+          expect(accountInfo.deposits.length).to.eq(0);
+        });
+      });
+
+      describe("when the account is registered with the old ramp contract but deposit made on new one", async () => {
+        let signalsOffRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+
+        beforeEach(async () => {
+          const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
+    
+          signalsOffRamp = [ZERO, BigNumber.from(await calculateIdHash("4")), ZERO, ZERO, ZERO];
+
+          await oldRamp.connect(owner.wallet).initialize(
+            registrationProcessor.address,
+            sendProcessor.address,
+          );
+
+          await oldRamp.connect(oldRampUser.wallet).register(
+            _a,
+            _b,
+            _c,
+            signalsOffRamp
+          );
+
+          await usdcToken.transfer(oldRampUser.address, usdc(10000));
+          await usdcToken.connect(oldRampUser.wallet).approve(ramp.address, usdc(10000));
+
+          await ramp.connect(oldRampUser.wallet).offRamp(
+            calculatePackedId("4"),
+            usdc(100),
+            usdc(101)
+          );
+
+          subjectAccount = oldRampUser.address;
+        });
+
+        it("should return the correct id hash", async () => {
+          const accountInfo = await subject();
+          
+          expect(accountInfo.venmoIdHash).to.eq(await calculateIdHash("4"));
+          expect(accountInfo.deposits[0]).to.eq(ONE);
+        });
+      });
+    });
+
+    describe("#getAccountVenmoIdHash", async () => {
+      let subjectAccount: Address;
+
+      beforeEach(async () => {
+        subjectAccount = offRamper.address;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.getAccountVenmoIdHash(subjectAccount);
+      }
+
+      it("should return the expected venmoIdHash", async () => {
+        const venmoIdHash = await subject();
+
+        expect(venmoIdHash).to.eq(await calculateIdHash("1"));
+      });
+
+      describe("when the account is not registered on either ramp contract", async () => {
+        beforeEach(async () => {
+          subjectAccount = unregisteredUser.address;
+        });
+
+        it("should return a null hash", async () => {
+          const venmoIdHash = await subject();
+
+          expect(venmoIdHash).to.eq(ZERO_BYTES32);
+        });
+      });
+
+      describe("when the account is registered with the old ramp contract", async () => {
+        let signalsOffRamp: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber];
+
+        beforeEach(async () => {
+          const _a: [BigNumber, BigNumber] = [ZERO, ZERO];
+          const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
+          const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
+    
+          signalsOffRamp = [ZERO, BigNumber.from(await calculateIdHash("4")), ZERO, ZERO, ZERO];
+
+          await oldRamp.connect(owner.wallet).initialize(
+            registrationProcessor.address,
+            sendProcessor.address,
+          );
+
+          await oldRamp.connect(oldRampUser.wallet).register(
+            _a,
+            _b,
+            _c,
+            signalsOffRamp
+          );
+
+          subjectAccount = oldRampUser.address;
+        });
+
+        it("should return the correct id hash", async () => {
+          const venmoIdHash = await subject();
+
+          expect(venmoIdHash).to.eq(await calculateIdHash("4"));
+        });
       });
     });
   });

@@ -116,6 +116,7 @@ export default class DeployHelper {
   // Venmo-V2 Contracts
   public async deployRampV2(
     owner: Address,
+    ramp: Address,
     usdcToken: Address,
     poseidon: Address,
     minDepositAmount: BigNumber,
@@ -127,6 +128,7 @@ export default class DeployHelper {
   ): Promise<RampV2> {
     return await new RampV2__factory(this._deployerSigner).deploy(
       owner,
+      ramp,
       usdcToken,
       poseidon,
       minDepositAmount,
