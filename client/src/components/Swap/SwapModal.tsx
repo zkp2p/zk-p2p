@@ -134,6 +134,7 @@ const StyledArrowLeft = styled(ArrowLeft)`
 
 const ModalContainer = styled.div`
   width: 400px;
+  height: 580px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -145,9 +146,17 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 12%;
-  position: relative;
-  height: 600px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+
   overflow-y: auto;
 `;
 
