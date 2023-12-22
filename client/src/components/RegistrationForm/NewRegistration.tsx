@@ -14,7 +14,7 @@ import { ThemedText } from '../../theme/text'
 import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
-import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
+import { RemoteProofGenEmailTypes } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -165,7 +165,6 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       <ProofGenerationForm
         paymentPlatformType={PaymentPlatform.VENMO}
         circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
-        circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
         circuitInputs={"1"} // Arbitrary value, unused for registration
         remoteProofGenEmailType={RemoteProofGenEmailTypes.REGISTRATION}
         proof={proof}

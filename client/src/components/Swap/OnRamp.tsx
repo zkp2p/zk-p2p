@@ -16,7 +16,7 @@ import { ProofGenerationForm } from "../ProofGen/ProofForm";
 import { NumberedStep } from "../common/NumberedStep";
 // import { ProofSettings } from "@components/ProofGen/ProofSettings";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
-import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
+import { RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useBalances from '@hooks/useBalance';
@@ -203,7 +203,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
       <ProofGenerationForm
         paymentPlatformType={PaymentPlatform.VENMO}
         circuitType={CircuitType.EMAIL_VENMO_SEND}
-        circuitRemoteFilePath={SEND_KEY_FILE_NAME}
         circuitInputs={selectedIntentHash}
         remoteProofGenEmailType={RemoteProofGenEmailTypes.SEND}
         proof={proof}
