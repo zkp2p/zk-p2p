@@ -17,19 +17,23 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
    */
 
   const storedProvingTypeSetting = localStorage.getItem('isProvingTypeRemote');
-  const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
-  const storedEmailModeSetting = localStorage.getItem('isEmailModeAuth');
-
   const [isProvingTypeRemote, setIsProvingTypeRemote] = useState<boolean>(
     storedProvingTypeSetting !== null ? JSON.parse(storedProvingTypeSetting) : true
   );
 
+  const storedEmailInputSetting = localStorage.getItem('isEmailInputPreferenceDrag');
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
     storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : false
   );
 
+  const storedEmailModeSetting = localStorage.getItem('isEmailModeAuth');
   const [isEmailModeAuth, setIsEmailModeAuth] = useState<boolean>(
     storedEmailModeSetting !== null ? JSON.parse(storedEmailModeSetting) : true
+  );
+
+  const storedAutoSelectEmailEnabled = localStorage.getItem('isAutoSelectEmailEnabled');
+  const [isAutoSelectEmailEnabled, setIsAutoSelectEmailEnabled] = useState<boolean>(
+    storedAutoSelectEmailEnabled !== null ? JSON.parse(storedAutoSelectEmailEnabled) : true
   );
 
   /*
@@ -48,15 +52,21 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
     localStorage.setItem('isEmailModeAuth', JSON.stringify(isEmailModeAuth));
   }, [isEmailModeAuth]);
 
+  useEffect(() => {
+    localStorage.setItem('isAutoSelectEmailEnabled', JSON.stringify(isAutoSelectEmailEnabled));
+  }, [isAutoSelectEmailEnabled]);
+
   return (
     <ProofGenSettingsContext.Provider
       value={{
         isEmailModeAuth,
-        isProvingTypeFast: isProvingTypeRemote,
-        isInputModeDrag: isEmailInputSettingDrag,
         setIsEmailModeAuth,
+        isProvingTypeFast: isProvingTypeRemote,
         setIsProvingTypeFast: setIsProvingTypeRemote,
+        isInputModeDrag: isEmailInputSettingDrag,
         setIsInputModeDrag: setIsEmailInputSettingDrag,
+        isAutoSelectEmailEnabled,
+        setIsAutoSelectEmailEnabled,
       }}
     >
       {children}
