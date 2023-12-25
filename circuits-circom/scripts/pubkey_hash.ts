@@ -18,7 +18,7 @@ export async function initializeMimcHasher() {
 const resolveTxtAsync = promisify(resolveTxt);
 
 // Fetches the DKIM public key from DNS
-async function fetchDnsTxtRecord(domain: string, selector: string): Promise<string[]> {
+export async function fetchDnsTxtRecord(domain: string, selector: string): Promise<string[]> {
     const queryDomain = `${selector}._domainkey.${domain}`;
     try {
         const records = await resolveTxtAsync(queryDomain);
@@ -30,7 +30,7 @@ async function fetchDnsTxtRecord(domain: string, selector: string): Promise<stri
 }
 
 // Extract modulus from DKIM public key
-function extractModulus(publicKey: string): string[] {
+export const extractModulus = (publicKey: string): string[] => {
     const certMatch = publicKey.match(/p=([0-9A-Za-z/+]+=*)/);
 
     if (!certMatch) {
@@ -52,6 +52,10 @@ function extractModulus(publicKey: string): string[] {
     return modulusInt;
 }
 
+export const mimcSponge = (arr: (number | bigint | string)[]): string =>
+    mimcHasher.F.toString(mimcHasher.multiHash(arr, "123", "1"));
+
+
 // If file called directly with `npx tsx pubkey_hash.ts`
 if (typeof require !== "undefined" && require.main === module) {
     const domain = process.argv[2]
@@ -65,8 +69,7 @@ if (typeof require !== "undefined" && require.main === module) {
             console.log("Modulus:", modulus);
 
             initializeMimcHasher().then(() => {
-                const modulusHash = mimcHasher.multiHash(modulus, "123", "1");
-                console.log("Modulus Hash:", mimcHasher.F.toString(modulusHash));
+                console.log("Modulus Hash:", mimcSponge(modulus));
             }).catch((err) => {
                 console.log('Failed to hash modulus', err);
             });
