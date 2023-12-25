@@ -385,7 +385,7 @@ export async function generate_inputs(
   console.log("DKIM verification starting");
   result = await dkimVerify(processed_email);
   // console.log("From:", result.headerFrom);
-  console.log("Results:", result.results[0]);
+  console.log("Results:", result.results);
   if (!result.results[0]) {
     throw new Error(`No result found on dkim output ${result}`);
   } else {
