@@ -25,7 +25,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
-  const [deployer] = await hre.getUnnamedAccounts();
+  const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
   const paymentProvider = PaymentProviders.HDFC;
 

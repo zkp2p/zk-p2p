@@ -26,6 +26,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     deployer:                   ${deployer}
     deployer nonce:             ${await hre.ethers.provider.getTransactionCount(deployer)}
     multiSig:                   ${multiSig}
+    multiSig nonce:             ${await hre.ethers.provider.getTransactionCount(multiSig)}
     ----------------------------------------------------------------------
     Ramp:                         ${getDeployedContractAddress(network, "Ramp")}
     HDFCRamp:                     ${getDeployedContractAddress(network, "HDFCRamp")}

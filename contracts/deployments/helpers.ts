@@ -34,7 +34,7 @@ export async function addWritePermission(
         const data = contract.interface.encodeFunctionData("addWritePermission", [newPermission]);
 
         await hre.deployments.rawTx({
-          from: await contract.owner(),
+          from: currentOwner,
           to: contract.address,
           data
         });
