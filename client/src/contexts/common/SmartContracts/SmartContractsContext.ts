@@ -8,6 +8,12 @@ interface SmartContractsValues {
   usdcAddress: string | null;
   usdcAbi?: Abi | null;
   
+  // legacy
+  legacyRampAddress: string | null;
+  legacyRampAbi: Abi | null;
+  legacyNftAddress: string | null;
+  legacyNftAbi: Abi | null;
+
   // venmo
   venmoRampAddress: string | null;
   venmoRampAbi: Abi | null;
@@ -28,6 +34,12 @@ const defaultValues: SmartContractsValues = {
   blockscanUrl: null,
   usdcAddress: null,
   usdcAbi: null,
+
+  // legacy
+  legacyRampAddress: null,
+  legacyRampAbi: null,
+  legacyNftAddress: null,
+  legacyNftAbi: null,
   
   // venmo
   venmoRampAddress: null,

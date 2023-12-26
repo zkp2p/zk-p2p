@@ -7,7 +7,7 @@ export const abi = [
         "type": "address"
       },
       {
-        "internalType": "contract IKeyHashAdapter",
+        "internalType": "contract IKeyHashAdapterV2",
         "name": "_venmoMailserverKeyHashAdapter",
         "type": "address"
       },
@@ -46,6 +46,19 @@ export const abi = [
   },
   {
     "inputs": [],
+    "name": "PACK_SIZE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "emailFromAddress",
     "outputs": [
       {
@@ -71,13 +84,19 @@ export const abi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getMailserverKeyHash",
-    "outputs": [
+    "inputs": [
       {
         "internalType": "bytes32",
-        "name": "",
+        "name": "_keyHash",
         "type": "bytes32"
+      }
+    ],
+    "name": "isMailServerKeyHash",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -85,10 +104,10 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "mailserverKeyHashAdapter",
+    "name": "mailServerKeyHashAdapter",
     "outputs": [
       {
-        "internalType": "contract IKeyHashAdapter",
+        "internalType": "contract IKeyHashAdapterV2",
         "name": "",
         "type": "address"
       }
@@ -219,8 +238,8 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IKeyHashAdapter",
-        "name": "_mailserverKeyHashAdapter",
+        "internalType": "contract IKeyHashAdapterV2",
+        "name": "_mailServerKeyHashAdapter",
         "type": "address"
       }
     ],

@@ -1,9 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { erc20ABI } from 'wagmi';
 
-import { abi as venmoRampAbi } from "@helpers/abi/ramp.abi";
-import { abi as sendProcessorAbi } from "@helpers/abi/send.abi";
-import { abi as venmoNftAbi } from "@helpers/abi/venmoNft.abi";
+import { abi as legacyRampAbi } from "@helpers/abi/legacy/ramp.abi";
+import { abi as legacyNftAbi } from "@helpers/abi/legacy/nft.abi";
+
+import { abi as venmoRampAbi } from "@helpers/abi/venmo/ramp.abi";
+import { abi as sendProcessorAbi } from "@helpers/abi/venmo/send.abi";
+
 import { abi as hdfcRampAbi } from "@helpers/abi/hdfc/ramp.abi";
 import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
@@ -31,6 +34,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
   const [usdcAddress, setUsdcAddress] = useState<string | null>(null);
   const [blockscanUrl, setBlockscanUrl] = useState<string>(blockExplorerUrls[DEFAULT_NETWORK]);
+
+  // Legacy
+  const [legacyRampAddress, setLegacyRampAddress] = useState<string | null>(null);
+  const [legacyNftAddress, setLegacyNftAddress] = useState<string | null>(null);
 
   // Venmo
   const [venmoRampAddress, setVenmoRampAddress] = useState<string | null>(null);
@@ -121,6 +128,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setBlockscanUrl(blockExplorerUrls['base']);
     setUsdcAddress(null);
 
+    // Legacy
+    setLegacyRampAddress(null);
+    setLegacyNftAddress(null);
+
     // Venmo
     setVenmoRampAddress(null);
     setVenmoSendProcessorAddress(null);
@@ -140,11 +151,15 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setBlockscanUrl(blockExplorerUrls[networkEnvKey]);
     setUsdcAddress(contractsForNetwork.fusdc);
 
+    // Legacy
+    setLegacyRampAddress(contractsForNetwork.legacyRamp);
+    setLegacyNftAddress(contractsForNetwork.legacyNft);
+
     // Venmo
-    setVenmoRampAddress(contractsForNetwork.ramp);
-    setVenmoSendProcessorAddress(contractsForNetwork.sendProcessor);
-    setVenmoRegistrationProcessorAddress(contractsForNetwork.registrationProcessor);
-    setVenmoNftAddress(contractsForNetwork.proofOfP2pNft);
+    setVenmoRampAddress(contractsForNetwork.venmoRamp);
+    setVenmoSendProcessorAddress(contractsForNetwork.venmoSendProcessor);
+    setVenmoRegistrationProcessorAddress(contractsForNetwork.venmoRegistrationProcessor);
+    setVenmoNftAddress(null);
 
     // Hdfc
     setHdfcRampAddress(contractsForNetwork.hdfcRamp);
@@ -160,14 +175,20 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         usdcAbi: erc20ABI as any,
         blockscanUrl: blockscanUrl,
 
+        // Legacy
+        legacyRampAddress,
+        legacyRampAbi: legacyRampAbi as Abi,
+        legacyNftAddress,
+        legacyNftAbi: legacyRampAbi as Abi,
+
         // Venmo
         venmoRampAddress,
         venmoRampAbi: venmoRampAbi as Abi,
-        venmoRegistrationProcessorAddress,
-        venmoSendProcessorAbi: sendProcessorAbi as Abi,
         venmoSendProcessorAddress,
+        venmoSendProcessorAbi: sendProcessorAbi as Abi,
         venmoNftAddress,
-        venmoNftAbi: venmoNftAbi as Abi,
+        venmoNftAbi: legacyNftAbi as Abi,
+        venmoRegistrationProcessorAddress,
 
         // Hdfc
         hdfcRampAddress: hdfcRampAddress,
