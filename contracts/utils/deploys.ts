@@ -14,7 +14,7 @@ import {
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
-  RampV2,
+  VenmoRampV2,
   StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
@@ -36,7 +36,7 @@ import {
   mocks as venmoMocks
 } from "../typechain/factories/contracts/ramps/venmo-v1";
 import {
-  RampV2__factory,
+  VenmoRampV2__factory,
   VenmoRegistrationProcessorV2__factory,
 } from "../typechain/factories/contracts/ramps/venmo-v2";
 import {
@@ -114,7 +114,7 @@ export default class DeployHelper {
   }
 
   // Venmo-V2 Contracts
-  public async deployRampV2(
+  public async deployVenmoRampV2(
     owner: Address,
     ramp: Address,
     usdcToken: Address,
@@ -125,8 +125,8 @@ export default class DeployHelper {
     onRampCoolDownPeriod: BigNumber,
     sustainabilityFee: BigNumber,
     sustainabilityFeeRecipient: Address,
-  ): Promise<RampV2> {
-    return await new RampV2__factory(this._deployerSigner).deploy(
+  ): Promise<VenmoRampV2> {
+    return await new VenmoRampV2__factory(this._deployerSigner).deploy(
       owner,
       ramp,
       usdcToken,

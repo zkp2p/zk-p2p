@@ -54,7 +54,7 @@ describe("VenmoRegistrationProcessorV2", () => {
   describe("#constructor", async () => {
     it("should set the correct state", async () => {
       const rampAddress = await registrationProcessor.ramp();
-      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
+      const venmoMailserverKeyHashAdapter = await registrationProcessor.mailServerKeyHashAdapter();
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(rampAddress).to.eq(ramp.address);
@@ -181,7 +181,7 @@ describe("VenmoRegistrationProcessorV2", () => {
     it("should set the correct venmo keys", async () => {
       await subject();
 
-      const venmoKeyHashAdapter = await registrationProcessor.mailserverKeyHashAdapter();
+      const venmoKeyHashAdapter = await registrationProcessor.mailServerKeyHashAdapter();
       expect(venmoKeyHashAdapter).to.equal(subjectVenmoMailserverKeyHashAdapter);
     });
 

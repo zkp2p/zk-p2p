@@ -8,7 +8,7 @@ import {
 import { Account } from "@utils/test/types";
 import {
   Ramp,
-  RampV2,
+  VenmoRampV2,
   USDCMock,
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock
@@ -29,7 +29,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("RampV2", () => {
+describe.only("VenmoRampV2", () => {
   let owner: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
@@ -43,7 +43,7 @@ describe.only("RampV2", () => {
   let feeRecipient: Account;
 
   let oldRamp: Ramp;
-  let ramp: RampV2;
+  let ramp: VenmoRampV2;
   let usdcToken: USDCMock;
   let registrationProcessor: VenmoRegistrationProcessorMock;
   let sendProcessor: VenmoSendProcessorMock;
@@ -87,7 +87,7 @@ describe.only("RampV2", () => {
       feeRecipient.address
     );
 
-    ramp = await deployer.deployRampV2(
+    ramp = await deployer.deployVenmoRampV2(
       owner.address,
       oldRamp.address,
       usdcToken.address,
@@ -2159,7 +2159,7 @@ describe.only("RampV2", () => {
 
         it("should return the correct id hash", async () => {
           const accountInfo = await subject();
-          
+
           expect(accountInfo.venmoIdHash).to.eq(await calculateIdHash("4"));
           expect(accountInfo.deposits[0]).to.eq(ONE);
         });

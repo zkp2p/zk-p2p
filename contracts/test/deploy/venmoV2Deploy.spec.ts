@@ -3,18 +3,18 @@ import "module-alias/register";
 import { deployments, ethers } from "hardhat";
 
 import {
-  ManagedKeyHashAdapter,
+  ManagedKeyHashAdapterV2,
   NullifierRegistry,
-  Ramp,
-  VenmoRegistrationProcessor,
-  VenmoSendProcessor,
+  VenmoRampV2,
+  VenmoRegistrationProcessorV2,
+  VenmoSendProcessorV2,
 } from "../../utils/contracts"
 import {
-  ManagedKeyHashAdapter__factory,
+  ManagedKeyHashAdapterV2__factory,
   NullifierRegistry__factory,
-  Ramp__factory,
-  VenmoRegistrationProcessor__factory,
-  VenmoSendProcessor__factory,
+  VenmoRampV2__factory,
+  VenmoRegistrationProcessorV2__factory,
+  VenmoSendProcessorV2__factory,
 } from "../../typechain"
 
 import {
@@ -46,15 +46,15 @@ const expect = getWaffleExpect();
 
 const paymentProvider = PaymentProviders.Venmo;
 
-describe("System and Venmo Deploy", () => {
+describe("VenmoV2 Deploy", () => {
   let deployer: Account;
   let multiSig: Address;
 
-  let ramp: Ramp;
-  let venmoRegistrationProcessor: VenmoRegistrationProcessor;
-  let venmoSendProcessor: VenmoSendProcessor;
+  let ramp: VenmoRampV2;
+  let venmoRegistrationProcessor: VenmoRegistrationProcessorV2;
+  let venmoSendProcessor: VenmoSendProcessorV2;
   let nullifierRegistry: NullifierRegistry;
-  let keyHashAdapter: ManagedKeyHashAdapter;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
 
   const network: string = deployments.getNetworkName();
 
@@ -69,23 +69,23 @@ describe("System and Venmo Deploy", () => {
 
     multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer.address;
 
-    const rampAddress  = await getDeployedContractAddress(network, "Ramp");
-    ramp = new Ramp__factory(deployer.wallet).attach(rampAddress);
+    const rampAddress  = await getDeployedContractAddress(network, "VenmoRampV2");
+    ramp = new VenmoRampV2__factory(deployer.wallet).attach(rampAddress);
 
-    const venmoRegistrationProcessorAddress  = await getDeployedContractAddress(network, "VenmoRegistrationProcessor");
-    venmoRegistrationProcessor = new VenmoRegistrationProcessor__factory(deployer.wallet).attach(venmoRegistrationProcessorAddress);
+    const venmoRegistrationProcessorAddress  = await getDeployedContractAddress(network, "VenmoRegistrationProcessorV2");
+    venmoRegistrationProcessor = new VenmoRegistrationProcessorV2__factory(deployer.wallet).attach(venmoRegistrationProcessorAddress);
 
-    const venmoSendProcessorAddress  = await getDeployedContractAddress(network, "VenmoSendProcessor");
-    venmoSendProcessor = new VenmoSendProcessor__factory(deployer.wallet).attach(venmoSendProcessorAddress);
+    const venmoSendProcessorAddress  = await getDeployedContractAddress(network, "VenmoSendProcessorV2");
+    venmoSendProcessor = new VenmoSendProcessorV2__factory(deployer.wallet).attach(venmoSendProcessorAddress);
 
     const nullifierRegistryAddress  = await getDeployedContractAddress(network, "NullifierRegistry");
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
 
-    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter");
-    keyHashAdapter = new ManagedKeyHashAdapter__factory(deployer.wallet).attach(keyHashAdapterAddress);
+    const keyHashAdapterAddress  = await getDeployedContractAddress(network, "VenmoManagedKeyHashAdapterV2");
+    keyHashAdapter = new ManagedKeyHashAdapterV2__factory(deployer.wallet).attach(keyHashAdapterAddress);
   });
 
-  describe("Ramp", async () => {
+  describe("VenmoRampV2", async () => {
     it("should have the correct processors, usdc, and poseidon set", async () => {
       const actualRegistrationProcessor = await ramp.registrationProcessor();
       const actualSendProcessor = await ramp.sendProcessor();
@@ -127,11 +127,11 @@ describe("System and Venmo Deploy", () => {
     });
   });
 
-  describe("VenmoRegistrationProcessor", async () => {
+  describe("VenmoRegistrationProcessorV2", async () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await venmoRegistrationProcessor.ramp();
       const actualOwner = await venmoRegistrationProcessor.owner();
-      const actualKeyHashAdapter = await venmoRegistrationProcessor.mailserverKeyHashAdapter();
+      const actualKeyHashAdapter = await venmoRegistrationProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await venmoRegistrationProcessor.nullifierRegistry();
       const actualEmailFromAddress = await venmoRegistrationProcessor.emailFromAddress();
 
@@ -143,11 +143,11 @@ describe("System and Venmo Deploy", () => {
     });
   });
 
-  describe("VenmoSendProcessor", async () => {
+  describe("VenmoSendProcessorV2", async () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await venmoSendProcessor.ramp();
       const actualOwner = await venmoSendProcessor.owner();
-      const actualKeyHashAdapter = await venmoSendProcessor.mailserverKeyHashAdapter();
+      const actualKeyHashAdapter = await venmoSendProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await venmoSendProcessor.nullifierRegistry();
       const actualEmailFromAddress = await venmoSendProcessor.emailFromAddress();
 
@@ -159,13 +159,13 @@ describe("System and Venmo Deploy", () => {
     });
   });
 
-  describe("ManagedKeyHashAdapter", async () => {
+  describe("ManagedKeyHashAdapterV2", async () => {
     it("should have the correct parameters set", async () => {
       const actualOwner = await keyHashAdapter.owner();
-      const actualMailserverKeyHash = await keyHashAdapter.mailserverKeyHash();
+      const isMailServerKeyHash = await keyHashAdapter.isMailServerKeyHash(SERVER_KEY_HASH[paymentProvider][0]);
 
       expect(actualOwner).to.eq(multiSig);
-      expect(actualMailserverKeyHash).to.eq(SERVER_KEY_HASH[paymentProvider][0]);
+      expect(isMailServerKeyHash).to.be.true;
     });
   });
 

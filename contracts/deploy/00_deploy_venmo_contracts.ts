@@ -51,7 +51,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       bytecode: circom.poseidonContract.createCode(3),
     }
   });
-  console.log("Poseidon3 deployed at ", poseidon.address);
+  console.log("Poseidon3 deployed at", poseidon.address);
 
   const ramp = await deploy("Ramp", {
     from: deployer,
@@ -69,32 +69,32 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         : deployer,
     ],
   });
-  console.log("Ramp deployed at ", ramp.address);
+  console.log("Ramp deployed at", ramp.address);
 
   const keyHashAdapter = await deploy("VenmoManagedKeyHashAdapter", {
     contract: "ManagedKeyHashAdapter",
     from: deployer,
-    args: [SERVER_KEY_HASH[paymentProvider]],
+    args: [SERVER_KEY_HASH[paymentProvider][0]],
   });
-  console.log("KeyHashAdapter deployed at ", keyHashAdapter.address);
+  console.log("KeyHashAdapter deployed at", keyHashAdapter.address);
 
   const nullifierRegistry = await deploy("NullifierRegistry", {
     from: deployer,
     args: [],
   });
-  console.log("Nullifier deployed at ", nullifierRegistry.address);
+  console.log("Nullifier deployed at", nullifierRegistry.address);
 
   const registrationProcessor = await deploy("VenmoRegistrationProcessor", {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL[paymentProvider]],
   });
-  console.log("RegistrationProcessor deployed at ", registrationProcessor.address);
+  console.log("RegistrationProcessor deployed at", registrationProcessor.address);
 
   const sendProcessor = await deploy("VenmoSendProcessor", {
     from: deployer,
     args: [ramp.address, keyHashAdapter.address, nullifierRegistry.address, FROM_EMAIL[paymentProvider]],
   });
-  console.log("SendProcessor deployed at ", sendProcessor.address);
+  console.log("SendProcessor deployed at", sendProcessor.address);
   console.log("Processors deployed...");
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);

@@ -13,7 +13,7 @@ import { ISendProcessor } from "../venmo-v1/interfaces/ISendProcessor.sol";
 
 pragma solidity ^0.8.18;
 
-contract RampV2 is Ownable {
+contract VenmoRampV2 is Ownable {
 
     using Bytes32ArrayUtils for bytes32[];
     using Uint256ArrayUtils for uint256[];

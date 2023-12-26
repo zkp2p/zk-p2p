@@ -8,7 +8,7 @@ export {
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
-  RampV2,
+  VenmoRampV2,
   StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
@@ -16,4 +16,5 @@ export {
   VenmoRegistrationProcessorMock,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
+  VenmoSendProcessorV2,
 } from "../typechain";

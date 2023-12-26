@@ -2,15 +2,15 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { BaseProcessor } from "../../processors/BaseProcessor.sol";
+import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
 import { Groth16Verifier } from "../../verifiers/venmo_registration_verifier.sol";
-import { IKeyHashAdapter } from "../../processors/keyHashAdapters/IKeyHashAdapter.sol";
+import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
 import { IRegistrationProcessorV2 } from "./interfaces/IRegistrationProcessorV2.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessorV2, BaseProcessor {
+contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessorV2, BaseProcessorV2 {
 
     using StringUtils for uint256[];
 
@@ -20,12 +20,12 @@ contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessor
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        IKeyHashAdapterV2 _venmoMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
 
     /* ============ External Functions ============ */
@@ -40,7 +40,7 @@ contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessor
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
+        require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
