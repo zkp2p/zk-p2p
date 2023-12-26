@@ -173,10 +173,12 @@ describe("HDFC Deploy", () => {
   });
 
   describe("NullifierRegistry", async () => {
-    it("should have the correct parameters set", async () => {
-      const hasWritePermission = await nullifierRegistry.isWriter(hdfcSendProcessor.address);
+    it("should have the correct write permissions set", async () => {
+      const sendHasWritePermission = await nullifierRegistry.isWriter(hdfcSendProcessor.address);
+      const registrationHasWritePermission = await nullifierRegistry.isWriter(hdfcRegistrationProcessor.address);
 
-      expect(hasWritePermission).to.be.true;
+      expect(sendHasWritePermission).to.be.true;
+      expect(registrationHasWritePermission).to.be.true;
     });
   });
 });

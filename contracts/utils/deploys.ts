@@ -14,30 +14,39 @@ import {
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
+  VenmoRampV2,
   StringConversionUtilsMock,
   USDCMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
+  VenmoRegistrationProcessorV2,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
 } from "./contracts";
-import { HDFCRamp__factory, Ramp__factory } from "../typechain/factories/contracts";
 import {
-  HDFCRegistrationProcessorMock__factory,
-  HDFCSendProcessorMock__factory,
-  StringConversionUtilsMock__factory,
-  USDCMock__factory,
-  VenmoRegistrationProcessorMock__factory,
-  VenmoSendProcessorMock__factory
-} from "../typechain/factories/contracts/mocks";
-import {
+  HDFCRamp__factory,
   HDFCRegistrationProcessor__factory,
   HDFCSendProcessor__factory,
+  mocks as hdfcMocks
+} from "../typechain/factories/contracts/ramps/hdfc";
+import {
+  Ramp__factory,
   VenmoRegistrationProcessor__factory,
-  VenmoSendProcessor__factory
-} from "../typechain/factories/contracts/processors";
-import { ManagedKeyHashAdapter__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
-import { ManagedKeyHashAdapterV2__factory } from "../typechain/factories/contracts/processors/keyHashAdapters";
+  VenmoSendProcessor__factory,
+  mocks as venmoMocks
+} from "../typechain/factories/contracts/ramps/venmo-v1";
+import {
+  VenmoRampV2__factory,
+  VenmoRegistrationProcessorV2__factory,
+} from "../typechain/factories/contracts/ramps/venmo-v2";
+import {
+  StringConversionUtilsMock__factory,
+  USDCMock__factory,
+} from "../typechain/factories/contracts/mocks";
+import {
+  ManagedKeyHashAdapter__factory,
+  ManagedKeyHashAdapterV2__factory
+} from "../typechain/factories/contracts/processors/keyHashAdapters";
 import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
 
 export default class DeployHelper {
@@ -51,7 +60,7 @@ export default class DeployHelper {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
   }
 
-  // Venmo Contracts
+  // Venmo-V1 Contracts
   public async deployRamp(
     owner: Address,
     usdcToken: Address,
@@ -97,6 +106,47 @@ export default class DeployHelper {
     emailFromAddress: string,
   ): Promise<VenmoSendProcessor> {
     return await new VenmoSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
+  }
+
+  // Venmo-V2 Contracts
+  public async deployVenmoRampV2(
+    owner: Address,
+    ramp: Address,
+    usdcToken: Address,
+    poseidon: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<VenmoRampV2> {
+    return await new VenmoRampV2__factory(this._deployerSigner).deploy(
+      owner,
+      ramp,
+      usdcToken,
+      poseidon,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  public async deployVenmoRegistrationProcessorV2(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    emailFromAddress: string,
+  ): Promise<VenmoRegistrationProcessorV2> {
+    return await new VenmoRegistrationProcessorV2__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
@@ -172,19 +222,19 @@ export default class DeployHelper {
   }
 
   public async deployVenmoSendProcessorMock(): Promise<VenmoSendProcessorMock> {
-    return await new VenmoSendProcessorMock__factory(this._deployerSigner).deploy();
+    return await new venmoMocks.VenmoSendProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployVenmoRegistrationProcessorMock(): Promise<VenmoRegistrationProcessorMock> {
-    return await new VenmoRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+    return await new venmoMocks.VenmoRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployHDFCSendProcessorMock(): Promise<HDFCSendProcessorMock> {
-    return await new HDFCSendProcessorMock__factory(this._deployerSigner).deploy();
+    return await new hdfcMocks.HDFCSendProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployHDFCRegistrationProcessorMock(): Promise<HDFCRegistrationProcessorMock> {
-    return await new HDFCRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+    return await new hdfcMocks.HDFCRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployPoseidon3(): Promise<any> {

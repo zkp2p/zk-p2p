@@ -3,10 +3,10 @@
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { Bytes32ArrayUtils } from "./external/Bytes32ArrayUtils.sol";
-import { Uint256ArrayUtils } from "./external/Uint256ArrayUtils.sol";
+import { Bytes32ArrayUtils } from "../../external/Bytes32ArrayUtils.sol";
+import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
-import { IPoseidon } from "./interfaces/IPoseidon.sol";
+import { IPoseidon } from "../../interfaces/IPoseidon.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { ISendProcessor } from "./interfaces/ISendProcessor.sol";
 

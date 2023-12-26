@@ -4,7 +4,6 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "hardhat";
 
-const circom = require("circomlibjs");
 import {
   FROM_EMAIL,
   INTENT_EXPIRATION_PERIOD,
@@ -25,92 +24,84 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
-  const [deployer] = await hre.getUnnamedAccounts();
+  const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
-  const paymentProvider = PaymentProviders.HDFC;
+  const paymentProvider = PaymentProviders.Venmo;
 
-  let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
+  const usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const poseidon6 = await deploy("Poseidon6", {
-    from: deployer,
-    contract: {
-      abi: circom.poseidonContract.generateABI(6),
-      bytecode: circom.poseidonContract.createCode(6),
-    }
-  });
-  console.log("Poseidon6 deployed at ", poseidon6.address);
-
-  const hdfcRamp = await deploy("HDFCRamp", {
+  const ramp = await deploy("VenmoRampV2", {
     from: deployer,
     args: [
       deployer,
+      getDeployedContractAddress(network, "Ramp"),
       usdcAddress,
       getDeployedContractAddress(network, "Poseidon3"),
-      poseidon6.address,
       MIN_DEPOSIT_AMOUNT[paymentProvider][network],
       MAX_ONRAMP_AMOUNT[paymentProvider][network],
       INTENT_EXPIRATION_PERIOD[paymentProvider][network],
       ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
       SUSTAINABILITY_FEE[paymentProvider][network],
       SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
-        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
+        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] 
         : deployer,
     ],
   });
-  console.log("HDFCRamp deployed at", hdfcRamp.address);
+  console.log("VenmoRampV2 deployed at", ramp.address);
 
-  const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
+  const keyHashAdapterDeploy = await deploy("VenmoManagedKeyHashAdapterV2", {
     contract: "ManagedKeyHashAdapterV2",
     from: deployer,
     args: [SERVER_KEY_HASH[paymentProvider]],
   });
-  console.log("KeyHashAdapter deployed at", keyHashAdapter.address);
+  console.log("VenmoV2KeyHashAdapter deployed at", keyHashAdapterDeploy.address);
 
   const nullifierRegistryContract = await ethers.getContractAt(
     "NullifierRegistry",
     getDeployedContractAddress(network, "NullifierRegistry")
   );
 
-  const registrationProcessor = await deploy("HDFCRegistrationProcessor", {
+  const registrationProcessor = await deploy("VenmoRegistrationProcessorV2", {
     from: deployer,
-    args: [hdfcRamp.address, keyHashAdapter.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
+    args: [ramp.address, keyHashAdapterDeploy.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
   });
-  console.log("RegistrationProcessor deployed at", registrationProcessor.address);
+  console.log("RegistrationProcessorV2 deployed at", registrationProcessor.address);
 
-  const sendProcessor = await deploy("HDFCSendProcessor", {
+  const sendProcessor = await deploy("VenmoSendProcessorV2", {
     from: deployer,
-    args: [hdfcRamp.address, keyHashAdapter.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
+    args: [ramp.address, keyHashAdapterDeploy.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
   });
-  console.log("SendProcessor deployed at ", sendProcessor.address);
+  console.log("SendProcessorV2 deployed at", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
-  await hdfcRampContract.initialize(
+  const rampContract = await ethers.getContractAt("VenmoRampV2", ramp.address);
+  await rampContract.initialize(
     registrationProcessor.address,
     sendProcessor.address
   );
 
-  console.log("HDFCRamp initialized...");
+  console.log("VenmoRampV2 initialized...");
 
-  await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
+  await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
+
   console.log("NullifierRegistry permissions added...");
 
   console.log("Transferring ownership of contracts...");
-  await setNewOwner(hre, hdfcRampContract, multiSig);
+  await setNewOwner(hre, rampContract, multiSig);
   await setNewOwner(
     hre,
-    await ethers.getContractAt("HDFCRegistrationProcessor", registrationProcessor.address),
+    await ethers.getContractAt("VenmoRegistrationProcessorV2", registrationProcessor.address),
     multiSig
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("HDFCSendProcessor", sendProcessor.address),
+    await ethers.getContractAt("VenmoSendProcessorV2", sendProcessor.address),
     multiSig
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("ManagedKeyHashAdapter", keyHashAdapter.address),
+    await ethers.getContractAt("ManagedKeyHashAdapter", keyHashAdapterDeploy.address),
     multiSig
   );
 

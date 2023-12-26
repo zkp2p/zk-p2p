@@ -2,15 +2,15 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { BaseProcessor } from "./BaseProcessor.sol";
-import { Groth16Verifier } from "../verifiers/venmo_registration_verifier.sol";
-import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
-import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
+import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
+import { Groth16Verifier } from "../../verifiers/venmo_registration_verifier.sol";
+import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
+import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
+import { IRegistrationProcessorV2 } from "./interfaces/IRegistrationProcessorV2.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, BaseProcessor {
+contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessorV2, BaseProcessorV2 {
 
     using StringUtils for uint256[];
 
@@ -20,32 +20,33 @@ contract VenmoRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        IKeyHashAdapterV2 _venmoMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
 
     /* ============ External Functions ============ */
 
     function processProof(
-        IRegistrationProcessor.RegistrationProof calldata _proof
+        IRegistrationProcessorV2.RegistrationProof calldata _proof
     )
         public
-        view
         override
         onlyRamp
         returns(bytes32 userIdHash)
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
+        require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
+
+        _validateAndAddNullifier(keccak256(abi.encode(_proof)));
 
         // Signals [4] is the packed onRamperIdHash
         userIdHash = bytes32(_proof.signals[4]);

@@ -2,16 +2,16 @@
 
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import { BaseProcessor } from "./BaseProcessor.sol";
-import { Groth16Verifier } from "../verifiers/venmo_send_verifier.sol";
-import { IKeyHashAdapter } from "./keyHashAdapters/IKeyHashAdapter.sol";
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
-import { ISendProcessor } from "../interfaces/ISendProcessor.sol";
-import { StringConversionUtils } from "../lib/StringConversionUtils.sol";
+import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
+import { Groth16Verifier } from "../../verifiers/venmo_send_verifier_v2.sol";
+import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
+import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
+import { ISendProcessor } from "../venmo-v1/interfaces/ISendProcessor.sol";
+import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 
-contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
+contract VenmoSendProcessorV2 is Groth16Verifier, ISendProcessor, BaseProcessorV2 {
     
     using StringUtils for uint256[];
     using StringConversionUtils for string;
@@ -22,12 +22,12 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
-        IKeyHashAdapter _venmoMailserverKeyHashAdapter,
+        IKeyHashAdapterV2 _venmoMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress
     )
         Groth16Verifier()
-        BaseProcessor(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
     {}
     
     /* ============ External Functions ============ */
@@ -41,7 +41,7 @@ contract VenmoSendProcessor is Groth16Verifier, ISendProcessor, BaseProcessor {
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
 
-        require(bytes32(_proof.signals[0]) == getMailserverKeyHash(), "Invalid mailserver key hash");
+        require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
         // Signals [1:4] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);

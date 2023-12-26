@@ -4,27 +4,29 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapterV2, NullifierRegistry, HDFCRegistrationProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapter, NullifierRegistry, VenmoRegistrationProcessorV2 } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
+import { ZERO_BYTES32 } from "@utils/constants";
 import { Address } from "@utils/types";
 
 const expect = getWaffleExpect();
+const abiCoder = new ethers.utils.AbiCoder();
 
-const rawSignals = ["0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x0741728e3aae72eda484e8ccbf00f843c38eae9c399b9bd7fb2b5ee7a055b6bf"];
 
-describe("HDFCRegistrationProcessor", () => {
+describe("VenmoRegistrationProcessorV2", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
 
-  let keyHashAdapter: ManagedKeyHashAdapterV2;
+  let keyHashAdapter: ManagedKeyHashAdapter;
   let nullifierRegistry: NullifierRegistry;
-  let registrationProcessor: HDFCRegistrationProcessor;
+  let registrationProcessor: VenmoRegistrationProcessorV2;
 
   let deployer: DeployHelper;
 
@@ -37,14 +39,16 @@ describe("HDFCRegistrationProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([rawSignals[0]]);
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
-    registrationProcessor = await deployer.deployHDFCRegistrationProcessor(
+    registrationProcessor = await deployer.deployVenmoRegistrationProcessorV2(
       ramp.address,
       keyHashAdapter.address,
       nullifierRegistry.address,
-      "alerts@hdfcbank.net"
+      "venmo@venmo.com"
     );
+
+    await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
   });
 
   describe("#constructor", async () => {
@@ -55,7 +59,7 @@ describe("HDFCRegistrationProcessor", () => {
 
       expect(rampAddress).to.eq(ramp.address);
       expect(venmoMailserverKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
-      expect(ethers.utils.toUtf8Bytes("alerts@hdfcbank.net")).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com")).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
   });
 
@@ -64,12 +68,12 @@ describe("HDFCRegistrationProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0aaf5c1ba1f7e33793fb9b625ef97bbceb5a4ff88eaf1a1aad9ce0d18689172b"), BigNumber.from("0x2d7402776d962249864b627030d4a2c7702037cabbb074cb506f9952f0f595c8")];
-      const b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
-        [BigNumber.from("0x20ff247aedbfa29e3f1cb8ca82dc6e3feb83d0ed56ca603f07e5226e18b7ca51"), BigNumber.from("0x07cb515fcb9d0feda50d42d1e5effe5cddf2e8b0a922f820a1f10cf828ed5db8")],
-        [BigNumber.from("0x20108a3012b7585d92c69706c315c7a764436251ba1a0c599a59c8da5f455c13"), BigNumber.from("0x1c7883ebff8bdc3ea2b03f327f7e9d87f79db84bf3eebe0d5eb97c4ada4739f0")]
+      const a: [BigNumber, BigNumber] = [BigNumber.from("0x191e1b9bc41df5af8ee340c17b985e6568d07af205081006b58b051cfcb69747"), BigNumber.from("0x12bf495fd858d78c2c1afe44a54c1e2e14816bb08e38d65ad7e433097330b3da")];
+      const b: [[BigNumber, BigNumber],[BigNumber, BigNumber]] = [
+        [BigNumber.from("0x3045cf6ba2aa61bc7b601e7d7a8ad40e4934e206e8e6649f28bf2bab5633539b"), BigNumber.from("0x12942590fa042c1852458a02ec03382fe954f41817bee90d00000f7c58813bbc")],
+        [BigNumber.from("0x22d6aaad8804724c0103be2ebce7168375f960d61169b9f3df2dcb269ed1e91a"), BigNumber.from("0x21afcce7edba700acadad481d70b3b987c6d66affee80165e9e37fc473e1cfe5")]
       ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x224cebf90888229bc9fbbe04bc868f41549f7fb055e0b6d7711df76cf558223c"), BigNumber.from("0x303a4c96fce908c05cf5fe21b84db342123fb73c8b66725e0e7eb4354ac0c7ba")];
+      const c: [BigNumber, BigNumber] = [BigNumber.from("0x16c20e8962dccf386104148cf396cff59eb91df62e9b809f3844773901e360cb"), BigNumber.from("0x1a086c71446c21cb5a114200211bd69c87095f750cf09726ab50f8ad551ff911")];
       const signals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [BigNumber.from(rawSignals[0]), BigNumber.from(rawSignals[1]), BigNumber.from(rawSignals[2]), BigNumber.from(rawSignals[3]), BigNumber.from(rawSignals[4])];
 
       subjectProof = {
@@ -85,10 +89,38 @@ describe("HDFCRegistrationProcessor", () => {
       return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
+    async function subjectCallStatic(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
+    }
+
     it("should process the proof", async () => {
-      const onRamperIdHash = await subject();
+      const onRamperIdHash = await subjectCallStatic();
 
       expect(onRamperIdHash).to.eq(subjectProof.signals[4]);
+    });
+
+    it("should add the hash of the proof inputs to the nullifier registry", async () => {
+      await subject();
+
+      const expectedNullifier = ethers.utils.keccak256(
+        abiCoder.encode(
+          ["tuple(uint256[2],uint256[2][2],uint256[2],uint256[5])"],
+          [[subjectProof.a, subjectProof.b, subjectProof.c, subjectProof.signals]]
+        )
+      );
+      const isNullified = await nullifierRegistry.isNullified(expectedNullifier);
+
+      expect(isNullified).to.be.true;
+    });
+
+    describe("when the email has been used previously", async () => {
+      beforeEach(async () => {
+        await subject();
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Nullifier has already been used");
+      });
     });
 
     describe("when the proof is invalid", async () => {
@@ -103,7 +135,7 @@ describe("HDFCRegistrationProcessor", () => {
 
     describe("when the email is from an invalid venmo address", async () => {
       beforeEach(async () => {
-        await registrationProcessor.setEmailFromAddress("bad-alerts@hdfcbank.net".padEnd(21, "\0"));
+        await registrationProcessor.setEmailFromAddress("bad-venmo@venmo.com".padEnd(21, "\0"));
       });
 
       it("should revert", async () => {
@@ -113,7 +145,7 @@ describe("HDFCRegistrationProcessor", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.removeMailServerKeyHash(rawSignals[0]);
+        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
       });
 
       it("should revert", async () => {
@@ -171,7 +203,7 @@ describe("HDFCRegistrationProcessor", () => {
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectEmailFromAddress = "new-alerts@hdfcbank.net".padEnd(21, "\0");
+      subjectEmailFromAddress = "new-venmo@venmo.com".padEnd(21, "\0");
     });
 
     async function subject(): Promise<any> {
@@ -183,7 +215,7 @@ describe("HDFCRegistrationProcessor", () => {
 
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
-      expect(ethers.utils.toUtf8Bytes("new-alerts@hdfcbank.net".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
 
     describe("when the caller is not the owner", async () => {
