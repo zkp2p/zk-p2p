@@ -16,7 +16,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { venmoRampAddress, venmoRampAbi } = useSmartContracts()
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
 
   /*
    * State

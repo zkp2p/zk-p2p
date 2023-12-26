@@ -235,16 +235,16 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, onRamperAddress: string): IndicativeQuote => {
     if (depositStore) {
-        return fetchBestDepositForAmount(
-            requestedOnRampInputAmount,
-            depositStore,
-            targetedDepositIds,
-            onRamperAddress
-        );
+      return fetchBestDepositForAmount(
+          requestedOnRampInputAmount,
+          depositStore,
+          targetedDepositIds,
+          onRamperAddress
+      );
     } else {
-        return {
-            error: 'No deposits available'
-        } as IndicativeQuote;
+      return {
+          error: 'No deposits available'
+      } as IndicativeQuote;
     }
   }, [depositStore, targetedDepositIds]);
 
