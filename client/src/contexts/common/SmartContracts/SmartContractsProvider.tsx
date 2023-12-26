@@ -149,7 +149,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     const contractsForNetwork = contractAddresses[networkEnvKey];
 
     setBlockscanUrl(blockExplorerUrls[networkEnvKey]);
-    setUsdcAddress(contractsForNetwork.fusdc);
+    setUsdcAddress(contractsForNetwork.usdc);
 
     // Legacy
     setLegacyRampAddress(contractsForNetwork.legacyRamp);
