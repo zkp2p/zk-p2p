@@ -65,7 +65,7 @@ template HdfcRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size
         pack_size
     )(in_padded, email_to_idx, in_body_padded, hdfc_acc_num_idx);
 
-    // TOTAL CONSTRAINTS: 4097650
+    // TOTAL CONSTRAINTS: 4095674
 }
 
 // Args:
