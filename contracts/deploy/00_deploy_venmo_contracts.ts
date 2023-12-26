@@ -20,8 +20,9 @@ import {
   USDC_MINT_AMOUNT,
   USDC_RECIPIENT,
 } from "../deployments/parameters";
-import { setNewOwner } from "../deployments/helpers";
+import { addWritePermission, setNewOwner } from "../deployments/helpers";
 import { PaymentProviders } from "../utils/types";
+import { ADDRESS_ZERO } from "../utils/constants";
 
 // Deployment Scripts
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -98,15 +99,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Processors deployed...");
 
   const rampContract = await ethers.getContractAt("Ramp", ramp.address);
-  await rampContract.initialize(
-    registrationProcessor.address,
-    sendProcessor.address
-  );
-
-  console.log("Ramp initialized...");
+  if ((await rampContract.registrationProcessor()) == ADDRESS_ZERO) {
+    await rampContract.initialize(
+      registrationProcessor.address,
+      sendProcessor.address
+    );
+  
+    console.log("Ramp initialized...");
+  }
 
   const nullifierRegistryContract = await ethers.getContractAt("NullifierRegistry", nullifierRegistry.address);
-  await nullifierRegistryContract.addWritePermission(sendProcessor.address);
+  await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
 
   console.log("NullifierRegistry permissions added...");
   

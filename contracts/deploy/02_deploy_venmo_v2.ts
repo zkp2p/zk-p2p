@@ -75,12 +75,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Processors deployed...");
 
   const rampContract = await ethers.getContractAt("VenmoRampV2", ramp.address);
-  await rampContract.initialize(
-    registrationProcessor.address,
-    sendProcessor.address
-  );
-
-  console.log("VenmoRampV2 initialized...");
+  if (!(await rampContract.isInitialized())) {
+    await rampContract.initialize(
+      registrationProcessor.address,
+      sendProcessor.address
+    );
+  
+    console.log("VenmoRampV2 initialized...");
+  }
 
   await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);

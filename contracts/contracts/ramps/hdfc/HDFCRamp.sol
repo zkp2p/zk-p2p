@@ -140,7 +140,7 @@ contract HDFCRamp is Ownable {
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
     IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
-    bool internal isInitialized;                                    // Indicates if contract has been initialized
+    bool public isInitialized;                                      // Indicates if contract has been initialized
 
     mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
     mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)

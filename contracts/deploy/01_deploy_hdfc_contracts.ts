@@ -85,12 +85,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Processors deployed...");
 
   const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
-  await hdfcRampContract.initialize(
-    registrationProcessor.address,
-    sendProcessor.address
-  );
-
-  console.log("HDFCRamp initialized...");
+  if (!(await hdfcRampContract.isInitialized())) {
+    await hdfcRampContract.initialize(
+      registrationProcessor.address,
+      sendProcessor.address
+    );
+  
+    console.log("HDFCRamp initialized...");
+  }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
