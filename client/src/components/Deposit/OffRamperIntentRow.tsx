@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
@@ -6,6 +6,8 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
+import { AccessoryButton } from '@components/common/AccessoryButton';
+import { ConfirmReleaseModal } from '@components/modals/ConfirmReleaseModal';
 
 
 interface IntentRowProps {
@@ -34,6 +36,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const { blockscanUrl } = useSmartContracts();
 
   /*
+   * State
+   */
+
+  const [shouldShowReleaeModal, setShouldShowReleaseModal] = useState<boolean>(false);
+
+  /*
    * Helpers
    */
 
@@ -52,6 +60,14 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
+      {
+        shouldShowReleaeModal && (
+          <ConfirmReleaseModal
+            onBackClick={() => setShouldShowReleaseModal(false)}
+          />
+        )
+      }
+
       <IntentDetailsContainer>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <AmountLabelsContainer>
@@ -80,6 +96,15 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             <Value>{orderExpirationLabel}</Value>
           </AmountContainer>
         </AmountLabelsContainer>
+
+        <ActionsContainer>
+          <AccessoryButton
+            onClick={() => setShouldShowReleaseModal(true)}
+            height={36}
+            loading={false}
+            title={'Release'}
+            icon={'unlock'}/>
+        </ActionsContainer>
       </IntentDetailsContainer>
     </Container>
   );
@@ -120,4 +145,12 @@ const Label = styled.label`
 const Value = styled.label`
   font-size: 15px;
   color: #FFFFFF;
+`;
+
+const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
 `;
