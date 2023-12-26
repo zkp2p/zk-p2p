@@ -8,6 +8,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { Landing } from "./pages/Landing";
 import { Permissions } from "./pages/Permissions";
+import { Withdraw } from "./pages/Withdraw";
 import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Liquidity } from "./pages/Liquidity";
@@ -26,6 +27,9 @@ import PlatformSettings from './contexts/common/PlatformSettings/PlatformSetting
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
+
+// Legacy Contexts
+import LegacyDepositsProvider  from './contexts/legacy/Deposits/DepositsProvider';
 
 // Venmo Contexts
 import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
@@ -64,6 +68,7 @@ const App = () => {
                 <Route path="/deposits" element={<MobileLandingPage />} />
                 <Route path="/register" element={<MobileLandingPage />} />
                 <Route path="/permissions" element={<MobileLandingPage />} />
+                <Route path="/withdraw" element={<MobileLandingPage />} />
                 <Route path="/pp" element={<Privacy />} />
                 <Route path="/tos" element={<Tos />} />
               </Routes>
@@ -87,6 +92,7 @@ const App = () => {
                 <Route path="/deposits" element={<Deposit />} />
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />
+                <Route path="/withdraw" element={<Withdraw />} />
                 <Route path="/pp" element={<Privacy />} />
                 <Route path="/tos" element={<Tos />} />
                 <Route element={<>Not found</>} />
@@ -135,6 +141,7 @@ const providersWithProps: ProvidersType[] = [
   [RegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
   [DepositsProvider, {}],
+  [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
   [PermissionsProvider, {}],
   [LiquidityProvider, {}],

@@ -43,6 +43,12 @@ export const MenuDropdown = () => {
                   View Documentation ↗
                 </ThemedText.LabelSmall>
             </NavDropdownItem>
+            
+            <NavDropdownItem as={Link} to="/withdraw">
+              <ThemedText.LabelSmall textAlign="left">
+                Withdraw ↗
+              </ThemedText.LabelSmall>
+            </NavDropdownItem>
 
             <NavDropdownItem
               href="https://v1.zkp2p.xyz/"
