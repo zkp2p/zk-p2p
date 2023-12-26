@@ -27,6 +27,9 @@ import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGe
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 
+// Legacy Contexts
+import LegacyDepositsProvider  from './contexts/legacy/Deposits/DepositsProvider';
+
 // Venmo Contexts
 import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
 import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
@@ -135,6 +138,7 @@ const providersWithProps: ProvidersType[] = [
   [RegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
   [DepositsProvider, {}],
+  [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
   [PermissionsProvider, {}],
   [LiquidityProvider, {}],

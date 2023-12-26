@@ -15,6 +15,6 @@ const defaultValues: DepositsValues = {
   shouldFetchDeposits: false,
 };
 
-const DepositsContext = createContext<DepositsValues>(defaultValues)
+const DepositsContext = createContext<DepositsValues>(defaultValues);
 
-export default DepositsContext
+export default DepositsContext;
