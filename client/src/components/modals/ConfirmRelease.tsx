@@ -301,10 +301,10 @@ const StyledArrowLeft = styled(ArrowLeft)`
 `;
 
 const StyledUnlock = styled(Unlock)`
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   color: #FFF;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
 `;
 
 const InstructionsContainer = styled.div`
