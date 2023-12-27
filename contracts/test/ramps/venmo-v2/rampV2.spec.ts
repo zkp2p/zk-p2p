@@ -29,7 +29,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("VenmoRampV2", () => {
+describe("VenmoRampV2", () => {
   let owner: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
@@ -2084,10 +2084,12 @@ describe.only("VenmoRampV2", () => {
         expect(intents[1].intent.amount).to.eq(usdc(40));
         expect(intents[0].onRamperIdHash).to.eq(await calculateIdHash("2"));
         expect(intents[1].onRamperIdHash).to.eq(await calculateIdHash("3"));
+        expect(intents[0].intentHash).to.eq(subjectIntentHashes[0]);
+        expect(intents[1].intentHash).to.eq(subjectIntentHashes[1]);
       });
     });
 
-    describe.only("#getAccountInfo", async () => {
+    describe("#getAccountInfo", async () => {
       let subjectAccount: Address;
 
       beforeEach(async () => {
