@@ -212,10 +212,12 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         }
 
         const onRamperVenmoHash = intentWithOnRamperId.onRamperIdHash;
+        const intentHash = intentWithOnRamperId.intentHash;
         const depositIntent: DepositIntent = {
           intent,
           onRamperVenmoHash,
-          deposit
+          deposit,
+          intentHash
         }
 
         sanitizedIntents.push(depositIntent);
@@ -245,4 +247,4 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default DepositsProvider
+export default DepositsProvider;
