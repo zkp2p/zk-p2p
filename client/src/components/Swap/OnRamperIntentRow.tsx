@@ -145,7 +145,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         <AccessoryButton
           onClick={handleSendClick}
           height={36}
-          title={'Send'}
+          title={'Complete'}
           icon={'send'}/>
       </ActionsContainer>
     </Container>

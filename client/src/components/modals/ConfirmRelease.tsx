@@ -16,13 +16,13 @@ import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-interface ConfirmReleaseModalProps {
+interface ConfirmReleaseProps {
   onBackClick: () => void
   intentHash: string;
   amountUSDCToSend: string;
 }
 
-export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
+export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
   onBackClick,
   intentHash,
   amountUSDCToSend,

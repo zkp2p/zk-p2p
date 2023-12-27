@@ -222,7 +222,6 @@ const StyledSend = styled(Send)`
   width: 12px;
   height: 12px;
   color: white;
-  margin-left: 2px;
 `;
 
 const StyledChevronRight = styled(ChevronRight)`
@@ -236,33 +235,28 @@ const StyledLogOut = styled(LogOut)`
   width: 15px;
   height: 15px;
   color: #adb5bd;
-  margin-left: 2px;
 `;
 
 const StyledRefresh = styled(RefreshCw)`
   width: 15px;
   height: 15px;
   color: #adb5bd;
-  margin-left: 2px;
 `;
 
 const StyledTrash = styled(Trash2)`
   width: 13px;
   height: 13px;
   color: #adb5bd;
-  margin-left: 2px;
 `;
 
 const StyledUnlock = styled(Unlock)`
   width: 14px;
   height: 14px;
   color: #adb5bd;
-  margin-left: 2px;
 `;
 
 const StyledUserX = styled(UserX)`
   width: 15px;
   height: 15px;
   color: #adb5bd;
-  margin-left: 2px;
 `;

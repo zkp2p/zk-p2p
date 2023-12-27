@@ -7,7 +7,7 @@ import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
-import { ConfirmReleaseModal } from '@components/modals/ConfirmReleaseModal';
+import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useLiquidity from '@hooks/useLiquidity';
@@ -150,7 +150,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
     <Container>
       {
         shouldShowReleaseModal && (
-          <ConfirmReleaseModal
+          <ConfirmRelease
             onBackClick={onCloseReleaseModal}
             intentHash={selectedReleaseIntentHash}
             amountUSDCToSend={selectedReleaseIntentAmount}
