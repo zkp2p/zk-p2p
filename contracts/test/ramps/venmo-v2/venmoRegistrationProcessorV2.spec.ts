@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapter, NullifierRegistry, VenmoRegistrationProcessorV2 } from "@utils/contracts";
+import { ManagedKeyHashAdapterV2, NullifierRegistry, VenmoRegistrationProcessorV2 } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
@@ -24,7 +24,7 @@ describe("VenmoRegistrationProcessorV2", () => {
   let attacker: Account;
   let ramp: Account;
 
-  let keyHashAdapter: ManagedKeyHashAdapter;
+  let keyHashAdapter: ManagedKeyHashAdapterV2;
   let nullifierRegistry: NullifierRegistry;
   let registrationProcessor: VenmoRegistrationProcessorV2;
 
@@ -39,7 +39,7 @@ describe("VenmoRegistrationProcessorV2", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    keyHashAdapter = await deployer.deployManagedKeyHashAdapter(rawSignals[0]);
+    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([rawSignals[0]]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
     registrationProcessor = await deployer.deployVenmoRegistrationProcessorV2(
       ramp.address,
@@ -145,7 +145,7 @@ describe("VenmoRegistrationProcessorV2", () => {
 
     describe("when the rsa modulus doesn't match", async () => {
       beforeEach(async () => {
-        await keyHashAdapter.setMailserverKeyHash(ZERO_BYTES32);
+        await keyHashAdapter.removeMailServerKeyHash(rawSignals[0]);
       });
 
       it("should revert", async () => {
