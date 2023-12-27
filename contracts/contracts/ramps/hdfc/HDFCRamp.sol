@@ -102,6 +102,7 @@ contract HDFCRamp is Ownable {
     }
 
     struct IntentWithOnRamperId {
+        bytes32 intentHash;                 // Intent hash
         Intent intent;                      // Intent struct
         bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's idHash
     }
@@ -609,8 +610,10 @@ contract HDFCRamp is Ownable {
         IntentWithOnRamperId[] memory intentsWithOnRamperId = new IntentWithOnRamperId[](_intentHashes.length);
 
         for (uint256 i = 0; i < _intentHashes.length; ++i) {
-            Intent memory intent = intents[_intentHashes[i]];
+            bytes32 intentHash = _intentHashes[i];
+            Intent memory intent = intents[intentHash];
             intentsWithOnRamperId[i] = IntentWithOnRamperId({
+                intentHash: _intentHashes[i],
                 intent: intent,
                 onRamperIdHash: accounts[intent.onRamper].idHash
             });

@@ -2042,6 +2042,8 @@ describe("HDFCRamp", () => {
         expect(intents[1].intent.amount).to.eq(usdc(40));
         expect(intents[0].onRamperIdHash).to.eq(await calculateUpiIdHash("22"));
         expect(intents[1].onRamperIdHash).to.eq(await calculateUpiIdHash("23"));
+        expect(intents[0].intentHash).to.eq(subjectIntentHashes[0]);
+        expect(intents[1].intentHash).to.eq(subjectIntentHashes[1]);
       });
     });
   });
