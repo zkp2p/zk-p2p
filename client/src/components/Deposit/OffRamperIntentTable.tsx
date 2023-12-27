@@ -7,6 +7,7 @@ import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { ConfirmReleaseModal } from '@components/modals/ConfirmReleaseModal';
 import useVenmoDeposits from '@hooks/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
 import useLiquidity from '@hooks/useLiquidity';
@@ -36,10 +37,34 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   /*
    * State
    */
+
+  const [shouldShowReleaseModal, setShouldShowReleaseModal] = useState<boolean>(false);
+  const [selectedReleaseIntentHash, setSelectedReleaseIntentHash] = useState<string>("");
+  const [selectedReleaseIntentAmount, setSelectedReleaseIntentAmount] = useState<string>("");
  
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
   const [depositIntents, setDepositIntents] = useState<DepositIntent[]>([]);
+
+  /*
+   * Handlers
+   */
+
+  const onReleaseIntentClick = (intentHash: string, amountUSDCToSend: string) => {
+    setSelectedReleaseIntentHash(intentHash);
+
+    setSelectedReleaseIntentAmount(amountUSDCToSend);
+
+    setShouldShowReleaseModal(true);
+  };
+
+  const onCloseReleaseModal = () => {
+    setShouldShowReleaseModal(false);
+
+    setSelectedReleaseIntentHash("");
+
+    setSelectedReleaseIntentAmount("");
+  };
 
   /*
    * Hooks
@@ -63,6 +88,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
       sanitizedIntents = depositIntents.map((depositIntent: DepositIntent, index: number) => {
         const intent = depositIntent.intent;
         const deposit = depositIntent.deposit;
+        const intentHash = depositIntent.intentHash;
 
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
@@ -72,13 +98,18 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC, true);
         const expirationTimestamp = formatExpiration(intent.timestamp);
-        
+
         const sanitizedIntent: IntentRowData = {
           isVenmo,
           onRamper,
           amountUSDToReceive,
           amountUSDCToSend,
           expirationTimestamp,
+          handleReleaseClick: () => {
+            if (onReleaseIntentClick) {
+              onReleaseIntentClick(intentHash, amountUSDCToSend);
+            }
+          }
         }
 
         return sanitizedIntent;
@@ -117,6 +148,16 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
 
   return (
     <Container>
+      {
+        shouldShowReleaseModal && (
+          <ConfirmReleaseModal
+            onBackClick={onCloseReleaseModal}
+            intentHash={selectedReleaseIntentHash}
+            amountUSDCToSend={selectedReleaseIntentAmount}
+          />
+        )
+      }
+
       <TitleAndTableContainer>
         <IntentCountTitle>
           <ThemedText.LabelSmall textAlign="left">
@@ -133,6 +174,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}
               onRamper={intentsRow.onRamper}
+              handleReleaseClick={intentsRow.handleReleaseClick}
             />
           ))}
         </Table>
@@ -154,12 +196,12 @@ const Container = styled.div`
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   overflow: hidden;
-`
+`;
 
 const TitleAndTableContainer = styled.div`
   display: flex;
   flex-direction: column;
-`
+`;
 
 const IntentCountTitle = styled.div`
   width: 100%;
@@ -167,7 +209,7 @@ const IntentCountTitle = styled.div`
   padding-bottom: 1rem;
   padding-left: 1.5rem;
   border-bottom: 1px solid #98a1c03d;
-`
+`;
 
 const Table = styled.div`
   width: 100%;

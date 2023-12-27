@@ -68,7 +68,7 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
     abi: releaseRampAbi,
     functionName: 'releaseFundsToOnramper',
     args: [
-      [intentHash],
+      intentHash,
     ],
   });
 
@@ -81,7 +81,6 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
 
   const {
     isLoading: isSubmitReleaseMining
-
   } = useWaitForTransaction({
     hash: submitReleaseResult ? submitReleaseResult.hash : undefined,
     onSuccess(data) {
@@ -150,15 +149,15 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
   useEffect(() => {
     switch (submitReleaseStatus) {
       case 'idle':
-        setCtaButtonTitle("Submit Transaction");
+        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_CONFIGURED);
         break;
 
       case 'loading':
-        setCtaButtonTitle("Signing Transaction");
+        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_LOADING);
         break;
 
       case 'success':
-        setCtaButtonTitle("Mining Transaction");
+        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_MINING);
         break;
     }
 
@@ -185,6 +184,20 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
     }
 
   }, [submitTransactionStatus]);
+
+  /*
+   * Helpers
+   */
+
+  const ctaOnClick = async () => {
+    try {
+      await writeSubmitReleaseAsync?.();
+    } catch (error) {
+      console.log('writeSubmitReleaseAsync failed: ', error);
+
+      setSubmitTransactionStatus(TransactionStatus.TRANSACTION_CONFIGURED);
+    }
+  }
 
   /*
    * Component
@@ -236,7 +249,7 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
 
         <Button
           disabled={isSubmitReleaseLoading || isSubmitReleaseMining}
-          onClick={writeSubmitReleaseAsync}
+          onClick={ctaOnClick}
           fullWidth={true}
         >
           {ctaButtonTitle}
