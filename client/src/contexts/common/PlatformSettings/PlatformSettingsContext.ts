@@ -12,12 +12,15 @@ interface PlatformSettingsValues {
   setPaymentPlatform?: React.Dispatch<React.SetStateAction<PaymentPlatformType>>;
   PaymentPlatform: typeof PaymentPlatform;
   paymentPlatforms: PaymentPlatformType[];
+  reviewedRequirementsForPlatform: () => boolean;
+  markPlatformRequirementsAsReviewed: () => void;
 };
 
 const defaultValues: PlatformSettingsValues = {
   paymentPlatforms: paymentPlatforms,
-  PaymentPlatform
-
+  PaymentPlatform,
+  reviewedRequirementsForPlatform: () => false,
+  markPlatformRequirementsAsReviewed: () => {},
 };
 
 const PlatformSettingsContext = createContext<PlatformSettingsValues>(defaultValues);

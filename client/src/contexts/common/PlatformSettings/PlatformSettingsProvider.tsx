@@ -16,6 +16,8 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
 
   const [paymentPlatform, setPaymentPlatform] = useState<PaymentPlatformType>(PaymentPlatform.VENMO);
 
+  const [didUserReviewRequirementsForPlatform, setDidUserReviewRequirementsForPlatform] = useState<boolean>(false);
+
   /*
    * Hooks
    */
@@ -34,13 +36,52 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
     }
   }, [paymentPlatform]);
 
+  useEffect(() => {
+    const reviewStatusKey = getReviewStatusKey(paymentPlatform);
+
+    const storedReviewStatus = localStorage.getItem(reviewStatusKey);
+    
+    if (storedReviewStatus) {
+      setDidUserReviewRequirementsForPlatform(JSON.parse(storedReviewStatus));
+    }
+  }, [paymentPlatform]);
+
+  useEffect(() => {
+    const reviewStatusKey = getReviewStatusKey(paymentPlatform);
+
+    localStorage.setItem(reviewStatusKey, JSON.stringify(didUserReviewRequirementsForPlatform));
+  }, [didUserReviewRequirementsForPlatform, paymentPlatform]);
+
+  /*
+   * Public
+   */
+
+  const reviewedRequirementsForPlatform = () => {
+    const reviewStatusKey = getReviewStatusKey(paymentPlatform);
+    const storedReviewStatus = localStorage.getItem(reviewStatusKey);
+    
+    return storedReviewStatus ? JSON.parse(storedReviewStatus) : false;
+  };
+
+  const markPlatformRequirementsAsReviewed = () => {
+    setDidUserReviewRequirementsForPlatform(true);
+  };
+
+  /*
+   * Helpers
+   */
+
+  const getReviewStatusKey = (platform: PaymentPlatformType) => `storedReviewStatus_${platform}`;
+
   return (
     <PlatformSettingsContext.Provider
       value={{
         paymentPlatform,
         setPaymentPlatform,
         PaymentPlatform,
-        paymentPlatforms
+        paymentPlatforms,
+        reviewedRequirementsForPlatform,
+        markPlatformRequirementsAsReviewed
       }}
     >
       {children}
