@@ -41,7 +41,7 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
 
       <InstructionsDropdown $isOpen={isOpen}>
         <HorizontalDivider/>
-        <InstructionListContainer>
+        <RequirementListContainer>
           <InstructionStep step={1}>
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_ONE') }
           </InstructionStep>
@@ -53,7 +53,7 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
           <InstructionStep step={3}>
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
           </InstructionStep>
-        </InstructionListContainer>
+        </RequirementListContainer>
 
         <DisclaimerLabel>
           Not meeting requirements will lead to lost funds
@@ -126,7 +126,7 @@ const InstructionsDropdown = styled.div<InstructionsDropdownProps>`
   transition: max-height 0.4s ease-out;
 `;
 
-const InstructionListContainer = styled.div`
+const RequirementListContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;

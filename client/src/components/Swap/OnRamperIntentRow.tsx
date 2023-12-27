@@ -6,6 +6,7 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
+import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
@@ -41,11 +42,18 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const { blockscanUrl } = useSmartContracts();
-  const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
+  const {
+    paymentPlatform,
+    PaymentPlatform,
+    reviewedRequirementsForPlatform,
+    markPlatformRequirementsAsReviewed
+  } = usePlatformSettings();
 
   /*
    * State
    */
+
+  const [shouldShowRequirementsModal, setShouldShowRequirementsModal] = useState<boolean>(false);
 
   const [shouldShowSwapModal, setShouldShowSwapModal] = useState<boolean>(false);
 
@@ -69,11 +77,24 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const handleSendClick = () => {
-    setShouldShowSwapModal(true);
+    if (reviewedRequirementsForPlatform()) {
+      setShouldShowSwapModal(true);
+    } else {
+      setShouldShowRequirementsModal(true);
+    }
   };
 
   const handleModalBackClicked = () => {
+    setShouldShowRequirementsModal(false);
     setShouldShowSwapModal(false);
+  };
+
+  const handleRequirementsModalCtaClick = () => {
+    markPlatformRequirementsAsReviewed();
+
+    setShouldShowRequirementsModal(false);
+
+    setShouldShowSwapModal(true);
   };
 
   /*
@@ -82,6 +103,16 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
+      {
+        shouldShowRequirementsModal && (
+          <ReviewRequirements
+            onBackClick={handleModalBackClicked}
+            paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
+            onCtaClick={handleRequirementsModalCtaClick}
+          />
+        )
+      }
+
       {
         shouldShowSwapModal && (
           <SwapModal

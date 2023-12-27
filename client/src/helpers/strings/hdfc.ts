@@ -66,7 +66,7 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Please send the payment only from the UPI ID linked to your HDFC bank account. Please don't send payment from UPI Lite or any other UPI ID  
+    Payment is sent from your UPI ID linked to your HDFC bank account. Do not send payment from UPI Lite or other UPI IDs
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
     HDFC InstaAlert email notifications are enabled in your bank account notification settings  

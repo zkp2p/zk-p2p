@@ -46,11 +46,24 @@ export const MenuDropdown = () => {
             
             <NavDropdownItem as={Link} to="/withdraw">
               <ThemedText.LabelSmall textAlign="left">
-                Withdraw ↗
+                Withdraw
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem
+            <NavDropdownItem as={Link} to="/tos">
+              <ThemedText.LabelSmall textAlign="left">
+                Terms of Service
+              </ThemedText.LabelSmall>
+            </NavDropdownItem>
+
+            <NavDropdownItem as={Link} to="/pp">
+              <ThemedText.LabelSmall textAlign="left">
+                Privacy Policy
+              </ThemedText.LabelSmall>
+            </NavDropdownItem>
+          </NavDropdownItemContainer>
+
+          <NavDropdownItem
               href="https://v1.zkp2p.xyz/"
               target="_blank"
               rel="noopener noreferrer">
@@ -58,19 +71,6 @@ export const MenuDropdown = () => {
                   ZKP2P V1 PoC ↗
                 </ThemedText.LabelSmall>
             </NavDropdownItem>
-
-            <NavDropdownItem as={Link} to="/tos">
-              <ThemedText.LabelSmall textAlign="left">
-                Terms of Service ↗
-              </ThemedText.LabelSmall>
-            </NavDropdownItem>
-
-            <NavDropdownItem as={Link} to="/pp">
-              <ThemedText.LabelSmall textAlign="left">
-                Privacy Policy ↗
-              </ThemedText.LabelSmall>
-            </NavDropdownItem>
-          </NavDropdownItemContainer>
 
           <IconRow>
             <Icon
@@ -89,7 +89,7 @@ export const MenuDropdown = () => {
             />
 
             <VersionLabel>
-              v0.1.1
+              v0.1.2
             </VersionLabel>
           </IconRow>
         </NavDropdown>
