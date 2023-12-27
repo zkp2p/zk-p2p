@@ -56,23 +56,37 @@ export const mimcSponge = (arr: (number | bigint | string)[]): string =>
     mimcHasher.F.toString(mimcHasher.multiHash(arr, "123", "1"));
 
 
+
 // If file called directly with `npx tsx pubkey_hash.ts`
 if (typeof require !== "undefined" && require.main === module) {
-    const domain = process.argv[2]
-    const selector = process.argv[3]
+    const fetch = process.argv[2]
+    let domainKey;
 
-    fetchDnsTxtRecord(domain, selector)
-        .then(domainKey => {
-            console.log("Fetched domain key:", domainKey);
+    initializeMimcHasher().then(() => {
+        if (fetch == '1') {
+            const domain = process.argv[3]
+            const selector = process.argv[4]
 
-            const modulus = extractModulus(domainKey[0]);
+            console.log("Fetching domain key:", domain, selector)
+            fetchDnsTxtRecord(domain, selector)
+                .then(_domainKey => {
+                    domainKey = _domainKey[0];
+                    console.log("Fetched domain key:", domainKey);
+
+                    const modulus = extractModulus(domainKey);
+                    console.log("Modulus:", modulus);
+                    console.log("Modulus Hash:", mimcSponge(modulus));
+                })
+                .catch(error => console.error('Failed to fetch domain key:', error));
+        } else {
+            console.log("Using domain key:", process.argv[3]);
+            domainKey = process.argv[3];
+
+            const modulus = extractModulus(domainKey);
             console.log("Modulus:", modulus);
-
-            initializeMimcHasher().then(() => {
-                console.log("Modulus Hash:", mimcSponge(modulus));
-            }).catch((err) => {
-                console.log('Failed to hash modulus', err);
-            });
-        })
-        .catch(error => console.error('Failed to fetch domain key:', error));
+            console.log("Modulus Hash:", mimcSponge(modulus));
+        }
+    }).catch((err) => {
+        console.log('Failed to initialize hasher', err);
+    });
 }
