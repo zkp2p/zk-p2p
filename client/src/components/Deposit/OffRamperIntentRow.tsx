@@ -6,9 +6,11 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
+import { AccessoryButton } from '@components/common/AccessoryButton';
 
 
 interface IntentRowProps {
+  handleReleaseClick?: () => void;
   isVenmo: boolean;
   onRamper: string;
   amountUSDToReceive: string;
@@ -19,6 +21,7 @@ interface IntentRowProps {
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
+  handleReleaseClick,
   isVenmo,
   onRamper,
   amountUSDToReceive,
@@ -80,6 +83,15 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             <Value>{orderExpirationLabel}</Value>
           </AmountContainer>
         </AmountLabelsContainer>
+
+        <ActionsContainer>
+          <AccessoryButton
+            onClick={handleReleaseClick}
+            height={36}
+            loading={false}
+            title={'Release'}
+            icon={'unlock'}/>
+        </ActionsContainer>
       </IntentDetailsContainer>
     </Container>
   );
@@ -120,4 +132,12 @@ const Label = styled.label`
 const Value = styled.label`
   font-size: 15px;
   color: #FFFFFF;
+`;
+
+const ActionsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
 `;

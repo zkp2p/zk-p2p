@@ -790,6 +790,11 @@ export const abi = [
       {
         "components": [
           {
+            "internalType": "bytes32",
+            "name": "intentHash",
+            "type": "bytes32"
+          },
+          {
             "components": [
               {
                 "internalType": "address",

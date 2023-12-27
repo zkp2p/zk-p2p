@@ -62,6 +62,7 @@ export interface DepositIntent {
   onRamperVenmoHash: string;
   deposit: Deposit;
   intent: Intent;
+  intentHash: string;
 }
 
 export interface OnRamperIntent {

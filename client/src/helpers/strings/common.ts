@@ -20,6 +20,10 @@ export interface CommonStrings {
   PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS: string,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: string,
 
+  // Release Funds Modal
+  RELEASE_FUNDS_WARNING_ONE: string,
+  RELEASE_FUNDS_WARNING_TWO: string,
+
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
 
@@ -92,6 +96,15 @@ const strings: CommonStrings = {
   `,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: `
     Follow this guide to copy and paste the email.
+  `,
+
+  // Release Funds Modal
+  RELEASE_FUNDS_WARNING_ONE: `
+    Submit this transaction to release
+  `,
+  RELEASE_FUNDS_WARNING_TWO: `
+    to the requester. This bypasses requiring the user to submit proof of the transaction
+    and may result in loss of funds.
   `,
 
   // Pay Modal

@@ -3,16 +3,24 @@ import styled, { css } from 'styled-components';
 import {
   ChevronRight,
   LogOut,
+  RefreshCw,
   Send,
   Trash2,
   UserX,
-  RefreshCw
+  Unlock
 } from 'react-feather';
 
 import Spinner from "@components/common/Spinner";
 
 
-type iconType = "send" | "chevronRight" | "trash" | "userX" | "logout" | "refresh";
+type iconType = 
+  "send" |
+  "chevronRight" |
+  "trash" |
+  "userX" |
+  "logout" |
+  "refresh" |
+  "unlock";
 
 interface AccessoryButtonProps {
   fullWidth?: boolean;
@@ -111,6 +119,9 @@ export const AccessoryButton: React.FC<AccessoryButtonProps> = ({
 
       case "userX":
         return <StyledUserX />;
+
+      case "unlock":
+        return <StyledUnlock />;
 
       default:
         return null;
@@ -238,6 +249,13 @@ const StyledRefresh = styled(RefreshCw)`
 const StyledTrash = styled(Trash2)`
   width: 13px;
   height: 13px;
+  color: #adb5bd;
+  margin-left: 2px;
+`;
+
+const StyledUnlock = styled(Unlock)`
+  width: 14px;
+  height: 14px;
   color: #adb5bd;
   margin-left: 2px;
 `;
