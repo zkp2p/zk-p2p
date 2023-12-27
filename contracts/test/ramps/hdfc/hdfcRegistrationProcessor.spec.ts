@@ -12,11 +12,12 @@ import {
   getAccounts
 } from "@utils/test/index";
 import { Address } from "@utils/types";
+import { createTypedRegistrationProof } from "@utils/protocolUtils"
 
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
 
-const rawSignals = ["0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
+const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
 
 describe("HDFCRegistrationProcessor", () => {
   let owner: Account;
@@ -67,20 +68,13 @@ describe("HDFCRegistrationProcessor", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      const a: [BigNumber, BigNumber] = [BigNumber.from("0x0aaf5c1ba1f7e33793fb9b625ef97bbceb5a4ff88eaf1a1aad9ce0d18689172b"), BigNumber.from("0x2d7402776d962249864b627030d4a2c7702037cabbb074cb506f9952f0f595c8")];
-      const b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
-        [BigNumber.from("0x20ff247aedbfa29e3f1cb8ca82dc6e3feb83d0ed56ca603f07e5226e18b7ca51"), BigNumber.from("0x07cb515fcb9d0feda50d42d1e5effe5cddf2e8b0a922f820a1f10cf828ed5db8")],
-        [BigNumber.from("0x20108a3012b7585d92c69706c315c7a764436251ba1a0c599a59c8da5f455c13"), BigNumber.from("0x1c7883ebff8bdc3ea2b03f327f7e9d87f79db84bf3eebe0d5eb97c4ada4739f0")]
-      ];
-      const c: [BigNumber, BigNumber] = [BigNumber.from("0x224cebf90888229bc9fbbe04bc868f41549f7fb055e0b6d7711df76cf558223c"), BigNumber.from("0x303a4c96fce908c05cf5fe21b84db342123fb73c8b66725e0e7eb4354ac0c7ba")];
-      const signals: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [BigNumber.from(rawSignals[0]), BigNumber.from(rawSignals[1]), BigNumber.from(rawSignals[2]), BigNumber.from(rawSignals[3]), BigNumber.from(rawSignals[4])];
+      subjectProof = createTypedRegistrationProof(
+        ["0x0219573fef54ca47f18b39e0b1c37781366873838e480b4f31a89ad5e477b98b", "0x23e29581b46205346c7b4e3dd940d03607d7720d978774c765e2e592abdd71bf"],
+        [["0x18df5f15533ba0171b4c88e9ae30f86868eda675ee453ab67d350a955059de70", "0x2d9f67c40a8ec199f76a030f6275a2eabad4c4465fa586af95349e37063c0e5c"],["0x2813627dcbbd64f3782f255e9d4bbe4af7585be9861a6eca90fe6a467082373e", "0x19b4d3ea86fdf64e9d578cfebaf5a65828e12375370f2a8f7d5733d6508a3769"]],
+        ["0x2cc2478b5f5eab655918f7a5a4475e033dfef9da0c3e3f65420d79822b23de52", "0x25b19aeea4379446f3b9858d7c38849ac210364a9d9015a2e81746d45723e2c5"],
+        rawSignals
+      );
 
-      subjectProof = {
-        a,
-        b,
-        c,
-        signals
-      };
       subjectCaller = ramp;
     });
 

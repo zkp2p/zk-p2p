@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { ManagedKeyHashAdapterV2, NullifierRegistry, HDFCSendProcessor } from "@utils/contracts";
+import { ManagedKeyHashAdapterV2, NullifierRegistry, VenmoSendProcessorV2 } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 import { GrothProof } from "@utils/types";
 import { createTypedSendProof } from "@utils/protocolUtils";
@@ -17,16 +17,16 @@ import { usdc } from "@utils/common";
 
 const expect = getWaffleExpect();
 
-const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x0000000000000000000000000000000000000000000000000000000030302e32","0x0000000000000000000000000000000000000000000000000000000000000000","0x000000000000000000000000000000000000000000000000003132202c657554","0x00000000000000000000000000000000000000000000000000303220766f4e20","0x00000000000000000000000000000000000000000000000000353a3131203332","0x00000000000000000000000000000000000000000000000000302b2038303a38","0x0000000000000000000000000000000000000000000000000000000000303335","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7","0x2e77b67e4f7d868c763d4539ca8483672e522d3aafb015f27aef9090f6790a18","0x0bd3bb4a2060e5b6d300226add771815983afad1c596b4cf191639ccd74874a9","0x0000000000000000000000000000000000000000000000000000000000003039"];
+const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x00000000000000000000000000000000000000000000000000000030302e3033","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000033373633383631","0x0000000000000000000000000000000000000000000000000000000000393334","0x14465b905804512ffd4ed3425fd0d9d0f50947bddfd35bb55be9c29cca1e1c3a","0x0741728e3aae72eda484e8ccbf00f843c38eae9c399b9bd7fb2b5ee7a055b6bf","0x1e1d37257be43685d944597f63d00a6b638b9b4ff1752cf8db9c5de48ececbe8","0x0000000000000000000000000000000000000000000000000000000000003039"];
 
-describe("HDFCSendProcessor", () => {
+describe("VenmoSendProcessorV2", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
 
   let keyHashAdapter: ManagedKeyHashAdapterV2;
   let nullifierRegistry: NullifierRegistry;
-  let sendProcessor: HDFCSendProcessor;
+  let sendProcessor: VenmoSendProcessorV2;
 
   let deployer: DeployHelper;
 
@@ -41,11 +41,11 @@ describe("HDFCSendProcessor", () => {
 
     keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([rawSignals[0]]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
-    sendProcessor = await deployer.deployHDFCSendProcessor(
+    sendProcessor = await deployer.deployVenmoSendProcessorV2(
       ramp.address,
       keyHashAdapter.address,
       nullifierRegistry.address,
-      "alerts@hdfcbank.net"
+      "venmo@venmo.com"
     );
 
     await nullifierRegistry.connect(owner.wallet).addWritePermission(sendProcessor.address);
@@ -59,7 +59,7 @@ describe("HDFCSendProcessor", () => {
 
       expect(rampAddress).to.eq(ramp.address);
       expect(venmoKeyHashAdapter).to.deep.equal(keyHashAdapter.address);
-      expect(ethers.utils.toUtf8Bytes("alerts@hdfcbank.net")).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+      expect(ethers.utils.toUtf8Bytes("venmo@venmo.com")).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
     });
   });
 
@@ -69,9 +69,9 @@ describe("HDFCSendProcessor", () => {
 
     beforeEach(async () => {
       subjectProof = createTypedSendProof(
-        ["0x0329ec978cbb496f8aa91c532d46df94a31e13af4f511cf383d8a82b8b23c3a0", "0x23b3799b57ccdcbfc424d61b2def5fc4d31a890f3fe3ab5e71b418827b1e01eb"],
-        [["0x27accfac2ff1e7aebf2a6d66a6eebc32717ab1830c6324cff67ae7f7dfd9b9cc", "0x044019ab6404cbd17c1b0e17a2b0b6d951d17c4b9f0ee0199ff1f7609b6fa963"],["0x16e6ebfa77b49ceea701c25670f78e9006e174e09431629c6388a023e8812808", "0x216f702d1bb419b24cb9e22c3998f5814ac8f5ebdab7132201c295074e52b215"]],
-        ["0x286673e304fd583f0ad70de6457fa2327fc8d86e63fb8571941881217d65f492", "0x0e27f48a70b471e7b3279cd5feb0b0042fa812a4ff51a9208c40c428ff69db00"],
+        ["0x26eafa99fbc9152f5caa761931486145a82e9649271deabda3a25999ea29f04e", "0x096ee92e6c983afc26679c98204e4cbcdd0a5c6b22437a386520de2d7659c992"],
+        [["0x0f5f6dd2a9e5ca4d67057fed296cb8a52b1839dabd0a7b29f7230f2914be1cfd", "0x0142e3f8122efba0585af0eaefb2e4ea2381b3ac7889b97cc740b388cae6e9dd"],["0x0b6983b54051bb80c988982638faf51a5ba72d2c15e5bc33d05cdf2af17067b1", "0x06292022a93e8a856763b5fa54e9f801f2f511bcf5f36bc79f243ac513e6a152"]],
+        ["0x179e94612f9be8617ccc27401f0fc504d70f06b774c5ebb7948216a5c54b3149", "0x27087490b38a75beeef88d6ad95ea0f089dbab0d36399f930e79bb0fd2b705b7"],
         rawSignals
       );
 
@@ -95,17 +95,17 @@ describe("HDFCSendProcessor", () => {
         intentHash
       } = await subjectCallStatic();
 
-      expect(amount).to.eq(usdc(2));
-      expect(timestamp).to.eq(BigNumber.from(1700548088));
-      expect(offRamperIdHash).to.eq(rawSignals[12]);
-      expect(onRamperIdHash).to.eq(rawSignals[11]);
-      expect(intentHash).to.eq(rawSignals[14]);
+      expect(amount).to.eq(usdc(30));
+      expect(timestamp).to.eq(BigNumber.from(1683673439));
+      expect(offRamperIdHash).to.eq(rawSignals[8]);
+      expect(onRamperIdHash).to.eq(rawSignals[9]);
+      expect(intentHash).to.eq(rawSignals[11]);
     });
 
     it("should add the email to the nullifier mapping", async () => {
       await subject();
 
-      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[13].toHexString());
+      const isNullified = await nullifierRegistry.isNullified(subjectProof.signals[10].toHexString());
 
       expect(isNullified).to.be.true;
     });
