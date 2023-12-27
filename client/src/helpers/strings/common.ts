@@ -16,6 +16,7 @@ export interface CommonStrings {
   EMAIL_TOOLTIP: string,
   PROVING_TYPE_TOOLTIP: string,
   UPLOAD_TYPE_TOOLTIP: string,
+  AUTO_SELECT_EMAIL_TOOLTIP: string,
   PROOF_TOOLTIP: string,
   PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS: string,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: string,
@@ -92,6 +93,10 @@ const strings: CommonStrings = {
   `,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: `
     Follow this guide to copy and paste the email.
+  `,
+  AUTO_SELECT_EMAIL_TOOLTIP: `
+    Toggling automatically submits the email associated with the order you are completing or lets you know
+    if the correct email cannot be found.
   `,
 
   // Pay Modal

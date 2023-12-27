@@ -221,4 +221,4 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default OnRamperIntentsProvider
+export default OnRamperIntentsProvider;

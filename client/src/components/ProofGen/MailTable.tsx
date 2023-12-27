@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro'
-import { Mail } from 'react-feather'
+import { Mail, Inbox } from 'react-feather'
+import Link from '@mui/material/Link';
 
 import { ThemedText } from '../../theme/text';
 import { Button } from '../Button';
@@ -8,23 +9,22 @@ import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
 import { CustomCheckbox } from "@components/common/Checkbox"
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
-import {
-  fetchEmailsRaw,
-  fetchEmailList,
-  RawEmailResponse
-} from '@hooks/useGmailClient';
+import { MailRow } from './MailRow';
+import { EmailInputStatus, AutoSelectEmailStatus } from  "../ProofGen/types";
+import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { searchEmailsForMatchingIntent } from './validation/autoSelect';
+import { platformStrings, commonStrings } from "@helpers/strings";
+import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER } from '@helpers/constants';
+import { fetchEmailsRaw, fetchEmailList, RawEmailResponse} from '@hooks/useGmailClient';
+import QuestionHelper from '@components/common/QuestionHelper';
 import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
-import { MailRow } from './MailRow';
-import { EmailInputStatus } from  "../ProofGen/types";
-import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
-import { platformStrings } from "@helpers/strings";
-import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER } from '@helpers/constants';
-import Link from '@mui/material/Link';
-import { Inbox } from 'react-feather';
 
 
 interface MailTableProps {
+  isCircuitTypePaymentCompletion: boolean;
+  intentTimestamp?: bigint;
+  intentAmount?: string;
   paymentPlatform: PaymentPlatformType;
   setEmailFull: (emailFull: string) => void;
   handleVerifyEmailClicked: () => void;
@@ -33,6 +33,9 @@ interface MailTableProps {
 }
 
 export const MailTable: React.FC<MailTableProps> = ({
+  isCircuitTypePaymentCompletion,
+  intentTimestamp,
+  intentAmount,
   paymentPlatform,
   setEmailFull,
   handleVerifyEmailClicked,
@@ -62,6 +65,8 @@ export const MailTable: React.FC<MailTableProps> = ({
    * State
    */
 
+  const [autoSelectEmailStatus, setAutoSelectEmailStatus] = useState<string>(AutoSelectEmailStatus.DISABLED);
+
   const [fetchedEmails, setFetchedEmails] = useState<RawEmailResponse[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -73,11 +78,9 @@ export const MailTable: React.FC<MailTableProps> = ({
    */
 
   const handleRowClick = (index: number) => {
-    setSelectedIndex(index);
+    setIsAutoSelectEmailEnabled(false);
 
-    const email = fetchedEmails[index];
-
-    setEmailFull(email.decodedContents);
+    updateSelectedEmailToVerify(index);
   };
 
   const handleEmailModeChanged = (checked: boolean) => {
@@ -86,13 +89,36 @@ export const MailTable: React.FC<MailTableProps> = ({
     }
   };
 
-  const onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsAutoSelectEmailEnabled(event.target.checked);
+  const onAutoSelectEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const isAutoSelectEmailChecked = event.target.checked;
+    if (isAutoSelectEmailChecked) {
+      setAutoSelectEmailStatus(AutoSelectEmailStatus.DEFAULT);
+    } else {
+      setAutoSelectEmailStatus(AutoSelectEmailStatus.DISABLED);
+
+      clearSelectedEmailToVerify();
+    }
+
+    setIsAutoSelectEmailEnabled(isAutoSelectEmailChecked);
   };
 
   /*
    * Helpers
    */
+
+  function updateSelectedEmailToVerify(index: number) {
+    setSelectedIndex(index);
+
+    const email = fetchedEmails[index];
+
+    setEmailFull(email.decodedContents);
+  };
+
+  function clearSelectedEmailToVerify() {
+    setSelectedIndex(null);
+
+    setEmailFull('');
+  };
 
   function formatDateTime(unixTimestamp: string): string {
     const date = new Date(Number(unixTimestamp));
@@ -173,6 +199,13 @@ export const MailTable: React.FC<MailTableProps> = ({
     }
   };
 
+  const shouldDisableCta = () => {
+    const invalidEmailInputStatus = emailInputStatus !== EmailInputStatus.VALID;
+    const invalidAutoSelectStatus = autoSelectEmailStatus === AutoSelectEmailStatus.EMAIL_NOT_FOUND;
+
+    return invalidEmailInputStatus || invalidAutoSelectStatus;
+  };
+
   /*
    * Hooks
    */
@@ -187,36 +220,85 @@ export const MailTable: React.FC<MailTableProps> = ({
 
   useEffect(() => {
     setSelectedIndex(null);
+
     setEmailFull('');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedEmails]);
 
   useEffect(() => {
-    switch (emailInputStatus) {
-      case EmailInputStatus.DEFAULT:
-        setCtaButtonTitle("Select Email");
-        break;
-      
-      case EmailInputStatus.INVALID_SIGNATURE:
-      setCtaButtonTitle("Invalid email: must be from Venmo");
-      break;
+    if (isAutoSelectEmailEnabled && fetchedEmails.length > 0 && intentTimestamp && intentAmount) {
+      const autoSelectedEmailIndex = searchEmailsForMatchingIntent(fetchedEmails, paymentPlatform, intentTimestamp, intentAmount);
+      if (autoSelectedEmailIndex !== null) {
+  
+        setAutoSelectEmailStatus(AutoSelectEmailStatus.EMAIL_FOUND);
 
-    case EmailInputStatus.INVALID_SUBJECT:
-      setCtaButtonTitle("Invalid email: must contain 'You Paid'");
-      break;
+        updateSelectedEmailToVerify(autoSelectedEmailIndex);
+      } else {
+  
+        setAutoSelectEmailStatus(AutoSelectEmailStatus.EMAIL_NOT_FOUND);
 
-    case EmailInputStatus.INVALID_DOMAIN_KEY:
-      setCtaButtonTitle("Invalid email: must be from 2023");
-      break;
-
-    case EmailInputStatus.VALID:
-      default:
-        setCtaButtonTitle("Validate Email");
-        break;
+        clearSelectedEmailToVerify();
+      }
     }
 
-  }, [emailInputStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAutoSelectEmailEnabled, fetchedEmails, intentTimestamp, intentAmount]);
+
+  useEffect(() => {
+    console.log('isAutoSelectEmailEnabled: ', isAutoSelectEmailEnabled);
+    console.log('emailInputStatus: ', emailInputStatus);
+    console.log('autoSelectEmailStatus: ', autoSelectEmailStatus);
+    console.log('---------------------');
+
+    switch (autoSelectEmailStatus) {
+      case AutoSelectEmailStatus.EMAIL_NOT_FOUND:
+        setCtaButtonTitle("Payment email for order not found");
+        break;
+
+      case AutoSelectEmailStatus.EMAIL_FOUND:
+      case AutoSelectEmailStatus.DEFAULT:
+      case AutoSelectEmailStatus.DISABLED:
+      default:
+        switch (emailInputStatus) {
+          case EmailInputStatus.DEFAULT:
+            setCtaButtonTitle("Select Email");
+            break;
+          
+          case EmailInputStatus.INVALID_SIGNATURE:
+          setCtaButtonTitle("Invalid email: must be from Venmo");
+          break;
+    
+        case EmailInputStatus.INVALID_SUBJECT:
+          setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+          break;
+    
+        case EmailInputStatus.INVALID_DOMAIN_KEY:
+          setCtaButtonTitle("Invalid email: must be from 2023");
+          break;
+    
+        case EmailInputStatus.VALID:
+          default:
+            setCtaButtonTitle("Validate Email");
+
+            console.log('Loop 2');
+
+            if (isAutoSelectEmailEnabled) {
+              // handleVerifyEmailClicked();
+
+              console.log('Loop 3');
+            }
+            break;
+        }
+    }
+
+  }, [isAutoSelectEmailEnabled, emailInputStatus, autoSelectEmailStatus]);
+
+  useEffect(() => {
+    return () => {
+      googleLogOut();
+    };
+  }, []);
 
   /*
    * Component
@@ -229,7 +311,7 @@ export const MailTable: React.FC<MailTableProps> = ({
           <ThemedText.DeprecatedBody textAlign="center">
             <MailIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
-            <div>
+            <MailTableInstructions>
              { platformStrings.getForPlatform(paymentPlatform, 'SIGN_IN_WITH_GOOGLE_INSTRUCTIONS') }
               <Link
                 href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
@@ -237,7 +319,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               >
                 Privacy and Safety ↗
               </Link>
-            </div>
+            </MailTableInstructions>
           </ThemedText.DeprecatedBody>
 
           <LoginOrUploadButtonContainer>
@@ -291,9 +373,9 @@ export const MailTable: React.FC<MailTableProps> = ({
             {fetchedEmails.length === 0 ? (
               <EmptyMailContainer>
                 <StyledInbox />
-                <ThemedText.LabelSmall textAlign="center" lineHeight={1.3}>
+                <ThemedText.DeprecatedBody textAlign="center" lineHeight={1.3}>
                   { platformStrings.getForPlatform(paymentPlatform, 'NO_EMAILS_ERROR') }
-                </ThemedText.LabelSmall>
+                </ThemedText.DeprecatedBody>
               </EmptyMailContainer>
             ) : (
               <Table>
@@ -312,19 +394,24 @@ export const MailTable: React.FC<MailTableProps> = ({
             )}
           </TitleAndTableContainer>
 
-          <CheckboxContainer>
-            <CustomCheckbox
-              checked={isAutoSelectEmailEnabled}
-              onChange={onCheckboxChange}
-            />
-            <CheckboxInstructionsLabel>
-              Auto select email
-            </CheckboxInstructionsLabel>
-          </CheckboxContainer>
+          {isCircuitTypePaymentCompletion && (
+            <CheckboxContainer>
+              <CustomCheckbox
+                checked={isAutoSelectEmailEnabled}
+                onChange={onAutoSelectEmailChange}
+              />
+              <CheckboxInstructionsLabel>
+                Auto select payment email
+                <QuestionHelper
+                  text={commonStrings.get('AUTO_SELECT_EMAIL_TOOLTIP')}
+                />
+              </CheckboxInstructionsLabel>
+            </CheckboxContainer>
+          )}
 
           <ButtonContainer>
             <Button
-              disabled={emailInputStatus !== EmailInputStatus.VALID}
+              disabled={shouldDisableCta()}
               loading={isProofModalOpen}
               onClick={handleVerifyEmailClicked}
             >
@@ -335,19 +422,7 @@ export const MailTable: React.FC<MailTableProps> = ({
       )}
     </Container>
   )
-}
-
-const EmptyMailContainer = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 4rem 0rem;
-  max-width: 75%;
-  margin: auto;
-  gap: 1rem;
-`;
+};
 
 const Container = styled.div`
   width: 100%;
@@ -372,7 +447,23 @@ const ErrorContainer = styled.div`
   max-width: 50vh;
   min-height: 25vh;
   line-height: 1.3;
-  gap: 36px;
+  gap: 1rem;
+`;
+
+const EmptyMailContainer = styled.div`
+  display: flex;
+  width: 100%;
+  max-width: 75%;
+  height: 154px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  gap: 1rem;
+`;
+
+const MailTableInstructions = styled.div`
+  line-height: 1.3;
 `;
 
 const IconStyle = css`
@@ -458,7 +549,9 @@ const CheckboxContainer = styled.div`
 `;
 
 const CheckboxInstructionsLabel = styled.div`
+  display: flex;
   padding-top: 2px;
+  gap: 4px;
   font-size: 15px;
   color: #6C757D;
 `;

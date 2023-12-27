@@ -59,11 +59,11 @@ const QuoteState = {
 }
 
 interface SwapProps {
-  onIntentTableRowClick?: () => void;
+  onCompleteOrderClick?: (intentTimestamp: bigint, intentAmount: string) => void;
 }
 
 const Swap: React.FC<SwapProps> = ({
-  onIntentTableRowClick
+  onCompleteOrderClick
 }: SwapProps) => {
   const navigate = useNavigate();
 
@@ -520,7 +520,7 @@ const Swap: React.FC<SwapProps> = ({
           <>
             <VerticalDivider />
             <OnRamperIntentTable
-              onIntentRowClick={onIntentTableRowClick}
+              onCompleteOrderClick={onCompleteOrderClick}
             />
           </>
         )

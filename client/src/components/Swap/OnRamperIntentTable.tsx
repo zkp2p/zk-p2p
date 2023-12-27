@@ -25,11 +25,11 @@ import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
 
 
 interface OnRamperIntentTableProps {
-  onIntentRowClick?: () => void;
+  onCompleteOrderClick?: (intentTimestamp: bigint, intentAmount: string) => void;
 }
 
 export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
-  onIntentRowClick,
+  onCompleteOrderClick,
 }) => {
   /*
    * Contexts
@@ -245,8 +245,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
           depositorAddress,
           recipientAddress,
           handleCompleteOrderClick: () => {
-            if (onIntentRowClick) {
-              onIntentRowClick();
+            if (onCompleteOrderClick) {
+              onCompleteOrderClick(currentIntent.intent.timestamp, amountUSDToSend);
             }
           }
         };

@@ -20,3 +20,10 @@ export const EmailInputStatus = {
   INVALID_SUBJECT: "invalid-subject",
   VALID: "valid"
 };
+
+export const AutoSelectEmailStatus = {
+  DISABLED: "disabled",
+  DEFAULT: "default",
+  EMAIL_NOT_FOUND: "not_found",
+  EMAIL_FOUND: "found"
+};

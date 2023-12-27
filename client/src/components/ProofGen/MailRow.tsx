@@ -44,7 +44,7 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatform
   display: grid;
   grid-template-columns: ${({ isPlatformTextLong }) => isPlatformTextLong ? '1.5fr 7fr 1.25fr' : '1.5fr 3fr 1fr'};
   grid-gap: 1px;
-  padding: 0.99rem 1.49rem;
+  padding: 1.1rem 1.5rem;
   font-size: 14px;
   color: #FFFFFF;
   border-radius: ${({ isLastRow }) => isLastRow ? "0 0 8px 8px" : "0"};

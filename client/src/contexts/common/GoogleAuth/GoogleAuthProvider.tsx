@@ -21,7 +21,7 @@ const GoogleAuthProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { loggedInEthereumAddress } = useAccount()
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State Keys
@@ -38,6 +38,7 @@ const GoogleAuthProvider = ({ children }: ProvidersProps) => {
   const [googleAuthToken, setGoogleAuthToken] = useState<any | null>(
     () => {
       const cachedToken = localStorage.getItem(getGoogleAuthTokenKey());
+
       return cachedToken ? JSON.parse(cachedToken) : null;
     }
   );
@@ -125,7 +126,6 @@ const GoogleAuthProvider = ({ children }: ProvidersProps) => {
     localStorage.removeItem(getGoogleAuthTokenKey());
   
     setIsGoogleAuthed(false);
-    localStorage.removeItem('isGoogleAuthed');
   
     setLoggedInGmail(null);
     localStorage.removeItem('loggedInGmail');

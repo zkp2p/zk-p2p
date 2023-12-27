@@ -27,11 +27,15 @@ import useSmartContracts from '@hooks/useSmartContracts';
 interface OnRampProps {
   handleBackClick: () => void;
   selectedIntentHash: string;
+  selectedIntentTimestamp: bigint;
+  selectedIntentAmount: string;
 }
 
 export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
-  selectedIntentHash
+  selectedIntentHash,
+  selectedIntentTimestamp,
+  selectedIntentAmount,
 }) => {
   /*
    * Context
@@ -213,6 +217,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
         submitTransactionStatus={submitOnRampStatus}
         isSubmitMining={isSubmitOnRampMining}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
+        intentTimestamp={selectedIntentTimestamp}
+        intentAmount={selectedIntentAmount}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         transactionAddress={submitOnRampTransactionHash}
       />

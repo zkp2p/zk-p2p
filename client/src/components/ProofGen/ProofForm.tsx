@@ -31,7 +31,6 @@ import useRemoteProofGen from '@hooks/useRemoteProofGen';
 interface ProofGenerationFormProps {
   paymentPlatformType: PaymentPlatformType;
   circuitType: CircuitType;
-  circuitRemoteFilePath: string;
   circuitInputs: string;
   remoteProofGenEmailType: string;
   proof: string;
@@ -41,6 +40,8 @@ interface ProofGenerationFormProps {
   submitTransactionStatus: string;
   isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
+  intentTimestamp?: bigint;
+  intentAmount?: string;
   handleSubmitVerificationClick?: () => void;
   onVerifyEmailCompletion?: () => void;
   transactionAddress?: string | null;
@@ -49,7 +50,6 @@ interface ProofGenerationFormProps {
 export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   paymentPlatformType,
   circuitType,
-  circuitRemoteFilePath,
   circuitInputs,
   remoteProofGenEmailType,
   proof,
@@ -59,6 +59,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   submitTransactionStatus,
   isSubmitMining,
   isSubmitSuccessful,
+  intentTimestamp,
+  intentAmount,
   handleSubmitVerificationClick,
   onVerifyEmailCompletion,
   transactionAddress,
@@ -401,6 +403,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       {
         isEmailModeAuth ? (
           <MailTable
+            isCircuitTypePaymentCompletion = {circuitType === CircuitType.EMAIL_VENMO_SEND}
+            intentTimestamp={intentTimestamp}
+            intentAmount={intentAmount}
             paymentPlatform={paymentPlatformType}
             setEmailFull={setEmailAndToggleInputMode}
             handleVerifyEmailClicked={handleVerifyEmailClicked}

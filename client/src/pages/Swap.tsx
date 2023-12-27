@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
-import SwapModal from "@components/Swap";
+import SwapForm from "@components/Swap";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
 
@@ -55,6 +55,8 @@ export const Swap: React.FC = () => {
    */
 
   const [selectedIntentHash, setSelectedIntentHash] = useState<string | null>(null);
+  const [selectedIntentTimestamp, setSelectedIntentTimestamp] = useState<bigint | null>(null);
+  const [selectedIntentAmount, setSelectedIntentAmount] = useState<string | null>(null);
 
   /*
    * Hooks
@@ -94,7 +96,7 @@ export const Swap: React.FC = () => {
     setSelectedIntentHash(null);
   }
 
-  const handleIntentClick = () => {
+  const handleCompleteOrderFromIntentTableClick = (intentTimestamp: bigint, intentAmount: string) => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         console.log('selectedVenmoIntentHash', currentVenmoIntentHash);
@@ -108,6 +110,11 @@ export const Swap: React.FC = () => {
         setSelectedIntentHash(currentHdfcIntentHash);
         break;
     }
+
+    console.log('selectedIntentTimestamp', intentTimestamp);
+    console.log('selectedIntentAmount', intentAmount);
+    setSelectedIntentTimestamp(intentTimestamp);
+    setSelectedIntentAmount(intentAmount);
   };
 
   /*
@@ -121,6 +128,8 @@ export const Swap: React.FC = () => {
           <VenmoOnRamp
             handleBackClick={handleBackClick}
             selectedIntentHash={selectedIntentHash}
+            selectedIntentTimestamp={selectedIntentTimestamp}
+            selectedIntentAmount={selectedIntentAmount}
           />
         );
 
@@ -129,6 +138,8 @@ export const Swap: React.FC = () => {
           <HdfcOnRamp
             handleBackClick={handleBackClick}
             selectedIntentHash={selectedIntentHash}
+            selectedIntentTimestamp={selectedIntentTimestamp}
+            selectedIntentAmount={selectedIntentAmount}
           />
         );
 
@@ -140,8 +151,8 @@ export const Swap: React.FC = () => {
   return (
     <PageWrapper>
       {!selectedIntentHash ? (
-        <SwapModal
-          onIntentTableRowClick={handleIntentClick}
+        <SwapForm
+          onCompleteOrderClick={handleCompleteOrderFromIntentTableClick}
         />
       ) : (
         <OnRampContainer>
