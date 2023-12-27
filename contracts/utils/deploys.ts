@@ -22,6 +22,7 @@ import {
   VenmoRegistrationProcessorV2,
   VenmoSendProcessorMock,
   VenmoSendProcessor,
+  VenmoSendProcessorV2,
 } from "./contracts";
 import {
   HDFCRamp__factory,
@@ -38,6 +39,7 @@ import {
 import {
   VenmoRampV2__factory,
   VenmoRegistrationProcessorV2__factory,
+  VenmoSendProcessorV2__factory,
 } from "../typechain/factories/contracts/ramps/venmo-v2";
 import {
   StringConversionUtilsMock__factory,
@@ -147,6 +149,20 @@ export default class DeployHelper {
     emailFromAddress: string,
   ): Promise<VenmoRegistrationProcessorV2> {
     return await new VenmoRegistrationProcessorV2__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress
+    );
+  }
+
+  public async deployVenmoSendProcessorV2(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    emailFromAddress: string,
+  ): Promise<VenmoSendProcessorV2> {
+    return await new VenmoSendProcessorV2__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,

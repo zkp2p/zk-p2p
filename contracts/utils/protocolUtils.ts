@@ -61,6 +61,52 @@ export const calculatePackedId = (venmoId: string): [BigNumber, BigNumber, BigNu
   return Bytes2Packed(7, venmoIdArray);
 };
 
+export const createTypedRegistrationProof = (
+  a: string[], 
+  b: string[][],
+  c: string[],
+  signals: string[]
+): any => {
+  const a_fixed: [BigNumber, BigNumber] = [BigNumber.from(a[0]), BigNumber.from(a[1])];
+  const b_fixed: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
+    [BigNumber.from(b[0][0]), BigNumber.from(b[0][1])],
+    [BigNumber.from(b[1][0]), BigNumber.from(b[1][1])]
+  ];
+  const c_fixed: [BigNumber, BigNumber] = [BigNumber.from(c[0]), BigNumber.from(c[1])];
+  const signals_fixed: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [
+    BigNumber.from(signals[0]), BigNumber.from(signals[1]), BigNumber.from(signals[2]), BigNumber.from(signals[3]), BigNumber.from(signals[4])
+  ];
+  
+  return {
+    a: a_fixed,
+    b: b_fixed,
+    c: c_fixed,
+    signals: signals_fixed
+  };
+}
+
+export const createTypedSendProof = (
+  a: string[], 
+  b: string[][],
+  c: string[],
+  signals: string[]
+): any => {
+  const a_fixed: [BigNumber, BigNumber] = [BigNumber.from(a[0]), BigNumber.from(a[1])];
+  const b_fixed: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [
+    [BigNumber.from(b[0][0]), BigNumber.from(b[0][1])],
+    [BigNumber.from(b[1][0]), BigNumber.from(b[1][1])]
+  ];
+  const c_fixed: [BigNumber, BigNumber] = [BigNumber.from(c[0]), BigNumber.from(c[1])];
+  const signals_fixed: BigNumber[] = signals.map((signal) => BigNumber.from(signal));;
+  
+  return {
+    a: a_fixed,
+    b: b_fixed,
+    c: c_fixed,
+    signals: signals_fixed
+  };
+}
+
 function Bytes2Packed(n: number, inArr: number[]) {
   let index = 0;
   const out: [BigNumber, BigNumber, BigNumber] = [ZERO, ZERO, ZERO];
