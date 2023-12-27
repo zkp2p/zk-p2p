@@ -21,7 +21,8 @@ export interface CommonStrings {
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: string,
 
   // Release Funds Modal
-  RELEASE_FUNDS_WARNING: string,
+  RELEASE_FUNDS_WARNING_ONE: string,
+  RELEASE_FUNDS_WARNING_TWO: string,
 
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
@@ -98,10 +99,12 @@ const strings: CommonStrings = {
   `,
 
   // Release Funds Modal
-  RELEASE_FUNDS_WARNING: `
-    Submit this transaction to release the USDC to the requester directly without requiring
-    them to submit proof of the transaction. This is only recommended if you have been contacted by
-    the requester.
+  RELEASE_FUNDS_WARNING_ONE: `
+    Submit this transaction to release
+  `,
+  RELEASE_FUNDS_WARNING_TWO: `
+    to the requester. This bypasses requiring the user to submit proof of the transaction
+    and may result in loss of funds.
   `,
 
   // Pay Modal

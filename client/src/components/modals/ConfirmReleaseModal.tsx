@@ -1,28 +1,47 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import { ArrowLeft } from 'react-feather';
+import { ArrowLeft, Unlock } from 'react-feather';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
 
 import { ThemedText } from '../../theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
+import { Abi } from '../../contexts/common/SmartContracts/types';
 import { TransactionStatus, TransactionStatusType } from "@helpers/types";
-
 import { Button } from "../Button";
-import useSmartContracts from "@hooks/useSmartContracts";
+import useDeposits from '@hooks/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
+import useSmartContracts from '@hooks/useSmartContracts';
+import useBalances from '@hooks/useBalance';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 interface ConfirmReleaseModalProps {
   onBackClick: () => void
+  intentHash: string;
+  amountUSDCToSend: string;
 }
 
 export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
   onBackClick,
+  intentHash,
+  amountUSDCToSend,
 }) => {
   /*
-   * Context
+   * Contexts
    */
 
-  const { blockscanUrl } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi, blockscanUrl } = useSmartContracts();
+  const { refetchUsdcBalance } = useBalances();
+  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
+
+  const {
+    refetchDeposits: refetchVenmoDeposits
+  } = useDeposits();
+
+  const {
+    refetchDeposits: refetchHdfcDeposits
+  } = useHdfcDeposits();
 
   /*
    * State
@@ -33,6 +52,59 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
   const [transactionAddress, setTransactionAddress] = useState<string>("");
 
   const [submitTransactionStatus, setSubmitTransactionStatus] = useState<TransactionStatusType>(TransactionStatus.TRANSACTION_CONFIGURED);
+
+  const [releaseRampAddress, setReleaseRampAddress] = useState<string>(venmoRampAddress);
+  const [releaseRampAbi, setReleaseRampAbi] = useState<Abi>(venmoRampAbi);
+
+  /*
+   * Contract Writes
+   */
+
+  //
+  // releaseFundsToOnramper(bytes32 _intentHash)
+  //
+  const { config: writeReleaseConfig } = usePrepareContractWrite({
+    address: releaseRampAddress,
+    abi: releaseRampAbi,
+    functionName: 'releaseFundsToOnramper',
+    args: [
+      [intentHash],
+    ],
+  });
+
+  const {
+    data: submitReleaseResult,
+    isLoading: isSubmitReleaseLoading,
+    status: submitReleaseStatus,
+    writeAsync: writeSubmitReleaseAsync,
+  } = useContractWrite(writeReleaseConfig);
+
+  const {
+    isLoading: isSubmitReleaseMining
+
+  } = useWaitForTransaction({
+    hash: submitReleaseResult ? submitReleaseResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitReleaseAsync successful: ', data);
+      
+      switch (paymentPlatform) {
+        case PaymentPlatform.VENMO:
+          refetchVenmoDeposits?.();
+          break;
+
+        case PaymentPlatform.HDFC:
+          refetchHdfcDeposits?.();
+          break;
+
+        default:
+          throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+      }
+
+      refetchUsdcBalance?.();
+
+      setSubmitTransactionStatus(TransactionStatus.TRANSACTION_MINED);
+    },
+  });
 
   /*
    * Handlers
@@ -45,6 +117,52 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        if (venmoRampAddress && venmoRampAbi) {
+          setReleaseRampAddress(venmoRampAddress);
+          setReleaseRampAbi(venmoRampAbi);
+        }
+        break;
+
+      case PaymentPlatform.HDFC:
+        if (hdfcRampAddress && hdfcRampAbi) {
+          setReleaseRampAddress(hdfcRampAddress);
+          setReleaseRampAbi(hdfcRampAbi);
+        }
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi]);
+
+  useEffect(() => {
+    if (submitReleaseResult?.hash) {
+      setTransactionAddress(submitReleaseResult.hash);
+    }
+  }, [submitReleaseResult])
+
+  useEffect(() => {
+    switch (submitReleaseStatus) {
+      case 'idle':
+        setCtaButtonTitle("Submit Transaction");
+        break;
+
+      case 'loading':
+        setCtaButtonTitle("Signing Transaction");
+        break;
+
+      case 'success':
+        setCtaButtonTitle("Mining Transaction");
+        break;
+    }
+
+  }, [submitReleaseStatus]);
 
   useEffect(() => {
     switch (submitTransactionStatus) {
@@ -95,13 +213,17 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
 
+        <StyledUnlock />
+
         <InstructionsContainer>
           <InstructionsLabel>
-            { commonStrings.get('RELEASE_FUNDS_WARNING') }
+            { commonStrings.get('RELEASE_FUNDS_WARNING_ONE') }
+            { `${amountUSDCToSend} USDC` }
+            { commonStrings.get('RELEASE_FUNDS_WARNING_TWO') }
           </InstructionsLabel>
         </InstructionsContainer>
 
-        {transactionAddress?.length ? (
+        { transactionAddress?.length ? (
           <Link
             href={`${blockscanUrl}/tx/${transactionAddress}`}
             target="_blank"
@@ -113,8 +235,8 @@ export const ConfirmReleaseModal: React.FC<ConfirmReleaseModalProps> = ({
         ) : null}
 
         <Button
-          disabled={false} // isSubmitVerificationButtonDisabled
-          onClick={() => {}}
+          disabled={isSubmitReleaseLoading || isSubmitReleaseMining}
+          onClick={writeSubmitReleaseAsync}
           fullWidth={true}
         >
           {ctaButtonTitle}
@@ -147,7 +269,7 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 20;
-  gap: 1.5rem;
+  gap: 1.3rem;
   top: 33%;
   position: relative;
 `;
@@ -163,6 +285,13 @@ const TitleCenteredRow = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
+`;
+
+const StyledUnlock = styled(Unlock)`
+  width: 64px;
+  height: 64px;
+  color: #FFF;
+  padding: 0.75rem 0;
 `;
 
 const InstructionsContainer = styled.div`

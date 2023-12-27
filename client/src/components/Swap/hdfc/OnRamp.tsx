@@ -117,7 +117,9 @@ export const OnRamp: React.FC<OnRampProps> = ({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitOnRampAsync successful: ', data);
+
       refetchUsdcBalance?.();
+      
       refetchIntentHash?.();
     },
   });

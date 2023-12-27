@@ -11,6 +11,7 @@ import { ConfirmReleaseModal } from '@components/modals/ConfirmReleaseModal';
 
 
 interface IntentRowProps {
+  intentHash: string;
   isVenmo: boolean;
   onRamper: string;
   amountUSDToReceive: string;
@@ -21,6 +22,7 @@ interface IntentRowProps {
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
+  intentHash,
   isVenmo,
   onRamper,
   amountUSDToReceive,
@@ -64,6 +66,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         shouldShowReleaeModal && (
           <ConfirmReleaseModal
             onBackClick={() => setShouldShowReleaseModal(false)}
+            intentHash={intentHash}
+            amountUSDCToSend={amountUSDCToSend}
           />
         )
       }
