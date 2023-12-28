@@ -1,5 +1,5 @@
-import americaFlagSvg from '../../../assets/images/america-flag.svg';
-import indiaFlagSvg from '../../../assets/images/india-flag.svg';
+import americaFlagSvg from '../../assets/images/america-flag.svg';
+import indiaFlagSvg from '../../assets/images/india-flag.svg';
 
 
 export const PaymentPlatform = {

@@ -10,18 +10,18 @@ import {
 import * as crypto from 'crypto';
 
 import { Col } from "@components/legacy/Layout";
-import { EmailInputStatus, ProofGenerationStatus } from  "./types";
+import { EmailInputStatus, ProofGenerationStatus } from  "@helpers/types";
 import { ValidateEmail } from '@components/modals/ValidateEmail';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
 // import { downloadProofFiles } from "@helpers/zkp";
-import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import {
   validateAndSanitizeEmailSubject,
   validateEmailDomainKey,
   validateDKIMSignature
-} from './validation/venmo';
+} from '@components/ProofGen/validation/venmo';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/venmo/useRegistration';

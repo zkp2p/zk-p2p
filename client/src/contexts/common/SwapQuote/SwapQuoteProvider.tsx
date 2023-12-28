@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { IndicativeQuote } from '../../venmo/Deposits/types';
+import { IndicativeQuote } from '@helpers/types';
 import { esl } from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 

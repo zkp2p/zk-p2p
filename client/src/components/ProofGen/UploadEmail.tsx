@@ -7,18 +7,17 @@ import { Col } from "@components/legacy/Layout";
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
 import { DragAndDropTextBox } from "@components/common/DragAndDropTextBox";
 import { LabeledSwitch } from "@components/common/LabeledSwitch";
-import { ThemedText } from '@theme/text';
 import { NumberedStep } from "@components/common/NumberedStep";
-
 import { TextButton } from '@components/common/TextButton';
-import { EmailInputStatus } from  "@components/ProofGen/types";
+import { EmailInputStatus } from  "@helpers/types/proofGeneration";
 import { commonStrings } from "@helpers/strings";
+import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import {
   DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK, 
   COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK 
 } from "@helpers/docUrls";
-import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import useProofGenSettings from '@hooks/useProofGenSettings';
+import { ThemedText } from '@theme/text';
 
 
 interface UploadEmailProps {

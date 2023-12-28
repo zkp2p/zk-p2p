@@ -5,9 +5,9 @@ import {
   Deposit,
   DepositIntent,
   DepositWithAvailableLiquidity,
-  Intent
-} from '../../venmo/Deposits/types';
-import { PaymentPlatform } from '../../common/PlatformSettings/types'
+  Intent,
+  PaymentPlatform
+} from '@helpers/types';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import { useContractRead } from 'wagmi';
 
-import { Deposit, DepositWithAvailableLiquidity } from '../../venmo/Deposits/types';
-import { PaymentPlatform } from '../../common/PlatformSettings/types';
+import { Deposit, DepositWithAvailableLiquidity } from '../../../helpers/types/deposit';
+import { PaymentPlatform } from '../../../helpers/types/paymentPlatform';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';

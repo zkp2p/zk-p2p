@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
-import { DepositWithAvailableLiquidity } from '../../venmo/Deposits/types';
+import { DepositWithAvailableLiquidity } from '../../../helpers/types/deposit';
 
 
 interface DepositsValues {

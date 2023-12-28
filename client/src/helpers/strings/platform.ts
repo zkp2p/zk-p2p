@@ -1,4 +1,4 @@
-import { PaymentPlatform, PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatform, PaymentPlatformType } from '@helpers/types';
 
 import venmoCopy from './venmo';
 import hdfcCopy from './hdfc';

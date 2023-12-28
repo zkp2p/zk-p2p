@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { IndicativeQuote } from '../../venmo/Deposits/types';
+import { IndicativeQuote } from '@helpers/types';
 
 
 interface SwapQuoteValues {

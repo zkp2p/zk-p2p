@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { OnRamperIntent } from '../../venmo/Deposits/types';
+import { OnRamperIntent } from '@helpers/types';
 
 
 interface OnRamperIntentsValues {

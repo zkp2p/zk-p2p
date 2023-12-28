@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import crypto from 'crypto';
 
-import { PaymentPlatformType, PaymentPlatform } from '../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 
 
 const REMOTE_PROOF_API_URL = process.env.REMOTE_PROOF_API_URL;

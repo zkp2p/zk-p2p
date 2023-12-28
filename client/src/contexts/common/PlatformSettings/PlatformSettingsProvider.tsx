@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { PaymentPlatform, PaymentPlatformType, paymentPlatforms } from './types';
+import { PaymentPlatform, PaymentPlatformType, paymentPlatforms } from '@helpers/types';
 
 import PlatformSettingsContext from './PlatformSettingsContext'
 

@@ -4,7 +4,7 @@ import {
   PaymentPlatformType,
   PaymentPlatform,
   paymentPlatforms,
-} from './types';
+} from '@helpers/types';
 
 
 interface PlatformSettingsValues {

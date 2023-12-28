@@ -3,11 +3,11 @@ import { useContractRead } from 'wagmi';
 
 import {
   Deposit,
+  DepositIntent,
   DepositWithAvailableLiquidity,
   Intent,
-  DepositIntent
-} from './types';
-import { PaymentPlatform } from '../../common/PlatformSettings/types';
+  PaymentPlatform
+} from '@helpers/types';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';

@@ -7,7 +7,7 @@ import { IntentRow, IntentRowData } from "@components/Swap/OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
-import { OnRamperIntent, StoredDeposit } from '../../contexts/venmo/Deposits/types';
+import { OnRamperIntent, StoredDeposit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 

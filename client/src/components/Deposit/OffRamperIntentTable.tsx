@@ -5,8 +5,7 @@ import { IntentRow, IntentRowData } from "@components/Deposit/OffRamperIntentRow
 import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { ThemedText } from '@theme/text'
-import { DepositIntent } from "../../contexts/venmo/Deposits/types";
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { DepositIntent, PaymentPlatform } from '@helpers/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';

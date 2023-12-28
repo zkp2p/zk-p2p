@@ -8,10 +8,10 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { RowBetween } from '@components/layouts/Row';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
+import { PaymentPlatform } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';

@@ -8,7 +8,7 @@ import { Button } from "@components/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
-import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 
 

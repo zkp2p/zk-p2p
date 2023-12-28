@@ -4,7 +4,7 @@ import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
   StoredDeposit
-} from '../../venmo/Deposits/types';
+} from '@helpers/types';
 
 import {
   calculateUsdFromRequestedUSDC

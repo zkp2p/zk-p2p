@@ -5,7 +5,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
-import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
+import { DepositWithAvailableLiquidity } from '@helpers/types';
 import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { toUsdcString, conversionRateToString } from '@helpers/units';

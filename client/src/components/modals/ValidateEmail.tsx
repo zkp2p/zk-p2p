@@ -16,7 +16,7 @@ import {
   VerificationStepType
 } from "@components/modals/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
-import { ProofGenerationStatus } from  "../ProofGen/types";
+import { ProofGenerationStatus } from  "@helpers/types";
 import { ThemedText } from '@theme/text'
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import useSmartContracts from "@hooks/useSmartContracts";

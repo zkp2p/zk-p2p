@@ -10,11 +10,11 @@ import { abi as sendProcessorAbi } from "@helpers/abi/venmo/send.abi";
 import { abi as hdfcRampAbi } from "@helpers/abi/hdfc/ramp.abi";
 import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
-import { esl, DEFAULT_NETWORK } from '@helpers/constants'
+import { esl, DEFAULT_NETWORK } from '@helpers/constants';
+import { Abi } from '@helpers/types';
 import useAccount from '@hooks/useAccount'
 
-import SmartContractsContext from './SmartContractsContext'
-import { Abi } from './types'
+import SmartContractsContext from './SmartContractsContext';
 
 
 interface ProvidersProps {

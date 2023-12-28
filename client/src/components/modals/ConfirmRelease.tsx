@@ -6,8 +6,8 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
-import { Abi } from '../../contexts/common/SmartContracts/types';
-import { TransactionStatus, TransactionStatusType } from "@helpers/types";
+import { Abi } from '@helpers/types';
+import { TransactionStatus, TransactionStatusType } from "@helpers/types/transactionStatus";
 import { ThemedText } from '@theme/text'
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';

@@ -9,7 +9,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
+import { PaymentPlatform } from '@helpers/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { hdfcStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";

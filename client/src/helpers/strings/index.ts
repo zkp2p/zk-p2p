@@ -1,4 +1,4 @@
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatform } from '@helpers/types';
 
 import { PlatformStringProvider }  from './platform';
 import { CommonStringProvider } from './common';

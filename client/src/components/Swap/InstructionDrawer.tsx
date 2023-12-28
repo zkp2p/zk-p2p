@@ -1,12 +1,12 @@
 import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
-import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
 import { platformStrings } from "@helpers/strings";
+import { PaymentPlatformType } from '@helpers/types';
 
 
 interface InstructionDrawerProps {
