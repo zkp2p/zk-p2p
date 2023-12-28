@@ -24,7 +24,7 @@ import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRampState from '@hooks/useRampState';
+import useRampState from '@hooks/venmo/useRampState';
 
 import LiquidityContext from './LiquidityContext';
 

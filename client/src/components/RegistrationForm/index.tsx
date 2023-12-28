@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/macro'
 
-import { ExistingRegistration as VenmoExistingRegistration } from "./ExistingRegistration";
+import { ExistingRegistration as VenmoExistingRegistration } from "./venmo/ExistingRegistration";
 import { ExistingRegistration as HdfcExistingRegistration } from './hdfc/ExistingRegistration';
-import { NewRegistration as VenmoNewRegistration } from "./NewRegistration";
+import { NewRegistration as VenmoNewRegistration } from "./venmo/NewRegistration";
 import { NewRegistration as HdfcNewRegistration } from './hdfc/NewRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 

@@ -16,10 +16,10 @@ import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
-import { ThemedText } from '../../theme/text';
+import { ThemedText } from '../../../theme/text';
 import { venmoStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

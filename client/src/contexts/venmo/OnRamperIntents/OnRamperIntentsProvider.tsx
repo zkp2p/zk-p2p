@@ -5,8 +5,8 @@ import { Intent, OnRamperIntent, StoredDeposit } from '../Deposits/types';
 import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLiquidity from '@hooks/useLiquidity';
-import useRegistration from '@hooks/useRegistration';
+import useLiquidity from '@hooks/venmo/useLiquidity';
+import useRegistration from '@hooks/venmo/useRegistration';
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 

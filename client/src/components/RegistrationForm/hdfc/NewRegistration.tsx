@@ -18,7 +18,7 @@ import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/c
 import { hdfcStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 
 interface NewRegistrationProps {

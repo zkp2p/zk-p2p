@@ -10,17 +10,17 @@ import {
   useWaitForTransaction
 } from 'wagmi';
 
-import { RowBetween } from '../layouts/Row';
-import { ThemedText } from '../../theme/text';
-import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { NumberedStep } from "../common/NumberedStep";
+import { RowBetween } from '../../layouts/Row';
+import { ThemedText } from '../../../theme/text';
+import { ProofGenerationForm } from "../../ProofGen/ProofForm";
+import { NumberedStep } from "../../common/NumberedStep";
 // import { ProofSettings } from "@components/ProofGen/ProofSettings";
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
+import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

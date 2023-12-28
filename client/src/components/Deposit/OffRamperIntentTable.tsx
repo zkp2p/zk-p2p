@@ -8,9 +8,9 @@ import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
-import useVenmoDeposits from '@hooks/useDeposits';
-import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
-import useLiquidity from '@hooks/useLiquidity';
+import useVenmoDeposits from '@hooks/venmo/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useLiquidity from '@hooks/venmo/useLiquidity';
 
 
 interface OffRamperIntentTableProps {
@@ -29,9 +29,11 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   const {
     depositIntents: venmoDepositIntents
   } = useVenmoDeposits();
+
   const {
     depositIntents: hdfcDepositIntents
   } = useHdfcDeposits();
+
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
   /*

@@ -5,11 +5,11 @@ import { AutoColumn } from '../layouts/Column'
 import { DepositsTable } from './DepositsTable'
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
 
-import useVenmoLiquidity from '@hooks/useLiquidity';
-import useVenmoRampState from '@hooks/useRampState';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
+import useVenmoRampState from '@hooks/venmo/useRampState';
 
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 export default function Deposit() {

@@ -9,16 +9,16 @@ import {
   useWaitForTransaction
  } from 'wagmi'
 
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
-import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { NumberedStep } from "../common/NumberedStep";
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { RowBetween } from '../../layouts/Row'
+import { ThemedText } from '../../../theme/text'
+import { ProofGenerationForm } from "../../ProofGen/ProofForm";
+import { NumberedStep } from "../../common/NumberedStep";
+import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 
 
 interface NewRegistrationProps {

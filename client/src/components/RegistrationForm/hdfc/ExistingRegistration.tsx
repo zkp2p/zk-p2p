@@ -14,7 +14,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../../theme/text';
 import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 
 interface ExistingRegistrationProps {

@@ -16,12 +16,12 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
-import useVenmoOnRamperIntents from '@hooks/useOnRamperIntents';
-import useVenmoLiquidity from '@hooks/useLiquidity';
+import useVenmoOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 
 // Hdfc
-import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 interface OnRamperIntentTableProps {

@@ -9,7 +9,7 @@ import { ThemedText } from '../../theme/text'
 import { PermissionRow } from "./PermissionRow";
 import { CustomConnectButton } from "../common/ConnectButton"
 import useAccount from '@hooks/useAccount'
-import useRegistration from '@hooks/useRegistration'
+import useRegistration from '@hooks/venmo/useRegistration'
 import usePermissions from '@hooks/usePermissions';
 
 

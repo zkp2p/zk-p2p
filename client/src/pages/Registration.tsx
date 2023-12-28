@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import styled from "styled-components";
 
 import { RegistrationForm } from "@components/RegistrationForm"
-import useRegistration from '@hooks/useRegistration';
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 

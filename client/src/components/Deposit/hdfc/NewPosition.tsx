@@ -19,9 +19,9 @@ import { ZERO } from '@helpers/constants'
 import { hdfcStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
-import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
+import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

@@ -18,11 +18,11 @@ import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { toUsdcString, conversionRateToString } from '@helpers/units';
 import { Abi } from '../../contexts/common/SmartContracts/types';
 import useAccount from '@hooks/useAccount';
-import useDeposits from '@hooks/useDeposits';
-import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
+import useDeposits from '@hooks/venmo/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration';
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 

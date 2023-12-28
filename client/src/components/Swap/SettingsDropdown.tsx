@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { Input } from "@components/common/Input";
 import { commonStrings } from "@helpers/strings";
-import useLiquidity from '@hooks/useLiquidity';
+import useLiquidity from '@hooks/venmo/useLiquidity';
 
 
 interface SettingsDropdownProps {

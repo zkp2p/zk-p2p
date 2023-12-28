@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import styled from "styled-components";
 
 import DepositTable from "@components/Liquidity"
-import useVenmoRampState from '@hooks/useRampState';
-import useVenmoLiquidity from '@hooks/useLiquidity';
+import useVenmoRampState from '@hooks/venmo/useRampState';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 export const Liquidity: React.FC = () => {

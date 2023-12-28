@@ -10,8 +10,8 @@ import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/Plat
 import { DepositsRow } from "./DepositsRow";
 import { toUsdcString, conversionRateToString } from '@helpers/units'
 
-import useVenmoLiquidity from '@hooks/useLiquidity';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 const ROWS_PER_PAGE = 10;

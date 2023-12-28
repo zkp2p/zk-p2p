@@ -21,7 +21,7 @@ import { hdfcStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 
 import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
+import useOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

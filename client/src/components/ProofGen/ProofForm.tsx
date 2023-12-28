@@ -24,7 +24,7 @@ import {
 } from './validation/venmo';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 

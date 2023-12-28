@@ -8,11 +8,11 @@ import {
   useWaitForTransaction
 } from 'wagmi'
 
-import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
+import { Button } from "../../Button";
+import { RowBetween } from '../../layouts/Row'
+import { ThemedText } from '../../../theme/text'
 import { Input } from "@components/Deposit/Input";
-import { NumberedStep } from "../common/NumberedStep";
+import { NumberedStep } from "../../common/NumberedStep";
 import {
   calculatePackedVenmoId,
   isProvidedIdEqualToRegistration
@@ -22,9 +22,9 @@ import { ZERO } from '@helpers/constants'
 import { venmoStrings } from '@helpers/strings'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance'
-import useDeposits from '@hooks/useDeposits';
-import useRampState from '@hooks/useRampState'
-import useRegistration from '@hooks/useRegistration';
+import useDeposits from '@hooks/venmo/useDeposits';
+import useRampState from '@hooks/venmo/useRampState'
+import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

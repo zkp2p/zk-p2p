@@ -23,7 +23,7 @@ import {
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
 
 import LiquidityContext from './LiquidityContext';
 
