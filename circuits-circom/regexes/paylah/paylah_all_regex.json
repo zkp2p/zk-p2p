@@ -1,0 +1,68 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "<td>Amount:</td>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<td>SGD"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9|\\.)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "</td>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "</tr>\r\n<tr>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<td>From:</td>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<td>PayLah! Wallet \\(Mobile ending "
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "\\)</td>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "</tr>\r\n<tr>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<td>To:</td>\r\n"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<td>"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|0|1|2|3|4|5|6|7|8|9|-| |\\.|'|_|,)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": " \\(Mobile ending "
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "\\)</td>\r\n"
+        }
+    ]
+}
