@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 
 import { AutoColumn } from '@components/layouts/Column';
-import { NewPermission } from '@components/PermissionsForm/NewPermission';
-import { PermissionTable } from '@components/PermissionsForm/PermissionTable';
+import { NewPermission } from '@components/Permissions/NewPermission';
+import { PermissionTable } from '@components/Permissions/PermissionTable';
 
 
 export default function PermissionsForm() {
