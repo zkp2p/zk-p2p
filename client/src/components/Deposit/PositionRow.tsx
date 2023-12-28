@@ -1,7 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
 
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 
 

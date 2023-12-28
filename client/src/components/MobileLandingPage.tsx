@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from "styled-components";
 
-import { ThemedText } from '../theme/text';
 import { Button } from '@components/Button';
+import { ThemedText } from '@theme/text';
 
 
 export const MobileLandingPage: React.FC = () => {

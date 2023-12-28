@@ -1,6 +1,6 @@
 import React from "react";
-import { UserX } from 'react-feather'
-import styled, { css } from 'styled-components/macro'
+import { UserX } from 'react-feather';
+import styled, { css } from 'styled-components/macro';
 
 
 interface PermissionRowProps {

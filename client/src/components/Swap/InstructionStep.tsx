@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { CenterAllDiv, Row } from "../legacy/Layout";
+import { CenterAllDiv, Row } from "@components/legacy/Layout";
 
 
 export const InstructionStep: React.FC<{

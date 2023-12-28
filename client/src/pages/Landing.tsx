@@ -1,22 +1,22 @@
-import { useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { MAIN_CARDS, SECONDARY_CARDS } from '../helpers/cards'
-import { Button } from '../components/Button'
-import Card from '../components/common/Card'
-import { ThemedText } from '../theme/text'
-import useMediaQuery from '@hooks/useMediaQuery'
-import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed'
-import SwapPreview from '@components/Landing/SwapPreview'
+import { Button } from '@components/Button';
+import Card from '@components/common/Card';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
+import SwapPreview from '@components/Landing/SwapPreview';
+import { MAIN_CARDS, SECONDARY_CARDS } from '@helpers/cards';
+import useMediaQuery from '@hooks/useMediaQuery';
+import { ThemedText } from '@theme/text';
 
 
 export const Landing: React.FC = () => {
   const currentDeviceSize = useMediaQuery();
 
-  const cardsRef = useRef<HTMLDivElement>(null)
-  const navigate = useNavigate()
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   /*
    * Handlers

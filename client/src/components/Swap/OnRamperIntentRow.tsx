@@ -3,7 +3,7 @@ import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
 import { ReviewRequirements } from '@components/modals/ReviewRequirements';

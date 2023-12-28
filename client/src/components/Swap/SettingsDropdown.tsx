@@ -2,7 +2,7 @@ import { useRef, useReducer, useMemo } from 'react';
 import { ChevronDown, Settings } from 'react-feather';
 import styled from "styled-components";
 import { Switch } from '@mui/material';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { Input } from "@components/common/Input";

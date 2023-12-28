@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Inbox, FileText } from 'react-feather'
-import styled, { css } from 'styled-components/macro'
+import { Inbox, FileText } from 'react-feather';
+import styled, { css } from 'styled-components/macro';
 import { useNavigate } from 'react-router-dom';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from '../Button';
-import { RowBetween } from '../layouts/Row';
-import { ThemedText } from '../../theme/text';
-import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
-import { PositionRow } from "./PositionRow";
-import { CustomConnectButton } from "../common/ConnectButton";
+import { Button } from '@components/Button';
+import { RowBetween } from '@components/layouts/Row';
+import { PositionRow } from "@components/Deposit/PositionRow";
+import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
-import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
 import { Abi } from '../../contexts/common/SmartContracts/types';
+import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { ThemedText } from '@theme/text';
 import useAccount from '@hooks/useAccount';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';

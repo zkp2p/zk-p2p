@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 import { Download, Cpu, Check, Circle, Play, Upload } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-import { commonStrings } from "@helpers/strings"
-import useProofGenSettings from "@hooks/useProofGenSettings"
 import Spinner from "@components/common/Spinner";
+import { commonStrings } from "@helpers/strings";
+import useProofGenSettings from "@hooks/useProofGenSettings";
 
 
 export const VerificationStepType = {

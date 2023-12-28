@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
-import { ThemedText } from '../../theme/text'
+import { ThemedText } from '@theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
 
 export const TokenSelector: React.FC = () => {

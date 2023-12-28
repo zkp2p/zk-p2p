@@ -2,7 +2,7 @@ import React from 'react';
 import { Switch } from '@mui/material';
 import styled from 'styled-components';
 
-import QuestionHelper from './QuestionHelper';
+import QuestionHelper from '@components/common/QuestionHelper';
 
 
 interface LabeledSwitchProps {

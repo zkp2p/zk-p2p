@@ -4,9 +4,9 @@ import Link from '@mui/material/Link';
 import { Check } from 'react-feather';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
+import { CustomCheckbox } from "@components/common/Checkbox";
 import useSmartContracts from "@hooks/useSmartContracts";
-import { CustomCheckbox } from "@components/common/Checkbox"
 import { alchemyMainnetEthersProvider } from "index";
 
 

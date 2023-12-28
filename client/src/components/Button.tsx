@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled, { css } from 'styled-components';
 
-import Spinner from "./common/Spinner";
+import Spinner from "@components/common/Spinner";
 
 
 interface ButtonProps {

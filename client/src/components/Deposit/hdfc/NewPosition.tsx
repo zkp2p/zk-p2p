@@ -2,23 +2,19 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "../../Button";
-import { RowBetween } from '../../layouts/Row'
-import { ThemedText } from '../../../theme/text'
+import { Button } from "@components/Button";
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
-import { NumberedStep } from "../../common/NumberedStep";
-import { calculatePackedUPIId } from '@helpers/poseidonHash'
-import { toBigInt, toUsdcString } from '@helpers/units'
-import { ZERO } from '@helpers/constants'
+import { NumberedStep } from "@components/common/NumberedStep";
+import { calculatePackedUPIId } from '@helpers/poseidonHash';
+import { toBigInt, toUsdcString } from '@helpers/units';
+import { ZERO } from '@helpers/constants';
 import { hdfcStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useBalances from '@hooks/useBalance'
+import useBalances from '@hooks/useBalance';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';

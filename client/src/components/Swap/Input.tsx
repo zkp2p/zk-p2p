@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
-import { TokenSelector } from './TokenSelector';
-import { PlatformSelector } from '../modals/PlatformSelector';
+import { TokenSelector } from '@components/Swap/TokenSelector';
+import { PlatformSelector } from '@components/modals/PlatformSelector';
 
 
 interface InputProps {

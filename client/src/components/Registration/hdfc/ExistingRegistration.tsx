@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 import Link from '@mui/material/Link';
 import { CheckCircle, Box } from 'react-feather';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi';
 
 import { Button } from "@components/Button";
 import { Col } from "@components/legacy/Layout";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
+import { ReadOnlyInput } from "@components/Registration/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../../theme/text';
-import { venmoStrings, commonStrings } from '@helpers/strings';
+import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/venmo/useRegistration';
-import useSmartContracts from '@hooks/useSmartContracts';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 
 interface ExistingRegistrationProps {
@@ -35,73 +29,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
-  const { venmoNftAddress, venmoNftAbi } = useSmartContracts();
-
-  const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
-
-  /*
-   * Contract Writes
-   */
-
-  //
-  // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount)
-  //
-  const { config: writeSubmitSbtConfig } = usePrepareContractWrite({
-    address: venmoNftAddress,
-    abi: venmoNftAbi,
-    functionName: 'mintSBT',
-    enabled: shouldConfigureMintSbtWrite
-  });
-
-  const {
-    data: submitMintSbtResult,
-    isLoading: isSubmitMintSbtLoading,
-    writeAsync: writeSubmitMintSbtAsync,
-  } = useContractWrite(writeSubmitSbtConfig);
-
-  const {
-    isLoading: isSubmitMintSbtMining
-  } = useWaitForTransaction({
-    hash: submitMintSbtResult ? submitMintSbtResult.hash : undefined,
-    onSuccess(data) {
-      console.log('writeSubmitMintSbtAsync successful: ', data);
-
-      refetchVenmoNftId?.();
-    },
-  });
-
-  /*
-   * Handlers
-   */
-
-  const handleMintSbtSubmit = async () => {
-    try {
-      await writeSubmitMintSbtAsync?.();
-    } catch (error) {
-      console.log('writeSubmitMintSbtAsync failed: ', error);
-    }
-  };
-
-  /*
-   * Helpers
-   */
-
-  const openSeaNftLink = () => {
-    return "https://opensea.io/assets/base/" + venmoNftAddress + "/" + venmoNftId;
-  };
-
-  /*
-   * Hooks
-   */
-
-  useEffect(() => {
-    if (isRegistered && !venmoNftUri) {
-      setShouldConfigureMintSbtWrite(true);
-    } else {
-      setShouldConfigureMintSbtWrite(false);
-    }
-  }, [isRegistered, venmoNftUri])
+  const { registrationHash, isRegistered } = useRegistration();
 
   /*
    * Component
@@ -142,7 +70,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               { !isRegistered && (
                 <NumberedInputContainer>
                   <NumberedStep>
-                    { venmoStrings.get('REGISTRATION_INSTRUCTIONS') }
+                    { hdfcStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
                       href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration"
                       target="_blank"
@@ -153,16 +81,8 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 </NumberedInputContainer>
               )}
               
-              { (shouldConfigureMintSbtWrite || venmoNftUri) && (
+              { (isRegistered) && (
                 <RegistrationNftContainer>
-                  {venmoNftUri && (
-                    <NftAndLinkContainer>
-                      <div dangerouslySetInnerHTML={{ __html: venmoNftUri }} />
-                      <Link href={ openSeaNftLink() } target="_blank"> View on Opensea ↗</Link>
-                    </NftAndLinkContainer>
-                  )}
-
-                  {shouldConfigureMintSbtWrite && (
                     <MintNftContainer>
                       <ThemedText.DeprecatedBody textAlign="center">
                         <BoxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -173,29 +93,28 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                       </ThemedText.DeprecatedBody>
 
                       <Button
-                        loading={isSubmitMintSbtMining || isSubmitMintSbtLoading}
+                        loading={false}
                         height={40}
-                        onClick={handleMintSbtSubmit}
+                        onClick={() => {}}
                         fullWidth={true}
                       >
-                        Mint
+                        Coming Soon
                       </Button>
                     </MintNftContainer>
-                  )}
                 </RegistrationNftContainer>
               )}
 
               <InputsContainer>
                 <ReadOnlyInput
                   label="Status"
-                  name={`depositAmount`}
+                  name={`registrationStatus`}
                   value={isRegistered ? "Registered" : "Not Registered"}
                 />
                 
                 {
                   isRegistered && <ReadOnlyInput
-                    label="Venmo Identifier"
-                    name={`venmoProfile`}
+                    label="HDFC Identifier"
+                    name={`hdfcProfile`}
                     value={registrationHash ? registrationHash : ""}
                   />
                 }
@@ -300,15 +219,6 @@ const RegistrationNftContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const NftAndLinkContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 15px;
-  padding-bottom: 4px;
 `;
 
 const MintNftContainer = styled.div`

@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
-import {
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { RowBetween } from '../../layouts/Row'
-import { ThemedText } from '../../../theme/text'
-import { ProofGenerationForm } from "../../ProofGen/ProofForm";
-import { NumberedStep } from "../../common/NumberedStep";
-// import { ProofSettings } from "@components/ProofGen/ProofSettings";
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
+import { NumberedStep } from "@components/common/NumberedStep";
 import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
 import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
 import { hdfcStrings } from "@helpers/strings";

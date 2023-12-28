@@ -9,7 +9,7 @@ import {
 // import { wrap } from 'comlink';
 import * as crypto from 'crypto';
 
-import { Col } from "../legacy/Layout";
+import { Col } from "@components/legacy/Layout";
 import { EmailInputStatus, ProofGenerationStatus } from  "./types";
 import { ValidateEmail } from '@components/modals/ValidateEmail';
 import { MailTable } from '@components/ProofGen/MailTable';

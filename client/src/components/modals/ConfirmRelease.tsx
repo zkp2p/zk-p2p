@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft, Unlock } from 'react-feather';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { ThemedText } from '../../theme/text'
+import { Button } from "@components/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { Abi } from '../../contexts/common/SmartContracts/types';
 import { TransactionStatus, TransactionStatusType } from "@helpers/types";
-import { Button } from "../Button";
+import { ThemedText } from '@theme/text'
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';

@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useState } from 'react'
-import { HelpCircle } from 'react-feather'
-import styled from 'styled-components/macro'
+import { ReactNode, useCallback, useState } from 'react';
+import { HelpCircle } from 'react-feather';
+import styled from 'styled-components/macro';
 
-import Tooltip from './Tooltip'
+import Tooltip from '@components/common/Tooltip';
 
 
 export default function QuestionHelper({ text }: { text: ReactNode; size?: number }) {

@@ -4,7 +4,7 @@ import Link from '@mui/material/Link';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import useSmartContracts from "@hooks/useSmartContracts";
-import { SVGIconThemed } from '../SVGIcon/SVGIconThemed';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 

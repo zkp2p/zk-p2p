@@ -3,9 +3,9 @@ import { MoreHorizontal } from 'react-feather';
 import { Link } from 'react-router-dom';
 import styled from "styled-components";
 
-import { SVGIconThemed } from '../../SVGIcon/SVGIconThemed';
-import { ThemedText } from '../../../theme/text';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
+import { ThemedText } from '@theme/text';
 
 
 export const MenuDropdown = () => {

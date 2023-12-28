@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 
-import { AutoColumn } from '../layouts/Column'
-import { DepositsTable } from './DepositsTable'
-import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
-
+import { AutoColumn } from '@components/layouts/Column';
+import { DepositsTable } from '@components/Liquidity/DepositsTable';
+import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useVenmoRampState from '@hooks/venmo/useRampState';
-
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 

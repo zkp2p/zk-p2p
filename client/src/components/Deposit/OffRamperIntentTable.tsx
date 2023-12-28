@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 
-import { ThemedText } from '../../theme/text'
-import { IntentRow, IntentRowData } from "./OffRamperIntentRow";
+import { IntentRow, IntentRowData } from "@components/Deposit/OffRamperIntentRow";
 import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
+import { ThemedText } from '@theme/text'
 import { DepositIntent } from "../../contexts/venmo/Deposits/types";
 import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
