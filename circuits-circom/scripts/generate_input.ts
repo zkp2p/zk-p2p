@@ -431,7 +431,6 @@ function preProcessEmail(email: Buffer, type: CircuitType): Buffer {
   if (type === CircuitType.EMAIL_HDFC_REGISTRATION || type === CircuitType.EMAIL_HDFC_SEND) {
     console.log("Preprocessing HDFC email. Updating message-id with x-google-original-message-id");
     return Buffer.from(hdfcReplaceMessageIdWithXGoogleOriginalMessageId(email.toString()));
-
   }
   return email;
 }
