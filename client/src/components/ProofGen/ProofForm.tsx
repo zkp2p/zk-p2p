@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 
 import { Col } from "../legacy/Layout";
 import { EmailInputStatus, ProofGenerationStatus } from  "./types";
-import { Modal } from '@components/modals/Modal';
+import { ValidateEmail } from '@components/modals/ValidateEmail';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
@@ -376,7 +376,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     <Container>
       {
         shouldShowVerificationModal && (
-          <Modal
+          <ValidateEmail
             title={"Verify Email"}
             proof={proof}
             publicSignals={publicSignals}

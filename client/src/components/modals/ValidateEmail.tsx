@@ -19,7 +19,7 @@ import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import useSmartContracts from "@hooks/useSmartContracts";
 
 
-interface ModalProps {
+interface ValidateEmailProps {
   title: string;
   proof: string;
   publicSignals: string;
@@ -37,7 +37,7 @@ interface ModalProps {
   provingFailureErrorCode: number | null;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const ValidateEmail: React.FC<ValidateEmailProps> = ({
   title,
   proof,
   publicSignals,
@@ -389,7 +389,7 @@ export const Modal: React.FC<ModalProps> = ({
           )
         }
 
-        {transactionAddress?.length ? (
+        { transactionAddress?.length ? (
           <Link
             href={`${blockscanUrl}/tx/${transactionAddress}`}
             target="_blank"
