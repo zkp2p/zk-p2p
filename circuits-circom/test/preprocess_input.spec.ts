@@ -1,11 +1,4 @@
 import chai from "chai";
-// import path from "path";
-// import { F1Field, Scalar } from "ffjavascript";
-// import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-// import { chunkArray, bytesToPacked, packNullifier, hashSignatureGenRand } from "./utils";
-// import { ethers } from "ethers";
-// import ganache from "ganache";
-// import { partialSha } from "@zk-email/helpers/src/shaHash";
 import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "../scripts/preprocess_input";
 
 const PREFIX = "Delivered-To: 0xsachink@gmail.com"
