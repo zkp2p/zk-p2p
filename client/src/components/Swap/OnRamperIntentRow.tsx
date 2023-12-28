@@ -69,7 +69,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const orderExpirationLabel = `${expirationTimestamp}`;
   
   const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
-  const hdfcLink = `upi://pay?pa=${depositorVenmoId}&pn=${recipientAddress}&tn=${''}&am=${amountUSDToSend}&cu=INR`;
+  const hdfcLink = `upi://pay?pa=${depositorVenmoId.replace(/\0/g, '')}&am=${amountUSDToSend}&cu=INR`;
   const qrLink = isVenmo ? venmoLink : hdfcLink;
 
   /*
