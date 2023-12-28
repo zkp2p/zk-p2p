@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
 
-import PermissionsForm from "@components/PermissionsForm"
+import PermissionsForm from "@components/Permissions"
 import usePermissions from "@hooks/usePermissions";
 
 
