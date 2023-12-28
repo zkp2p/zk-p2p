@@ -3,7 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide any historical transaction email sent from HDFC InstaAlerts containing "You have done a UPI" in the subject to
+    Provide any historical transaction email sent from HDFC InstaAlerts containing "You have done a UPI txn" in the subject to
     complete registration. Base ETH is required to submit a registration transaction.
   `,
 
@@ -34,8 +34,7 @@ const strings: PlatformStrings = {
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
     Creating a new deposit requires you to submit your UPI ID, the USDC liquidity to deposit and
-    desired USD conversion rate. Your UPI ID must match the ID you registered with. Instructions
-    on how to fetch your UPI ID can be found here.
+    desired USD conversion rate.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid UPI ID where users will send payments.
@@ -66,13 +65,13 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Payment is sent from your UPI ID linked to your HDFC bank account. Do not send payment from UPI Lite or other UPI IDs
+    Send payment from your UPI ID linked to your HDFC bank account. Do not send payment from UPI Lite or other bank accounts
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    HDFC InstaAlert email notifications are enabled in your bank account notification settings  
+    HDFC InstaAlert email notifications are enabled for your account
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Amount INR to send, which may not match your requested USDC amount, is double checked
+    Send the exact INR amount including decimals as displayed on the payment screen
   `,
 
 };
