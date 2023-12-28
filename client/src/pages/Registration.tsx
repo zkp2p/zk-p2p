@@ -7,7 +7,7 @@ import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-export const Registration: React.FC<{}> = (props) => {
+export const Registration: React.FC = () => {
   /*
    * Contexts
    */

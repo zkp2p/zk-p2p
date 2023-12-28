@@ -5,7 +5,7 @@ import PermissionsForm from "@components/PermissionsForm"
 import usePermissions from "@hooks/usePermissions";
 
 
-export const Permissions: React.FC<{}> = (props) => {
+export const Permissions: React.FC = () => {
   /*
    * Contexts
    */

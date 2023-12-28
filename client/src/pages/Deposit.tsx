@@ -10,21 +10,21 @@ import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-export const Deposit: React.FC<{}> = (props) => {
+export const Deposit: React.FC = () => {
   /*
    * Contexts
    */
 
   const {
     isRegistered: isRegisteredOnVenmo
-  } = useRegistration();
+  } = useVenmoRegistration();
 
   const {
     refetchDeposits: refetchVenmoDeposits,
     shouldFetchDeposits: shouldFetchVenmoDeposits,
     refetchDepositIntents: refetchVenmoDepositIntents,
     shouldFetchDepositIntents: shouldFetchVenmoDepositIntents,
-  } = useDeposits();
+  } = useVenmoDeposits();
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
 
