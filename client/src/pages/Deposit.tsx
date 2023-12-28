@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
 
-import DepositTable from "@components/Deposit"
-import useDeposits from '@hooks/venmo/useDeposits';
+import DepositTable from "@components/Deposit";
+import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
-import useRegistration from '@hooks/venmo/useRegistration';
+import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
