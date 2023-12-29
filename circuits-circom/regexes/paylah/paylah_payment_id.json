@@ -1,0 +1,16 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "Transaction Ref: "
+        },
+        {
+            "is_public": true,
+            "regex_def": "55941571702351184916"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<"
+        }
+    ]
+}
