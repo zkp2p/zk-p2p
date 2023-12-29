@@ -73,6 +73,7 @@ export interface ICircuitInputs {
   paylah_payer_mobile_num_idx?: string;
   paylah_payee_name_idx?: string;
   paylah_payee_mobile_num_idx?: string;
+  paylah_payment_id_idx?: string;
   email_date_idx?: string;
   intent_hash?: string;
 
@@ -171,11 +172,11 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_PAYLAH_SEND) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "(SGT)</td>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "ontenttable\" align=3D\"left\"><br />";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_PAYLAH_REGISTRATION) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "(SGT)</td>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 1280;  // 1280 is the max observed body length
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "ontenttable\" align=3D\"left\"><br />";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
   }
 
   // Derive modulus from signature
@@ -364,7 +365,21 @@ export async function getCircuitInputs(
     const first_mobile_ending_idx = Buffer.from(bodyRemaining).indexOf(paylah_payee_mobile_num_selector) + paylah_payee_mobile_num_selector.length;
     const paylah_payee_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(paylah_payee_mobile_num_selector, first_mobile_ending_idx) + paylah_payee_mobile_num_selector.length).toString();
 
-    console.log("Indexes into for paylah send email are: ", email_from_idx, paylah_amount_idx, paylah_payer_mobile_num_idx, paylah_payee_name_idx, paylah_payee_mobile_num_idx)
+    const paylah_payment_id_selector = Buffer.from("Transaction Ref: ");
+    const paylah_payment_id_idx = (Buffer.from(bodyRemaining).indexOf(paylah_payment_id_selector) + paylah_payment_id_selector.length).toString();
+
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_timestamp_idx': email_timestamp_idx,
+      'email_to_idx': email_to_idx,
+      'paylah_amount_idx': paylah_amount_idx,
+      'paylah_payer_mobile_num_idx': paylah_payer_mobile_num_idx,
+      'paylah_payee_name_idx': paylah_payee_name_idx,
+      'paylah_payee_mobile_num_idx': paylah_payee_mobile_num_idx,
+      'paylah_payment_id_idx': paylah_payment_id_idx
+    })
 
     circuitInputs = {
       in_padded,
@@ -380,7 +395,10 @@ export async function getCircuitInputs(
       paylah_payer_mobile_num_idx,
       paylah_payee_name_idx,
       paylah_payee_mobile_num_idx,
+      paylah_payment_id_idx,
       email_from_idx,
+      email_timestamp_idx,
+      email_to_idx,
       // IDs
       intent_hash,
     }
