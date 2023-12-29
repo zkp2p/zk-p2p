@@ -32,7 +32,7 @@
     "gen-input:hdfc:send": "npx tsx ./scripts/generate_input.ts --email_file=emls/hdfc_send_sachin.eml --payment_type=hdfc --circuit_type=send --output_file=input_hdfc_send",
     "gen-input:hdfc:registration": "npx tsx ./scripts/generate_input.ts --email_file=emls/hdfc_send_sachin.eml --payment_type=hdfc --circuit_type=registration  --output_file=input_hdfc_registration",
     "gen-input:hdfc:registration:wrong-subject": "npx tsx ./scripts/generate_input.ts --email_file=emls/hdfc_account_update.eml --payment_type=hdfc --circuit_type=registration  --output_file=input_hdfc_registration_wrong_subject",
-    "gen-input:paylah:send": "npx tsx ./scripts/generate_input.ts --email_file=emls/maersk.eml --payment_type=paylah --circuit_type=send --output_file=input_paylah_send",
+    "gen-input:paylah:send": "npx tsx ./scripts/generate_input.ts --email_file=emls/paylah_send.eml --payment_type=paylah --circuit_type=send --output_file=input_paylah_send",
     "gen-input:paylah:registration": "npx tsx ./scripts/generate_input.ts --email_file=emls/paylah_send.eml --payment_type=paylah --circuit_type=registration --output_file=input_paylah_registration",
     "compile:venmo:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile.sh && cd ..",
     "compile:venmo:send:unsafe": "CIRCUIT_NAME=venmo_send && cd scripts && ./1_compile_unsafe.sh && cd ..",
