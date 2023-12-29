@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
-import { NumberedStep } from "../common/NumberedStep";
-import { SingleLineInput } from "../common/SingleLineInput";
+import { Button } from "@components/Button";
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { NumberedStep } from "@components/common/NumberedStep";
+import { SingleLineInput } from "@components/common/SingleLineInput";
 import useSmartContracts from '@hooks/useSmartContracts';
 import usePermissions from '@hooks/usePermissions';
 

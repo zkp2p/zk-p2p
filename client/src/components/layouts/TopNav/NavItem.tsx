@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-import { MenuDropdown } from "../MenuDropdown"
+import { MenuDropdown } from "@components/layouts/MenuDropdown";
 
 
 interface NavItemProps {

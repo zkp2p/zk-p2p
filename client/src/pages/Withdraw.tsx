@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import styled from "styled-components";
 
 import DepositTable from "@components/Withdraw"
-import useLegacyDeposits from '@hooks/useLegacyDeposits';
 import useBalances from '@hooks/useBalance';
+import useLegacyDeposits from '@hooks/useLegacyDeposits';
 
 
-export const Withdraw: React.FC<{}> = (props) => {
+export const Withdraw: React.FC = () => {
   /*
    * Contexts
    */

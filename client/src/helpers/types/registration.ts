@@ -1,4 +1,5 @@
-import { Deposit } from "../Deposits/types";
+import { Deposit } from "@helpers/types";
+
 
 // struct AccountInfo {
 //   bytes32 venmoIdHash;

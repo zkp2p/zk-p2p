@@ -3,16 +3,16 @@ import { useContractRead } from 'wagmi';
 
 import {
   Deposit,
+  DepositIntent,
   DepositWithAvailableLiquidity,
   Intent,
-  DepositIntent
-} from './types';
-import { PaymentPlatform } from '../../common/PlatformSettings/types';
+  PaymentPlatform
+} from '@helpers/types';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 
 import DepositsContext from './DepositsContext';
 

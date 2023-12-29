@@ -9,22 +9,22 @@ import {
 // import { wrap } from 'comlink';
 import * as crypto from 'crypto';
 
-import { Col } from "../legacy/Layout";
-import { EmailInputStatus, ProofGenerationStatus } from  "./types";
-import { Modal } from '@components/modals/Modal';
+import { Col } from "@components/legacy/Layout";
+import { EmailInputStatus, ProofGenerationStatus } from  "@helpers/types";
+import { ValidateEmail } from '@components/modals/ValidateEmail';
 import { MailTable } from '@components/ProofGen/MailTable';
 import { UploadEmail } from '@components/ProofGen/UploadEmail';
 // import { HOSTED_FILES_PATH } from "@helpers/constants";
 // import { downloadProofFiles } from "@helpers/zkp";
-import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import {
   validateAndSanitizeEmailSubject,
   validateEmailDomainKey,
   validateDKIMSignature
-} from './validation/venmo';
+} from '@components/ProofGen/validation/venmo';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 
 
@@ -376,7 +376,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     <Container>
       {
         shouldShowVerificationModal && (
-          <Modal
+          <ValidateEmail
             title={"Verify Email"}
             proof={proof}
             publicSignals={publicSignals}

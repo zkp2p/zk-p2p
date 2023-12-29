@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-feather'
-import styled, { css } from 'styled-components/macro'
+import { Link } from 'react-feather';
+import styled, { css } from 'styled-components/macro';
 
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
-import { Button } from "../Button";
-import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
-import { PaymentPlatformType, PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
-import { DepositsRow } from "./DepositsRow";
-import { toUsdcString, conversionRateToString } from '@helpers/units'
+import { RowBetween } from '@components/layouts/Row';
+import { DepositsRow } from "@components/Liquidity/DepositsRow";
+import { Button } from "@components/Button";
+import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity } from '@helpers/types';
+import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { ThemedText } from '@theme/text';
 
-import useVenmoLiquidity from '@hooks/useLiquidity';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 const ROWS_PER_PAGE = 10;

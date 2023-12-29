@@ -2,7 +2,7 @@ import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
   StoredDeposit
-} from "../Deposits/types";
+} from '@helpers/types';
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
 import { toBigInt, toUsdString } from "@helpers/units";
 

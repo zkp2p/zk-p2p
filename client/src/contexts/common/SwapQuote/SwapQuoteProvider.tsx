@@ -1,20 +1,20 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { IndicativeQuote } from '../../venmo/Deposits/types';
+import { IndicativeQuote } from '@helpers/types';
 import { esl } from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
-import useLiquidity from '@hooks/useLiquidity';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
-import useRampState from "@hooks/useRampState";
-import useVenmoRegistration from "@hooks/useRegistration";
+import useLiquidity from '@hooks/venmo/useLiquidity';
+import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
+import useRampState from "@hooks/venmo/useRampState";
+import useVenmoRegistration from "@hooks/venmo/useRegistration";
 
 // Hdfc
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
-import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useHdfcRampState from "@hooks/hdfc/useHdfcRampState";
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
+import useHdfcRampState from "@hooks/hdfc/useRampState";
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 
 import SwapQuoteContext from './SwapQuoteContext';
 

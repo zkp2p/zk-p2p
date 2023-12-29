@@ -2,7 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 
 import { useDragAndDrop } from '@hooks/useDragAndDrop';
-import { Col } from "../legacy/Layout";
+import { Col } from "@components/legacy/Layout";
 
 
 type Props = {

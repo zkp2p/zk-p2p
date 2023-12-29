@@ -1,10 +1,6 @@
 import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 
 import { Input } from "@components/Swap/Input";
@@ -12,8 +8,8 @@ import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
 import { AutoColumn } from '@components/layouts/Column';
 import { Button } from '@components/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
-import { ThemedText } from '../../theme/text';
-import { IndicativeQuote } from '../../contexts/venmo/Deposits/types';
+import { ThemedText } from '@theme/text';
+import { IndicativeQuote } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { SettingsDropdown } from './SettingsDropdown';
 import {

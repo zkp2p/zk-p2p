@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft, AlertTriangle } from 'react-feather';
 
-import { ThemedText } from '../../theme/text'
+import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
 import { platformStrings } from '@helpers/strings';
-import { Button } from "../Button";
+import { Button } from "@components/Button";
 import { RequirementStepRow } from "@components/modals/RequirementStepRow";
-import { CustomCheckbox } from "@components/common/Checkbox"
-import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import { CustomCheckbox } from "@components/common/Checkbox";
+import { PaymentPlatformType } from '@helpers/types';
 
 
 interface ReviewRequirementsProps {

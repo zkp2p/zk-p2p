@@ -36,11 +36,10 @@ export const ReadOnlyInput: React.FC<ReadOnlyInputProps> = ({
         <LabelAndInputContainer>
           <LabelAndTooltipContainer>
             <Label htmlFor={name}>
-                {label}
+              {label}
             </Label>
 
-            { 
-              helperText && (
+            { helperText && (
                 <QuestionHelper
                   text={helperText}
                 />

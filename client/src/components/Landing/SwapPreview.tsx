@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Input } from "@components/Swap/Input";
 import { AutoColumn } from '@components/layouts/Column';
-import { ThemedText } from '../../theme/text';
+import { ThemedText } from '@theme/text';
 
 
 export type SwapQuote = {

@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 
-import { LabeledSwitch } from "../common/LabeledSwitch";
+import { LabeledSwitch } from "@components/common/LabeledSwitch";
 import { commonStrings } from "@helpers/strings";
 import useProofGenSettings from '@hooks/useProofGenSettings';
 

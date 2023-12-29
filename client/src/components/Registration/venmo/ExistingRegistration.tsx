@@ -2,24 +2,20 @@ import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import Link from '@mui/material/Link';
 import { CheckCircle, Box } from 'react-feather';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/Button";
 import { Col } from "@components/legacy/Layout";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
+import { ReadOnlyInput } from "@components/Registration/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
-import { ThemedText } from '../../theme/text';
+import { ThemedText } from '../../../theme/text';
 import { venmoStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

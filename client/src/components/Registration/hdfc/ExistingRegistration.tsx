@@ -7,14 +7,14 @@ import { Button } from "@components/Button";
 import { Col } from "@components/legacy/Layout";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { ReadOnlyInput } from "@components/RegistrationForm/ReadOnlyInput";
+import { ReadOnlyInput } from "@components/Registration/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '../../../theme/text';
 import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 
 interface ExistingRegistrationProps {

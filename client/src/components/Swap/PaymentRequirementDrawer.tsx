@@ -4,7 +4,7 @@ import { ChevronDown } from 'react-feather';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { platformStrings } from "@helpers/strings";
-import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import { PaymentPlatformType } from '@helpers/types';
 
 
 interface PaymentRequirementDrawerProps {

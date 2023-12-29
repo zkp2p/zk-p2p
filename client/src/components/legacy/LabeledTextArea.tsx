@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, { CSSProperties } from "react";
 import styled from "styled-components";
 
-import { Col } from "./Layout";
+import { Col } from "@components/legacy/Layout";
 
 
 export const LabeledTextArea: React.FC<{

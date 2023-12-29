@@ -8,22 +8,22 @@ import React, {
 import { readContract } from '@wagmi/core';
 
 import {
+  Abi,
   Deposit,
   DepositWithAvailableLiquidity,
   IndicativeQuote,
+  PaymentPlatform,
   StoredDeposit
-} from '../../venmo/Deposits/types';
+} from '@helpers/types';
 import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
  } from '../../venmo/Liquidity/helper';
- import { PaymentPlatform } from '../../common/PlatformSettings/types';
- import { Abi } from '../../common/SmartContracts/types';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
 
 import LiquidityContext from './LiquidityContext';
 

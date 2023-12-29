@@ -5,14 +5,14 @@ import {
   Deposit,
   DepositIntent,
   DepositWithAvailableLiquidity,
-  Intent
-} from '../../venmo/Deposits/types';
-import { PaymentPlatform } from '../../common/PlatformSettings/types'
+  Intent,
+  PaymentPlatform
+} from '@helpers/types';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 import DepositsContext from './DepositsContext';
 

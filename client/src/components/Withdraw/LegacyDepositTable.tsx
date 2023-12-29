@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Inbox } from 'react-feather'
-import styled, { css } from 'styled-components/macro'
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { Inbox } from 'react-feather';
+import styled, { css } from 'styled-components/macro';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { RowBetween } from '../layouts/Row';
-import { ThemedText } from '../../theme/text';
-import { DepositWithAvailableLiquidity } from "../../contexts/venmo/Deposits/types";
-import { LegacyDepositRow } from "./LegacyDepositRow";
-import { CustomConnectButton } from "../common/ConnectButton";
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { DepositWithAvailableLiquidity } from '@helpers/types';
+import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
+import { CustomConnectButton } from "@components/common/ConnectButton";
 import { toUsdcString, conversionRateToString } from '@helpers/units';
 import useAccount from '@hooks/useAccount';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';

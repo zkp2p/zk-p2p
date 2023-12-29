@@ -1,6 +1,6 @@
-import { createContext } from 'react'
+import { createContext } from 'react';
 
-import { DepositWithAvailableLiquidity, DepositIntent } from './types'
+import { DepositWithAvailableLiquidity, DepositIntent } from '@helpers/types';
 
 
 interface DepositsValues {

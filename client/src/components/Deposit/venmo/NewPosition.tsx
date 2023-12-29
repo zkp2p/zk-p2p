@@ -2,29 +2,25 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "../Button";
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
+import { Button } from "@components/Button";
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
-import { NumberedStep } from "../common/NumberedStep";
+import { NumberedStep } from "@components/common/NumberedStep";
 import {
   calculatePackedVenmoId,
   isProvidedIdEqualToRegistration
-} from '@helpers/poseidonHash'
-import { toBigInt, toUsdcString } from '@helpers/units'
-import { ZERO } from '@helpers/constants'
-import { venmoStrings } from '@helpers/strings'
+} from '@helpers/poseidonHash';
+import { toBigInt, toUsdcString } from '@helpers/units';
+import { ZERO } from '@helpers/constants';
+import { venmoStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useBalances from '@hooks/useBalance'
-import useDeposits from '@hooks/useDeposits';
-import useRampState from '@hooks/useRampState'
-import useRegistration from '@hooks/useRegistration';
+import useBalances from '@hooks/useBalance';
+import useDeposits from '@hooks/venmo/useDeposits';
+import useRampState from '@hooks/venmo/useRampState';
+import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 

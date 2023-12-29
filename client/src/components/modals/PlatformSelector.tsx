@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
-import { ThemedText } from '../../theme/text'
+import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
 import { PlatformRow } from '@components/modals/PlatformRow';
-import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
+import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";

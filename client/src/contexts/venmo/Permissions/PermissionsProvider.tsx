@@ -4,7 +4,7 @@ import { useContractRead } from 'wagmi';
 import { esl } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 
 import PermissionsContext from './PermissionsContext'
 

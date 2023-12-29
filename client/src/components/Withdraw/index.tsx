@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components/macro';
 
-import { AutoColumn } from '../layouts/Column';
-import { LegacyDepositTable } from './LegacyDepositTable';
+import { AutoColumn } from '@components/layouts/Column';
+import { LegacyDepositTable } from '@components/Withdraw/LegacyDepositTable';
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';
 

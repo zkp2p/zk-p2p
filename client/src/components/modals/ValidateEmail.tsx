@@ -5,21 +5,25 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import Confetti from 'react-confetti';
 import { useWindowSize } from '@uidotdev/usehooks';
 
-import { ThemedText } from '../../theme/text'
-import { LabeledSwitch } from "../common/LabeledSwitch";
+import { Button } from "@components/Button";
+import { LabeledSwitch } from "@components/common/LabeledSwitch";
 import { Overlay } from '@components/modals/Overlay';
 import { TitleCenteredRow } from '@components/layouts/Row';
+import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
+import {
+  VerificationStepRow,
+  VerificationState,
+  VerificationStepType
+} from "@components/modals/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
+import { ProofGenerationStatus } from  "@helpers/types";
+import { ThemedText } from '@theme/text'
 import useProofGenSettings from "@hooks/useProofGenSettings";
-import { ProofGenerationStatus } from  "../ProofGen/types";
-
-import { Button } from "../Button";
-import { VerificationStepRow, VerificationState, VerificationStepType } from "./VerificationStepRow";
-import { LabeledTextArea } from '../legacy/LabeledTextArea';
 import useSmartContracts from "@hooks/useSmartContracts";
 
 
-interface ModalProps {
+
+interface ValidateEmailProps {
   title: string;
   proof: string;
   publicSignals: string;
@@ -37,7 +41,7 @@ interface ModalProps {
   provingFailureErrorCode: number | null;
 }
 
-export const Modal: React.FC<ModalProps> = ({
+export const ValidateEmail: React.FC<ValidateEmailProps> = ({
   title,
   proof,
   publicSignals,
@@ -389,7 +393,7 @@ export const Modal: React.FC<ModalProps> = ({
           )
         }
 
-        {transactionAddress?.length ? (
+        { transactionAddress?.length ? (
           <Link
             href={`${blockscanUrl}/tx/${transactionAddress}`}
             target="_blank"

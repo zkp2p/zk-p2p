@@ -2,16 +2,15 @@ import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
 import SwapModal from "@components/Swap";
-import { OnRamp as VenmoOnRamp } from '@components/Swap/OnRamp';
+import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
-
-import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/useOnRamperIntents';
-import useRampState from '@hooks/useRampState';
-
-import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useHdfcRampState from '@hooks/hdfc/useHdfcRampState';
+import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
+import useHdfcRampState from '@hooks/hdfc/useRampState';
 import usePlatformSettings from '@hooks/usePlatformSettings';
+import useBalances from '@hooks/useBalance';
+import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
+import useRampState from '@hooks/venmo/useRampState';
+
 
 
 export const Swap: React.FC = () => {

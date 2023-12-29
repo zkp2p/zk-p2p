@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Filter, FileText } from 'react-feather'
+import { Filter, FileText } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
-import styled, { css } from 'styled-components/macro'
+import styled, { css } from 'styled-components/macro';
 
-import { Button } from '../Button'
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
-import { PermissionRow } from "./PermissionRow";
-import { CustomConnectButton } from "../common/ConnectButton"
-import useAccount from '@hooks/useAccount'
-import useRegistration from '@hooks/useRegistration'
+import { Button } from '@components/Button';
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { PermissionRow } from "@components/Permissions/PermissionRow";
+import { CustomConnectButton } from "@components/common/ConnectButton";
+import useAccount from '@hooks/useAccount';
+import useRegistration from '@hooks/venmo/useRegistration';
 import usePermissions from '@hooks/usePermissions';
 
 

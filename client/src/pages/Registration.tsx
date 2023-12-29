@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
 
-import { RegistrationForm } from "@components/RegistrationForm"
-import useRegistration from '@hooks/useRegistration';
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import { RegistrationForm } from "@components/Registration"
+import useRegistration from '@hooks/venmo/useRegistration';
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-export const Registration: React.FC<{}> = (props) => {
+export const Registration: React.FC = () => {
   /*
    * Contexts
    */

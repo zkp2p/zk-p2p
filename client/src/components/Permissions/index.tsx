@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 
-import { AutoColumn } from '../layouts/Column'
-import { NewPermission } from './NewPermission'
-import { PermissionTable } from './PermissionTable'
+import { AutoColumn } from '@components/layouts/Column';
+import { NewPermission } from '@components/Permissions/NewPermission';
+import { PermissionTable } from '@components/Permissions/PermissionTable';
 
 
 export default function PermissionsForm() {
   /*
    * State
    */
+
   const [isAddPosition, setIsAddPosition] = useState<boolean>(false);
 
   /*
-    Handlers
-  */
+   * Handlers
+   */
+
   const handleUpdateClick = () => {
     setIsAddPosition(true);
-  }
+  };
 
   const handleBackClick = () => {
     setIsAddPosition(false);
-  }
+  };
 
   return (
     <Wrapper>
@@ -44,12 +46,12 @@ export default function PermissionsForm() {
       </Column>
     </Wrapper>
   )
-}
+};
 
 const Wrapper = styled(AutoColumn)`
   max-width: 660px;
   width: 100%;
-`
+`;
 
 const Column = styled.div`
   gap: 1rem;

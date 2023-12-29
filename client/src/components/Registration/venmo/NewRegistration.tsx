@@ -3,22 +3,18 @@ import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import Link from '@mui/material/Link';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
- } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { RowBetween } from '../layouts/Row'
-import { ThemedText } from '../../theme/text'
-import { ProofGenerationForm } from "../ProofGen/ProofForm";
-import { NumberedStep } from "../common/NumberedStep";
-import { PaymentPlatform } from '../../contexts/common/PlatformSettings/types';
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
+import { NumberedStep } from "@components/common/NumberedStep";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
+import { PaymentPlatform } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/useRegistration';
+import useRegistration from '@hooks/venmo/useRegistration';
 
 
 interface NewRegistrationProps {

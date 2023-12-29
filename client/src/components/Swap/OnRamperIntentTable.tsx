@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from 'wagmi';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { ThemedText } from '../../theme/text';
-import { IntentRow, IntentRowData } from "./OnRamperIntentRow";
+import { ThemedText } from '@theme/text';
+import { IntentRow, IntentRowData } from "@components/Swap/OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
-import { OnRamperIntent, StoredDeposit } from '../../contexts/venmo/Deposits/types';
+import { OnRamperIntent, StoredDeposit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
-import useVenmoOnRamperIntents from '@hooks/useOnRamperIntents';
-import useVenmoLiquidity from '@hooks/useLiquidity';
+import useVenmoOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
+import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 
 // Hdfc
-import useHdfcOnRamperIntents from '@hooks/hdfc/useHdfcOnRamperIntents';
-import useHdfcLiquidity from '@hooks/hdfc/useHdfcLiquidity';
+import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
+import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 
 interface OnRamperIntentTableProps {

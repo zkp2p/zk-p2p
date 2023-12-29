@@ -4,12 +4,12 @@ import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
 import Link from '@mui/material/Link';
 
-import { Button } from "../Button";
+import { Button } from "@components/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
-import { PaymentPlatformType } from '../../contexts/common/PlatformSettings/types';
-import { ThemedText } from '../../theme/text';
+import { PaymentPlatformType } from '@helpers/types';
+import { ThemedText } from '@theme/text';
 
 
 interface SwapModalProps {

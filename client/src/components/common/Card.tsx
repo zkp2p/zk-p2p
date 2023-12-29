@@ -1,7 +1,8 @@
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components'
-import { colors } from 'theme/colors'
+import styled from 'styled-components';
+import { colors } from 'theme/colors';
+
 
 const StyledCard = styled.div<{ cursor: string }>`
 	display: flex;

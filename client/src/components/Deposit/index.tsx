@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components/macro'
+import styled from 'styled-components/macro';
 
-import { AutoColumn } from '../layouts/Column'
-import { NewPosition as VenmoNewPosition } from './NewPosition'
-import { NewPosition as HdfcNewPosition } from './hdfc/NewPosition'
-import { PositionTable } from './PositionTable'
-import { OffRamperIntentTable } from './OffRamperIntentTable'
-import { DepositIntent } from "../../contexts/venmo/Deposits/types";
-import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants'
-import useDeposits from '@hooks/useDeposits';
-import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
+import { AutoColumn } from '@components/layouts/Column';
+import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
+import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
+import { PositionTable } from '@components/Deposit/PositionTable';
+import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
+import { DepositIntent } from '@helpers/types';
+import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
+import useDeposits from '@hooks/venmo/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 

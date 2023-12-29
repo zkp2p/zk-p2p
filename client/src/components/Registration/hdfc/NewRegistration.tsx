@@ -3,22 +3,18 @@ import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import Link from '@mui/material/Link';
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
- } from 'wagmi'
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { RowBetween } from '../../layouts/Row'
-import { ThemedText } from '../../../theme/text'
-import { ProofGenerationForm } from "../../ProofGen/ProofForm";
-import { NumberedStep } from "../../common/NumberedStep";
-import { PaymentPlatform } from '../../../contexts/common/PlatformSettings/types';
+import { RowBetween } from '@components/layouts/Row';
+import { ThemedText } from '@theme/text';
+import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
+import { NumberedStep } from "@components/common/NumberedStep";
+import { PaymentPlatform } from '@helpers/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { hdfcStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/hdfc/useHdfcRegistration';
+import useRegistration from '@hooks/hdfc/useRegistration';
 
 
 interface NewRegistrationProps {

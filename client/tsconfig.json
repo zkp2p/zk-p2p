@@ -14,6 +14,7 @@
       "@components/*": ["components/*"],
       "@hooks/*": ["hooks/*"],
       "@helpers/*": ["helpers/*"],
+      "@theme/*": ["theme/*"],
     },
     "allowJs": true,
     "skipLibCheck": true,

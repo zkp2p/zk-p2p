@@ -1,30 +1,30 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
 
-import DepositTable from "@components/Deposit"
-import useDeposits from '@hooks/useDeposits';
-import useHdfcDeposits from '@hooks/hdfc/useHdfcDeposits';
-import useRegistration from '@hooks/useRegistration';
-import useHdfcRegistration from '@hooks/hdfc/useHdfcRegistration';
+import DepositTable from "@components/Deposit";
+import useVenmoDeposits from '@hooks/venmo/useDeposits';
+import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useVenmoRegistration from '@hooks/venmo/useRegistration';
+import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
-export const Deposit: React.FC<{}> = (props) => {
+export const Deposit: React.FC = () => {
   /*
    * Contexts
    */
 
   const {
     isRegistered: isRegisteredOnVenmo
-  } = useRegistration();
+  } = useVenmoRegistration();
 
   const {
     refetchDeposits: refetchVenmoDeposits,
     shouldFetchDeposits: shouldFetchVenmoDeposits,
     refetchDepositIntents: refetchVenmoDepositIntents,
     shouldFetchDepositIntents: shouldFetchVenmoDepositIntents,
-  } = useDeposits();
+  } = useVenmoDeposits();
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
 

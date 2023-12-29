@@ -1,6 +1,6 @@
-import { createContext } from 'react'
+import { createContext } from 'react';
 
-import { Abi } from './types'
+import { Abi } from '@helpers/types';
 
 
 interface SmartContractsValues {

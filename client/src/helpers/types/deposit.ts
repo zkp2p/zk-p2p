@@ -1,4 +1,4 @@
-import { PaymentPlatformType } from '../../common/PlatformSettings/types';
+import { PaymentPlatformType } from '@helpers/types';
 
 
 // struct Deposit {
