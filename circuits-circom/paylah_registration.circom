@@ -5,7 +5,7 @@ include "circomlib/circuits/poseidon.circom";
 include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
-include "./regexes/common/from_regex.circom";
+include "./regexes/common/from_regex_new.circom";
 include "./regexes/paylah/paylah_all_regex.circom";
 include "./regexes/paylah/paylah_payer_id.circom";
 include "./regexes/paylah/paylah_subject.circom";
@@ -57,9 +57,9 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     signal input email_from_idx;
     signal output reveal_email_from_packed[max_email_from_packed_bytes];
 
-    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegex(max_header_bytes)(in_padded);
-    // from_regex_out === 1;
-    // reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
+    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexNew(max_header_bytes)(in_padded);
+    from_regex_out === 1;
+    reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // HDFC ONRAMPER ID REGEX
     var max_payer_mobile_num_packed_bytes = count_packed(max_payer_mobile_num_len, pack_size);
@@ -77,7 +77,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
         pack_size
     )(in_padded, email_to_idx, in_body_padded, paylah_payer_mobile_num_idx, payer_mobile_num_regex_reveal);
 
-    // TOTAL CONSTRAINTS: X
+    // TOTAL CONSTRAINTS: 1242873
 }
 
 // Args:

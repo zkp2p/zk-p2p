@@ -5,7 +5,7 @@ include "circomlib/circuits/poseidon.circom";
 include "./stubs/email-verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
-include "./regexes/common/from_regex.circom";
+include "./regexes/common/from_regex_new.circom";
 include "./regexes/paylah/paylah_all_regex.circom";
 include "./regexes/paylah/paylah_timestamp.circom";
 include "./regexes/paylah/paylah_subject.circom";
@@ -54,7 +54,7 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // PAYLAH SUBJECT REGEX (Check that regex matches)
     signal subject_regex_out <== PaylahSubjectRegex(max_header_bytes)(in_padded);
-    subject_regex_out === 1;
+    // subject_regex_out === 1;
 
     // FROM HEADER REGEX
     var max_email_from_packed_bytes = count_packed(max_email_from_len, pack_size);
@@ -63,9 +63,9 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input email_from_idx;
     signal output reveal_email_from_packed[max_email_from_packed_bytes];
 
-    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegex(max_header_bytes)(in_padded);
-    // from_regex_out === 1;
-    // reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
+    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexNew(max_header_bytes)(in_padded);
+    from_regex_out === 1;
+    reveal_email_from_packed <== ShiftAndPackMaskedStr(max_header_bytes, max_email_from_len, pack_size)(from_regex_reveal, email_from_idx);
 
     // TIMESTAMP REGEX
     var max_timestamp_packed_bytes = count_packed(max_timestamp_len, pack_size);
@@ -100,17 +100,7 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     ) <== PaylahAllRegex(max_body_bytes)(in_body_padded);
 
     paylah_regex_out === 1;
-
-    // signal (amount_regex_out, amount_regex_reveal[max_body_bytes]) <== PaylahSendAmountRegex(max_body_bytes)(in_body_padded);
-    // amount_regex_out === 1;
-    // reveal_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_amount_len, pack_size)(amount_regex_reveal, paylah_amount_idx);
-
-    // signal (payer_mobile_num_regex_out, payer_mobile_num_regex_reveal[max_body_bytes]) <== PaylahPayerIdRegex(max_body_bytes)(in_body_padded);
-    // payer_mobile_num_regex_out === 1;
-
-    // signal (payee_regex_out, payee_name_regex_reveal[max_body_bytes], payee_mobile_num_regex_reveal[max_body_bytes]) <== PaylahPayeeIdRegex(max_body_bytes)(in_body_padded);
-    // payee_regex_out === 1;
-
+    reveal_amount_packed <== ShiftAndPackMaskedStr(max_body_bytes, max_amount_len, pack_size)(amount_regex_reveal, paylah_amount_idx);
     
     // Extract packed and hashed onramper id
     signal input email_to_idx;
@@ -156,7 +146,7 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5873770
+    // TOTAL CONSTRAINTS: 2060123
 }
 
 // Args:
