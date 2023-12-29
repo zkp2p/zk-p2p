@@ -406,7 +406,8 @@ export async function getCircuitInputs(
     const paylah_payer_mobile_num_selector = Buffer.from("<td>PayLah! Wallet (Mobile ending ");
     const paylah_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(paylah_payer_mobile_num_selector) + paylah_payer_mobile_num_selector.length).toString();
 
-    console.log("Indexes into for paylah send email are: ", email_from_idx, paylah_payer_mobile_num_idx)
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    console.log("Indexes into for paylah send email are: ", email_from_idx, email_to_idx, paylah_payer_mobile_num_idx)
 
     circuitInputs = {
       in_padded,
@@ -420,8 +421,7 @@ export async function getCircuitInputs(
       // paylah specific indices
       paylah_payer_mobile_num_idx,
       email_from_idx,
-      // IDs
-      intent_hash,
+      email_to_idx,
     }
   }
   else {
