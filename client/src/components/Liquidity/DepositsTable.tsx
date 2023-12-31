@@ -6,7 +6,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { Button } from "@components/Button";
 import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity } from '@helpers/types';
-import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
@@ -77,7 +77,9 @@ export const DepositsTable: React.FC = () => {
         const depositId = depositWithLiquidity.depositId;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
-        const conversionRate = conversionRateToString(deposit.conversionRate);
+        const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
+
+        console.log(deposit.conversionRate);
 
         let targeted = false;
         if (platformType === PaymentPlatform.VENMO && venmoTargetedDepositIds) {
