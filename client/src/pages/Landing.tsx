@@ -1,7 +1,8 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import TextTransition, { presets } from 'react-text-transition';
 
 import { Button } from '@components/Button';
 import Card from '@components/common/Card';
@@ -12,11 +13,31 @@ import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
 
 
+const CURRENCIES = ['USD', 'INR'];
+
 export const Landing: React.FC = () => {
   const currentDeviceSize = useMediaQuery();
 
   const cardsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  /*
+   * State
+   */
+
+  const [index, setIndex] = useState(0);
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => setIndex((index) => index + 1),
+      3000,
+    );
+    return () => clearTimeout(intervalId);
+  }, []);
 
   /*
    * Handlers
@@ -40,14 +61,22 @@ export const Landing: React.FC = () => {
 
           <HeroTextContainer>
             <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
-              <span style={{ display: 'block'}}>Onramp USD in </span>
-              <span style={{ display: 'block'}}>90 seconds</span>
+              <span>Onramp </span>
+              <TextTransition 
+                springConfig={presets.stiff}
+                direction={'down'}
+                inline={true}
+                style={{ minWidth: '128px'}}
+              >
+                {CURRENCIES[index % CURRENCIES.length]}
+              </TextTransition>
+              <div style={{ display: 'block' }}>in 90 seconds</div>
             </ThemedText.Hero>
           </HeroTextContainer>
 
           <SubHeaderContainer>
-            <ThemedText.SubHeaderLarge style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 20 : 24 }}>
-              Buy and sell crypto peer-to-peer without trusting anyone
+            <ThemedText.SubHeaderLarge style={{ textAlign: 'center', lineHeight: '1.3', fontSize: currentDeviceSize === 'mobile' ? 20 : 24 }}>
+              Completely peer-to-peer without trusting anyone
             </ThemedText.SubHeaderLarge>
           </SubHeaderContainer>
 
@@ -166,9 +195,6 @@ const SwapPreviewContainer = styled.div`
   margin-bottom: 520px;
   cursor: pointer;
   padding: 0px 48px;
-  &:hover {
-    transform: translateY(-5px); /* Move the element up by 5px on hover */
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -197,6 +223,7 @@ const HeroTextContainer = styled.div`
   display: grid;
   flex-direction: column;
   padding-top: 2rem;
+  padding-left: 12px;
   gap: 1rem;
   z-index: 20;
 `;
