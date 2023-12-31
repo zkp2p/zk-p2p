@@ -89,18 +89,18 @@ export const MailTable: React.FC<MailTableProps> = ({
                     date.getFullYear() === now.getFullYear();
 
     if (isToday) {
-      return date.toLocaleTimeString(undefined, {
+      return date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       });
     } else {
-      return date.toLocaleDateString(undefined, {
+      return date.toLocaleDateString('en-US', {
         month: 'numeric',
         day: 'numeric'
       });
     }
-  }
+}
 
   const rowPlatformText = () => {
    switch (paymentPlatform) {
