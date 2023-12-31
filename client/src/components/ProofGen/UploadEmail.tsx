@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
+import { Paperclip } from 'react-feather';
 
 import { Button } from "@components/Button";
 import { Col } from "@components/legacy/Layout";
@@ -17,6 +18,7 @@ import {
   COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK 
 } from "@helpers/docUrls";
 import useProofGenSettings from '@hooks/useProofGenSettings';
+import { useFileBrowser } from '@hooks/useFileBrowser';
 import { ThemedText } from '@theme/text';
 
 
@@ -35,6 +37,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   emailInputStatus,
   isProofModalOpen,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   /*
    * Context
@@ -45,6 +48,8 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
     setIsInputModeDrag,
     setIsEmailModeAuth,
   } = useProofGenSettings();
+
+  const { openFileDialog } = useFileBrowser();
 
   /*
    * State
@@ -65,6 +70,19 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
   const handleEmailModeChanged = (checked: boolean) => {
     if (setIsEmailModeAuth) {
       setIsEmailModeAuth(checked);
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.name.endsWith(".eml")) {
+        const content = await file.text();
+        
+        setEmailAndToggleInputMode(content);
+      } else {
+        alert("Only .eml files are allowed.");
+      }
     }
   };
 
@@ -141,21 +159,35 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
           />
         </TitleAndEmailSwitchRowContainer>
 
-        <NumberedStep>
-          {
-            isInputModeDrag ?
-            commonStrings.get('PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS') :
-            commonStrings.get('PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS')
-          }
-          <Link
-            href={isInputModeDrag 
-              ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK
-              : COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK
-            }
-            target="_blank">
-              Guide ↗
-          </Link>
-        </NumberedStep>
+        <UploadInstructionAndBrowseContainer>
+          <UploadInstruction>
+            <NumberedStep>
+              {isInputModeDrag ?
+                commonStrings.get('PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS') :
+                commonStrings.get('PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS')
+              }
+              <Link
+                href={isInputModeDrag 
+                  ? DOWNLOAD_AND_UPLOAD_EMAIL_INSTRUCTIONS_DOCS_LINK
+                  : COPY_AND_PASTE_EMAIL_INSTRUCTIONS_DOCS_LINK
+                }
+                target="_blank">
+                  Guide ↗
+              </Link>
+            </NumberedStep>
+          </UploadInstruction>
+
+          <BrowseButton onClick={() => openFileDialog(fileInputRef)}>
+            <StyledPaperclick />
+          </BrowseButton>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            accept=".eml"
+          />
+        </UploadInstructionAndBrowseContainer>
 
         {isInputModeDrag ? (
           <DragAndDropTextBox
@@ -213,6 +245,35 @@ const TitleAndEmailSwitchRowContainer = styled.div`
   align-items: center;
   padding-left: 1rem;
   margin-bottom: -16px;
+`;
+
+const UploadInstructionAndBrowseContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+`;
+
+const UploadInstruction = styled.div`
+  flex-grow: 1;
+`;
+
+const BrowseButton = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  width: 53px;
+  height: 53px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledPaperclick = styled(Paperclip)`
+  width: 18px;
+  height: 18px;
+  color: #FFF;
 `;
 
 const ButtonContainer = styled.div`
