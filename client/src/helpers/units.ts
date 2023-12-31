@@ -109,5 +109,5 @@ export function conversionRateToMultiplierString(rate: bigint): string {
   let ratioString = conversionRatio.toFixed(3);
   ratioString = ratioString.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 
-  return ratioString + ' : 1';
+  return ratioString + 'x';
 };
