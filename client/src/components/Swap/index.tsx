@@ -249,7 +249,7 @@ const Swap: React.FC<SwapProps> = ({
       const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
       if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
-        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, loggedInEthereumAddress);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
@@ -319,6 +319,7 @@ const Swap: React.FC<SwapProps> = ({
       lastOnRampTimestamp,
       onRampCooldownPeriod,
       recipientAddress,
+      loggedInEthereumAddress
     ]
   );
 
