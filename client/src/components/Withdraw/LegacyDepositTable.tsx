@@ -8,7 +8,7 @@ import { ThemedText } from '@theme/text';
 import { DepositWithAvailableLiquidity } from '@helpers/types';
 import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
-import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import useAccount from '@hooks/useAccount';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -103,7 +103,7 @@ export const LegacyDepositTable: React.FC = () => {
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
-        const conversionRate = conversionRateToString(deposit.conversionRate, true);
+        const conversionRate = conversionRateToMultiplierString(deposit.conversionRate, true);
 
         return {
           depositor,

@@ -11,7 +11,7 @@ import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { Abi } from '@helpers/types';
-import { toUsdcString, conversionRateToString } from '@helpers/units';
+import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import useAccount from '@hooks/useAccount';
 import useDeposits from '@hooks/venmo/useDeposits';
@@ -186,7 +186,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
-        const conversionRate = conversionRateToString(deposit.conversionRate, true);
+        const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
 
         return {
           depositor,

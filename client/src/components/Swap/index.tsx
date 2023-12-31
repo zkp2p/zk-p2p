@@ -17,11 +17,7 @@ import {
   MAX_USDC_TRANSFER_SIZE,
   ZERO
 } from "@helpers/constants";
-import {
-  toBigInt,
-  toUsdcString,
-  conversionRateToString
-} from '@helpers/units'
+import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -249,7 +245,7 @@ const Swap: React.FC<SwapProps> = ({
       const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
       if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
-        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, loggedInEthereumAddress);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
@@ -319,6 +315,7 @@ const Swap: React.FC<SwapProps> = ({
       lastOnRampTimestamp,
       onRampCooldownPeriod,
       recipientAddress,
+      loggedInEthereumAddress
     ]
   );
 
@@ -397,7 +394,7 @@ const Swap: React.FC<SwapProps> = ({
 
   const bestAvailableRateLabel = useMemo(() => {
     if (currentQuote.conversionRate !== ZERO) {
-      return `Best available rate: ${conversionRateToString(currentQuote.conversionRate)}`
+      return `Best available rate: ${conversionRateToMultiplierString(currentQuote.conversionRate)}`
     } else {
       return '';
     }
