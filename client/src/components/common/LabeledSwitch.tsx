@@ -30,9 +30,11 @@ export const LabeledSwitch: React.FC<LabeledSwitchProps> = ({
         {switchChecked ? checkedLabel :uncheckedLabel}
       </SwitchLabel>
       
-      <QuestionHelper
-        text={helperText}
-      />
+      <HelperContainer>
+        <QuestionHelper
+          text={helperText}
+        />
+      </HelperContainer>
 
       <Switch
         checked={switchChecked}
@@ -51,4 +53,9 @@ const Container = styled.div`
 
 const SwitchLabel = styled.span`
   color: '#888888';
+  padding-right: 4px;
+`;
+
+const HelperContainer = styled.div`
+  padding-top: 4px;
 `;

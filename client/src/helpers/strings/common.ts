@@ -92,10 +92,10 @@ const strings: CommonStrings = {
     and signatures that exist in the email.
   `,
   PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS: `
-    Follow this guide to download and upload the email.
+    Follow this guide to download and input the email.
   `,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: `
-    Follow this guide to copy and paste the email.
+    Follow this guide to download and input the email.
   `,
 
   // Release Funds Modal
