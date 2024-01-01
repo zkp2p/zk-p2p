@@ -1,3 +1,3 @@
-include "../../../regexes/common/from_regex_new.circom";
+include "../../../regexes/common/from_regex_v2.circom";
 
-component main = FromRegexNew(50);
+component main = FromRegexV2(50);
