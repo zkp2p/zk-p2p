@@ -22,10 +22,10 @@ describe("From Regex V2", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/common/test_from_regex_new.circom"),
+            path.join(__dirname, "../../mocks/common/test_from_regex_v2.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_from_regex_new"),
+                output: path.join(__dirname, "../../../build/test_from_regex_v2"),
                 recompile: true,
                 verbose: true,
             }
