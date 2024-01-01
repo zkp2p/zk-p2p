@@ -12,7 +12,7 @@ const wasm_tester = require("circom_tester").wasm;
 const fs = require('fs');
 const MIN_LEN = 189;
 
-describe("Paylah payee id", function () {
+describe("Paylah payment details", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -31,10 +31,10 @@ describe("Paylah payee id", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/paylah/test_paylah_all.circom"),
+            path.join(__dirname, "../../mocks/paylah/test_paylah_payment_details.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_paylah_all"),
+                output: path.join(__dirname, "../../../build/test_paylah_payment_details"),
                 recompile: true,
                 verbose: true,
             }

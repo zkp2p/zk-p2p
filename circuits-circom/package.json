@@ -66,6 +66,8 @@
     "test:venmo:registration": "yarn test ./test/venmo_registration.spec.ts",
     "test:hdfc:send": "yarn test ./test/hdfc_send.spec.ts",
     "test:hdfc:registration": "yarn test ./test/hdfc_registration.spec.ts",
+    "test:paylah:send": "yarn test ./test/paylah_send.spec.ts",
+    "test:paylah:registration": "yarn test ./test/paylah_registration.spec.ts",
     "genverifier:venmo:send": "CIRCUIT_NAME=venmo_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "genverifier:venmo:registration": "CIRCUIT_NAME=venmo_registration && cd scripts && ./8_gen_sol_verifier.sh && cd ..",
     "genverifier:hdfc:send": "CIRCUIT_NAME=hdfc_send && cd scripts && ./8_gen_sol_verifier.sh && cd ..",

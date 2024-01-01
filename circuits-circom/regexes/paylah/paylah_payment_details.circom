@@ -2,7 +2,7 @@ pragma circom 2.1.5;
 
 include "@zk-email/circuits/regexes/regex_helpers.circom";
 
-template PaylahAllRegex(msg_bytes) {
+template PaylahPaymentDetailsRegex(msg_bytes) {
 	signal input msg[msg_bytes];
 	signal output out;
 

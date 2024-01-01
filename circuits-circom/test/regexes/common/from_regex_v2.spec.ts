@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Paylah send amount", function () {
+describe("From Regex V2", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -22,10 +22,10 @@ describe("Paylah send amount", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/paylah/test_paylah_send_amount.circom"),
+            path.join(__dirname, "../../mocks/common/test_from_regex_new.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_paylah_send_amount"),
+                output: path.join(__dirname, "../../../build/test_from_regex_new"),
                 recompile: true,
                 verbose: true,
             }
@@ -35,7 +35,7 @@ describe("Paylah send amount", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\n<td>Amount:</td>\r\n<td>SGD300.00</td>\r\n</tr>\r\n")
+            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -47,7 +47,7 @@ describe("Paylah send amount", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\n<td>Amount:</td>\r\n<td>SGD300.00</td>\r\n</tr>\r\n")
+            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -59,15 +59,15 @@ describe("Paylah send amount", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\n<td>Amount:</td>\r\n<td>SGD300.00</td>\r\n</tr>\r\n")
+            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray("\r\n<td>Amount:</td>\r\n<td>SGD").length).fill("0")
-            .concat(textToAsciiArray("300.00"))
-            .concat(Array(textToAsciiArray("</td>\r\n</tr>\r\n").length).fill("0"));
+        const expected = Array(textToAsciiArray("from:PayLah! Alerts <").length).fill("0")
+            .concat(textToAsciiArray("paylah.alert@dbs.com"))
+            .concat(Array(textToAsciiArray(">\r\nto:tes").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -75,7 +75,7 @@ describe("Paylah send amount", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\n<td>Amopnt:</td>\r\n<td>SGD300.00</td>\r\n</tr>\r\n") // update to `p`
+            "msg": textToAsciiArray("from:PayLah! Alerts >paylah.alert@dbs.com>\r\nto:tes")
         };
         const witness = await cir.calculateWitness(
             input,

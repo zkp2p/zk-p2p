@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo Actor ID", function () {
+describe("Paylah payer id", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -22,20 +22,22 @@ describe("Venmo Actor ID", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/common/test_from_regex_new.circom"),
+            path.join(__dirname, "../../mocks/paylah/test_paylah_payer_mobile_num.circom"),
             {
                 include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_from_regex_new"),
+                output: path.join(__dirname, "../../../build/test_paylah_payer_mobile_num"),
                 recompile: true,
                 verbose: true,
             }
         );
     });
 
-
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
+            "msg": textToAsciiArray(
+                "<td>From:</td>\r\n" +
+                "<td>PayLah! Wallet (Mobile ending 1111)</td>\r\n"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
@@ -47,7 +49,10 @@ describe("Venmo Actor ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
+            "msg": textToAsciiArray(
+                "<td>From:</td>\r\n" +
+                "<td>PayLah! Wallet (Mobile ending 1111)</td>\r\n"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
@@ -59,15 +64,18 @@ describe("Venmo Actor ID", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
+            "msg": textToAsciiArray(
+                "<td>From:</td>\r\n" +
+                "<td>PayLah! Wallet (Mobile ending 1111)</td>\r\n"
+            )
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray("from:PayLah! Alerts <").length).fill("0")
-            .concat(textToAsciiArray("paylah.alert@dbs.com"))
-            .concat(Array(textToAsciiArray(">\r\nto:tes").length).fill("0"));
+        const expected = Array(textToAsciiArray("<td>From:</td>\r\n<td>PayLah! Wallet (Mobile ending ").length).fill("0")
+            .concat(textToAsciiArray("1111"))
+            .concat(textToAsciiArray(")</td>\r\n").fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -75,7 +83,10 @@ describe("Venmo Actor ID", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts >paylah.alert@dbs.com>\r\nto:tes")
+            "msg": textToAsciiArray(
+                "<td>From:</td>\r\n" +
+                "<td>EeeeeEe EeeEee (Mobile ending 1111)</td>\r\n"
+            )
         };
         const witness = await cir.calculateWitness(
             input,

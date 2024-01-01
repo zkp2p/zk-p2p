@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo timestamp", function () {
+describe("Paylah timestamp", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;

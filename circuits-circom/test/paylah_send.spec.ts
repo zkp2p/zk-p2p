@@ -133,8 +133,6 @@ describe("Paylah send WASM tester", function () {
         const regex_end = regex_start_sub_array.indexOf("59"); // Look for `;` to end the timestamp which is 59 in ascii
         const timestamp_array = regex_start_sub_array.slice(0, regex_end);
 
-        console.log(timestamp_array)
-        console.log(packed_timestamp)
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(timestamp_array, 7, 10);
 
@@ -161,7 +159,7 @@ describe("Paylah send WASM tester", function () {
 
         // Get returned packed amount
         // Indexes 5 to 7 represent the packed amount (8 \ 7)
-        const packed_amount = witness.slice(7, 9);
+        const packed_amount = witness.slice(7, 8);
 
         // Get expected packed amount
         const regex_start = Number(input["paylah_amount_idx"]);
@@ -170,7 +168,7 @@ describe("Paylah send WASM tester", function () {
         const amount_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(amount_array, 7, 8);
+        let chunkedArrays = chunkArray(amount_array, 7, 7);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -217,22 +215,19 @@ describe("Paylah send WASM tester", function () {
         );
 
         // Get returned hashed onramper id
-        console.log(witness)
-        const hashed_onramper_id = witness[9];
+        const hashed_onramper_id = witness[8];
 
         // Get expected packed to email
         const regex_start_to_email = Number(input["email_to_idx"]);
         const regex_start_sub_array_to_email = input["in_padded"].slice(regex_start_to_email);
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
-        console.log(to_email_array);
 
         // Get expected packed account number array
         const regex_start_mobile_number = Number(input["paylah_payer_mobile_num_idx"]);
         const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
         const regex_end_mobile_number = regex_start_sub_array_mobile_number.indexOf("41"); // Look for `)` to end the from which is 41 in ascii.
         const mobile_number_array = regex_start_sub_array_mobile_number.slice(0, regex_end_mobile_number);
-        console.log(mobile_number_array);
 
         // Chunk bytes into 7 and pack
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
@@ -251,7 +246,7 @@ describe("Paylah send WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     });
 
-    it.skip("Should return the correct hashed offramper id", async () => {
+    it("Should return the correct hashed offramper id", async () => {
         const provider = new ethers.providers.Web3Provider(
             ganache.provider({
                 logging: {
@@ -280,22 +275,19 @@ describe("Paylah send WASM tester", function () {
         );
 
         // Get returned hashed offramper_id
-        console.log(witness);
-        const hashed_offramper_id = witness[10];
+        const hashed_offramper_id = witness[9];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["paylah_payee_name_idx"]);
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
         const regex_end = regex_start_sub_array.indexOf("40");  // Look for `(` to end the offramper name which is 40 in ascii
         const offramper_name_array = regex_start_sub_array.slice(0, regex_end);
-        console.log(offramper_name_array)
 
         // Get expected packed phone number array
         const regex_start_mobile_number = Number(input["paylah_payee_mobile_num_idx"]);
         const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
         const regex_end_mobile_number = regex_start_sub_array_mobile_number.indexOf("41"); // Look for `)` to end the from which is 41 in ascii.
         const mobile_number_array = regex_start_sub_array_mobile_number.slice(0, regex_end_mobile_number);
-        console.log(mobile_number_array);
 
         // Chunk bytes into 7 and pack
         const toEmailChunkedArray = chunkArray(offramper_name_array, 7, 35);
@@ -324,7 +316,7 @@ describe("Paylah send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[11];
+        const nullifier = witness[10];
 
         // Get expected packed offramper_id
         const regex_start = Number(input["paylah_payment_id_idx"]);
@@ -333,7 +325,7 @@ describe("Paylah send WASM tester", function () {
         const payment_id_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        const chunkedArrays = chunkArray(payment_id_array, 7, 21);
+        const chunkedArrays = chunkArray(payment_id_array, 7, 28);
         const packed_payment_id = chunkedArrays.map((arr, i) => bytesToPacked(arr));
 
         const expected_nullifier = poseidon(packed_payment_id)
@@ -352,7 +344,7 @@ describe("Paylah send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[12];
+        const intent_hash = witness[11];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];
