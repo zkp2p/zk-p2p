@@ -93,7 +93,9 @@
     "genproof:hdfc:send": "CIRCUIT_NAME=hdfc_send && cd scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
     "genproof:hdfc:registration": "CIRCUIT_NAME=hdfc_registration && cd scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
     "genproof:paylah:send": "CIRCUIT_NAME=paylah_send && cd scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
-    "genproof:paylah:registration": "CIRCUIT_NAME=paylah_registration && cd scripts && ./6_gen_proof_rapidsnark.sh && cd .."
+    "genproof:paylah:registration": "CIRCUIT_NAME=paylah_registration && cd scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
+    "runall:paylah:send": "cd scripts && ./10_run_all.sh paylah send && cd ..",
+    "runall:paylah:registration": "cd scripts && ./10_run_all.sh paylah registration && cd .."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.2",
