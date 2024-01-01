@@ -14,12 +14,3 @@ circom "../$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_
 end=$(date +%s)
 echo "DONE ($((end - start))s)"
 echo
-
-echo '****INSPECTING CIRCUIT FOR UNDERCONSTRAINTS (OPTIONAL, CAN FORCE EXIT)****'
-start=$(date +%s)
-set -x
-circom "../$CIRCUIT_NAME".circom --inspect -l "../node_modules"
-{ set +x; } 2>/dev/null
-end=$(date +%s)
-echo "DONE ($((end - start))s)"
-echo
