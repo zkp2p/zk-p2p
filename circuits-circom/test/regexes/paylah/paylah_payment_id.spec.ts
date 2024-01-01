@@ -35,7 +35,7 @@ describe("Paylah Payment ID", function () {
     it("Should generate witnesses", async () => {
         // No commas in payment_id.
         const input = {
-            "msg": textToAsciiArray("Transaction Ref: 55941571702351184916<")
+            "msg": textToAsciiArray("Transaction Ref: 55941571702351184917<")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -46,7 +46,7 @@ describe("Paylah Payment ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Transaction Ref: 55941571702351184916<")
+            "msg": textToAsciiArray("Transaction Ref: 55941571702351184917<")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -58,14 +58,14 @@ describe("Paylah Payment ID", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("Transaction Ref: 55941571702351184916<")
+            "msg": textToAsciiArray("Transaction Ref: 55941571702351184917<")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
         const expected = Array(textToAsciiArray("Transaction Ref: ").length).fill("0")
-            .concat(textToAsciiArray("55941571702351184916"))
+            .concat(textToAsciiArray("55941571702351184917"))
             .concat(Array(textToAsciiArray("<").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 
@@ -74,7 +74,7 @@ describe("Paylah Payment ID", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Transaction Ref: 559415717023511849160")   // Remove the `<`
+            "msg": textToAsciiArray("Transaction Ref: 559415717023511849170")   // Remove the `<`
         };
         const witness = await cir.calculateWitness(
             input,
