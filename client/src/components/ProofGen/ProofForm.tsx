@@ -146,7 +146,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             try {
               const emailReceivedYear = validateEmailDomainKey(emailFull);
     
-              if (emailReceivedYear.emailRaw !== "2023") {
+              if (emailReceivedYear.emailRaw !== "2024") {
                 setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
                 return;
               }
