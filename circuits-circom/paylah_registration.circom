@@ -116,7 +116,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     hash2.inputs[2] <== reveal_payer_mobile_num_packed[0];
     signal output on_ramper_id <== hash2.out;
 
-    // TOTAL CONSTRAINTS: 1242873
+    // TOTAL CONSTRAINTS: 3261788
 }
 
 // Args:
