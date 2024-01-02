@@ -13,7 +13,14 @@ parser.add_argument('--bucket_name', type=str, default='zk-p2p', help='Name of t
 # parser.add_argument('--build_dir', type=str, default='build', help='Name of the build directory directory with the circuitname/ folder')
 # parser.add_argument('--circuit_name', type=str, default='venmo_send', help='Name of the circuit (i.e. the foldername in build_dir/)')
 parser.add_argument('--prefix_to_tar', type=str, default='venmo_send.zkey,venmo_registration.zkey,hdfc_send.zkey,hdfc_registration.zkey', help='Prefix to match for files in order to compress to a .tar.gz and upload')
-parser.add_argument('--prefix', type=str, default='venmo_send.wasm,venmo_registration.wasm,venmo_send_vkey.json,venmo_registration_vkey.json,venmo_send.dat,venmo_registration.dat,hdfc_send.wasm,hdfc_registration.wasm,hdfc_send_vkey.json,hdfc_registration_vkey.json,hdfc_send.dat,hdfc_registration.dat', help='Comma-seperated prefixes to upload without compression')
+parser.add_argument('--prefix', type=str, default=
+                    'venmo_send.wasm,venmo_registration.wasm,venmo_send_vkey.json,' +
+                    'venmo_registration_vkey.json,venmo_send.dat,venmo_registration.dat,' +
+                    'hdfc_send.wasm,hdfc_registration.wasm,hdfc_send_vkey.json,' +
+                    'hdfc_registration_vkey.json,hdfc_send.dat,hdfc_registration.dat,' +
+                    'venmo_send.wasm,venmo_registration.wasm,' +
+                    'paylah_send.wasm,paylah_send_vkey.json,paylah_send.dat,paylah_send.zkey,' +
+                    'paylah_registration.wasm,paylah_registration_vkey.json,paylah_registration.dat,paylah_registration.zkey', help='Comma-seperated prefixes to upload without compression')
 parser.add_argument('--dirs', type=str, default='', help='Comma-separated list of directories to upload from')
 parser.add_argument('--upload_dir', type=str, default='', help='Directory to upload to')
 args = parser.parse_args()
@@ -80,3 +87,4 @@ for dir in dirs:
             upload_to_s3(file, dir)
         # if file.startswith('vkey.json') or file.startswith('email.wasm'):
         #     upload_to_s3(file, dir)
+
