@@ -15,7 +15,7 @@ template PaylahPayerMobileNumRegex(msg_bytes) {
 
 	component eq[39][num_bytes];
 	component and[58][num_bytes];
-	component multi_or[3][num_bytes];
+	component multi_or[2][num_bytes];
 	signal states[num_bytes+1][58];
 	component state_changed[num_bytes];
 
@@ -245,22 +245,11 @@ template PaylahPayerMobileNumRegex(msg_bytes) {
 		and[25][i].b <== multi_or[0][i].out;
 		and[26][i] = AND();
 		and[26][i].a <== states[i][26];
-		multi_or[1][i] = MultiOR(10);
-		multi_or[1][i].in[0] <== eq[16][i].out;
-		multi_or[1][i].in[1] <== eq[17][i].out;
-		multi_or[1][i].in[2] <== eq[18][i].out;
-		multi_or[1][i].in[3] <== eq[19][i].out;
-		multi_or[1][i].in[4] <== eq[20][i].out;
-		multi_or[1][i].in[5] <== eq[21][i].out;
-		multi_or[1][i].in[6] <== eq[22][i].out;
-		multi_or[1][i].in[7] <== eq[23][i].out;
-		multi_or[1][i].in[8] <== eq[24][i].out;
-		multi_or[1][i].in[9] <== eq[25][i].out;
-		and[26][i].b <== multi_or[1][i].out;
-		multi_or[2][i] = MultiOR(2);
-		multi_or[2][i].in[0] <== and[25][i].out;
-		multi_or[2][i].in[1] <== and[26][i].out;
-		states[i+1][26] <== multi_or[2][i].out;
+		and[26][i].b <== multi_or[0][i].out;
+		multi_or[1][i] = MultiOR(2);
+		multi_or[1][i].in[0] <== and[25][i].out;
+		multi_or[1][i].in[1] <== and[26][i].out;
+		states[i+1][26] <== multi_or[1][i].out;
 		state_changed[i].in[25] <== states[i+1][26];
 		eq[26][i] = IsEqual();
 		eq[26][i].in[0] <== in[i];
