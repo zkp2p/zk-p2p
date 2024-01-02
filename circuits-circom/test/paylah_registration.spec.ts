@@ -151,7 +151,6 @@ describe("Paylah registration WASM tester", function () {
         );
 
         // Get returned hashed onramper id
-        console.log(witness)
         const hashed_onramper_id = witness[5];
 
         // Get expected packed to email
@@ -159,14 +158,12 @@ describe("Paylah registration WASM tester", function () {
         const regex_start_sub_array_to_email = input["in_padded"].slice(regex_start_to_email);
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
-        console.log(to_email_array);
 
         // Get expected packed account number array
         const regex_start_mobile_number = Number(input["paylah_payer_mobile_num_idx"]);
         const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
         const regex_end_mobile_number = regex_start_sub_array_mobile_number.indexOf("41"); // Look for `)` to end the from which is 41 in ascii.
         const mobile_number_array = regex_start_sub_array_mobile_number.slice(0, regex_end_mobile_number);
-        console.log(mobile_number_array);
 
         // Chunk bytes into 7 and pack
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
