@@ -5,7 +5,7 @@ include "./utils/email_verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./regexes/common/from_regex_v2.circom";
-include "./regexes/common/to_regex.circom";
+include "./regexes/common/to_regex_v2.circom";
 include "./regexes/paylah/paylah_payer_mobile_num.circom";
 include "./regexes/paylah/paylah_subject.circom";
 
@@ -68,7 +68,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     from_regex_out === 1;
 
     // To regex
-    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegex(max_header_bytes)(in_padded);
+    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegexV2(max_header_bytes)(in_padded);
     to_regex_out === 1;
 
     // Paylah payer mobile num regex
@@ -85,7 +85,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
         pack_size
     )(from_regex_reveal, email_from_idx);
 
-    // Packed to (Not an output. Used used to compute onramper id)
+    // Packed to (Not an output. Used used to compute user id)
     signal input email_to_idx;
     signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
         max_header_bytes, 
@@ -93,7 +93,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
         pack_size
     )(to_regex_reveal, email_to_idx);
     
-    // Packed payer mobile number (Not an output. Used used to compute onramper id)
+    // Packed payer mobile number (Not an output. Used used to compute user id)
     signal input paylah_payer_mobile_num_idx;
     signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 
@@ -103,20 +103,19 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
 
     //-------ONRAMPER ID----------//
 
-    // Output hashed onramper id = hash(to_packed + payer_mobile_num_packed)
-    assert(max_email_to_packed_bytes == 7);
-    assert(max_payer_mobile_num_packed_bytes == 1);
-    component hash1 = Poseidon(6);
-    for (var i = 0; i < 6; i++) {
-        hash1.inputs[i] <== reveal_email_to_packed[i];
+    // Output hashed user id = hash(to_packed + payer_mobile_num_packed)
+    var max_id_bytes = max_email_to_packed_bytes + max_payer_mobile_num_packed_bytes;
+    assert(max_id_bytes < 16);    
+    component hash = Poseidon(max_id_bytes);
+    for (var i = 0; i < max_email_to_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_email_to_packed[i];
     }
-    component hash2 = Poseidon(3);
-    hash2.inputs[0] <== hash1.out;
-    hash2.inputs[1] <== reveal_email_to_packed[6];
-    hash2.inputs[2] <== reveal_payer_mobile_num_packed[0];
-    signal output on_ramper_id <== hash2.out;
+    for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
+        hash.inputs[i + max_email_to_packed_bytes] <== reveal_payer_mobile_num_packed[i];
+    }
+    signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 3261788
+    // TOTAL CONSTRAINTS: 3077213
 }
 
 // Args:

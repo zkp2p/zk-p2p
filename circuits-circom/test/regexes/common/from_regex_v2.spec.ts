@@ -45,33 +45,66 @@ describe("From Regex V2", function () {
         assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
     });
 
-    it("Should match regex once", async () => {
-        const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
+    describe("when canonicalization is relaxed", () => {
+        it("Should match regex once", async () => {
+            const input = {
+                "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
 
-        assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Should reveal regex correctly", async () => {
+            const input = {
+                "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            const expected = Array(textToAsciiArray("from:PayLah! Alerts <").length).fill("0")
+                .concat(textToAsciiArray("paylah.alert@dbs.com"))
+                .concat(Array(textToAsciiArray(">\r\nto:tes").length).fill("0"));
+            const result = witness.slice(2, input.msg.length + 2);
+
+            assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
+        });
     });
 
-    it("Should reveal regex correctly", async () => {
-        const input = {
-            "msg": textToAsciiArray("from:PayLah! Alerts <paylah.alert@dbs.com>\r\nto:tes")
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-        const expected = Array(textToAsciiArray("from:PayLah! Alerts <").length).fill("0")
-            .concat(textToAsciiArray("paylah.alert@dbs.com"))
-            .concat(Array(textToAsciiArray(">\r\nto:tes").length).fill("0"));
-        const result = witness.slice(2, input.msg.length + 2);
+    describe("when canonicalization is simple", () => {
+        it("Should match regex once", async () => {
+            const input = {
+                "msg": textToAsciiArray("From: PayLah! Alerts <paylah.alert@dbs.com>\r\nto:te")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
 
-        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Should reveal regex correctly", async () => {
+            const input = {
+                "msg": textToAsciiArray("From: PayLah! Alerts <paylah.alert@dbs.com>\r\nto:te")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            const expected = Array(textToAsciiArray("From: PayLah! Alerts <").length).fill("0")
+                .concat(textToAsciiArray("paylah.alert@dbs.com"))
+                .concat(Array(textToAsciiArray(">\r\nto:te").length).fill("0"));
+            const result = witness.slice(2, input.msg.length + 2);
+
+            assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
+        });
     });
+
 
     it("Should fail to match regex", async () => {
         const input = {
