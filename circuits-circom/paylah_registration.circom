@@ -5,7 +5,7 @@ include "./utils/email_verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./regexes/common/from_regex_v2.circom";
-include "./regexes/common/to_regex.circom";
+include "./regexes/common/to_regex_v2.circom";
 include "./regexes/paylah/paylah_payer_mobile_num.circom";
 include "./regexes/paylah/paylah_subject.circom";
 
@@ -68,7 +68,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     from_regex_out === 1;
 
     // To regex
-    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegex(max_header_bytes)(in_padded);
+    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegexV2(max_header_bytes)(in_padded);
     to_regex_out === 1;
 
     // Paylah payer mobile num regex
@@ -115,7 +115,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: X
+    // TOTAL CONSTRAINTS: 3077213
 }
 
 // Args:

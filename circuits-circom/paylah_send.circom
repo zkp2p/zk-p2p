@@ -5,7 +5,7 @@ include "./utils/email_verifier.circom";
 include "./utils/ceil.circom";
 include "./utils/extract.circom";
 include "./regexes/common/from_regex_v2.circom";
-include "./regexes/common/to_regex.circom";
+include "./regexes/common/to_regex_v2.circom";
 include "./regexes/paylah/paylah_payment_details.circom";
 include "./regexes/paylah/paylah_timestamp.circom";
 include "./regexes/paylah/paylah_subject.circom";
@@ -90,7 +90,7 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     from_regex_out === 1;
     
     // To regex
-    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegex(max_header_bytes)(in_padded);
+    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegexV2(max_header_bytes)(in_padded);
     to_regex_out === 1;
 
     // Paylah timestamp regex
@@ -215,7 +215,7 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4151467
+    // TOTAL CONSTRAINTS: 3966892  
 }
 
 // Args:
