@@ -27,9 +27,6 @@ describe("Paylah registration WASM tester", function () {
     let cir;
     let poseidon;
     let mimcSponge;
-    let account;
-    let poseidonContract1;
-    let poseidonContract2;
 
     beforeAll(async () => {
         cir = await wasm_tester(
@@ -125,20 +122,6 @@ describe("Paylah registration WASM tester", function () {
                 }
             })
         );
-        account = provider.getSigner(0);
-        const C6 = new ethers.ContractFactory(
-            generateABI(6),
-            createCode(6),
-            account
-        );
-        const C3 = new ethers.ContractFactory(
-            generateABI(3),
-            createCode(3),
-            account
-        );
-
-        poseidonContract1 = await C6.deploy();
-        poseidonContract2 = await C3.deploy();
 
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
         // Otherwise, you can download the original eml from any Venmo send payment transaction
@@ -172,13 +155,9 @@ describe("Paylah registration WASM tester", function () {
         const mobileNumberChunkedArray = chunkArray(mobile_number_array, 7, 7);
         const packed_mobile_number_array = mobileNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        // ARE WE REALLY LIMITED BY THIS? DO WE NEED TO HASH ON THE CONTRACT?
         const combinedArray = packed_to_email_array.concat(packed_mobile_number_array)
-        const expected_hash = poseidon([poseidon(combinedArray.slice(0, 6))].concat(combinedArray.slice(6, 8)))
-        const temp_contract_hash_out = await poseidonContract1["poseidon(uint256[6])"](combinedArray.slice(0, 6));
-        const expected_hash_contract = await poseidonContract2["poseidon(uint256[3])"]([temp_contract_hash_out].concat(combinedArray.slice(6, 8)));
+        const expected_hash = poseidon(combinedArray)
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
-        assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(poseidon.F.e(expected_hash_contract.toString())), true);
     });
 });

@@ -180,17 +180,16 @@ template PaylahSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     //-------ONRAMPER_ID, OFFRAMPER_ID, NULLIFIER----------//
 
     // Output hashed onramper id = hash(to_packed + payer_mobile_num_packed)
-    assert(max_email_to_packed_bytes == 7);
-    assert(max_payer_mobile_num_packed_bytes == 1);
-    component hash1 = Poseidon(6);
-    for (var i = 0; i < 6; i++) {
-        hash1.inputs[i] <== reveal_email_to_packed[i];
+    var max_id_bytes = max_email_to_packed_bytes + max_payer_mobile_num_packed_bytes;
+    assert(max_id_bytes < 16);    
+    component hash_onramper_id = Poseidon(max_id_bytes);
+    for (var i = 0; i < max_email_to_packed_bytes; i++) {
+        hash_onramper_id.inputs[i] <== reveal_email_to_packed[i];
     }
-    component hash2 = Poseidon(3);
-    hash2.inputs[0] <== hash1.out;
-    hash2.inputs[1] <== reveal_email_to_packed[6];
-    hash2.inputs[2] <== reveal_payer_mobile_num_packed[0];
-    signal output on_ramper_id <== hash2.out;
+    for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
+        hash_onramper_id.inputs[i + max_email_to_packed_bytes] <== reveal_payer_mobile_num_packed[i];
+    }
+    signal output onramper_id <== hash_onramper_id.out;
 
     // Output hashed offramper id = hash(payee_name_packed + payee_mobile_num_packed)
     assert(max_payee_name_packed_bytes == 5);
