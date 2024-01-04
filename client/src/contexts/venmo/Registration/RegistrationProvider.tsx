@@ -254,7 +254,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
     const decoder = new TextDecoder('utf-8');
     return decoder.decode(bytes);
-  }
+  };
 
   function extractSvg(jsonDataString: string): any {
     const uriPrefix = "data:application/json;base64,";
@@ -278,7 +278,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     const svgString = decodeBase64Utf8(svgBase64String);
 
     return svgString;
-  }
+  };
 
   /*
    * Provider
@@ -304,4 +304,4 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default RegistrationProvider
+export default RegistrationProvider;

@@ -22,6 +22,8 @@ export const Registration: React.FC = () => {
   const {
     refetchRampAccount: refetchHdfcAccount,
     shouldFetchRegistration: shouldFetchHdfcRegistration,
+    refetchHdfcNftId,
+    shouldFetchHdfcNftId
   } = useHdfcRegistration();
 
   const {
@@ -48,6 +50,10 @@ export const Registration: React.FC = () => {
       case PaymentPlatform.HDFC:
         if (shouldFetchHdfcRegistration) {
           refetchHdfcAccount?.();
+        }
+
+        if (shouldFetchHdfcNftId) {
+          refetchHdfcNftId?.();
         }
         break;
 
