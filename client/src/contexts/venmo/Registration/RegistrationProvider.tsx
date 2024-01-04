@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { venmoRampAddress, venmoRampAbi, venmoNftAddress, venmoNftAbi } = useSmartContracts()
+  const { venmoRampAddress, venmoRampAbi, venmoNftAddress, nftAbi } = useSmartContracts()
 
   /*
    * State
@@ -83,7 +83,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     refetch: refetchVenmoNftId,
   } = useContractRead({
     address: venmoNftAddress,
-    abi: venmoNftAbi,
+    abi: nftAbi,
     functionName: 'getTokenId',
     args: [
       loggedInEthereumAddress
@@ -96,7 +96,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: venmoNftUriRaw,
   } = useContractRead({
     address: venmoNftAddress,
-    abi: venmoNftAbi,
+    abi: nftAbi,
     functionName: 'tokenURI',
     args: [
       venmoNftId
