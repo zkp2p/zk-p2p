@@ -303,7 +303,7 @@ const NftAndLinkContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   font-size: 15px;
   padding-bottom: 4px;
 `;
