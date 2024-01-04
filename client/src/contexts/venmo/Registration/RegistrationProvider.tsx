@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount()
-  const { venmoRampAddress, venmoRampAbi, venmoNftAddress, venmoNftAbi } = useSmartContracts()
+  const { venmoRampAddress, venmoRampAbi, venmoNftAddress, nftAbi } = useSmartContracts()
 
   /*
    * State
@@ -83,7 +83,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     refetch: refetchVenmoNftId,
   } = useContractRead({
     address: venmoNftAddress,
-    abi: venmoNftAbi,
+    abi: nftAbi,
     functionName: 'getTokenId',
     args: [
       loggedInEthereumAddress
@@ -96,7 +96,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: venmoNftUriRaw,
   } = useContractRead({
     address: venmoNftAddress,
-    abi: venmoNftAbi,
+    abi: nftAbi,
     functionName: 'tokenURI',
     args: [
       venmoNftId
@@ -254,7 +254,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
     const decoder = new TextDecoder('utf-8');
     return decoder.decode(bytes);
-  }
+  };
 
   function extractSvg(jsonDataString: string): any {
     const uriPrefix = "data:application/json;base64,";
@@ -278,7 +278,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     const svgString = decodeBase64Utf8(svgBase64String);
 
     return svgString;
-  }
+  };
 
   /*
    * Provider
@@ -304,4 +304,4 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   );
 };
 
-export default RegistrationProvider
+export default RegistrationProvider;

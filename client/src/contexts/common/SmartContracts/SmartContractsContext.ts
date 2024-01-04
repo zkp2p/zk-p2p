@@ -12,7 +12,6 @@ interface SmartContractsValues {
   legacyRampAddress: string | null;
   legacyRampAbi: Abi | null;
   legacyNftAddress: string | null;
-  legacyNftAbi: Abi | null;
 
   // venmo
   venmoRampAddress: string | null;
@@ -20,14 +19,17 @@ interface SmartContractsValues {
   venmoRegistrationProcessorAddress: string | null;
   venmoSendProcessorAddress: string | null;
   venmoSendProcessorAbi: Abi | null;
-  venmoNftAddress: string | null;
-  venmoNftAbi: Abi | null;
   
   // hdfc
   hdfcRampAddress: string | null;
   hdfcRampAbi: Abi | null;
   hdfcSendProcessorAddress: string | null;
   hdfcSendProcessorAbi: Abi | null;
+
+  // nft
+  nftAbi: Abi | null;
+  venmoNftAddress: string | null;
+  hdfcNftAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -39,7 +41,6 @@ const defaultValues: SmartContractsValues = {
   legacyRampAddress: null,
   legacyRampAbi: null,
   legacyNftAddress: null,
-  legacyNftAbi: null,
   
   // venmo
   venmoRampAddress: null,
@@ -47,14 +48,17 @@ const defaultValues: SmartContractsValues = {
   venmoRegistrationProcessorAddress: null,
   venmoSendProcessorAddress: null,
   venmoSendProcessorAbi: null,
-  venmoNftAddress: null,
-  venmoNftAbi: null,
   
   // hdfc
   hdfcRampAddress: null,
   hdfcRampAbi: null,
   hdfcSendProcessorAddress: null,
   hdfcSendProcessorAbi: null,
+  
+  // nft
+  nftAbi: null,
+  venmoNftAddress: null,
+  hdfcNftAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

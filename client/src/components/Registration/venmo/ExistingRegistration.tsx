@@ -32,7 +32,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 
   const { isLoggedIn } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
-  const { venmoNftAddress, venmoNftAbi } = useSmartContracts();
+  const { venmoNftAddress, nftAbi } = useSmartContracts();
 
   const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
 
@@ -41,11 +41,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    */
 
   //
-  // offRamp(bytes32 _venmoId, uint256 _depositAmount, uint256 _receiveAmount)
+  // mintSBT()
   //
   const { config: writeSubmitSbtConfig } = usePrepareContractWrite({
     address: venmoNftAddress,
-    abi: venmoNftAbi,
+    abi: nftAbi,
     functionName: 'mintSBT',
     enabled: shouldConfigureMintSbtWrite
   });
