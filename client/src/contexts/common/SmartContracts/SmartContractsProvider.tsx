@@ -99,22 +99,22 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     if (networkToUse) {
       switch (deploymentEnvironment) {
         case 'PRODUCTION':
-          setAddressWithNetworkEnvKey('base_production');
+          setAddressWithNetworkEnvKey(networkToUse, 'base_production');
           break;
   
         default:
           switch (networkToUse) {
             case 'base':
-              setAddressWithNetworkEnvKey('base_staging');
+              setAddressWithNetworkEnvKey(networkToUse, 'base_staging');
               break;
   
             case 'goerli':
-              setAddressWithNetworkEnvKey('goerli_staging');
+              setAddressWithNetworkEnvKey(networkToUse, 'goerli_staging');
               break;
   
             case 'hardhat':
             default:
-              setAddressWithNetworkEnvKey('localhardhat');
+              setAddressWithNetworkEnvKey(networkToUse, 'localhardhat');
               break;
           }
         }
@@ -151,10 +151,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('Set venmoRampAddress: null');
   };
 
-  const setAddressWithNetworkEnvKey = (networkEnvKey: string) => {
+  const setAddressWithNetworkEnvKey = (network: string, networkEnvKey: string) => {
     const contractsForNetwork = contractAddresses[networkEnvKey];
 
-    setBlockscanUrl(blockExplorerUrls[networkEnvKey]);
+    setBlockscanUrl(blockExplorerUrls[network]);
     setUsdcAddress(contractsForNetwork.usdc);
 
     // Legacy

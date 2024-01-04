@@ -42,7 +42,7 @@ export const contractAddresses: Contracts = {
     'hdfcRamp': '0x7edd66b19a22293af86a2d96761fd7146ba3ff6c',
     'hdfcSendProcessor': '0xEF14b8a0196002dA629c1eC585371274FA9Da7d8',
     'hdfcRegistrationProcessor': '0x8E9ca43089F380A904D2d121fAa021bb4fbb0f4a',
-    'hdfcNft': '0x6b1e74b7e6145505eb529af36cb9a726abef1cdd',
+    'hdfcNft': '0x3F3e10c0617911B4C91e366A586797F1d09e5158',
   },
   'localhardhat': {
     'legacyRamp': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
