@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import Link from '@mui/material/Link';
 import { CheckCircle, Box } from 'react-feather';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/Button";
 import { Col } from "@components/legacy/Layout";
@@ -15,6 +16,7 @@ import { ThemedText } from '../../../theme/text';
 import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/hdfc/useRegistration';
+import useSmartContracts from '@hooks/useSmartContracts';
 
 
 interface ExistingRegistrationProps {
@@ -29,7 +31,74 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { registrationHash, isRegistered } = useRegistration();
+  const { registrationHash, isRegistered, hdfcNftUri, hdfcNftId, refetchHdfcNftId } = useRegistration();
+  const { hdfcNftAddress, nftAbi } = useSmartContracts();
+
+  const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
+
+  /*
+   * Contract Writes
+   */
+
+  //
+  // mintSBT()
+  //
+  const { config: writeSubmitSbtConfig } = usePrepareContractWrite({
+    address: hdfcNftAddress,
+    abi: nftAbi,
+    functionName: 'mintSBT',
+    enabled: shouldConfigureMintSbtWrite
+  });
+
+  const {
+    data: submitMintSbtResult,
+    isLoading: isSubmitMintSbtLoading,
+    writeAsync: writeSubmitMintSbtAsync,
+  } = useContractWrite(writeSubmitSbtConfig);
+
+  const {
+    isLoading: isSubmitMintSbtMining
+  } = useWaitForTransaction({
+    hash: submitMintSbtResult ? submitMintSbtResult.hash : undefined,
+    onSuccess(data) {
+      console.log('writeSubmitMintSbtAsync successful: ', data);
+
+      refetchHdfcNftId?.();
+    },
+  });
+
+  /*
+   * Handlers
+   */
+
+  const handleMintSbtSubmit = async () => {
+    try {
+      await writeSubmitMintSbtAsync?.();
+    } catch (error) {
+      console.log('writeSubmitMintSbtAsync failed: ', error);
+    }
+  };
+
+  /*
+   * Helpers
+   */
+
+  const openSeaNftLink = () => {
+    return "https://opensea.io/assets/base/" + hdfcNftAddress + "/" + hdfcNftId;
+  };
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (isRegistered && !hdfcNftUri) {
+      setShouldConfigureMintSbtWrite(true);
+    } else {
+      setShouldConfigureMintSbtWrite(false);
+    }
+  }, [isRegistered, hdfcNftUri])
+
 
   /*
    * Component
@@ -81,8 +150,16 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 </NumberedInputContainer>
               )}
               
-              { (isRegistered) && (
+              { (shouldConfigureMintSbtWrite || hdfcNftUri) && (
                 <RegistrationNftContainer>
+                  {hdfcNftUri && (
+                    <NftAndLinkContainer>
+                      <div dangerouslySetInnerHTML={{ __html: hdfcNftUri }} />
+                      <Link href={ openSeaNftLink() } target="_blank"> View on Opensea ↗</Link>
+                    </NftAndLinkContainer>
+                  )}
+
+                  {shouldConfigureMintSbtWrite && (
                     <MintNftContainer>
                       <ThemedText.DeprecatedBody textAlign="center">
                         <BoxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
@@ -93,14 +170,15 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                       </ThemedText.DeprecatedBody>
 
                       <Button
-                        loading={false}
+                        loading={isSubmitMintSbtMining || isSubmitMintSbtLoading}
                         height={40}
-                        onClick={() => {}}
+                        onClick={handleMintSbtSubmit}
                         fullWidth={true}
                       >
-                        Coming Soon
+                        Mint
                       </Button>
                     </MintNftContainer>
+                  )}
                 </RegistrationNftContainer>
               )}
 
@@ -219,6 +297,15 @@ const RegistrationNftContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const NftAndLinkContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  padding-bottom: 4px;
 `;
 
 const MintNftContainer = styled.div`
