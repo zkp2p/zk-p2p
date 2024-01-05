@@ -13,10 +13,10 @@ import {
   mergeUInt8Arrays,
   int8toBytes,
   int64toBytes,
-} from "@zk-email/helpers/src/binaryFormat";
-import { CIRCOM_FIELD_MODULUS, MAX_HEADER_PADDED_BYTES, MAX_BODY_PADDED_BYTES, STRING_PRESELECTOR } from "@zk-email/helpers/src/constants";
-import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/src/shaHash";
-import { dkimVerify } from "@zk-email/helpers/src/dkim";
+} from "@zk-email/helpers/dist/binaryFormat";
+import { CIRCOM_FIELD_MODULUS, MAX_HEADER_PADDED_BYTES, MAX_BODY_PADDED_BYTES, STRING_PRESELECTOR } from "@zk-email/helpers/dist/constants";
+import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/dist/shaHash";
+import { dkimVerify } from "@zk-email/helpers/dist/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
 import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
