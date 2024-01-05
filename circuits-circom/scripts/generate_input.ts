@@ -13,10 +13,10 @@ import {
   mergeUInt8Arrays,
   int8toBytes,
   int64toBytes,
-} from "@zk-email/helpers/src/binaryFormat";
-import { CIRCOM_FIELD_MODULUS, MAX_HEADER_PADDED_BYTES, MAX_BODY_PADDED_BYTES, STRING_PRESELECTOR } from "@zk-email/helpers/src/constants";
-import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/src/shaHash";
-import { dkimVerify } from "@zk-email/helpers/src/dkim";
+} from "@zk-email/helpers/dist/binaryFormat";
+import { CIRCOM_FIELD_MODULUS, MAX_HEADER_PADDED_BYTES, MAX_BODY_PADDED_BYTES, STRING_PRESELECTOR } from "@zk-email/helpers/dist/constants";
+import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/dist/shaHash";
+import { dkimVerify } from "@zk-email/helpers/dist/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
 import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess_input";
@@ -62,6 +62,7 @@ export interface ICircuitInputs {
   body_hash_idx?: string;
   venmo_payer_id_idx?: string;
   email_from_idx?: string | number;
+  email_to_idx?: string | number;
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
@@ -69,6 +70,7 @@ export interface ICircuitInputs {
   hdfc_payee_id_idx?: string;
   hdfc_amount_idx?: string;
   hdfc_payment_id_idx?: string;
+  hdfc_acc_num_idx?: string;
   paylah_amount_idx?: string;
   paylah_payer_mobile_num_idx?: string;
   paylah_payee_name_idx?: string;
@@ -222,7 +224,7 @@ export async function getCircuitInputs(
   const bodyShaPrecompute = await partialSha(precomputeText, shaCutoffIndex);
 
   // Compute identity revealer
-  let circuitInputs;
+  let circuitInputs: ICircuitInputs;
   const modulus = toCircomBigIntBytes(modulusBigInt);
   const signature = toCircomBigIntBytes(signatureBigInt);
 

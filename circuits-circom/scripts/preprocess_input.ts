@@ -1,4 +1,4 @@
-export function hdfcReplaceMessageIdWithXGoogleOriginalMessageId(str) {
+export function hdfcReplaceMessageIdWithXGoogleOriginalMessageId(str: string) {
 
 	// Replace Message-ID with X-Google-Original-Message-ID if Message-ID contains SMTPIN_ADDED_BROKEN@mx.google.com
 	const messageIdLabel = "Message-ID: ";
