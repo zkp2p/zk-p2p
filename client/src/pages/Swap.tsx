@@ -119,7 +119,7 @@ export const Swap: React.FC = () => {
         return (
           <VenmoOnRamp
             handleBackClick={handleBackClick}
-            selectedIntentHash={selectedIntentHash}
+            selectedIntentHash={selectedIntentHash as any}
           />
         );
 
@@ -127,7 +127,7 @@ export const Swap: React.FC = () => {
         return (
           <HdfcOnRamp
             handleBackClick={handleBackClick}
-            selectedIntentHash={selectedIntentHash}
+            selectedIntentHash={selectedIntentHash as any}
           />
         );
 

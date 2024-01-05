@@ -28,7 +28,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "incremental": true
   },
