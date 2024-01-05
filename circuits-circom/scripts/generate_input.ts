@@ -62,6 +62,7 @@ export interface ICircuitInputs {
   body_hash_idx?: string;
   venmo_payer_id_idx?: string;
   email_from_idx?: string | number;
+  email_to_idx?: string | number;
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
