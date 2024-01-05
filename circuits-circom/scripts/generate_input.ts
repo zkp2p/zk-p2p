@@ -70,6 +70,7 @@ export interface ICircuitInputs {
   hdfc_payee_id_idx?: string;
   hdfc_amount_idx?: string;
   hdfc_payment_id_idx?: string;
+  hdfc_acc_num_idx?: string;
   paylah_amount_idx?: string;
   paylah_payer_mobile_num_idx?: string;
   paylah_payee_name_idx?: string;
@@ -223,7 +224,7 @@ export async function getCircuitInputs(
   const bodyShaPrecompute = await partialSha(precomputeText, shaCutoffIndex);
 
   // Compute identity revealer
-  let circuitInputs;
+  let circuitInputs: ICircuitInputs;
   const modulus = toCircomBigIntBytes(modulusBigInt);
   const signature = toCircomBigIntBytes(signatureBigInt);
 
