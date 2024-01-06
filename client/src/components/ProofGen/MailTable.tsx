@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components/macro';
 import { Mail } from 'react-feather';
 
 import { ThemedText } from '@theme/text';
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';

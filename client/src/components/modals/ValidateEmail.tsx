@@ -5,7 +5,7 @@ import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
 import Confetti from 'react-confetti';
 import { useWindowSize } from '@uidotdev/usehooks';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { LabeledSwitch } from "@components/common/LabeledSwitch";
 import { Overlay } from '@components/modals/Overlay';
 import { TitleCenteredRow } from '@components/layouts/Row';

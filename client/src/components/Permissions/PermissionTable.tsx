@@ -3,7 +3,7 @@ import { Filter, FileText } from 'react-feather';
 import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
 
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { PermissionRow } from "@components/Permissions/PermissionRow";

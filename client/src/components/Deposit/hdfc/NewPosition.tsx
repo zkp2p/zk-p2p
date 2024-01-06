@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";

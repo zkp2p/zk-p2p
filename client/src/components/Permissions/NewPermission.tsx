@@ -3,7 +3,7 @@ import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { NumberedStep } from "@components/common/NumberedStep";

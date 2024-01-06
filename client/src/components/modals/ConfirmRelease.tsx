@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ArrowLeft, Unlock } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { Abi } from '@helpers/types';

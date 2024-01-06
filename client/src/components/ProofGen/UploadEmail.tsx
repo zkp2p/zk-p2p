@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { Paperclip } from 'react-feather';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { Col } from "@components/legacy/Layout";
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
 import { DragAndDropTextBox } from "@components/common/DragAndDropTextBox";
