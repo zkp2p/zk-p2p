@@ -394,7 +394,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         </div>
 
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          New Position
+          New Deposit
         </ThemedText.HeadlineSmall>
 
         <div style={{ flex: 0.5 }}/>

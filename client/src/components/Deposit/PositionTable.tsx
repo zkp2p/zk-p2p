@@ -282,7 +282,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           </ThemedText.HeadlineMedium>
           {isLoggedIn && isRegistered ? (
             <Button onClick={handleNewPositionClick} height={40}>
-                + New Position
+                + New Deposit
             </Button>
           ) : null}
         </TitleRow>
