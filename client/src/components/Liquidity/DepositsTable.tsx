@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components/macro';
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { Button } from "@components/Button";
-import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity } from '@helpers/types';
+import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 
@@ -22,6 +22,7 @@ export interface DepositPrime {
   availableDepositAmount: string;
   totalDepositAmount: string;
   conversionRate: string;
+  conversionCurrency: string;
   targeted: boolean;
 }
 
@@ -78,8 +79,7 @@ export const DepositsTable: React.FC = () => {
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
-
-        console.log(deposit.conversionRate);
+        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency;
 
         let targeted = false;
         if (platformType === PaymentPlatform.VENMO && venmoTargetedDepositIds) {
@@ -107,6 +107,7 @@ export const DepositsTable: React.FC = () => {
           availableDepositAmount,
           totalDepositAmount,
           conversionRate,
+          conversionCurrency,
           targeted
         };
       });
@@ -225,6 +226,7 @@ export const DepositsTable: React.FC = () => {
                     isVenmo={positionRow.platformType === PaymentPlatform.VENMO}
                     availableDepositAmount={positionRow.availableDepositAmount}
                     conversionRate={positionRow.conversionRate}
+                    conversionCurrency={positionRow.conversionCurrency}
                     depositorAddress={positionRow.depositor}
                     rowIndex={rowIndex}
                     targeted={positionRow.targeted}

@@ -14,6 +14,7 @@ interface DepositsRowProps {
   isVenmo: boolean;
   availableDepositAmount: string;
   conversionRate: string;
+  conversionCurrency: string;
   rowIndex: number;
   depositorAddress: string;
   depositId: bigint;
@@ -26,6 +27,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
   isVenmo,
   availableDepositAmount,
   conversionRate,
+  conversionCurrency,
   rowIndex,
   depositorAddress,
   depositId,
@@ -93,7 +95,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       </TitleAndValueContainer>
 
       <PercentageLabel>
-        <Value>{conversionRate}</Value>
+        <Value>{`${conversionRate} ${conversionCurrency}`}</Value>
       </PercentageLabel>
 
       {isSelectingDeposits ? (
