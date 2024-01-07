@@ -2956,14 +2956,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zk-email/circuits@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@zk-email/circuits@npm:2.0.1"
-  checksum: 3a8e346bbfd8ea58c101c47e84c5fedcf8b2e135feef8e0a6188252d2059a12523846cf1d3b4b4fac70c9b4503e5b3107a01251d0e5739cfd8b37fc92dd6c453
+"@zk-email/circuits@npm:^3.2.0":
+  version: 3.2.2
+  resolution: "@zk-email/circuits@npm:3.2.2"
+  dependencies:
+    "@zk-email/zk-regex-circom": ^1.1.1
+  checksum: 5625f62dda12c60e8165d5278a8fbe04fe8f9dde60884b0c98eb5ac64cf77ac293ad6d7e6a943f0d0cf837c2347e9a50bbe8c490e3fd31a104bcac5df98c01ba
   languageName: node
   linkType: hard
 
-"@zk-email/zk-regex-circom@npm:latest":
+"@zk-email/zk-regex-circom@npm:^1.1.1, @zk-email/zk-regex-circom@npm:latest":
   version: 1.2.1
   resolution: "@zk-email/zk-regex-circom@npm:1.2.1"
   dependencies:
@@ -2989,7 +2991,7 @@ __metadata:
     "@types/node": ^18.0.6
     "@types/node-forge": ^1.3.2
     "@types/tar-stream": ^2.2.2
-    "@zk-email/circuits": ^2.0.1
+    "@zk-email/circuits": ^3.2.0
     "@zk-email/zk-regex-circom": latest
     babel-preset-jest: ^29.5.0
     browserify-fs: ^1.0.0
