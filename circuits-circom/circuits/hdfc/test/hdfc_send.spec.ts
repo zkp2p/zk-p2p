@@ -2,10 +2,9 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, packNullifier, hashSignatureGenRand } from "./utils";
+import { chunkArray, bytesToPacked, packNullifier, hashSignatureGenRand } from "../../../test/utils";
 import { ethers } from "ethers";
 import ganache from "ganache";
-import { partialSha } from "@zk-email/helpers/src/shaHash";
 
 const { createCode, generateABI } = poseidonContract;
 export const p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");

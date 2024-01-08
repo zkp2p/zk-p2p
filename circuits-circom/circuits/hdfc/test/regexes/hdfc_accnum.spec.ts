@@ -18,10 +18,10 @@ describe("HDFC Account Number", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/hdfc/test_hdfc_accnum.circom"),
+            path.join(__dirname, "../mocks/test_hdfc_accnum.circom"),
             {
-                include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_hdfc_accnum"),
+                include: path.join(__dirname, "../../../hdfc/node_modules"),
+                output: path.join(__dirname, "../../../hdfc/build/test_hdfc_accnum"),
                 recompile: true,
                 verbose: true,
             }

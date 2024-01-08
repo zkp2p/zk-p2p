@@ -9,7 +9,7 @@ fi
 echo '****COMPILING CIRCUIT****'
 start=$(date +%s)
 set -x
-circom "../$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_DIR" -l "../node_modules"
+circom "../circuits/$CIRCUIT_DIR/$CIRCUIT_NAME".circom --r1cs --wasm --sym --c --wat --output "$BUILD_DIR" -l "../circuits/$CIRCUIT_DIR/node_modules"
 { set +x; } 2>/dev/null
 end=$(date +%s)
 echo "DONE ($((end - start))s)"

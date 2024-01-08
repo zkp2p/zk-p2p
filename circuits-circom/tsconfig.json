@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/*/*/*.spec.ts", "test/utils/*.ts", "types/declaration.d.ts"],
+  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/*/*/*.spec.ts", "test/utils/*.ts", "types/declaration.d.ts", "circuits/hdfc/test/hdfc_registration.spec.ts", "circuits/hdfc/test/hdfc_send.spec.ts"],
   "exclude": ["node_modules"]
 }

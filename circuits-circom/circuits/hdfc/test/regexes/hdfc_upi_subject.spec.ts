@@ -11,17 +11,17 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("HDFC payment ID", function () {
+describe("HDFC UPI Subject", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/hdfc/test_hdfc_payment_id.circom"),
+            path.join(__dirname, "../mocks/test_hdfc_upi_subject.circom"),
             {
-                include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_hdfc_payment_id"),
+                include: path.join(__dirname, "../../../hdfc/node_modules"),
+                output: path.join(__dirname, "../../../hdfc/build/test_hdfc_upi_subject"),
                 recompile: true,
                 verbose: true,
             }
@@ -33,9 +33,8 @@ describe("HDFC payment ID", function () {
     }
 
     it("Should generate witnesses", async () => {
-        // No commas in payment_id.
         const input = {
-            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -46,7 +45,7 @@ describe("HDFC payment ID", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -55,26 +54,9 @@ describe("HDFC payment ID", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
-
-    it("Should reveal regex correctly", async () => {
-        const input = {
-            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> Please")
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-        const expected = Array(textToAsciiArray("\r\nansaction reference number is ").length).fill("0")
-            .concat(textToAsciiArray("123123123123"))
-            .concat(Array(textToAsciiArray(".<br> <br> Please").length).fill("0"));
-        const result = witness.slice(2, input.msg.length + 2);
-
-        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
-    });
-
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\nansaction reference number is 123123123123.<br> <br> PLease")
+            "msg": textToAsciiArray("subject:=?UTF-8?q?=E2=9D=97_You_have_done_a_API_txn._Check_details!?=\r\n")   // API instead of UPI
         };
         const witness = await cir.calculateWitness(
             input,

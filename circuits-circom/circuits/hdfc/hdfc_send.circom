@@ -2,13 +2,13 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "./utils/email_verifier.circom";
-include "./utils/ceil.circom";
+include "../../utils/ceil.circom";
 include "./utils/extract.circom";
 include "./helpers/hdfc_helpers.circom";
-include "./regexes/hdfc/hdfc_amount.circom";
-include "./regexes/hdfc/hdfc_date.circom";
-include "./regexes/hdfc/hdfc_upi_subject.circom";
-include "./regexes/hdfc/hdfc_payment_id.circom";
+include "./regexes/hdfc_amount.circom";
+include "./regexes/hdfc_date.circom";
+include "./regexes/hdfc_upi_subject.circom";
+include "./regexes/hdfc_payment_id.circom";
 
 template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 2048); // constraints for 2048 bit RSA
