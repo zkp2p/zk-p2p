@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/*/*/*.spec.ts", "test/utils/*.ts", "types/declaration.d.ts", "circuits/hdfc/test/hdfc_registration.spec.ts", "circuits/hdfc/test/hdfc_send.spec.ts"],
+  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/*/*/*.spec.ts", "test/utils/*.ts", "types/declaration.d.ts", "circuits/hdfc/test/hdfc_registration.spec.ts", "circuits/hdfc/test/hdfc_send.spec.ts", "circuits/paylah/test/paylah_registration.spec.ts", "circuits/paylah/test/paylah_send.spec.ts", "circuits/paylah/test/regexes/paylah_payer_mobile_num.spec.ts", "circuits/paylah/test/regexes/paylah_payment_details.spec.ts", "circuits/paylah/test/regexes/paylah_payment_id.spec.ts", "circuits/paylah/test/regexes/paylah_subject.spec.ts", "circuits/paylah/test/regexes/paylah_timestamp.spec.ts"],
   "exclude": ["node_modules"]
 }

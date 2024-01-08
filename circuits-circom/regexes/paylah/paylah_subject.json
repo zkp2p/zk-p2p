@@ -1,9 +1,0 @@
-{
-    "parts": [
-      {
-        "is_public": false,
-        "regex_def": "subject:Transaction Alerts\r\n"
-      }
-    ]
-  }
-  
