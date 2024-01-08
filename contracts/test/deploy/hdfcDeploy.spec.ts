@@ -137,7 +137,7 @@ describe("HDFC Deploy", () => {
       const actualNullifierRegistry = await hdfcRegistrationProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcRegistrationProcessor.emailFromAddress();
 
-      expect(actualRamp).to.eq(hdfcRamp.address);
+      expect(actualRamp.toLowerCase()).to.eq(hdfcRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
@@ -153,7 +153,7 @@ describe("HDFC Deploy", () => {
       const actualNullifierRegistry = await hdfcSendProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcSendProcessor.emailFromAddress();
 
-      expect(actualRamp).to.eq(hdfcRamp.address);
+      expect(actualRamp.toLowerCase()).to.eq(hdfcRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);

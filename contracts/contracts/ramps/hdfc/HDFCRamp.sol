@@ -48,7 +48,6 @@ contract HDFCRamp is Ownable {
         uint256 amount,
         uint256 feeAmount
     );
-    // Do we want to emit the depositor or the idHash
     event DepositWithdrawn(
         uint256 indexed depositId,
         address indexed depositor,
@@ -140,7 +139,7 @@ contract HDFCRamp is Ownable {
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
     IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
-    bool internal isInitialized;                                    // Indicates if contract has been initialized
+    bool public isInitialized;                                      // Indicates if contract has been initialized
 
     mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
     mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)
@@ -237,7 +236,7 @@ contract HDFCRamp is Ownable {
      * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
      * of USDC.
      *
-     * @param _upiId            The upi ID of the depositor
+     * @param _upiId            The packed upi ID of the depositor
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      */

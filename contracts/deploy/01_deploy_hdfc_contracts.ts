@@ -25,7 +25,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = await hre.deployments
   const network = hre.deployments.getNetworkName();
 
-  const [deployer] = await hre.getUnnamedAccounts();
+  const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
   const paymentProvider = PaymentProviders.HDFC;
 
@@ -85,12 +85,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Processors deployed...");
 
   const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
-  await hdfcRampContract.initialize(
-    registrationProcessor.address,
-    sendProcessor.address
-  );
-
-  console.log("HDFCRamp initialized...");
+  if (!(await hdfcRampContract.isInitialized())) {
+    await hdfcRampContract.initialize(
+      registrationProcessor.address,
+      sendProcessor.address
+    );
+  
+    console.log("HDFCRamp initialized...");
+  }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);

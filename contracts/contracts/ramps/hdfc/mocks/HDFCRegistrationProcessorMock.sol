@@ -16,7 +16,7 @@ contract HDFCRegistrationProcessorMock is IRegistrationProcessor {
         public
         pure
         override
-        returns(bytes32 onRamperIdHash)
+        returns(bytes32 userIdHash)
     {
         return(bytes32(_proof.signals[1]));
     }
