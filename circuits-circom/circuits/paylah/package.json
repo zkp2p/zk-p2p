@@ -22,6 +22,8 @@
     "scripts": {
         "test": "jest",
         "build": "tsc",
+        "gen-input:paylah:send": "npx tsx ../../package/generate_input.ts --email_file=./emls/paylah_send.eml --payment_type=paylah --circuit_type=send --output_file=input_paylah_send",
+        "gen-input:paylah:registration": "npx tsx ../../package/generate_input.ts --email_file=./emls/paylah_send.eml --payment_type=paylah --circuit_type=registration --output_file=input_paylah_registration",
         "compile:paylah:send": "CIRCUIT_DIR=paylah CIRCUIT_NAME=paylah_send && cd ../../scripts && ./1_compile.sh && cd ..",
         "compile:paylah:registration": "CIRCUIT_DIR=paylah CIRCUIT_NAME=paylah_registration && cd ../../scripts && ./1_compile.sh && cd ..",
         "genkey:chunked:paylah:send": "CIRCUIT_DIR=paylah CIRCUIT_NAME=paylah_send && cd ../../scripts && ./3_gen_chunk_zkey.sh && cd ..",

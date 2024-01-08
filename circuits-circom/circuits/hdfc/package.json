@@ -22,6 +22,9 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "gen-input:hdfc:send": "npx tsx ../../package/generate_input.ts --email_file=./emls/hdfc_send.eml --payment_type=hdfc --circuit_type=send --output_file=input_hdfc_send",
+    "gen-input:hdfc:registration": "npx tsx ../../package/generate_input.ts --email_file=./emls/hdfc_send.eml --payment_type=hdfc --circuit_type=registration  --output_file=input_hdfc_registration",
+    "gen-input:hdfc:registration:wrong-subject": "npx tsx ../../package/generate_input.ts --email_file=./emls/hdfc_send.eml --payment_type=hdfc --circuit_type=registration  --output_file=input_hdfc_registration_wrong_subject",
     "compile:hdfc:send": "CIRCUIT_DIR=hdfc CIRCUIT_NAME=hdfc_send && cd ../../scripts && ./1_compile.sh && cd ..",
     "compile:hdfc:registration": "CIRCUIT_DIR=hdfc CIRCUIT_NAME=hdfc_registration && cd ../../scripts && ./1_compile.sh && cd ..",
     "genkey:chunked:hdfc:send": "CIRCUIT_DIR=hdfc CIRCUIT_NAME=hdfc_send && cd ../../scripts && ./3_gen_chunk_zkey.sh && cd ..",

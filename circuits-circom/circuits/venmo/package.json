@@ -22,6 +22,11 @@
     "scripts": {
         "test": "jest",
         "build": "tsc",
+        "gen-input:venmo:send": "npx tsx ../../package/generate_input.ts --email_file=./emls/venmo_send.eml --payment_type=venmo --circuit_type=send",
+        "gen-input:venmo:registration": "npx tsx ../../package/generate_input.ts --email_file=./emls/venmo_send.eml --payment_type=venmo --circuit_type=registration",
+        "gen-input:venmo:send:receive": "npx tsx ../../package/generate_input.ts --email_file=./emls/venmo_receive.eml --payment_type=venmo --circuit_type=send --output_file=input_venmo_send_receive",
+        "gen-input:venmo:send:merchant": "npx tsx ../../package/generate_input.ts --email_file=./emls/venmo_send_merchant.eml --payment_type=venmo --circuit_type=send --output_file=input_venmo_send_merchant",
+        "gen-input:venmo:registration:receive": "npx tsx ../../package/generate_input.ts --email_file=./emls/venmo_receive.eml --payment_type=venmo --circuit_type=registration --output_file=input_venmo_registration_receive",
         "compile:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./1_compile.sh && cd ..",
         "compile:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./1_compile.sh && cd ..",
         "genkey:chunked:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./3_gen_chunk_zkey.sh && cd ..",
