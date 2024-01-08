@@ -22,10 +22,10 @@ describe("Venmo Actor ID", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/common/test_from_regex.circom"),
+            path.join(__dirname, "../mocks/test_from_regex.circom"),
             {
-                include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_from_regex"),
+                include: path.join(__dirname, "../../node_modules"),
+                output: path.join(__dirname, "../../build/test_from_regex"),
                 recompile: true,
                 verbose: true,
             }

@@ -1,8 +1,8 @@
 pragma circom 2.1.5;
 
 include "../../../utils/ceil.circom";
-include "../../../regexes/common/from_regex.circom";
-include "../../../regexes/common/to_regex.circom";
+include "../../common/regexes/from_regex.circom";
+include "../../common/regexes/to_regex.circom";
 include "../regexes/hdfc_accnum.circom";
 include "../regexes/hdfc_payee_id.circom";
 

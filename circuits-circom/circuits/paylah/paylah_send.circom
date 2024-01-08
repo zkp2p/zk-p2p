@@ -2,8 +2,8 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "../../utils/ceil.circom";
-include "../../regexes/common/from_regex_v2.circom";
-include "../../regexes/common/to_regex_v2.circom";
+include "../../common/regexes/from_regex_v2.circom";
+include "../../common/regexes/to_regex_v2.circom";
 
 include "./utils/email_verifier.circom";
 include "./utils/extract.circom";
