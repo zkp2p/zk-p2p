@@ -11,34 +11,31 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo p2p check", function () {
+describe("Venmo timestamp", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
 
-    function textToAsciiArray(text: string): string[] {
-        return Array.from(text).map(char => char.charCodeAt(0).toString());
-    }
-
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/venmo/test_venmo_p2p_check.circom"),
+            path.join(__dirname, "../mocks//test_venmo_timestamp.circom"),
             {
-                include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_venmo_p2p_check"),
+                include: path.join(__dirname, "../../node_modules"),
+                output: path.join(__dirname, "../../build/test_venmo_timestamp"),
                 recompile: true,
                 verbose: true,
             }
         );
     });
 
+
+    function textToAsciiArray(text: string): string[] {
+        return Array.from(text).map(char => char.charCodeAt(0).toString());
+    }
+
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray(
-                "EEEEEEEEE<br/><br/>As an obl=\r\n"
-                + "igor of this payment, PayPal, Inc. (855-812-4430) is liable for non-deliver=\r\n"
-                + "y or delayed delivery of your funds.<br/>"
-            )
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -50,11 +47,7 @@ describe("Venmo p2p check", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray(
-                "EEEEEEEEE<br/><br/>As an obl=\r\n"
-                + "igor of this payment, PayPal, Inc. (855-812-4430) is liable for non-deliver=\r\n"
-                + "y or delayed delivery of your funds.<br/>"
-            )
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -64,13 +57,25 @@ describe("Venmo p2p check", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
+    it("Should reveal regex correctly", async () => {
+        const input = {
+            "msg": textToAsciiArray("xftkly; d=venmo.com; t=1698260687; h=Fro")
+        };
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+        const expected = Array(textToAsciiArray("xftkly; d=venmo.com; t=").length).fill("0")
+            .concat(textToAsciiArray("1698260687"))
+            .concat(Array(textToAsciiArray("; h=Fro").length).fill("0"));
+        const result = witness.slice(2, 40 + 2);
+
+        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
+    });
+
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray(
-                "EEEEEEEEE<br/><br/>As an obl=\r\n"
-                + "igor of this payment, PayPal, Inc. (855-812-4320) is liable for non-deliver=\r\n"
-                + "y or ddlayed delivery of your funds.<br/>" // update to d
-            )
+            "msg": textToAsciiArray("xftkly; D=venmo.com; t=1698260687; h=Fro")     // D instead of d
         };
         const witness = await cir.calculateWitness(
             input,

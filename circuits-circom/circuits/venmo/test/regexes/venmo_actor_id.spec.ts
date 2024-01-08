@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Venmo send id", function () {
+describe("Venmo actor id", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -22,10 +22,10 @@ describe("Venmo send id", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../../mocks/venmo/test_venmo_send_id.circom"),
+            path.join(__dirname, "../mocks/test_venmo_actor_id.circom"),
             {
-                include: path.join(__dirname, "../../../node_modules"),
-                output: path.join(__dirname, "../../../build/test_venmo_send_id"),
+                include: path.join(__dirname, "../../node_modules"),
+                output: path.join(__dirname, "../../build/test_venmo_actor_id"),
                 recompile: true,
                 verbose: true,
             }
@@ -84,37 +84,7 @@ describe("Venmo send id", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
-    it("Should reveal first regex correctly", async () => {
-        const input = {
-            "msg": textToAsciiArray(
-                "EEEEEEEEEEE<!-- recipient name -->\r\n"
-                + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
-                + "                   =20\r\n"
-                + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
-                + "45553&actor_id=3D1192345678912345678\">\r\n"
-                + "                   =20\r\n"
-                + "                    La Fleur Salon\r\n"
-                + "                </a>\r\n"
-                + "               =20\r\n"
-                + "            </div>\r\n"
-                + "            <!-- note -->\r\n"
-                + "            <div>\r\n"
-                + "               <p>"
-            )
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-        const expected = Array(textToAsciiArray("EEEEEEEEEEE<!-- recipient name -->\r\n                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n                   =20\r\n                    href=3D\"https://venmo.com/code?user_id=3D").length).fill("0")
-            .concat(textToAsciiArray("27443255215553=\r\n45553"))
-            .concat(textToAsciiArray("&actor_id=3D1192345678912345678\">\r\n                   =20\r\n                    La Fleur Salon\r\n                </a>\r\n               =20\r\n            </div>\r\n            <!-- note -->\r\n            <div>\r\n               <p>").fill("0"));
-        const result = witness.slice(2, input.msg.length + 2);
-
-        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
-    });
-
-    it("Should reveal second regex correctly", async () => {
+    it("Should reveal regex correctly", async () => {
         const input = {
             "msg": textToAsciiArray(
                 "EEEEEEEEEEE<!-- recipient name -->\r\n"
@@ -139,7 +109,8 @@ describe("Venmo send id", function () {
         const expected = Array(textToAsciiArray("EEEEEEEEEEE<!-- recipient name -->\r\n                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n                   =20\r\n                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n45553&actor_id=3D").length).fill("0")
             .concat(textToAsciiArray("1192345678912345678"))
             .concat(textToAsciiArray("\">\r\n                   =20\r\n                    La Fleur Salon\r\n                </a>\r\n               =20\r\n            </div>\r\n            <!-- note -->\r\n            <div>\r\n               <p>").fill("0"));
-        const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
+        const result = witness.slice(2, input.msg.length + 2);
+
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
@@ -150,13 +121,13 @@ describe("Venmo send id", function () {
                 + "                <a style=3D\"color:#0074DE; text-decoration:none\"\r\n"
                 + "                   =20\r\n"
                 + "                    href=3D\"https://venmo.com/code?user_id=3D27443255215553=\r\n"
-                + "45553&pctor_id=3D1192345678912345678\">\r\n" // update to p
+                + "45553&actor_id=3D1192345678912345678\">\r\n"
                 + "                   =20\r\n"
                 + "                    La Fleur Salon\r\n"
                 + "                </a>\r\n"
                 + "               =20\r\n"
                 + "            </div>\r\n"
-                + "            <!-- note -->\r\n"
+                + "            <!-- npte -->\r\n" // Update to `p`
                 + "            <div>\r\n"
                 + "               <p>"
             )

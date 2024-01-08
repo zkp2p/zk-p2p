@@ -55,6 +55,7 @@ template ShiftAndPackMaskedStr(in_array_len, max_substr_len, pack_size) {
     }
 }
 
+
 // Adapted from ShiftAndPackMaskedStr function in zkemail to shift, remove line break, and pack.
 // https://github.com/zkemail/zk-email-verify/blob/main/packages/circuits/helpers/extract.circom
 template ShiftAndPackMaskedStrVenmoPayeeId(in_array_len, max_substr_len, pack_size) {
