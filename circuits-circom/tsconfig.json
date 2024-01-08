@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["test/*.spec.ts", "test/*/*.spec.ts", "test/*/*/*.spec.ts", "test/utils/*.ts", "types/declaration.d.ts", "circuits/hdfc/test/hdfc_registration.spec.ts", "circuits/hdfc/test/hdfc_send.spec.ts", "circuits/paylah/test/paylah_registration.spec.ts", "circuits/paylah/test/paylah_send.spec.ts", "circuits/paylah/test/regexes/paylah_payer_mobile_num.spec.ts", "circuits/paylah/test/regexes/paylah_payment_details.spec.ts", "circuits/paylah/test/regexes/paylah_payment_id.spec.ts", "circuits/paylah/test/regexes/paylah_subject.spec.ts", "circuits/paylah/test/regexes/paylah_timestamp.spec.ts", "circuits/common/test/regexes/body_hash.spec.ts", "circuits/common/test/regexes/from_regex_v2.spec.ts", "circuits/common/test/regexes/from_regex.spec.ts", "circuits/common/test/regexes/to_regex_v2.spec.ts", "circuits/common/test/regexes/to_regex.spec.ts", "utils/test-utils/utils.ts", "utils/test-utils/index.ts", "circuits/hdfc/test/preprocess_input.spec.ts"],
-  "exclude": ["node_modules"]
+  "include": ["utils/*/*.ts", "types/declaration.d.ts", "circuits/*/test/*.ts",  "circuits/*/test/regexes/*.ts"],
+  "exclude": ["node_modules", "./*/*/node_modules"]
 }
