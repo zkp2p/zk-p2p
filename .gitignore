@@ -21,6 +21,7 @@ build/
 */.yarn/install-state.gz
 */*/.yarn/install-state.gz
 */*/*/.yarn/install-state.gz
+*/*/.yarn/unplugged/
 */dist
 
 .vscode

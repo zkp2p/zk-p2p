@@ -60,7 +60,7 @@
         "util": "^0.12.5",
         "vite-plugin-commonjs": "^0.7.1",
         "vite-plugin-ngmi-polyfill": "^0.0.2",
-        "vite-plugin-node-polyfills": "^0.8.2"    
+        "vite-plugin-node-polyfills": "^0.8.2"
     },
     "jest": {
         "transform": {

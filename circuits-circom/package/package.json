@@ -4,8 +4,8 @@
     "packageManager": "yarn@3.6.3",
     "description": "Circom circuits for ZKP2P",
     "contributors": [
-        "richardliang",
-        "0xSachinK"
+        "0xSachinK",
+        "richardliang"
     ],
     "main": "dist/generate_input.js",
     "types": "dist/index.d.ts",

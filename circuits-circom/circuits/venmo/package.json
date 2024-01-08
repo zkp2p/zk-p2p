@@ -12,6 +12,7 @@
     "license": "MIT",
     "dependencies": {
         "@zk-email/circuits": "^2.0.1",
+        "@zk-email/helpers": "^2.0.0",
         "buffer": "^6.0.3",
         "circomlib": "^2.0.5",
         "process": "^0.11.10",
