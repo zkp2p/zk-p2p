@@ -48,7 +48,6 @@ contract HDFCRamp is Ownable {
         uint256 amount,
         uint256 feeAmount
     );
-    // Do we want to emit the depositor or the idHash
     event DepositWithdrawn(
         uint256 indexed depositId,
         address indexed depositor,
@@ -237,7 +236,7 @@ contract HDFCRamp is Ownable {
      * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
      * of USDC.
      *
-     * @param _upiId            The upi ID of the depositor
+     * @param _upiId            The packed upi ID of the depositor
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      */

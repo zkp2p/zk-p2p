@@ -56,11 +56,11 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [4:5] is the packed amount, since this is a USDC amount we want to make sure the returned number is
+        // Signals [4:6] is the packed amount, since this is a USDC amount we want to make sure the returned number is
         // properly padded to 6 decimals. If the parsed has more than 6 figures to the right of the decimal it will revert
         amount = _parseSignalArray(_proof.signals, 4, 6).stringToUint(6);
 
-        // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, , that we need to
+        // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
         // parse and convert to a unix timestamp
         string memory rawTimestamp = _parseSignalArray(_proof.signals, 6, 11);
         timestamp = _dateStringToTimestamp(rawTimestamp);
@@ -68,7 +68,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         // Signals [11] is the packed onRamperIdHash
         onRamperIdHash = bytes32(_proof.signals[11]);
 
-        // Signals [12] is the packed offRamperIdHash
+        // Signals [12] is the packed offRamper UPI ID hash
         offRamperIdHash = bytes32(_proof.signals[12]);
 
         // Check if email has been used previously, if not nullify it so it can't be used again

@@ -48,7 +48,7 @@ contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, B
 
         _validateAndAddNullifier(keccak256(abi.encode(_proof)));
 
-        // Signals [4] is the packed onRamperIdHash
+        // Signals [4] is the packed userIdHash
         userIdHash = bytes32(_proof.signals[4]);
     }
 
