@@ -10,6 +10,7 @@ import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
+import { ZKP2P_TG_INDIA_CHAT_LINK } from "@helpers/docUrls";
 
 
 interface SwapModalProps {
@@ -47,6 +48,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
   const currencySymbol = isVenmo ? '$' : '₹';
   const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
+  const troubleScanningQRCodeLink = isVenmo ? link : ZKP2P_TG_INDIA_CHAT_LINK;
 
   /*
    * Component
@@ -80,7 +82,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             size={192}/>
         </QRContainer>
         <QRLabel>
-          <Link href={link} target="_blank">
+          <Link href={troubleScanningQRCodeLink} target="_blank">  
             Trouble scanning QR?
           </Link>
         </QRLabel>
