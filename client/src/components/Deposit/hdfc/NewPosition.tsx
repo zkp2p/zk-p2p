@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
-import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { TransactionButton } from "@components/common/TransactionButton";
@@ -13,6 +12,7 @@ import { calculatePackedUPIId } from '@helpers/poseidonHash';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { hdfcStrings } from '@helpers/strings';
+import useUpiValidation from '@hooks/useUpiValidation';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
@@ -24,6 +24,7 @@ import useSmartContracts from '@hooks/useSmartContracts';
 const NewDepositState = {
   MISSING_REGISTRATION: 'missing_registration',
   DEFAULT: 'default',
+  VALIDATING_UPI_ID: 'validating_upi_id',
   INVALID_UPI_ID: 'invalid_upi_id',
   MISSING_AMOUNTS: 'missing_amounts',
   INSUFFICIENT_BALANCE: 'insufficient_balance',
@@ -42,6 +43,8 @@ interface NewPositionProps {
 export const NewPosition: React.FC<NewPositionProps> = ({
   handleBackClick
 }) => {
+  const latestUpiInputRef = useRef("");
+
   /*
    * Contexts
    */
@@ -56,6 +59,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * State
    */
+
   const [depositState, setDepositState] = useState(NewDepositState.DEFAULT);
   const [upiIdInput, setUpiIdInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
@@ -144,6 +148,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Hooks
    */
 
+  const {
+    data: validateUpiIdResponse,
+    loading: isValidateUpiIdLoading,
+    fetchData: validateUpiId
+  } = useUpiValidation({
+    vpa: upiIdInput
+  });
+
   useEffect(() => {
     const updateDepositState = async () => {
       if(!registrationHash) {
@@ -152,35 +164,39 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         if (!upiIdInput) { 
           setDepositState(NewDepositState.DEFAULT);
         } else {
-          if (!isUpiIdInputValid) {
-            setDepositState(NewDepositState.INVALID_UPI_ID);
+          if (isValidateUpiIdLoading) {
+            setDepositState(NewDepositState.VALIDATING_UPI_ID);
           } else {
-            const usdcBalanceLoaded = usdcBalance !== null;
-            const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null;
-            const minimumDepositAmountLoaded = minimumDepositAmount !== null;
-
-  
-            if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-              const depositAmountBI = toBigInt(depositAmountInput);
-              const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
-              const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToHdfcRamp;
-        
-              if (isDepositAmountGreaterThanBalance) {
-                setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
-              } else if (isDepositAmountLessThanMinDepositSize) {
-                setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-              } else if (isDepositAmountGreaterThanApprovedBalance) {
-                setDepositState(NewDepositState.APPROVAL_REQUIRED);
-              } else {
-                if (receiveAmountInput) {
-                  setDepositState(NewDepositState.VALID);
-                } else {
-                  setDepositState(NewDepositState.MISSING_AMOUNTS);
-                }
-              }
+            if (!isUpiIdInputValid) {
+              setDepositState(NewDepositState.INVALID_UPI_ID);
             } else {
-              setDepositState(NewDepositState.MISSING_AMOUNTS);
+              const usdcBalanceLoaded = usdcBalance !== null;
+              const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null;
+              const minimumDepositAmountLoaded = minimumDepositAmount !== null;
+  
+    
+              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+                const depositAmountBI = toBigInt(depositAmountInput);
+                const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+                const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToHdfcRamp;
+          
+                if (isDepositAmountGreaterThanBalance) {
+                  setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
+                } else if (isDepositAmountLessThanMinDepositSize) {
+                  setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+                } else if (isDepositAmountGreaterThanApprovedBalance) {
+                  setDepositState(NewDepositState.APPROVAL_REQUIRED);
+                } else {
+                  if (receiveAmountInput) {
+                    setDepositState(NewDepositState.VALID);
+                  } else {
+                    setDepositState(NewDepositState.MISSING_AMOUNTS);
+                  }
+                }
+              } else {
+                setDepositState(NewDepositState.MISSING_AMOUNTS);
+              }
             }
           }
         }
@@ -197,6 +213,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       usdcBalance,
       usdcApprovalToHdfcRamp,
       isUpiIdInputValid,
+      isValidateUpiIdLoading,
     ]
   );
 
@@ -224,16 +241,28 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [depositAmountInput, usdcApprovalToHdfcRamp]);
 
   useEffect(() => {
-    const validUpiInput = isValidUpiId(upiIdInput);
-  
-    setIsUpiInputValid(validUpiInput);
+    const validUpiInput = isValidUpiRegex(upiIdInput);
+
+    if (validUpiInput) {
+      validateUpiId();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [upiIdInput]);
+
+  useEffect(() => {
+    if (validateUpiIdResponse) {
+      if (validateUpiIdResponse.input === latestUpiInputRef.current) {
+        setIsUpiInputValid(validateUpiIdResponse.accountExists);
+      }
+    }
+  }, [validateUpiIdResponse]);
 
   /*
    * Helpers
    */
 
-  function isValidUpiId(value: string) {
+  function isValidUpiRegex(value: string) {
     const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
 
     return upiRegex.test(value);
@@ -248,6 +277,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const ctaDisabled = (): boolean => {
     switch (depositState) {
       case NewDepositState.DEFAULT:
+      case NewDepositState.VALIDATING_UPI_ID:
       case NewDepositState.INVALID_UPI_ID:
       case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
       case NewDepositState.CONVENIENCE_FEE_INVALID:
@@ -271,8 +301,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositState.MISSING_REGISTRATION:
         return 'Missing registration';
 
+      case NewDepositState.VALIDATING_UPI_ID:
+        return 'Validating UPI id';
+
       case NewDepositState.INVALID_UPI_ID:
-        return 'UPI id does not match registration';
+        return 'Invalid UPI id';
 
       case NewDepositState.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
@@ -407,7 +440,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             label="UPI ID"
             name={`upiId`}
             value={upiIdInput}
-            onChange={(e) => {setUpiIdInput(e.currentTarget.value)}}
+            onChange={(e) => {
+              setUpiIdInput(e.currentTarget.value)
+              latestUpiInputRef.current = e.currentTarget.value
+            }}
             type="text"
             placeholder="0xsachink@okhdfcbank"
             helperText={hdfcStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}

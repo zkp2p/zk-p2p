@@ -237,8 +237,6 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
    */
 
   const renderVerificationSteps = () => {
-    console.log('Status update: ', status);
-
     let downloadStepState = VerificationState.DEFAULT;
     let uploadStepState = VerificationState.DEFAULT;
     let proveStepState = VerificationState.DEFAULT;
