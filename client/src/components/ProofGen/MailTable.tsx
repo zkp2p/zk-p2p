@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Mail } from 'react-feather';
+import { Inbox, Mail } from 'react-feather';
+import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
-import googleButtonSvg from '../../assets/images/google_dark_button.svg';
+import { MailRow } from '@components/ProofGen/MailRow';
 import { fetchEmailsRaw, fetchEmailList, RawEmailResponse } from '@hooks/useGmailClient';
 import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
-import { MailRow } from '@components/ProofGen/MailRow';
 import { EmailInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import { platformStrings } from "@helpers/strings";
 import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER } from '@helpers/constants';
-import Link from '@mui/material/Link';
-import { Inbox } from 'react-feather';
+import googleButtonSvg from '../../assets/images/google_dark_button.svg';
 
 
 interface MailTableProps {
