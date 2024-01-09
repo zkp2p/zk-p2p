@@ -400,9 +400,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             { hdfcStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
-              Fetch Your UPI ID ↗
-            </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>
         <InputsContainer>
