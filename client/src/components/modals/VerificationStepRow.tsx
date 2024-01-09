@@ -186,7 +186,14 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
         return commonStrings.get('PROOF_MODAL_UPLOAD_TITLE');
 
       case VerificationStepType.PROVE:
-        return commonStrings.get('PROOF_MODAL_PROVE_TITLE');
+        switch (circuitType) {
+          case CircuitType.EMAIL_VENMO_REGISTRATION:
+            return commonStrings.get('PROOF_MODAL_PROVE_REGISTRATION_TITLE');
+
+          case CircuitType.EMAIL_VENMO_SEND:
+          default:
+            return commonStrings.get('PROOF_MODAL_PROVE_TITLE');
+        }
 
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
@@ -213,7 +220,14 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
       case VerificationStepType.PROVE:
         if (isProvingTypeFast) {
-          return commonStrings.get('PROOF_MODAL_PROVE_SUBTITLE_FAST');
+          switch (circuitType) {
+            case CircuitType.EMAIL_VENMO_REGISTRATION:
+              return commonStrings.get('PROOF_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST');
+
+            case CircuitType.EMAIL_VENMO_SEND:
+            default:
+              return commonStrings.get('PROOF_MODAL_PROVE_SUBTITLE_FAST');
+          }
         } else {
           return commonStrings.get('PROOF_MODAL_PROVE_SUBTITLE_PRIVATE');
         }

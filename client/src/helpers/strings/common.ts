@@ -33,8 +33,10 @@ export interface CommonStrings {
   PROOF_MODAL_UPLOAD_TITLE: string,
   PROOF_MODAL_UPLOAD_SUBTITLE: string,
   PROOF_MODAL_PROVE_TITLE: string,
+  PROOF_MODAL_PROVE_REGISTRATION_TITLE: string,
   PROOF_MODAL_PROVE_SUBTITLE_PRIVATE: string,
   PROOF_MODAL_PROVE_SUBTITLE_FAST: string,
+  PROOF_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: string,
   PROOF_MODAL_VERIFY_TITLE: string,
   PROOF_MODAL_VERIFY_SUBTITLE: string,
   PROOF_MODAL_SUBMIT_TITLE: string,
@@ -127,11 +129,17 @@ const strings: CommonStrings = {
   PROOF_MODAL_PROVE_TITLE: `
     Validating Payment
   `,
+  PROOF_MODAL_PROVE_REGISTRATION_TITLE: `
+    Validating Email
+  `,
   PROOF_MODAL_PROVE_SUBTITLE_PRIVATE: `
     Private validation will take approximately 10 minutes
   `,
   PROOF_MODAL_PROVE_SUBTITLE_FAST: `
     Payment validation can take up to 60 seconds
+  `,
+  PROOF_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: `
+    Email validation can take up to 60 seconds
   `,
   PROOF_MODAL_VERIFY_TITLE: `
     Local Proof Verification
