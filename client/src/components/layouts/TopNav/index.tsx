@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NavItem } from "@components/layouts/TopNav/NavItem";
+import { PrivyLoginButton } from '@components/common/PrivyLoginButton';
 
 
 export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
@@ -34,6 +35,7 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
       )}
 
       {!withoutLinks && <CustomConnectButton height={40} />}
+      {!withoutLinks && <PrivyLoginButton height={40} />}
     </NavBar>
   );
 }

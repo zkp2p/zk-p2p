@@ -1,16 +1,10 @@
 import styled from 'styled-components';
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useDisconnect, useNetwork } from 'wagmi';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { usePrivyWagmi } from '@privy-io/wagmi-connector';
-import { usePrivySmartAccount } from "@zerodev/privy";
-import { useSwitchNetwork } from '@privy-io/wagmi-connector';
-import useAccount from '@hooks/useAccount';
-
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from '@mui/material/Link';
 
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
+
 
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
@@ -21,47 +15,30 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   fullWidth = false,
   height = 48
 }) => {
-  // Privy hooks
-  const {ready, user, authenticated, login, connectWallet, logout, linkWallet} = usePrivy();
-
-  // wagmi hooks
-  const { chain } = useNetwork();
-  const {disconnect} = useDisconnect();
-
-  // ZKP2P hooks
-  const { isLoggedIn, loggedInEthereumAddress, network } = useAccount();
-  console.log(chain, isLoggedIn);
-
-  const {wallet: activeWallet, setActiveWallet} = usePrivyWagmi();
-
-  // WAGMI hooks
-  // const {address, isLoggedIn, isauthenticated, isConnecting, isDisauthenticated} = useAccount();
-  // const {disconnect} = useDisconnect();
-  // const {chain} = useNetwork();
-
-  // Note: If your app doesn't use authentication, you
-  // can remove all 'authenticationStatus' checks
-  // const ready = mounted && authenticationStatus !== 'loading';
-  // const authenticated =
-  //   ready &&
-  //   authenticated &&
-  //   chain
-
-
   const currentDeviceSize = useMediaQuery();
 
   return (
+    <ConnectButton.Custom>
+      {({
+        account,
+        chain,
+        openAccountModal,
+        openChainModal,
+        openConnectModal,
+        authenticationStatus,
+        mounted,
+      }) => {
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
-        // const ready = mounted && authenticationStatus !== 'loading';
-        // const connected =
-        //   ready &&
-        //   account &&
-        //   chain &&
-        //   (!authenticationStatus ||
-        //     authenticationStatus === 'authenticated');
+        const ready = mounted && authenticationStatus !== 'loading';
+        const connected =
+          ready &&
+          account &&
+          chain &&
+          (!authenticationStatus ||
+            authenticationStatus === 'authenticated');
 
-        // return (
+        return (
           <div
             {...(!ready && {
               'style': {
@@ -73,11 +50,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
             })}
           >
             {(() => {
-              if (!isLoggedIn) {
+              if (!connected) {
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    onClick={connectWallet}
+                    onClick={openConnectModal}
                     height={height}
                   >
                     {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
@@ -85,11 +62,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 );
               }
 
-              if (!network && chain.unsupported) {
+              if (chain.unsupported) {
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    // onClick={openChainModal}
+                    onClick={openChainModal}
                     height={height}
                   >
                     Wrong Network
@@ -101,7 +78,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 <div style={{ display: 'flex', gap: 12 }}>
                   <NetworkAndBridgeContainer>
                     <NetworkSelector
-                      // onClick={openChainModal}
+                      onClick={openChainModal}
                       style={{ display: 'flex', alignItems: 'center' }}
                     >
                       {chain.hasIcon && (
@@ -129,13 +106,13 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={disconnect}>
-                      {/* <AccountBalance>
+                    <LoggedInBalanceAndAccount onClick={openAccountModal}>
+                      <AccountBalance>
                         {account.displayBalance}
-                      </AccountBalance> */}
+                      </AccountBalance>
 
                       <LoggedInButton>
-                        {loggedInEthereumAddress}
+                        {account.displayName}
                       </LoggedInButton>
                     </LoggedInBalanceAndAccount>
 
@@ -158,7 +135,9 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
               );
             })()}
           </div>
-        // );
+        );
+      }}
+    </ConnectButton.Custom>
   );
 };
 

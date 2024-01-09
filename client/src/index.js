@@ -12,11 +12,11 @@ import {
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from "wagmi/providers/public";
 import { hardhat, goerli, base } from 'wagmi/chains'
-// import {
-//   RainbowKitProvider,
-//   darkTheme,
-//   getDefaultWallets,
-// } from "@rainbow-me/rainbowkit";
+import {
+  RainbowKitProvider,
+  darkTheme,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import "./index.css";
@@ -28,7 +28,7 @@ const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
   } else {
-    return [base, goerli, hardhat];
+    return [goerli]; // TODO: add back hardhat and base. Disabled because we need zerodev project ids for each chain
   }
 };
 
@@ -41,43 +41,43 @@ const configureChainsConfig = configureChains(
     publicProvider()
   ]
 );
-// const { publicClient } = configureChains(
-//   chains,
-//   [
-//     alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
-//     publicProvider()
-//   ]
-// );
+const { publicClient } = configureChains(
+  chains,
+  [
+    alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
+    publicProvider()
+  ]
+);
 
 export const alchemyMainnetEthersProvider =
   new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY)
 
-// const { connectors } = getDefaultWallets({
-//   appName: 'ZK P2P On-Ramp',
-//   projectId: process.env.WALLET_CONNECT_PROJECT_ID,
-//   chains
-// });
+const { connectors } = getDefaultWallets({
+  appName: 'ZK P2P On-Ramp',
+  projectId: process.env.WALLET_CONNECT_PROJECT_ID,
+  chains
+});
 
-// const config = createConfig({
-//   autoConnect: true,
-//   connectors,
-//   publicClient
-// })
+const config = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient
+})
 
-// const zkp2pTheme = merge(darkTheme(), {
-//   colors: {
-//     accentColor: '#df2e2d',
-//   },
-//   radii: {
-//     connectButton: '20px',
-//   },
-//   fonts: {
-//     body: 'Graphik',
-//   },
-//   shadows: {
-//     connectButton: 'inset 0px -4px 0px rgba(0, 0, 0, 0.16)',
-//   }
-// });
+const zkp2pTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: '#df2e2d',
+  },
+  radii: {
+    connectButton: '20px',
+  },
+  fonts: {
+    body: 'Graphik',
+  },
+  shadows: {
+    connectButton: 'inset 0px -4px 0px rgba(0, 0, 0, 0.16)',
+  }
+});
 
 const zeroDevOptions = {
   projectIds: [process.env.ZERODEV_APP_ID],
@@ -91,24 +91,20 @@ ReactDOM.render(
       <PrivyProvider
         appId={process.env.PRIVY_APP_ID}
         config={{
-            /* Replace this with your desired login methods */
-            loginMethods: ['email', 'google', 'wallet'],
-            /* Replace this with your desired appearance configuration */
-            appearance: {
-                theme: 'light',
-                accentColor: '#676FFF',
-                logo: ''
-            },
-            embeddedWallets: {
-                createOnLogin: 'users-without-wallets',
-                noPromptOnSignature: true
-            },
-            defaultChain: goerli, // TODO: Switch back to base
-            supportedChains: [goerli, base]
+          embeddedWallets: {
+            createOnLogin: 'users-without-wallets',
+            noPromptOnSignature: false // TODO: Set to true
+          },
+          defaultChain: goerli, // TODO: Switch back to base
+          supportedChains: [goerli, base, hardhat]
         }}
       >
         <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
-          <App />
+          <WagmiConfig config={config}>
+            <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
+              <App />
+            </RainbowKitProvider>
+          </WagmiConfig>
         </ZeroDevPrivyWagmiProvider>
       </PrivyProvider>
     </ErrorBoundary>
