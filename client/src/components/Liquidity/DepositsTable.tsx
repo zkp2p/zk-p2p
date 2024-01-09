@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components/macro';
 
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';

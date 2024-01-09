@@ -5,7 +5,7 @@ import { ArrowLeft, AlertTriangle } from 'react-feather';
 import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
 import { platformStrings } from '@helpers/strings';
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { RequirementStepRow } from "@components/modals/RequirementStepRow";
 import { CustomCheckbox } from "@components/common/Checkbox";
 import { PaymentPlatformType } from '@helpers/types';

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import TextTransition, { presets } from 'react-text-transition';
 
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import Card from '@components/common/Card';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import SwapPreview from '@components/Landing/SwapPreview';

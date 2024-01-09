@@ -4,7 +4,7 @@ import Link from '@mui/material/Link';
 import { CheckCircle, Box } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { Col } from "@components/legacy/Layout";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NumberedStep } from "@components/common/NumberedStep";

@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 import { AutoColumn } from '@components/layouts/Column';
 import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
 import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
-import { PositionTable } from '@components/Deposit/PositionTable';
+import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';

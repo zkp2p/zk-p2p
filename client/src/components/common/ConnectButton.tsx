@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from '@mui/material/Link';
 
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 
 

@@ -3,11 +3,10 @@ import styled from 'styled-components';
 import { ArrowLeft, Unlock } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { TransactionButton } from "@components/common/TransactionButton";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { Abi } from '@helpers/types';
-import { TransactionStatus, TransactionStatusType } from "@helpers/types/transactionStatus";
 import { ThemedText } from '@theme/text'
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
@@ -47,11 +46,7 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
    * State
    */
 
-  const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
-
   const [transactionAddress, setTransactionAddress] = useState<string>("");
-
-  const [submitTransactionStatus, setSubmitTransactionStatus] = useState<TransactionStatusType>(TransactionStatus.TRANSACTION_CONFIGURED);
 
   const [releaseRampAddress, setReleaseRampAddress] = useState<string>(venmoRampAddress);
   const [releaseRampAbi, setReleaseRampAbi] = useState<Abi>(venmoRampAbi);
@@ -74,13 +69,12 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
 
   const {
     data: submitReleaseResult,
-    isLoading: isSubmitReleaseLoading,
-    status: submitReleaseStatus,
+    status: signReleaseTransactionStatus,
     writeAsync: writeSubmitReleaseAsync,
   } = useContractWrite(writeReleaseConfig);
 
   const {
-    isLoading: isSubmitReleaseMining
+    status: mineReleaseTransactionStatus,
   } = useWaitForTransaction({
     hash: submitReleaseResult ? submitReleaseResult.hash : undefined,
     onSuccess(data) {
@@ -100,8 +94,6 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
       }
 
       refetchUsdcBalance?.();
-
-      setSubmitTransactionStatus(TransactionStatus.TRANSACTION_MINED);
     },
   });
 
@@ -146,45 +138,6 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
     }
   }, [submitReleaseResult])
 
-  useEffect(() => {
-    switch (submitReleaseStatus) {
-      case 'idle':
-        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_CONFIGURED);
-        break;
-
-      case 'loading':
-        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_LOADING);
-        break;
-
-      case 'success':
-        setSubmitTransactionStatus(TransactionStatus.TRANSACTION_MINING);
-        break;
-    }
-
-  }, [submitReleaseStatus]);
-
-  useEffect(() => {
-    switch (submitTransactionStatus) {
-      case TransactionStatus.TRANSACTION_CONFIGURED:
-        setCtaButtonTitle("Submit Transaction");
-        break;
-
-      case TransactionStatus.TRANSACTION_LOADING:
-        setCtaButtonTitle("Signing Transaction");
-        break;
-
-      case TransactionStatus.TRANSACTION_MINING:
-        setCtaButtonTitle("Mining Transaction");
-        break;
-
-      case TransactionStatus.TRANSACTION_MINED:
-          default:
-            setCtaButtonTitle('Go to Deposits');
-        break;
-    }
-
-  }, [submitTransactionStatus]);
-
   /*
    * Helpers
    */
@@ -194,8 +147,6 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
       await writeSubmitReleaseAsync?.();
     } catch (error) {
       console.log('writeSubmitReleaseAsync failed: ', error);
-
-      setSubmitTransactionStatus(TransactionStatus.TRANSACTION_CONFIGURED);
     }
   }
 
@@ -247,13 +198,14 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           </Link>
         ) : null}
 
-        <Button
-          disabled={isSubmitReleaseLoading || isSubmitReleaseMining}
+        <TransactionButton
+          signTransactionStatus={signReleaseTransactionStatus}
+          mineTransactionStatus={mineReleaseTransactionStatus}
+          defaultLabel={"Submit Transaction"}
+          minedLabel={"Go to Deposits"}
           onClick={ctaOnClick}
           fullWidth={true}
-        >
-          {ctaButtonTitle}
-        </Button>
+        />
       </ModalContainer>
     </ModalAndOverlayContainer>
   );

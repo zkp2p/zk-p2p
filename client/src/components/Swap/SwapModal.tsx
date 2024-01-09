@@ -4,7 +4,7 @@ import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
 import Link from '@mui/material/Link';
 
-import { Button } from "@components/Button";
+import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";

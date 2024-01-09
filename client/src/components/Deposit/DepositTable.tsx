@@ -4,9 +4,9 @@ import styled, { css } from 'styled-components/macro';
 import { useNavigate } from 'react-router-dom';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
-import { PositionRow } from "@components/Deposit/PositionRow";
+import { PositionRow } from "@components/Deposit/DepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";

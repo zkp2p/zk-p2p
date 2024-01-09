@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/Button";
+import { TransactionButton } from "@components/common/TransactionButton";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
@@ -64,7 +64,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const [isUpiIdInputValid, setIsUpiInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
-  const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
+  const [shouldConfigureNewDepositWrite, setShouldConfigureNewDepositWrite] = useState<boolean>(false);
   const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
 
   /*
@@ -83,23 +83,25 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],
-    enabled: shouldConfigureSignalIntentWrite
+    enabled: shouldConfigureNewDepositWrite
   });
 
   const {
     data: submitDepositResult,
-    isLoading: isSubmitDepositLoading,
+    status: signDepositTransactionStatus,
     writeAsync: writeSubmitDepositAsync,
   } = useContractWrite(writeDepositConfig);
 
   const {
-    isLoading: isSubmitDepositMining
+    status: mineDepositTransactionStatus
   } = useWaitForTransaction({
     hash: submitDepositResult ? submitDepositResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
+
+      refetchUsdcApprovalToHdfcRamp?.();
 
       setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
@@ -121,18 +123,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const {
     data: submitApproveResult,
-    isLoading: isSubmitApproveLoading,
+    status: signApproveTransactionStatus,
     writeAsync: writeSubmitApproveAsync
   } = useContractWrite(writeApproveConfig);
 
   const {
-    isLoading: isSubmitApproveMining
+    status: mineApproveTransactionStatus
   } = useWaitForTransaction({
     hash: submitApproveResult ? submitApproveResult.hash : undefined,
     onSuccess(data) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
       refetchUsdcApprovalToHdfcRamp?.();
+
       refetchUsdcBalance?.();
     },
   });
@@ -201,7 +204,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     const isApprovalRequired = depositState === NewDepositState.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
-    setShouldConfigureSignalIntentWrite(depositState === NewDepositState.VALID);
+    setShouldConfigureNewDepositWrite(depositState === NewDepositState.VALID);
   }, [depositState]);
 
   useEffect(() => {
@@ -299,19 +302,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }
 
-  const ctaLoading = (): boolean => {
-    switch (depositState) {
-      case NewDepositState.APPROVAL_REQUIRED:
-        return isSubmitApproveLoading || isSubmitApproveMining;
-
-      case NewDepositState.VALID:
-        return isSubmitDepositLoading || isSubmitDepositMining;
-
-      default:
-        return false;
-    }
-  }
-
   const ctaOnClick = async () => {
     switch (depositState) {
       case NewDepositState.APPROVAL_REQUIRED:
@@ -336,6 +326,32 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       default:
         break;
+    }
+  }
+
+  const signTransactionStateFromDepositState = () => {
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
+        return signApproveTransactionStatus;
+
+      case NewDepositState.VALID:
+        return signDepositTransactionStatus;
+
+      default:
+        return signDepositTransactionStatus;
+    }
+  }
+
+  const mineTransactionStateFromDepositState = () => {
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
+        return mineApproveTransactionStatus;
+
+      case NewDepositState.VALID:
+        return mineDepositTransactionStatus;
+
+      default:
+        return mineDepositTransactionStatus;
     }
   }
 
@@ -424,15 +440,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
 
           <ButtonContainer>
-            <Button
+            <TransactionButton
+              signTransactionStatus={signTransactionStateFromDepositState()}
+              mineTransactionStatus={mineTransactionStateFromDepositState()}
               disabled={ctaDisabled()}
-              loading={ctaLoading()}
+              defaultLabel={ctaText()}
+              minedLabel={'Go to Deposits'}
               onClick={async () => {
                 ctaOnClick();
               }}
-            >
-              {ctaText()}
-            </Button>
+            />
           </ButtonContainer>
         </InputsContainer>
       </Body>

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from "@components/Swap/Input";
 import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
 import { AutoColumn } from '@components/layouts/Column';
-import { Button } from '@components/Button';
+import { Button } from '@components/common/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '@theme/text';
 import { IndicativeQuote } from '@helpers/types';
