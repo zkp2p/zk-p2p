@@ -42,26 +42,18 @@ function sanitizeHdfcPasteEmail(emailContent: string): string {
 
   // Update First Tab encoding occurrence
   const firstTabEncodedPattern = `=09=09=09  <tr>`;
-  const firstTabEncodedMatch = subjectSanitizedEmail.match(firstTabEncodedPattern);
-  console.log(firstTabEncodedMatch);
   const tabEncodedSanitizedEmail = subjectSanitizedEmail.replace(firstTabEncodedPattern,'\t\t\t  <tr>');
 
   // Update Second Tab encoding occurrence
   const secondTabEncodedPattern = /=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>/g; // multiple occurrences
-  const secondTabEncodedMatch = subjectSanitizedEmail.match(secondTabEncodedPattern);
-  console.log(secondTabEncodedMatch);
   const secondTabEncodedSanitizedEmail = tabEncodedSanitizedEmail.replace(secondTabEncodedPattern, '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>');
 
   // Update Third Tab encoding occurrence
   const thirdTabEncodedPattern = `=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09`;
-  const thirdTabEncodedMatch = subjectSanitizedEmail.match(thirdTabEncodedPattern);
-  console.log(thirdTabEncodedMatch);
   const thirdTabEncodedSanitizedEmail = secondTabEncodedSanitizedEmail.replace(thirdTabEncodedPattern, '\t\t\t\t\t\t\t\t\t\t\t\t\t\t=09');
 
   // Update Fourth Tab encoding occurrence
   const fourthTabEncodingPattern = `=09=09=09 =20`;
-  const fourthTabEncodedMatch = subjectSanitizedEmail.match(fourthTabEncodingPattern);
-  console.log(fourthTabEncodedMatch);
   const fourthTabEncodedSanitizedEmail = thirdTabEncodedSanitizedEmail.replace(fourthTabEncodingPattern, '\t\t\t =20');
 
   return fourthTabEncodedSanitizedEmail;
