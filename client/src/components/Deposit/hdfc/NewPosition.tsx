@@ -400,9 +400,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             { hdfcStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
-              Fetch Your UPI ID ↗
-            </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>
         <InputsContainer>
@@ -412,7 +409,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={upiIdInput}
             onChange={(e) => {setUpiIdInput(e.currentTarget.value)}}
             type="text"
-            placeholder="90876543@okicici"
+            placeholder="0xsachink@okhdfcbank"
             helperText={hdfcStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
           />
 
