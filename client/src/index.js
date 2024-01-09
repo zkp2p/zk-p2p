@@ -88,25 +88,25 @@ const zeroDevOptions = {
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <PrivyProvider
-        appId={process.env.PRIVY_APP_ID}
-        config={{
-          embeddedWallets: {
-            createOnLogin: 'users-without-wallets',
-            noPromptOnSignature: false // TODO: Set to true
-          },
-          defaultChain: goerli, // TODO: Switch back to base
-          supportedChains: [goerli, base, hardhat]
-        }}
-      >
-        <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
-          <WagmiConfig config={config}>
-            <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
+      <WagmiConfig config={config}>
+        <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
+          <PrivyProvider
+            appId={process.env.PRIVY_APP_ID}
+            config={{
+              embeddedWallets: {
+                createOnLogin: 'users-without-wallets',
+                noPromptOnSignature: false // TODO: Set to true
+              },
+              defaultChain: goerli, // TODO: Switch back to base
+              supportedChains: [goerli, base, hardhat]
+            }}
+          >
+            <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
               <App />
-            </RainbowKitProvider>
-          </WagmiConfig>
-        </ZeroDevPrivyWagmiProvider>
-      </PrivyProvider>
+            </ZeroDevPrivyWagmiProvider>
+          </PrivyProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")

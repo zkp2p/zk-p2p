@@ -106,7 +106,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={openAccountModal}>
+                    <LoggedInBalanceAndAccount onClick={openAccountModal}> {/* TODO: need to disable disconnecting when logged into privy */}
                       <AccountBalance>
                         {account.displayBalance}
                       </AccountBalance>

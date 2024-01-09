@@ -78,7 +78,7 @@ export const PrivyLoginButton: React.FC<PrivyLoginButtonProps> = ({
               height={height}
             >
               Logout
-            </Button>
+            </Button> // TODO: logging out of Privy doesn't update account provider state throughout the rest of the app. Same for login
           );
         }
       })()}
