@@ -22,6 +22,9 @@ import {
   validateEmailDomainKey,
   validateDKIMSignature
 } from '@components/ProofGen/validation/venmo';
+import {
+  validateAndSanitizeHdfcEmailSubject
+} from '@components/ProofGen/validation/hdfc';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/venmo/useRegistration';
@@ -146,7 +149,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             try {
               const emailReceivedYear = validateEmailDomainKey(emailFull);
     
-              if (emailReceivedYear.emailRaw !== "2024") {
+              if (emailReceivedYear.emailRaw !== "2023" && emailReceivedYear.emailRaw !== "2024") {
                 setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
                 return;
               }
@@ -165,7 +168,19 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             break;
 
           case PaymentPlatform.HDFC:
-            // no-op
+            // validateAndSanitizeHdfcEmailSubject
+            try {
+              const { sanitizedEmail, didSanitize } = validateAndSanitizeHdfcEmailSubject(emailFull);
+    
+              if (didSanitize) {
+                setEmailFull(sanitizedEmail);
+                return;
+              };
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
+              return;
+            }
+
             break;
         }
   
