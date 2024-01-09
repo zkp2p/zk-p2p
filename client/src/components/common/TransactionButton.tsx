@@ -36,8 +36,6 @@ export const TransactionButton: React.FC<TransactionButtonProps> = ({
    */
 
   useEffect(() => {
-    console.log('signTransactionStatus: ', signTransactionStatus);
-
     switch (signTransactionStatus) {
       case 'idle':
       case 'error':
@@ -56,8 +54,6 @@ export const TransactionButton: React.FC<TransactionButtonProps> = ({
   }, [signTransactionStatus]);
 
   useEffect(() => {
-    console.log('mineTransactionStatus: ', mineTransactionStatus);
-
     switch (mineTransactionStatus) {
       case 'idle':
       case 'error':
@@ -76,8 +72,6 @@ export const TransactionButton: React.FC<TransactionButtonProps> = ({
   }, [mineTransactionStatus]);
 
   useEffect(() => {
-    console.log('transactionStatus: ', transactionStatus);
-
     switch (transactionStatus) {
       case TransactionStatus.TRANSACTION_CONFIGURED:
         setCtaButtonTitle(defaultLabel);
