@@ -409,7 +409,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={upiIdInput}
             onChange={(e) => {setUpiIdInput(e.currentTarget.value)}}
             type="text"
-            placeholder="90876543@okicici"
+            placeholder="0xsachink@okhdfcbank"
             helperText={hdfcStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
           />
 
