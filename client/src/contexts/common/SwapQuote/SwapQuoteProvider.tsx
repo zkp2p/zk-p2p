@@ -149,11 +149,11 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
-        setGetBestDepositForAmount(() => getBestVenmoDepositForAmount);
+        setGetBestDepositForAmount(() => getBestVenmoDepositForAmount as any);
         break;
 
       case PaymentPlatform.HDFC:
-        setGetBestDepositForAmount(() => getBestHdfcDepositForAmount);
+        setGetBestDepositForAmount(() => getBestHdfcDepositForAmount as any);
         break;
 
       default:

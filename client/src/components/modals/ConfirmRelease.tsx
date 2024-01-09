@@ -48,8 +48,8 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
 
   const [transactionAddress, setTransactionAddress] = useState<string>("");
 
-  const [releaseRampAddress, setReleaseRampAddress] = useState<string>(venmoRampAddress);
-  const [releaseRampAbi, setReleaseRampAbi] = useState<Abi>(venmoRampAbi);
+  const [releaseRampAddress, setReleaseRampAddress] = useState<string>(venmoRampAddress as any);
+  const [releaseRampAbi, setReleaseRampAbi] = useState<Abi>(venmoRampAbi as any);
 
   /*
    * Contract Writes
@@ -77,7 +77,7 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
     status: mineReleaseTransactionStatus,
   } = useWaitForTransaction({
     hash: submitReleaseResult ? submitReleaseResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitReleaseAsync successful: ', data);
       
       switch (paymentPlatform) {

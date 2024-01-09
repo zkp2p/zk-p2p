@@ -83,7 +83,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     isSuccess: isSubmitRegistrationSuccessful
   } = useWaitForTransaction({
     hash: submitRegistrationResult ? submitRegistrationResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitRegistrationAsync successful: ', data);
       
       refetchRampAccount?.();

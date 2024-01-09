@@ -79,8 +79,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   const [selectedDepositIdToWithdraw, setSelectedDepositIdToWithdraw] = useState<bigint>(0n);
   const [selectedRowIndexToWithdraw, setSelectedRowIndexToWithdraw] = useState<number>(0);
 
-  const [withdrawRampAddress, setWithdrawRampAddress] = useState<string>(venmoRampAddress);
-  const [withdrawRampAbi, setWithdrawRampAbi] = useState<Abi>(venmoRampAbi);
+  const [withdrawRampAddress, setWithdrawRampAddress] = useState<string>(venmoRampAddress as any);
+  const [withdrawRampAbi, setWithdrawRampAbi] = useState<Abi>(venmoRampAbi as any);
 
   const [shouldConfigureWithdrawWrite, setShouldConfigureWithdrawWrite] = useState<boolean>(false);
 
@@ -112,7 +112,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     isLoading: isSubmitWithdrawMining
   } = useWaitForTransaction({
     hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitWithdrawAsync successful: ', data);
       
       switch (paymentPlatform) {
@@ -243,8 +243,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
           setSelectedRowIndexToWithdraw(rowIndex);
 
-          setWithdrawRampAddress(venmoRampAddress);
-          setWithdrawRampAbi(venmoRampAbi);
+          setWithdrawRampAddress(venmoRampAddress as any);
+          setWithdrawRampAbi(venmoRampAbi as any);
 
           setShouldConfigureWithdrawWrite(true);
         }
@@ -257,8 +257,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
           setSelectedRowIndexToWithdraw(rowIndex);
           
-          setWithdrawRampAddress(hdfcRampAddress);
-          setWithdrawRampAbi(hdfcRampAbi);
+          setWithdrawRampAddress(hdfcRampAddress as any);
+          setWithdrawRampAbi(hdfcRampAbi as any);
 
           setShouldConfigureWithdrawWrite(true);
         }

@@ -108,7 +108,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
     isSuccess: isSubmitOnRampSuccessful
   } = useWaitForTransaction({
     hash: submitOnRampResult ? submitOnRampResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitOnRampAsync successful: ', data);
       refetchUsdcBalance?.();
       refetchIntentHash?.();

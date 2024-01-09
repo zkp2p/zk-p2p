@@ -62,9 +62,17 @@ const writeToStream = async (stream, input, chunkSize) => {
           stream.once("drain", () => writeChunk());
           return;
         }
-        setImmediate(writeChunk);
+        if (isNode) {
+          setImmediate(writeChunk);
+        } else {
+          setTimeout(writeChunk, 0);
+        }
       };
-      setImmediate(writeChunk);
+      if (isNode) {
+        setImmediate(writeChunk);
+      } else {
+        setTimeout(writeChunk, 0);
+      }
     }
 
     stream.on("end", resolve);

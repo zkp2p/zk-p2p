@@ -108,22 +108,23 @@ const Swap: React.FC<SwapProps> = ({
    */
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>, field: keyof SwapQuote) => {
+    const value = event.target.value;
+    const quoteCopy = {...currentQuote}
+  
     if (field === 'requestedUSDC') {
-      const value = event.target.value;
-      const quoteCopy = {...currentQuote}
       setShouldConfigureSignalIntentWrite(false);
-
+  
       if (value === "" || value === "0" || value === ".") {
         setCurrentQuote(ZERO_QUOTE);
       } else if (isValidInput(value)) {
-        quoteCopy[field] = event.target.value;
-
+        quoteCopy[field] = value;
         setCurrentQuote(quoteCopy);
       }
+    } else if (field === 'depositId' || field === 'conversionRate') {
+      quoteCopy[field] = BigInt(value);
+      setCurrentQuote(quoteCopy);
     } else {
-      const quoteCopy = {...currentQuote}
-      quoteCopy[field] = event.target.value;
-
+      quoteCopy[field] = value;
       setCurrentQuote(quoteCopy);
     }
   };
@@ -178,7 +179,7 @@ const Swap: React.FC<SwapProps> = ({
     isLoading: isSubmitIntentMining
   } = useWaitForTransaction({
     hash: submitIntentResult ? submitIntentResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitIntentAsync successful: ', data);
 
       refetchIntentHash?.();
@@ -194,12 +195,12 @@ const Swap: React.FC<SwapProps> = ({
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setRampAddress(venmoRampAddress);
-        setRampAbi(venmoRampAbi);
+        setRampAbi(venmoRampAbi as any);
         break;
 
       case PaymentPlatform.HDFC:
         setRampAddress(hdfcRampAddress);
-        setRampAbi(hdfcRampAbi);
+        setRampAbi(hdfcRampAbi as any);
         break;
 
       default:
@@ -245,7 +246,7 @@ const Swap: React.FC<SwapProps> = ({
       const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
 
       if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
-        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, loggedInEthereumAddress);
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
@@ -268,7 +269,7 @@ const Swap: React.FC<SwapProps> = ({
             const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
             const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
-              const onRampCooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+              const onRampCooldownEnd = (BigInt(lastOnRampTimestamp) + BigInt(onRampCooldownPeriod)) * 1000n;
               const onRampCooldownElapsed = Date.now() >= onRampCooldownEnd;
 
               if (!onRampCooldownElapsed) {
@@ -322,7 +323,7 @@ const Swap: React.FC<SwapProps> = ({
   useEffect(() => {
     const updateCooldownTime = () => {
       if (lastOnRampTimestamp && onRampCooldownPeriod) {
-        const cooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+        const cooldownEnd = (BigInt(lastOnRampTimestamp) + BigInt(onRampCooldownPeriod)) * 1000n;
         const now = BigInt(Date.now());
         const timeRemaining = cooldownEnd - now;
 
@@ -375,7 +376,7 @@ const Swap: React.FC<SwapProps> = ({
     setShouldConfigureSignalIntentWrite(false);
   }
 
-  function isValidInput(value) {
+  function isValidInput(value: any) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
     return !isNaN(value) && parseFloat(value) >= 0 && isValid;
   }

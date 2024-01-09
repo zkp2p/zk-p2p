@@ -60,7 +60,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
     isLoading: isSubmitMintSbtMining
   } = useWaitForTransaction({
     hash: submitMintSbtResult ? submitMintSbtResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitMintSbtAsync successful: ', data);
 
       refetchHdfcNftId?.();

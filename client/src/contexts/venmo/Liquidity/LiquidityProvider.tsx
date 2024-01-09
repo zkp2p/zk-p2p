@@ -76,7 +76,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       const depositIdBatch = depositIdsToFetch.slice(i, i + BATCH_SIZE);
       const rawDepositsData = await fetchDepositBatch(depositIdBatch);
       
-      const deposits = sanitizeRawDeposits(rawDepositsData);
+      const deposits = sanitizeRawDeposits(rawDepositsData as any);
       for (let j = 0; j < deposits.length; j++) {
         const deposit = deposits[j];
 

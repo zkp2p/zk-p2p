@@ -7,7 +7,7 @@ import {
   ICircuitInputs
 } from '@zkp2p/circuits-circom/scripts/generate_input';
 // import { wrap } from 'comlink';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 
 import { Col } from "@components/legacy/Layout";
 import { EmailInputStatus, ProofGenerationStatus } from  "@helpers/types";

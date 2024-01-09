@@ -100,7 +100,7 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
           message: err.message
         });
       } else {
-        setError(err);
+        setError(err as any);
       }
     } finally {
       setLoading(false);

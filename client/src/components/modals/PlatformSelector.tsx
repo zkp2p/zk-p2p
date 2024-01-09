@@ -48,7 +48,7 @@ export const PlatformSelector: React.FC = () => {
     <Wrapper ref={ref}>
       <LogoAndTokenLabel onClick={toggleOpen}>
         <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform].platformName}
+          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
         </PlatformLabel>
         <StyledChevronDown/>
       </LogoAndTokenLabel>

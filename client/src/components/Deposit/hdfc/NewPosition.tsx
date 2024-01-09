@@ -96,7 +96,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     status: mineDepositTransactionStatus
   } = useWaitForTransaction({
     hash: submitDepositResult ? submitDepositResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
@@ -131,7 +131,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     status: mineApproveTransactionStatus
   } = useWaitForTransaction({
     hash: submitApproveResult ? submitApproveResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
       refetchUsdcApprovalToHdfcRamp?.();

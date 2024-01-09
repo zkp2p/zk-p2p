@@ -102,7 +102,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     isLoading: isSubmitCancelIntentMining,
   } = useWaitForTransaction({
     hash: submitCancelIntentResult ? submitCancelIntentResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitCancelIntentAsync successful: ', data);
       
       refetchIntentHash?.();
@@ -125,12 +125,12 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setRampAddress(venmoRampAddress);
-        setRampAbi(venmoRampAbi);
+        setRampAbi(venmoRampAbi as any);
         break;
 
       case PaymentPlatform.HDFC:
         setRampAddress(hdfcRampAddress);
-        setRampAbi(hdfcRampAbi);
+        setRampAbi(hdfcRampAbi as any);
         break;
 
       default:

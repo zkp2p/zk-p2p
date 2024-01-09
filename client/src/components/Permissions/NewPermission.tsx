@@ -64,7 +64,7 @@ export const NewPermission: React.FC<NewPermissionProps> = ({
     isLoading: isSubmitPermissionMining
   } = useWaitForTransaction({
     hash: submitPermissionResult ? submitPermissionResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitPermissionAsync successful: ', data);
       
       refetchDeniedUsers?.();

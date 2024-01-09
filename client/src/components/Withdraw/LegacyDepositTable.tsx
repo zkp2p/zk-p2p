@@ -77,7 +77,7 @@ export const LegacyDepositTable: React.FC = () => {
     isLoading: isSubmitWithdrawMining
   } = useWaitForTransaction({
     hash: submitWithdrawResult ? submitWithdrawResult.hash : undefined,
-    onSuccess(data) {
+    onSuccess(data: any) {
       console.log('writeSubmitWithdrawAsync successful: ', data);
 
       refetchUsdcBalance?.();
@@ -103,7 +103,7 @@ export const LegacyDepositTable: React.FC = () => {
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
-        const conversionRate = conversionRateToMultiplierString(deposit.conversionRate, true);
+        const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
 
         return {
           depositor,
