@@ -12,7 +12,8 @@ type ValidateUpiParams = {
 }
 
 type ValidateUpiResponse = {
-  account_exists: boolean;
+  input: string;
+  accountExists: boolean;
 };
 
 type RemoteProofError = {
@@ -51,9 +52,12 @@ export default function useUpiValidation({ vpa }: ValidateUpiParams) {
       if (response.ok) {
         const result = await response.json();
 
-        const account_exists = result['data']['account_exists'];
+        const accountExists = result['data']['account_exists'];
 
-        setData({account_exists});
+        setData({
+          accountExists,
+          input: vpa
+        });
       } else {
         setError({ code: response.status });
       }
