@@ -2,7 +2,7 @@ import { useState } from 'react';
 import crypto from 'crypto';
 
 
-const VALIDATION_API_URL = "https://zkp2p--zkp2p-modal-upi-0-1-2-staging-verify-upi-id.modal.run";
+const VALIDATION_API_URL = process.env.REMOTE_VALIDATE_UPI_URL;
 if (!VALIDATION_API_URL) {
   throw new Error("VALIDATION_API_URL environment variable is not defined.");
 }

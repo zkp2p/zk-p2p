@@ -657,6 +657,7 @@ module.exports = function (webpackEnv) {
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
         'process.env.REACT_APP_PRIVY_APP_ID': JSON.stringify(process.env.REACT_APP_PRIVY_APP_ID),
+        'process.env.REMOTE_VALIDATE_UPI_URL': JSON.stringify(process.env.REMOTE_VALIDATE_UPI_URL),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh
