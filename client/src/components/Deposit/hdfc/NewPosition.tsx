@@ -101,7 +101,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       
       refetchDeposits?.();
 
-      refetchUsdcApprovalToRamp?.();
+      refetchUsdcApprovalToHdfcRamp?.();
 
       setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
