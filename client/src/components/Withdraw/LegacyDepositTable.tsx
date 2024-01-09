@@ -7,7 +7,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { DepositWithAvailableLiquidity } from '@helpers/types';
 import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
-import { CustomConnectButton } from "@components/common/ConnectButton";
+import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import useAccount from '@hooks/useAccount';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';
@@ -178,7 +178,7 @@ export const LegacyDepositTable: React.FC = () => {
                   Your legacy deposits will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <AccountSelectorButton />
             </ErrorContainer>
           ) : positionsRowData.length === 0 ? (
             <ErrorContainer>

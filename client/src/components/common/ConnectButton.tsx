@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { usePrivy } from '@privy-io/react-auth';
+
 import Link from '@mui/material/Link';
 
 import { Button } from '@components/common/Button';
@@ -17,6 +19,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 }) => {
   const currentDeviceSize = useMediaQuery();
 
+  const { connectWallet, authenticated } = usePrivy();
+
   return (
     <ConnectButton.Custom>
       {({
@@ -24,7 +28,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
         chain,
         openAccountModal,
         openChainModal,
-        openConnectModal,
         authenticationStatus,
         mounted,
       }) => {
@@ -40,7 +43,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
         return (
           <div
-            {...(!ready && {
+            // If authenticated with Privy, do not display account or balance
+            {...((!ready || authenticated) && {
               'style': {
                 width: '100%',
                 opacity: 0,
@@ -54,7 +58,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    onClick={openConnectModal}
+                    onClick={connectWallet}
                     height={height}
                   >
                     {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
@@ -81,7 +85,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                       onClick={openChainModal}
                       style={{ display: 'flex', alignItems: 'center' }}
                     >
-                      {chain.hasIcon && (
+                      {/* {chain.hasIcon && (
                         <div
                           style={{
                             background: chain.iconBackground,
@@ -100,7 +104,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                             />
                           )}
                         </div>
-                      )}
+                      )} */}
                       {chain.name}
                     </NetworkSelector>
                   </NetworkAndBridgeContainer>

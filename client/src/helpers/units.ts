@@ -86,7 +86,7 @@ export function conversionRateToPercentageString(rate: bigint, premiumForOffRamp
 };
 
 export function conversionRateToMultiplierString(rate: bigint): string {
-  const scaledValue = rate * PRECISION;
+  const scaledValue = BigInt(rate) * PRECISION;
   const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
 
   const adjustedRate = Number(reciprocal - 10000n);
