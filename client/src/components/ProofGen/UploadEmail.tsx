@@ -98,7 +98,6 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
       
       case EmailInputStatus.INVALID_SIGNATURE:
         setCtaButtonTitle("Invalid email: must be from Venmo");
-        console.log("EmailInputStatus.INVALID_SIGNATURE", emailInputStatus);
         break;
 
       case EmailInputStatus.INVALID_SUBJECT:
