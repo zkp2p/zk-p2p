@@ -67,7 +67,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const [isVenmoIdInputValid, setIsVenmoIdInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
-  const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
+  const [shouldConfigureNewDepositWrite, setShouldConfigureNewDepositWrite] = useState<boolean>(false);
   const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
 
   /*
@@ -86,7 +86,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],
-    enabled: shouldConfigureSignalIntentWrite
+    enabled: shouldConfigureNewDepositWrite
   });
 
   const {
@@ -103,6 +103,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
+
+      refetchUsdcApprovalToRamp?.();
 
       setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
     },
@@ -136,6 +138,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       console.log('writeSubmitApproveAsync successful: ', data);
       
       refetchUsdcApprovalToRamp?.();
+
       refetchUsdcBalance?.();
     },
   });
@@ -203,7 +206,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     const isApprovalRequired = depositState === NewDepositState.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
-    setShouldConfigureSignalIntentWrite(depositState === NewDepositState.VALID);
+    setShouldConfigureNewDepositWrite(depositState === NewDepositState.VALID);
   }, [depositState]);
 
   useEffect(() => {
