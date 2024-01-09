@@ -32,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
       fullWidth={fullWidth}
       height={height}
       fontSize={fontSize}
+      disabled={disabled}
       $disabled={disabled}
       $loading={loading}
       $svgLoaded={!svg && svgLoaded}
