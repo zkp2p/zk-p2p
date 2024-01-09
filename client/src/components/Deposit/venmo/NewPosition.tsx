@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { Button } from "@components/common/Button";
+import { TransactionButton } from "@components/common/TransactionButton";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
@@ -91,12 +91,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const {
     data: submitDepositResult,
-    isLoading: isSubmitDepositLoading,
+    status: signDepositTransactionStatus,
     writeAsync: writeSubmitDepositAsync,
   } = useContractWrite(writeDepositConfig);
 
   const {
-    isLoading: isSubmitDepositMining
+    status: mineDepositTransactionStatus
   } = useWaitForTransaction({
     hash: submitDepositResult ? submitDepositResult.hash : undefined,
     onSuccess(data) {
@@ -124,12 +124,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const {
     data: submitApproveResult,
-    isLoading: isSubmitApproveLoading,
+    status: signApproveTransactionStatus,
     writeAsync: writeSubmitApproveAsync
   } = useContractWrite(writeApproveConfig);
 
   const {
-    isLoading: isSubmitApproveMining
+    status: mineApproveTransactionStatus
   } = useWaitForTransaction({
     hash: submitApproveResult ? submitApproveResult.hash : undefined,
     onSuccess(data) {
@@ -315,20 +315,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositState.DEFAULT:
       default:
         return 'Input valid Venmo Id';
-
-    }
-  }
-
-  const ctaLoading = (): boolean => {
-    switch (depositState) {
-      case NewDepositState.APPROVAL_REQUIRED:
-        return isSubmitApproveLoading || isSubmitApproveMining;
-
-      case NewDepositState.VALID:
-        return isSubmitDepositLoading || isSubmitDepositMining;
-
-      default:
-        return false;
     }
   }
 
@@ -356,6 +342,32 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       default:
         break;
+    }
+  }
+
+  const signTransactionStateFromDepositState = () => {
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
+        return signApproveTransactionStatus;
+
+      case NewDepositState.VALID:
+        return signDepositTransactionStatus;
+
+      default:
+        return signDepositTransactionStatus;
+    }
+  }
+
+  const mineTransactionStateFromDepositState = () => {
+    switch (depositState) {
+      case NewDepositState.APPROVAL_REQUIRED:
+        return mineApproveTransactionStatus;
+
+      case NewDepositState.VALID:
+        return mineDepositTransactionStatus;
+
+      default:
+        return mineDepositTransactionStatus;
     }
   }
 
@@ -444,15 +456,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
 
           <ButtonContainer>
-            <Button
+            <TransactionButton
+              signTransactionStatus={signTransactionStateFromDepositState()}
+              mineTransactionStatus={mineTransactionStateFromDepositState()}
               disabled={ctaDisabled()}
-              loading={ctaLoading()}
+              defaultLabel={ctaText()}
+              minedLabel={'Go to Deposits'}
               onClick={async () => {
                 ctaOnClick();
               }}
-            >
-              {ctaText()}
-            </Button>
+            />
           </ButtonContainer>
         </InputsContainer>
       </Body>
