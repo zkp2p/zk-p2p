@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
@@ -34,8 +34,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const {
     venmoRampAddress,
     venmoRampAbi,
-    sendProcessorAddress,
-    sendProcessorAbi,
+    venmoSendProcessorAbi,
+    venmoSendProcessorAddress,
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
@@ -66,8 +66,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const {
     data: verifyProofRaw,
   } = useContractRead({
-    address: sendProcessorAddress,
-    abi: sendProcessorAbi,
+    address: venmoSendProcessorAddress,
+    abi: venmoSendProcessorAbi,
     functionName: "verifyProof",
     args: [
       ...reformatProofForChain(proof),

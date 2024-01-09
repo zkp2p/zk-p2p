@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
