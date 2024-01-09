@@ -269,7 +269,7 @@ const Swap: React.FC<SwapProps> = ({
             const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
             const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
-              const onRampCooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+              const onRampCooldownEnd = (BigInt(lastOnRampTimestamp) + BigInt(onRampCooldownPeriod)) * 1000n;
               const onRampCooldownElapsed = Date.now() >= onRampCooldownEnd;
 
               if (!onRampCooldownElapsed) {
@@ -323,7 +323,7 @@ const Swap: React.FC<SwapProps> = ({
   useEffect(() => {
     const updateCooldownTime = () => {
       if (lastOnRampTimestamp && onRampCooldownPeriod) {
-        const cooldownEnd = (lastOnRampTimestamp + onRampCooldownPeriod) * 1000n;
+        const cooldownEnd = (BigInt(lastOnRampTimestamp) + BigInt(onRampCooldownPeriod)) * 1000n;
         const now = BigInt(Date.now());
         const timeRemaining = cooldownEnd - now;
 
