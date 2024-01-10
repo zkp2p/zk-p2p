@@ -21,6 +21,16 @@ export function chunkArray(arr, chunkSize, length) {
     return chunks;
 }
 
+export function chunkedBytesToBigInt(chunks: string[], bytesPerChunk: number): bigint {
+    let result = BigInt(0);
+    for (let i = 0; i < chunks.length; ++i) {
+        // Convert each string chunk to a bigint and shift it to its proper position
+        const chunkBigInt = BigInt(chunks[i]);
+        result += chunkBigInt << BigInt(i * bytesPerChunk);
+    }
+    return result;
+}
+
 export function packNullifier(header_hash) {
     const field_pack_bits = 248;
     let header_hash_int = new Array(field_pack_bits + 1).fill(0n);  // Initialize to BigInt zeros

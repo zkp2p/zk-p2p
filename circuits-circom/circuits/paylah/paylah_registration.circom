@@ -1,12 +1,13 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "../../utils/ceil.circom";
-include "../../common/regexes/from_regex_v2.circom";
-include "../../common/regexes/to_regex_v2.circom";
+include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
 
-include "./utils/email_verifier.circom";
-include "./utils/extract.circom";
+include "../../utils/ceil.circom";
+include "../../common-v2/regexes/from_regex_v2.circom";
+include "../../common-v2/regexes/to_regex_v2.circom";
+
 include "./regexes/paylah_payer_mobile_num.circom";
 include "./regexes/paylah_subject.circom";
 
