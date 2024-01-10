@@ -1,4 +1,4 @@
-import { useRef, useReducer, useMemo } from 'react';
+import { useRef, useReducer } from 'react';
 import { ChevronDown, Settings } from 'react-feather';
 import styled from "styled-components";
 import { Switch } from '@mui/material';
@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { Input } from "@components/common/Input";
 import { commonStrings } from "@helpers/strings";
-import useLiquidity from '@hooks/venmo/useLiquidity';
 
 
 interface SettingsDropdownProps {
@@ -24,12 +23,6 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps>= ({
   const navigate = useNavigate();
 
   /*
-   * Contexts
-   */
-
-  const { targetedDepositIds } = useLiquidity();
-
-  /*
    * State
    */
 
@@ -38,14 +31,6 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps>= ({
 
   const ref = useRef<HTMLDivElement>(null)
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
-
-  /*
-   * Hooks
-   */
-
-  const isTargetedLiquidityEnabled = useMemo(() => {
-    return targetedDepositIds !== null && targetedDepositIds.length > 0;
-  }, [targetedDepositIds]);
 
   /*
    * Handlers
@@ -87,24 +72,6 @@ export const SettingsDropdown: React.FC<SettingsDropdownProps>= ({
                 readOnly={!isLoggedIn}
               />
             </RecipientInputContainer>
-
-            <HorizontalDivider/>
-
-            <TargetedLiquidityContainer>
-              <ItemLabel>
-                Targeted liquidity
-                <ItemDescription>
-                  {commonStrings.get('TARGETED_LIQUIDITY_DESCRIPTION')}
-                </ItemDescription>
-              </ItemLabel>
-
-              <SwitchContainer>
-                <Switch
-                  checked={isTargetedLiquidityEnabled}
-                  onChange={navigateToLiquidityHandler}
-                />
-              </SwitchContainer>
-            </TargetedLiquidityContainer>
           </DropdownItems>
         </Dropdown>
       )}
@@ -185,33 +152,4 @@ const RecipientInputContainer = styled.div<RecipientAddressContainerProps>`
   ${({ $isOpen }) => $isOpen && `
     padding-bottom: 1rem;
   `}
-`;
-
-const HorizontalDivider = styled.div`
-  width: 100%;
-  border-top: 1px solid #98a1c03d;
-`;
-
-const TargetedLiquidityContainer = styled.div`
-  display: grid;
-  grid-template-columns: .8fr .2fr;
-  align-items: center;
-  font-size: 16px;
-  padding-top: 1rem;
-`;
-
-const SwitchContainer = styled.div`
-  justify-self: end;
-`;
-
-const ItemLabel = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  line-height: 1.5;
-`;
-
-const ItemDescription = styled.div`
-  font-size: 14px;
-  color: #6C757D;
 `;

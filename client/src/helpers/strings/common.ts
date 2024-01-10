@@ -5,9 +5,6 @@ export interface CommonStrings {
   STAGING_ENV_BANNER: string,
   PRODUCTION_ENV_BANNER: string,
 
-  // Swap Settings
-  TARGETED_LIQUIDITY_DESCRIPTION: string,
-
   // Registration NFT Tooltip
   REGISTRATION_NFT_TOOLTIP: string,
 
@@ -58,12 +55,6 @@ const strings: CommonStrings = {
   `,
   PRODUCTION_ENV_BANNER: `
     ZKP2P's Alpha Launch —
-  `,
-
-  // Swap Settings
-  TARGETED_LIQUIDITY_DESCRIPTION:`
-    When enabled, you are targeting deposits for quotes that may not include the best available rate.
-    Toggle here to select deposits
   `,
 
   // Registration NFT Tooltip
