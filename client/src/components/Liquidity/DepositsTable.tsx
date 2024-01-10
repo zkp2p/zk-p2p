@@ -4,7 +4,6 @@ import styled, { css } from 'styled-components/macro';
 
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
-import { Button } from "@components/common/Button";
 import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
@@ -18,12 +17,10 @@ const ROWS_PER_PAGE = 10;
 export interface DepositPrime {
   platformType: PaymentPlatformType,
   depositor: string;
-  depositId: bigint;
   availableDepositAmount: string;
   totalDepositAmount: string;
   conversionRate: string;
   conversionCurrency: string;
-  targeted: boolean;
 }
 
 export const DepositsTable: React.FC = () => {
@@ -33,14 +30,10 @@ export const DepositsTable: React.FC = () => {
 
   const {
     depositStore: venmoDepositStore,
-    targetedDepositIds: venmoTargetedDepositIds,
-    updateTargetedDepositIds: updateVenmoTargetedDepositIds
   } = useVenmoLiquidity();
 
   const {
     depositStore: hdfcDepositStore,
-    targetedDepositIds: hdfcTargetedDepositIds,
-    updateTargetedDepositIds: updateHdfcTargetedDepositIds
   } = useHdfcLiquidity();
 
   /*
@@ -50,8 +43,6 @@ export const DepositsTable: React.FC = () => {
   const [positionsRowData, setPositionsRowData] = useState<DepositPrime[]>([]);
 
   const [currentPage, setCurrentPage] = useState(0);
-
-  const [isTargetingDeposits, setIsTargetingDeposits] = useState<boolean>(false);
 
   /*
    * Hooks
@@ -75,46 +66,24 @@ export const DepositsTable: React.FC = () => {
         const deposit = depositWithLiquidity.deposit
         const platformType = deposit.platformType
         const depositor = deposit.depositor;
-        const depositId = depositWithLiquidity.depositId;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
         const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency;
 
-        let targeted = false;
-        if (platformType === PaymentPlatform.VENMO && venmoTargetedDepositIds) {
-          const targetedDepositIdsSet = new Set(venmoTargetedDepositIds.map(id => id.toString()));
-          const shouldBeTargeted = targetedDepositIdsSet.has(depositId.toString());
-
-
-          if (shouldBeTargeted) {
-            targeted = true;
-          }
-        }
-        
-        if (platformType === PaymentPlatform.HDFC && hdfcTargetedDepositIds) {
-          const targetedDepositIdsSet = new Set(hdfcTargetedDepositIds.map(id => id.toString()));
-
-          if (targetedDepositIdsSet.has(depositId.toString())) {
-            targeted = true;
-          }
-        }
-
         return {
           depositor,
           platformType,
-          depositId,
           availableDepositAmount,
           totalDepositAmount,
           conversionRate,
-          conversionCurrency,
-          targeted
+          conversionCurrency
         };
       });
 
       setPositionsRowData(sanitizedDeposits);
     }
-  }, [venmoDepositStore, hdfcDepositStore, isTargetingDeposits, venmoTargetedDepositIds, hdfcTargetedDepositIds]);
+  }, [venmoDepositStore, hdfcDepositStore]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -128,44 +97,6 @@ export const DepositsTable: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const handleClickTargetDeposits = () => {
-    if (isTargetingDeposits) {
-      setIsTargetingDeposits(false);
-    } else {
-      setIsTargetingDeposits(true);
-    }
-  };
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>, depositId: bigint, isVenmo: boolean) => {
-    if (isVenmo) {
-      if (venmoTargetedDepositIds) {
-        const didSelectDeposit = event.target.checked;
-        if (didSelectDeposit) {
-          const depositIdsToStore = [...venmoTargetedDepositIds, depositId];
-  
-          updateVenmoTargetedDepositIds(depositIdsToStore);
-        } else {
-          const filteredTargetedDepositIds = venmoTargetedDepositIds.filter(id => id !== depositId);
-  
-          updateVenmoTargetedDepositIds(filteredTargetedDepositIds);
-        }
-      }
-    } else {
-      if (hdfcTargetedDepositIds) {
-        const didSelectDeposit = event.target.checked;
-        if (didSelectDeposit) {
-          const depositIdsToStore = [...hdfcTargetedDepositIds, depositId];
-  
-          updateHdfcTargetedDepositIds(depositIdsToStore);
-        } else {
-          const filteredTargetedDepositIds = hdfcTargetedDepositIds.filter(id => id !== depositId);
-  
-          updateHdfcTargetedDepositIds(filteredTargetedDepositIds);
-        }
-      }
-    }
-};
-
   /*
    * Helpers
    */
@@ -173,8 +104,6 @@ export const DepositsTable: React.FC = () => {
   const totalPages = Math.ceil(positionsRowData.length / ROWS_PER_PAGE);
 
   const paginatedData = positionsRowData.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
-
-  const targetDepositsButtonText = isTargetingDeposits ? 'Save Selections' : '+ Target Deposits';
   
   /*
    * Component
@@ -186,10 +115,6 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
-
-        <Button onClick={handleClickTargetDeposits} height={40}>
-          {targetDepositsButtonText}
-        </Button>
       </TitleRow>
 
       <Content>
@@ -216,8 +141,6 @@ export const DepositsTable: React.FC = () => {
               <ColumnHeader>Available Amount</ColumnHeader>
 
               <ColumnHeader>Conversion Rate</ColumnHeader>
-
-              <ColumnHeader>Targeted</ColumnHeader>
             </TableHeaderRow>
             <Table>
               {paginatedData.map((positionRow, rowIndex) => (
@@ -229,10 +152,6 @@ export const DepositsTable: React.FC = () => {
                     conversionCurrency={positionRow.conversionCurrency}
                     depositorAddress={positionRow.depositor}
                     rowIndex={rowIndex}
-                    targeted={positionRow.targeted}
-                    isSelectingDeposits={isTargetingDeposits}
-                    depositId={positionRow.depositId}
-                    handleTargetLiquidityCheckboxChange={handleCheckboxChange}
                   />
                 </PositionRowStyled>
               ))}
@@ -310,7 +229,7 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr .9fr .6fr .8fr repeat(2, minmax(0,1fr)) .4fr;
+  grid-template-columns: .2fr .9fr .6fr .8fr repeat(2, minmax(0,1fr));
   gap: 8px;
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
