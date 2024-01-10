@@ -6,6 +6,7 @@ import '@nomiclabs/hardhat-ethers'
 import 'hardhat-deploy';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomicfoundation/hardhat-chai-matchers'
+import './tasks';
 
 import { HardhatUserConfig } from "hardhat/config";
 
