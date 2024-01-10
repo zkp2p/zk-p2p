@@ -54,8 +54,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
 
-  const [prunedDepositIds, setPrunedDepositIds] = useState<bigint[]>([]);
-
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
   /*
@@ -191,8 +189,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   
         setDeposits(null);
         setDepositStore(null);
-  
-        setPrunedDepositIds([]);
       }
     };
   
@@ -258,8 +254,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
     const prunedDepositIdsForStorage = prunedDepositIdsToStore.map(id => id.toString());
     localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
-
-    setPrunedDepositIds(prunedDepositIdsToStore);
   };
 
   return (
