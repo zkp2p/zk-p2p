@@ -41,13 +41,6 @@ const configureChainsConfig = configureChains(
     publicProvider()
   ]
 );
-const { publicClient } = configureChains(
-  chains,
-  [
-    alchemyProvider({ apiKey: process.env.ALCHEMY_API_KEY }),
-    publicProvider()
-  ]
-);
 
 export const alchemyMainnetEthersProvider =
   new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY)
@@ -61,7 +54,7 @@ const { connectors } = getDefaultWallets({
 const config = createConfig({
   autoConnect: true,
   connectors,
-  publicClient
+  publicClient: configureChainsConfig.publicClient
 })
 
 const zkp2pTheme = merge(darkTheme(), {
