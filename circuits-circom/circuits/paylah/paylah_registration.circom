@@ -117,7 +117,7 @@ template PaylahRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_si
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 3077213
+    // TOTAL CONSTRAINTS: 3154474
 }
 
 // Args:
