@@ -11,14 +11,14 @@
     "types": "dist/index.d.ts",
     "license": "MIT",
     "dependencies": {
-        "@zk-email/helpers": "^2.0.0",
+        "@zk-email/helpers": "^3.0.2",
         "circomlib": "^2.0.5"
     },
     "scripts": {
         "test": "jest",
         "build": "tsc",
-        "pubkey_fetch_and_hash": "npx tsx ./scripts/pubkey_hash.ts 1",
-        "pubkey_hash": "npx tsx ./scripts/pubkey_hash.ts 0"
+        "pubkey_fetch_and_hash": "npx tsx ./pubkey_hash.ts 1",
+        "pubkey_hash": "npx tsx ./pubkey_hash.ts 0"
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.2",

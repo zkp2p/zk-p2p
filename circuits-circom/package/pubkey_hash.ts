@@ -46,6 +46,7 @@ export const extractModulus = (publicKey: string): string[] => {
 
     // Extract modulus as a BigInt
     const modulusBigInt = BigInt(`0x${rsaPublicKey.n.toString(16)}`);
+    console.log('Modulus:', modulusBigInt.toString());
 
     // Convert to the desired format
     const modulusInt = toCircomBigIntBytes(modulusBigInt);
