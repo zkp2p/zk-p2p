@@ -1,1 +1,0 @@
-declare module '@zk-email/helpers';

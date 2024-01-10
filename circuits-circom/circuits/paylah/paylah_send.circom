@@ -4,9 +4,9 @@ include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/helpers/extract.circom";
 
-include "../../utils/ceil.circom";
-include "../../common-v2/regexes/from_regex_v2.circom";
-include "../../common-v2/regexes/to_regex_v2.circom";
+include "../utils/ceil.circom";
+include "../common-v2/regexes/from_regex_v2.circom";
+include "../common-v2/regexes/to_regex_v2.circom";
 
 include "./regexes/paylah_payment_details.circom";
 include "./regexes/paylah_timestamp.circom";

@@ -2,7 +2,7 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../../utils/test-utils";
+import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../utils/test-utils";
 import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
 import ganache from "ganache";

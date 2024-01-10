@@ -1,7 +1,7 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "../../utils/ceil.circom";
+include "../utils/ceil.circom";
 
 include "./utils/email_verifier.circom";
 include "./utils/extract.circom";
