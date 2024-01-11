@@ -30,7 +30,6 @@ import LiquidityContext from './LiquidityContext';
 
 const BATCH_SIZE = 30;
 const PRUNED_DEPOSITS_PREFIX = 'prunedDepositIds_';
-const TARGETED_DEPOSITS_PREFIX = 'targetedDepositIds_';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -55,9 +54,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const [deposits, setDeposits] = useState<DepositWithAvailableLiquidity[] | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
 
-  const [prunedDepositIds, setPrunedDepositIds] = useState<bigint[]>([]);
-  const [targetedDepositIds, setTargetedDepositIds] = useState<bigint[]>([]);
-
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
   /*
@@ -66,7 +62,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const fetchAndPruneDeposits = async (depositCounter: bigint, rampAddress: string) => {
     const existingPrunedIds = fetchStoredPrunedDepositIds(rampAddress);
-    const existingTargetedIds = fetchStoredTargetedDepositIds(rampAddress);
     const depositIdsToFetch = initializeDepositIdsToFetch(depositCounter, existingPrunedIds);
 
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
@@ -94,9 +89,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
     if (currentRampAddressRef.current === rampAddress) {
       const newPrunedDepositIds = [...existingPrunedIds, ...depositIdsToPrune];
-      updateStoredPrunedIds(rampAddress, newPrunedDepositIds, existingTargetedIds);
-  
-      setTargetedDepositIds(existingTargetedIds);
+      updateStoredPrunedIds(rampAddress, newPrunedDepositIds);
   
       setDeposits(batchedDeposits);
     }
@@ -196,9 +189,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   
         setDeposits(null);
         setDepositStore(null);
-  
-        setPrunedDepositIds([]);
-        setTargetedDepositIds([]);
+
       }
     };
   
@@ -235,35 +226,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, onRamperAddress: string): IndicativeQuote => {
     if (depositStore) {
       return fetchBestDepositForAmount(
-          requestedOnRampInputAmount,
-          depositStore,
-          targetedDepositIds,
-          onRamperAddress
+        requestedOnRampInputAmount,
+        depositStore,
+        onRamperAddress
       );
     } else {
       return {
-          error: 'No deposits available'
+        error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore, targetedDepositIds]);
-
-  const updateTargetedDepositIds = useCallback((targetedDepositIdsToStore: bigint[]) => {
-    if (venmoRampAddress) {
-      updateStoredTargetedIds(venmoRampAddress, targetedDepositIdsToStore);
-    }
-  }, [venmoRampAddress]);
+  }, [depositStore]);
 
   /*
    * Helpers
    */
-
-  const filterPrunedDepositIdsFromTargetedDepositIds = (depositIdsToPrune: bigint[], existingTargetedIds: bigint[]) => {
-    const prunedIdsSet = new Set(depositIdsToPrune.map(id => id.toString()));
-
-    const targetedDepositIdsToKeep = existingTargetedIds.filter(id => !prunedIdsSet.has(id.toString()));
-
-    setTargetedDepositIds(targetedDepositIdsToKeep);
-  };
 
   const fetchStoredPrunedDepositIds = (contractAddress: string) => {
     const prunedIdsStorageKey = `${PRUNED_DEPOSITS_PREFIX}${contractAddress}`;
@@ -273,32 +249,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     return prunedIdsFromStorageParsed;
   };
 
-  const fetchStoredTargetedDepositIds = (contractAddress: string) => {
-    const targetedIdsStorageKey = `${TARGETED_DEPOSITS_PREFIX}${contractAddress}`;
-    const targetedIdsFromStorage = localStorage.getItem(targetedIdsStorageKey);
-    const targetedIdsFromStorageParsed = targetedIdsFromStorage ? JSON.parse(targetedIdsFromStorage).map(BigInt) : [];
-
-    return targetedIdsFromStorageParsed;
-  };
-
-  const updateStoredTargetedIds = (rampAddress: string, targetedDepositIdsToStore: bigint[]) => {
-    const storageKey = `${TARGETED_DEPOSITS_PREFIX}${rampAddress}`;
-    const targetedDepositIdsForStorage = targetedDepositIdsToStore.map(id => id.toString());
-    localStorage.setItem(storageKey, JSON.stringify(targetedDepositIdsForStorage));
-
-    setTargetedDepositIds(targetedDepositIdsToStore);
-  };
-
-  const updateStoredPrunedIds = (rampAddress: string, prunedDepositIdsToStore: bigint[], existingTargetedIds: bigint[]) => {
+  const updateStoredPrunedIds = (rampAddress: string, prunedDepositIdsToStore: bigint[]) => {
     esl && console.log('updateStoredPrunedIds_1: ', rampAddress);
 
     const storageKey = `${PRUNED_DEPOSITS_PREFIX}${rampAddress}`;
     const prunedDepositIdsForStorage = prunedDepositIdsToStore.map(id => id.toString());
     localStorage.setItem(storageKey, JSON.stringify(prunedDepositIdsForStorage));
-
-    setPrunedDepositIds(prunedDepositIdsToStore);
-
-    filterPrunedDepositIdsFromTargetedDepositIds(prunedDepositIds, existingTargetedIds);
   };
 
   return (
@@ -310,8 +266,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         refetchDeposits,
         shouldFetchDeposits,
         calculateUsdFromRequestedUSDC,
-        targetedDepositIds,
-        updateTargetedDepositIds,
       }}
     >
       {children}

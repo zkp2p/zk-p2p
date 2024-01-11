@@ -18,8 +18,6 @@ interface LiquidityValues {
   refetchDeposits: (() => void) | null;
   shouldFetchDeposits: boolean;
   calculateUsdFromRequestedUSDC: (requestedOnRampInputAmount: bigint, conversionRate: bigint) => bigint;
-  targetedDepositIds: bigint[] | null;
-  updateTargetedDepositIds: (targetedDepositIds: bigint[]) => void;
 }
 
 const defaultValues: LiquidityValues = {
@@ -29,8 +27,6 @@ const defaultValues: LiquidityValues = {
   refetchDeposits: null,
   shouldFetchDeposits: false,
   calculateUsdFromRequestedUSDC,
-  targetedDepositIds: null,
-  updateTargetedDepositIds: () => {}
 };
 
 const LiquidityContext = createContext<LiquidityValues>(defaultValues);

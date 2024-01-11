@@ -45,18 +45,11 @@ export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint
 export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
-  targetedDepositIds: bigint[],
   loggedInUserAddress: string = ''
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 
-  let depositsToSearch: StoredDeposit[] = [];
-  if (targetedDepositIds.length > 0) {
-    depositsToSearch = depositStore.filter(deposit => targetedDepositIds.includes(deposit.depositId));
-  } else {
-    depositsToSearch = depositStore;
-  }
-
+  let depositsToSearch: StoredDeposit[] = depositStore;
   for (const deposit of depositsToSearch) {
     const isUserDepositor = deposit.deposit.depositor === loggedInUserAddress;
 
