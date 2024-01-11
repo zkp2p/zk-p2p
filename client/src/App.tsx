@@ -27,17 +27,18 @@ import PlatformSettings from './contexts/common/PlatformSettings/PlatformSetting
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
+import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
 
 // Legacy Contexts
 import LegacyDepositsProvider  from './contexts/legacy/Deposits/DepositsProvider';
 
 // Venmo Contexts
-import DepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
-import LiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
-import OnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
-import PermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
-import RampProvider  from './contexts/venmo/Ramp/RampProvider';
-import RegistrationProvider from './contexts/venmo/Registration/RegistrationProvider';
+import VenmoDepositsProvider  from './contexts/venmo/Deposits/DepositsProvider';
+import VenmoLiquidityProvider from './contexts/venmo/Liquidity/LiquidityProvider';
+import VenmoOnRamperIntentsProvider  from './contexts/venmo/OnRamperIntents/OnRamperIntentsProvider';
+import VenmoPermissionsProvider from './contexts/venmo/Permissions/PermissionsProvider';
+import VenmoRegistrationProvider from './contexts/venmo/Registration/RegistrationProvider';
+import VenmoRampProvider  from './contexts/venmo/Ramp/RampProvider';
 
 // HDFC Contexts
 import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
@@ -136,17 +137,18 @@ const providersWithProps: ProvidersType[] = [
   [SmartContractsProvider, {}],
   [PlatformSettings, {}],
   [BalancesProvider, {}],
-  [RampProvider, {}],
+  [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
-  [RegistrationProvider, {}],
+  [VenmoRegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
-  [DepositsProvider, {}],
+  [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
-  [PermissionsProvider, {}],
-  [LiquidityProvider, {}],
+  [VenmoPermissionsProvider, {}],
+  [VenmoLiquidityProvider, {}],
+  [DenyListProvider, {}],
   [HdfcLiquidityProvider, {}],
-  [OnRamperIntentsProvider, {}],
+  [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],

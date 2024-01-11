@@ -21,9 +21,10 @@ import {
   fetchBestDepositForAmount,
  } from '../../venmo/Liquidity/helper';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
-import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+import { unpackPackedUpiId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
+import useDenyList from '@hooks/useDenyList';
 
 import LiquidityContext from './LiquidityContext';
 
@@ -42,6 +43,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const { hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
   const { depositCounter } = useHdfcRampState();
+  const { fetchHdfcDepositoryDenyList } = useDenyList();
 
   /*
    * State
@@ -63,6 +65,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const fetchAndPruneDeposits = async (depositCounter: bigint, rampAddress: string) => {
     const existingPrunedIds = fetchStoredPrunedDepositIds(rampAddress);
     const depositIdsToFetch = initializeDepositIdsToFetch(depositCounter, existingPrunedIds);
+    const hdfcDenyList = await fetchHdfcDepositoryDenyList();
 
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
@@ -91,7 +94,9 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       const newPrunedDepositIds = [...existingPrunedIds, ...depositIdsToPrune];
       updateStoredPrunedIds(rampAddress, newPrunedDepositIds);
   
-      setDeposits(batchedDeposits);
+      const hdfcDenyListSet = new Set(hdfcDenyList);
+      const filteredDeposits = batchedDeposits.filter(deposit => !hdfcDenyListSet.has(deposit.deposit.venmoId));
+      setDeposits(filteredDeposits);
     }
   };
 
@@ -142,7 +147,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       const deposit: Deposit = {
         platformType: PaymentPlatform.HDFC,
         depositor: depositData.depositor.toString(),
-        venmoId: unpackPackedVenmoId(depositData.upiId),
+        venmoId: unpackPackedUpiId(depositData.upiId),
         depositAmount: depositData.depositAmount,
         remainingDepositAmount: depositData.remainingDeposits,
         outstandingIntentAmount: depositData.outstandingIntentAmount,
