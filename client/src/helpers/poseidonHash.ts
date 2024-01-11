@@ -104,7 +104,6 @@ function Bytes2Packed8(n: number, inArr: number[]) {
   return out;
 }
 
-
 export const unpackPackedVenmoId = (packedVenmoId: [bigint, bigint, bigint, bigint, bigint]): string => {
   const n = 7;
   let venmoIdArray: number[] = [];
@@ -126,4 +125,26 @@ export const unpackPackedVenmoId = (packedVenmoId: [bigint, bigint, bigint, bigi
   venmoIdArray = venmoIdArray.reverse();
 
   return String.fromCharCode(...venmoIdArray);
+};
+
+export const unpackPackedUpiId = (packedUpiId: [bigint, bigint, bigint, bigint, bigint]): string => {
+  const n = 7;
+  let upiIdArray: number[] = [];
+
+  for (const packedValue of packedUpiId) {
+    let bigIntValue = BigInt(packedValue.toString());
+
+    for (let k = 0; k < n; k++) {
+      upiIdArray.push(Number(bigIntValue & BigInt(0xFF)));
+      bigIntValue >>= BigInt(8);
+    }
+  }
+
+  // Remove padding zeros and convert back to string
+  const firstNonZeroIndex = upiIdArray.reverse().findIndex(value => value !== 0);
+  if (firstNonZeroIndex !== -1) {
+    upiIdArray = upiIdArray.slice(firstNonZeroIndex).reverse();
+  }
+
+  return String.fromCharCode(...upiIdArray);
 };
