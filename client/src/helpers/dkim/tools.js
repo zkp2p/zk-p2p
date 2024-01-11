@@ -275,8 +275,7 @@ const getPublicKey = async (type, name, minBitLength, resolver) => {
   }
 
   // let list = await resolver(name, "TXT");
-  
-  let list = ["p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoecgrbF4KMhqGMZK02Dv2vZgGnSAo9CDpYEZCpNDRBLXkfp/0Yzp3rgngm4nuiQWbhHO457vQ37nvc88I9ANuJKa3LIodD+QtOLCjwlzH+li2A81duY4fKLHcHYO3XKw+uYXKWd+bABQqps3AQP5KxoOgQ/P1EssOnvtQYBHjWQIDAQAB"]
+  let list = ["p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMh6czdzpSrMH7a5nxQ867R2FqeEkoDdSUszWVL2/06iGLMI4X/mOF23IW31hWBsb5YGkm7vHEwXVltWYpSf1mVGuvqIIyXOb77tOPtVdgkvyfko/z7uUgTT509QYbo3KQyBj6geojrGZF6GN0isLIXxeE11XCz9yKmdh8JK4bAQIDAQAB"]
 
   let rr =
     list &&
