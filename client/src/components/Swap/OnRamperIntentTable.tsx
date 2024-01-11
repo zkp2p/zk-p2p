@@ -22,10 +22,14 @@ import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
 interface OnRamperIntentTableProps {
   onIntentRowClick?: () => void;
+  shouldAutoSelectIntent: boolean;
+  resetShouldAutoSelectIntent: () => void;
 }
 
 export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   onIntentRowClick,
+  shouldAutoSelectIntent,
+  resetShouldAutoSelectIntent,
 }) => {
   /*
    * Contexts
@@ -143,12 +147,10 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
-        console.log('currentVenmoIntentHash', currentVenmoIntentHash);  
         setCurrentIntentHash(currentVenmoIntentHash);
         break;
 
       case PaymentPlatform.HDFC:
-        console.log('currentHdfcIntentHash', currentHdfcIntentHash);  
         setCurrentIntentHash(currentHdfcIntentHash);
         break;
 
@@ -179,12 +181,10 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
-        console.log('currentVenmoIntent', currentVenmoIntent);
         setCurrentIntent(currentVenmoIntent);
         break;
 
       case PaymentPlatform.HDFC:
-        console.log('currentHdfcIntent', currentHdfcIntent);
         setCurrentIntent(currentHdfcIntent);
         break;
 
@@ -244,7 +244,9 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
             if (onIntentRowClick) {
               onIntentRowClick();
             }
-          }
+          },
+          shouldAutoSelectIntent,
+          resetShouldAutoSelectIntent,
         };
 
         setIntentsRowData([sanitizedIntent]);
@@ -333,6 +335,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
               depositorAddress={intentsRow.depositorAddress}
               recipientAddress={intentsRow.recipientAddress}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
+              shouldAutoSelectIntent={intentsRow.shouldAutoSelectIntent}
+              resetShouldAutoSelectIntent={intentsRow.resetShouldAutoSelectIntent}
             />
           ))}
         </Table>

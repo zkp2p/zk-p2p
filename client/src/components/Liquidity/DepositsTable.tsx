@@ -234,10 +234,6 @@ const TableHeaderRow = styled.div`
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
   border-bottom: 1px solid #98a1c03d;
-
-  & > *:last-child {
-    justify-self: center;
-  }
 `;
 
 const Table = styled.div`

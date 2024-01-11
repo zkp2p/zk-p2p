@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
-import SwapModal from "@components/Swap";
+import SwapForm from "@components/Swap";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
@@ -96,14 +96,10 @@ export const Swap: React.FC = () => {
   const handleIntentClick = () => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
-        console.log('selectedVenmoIntentHash', currentVenmoIntentHash);
-
         setSelectedIntentHash(currentVenmoIntentHash);
         break;
       
       case PaymentPlatform.HDFC:
-        console.log('selectedHdfcIntentHash', currentHdfcIntentHash);
-
         setSelectedIntentHash(currentHdfcIntentHash);
         break;
     }
@@ -139,7 +135,7 @@ export const Swap: React.FC = () => {
   return (
     <PageWrapper>
       {!selectedIntentHash ? (
-        <SwapModal
+        <SwapForm
           onIntentTableRowClick={handleIntentClick}
         />
       ) : (
