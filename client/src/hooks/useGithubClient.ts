@@ -15,8 +15,7 @@ type FetchDenyListError = {
   code: number;
 };
 
-export default function useUpiValidation() {
-  const [data, setData] = useState<FetchDenyListResponse | null>(null);
+export default function useGithubClient() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<FetchDenyListError | null>(null);
 
@@ -24,8 +23,9 @@ export default function useUpiValidation() {
     return crypto.randomBytes(16).toString('hex');
   }
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<FetchDenyListResponse | null> => {
     setLoading(true);
+    setError(null);
 
     const nonce = generateNonce();
     if (!HDFC_DENY_LIST_URL) {
@@ -38,9 +38,6 @@ export default function useUpiValidation() {
     try {
       const response = await fetch(urlWithParams.toString(), {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
 
       if (response.ok) {
@@ -48,18 +45,23 @@ export default function useUpiValidation() {
 
         const hdfcDenyList = result['depositors'];
 
-        setData({
-          hdfcDenyList
-        });
+        setLoading(false);
+        return { hdfcDenyList };
       } else {
         setError({ code: response.status });
+
+        setLoading(false);
+
+        return null;
       }
     } catch (err) {
       setError({code: 0});
-    } finally {
+
       setLoading(false);
+
+      return null;
     }
   };
 
-  return { data, loading, error, fetchData };
+  return { loading, error, fetchData };
 };

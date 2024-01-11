@@ -3,12 +3,12 @@ import { createContext } from 'react'
 
 interface DenyListValues {
   hdfcDepositorDenyList: string[] | null;
-  fetchHdfcDepositoryDenyList: (() => void) | null;
+  fetchHdfcDepositoryDenyList: () => Promise<string[] | null>;
 };
 
 const defaultValues: DenyListValues = {
   hdfcDepositorDenyList: null,
-  fetchHdfcDepositoryDenyList: null
+  fetchHdfcDepositoryDenyList: async () => null
 };
 
 const DenyListContext = createContext<DenyListValues>(defaultValues);

@@ -1,6 +1,5 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import React, { useEffect, useCallback, useState, ReactNode } from 'react';
 
-import { esl } from '@helpers/constants';
 import useGithubClient from '@hooks/useGithubClient';
 
 
@@ -15,10 +14,7 @@ const DenyListProvider = ({ children }: ProvidersProps) => {
    * Context
    */
 
-  const { 
-    data,
-    fetchData
-  } = useGithubClient();
+  const {  fetchData } = useGithubClient();
 
   /*
    * State
@@ -26,32 +22,36 @@ const DenyListProvider = ({ children }: ProvidersProps) => {
 
   const [hdfcDepositorDenyList, setHdfcDepositorDenyList] = useState<string[] | null>(null);
 
-  /*
-   * Hooks
-   */
+  const fetchHdfcDepositoryDenyList = useCallback(async () => {
+    const cachedData = localStorage.getItem('hdfcDepositorDenyList');
+    const now = new Date();
 
-  useEffect(() => {
-    esl && console.log('denyList_1');
-    esl && console.log('checking data: ', data);
+    if (cachedData) {
+      const { data: storedData, timestamp } = JSON.parse(cachedData);
 
-    if (data) {
-      esl && console.log('denyList_2');
+      if (now.getTime() - timestamp < 60000) { // 1 min
+        setHdfcDepositorDenyList(storedData);
 
-      setHdfcDepositorDenyList(data.hdfcDenyList);
-    } else {
-      esl && console.log('denyList_3');
-
-      setHdfcDepositorDenyList(null);
+        return storedData;
+      }
     }
-  }, [data]);
+
+    const fetchedData = await fetchData();
+    if (fetchedData && fetchedData.hdfcDenyList) {
+      setHdfcDepositorDenyList(fetchedData.hdfcDenyList);
+
+      localStorage.setItem('hdfcDepositorDenyList', JSON.stringify({
+        data: fetchedData.hdfcDenyList,
+        timestamp: now.getTime()
+      }));
+
+      return fetchedData.hdfcDenyList;
+    }
+    return null;
+  }, [fetchData]);
 
   return (
-    <DenyListContext.Provider
-      value={{
-        hdfcDepositorDenyList,
-        fetchHdfcDepositoryDenyList: fetchData
-      }}
-    >
+    <DenyListContext.Provider value={{ hdfcDepositorDenyList, fetchHdfcDepositoryDenyList }}>
       {children}
     </DenyListContext.Provider>
   );
