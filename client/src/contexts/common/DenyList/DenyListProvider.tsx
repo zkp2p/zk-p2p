@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, ReactNode } from 'react';
+import React, { useCallback, useState, ReactNode } from 'react';
 
 import useGithubClient from '@hooks/useGithubClient';
 
