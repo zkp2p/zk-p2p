@@ -88,7 +88,7 @@ ReactDOM.render(
             config={{
               embeddedWallets: {
                 createOnLogin: 'users-without-wallets',
-                noPromptOnSignature: false // TODO: Set to true
+                noPromptOnSignature: true // TODO: Any custom logic we want here
               },
               defaultChain: goerli, // TODO: Switch back to base
               supportedChains: [goerli, base, hardhat]
