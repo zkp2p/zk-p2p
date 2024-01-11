@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
@@ -21,6 +21,8 @@ interface IntentRowProps {
   depositorAddress: string;
   recipientAddress: string;
   handleCompleteOrderClick: () => void;
+  shouldAutoSelectIntent: boolean;
+  resetShouldAutoSelectIntent: () => void;
 }
 
 export type IntentRowData = IntentRowProps;
@@ -34,6 +36,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   depositorAddress,
   recipientAddress,
   handleCompleteOrderClick,
+  shouldAutoSelectIntent,
+  resetShouldAutoSelectIntent,
 }: IntentRowProps) => {
   IntentRow.displayName = "IntentRow";
 
@@ -86,6 +90,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const handleModalBackClicked = () => {
     setShouldShowRequirementsModal(false);
+
     setShouldShowSwapModal(false);
   };
 
@@ -96,6 +101,18 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
     setShouldShowSwapModal(true);
   };
+  
+  /*
+   * Effects
+   */
+
+  useEffect(() => {
+    if (shouldAutoSelectIntent) {
+      handleSendClick();
+
+      resetShouldAutoSelectIntent();
+    }
+  }, [shouldAutoSelectIntent]);
 
   /*
    * Component

@@ -50,13 +50,13 @@ const QuoteState = {
   SUCCESS: 'success',
 }
 
-interface SwapProps {
+interface SwapFormProps {
   onIntentTableRowClick?: () => void;
 }
 
-const Swap: React.FC<SwapProps> = ({
-  onIntentTableRowClick
-}: SwapProps) => {
+const SwapForm: React.FC<SwapFormProps> = ({
+  onIntentTableRowClick,
+}: SwapFormProps) => {
   const navigate = useNavigate();
 
   /*
@@ -102,6 +102,8 @@ const Swap: React.FC<SwapProps> = ({
   const [shouldConfigureSignalIntentWrite, setShouldConfigureSignalIntentWrite] = useState<boolean>(false);
 
   const [onRampTimeRemainingLabel, setOnRampTimeRemainingLabel] = useState('');
+
+  const [shouldAutoSelectIntent, setShouldAutoSelectIntent] = useState<boolean>(false);
 
   /*
    * Event Handlers
@@ -184,6 +186,8 @@ const Swap: React.FC<SwapProps> = ({
 
       refetchIntentHash?.();
       refetchLastOnRampTimestamp?.();
+
+      setShouldAutoSelectIntent(true);
     },
   });
 
@@ -434,7 +438,7 @@ const Swap: React.FC<SwapProps> = ({
 
   return (
     <Wrapper>
-      <SwapModalContainer>
+      <SwapFormContainer>
         <TitleContainer>
           <ThemedText.HeadlineSmall>
             Swap
@@ -498,7 +502,7 @@ const Swap: React.FC<SwapProps> = ({
             </CTAButton>
           )}
         </MainContentWrapper>
-      </SwapModalContainer>
+      </SwapFormContainer>
 
       <>
         <VerticalDivider />
@@ -516,6 +520,8 @@ const Swap: React.FC<SwapProps> = ({
             <VerticalDivider />
             <OnRamperIntentTable
               onIntentRowClick={onIntentTableRowClick}
+              shouldAutoSelectIntent={shouldAutoSelectIntent}
+              resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
             />
           </>
         )
@@ -532,7 +538,7 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const SwapModalContainer = styled(AutoColumn)`
+const SwapFormContainer = styled(AutoColumn)`
   border-radius: 16px;
   border: 1px solid #DEE2E6;
   padding: 1rem;
@@ -575,4 +581,4 @@ const VerticalDivider = styled.div`
   margin: 0 auto;
 `;
 
-export default Swap;
+export default SwapForm;
