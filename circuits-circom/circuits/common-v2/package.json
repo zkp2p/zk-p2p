@@ -1,8 +1,8 @@
 {
     "name": "@zkp2p/circuits-circom-common-v2",
-    "version": "0.1.1",
+    "version": "0.0.1",
     "packageManager": "yarn@3.6.3",
-    "description": "Circom circuits for ZKP2P",
+    "description": "Common regex circuits for ZKP2P",
     "contributors": [
         "0xSachinK",
         "richardliang"
