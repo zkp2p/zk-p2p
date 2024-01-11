@@ -12,7 +12,6 @@ import { calculatePackedUPIId } from '@helpers/poseidonHash';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { hdfcStrings } from '@helpers/strings';
-import useUpiValidation from '@hooks/useUpiValidation';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
@@ -24,7 +23,6 @@ import useSmartContracts from '@hooks/useSmartContracts';
 const NewDepositState = {
   MISSING_REGISTRATION: 'missing_registration',
   DEFAULT: 'default',
-  VALIDATING_UPI_ID: 'validating_upi_id',
   INVALID_UPI_ID: 'invalid_upi_id',
   MISSING_AMOUNTS: 'missing_amounts',
   INSUFFICIENT_BALANCE: 'insufficient_balance',
@@ -148,14 +146,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Hooks
    */
 
-  const {
-    data: validateUpiIdResponse,
-    loading: isValidateUpiIdLoading,
-    fetchData: validateUpiId
-  } = useUpiValidation({
-    vpa: upiIdInput
-  });
-
   useEffect(() => {
     const updateDepositState = async () => {
       if(!registrationHash) {
@@ -164,39 +154,35 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         if (!upiIdInput) { 
           setDepositState(NewDepositState.DEFAULT);
         } else {
-          if (isValidateUpiIdLoading) {
-            setDepositState(NewDepositState.VALIDATING_UPI_ID);
+          if (!isUpiIdInputValid) {
+            setDepositState(NewDepositState.INVALID_UPI_ID);
           } else {
-            if (!isUpiIdInputValid) {
-              setDepositState(NewDepositState.INVALID_UPI_ID);
-            } else {
-              const usdcBalanceLoaded = usdcBalance !== null;
-              const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null;
-              const minimumDepositAmountLoaded = minimumDepositAmount !== null;
+            const usdcBalanceLoaded = usdcBalance !== null;
+            const usdcApprovalToRampLoaded = usdcApprovalToHdfcRamp !== null;
+            const minimumDepositAmountLoaded = minimumDepositAmount !== null;
+
   
-    
-              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-                const depositAmountBI = toBigInt(depositAmountInput);
-                const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
-                const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToHdfcRamp;
-          
-                if (isDepositAmountGreaterThanBalance) {
-                  setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
-                } else if (isDepositAmountLessThanMinDepositSize) {
-                  setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-                } else if (isDepositAmountGreaterThanApprovedBalance) {
-                  setDepositState(NewDepositState.APPROVAL_REQUIRED);
-                } else {
-                  if (receiveAmountInput) {
-                    setDepositState(NewDepositState.VALID);
-                  } else {
-                    setDepositState(NewDepositState.MISSING_AMOUNTS);
-                  }
-                }
+            if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+              const depositAmountBI = toBigInt(depositAmountInput);
+              const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+              const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToHdfcRamp;
+        
+              if (isDepositAmountGreaterThanBalance) {
+                setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
+              } else if (isDepositAmountLessThanMinDepositSize) {
+                setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+              } else if (isDepositAmountGreaterThanApprovedBalance) {
+                setDepositState(NewDepositState.APPROVAL_REQUIRED);
               } else {
-                setDepositState(NewDepositState.MISSING_AMOUNTS);
+                if (receiveAmountInput) {
+                  setDepositState(NewDepositState.VALID);
+                } else {
+                  setDepositState(NewDepositState.MISSING_AMOUNTS);
+                }
               }
+            } else {
+              setDepositState(NewDepositState.MISSING_AMOUNTS);
             }
           }
         }
@@ -213,7 +199,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       usdcBalance,
       usdcApprovalToHdfcRamp,
       isUpiIdInputValid,
-      isValidateUpiIdLoading,
     ]
   );
 
@@ -243,20 +228,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   useEffect(() => {
     const validUpiInput = isValidUpiRegex(upiIdInput);
 
-    if (validUpiInput) {
-      validateUpiId();
-    }
+    setIsUpiInputValid(validUpiInput);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [upiIdInput]);
-
-  useEffect(() => {
-    if (validateUpiIdResponse) {
-      if (validateUpiIdResponse.input === latestUpiInputRef.current) {
-        setIsUpiInputValid(validateUpiIdResponse.accountExists);
-      }
-    }
-  }, [validateUpiIdResponse]);
 
   /*
    * Helpers
@@ -277,7 +252,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const ctaDisabled = (): boolean => {
     switch (depositState) {
       case NewDepositState.DEFAULT:
-      case NewDepositState.VALIDATING_UPI_ID:
       case NewDepositState.INVALID_UPI_ID:
       case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
       case NewDepositState.CONVENIENCE_FEE_INVALID:
@@ -300,9 +274,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     switch (depositState) {
       case NewDepositState.MISSING_REGISTRATION:
         return 'Missing registration';
-
-      case NewDepositState.VALIDATING_UPI_ID:
-        return 'Validating UPI id';
 
       case NewDepositState.INVALID_UPI_ID:
         return 'Invalid UPI id';
