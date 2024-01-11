@@ -16,14 +16,14 @@ type ValidateUpiResponse = {
   accountExists: boolean;
 };
 
-type RemoteProofError = {
+type ValidateUpiError = {
   code: number;
 };
 
 export default function useUpiValidation({ vpa }: ValidateUpiParams) {
   const [data, setData] = useState<ValidateUpiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<RemoteProofError | null>(null);
+  const [error, setError] = useState<ValidateUpiError | null>(null);
 
   const generateNonce = () => {
     return crypto.randomBytes(16).toString('hex');
