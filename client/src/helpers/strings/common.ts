@@ -88,7 +88,7 @@ const strings: CommonStrings = {
     Follow this guide to download and input the email.
   `,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: `
-    Follow this guide to download and input the email.
+    Follow this guide to copy and paste the email.
   `,
 
   // Release Funds Modal
