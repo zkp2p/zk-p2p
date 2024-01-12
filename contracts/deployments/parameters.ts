@@ -5,7 +5,10 @@ import { ether, usdc } from "@utils/common/units";
 
 // Deployment Parameters
 export const SERVER_KEY_HASH = {
-  "venmo": ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f"], // selector: yzlavq3ml4jl4lt6dltbgmnoftxftkly
+  "venmo": [
+    "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f",   // selector: yzlavq3ml4jl4lt6dltbgmnoftxftkly
+    "0x1163C7F4AF2E63FE2DCB73B8EDF51A3AC04A257979D7877EDFE4AB37B9C807B1",   // selector: lycwyfwp74k6gitv7a7jiergkl3mgkrg
+  ],
   "hdfc": [
     "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", // acls01
     "0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8" // acls03
@@ -22,55 +25,55 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "localhost": usdc(20),
     "goerli": usdc(20),
     "base": usdc(20),
-    "base_staging": usdc(20),
+    "base_staging": usdc(10),
   },
   "hdfc": {
     "localhost": usdc(21),
     "goerli": usdc(20),
     "base": usdc(20),
-    "base_staging": usdc(20),
+    "base_staging": usdc(10),
   },
 };
 export const MAX_ONRAMP_AMOUNT: any = {
   "venmo": {
     "localhost": usdc(999),
     "goerli": usdc(999),
-    "base": usdc(250),
+    "base": usdc(500),
     "base_staging": usdc(999),
   },
   "hdfc": {
     "localhost": usdc(998),
     "goerli": usdc(999),
-    "base": usdc(25),
-    "base_staging": usdc(25),
+    "base": usdc(100),
+    "base_staging": usdc(100),
   },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
   "venmo": {
     "localhost": ONE_DAY_IN_SECONDS,
-    "goerli": ONE_DAY_IN_SECONDS,
+    "goerli": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
-    "base_staging": BigNumber.from(180),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": ONE_DAY_IN_SECONDS.sub(1),
-    "goerli": BigNumber.from(300),
+    "goerli": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
-    "base_staging": BigNumber.from(300),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
   },
 };
 export const ONRAMP_COOL_DOWN_PERIOD: any = {
   "venmo": {
-    "localhost": THREE_MINUTES_IN_SECONDS.sub(1),
+    "localhost": THREE_MINUTES_IN_SECONDS,
     "goerli": THREE_MINUTES_IN_SECONDS,
-    "base": ONE_DAY_IN_SECONDS,
-    "base_staging": BigNumber.from(180),
+    "base": ONE_DAY_IN_SECONDS.div(2),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(1),
     "goerli": THREE_MINUTES_IN_SECONDS,
-    "base": ONE_DAY_IN_SECONDS,
-    "base_staging": BigNumber.from(180),
+    "base": ONE_DAY_IN_SECONDS.div(2),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
   },
 };
 export const SUSTAINABILITY_FEE: any = {
