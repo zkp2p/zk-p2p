@@ -1,5 +1,52 @@
+import { dkimVerify } from '@helpers/dkim';
 import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from '@zkp2p/circuits-circom-helpers/preprocess';
 
+
+const HDFC_DOMAIN_KEYS = process.env.HDFC_DOMAIN_KEYS;
+if (!HDFC_DOMAIN_KEYS) {
+  throw new Error("HDFC_DOMAIN_KEYS environment variable is not defined.");
+}
+
+export const validateDKIMSignature = async (raw_email: string) => {
+  var email: Buffer;
+  if (typeof raw_email === "string") {
+    email = Buffer.from(raw_email);
+  } else email = raw_email;
+
+  const keys = HDFC_DOMAIN_KEYS.split(',');
+  let lastError: Error | null = null;
+
+  for (const key of keys) {
+    try {
+      const result = await dkimVerify(email, { key: key });
+
+      if (!result.results[0]) {
+        throw new Error(`No result found on dkim output ${result}`);
+      }
+
+      if (!result.results[0].publicKey) {
+        if (result.results[0].status.message) {
+          throw new Error(result.results[0].status.message);
+        } else {
+          throw new Error(`No public key found on generate_inputs result ${JSON.stringify(result)}`);
+        }
+      }
+
+      const { status } = result.results[0];
+      if (status.result === "pass") {
+        return result;
+      }
+
+      lastError = new Error(`DKIM verification failed with message: ${status.comment}`);
+    } catch (error: any) {
+      lastError = error;
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+};
 
 export function validateAndSanitizeHdfcEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {
   const subjectLinePattern = /^(Subject: ).*$/m;
