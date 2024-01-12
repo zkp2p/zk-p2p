@@ -20,9 +20,10 @@ import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import {
   validateAndSanitizeEmailSubject,
   validateEmailDomainKey,
-  validateDKIMSignature
+  validateDKIMSignature as validateVenmoDKIMSignature
 } from '@components/ProofGen/validation/venmo';
 import {
+  validateDKIMSignature as validateHdfcDKIMSignature,
   validateAndSanitizeHdfcEmailSubject
 } from '@components/ProofGen/validation/hdfc';
 import useLocalStorage from '@hooks/useLocalStorage';
@@ -149,7 +150,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             try {
               const emailReceivedYear = validateEmailDomainKey(emailFull);
     
-              if (emailReceivedYear.emailRaw !== "2024") {
+              if (emailReceivedYear.emailRaw !== "2024" && emailReceivedYear.emailRaw !== "2023") {
                 setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
                 return;
               }
@@ -158,9 +159,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               return;
             }
     
-            // validateDKIMSignature
+            // validateVenmoDKIMSignature
             try {
-              await validateDKIMSignature(emailFull);
+              await validateVenmoDKIMSignature(emailFull);
             } catch (e) {
               setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
               return;
@@ -180,6 +181,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
               return;
             }
+
+            // validateHdfcDKIMSignature
+            try {
+              await validateHdfcDKIMSignature(emailFull);
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+              return;
+            }
+            break;
 
             break;
         }
@@ -389,49 +399,46 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   return (
     <Container>
-      {
-        shouldShowVerificationModal && (
-          <ValidateEmail
-            title={"Verify Email"}
-            proof={proof}
-            publicSignals={publicSignals}
-            onBackClick={handleModalBackClicked}
-            onVerifyEmailCompletion={onVerifyEmailCompletion}
-            status={proofGenStatus}
-            circuitType={circuitType}
-            buttonTitle={getModalCtaTitle()}
-            submitTransactionStatus={submitTransactionStatus}
-            isSubmitMining={isSubmitMining}
-            isSubmitSuccessful={isSubmitSuccessful}
-            setProofGenStatus={setProofGenStatus}
-            handleSubmitVerificationClick={handleSubmitVerificationClick}
-            transactionAddress={transactionAddress}
-            provingFailureErrorCode={provingFailureErrorCode}
-          />
-        )
-      }
+      {shouldShowVerificationModal && (
+        <ValidateEmail
+          title={"Verify Email"}
+          proof={proof}
+          publicSignals={publicSignals}
+          onBackClick={handleModalBackClicked}
+          onVerifyEmailCompletion={onVerifyEmailCompletion}
+          status={proofGenStatus}
+          circuitType={circuitType}
+          buttonTitle={getModalCtaTitle()}
+          submitTransactionStatus={submitTransactionStatus}
+          isSubmitMining={isSubmitMining}
+          isSubmitSuccessful={isSubmitSuccessful}
+          setProofGenStatus={setProofGenStatus}
+          handleSubmitVerificationClick={handleSubmitVerificationClick}
+          transactionAddress={transactionAddress}
+          provingFailureErrorCode={provingFailureErrorCode}
+        />
+      )}
 
       <VerticalDivider/>
 
-      {
-        isEmailModeAuth ? (
-          <MailTable
-            paymentPlatform={paymentPlatformType}
-            setEmailFull={setEmailAndToggleInputMode}
-            handleVerifyEmailClicked={handleVerifyEmailClicked}
-            emailInputStatus={emailInputStatus}
-            isProofModalOpen={isRemoteGenerateProofLoading}
-          />
-        ) : (
-          <UploadEmail
-            email={emailFull}
-            setEmail={setEmailFull}
-            handleVerifyEmailClicked={handleVerifyEmailClicked}
-            emailInputStatus={emailInputStatus}
-            isProofModalOpen={isRemoteGenerateProofLoading}
-          />
-        )
-      }
+      {isEmailModeAuth ? (
+        <MailTable
+          paymentPlatform={paymentPlatformType}
+          setEmailFull={setEmailAndToggleInputMode}
+          handleVerifyEmailClicked={handleVerifyEmailClicked}
+          emailInputStatus={emailInputStatus}
+          isProofModalOpen={isRemoteGenerateProofLoading}
+        />
+      ) : (
+        <UploadEmail
+          paymentPlatform={paymentPlatformType}
+          email={emailFull}
+          setEmail={setEmailFull}
+          handleVerifyEmailClicked={handleVerifyEmailClicked}
+          emailInputStatus={emailInputStatus}
+          isProofModalOpen={isRemoteGenerateProofLoading}
+        />
+      )}
     </Container>
   );
 };

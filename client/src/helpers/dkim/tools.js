@@ -266,7 +266,7 @@ function importRsaKey(pem) {
   );
 }
 
-const getPublicKey = async (type, name, minBitLength, resolver) => {
+const getPublicKey = async (type, nameOrKey, minBitLength, resolver) => {
   minBitLength = minBitLength || 1024;
   if (LOCAL) {
     resolver = resolver || dns.resolve;
@@ -275,7 +275,7 @@ const getPublicKey = async (type, name, minBitLength, resolver) => {
   }
 
   // let list = await resolver(name, "TXT");
-  let list = ["p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMh6czdzpSrMH7a5nxQ867R2FqeEkoDdSUszWVL2/06iGLMI4X/mOF23IW31hWBsb5YGkm7vHEwXVltWYpSf1mVGuvqIIyXOb77tOPtVdgkvyfko/z7uUgTT509QYbo3KQyBj6geojrGZF6GN0isLIXxeE11XCz9yKmdh8JK4bAQIDAQAB"]
+  let list = [nameOrKey];
 
   let rr =
     list &&
@@ -290,10 +290,6 @@ const getPublicKey = async (type, name, minBitLength, resolver) => {
     let entry = parseDkimHeaders("DNS: TXT;" + rr);
 
     const publicKeyValue = entry?.parsed?.p?.value;
-    // Hardcoded Venmo public key value
-    // const publicKeyValue = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCoecgrbF4KMhqGMZK02Dv2vZgGnSAo9CDpYEZCpNDRBLXkfp/0Yzp3rgngm4nuiQWbhHO457vQ37nvc88I9ANuJKa3LIodD+QtOLCjwlzH+li2A81duY4fKLHcHYO3XKw+uYXKWd+bABQqps3AQP5KxoOgQ/P1EssOnvtQYBHjWQIDAQAB"
-    //'v=DKIM1;p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwe34ubzrMzM9sT0XVkcc3UXd7W+EHCyHoqn70l2AxXox52lAZzH/UnKwAoO+5qsuP7T9QOifIJ9ddNH9lEQ95Y/GdHBsPLGdgSJIs95mXNxscD6MSyejpenMGL9TPQAcxfqY5xPViZ+1wA1qcryjdZKRqf1f4fpMY+x3b8k7H5Qyf/Smz0sv4xFsx1r+THNIz0rzk2LO3GvE0f1ybp6P+5eAelYU4mGeZQqsKw/eB20I3jHWEyGrXuvzB67nt6ddI+N2eD5K38wg/aSytOsb5O+bUSEe7P0zx9ebRRVknCD6uuqG3gSmQmttlD5OrMWSXzrPIXe8eTBaaPd+e/jfxwIDAQAB'
-    
     if (!publicKeyValue) {
       let err = new Error("Missing key value");
       err.code = "EINVALIDVAL";
@@ -301,14 +297,16 @@ const getPublicKey = async (type, name, minBitLength, resolver) => {
       throw err;
     }
 
-    /*let validation = base64Schema.validate(publicKeyValue);
-        if (validation.error) {
-            let err = new Error('Invalid base64 format for public key');
-            err.code = 'EINVALIDVAL';
-            err.rr = rr;
-            err.details = validation.error;
-            throw err;
-        }*/
+    /*
+    let validation = base64Schema.validate(publicKeyValue);
+    if (validation.error) {
+        let err = new Error('Invalid base64 format for public key');
+        err.code = 'EINVALIDVAL';
+        err.rr = rr;
+        err.details = validation.error;
+        throw err;
+    }
+    */
 
     if (type === "DKIM" && entry?.parsed?.v && (entry?.parsed?.v?.value || "").toString().toLowerCase().trim() !== "dkim1") {
       let err = new Error("Unknown key version");

@@ -11,6 +11,7 @@ import { LabeledSwitch } from "@components/common/LabeledSwitch";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { TextButton } from '@components/common/TextButton';
 import { EmailInputStatus } from  "@helpers/types/proofGeneration";
+import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import { commonStrings } from "@helpers/strings";
 import { PLACEHOLDER_EMAIL_BODY } from "@helpers/placeholderEmailBody";
 import {
@@ -23,14 +24,16 @@ import { ThemedText } from '@theme/text';
 
 
 interface UploadEmailProps {
+  paymentPlatform: PaymentPlatformType;
   email: string;
   setEmail: (email: string) => void;
   handleVerifyEmailClicked: () => void;
   emailInputStatus: string;
   isProofModalOpen: boolean;
-}
+};
 
 export const UploadEmail: React.FC<UploadEmailProps> = ({
+  paymentPlatform,
   email,
   setEmail,
   handleVerifyEmailClicked,
@@ -97,7 +100,15 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         break;
       
       case EmailInputStatus.INVALID_SIGNATURE:
-        setCtaButtonTitle("Invalid email: must be from Venmo");
+        switch (paymentPlatform) {
+          case PaymentPlatform.VENMO:
+            setCtaButtonTitle("Invalid email: must be from Venmo");
+            break;
+
+          case PaymentPlatform.HDFC:
+            setCtaButtonTitle("Invalid email: must be from HDFC");
+            break;
+        }
         break;
 
       case EmailInputStatus.INVALID_SUBJECT:
@@ -105,7 +116,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         break;
 
       case EmailInputStatus.INVALID_DOMAIN_KEY:
-        setCtaButtonTitle("Invalid email: must be from 2023");
+        setCtaButtonTitle("Invalid email: must be from 2024");
         break;
 
       case EmailInputStatus.VALID:

@@ -658,6 +658,8 @@ module.exports = function (webpackEnv) {
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
         'process.env.REACT_APP_PRIVY_APP_ID': JSON.stringify(process.env.REACT_APP_PRIVY_APP_ID),
         'process.env.HDFC_DENY_LIST_URL': JSON.stringify(process.env.HDFC_DENY_LIST_URL),
+        'process.env.VENMO_DOMAIN_KEYS': JSON.stringify(process.env.VENMO_DOMAIN_KEYS),
+        'process.env.HDFC_DOMAIN_KEYS': JSON.stringify(process.env.HDFC_DOMAIN_KEYS),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

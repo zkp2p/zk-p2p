@@ -23,7 +23,7 @@ interface MailTableProps {
   handleVerifyEmailClicked: () => void;
   emailInputStatus: string;
   isProofModalOpen: boolean;
-}
+};
 
 export const MailTable: React.FC<MailTableProps> = ({
   paymentPlatform,
@@ -99,7 +99,7 @@ export const MailTable: React.FC<MailTableProps> = ({
         day: 'numeric'
       });
     }
-}
+  };
 
   const rowPlatformText = () => {
    switch (paymentPlatform) {
@@ -111,8 +111,8 @@ export const MailTable: React.FC<MailTableProps> = ({
 
       default:
         return '';
-    } 
-  }
+    }
+  };
 
   const rowSubjectText = (rawEmail: RawEmailResponse) => {
     switch (paymentPlatform) {
@@ -134,7 +134,7 @@ export const MailTable: React.FC<MailTableProps> = ({
       default:
         return '';
     }
-  }
+  };
 
   async function fetchData() {
     const filter = paymentPlatform === PaymentPlatform.VENMO ? VENMO_EMAIL_FILTER : HDFC_EMAIL_FULTER;
@@ -184,7 +184,15 @@ export const MailTable: React.FC<MailTableProps> = ({
         break;
       
       case EmailInputStatus.INVALID_SIGNATURE:
-      setCtaButtonTitle("Invalid email: must be from Venmo");
+        switch (paymentPlatform) {
+          case PaymentPlatform.VENMO:
+            setCtaButtonTitle("Invalid email: must be from Venmo");
+            break;
+
+          case PaymentPlatform.HDFC:
+            setCtaButtonTitle("Invalid email: must be from HDFC");
+            break;
+        }
       break;
 
     case EmailInputStatus.INVALID_SUBJECT:
@@ -201,7 +209,7 @@ export const MailTable: React.FC<MailTableProps> = ({
         break;
     }
 
-  }, [emailInputStatus]);
+  }, [emailInputStatus, paymentPlatform]);
 
   /*
    * Component
@@ -311,7 +319,7 @@ export const MailTable: React.FC<MailTableProps> = ({
       )}
     </Container>
   )
-}
+};
 
 const EmptyMailContainer = styled.div`
   display: flex;
@@ -435,4 +443,4 @@ const LoginOrUploadButtonContainer = styled.div`
 
 const StyledInbox = styled(Inbox)`
   color: #FFF;
-`
+`;
