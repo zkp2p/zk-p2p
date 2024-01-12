@@ -31,14 +31,15 @@ export async function fetchDnsTxtRecord(domain: string, selector: string): Promi
 
 // Extract modulus from DKIM public key
 export const extractModulus = (publicKey: string): string[] => {
-    const certMatch = publicKey.match(/p=([0-9A-Za-z/+]+=*)/);
+    // const certMatch = publicKey.match(/p=([0-9A-Za-z/+]+=*)/);
 
-    if (!certMatch) {
-        throw new Error('Failed to extract modulus from DKIM public key');
-    }
+    // if (!certMatch) {
+    //     throw new Error('Failed to extract modulus from DKIM public key');
+    // }
 
     // Decode base64 encoded cert
-    const decodedCert = Buffer.from(certMatch[1], 'base64').toString('binary');
+    console.log('Public Key:', publicKey)
+    const decodedCert = Buffer.from(publicKey, 'base64').toString('binary');
 
     // Parse the ASN.1 structure
     const asn1 = forge.asn1.fromDer(decodedCert);
@@ -71,7 +72,8 @@ if (typeof require !== "undefined" && require.main === module) {
             console.log("Fetching domain key:", domain, selector)
             fetchDnsTxtRecord(domain, selector)
                 .then(_domainKey => {
-                    domainKey = _domainKey[0];
+                    console.log("Fetched domain key:", _domainKey);
+                    domainKey = _domainKey.join('');
                     console.log("Fetched domain key:", domainKey);
 
                     const modulus = extractModulus(domainKey);
