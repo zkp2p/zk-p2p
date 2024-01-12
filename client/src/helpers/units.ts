@@ -50,7 +50,7 @@ export const toUsdString = (amount: bigint): string => {
   if (parts.length === 2) {
     let wholePart = parts[0];
     let decimalPart = parts[1].substring(0, 2);  // Take only the first two decimal places
-    
+
     // Check if we need to round up
     if (parts[1].length > 2 && parts[1][2] >= '5') {
       const decimalAsNumber = parseInt(decimalPart, 10) + 1;
@@ -66,7 +66,7 @@ export const toUsdString = (amount: bigint): string => {
 
     // Create the string and remove trailing zero if present
     let result = `${wholePart}.${decimalPart}`;
-    return parseFloat(result).toString();
+    return parseFloat(result).toFixed(2).toString();
   }
   
   return usdcString;

@@ -112,6 +112,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
       resetShouldAutoSelectIntent();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldAutoSelectIntent]);
 
   /*
@@ -134,6 +136,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         shouldShowSwapModal && (
           <SwapModal
             isVenmo={isVenmo}
+            venmoId={depositorVenmoId}
             link={qrLink}
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}

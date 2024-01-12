@@ -15,6 +15,7 @@ import { ZKP2P_TG_INDIA_CHAT_LINK } from "@helpers/docUrls";
 
 interface SwapModalProps {
   isVenmo: boolean;
+  venmoId: string;
   link: string;
   amount: string;
   onBackClick: () => void
@@ -24,6 +25,7 @@ interface SwapModalProps {
 
 export const SwapModal: React.FC<SwapModalProps> = ({
   isVenmo,
+  venmoId,
   link,
   amount,
   onBackClick,
@@ -46,9 +48,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
    * Helpers
    */
 
-  const currencySymbol = isVenmo ? '$' : '₹';
   const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
   const troubleScanningQRCodeLink = isVenmo ? link : ZKP2P_TG_INDIA_CHAT_LINK;
+  const instructionsText = isVenmo ? `Scan and send $${amount}` : `Scan and send ₹219182.12 to ${venmoId}`
 
   /*
    * Component
@@ -58,7 +60,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
     <ModalAndOverlayContainer>
       <Overlay onClick={handleOverlayClick}/>
 
-      <ModalContainer>
+      <ModalContainer $isVenmo={isVenmo}>
         <RowBetween>
           <div style={{ flex: 0.25 }}>
             <button
@@ -89,7 +91,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         <InstructionsContainer>
           <InstructionsTitle>
-            Scan and send {currencySymbol}{amount}
+            {instructionsText}
           </InstructionsTitle>
 
           <InstructionsLabel>
@@ -134,7 +136,7 @@ const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
 `;
 
-const ModalContainer = styled.div`
+const ModalContainer = styled.div<{$isVenmo?: boolean}>`
   width: 400px;
   display: flex;
   flex-direction: column;
@@ -149,7 +151,7 @@ const ModalContainer = styled.div`
   gap: 1.5rem;
   top: 12%;
   position: relative;
-  height: 600px;
+  height: ${({ $isVenmo }) => $isVenmo ? '588px' : '612px'};
   overflow-y: auto;
 `;
 
@@ -169,7 +171,7 @@ const InstructionsContainer = styled.div`
 `;
 
 const InstructionsTitle = styled.div`
-  line-height: 1.15;
+  line-height: 1.3;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
