@@ -88,6 +88,7 @@ contract HDFCRamp is Ownable {
 
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
+        bytes32 depositorIdHash;            // Depositor's idHash 
         Deposit deposit;                    // Deposit struct
         uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
@@ -632,6 +633,7 @@ contract HDFCRamp is Ownable {
 
             accountDeposits[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
+                depositorIdHash: accounts[deposit.depositor].idHash,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -648,6 +650,7 @@ contract HDFCRamp is Ownable {
 
             depositArray[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
+                depositorIdHash: accounts[deposit.depositor].idHash,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
