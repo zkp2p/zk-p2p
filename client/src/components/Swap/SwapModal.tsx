@@ -48,9 +48,10 @@ export const SwapModal: React.FC<SwapModalProps> = ({
    * Helpers
    */
 
+  const currencySymbol = isVenmo ? '$' : '₹';
   const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
   const troubleScanningQRCodeLink = isVenmo ? link : ZKP2P_TG_INDIA_CHAT_LINK;
-  const instructionsText = isVenmo ? `Scan and send $${amount}` : `Scan and send ₹${amount} to ${venmoId}`
+  const instructionsText = `Scan and send ${currencySymbol}${amount}` + (!isVenmo ? `<br />to ${venmoId}` : '');
 
   /*
    * Component
@@ -90,9 +91,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         </QRLabel>
 
         <InstructionsContainer>
-          <InstructionsTitle>
-            {instructionsText}
-          </InstructionsTitle>
+          <InstructionsTitle
+            dangerouslySetInnerHTML={{ __html: instructionsText }}
+          />
 
           <InstructionsLabel>
             { commonStrings.get('PAY_MODAL_INSTRUCTIONS') }
