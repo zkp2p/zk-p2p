@@ -89,6 +89,7 @@ contract VenmoRampV2 is Ownable {
 
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
+        bytes32 depositorIdHash;            // Depositor's venmoIdHash 
         Deposit deposit;                    // Deposit struct
         uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
@@ -644,6 +645,7 @@ contract VenmoRampV2 is Ownable {
 
             accountDeposits[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
+                depositorIdHash: getAccountVenmoIdHash(deposit.depositor),
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -660,6 +662,7 @@ contract VenmoRampV2 is Ownable {
 
             depositArray[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
+                depositorIdHash: getAccountVenmoIdHash(deposit.depositor),
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });

@@ -1969,6 +1969,8 @@ describe("VenmoRampV2", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
+        expect(deposits[0].depositorIdHash).to.eq(await calculateIdHash("1"));
+        expect(deposits[1].depositorIdHash).to.eq(await calculateIdHash("1"));
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
       });
@@ -2035,6 +2037,8 @@ describe("VenmoRampV2", () => {
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
+        expect(deposits[0].depositorIdHash).to.eq(await calculateIdHash("1"));
+        expect(deposits[1].depositorIdHash).to.eq(await calculateIdHash("1"));
       });
 
       describe("when there are reclaimable intents", async () => {
