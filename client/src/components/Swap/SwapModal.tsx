@@ -50,7 +50,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
   const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
   const troubleScanningQRCodeLink = isVenmo ? link : ZKP2P_TG_INDIA_CHAT_LINK;
-  const instructionsText = isVenmo ? `Scan and send $${amount}` : `Scan and send ₹219182.12 to ${venmoId}`
+  const instructionsText = isVenmo ? `Scan and send $${amount}` : `Scan and send ₹${amount} to ${venmoId}`
 
   /*
    * Component
