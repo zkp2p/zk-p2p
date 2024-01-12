@@ -45,31 +45,24 @@ export const toUsdcString = (amount: bigint, includeCommas: boolean = false): st
 export const toUsdString = (amount: bigint): string => {
   const usdcString = toUsdcString(amount);
   const parts = usdcString.split('.');
-  
-  // Check if there's a decimal part
-  if (parts.length === 2) {
-    let wholePart = parts[0];
-    let decimalPart = parts[1].substring(0, 2);  // Take only the first two decimal places
 
-    // Check if we need to round up
-    if (parts[1].length > 2 && parts[1][2] >= '5') {
-      const decimalAsNumber = parseInt(decimalPart, 10) + 1;
-      
-      // Check if rounding up caused a carry-over
-      if (decimalAsNumber === 100) {
-        decimalPart = '00';
-        wholePart = (parseInt(wholePart, 10) + 1).toString();
-      } else {
-        decimalPart = decimalAsNumber.toString().padStart(2, '0');
-      }
+  let wholePart = parts[0];
+  let decimalPart = parts.length > 1 ? parts[1].substring(0, 2) : '00';
+
+  // Check if we need to round up
+  if (parts.length > 1 && parts[1].length > 2 && parts[1][2] >= '5') {
+    const decimalAsNumber = parseInt(decimalPart, 10) + 1;
+
+    // Check if rounding up caused a carry-over
+    if (decimalAsNumber === 100) {
+      decimalPart = '00';
+      wholePart = (parseInt(wholePart, 10) + 1).toString();
+    } else {
+      decimalPart = decimalAsNumber.toString().padStart(2, '0');
     }
-
-    // Create the string and remove trailing zero if present
-    let result = `${wholePart}.${decimalPart}`;
-    return parseFloat(result).toFixed(2).toString();
   }
-  
-  return usdcString;
+
+  return `${wholePart}.${decimalPart}`;
 };
 
 export function conversionRateToPercentageString(rate: bigint, premiumForOffRamper: boolean = false): string {
