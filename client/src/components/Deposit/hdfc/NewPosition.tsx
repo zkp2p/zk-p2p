@@ -52,7 +52,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useHdfcRampState();
   const { usdcApprovalToHdfcRamp, usdcBalance, refetchUsdcApprovalToHdfcRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useHdfcDeposits();
-  const { registrationHash } = useHdfcRegistration();
+  const { storedUpiId, registrationHash, setStoredUpiId } = useHdfcRegistration();
 
   /*
    * State
@@ -226,12 +226,24 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [depositAmountInput, usdcApprovalToHdfcRamp]);
 
   useEffect(() => {
+    if (storedUpiId) {
+      setUpiIdInput(storedUpiId);
+    } else {
+      setUpiIdInput('');
+    }
+  }, [storedUpiId]);
+  
+  useEffect(() => {
     const validUpiInput = isValidUpiRegex(upiIdInput);
 
     setIsUpiInputValid(validUpiInput);
 
+    if (validUpiInput && setStoredUpiId) {
+      setStoredUpiId(upiIdInput);
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upiIdInput]);
+  }, [upiIdInput, setStoredUpiId]);
 
   /*
    * Helpers

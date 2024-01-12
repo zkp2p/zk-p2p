@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from 'react'
+import React, { useEffect, useCallback, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
 import { esl, ZERO_ADDRESS } from '@helpers/constants'
@@ -26,12 +26,31 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
   const [registrationHash, setRegistrationHash] = useState<string | null>(null);
 
+  const [storedUpiStorageKey, setStoredUpiIdStorageKey] = useState<string | null>(null);
+  const [storedUpiId, _setStoredUpiId] = useState<string | null>(() => {
+    if (storedUpiStorageKey) {
+      return localStorage.getItem(storedUpiStorageKey) || null;
+    }
+    return null;
+  });
+
   const [hdfcNftId, setHdfcNftId] = useState<bigint | null>(null);
   const [hdfcNftUri, setHdfcNftUri] = useState<string | null>(null);
 
   const [shouldFetchHdfcRegistration, setShouldFetchHdfcRegistration] = useState<boolean>(false);
   const [shouldFetchHdfcNftId, setShouldFetchHdfcNftId] = useState<boolean>(false);
   const [shouldFetchHdfcNftUri, setShouldFetchHdfcNftUri] = useState<boolean>(false);
+
+  /*
+   * Overridden Setters
+   */
+
+  const setStoredUpiId = useCallback((value: string | null) => {
+    if (storedUpiStorageKey) {
+      localStorage.setItem(storedUpiStorageKey, value || '');
+      _setStoredUpiId(value);
+    }
+  }, [storedUpiStorageKey]);
 
   /*
    * Helpers
@@ -107,10 +126,11 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setShouldFetchHdfcNftUri(false);
 
       setRegistrationHash(null);
+      setStoredUpiId(null);
       setHdfcNftId(null);
       setHdfcNftUri(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress]);
+  }, [isLoggedIn, loggedInEthereumAddress, hdfcRampAddress, setStoredUpiId]);
 
   useEffect(() => {
     esl && console.log('hdfc_hdfcRampAccountRaw_1');
@@ -143,6 +163,41 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setShouldFetchHdfcNftId(false);
     }
   }, [hdfcRampAccountRaw]);
+
+  useEffect(() => {
+    esl && console.log('hdfc_storedUpiStorageKey_1');
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+
+    if (loggedInEthereumAddress) {
+      esl && console.log('hdfc_storedUpiStorageKey_2');
+
+      setStoredUpiIdStorageKey(`StoredUpiId_${loggedInEthereumAddress}`);
+    } else {
+      esl && console.log('hdfc_storedUpiStorageKey_3');
+
+      setStoredUpiIdStorageKey(null);
+    }
+  }, [loggedInEthereumAddress]);
+
+  useEffect(() => {
+    esl && console.log('hdfc_StoredUpiId_1');
+    esl && console.log('checking storedUpiStorageKey: ', storedUpiStorageKey);
+
+    if (storedUpiStorageKey) {
+      esl && console.log('hdfc_StoredUpiId_2');
+
+      const storedValue = localStorage.getItem(storedUpiStorageKey);
+      if (storedValue !== null) {
+        _setStoredUpiId(storedValue);
+      } else {
+        _setStoredUpiId(null);
+      }
+    } else {
+      esl && console.log('hdfc_StoredUpiId_3');
+
+      _setStoredUpiId(null);
+    }
+  }, [storedUpiStorageKey]);
 
   useEffect(() => {
     esl && console.log('hdfc_hdfcNftIdRaw_1');
@@ -234,10 +289,12 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       value={{
         isRegistered,
         registrationHash,
+        storedUpiId,
         shouldFetchHdfcNftId,
         hdfcNftId,
         hdfcNftUri,
         refetchHdfcNftId,
+        setStoredUpiId,
         refetchRampAccount: refetchHdfcRampAccount,
         shouldFetchRegistration: shouldFetchHdfcRegistration,
       }}
