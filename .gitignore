@@ -1,5 +1,6 @@
 node_modules/
 */node_modules/
+*/*/*/node_modules/
 
 .env
 yarn-error.log
@@ -8,10 +9,19 @@ yarn-error.log
 
 build/
 */inputs/*.json
+*/*/*/inputs/*.json
 */emls/*.eml
+*/*/*/emls/*.eml
 *.env
+*/*/*.env
+*/*/*/*.env
 */.yarn/cache/
+*/*/.yarn/cache
+*/*/*/.yarn/cache/
 */.yarn/install-state.gz
+*/*/.yarn/install-state.gz
+*/*/*/.yarn/install-state.gz
+*/*/.yarn/unplugged/
 */dist
 
 .vscode

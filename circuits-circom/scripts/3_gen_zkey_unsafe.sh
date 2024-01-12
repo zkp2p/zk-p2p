@@ -9,22 +9,10 @@ PARTIAL_ZKEYS="$BUILD_DIR"/partial_zkeys
 PHASE1="$PTAU_DIR/powersOfTau28_hez_final_$PTAU.ptau"
 source entropy.env
 
-if [ ! -d "$BUILD_DIR"/partial_zkeys ]; then
-    echo "No partial_zkeys directory found. Creating partial_zkeys directory..."
-    mkdir -p "$BUILD_DIR"/partial_zkeys
-fi
-
-# Then, nonchunked snarkjs
-yarn remove snarkjs
-# mv ../yarn.lock ../yarn.lock_old2
-# rm -rf ../node_modules_old2
-# mv ../node_modules ../node_modules_old2
-yarn add snarkjs@latest
-
 echo "****GENERATING ZKEY NONCHUNKED FINAL****"
 start=$(date +%s)
 set -x
-NODE_OPTIONS='--max-old-space-size=112000' node ../node_modules/.bin/snarkjs zkey new "$BUILD_DIR"/"$CIRCUIT_NAME".r1cs "$PHASE1" "$BUILD_DIR"/"$CIRCUIT_NAME".zkey -v
+NODE_OPTIONS='--max-old-space-size=112000' node ../circuits/$CIRCUIT_DIR/node_modules/.bin/snarkjs zkey new "$BUILD_DIR"/"$CIRCUIT_NAME".r1cs "$PHASE1" "$BUILD_DIR"/"$CIRCUIT_NAME".zkey -v
 { set +x; } 2>/dev/null
 end=$(date +%s)
 echo "DONE ($((end - start))s)"
@@ -32,11 +20,4 @@ echo
 
 # Export the verification key to JSON
 echo "Exporting verification key to JSON..."
-node ../node_modules/.bin/snarkjs zkey export verificationkey "$BUILD_DIR"/"$CIRCUIT_NAME".zkey "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json
-
-yarn remove snarkjs
-# mv ../yarn.lock ../yarn.lock_old3
-# rm -rf ../node_modules_old3
-# mv ../node_modules ../node_modules_old3
-yarn add snarkjs@git+https://github.com/vb7401/snarkjs.git#24981febe8826b6ab76ae4d76cf7f9142919d2b8
-yarn
+node ../circuits/$CIRCUIT_DIR/node_modules/.bin/snarkjs zkey export verificationkey "$BUILD_DIR"/"$CIRCUIT_NAME".zkey "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json

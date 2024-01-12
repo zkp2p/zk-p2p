@@ -12,6 +12,8 @@ export CIRCUIT_NAME="${payment_type}_${circuit_type}"
 echo "CIRCUIT_NAME: $CIRCUIT_NAME"
 
 yarn gen-input:$payment_type:$circuit_type
+
+cd ../circuits/$CIRCUIT_DIR
 yarn compile:$payment_type:$circuit_type
 yarn test:$payment_type:$circuit_type
 yarn genkey:non-chunked:unsafe:$payment_type:$circuit_type

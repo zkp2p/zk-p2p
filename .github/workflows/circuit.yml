@@ -10,9 +10,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.15.0'
-      - name: Install Dependencies
-        run: yarn install
-        working-directory: ./circuits-circom
+      - name: Enable Corepack
+        run: corepack enable
       - name: Install rust...
         run: curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
         working-directory: ./circuits-circom
@@ -22,6 +21,21 @@ jobs:
       - name: Create env...
         run: cp scripts/circuit.env.example scripts/circuit.env
         working-directory: ./circuits-circom
-      - name: Testing regexes...
+      - name: Install Venmo Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/venmo
+      - name: Testing Venmo regexes...
         run: yarn test test/regexes
-        working-directory: ./circuits-circom
+        working-directory: ./circuits-circom/circuits/venmo
+      - name: Installing HDFC Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/hdfc
+      - name: Testing HDFC regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/hdfc
+      - name: Installing Paylah Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/paylah
+      - name: Testing Paylah regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/paylah
