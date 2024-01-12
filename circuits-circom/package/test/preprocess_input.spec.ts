@@ -1,5 +1,5 @@
 import chai from "chai";
-import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "../scripts/preprocess_input";
+import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "../preprocess";
 
 const PREFIX = "Delivered-To: 0xsachink@gmail.com"
 const SUFFIX = "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=acls01; d=hdfcbank.net;"

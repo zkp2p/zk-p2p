@@ -19,7 +19,7 @@ import { shaHash, partialSha, sha256Pad } from "@zk-email/helpers/dist/shaHash";
 import { dkimVerify } from "@zk-email/helpers/dist/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
-import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "../circuits/hdfc/scripts/preprocess_input";
+import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess";
 
 async function getArgs() {
   const args = process.argv.slice(2);
