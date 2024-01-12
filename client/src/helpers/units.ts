@@ -16,7 +16,7 @@ export const toUsdcString = (amount: bigint, includeCommas: boolean = false): st
   // Insert decimal point 6 places from the right
   const wholePart = amountString.slice(0, -6);
   let fractionalPart = amountString.slice(-6);
-  
+
   // Trim trailing zeros from the fractional part
   fractionalPart = fractionalPart.replace(/0+$/, '');
 
@@ -30,7 +30,7 @@ export const toUsdcString = (amount: bigint, includeCommas: boolean = false): st
     if (fractionalPart === '0') {
       return formattedWholePart;
     }
-    
+
     let result = `${formattedWholePart}.${fractionalPart}`;
     result = result.replace(/^,/, '');
 
@@ -38,7 +38,7 @@ export const toUsdcString = (amount: bigint, includeCommas: boolean = false): st
   } else {
     let result = `${wholePart}.${fractionalPart}`;
 
-    return parseFloat(result).toString(); 
+    return parseFloat(result).toString();
   }
 };
 
@@ -68,7 +68,7 @@ export const toUsdString = (amount: bigint): string => {
 export function conversionRateToPercentageString(rate: bigint, premiumForOffRamper: boolean = false): string {
   const scaledValue = rate * PRECISION;
   const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
-  
+
   const adjustedRate = Number(reciprocal - 10000n);
   const percentage = Math.abs(adjustedRate / 100);
 
@@ -92,12 +92,7 @@ export function conversionRateToMultiplierString(rate: bigint): string {
   const adjustedRate = Number(reciprocal - 10000n);
   const percentage = adjustedRate / 10000;
 
-  let conversionRatio: number;
-  if (Math.abs(percentage) < 1) {
-    conversionRatio = 1 + percentage;
-  } else {
-    conversionRatio = percentage;
-  }
+  const conversionRatio = 1 + percentage;
 
   let ratioString = conversionRatio.toFixed(3);
   ratioString = ratioString.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
