@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
-import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import { CircuitType } from '@zkp2p/circuits-circom-helpers/generate_input';
 import Confetti from 'react-confetti';
 import { useWindowSize } from '@uidotdev/usehooks';
 
