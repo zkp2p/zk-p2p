@@ -45,11 +45,23 @@ const config: HardhatUserConfig = {
         }
       },
     },
+    sepolia: {
+      url: "https://optimism-sepolia.infura.io/v3/" + process.env.INFURA_TOKEN,
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.TESTNET_DEPLOY_PRIVATE_KEY}`,
+      ],
+      verify: {
+        etherscan: {
+          apiKey: process.env.ETHERSCAN_API_KEY
+        }
+      },
+    },
     goerli: {
       url: "https://goerli.infura.io/v3/" + process.env.INFURA_TOKEN,
       // @ts-ignore
       accounts: [
-        `0x${process.env.GOERLI_DEPLOY_PRIVATE_KEY}`,
+        `0x${process.env.TESTNET_DEPLOY_PRIVATE_KEY}`,
       ],
       verify: {
         etherscan: {
