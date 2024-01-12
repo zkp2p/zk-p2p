@@ -5,7 +5,7 @@ import {
   generate_inputs,
   insert13Before10,
   ICircuitInputs
-} from '@zkp2p/circuits-circom/scripts/generate_input';
+} from '@zkp2p/circuits-circom-helpers/generate_input';
 // import { wrap } from 'comlink';
 import crypto from 'crypto';
 

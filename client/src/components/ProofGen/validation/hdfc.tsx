@@ -1,4 +1,4 @@
-import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from '@zkp2p/circuits-circom/scripts/preprocess_input';
+import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from '@zkp2p/circuits-circom-helpers/preprocess';
 
 
 export function validateAndSanitizeHdfcEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {

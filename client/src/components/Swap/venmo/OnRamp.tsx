@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
 import { ArrowLeft } from 'react-feather';
-import { CircuitType } from '@zkp2p/circuits-circom/scripts/generate_input';
+import { CircuitType } from '@zkp2p/circuits-circom-helpers/generate_input';
 import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
