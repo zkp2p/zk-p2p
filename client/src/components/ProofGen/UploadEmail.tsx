@@ -105,7 +105,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         break;
 
       case EmailInputStatus.INVALID_DOMAIN_KEY:
-        setCtaButtonTitle("Invalid email: must be from 2023");
+        setCtaButtonTitle("Invalid email: must be from 2024");
         break;
 
       case EmailInputStatus.VALID:
