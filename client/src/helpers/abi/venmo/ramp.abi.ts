@@ -524,6 +524,11 @@ export const abi = [
             "type": "uint256"
           },
           {
+            "internalType": "bytes32",
+            "name": "depositorIdHash",
+            "type": "bytes32"
+          },
+          {
             "components": [
               {
                 "internalType": "address",
@@ -720,6 +725,11 @@ export const abi = [
             "internalType": "uint256",
             "name": "depositId",
             "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "depositorIdHash",
+            "type": "bytes32"
           },
           {
             "components": [
@@ -962,6 +972,19 @@ export const abi = [
       }
     ],
     "name": "isDeniedUser",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isInitialized",
     "outputs": [
       {
         "internalType": "bool",
