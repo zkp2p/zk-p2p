@@ -90,6 +90,11 @@ ReactDOM.render(
                 createOnLogin: 'users-without-wallets',
                 noPromptOnSignature: true // TODO: Any custom logic we want here
               },
+              appearance: {
+                theme: "#0E111C",
+                accentColor: "#df2e2d",
+                showWalletLoginFirst: false,
+              },
               defaultChain: goerli, // TODO: Switch back to base
               supportedChains: [goerli, base, hardhat]
             }}
