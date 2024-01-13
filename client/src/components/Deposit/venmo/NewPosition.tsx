@@ -465,8 +465,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               disabled={ctaDisabled()}
               defaultLabel={ctaText()}
               minedLabel={'Go to Deposits'}
-              onClick={async () => {
+              defaultOnClick={async () => {
                 ctaOnClick();
+              }}
+              minedOnClick={() => {
+                handleBackClick();
               }}
             />
           </ButtonContainer>

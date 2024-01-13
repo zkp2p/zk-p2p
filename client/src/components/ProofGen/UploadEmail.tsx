@@ -125,7 +125,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
         break;
     }
 
-  }, [emailInputStatus]);
+  }, [emailInputStatus, paymentPlatform]);
 
   /*
    * Helpers

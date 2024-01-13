@@ -129,6 +129,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       }
 
       refetchUsdcBalance?.();
+
+      setShouldConfigureWithdrawWrite(false);
     },
   });
 

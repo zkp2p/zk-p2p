@@ -11,7 +11,8 @@ interface TransactionButtonProps {
   mineTransactionStatus?: string;
   defaultLabel?: string;
   minedLabel: string;
-  onClick?: () => void;
+  defaultOnClick?: () => void;
+  minedOnClick?: () => void;
 }
 
 export const TransactionButton: React.FC<TransactionButtonProps> = ({
@@ -21,7 +22,8 @@ export const TransactionButton: React.FC<TransactionButtonProps> = ({
   mineTransactionStatus,
   defaultLabel = "Submit Transaction",
   minedLabel,
-  onClick,
+  defaultOnClick,
+  minedOnClick,
 }) => {
   /*
    * State
@@ -103,13 +105,21 @@ export const TransactionButton: React.FC<TransactionButtonProps> = ({
     ];
 
     return disabled || disabledTransactionStatuses.includes(transactionStatus);
-  }
+  };
+
+  const handleClick = () => {
+    if (transactionStatus === TransactionStatus.TRANSACTION_MINED && minedOnClick) {
+      minedOnClick();
+    } else if (defaultOnClick) {
+      defaultOnClick();
+    }
+  };
 
   return (
     <Button
       fullWidth={fullWidth}
       disabled={isDisabled()}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {ctaButtonTitle}
     </Button>
