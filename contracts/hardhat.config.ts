@@ -40,7 +40,7 @@ const config: HardhatUserConfig = {
       ],
       verify: {
         etherscan: {
-          apiUrl: "https://api.basescan.org",
+          apiUrl: "https://api.basescan.org/",
           apiKey: process.env.BASESCAN_API_KEY
         }
       },
@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
       ],
       verify: {
         etherscan: {
-          apiKey: process.env.ETHERSCAN_API_KEY
+          apiKey: process.env.ETHERSCAN_KEY
         }
       },
     },
@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
       ],
       verify: {
         etherscan: {
-          apiKey: process.env.ETHERSCAN_API_KEY
+          apiKey: process.env.ETHERSCAN_KEY
         }
       },
     },
