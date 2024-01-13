@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { usePrivy } from '@privy-io/react-auth';
+
 import Link from '@mui/material/Link';
 
 import { Button } from '@components/common/Button';
@@ -16,6 +18,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   height = 48
 }) => {
   const currentDeviceSize = useMediaQuery();
+
+  const { connectWallet } = usePrivy();
 
   return (
     <ConnectButton.Custom>
@@ -54,7 +58,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    onClick={openConnectModal}
+                    onClick={connectWallet}
                     height={height}
                   >
                     {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
@@ -106,7 +110,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={openAccountModal}> {/* TODO: need to disable disconnecting when logged into privy */}
+                    <LoggedInBalanceAndAccount onClick={openAccountModal}>
                       <AccountBalance>
                         {account.displayBalance}
                       </AccountBalance>
