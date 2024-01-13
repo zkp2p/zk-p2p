@@ -48,7 +48,7 @@ export const validateDKIMSignature = async (raw_email: string) => {
   }
 };
 
-export function validateAndSanitizeHdfcEmailSubject(emailContent: string): { sanitizedEmail: string, didSanitize: boolean } {
+export function sanitizeAndProcessHdfcEmailSubject(emailContent: string): { processedEmail: string, didSanitize: boolean } {
   const subjectLinePattern = /^(Subject: ).*$/m;
   const subjectLineMatch = emailContent.match(subjectLinePattern);
   
@@ -64,28 +64,28 @@ export function validateAndSanitizeHdfcEmailSubject(emailContent: string): { san
   const isValid = validationPattern.test(subjectLine);
   const needsSanitization = sanitizePattern.test(subjectLine);
 
-  let sanitizedEmail = emailContent;
+  let processedEmail = emailContent;
   if (needsSanitization) {
-    sanitizedEmail = sanitizeHdfcPasteEmail(emailContent);
+    processedEmail = sanitizeHdfcPasteEmail(emailContent);
   } else if (!isValid) {
     throw new Error('The subject line is invalid and could not be sanitized.');
   }
 
-  const didSanitize = sanitizedEmail !== emailContent;
+  // Update Google Original Message ID
+  const preProcessedEmail = hdfcReplaceMessageIdWithXGoogleOriginalMessageId(processedEmail);
+
+  const didSanitize = preProcessedEmail !== emailContent;
 
   return {
-    sanitizedEmail,
+    processedEmail: preProcessedEmail,
     didSanitize
   };
 };
 
 function sanitizeHdfcPasteEmail(emailContent: string): string {
-  // Update Google Original Message ID
-  const replacedMessageIdEmail = hdfcReplaceMessageIdWithXGoogleOriginalMessageId(emailContent);
-  
   // Update Subject Line
   const subjectLinePattern = /^(Subject: ).*$/m;
-  const subjectSanitizedEmail = replacedMessageIdEmail.replace(subjectLinePattern, '$1=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=');
+  const subjectSanitizedEmail = emailContent.replace(subjectLinePattern, '$1=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=');
 
   // Update First Tab encoding occurrence
   const firstTabEncodedPattern = `=09=09=09  <tr>`;

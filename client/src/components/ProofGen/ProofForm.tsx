@@ -24,7 +24,7 @@ import {
 } from '@components/ProofGen/validation/venmo';
 import {
   validateDKIMSignature as validateHdfcDKIMSignature,
-  validateAndSanitizeHdfcEmailSubject
+  sanitizeAndProcessHdfcEmailSubject
 } from '@components/ProofGen/validation/hdfc';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
@@ -169,12 +169,12 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             break;
 
           case PaymentPlatform.HDFC:
-            // validateAndSanitizeHdfcEmailSubject
+            // sanitizeAndProcessHdfcEmailSubject
             try {
-              const { sanitizedEmail, didSanitize } = validateAndSanitizeHdfcEmailSubject(emailFull);
+              const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
     
               if (didSanitize) {
-                setEmailFull(sanitizedEmail);
+                setEmailFull(processedEmail);
                 return;
               };
             } catch (e) {
