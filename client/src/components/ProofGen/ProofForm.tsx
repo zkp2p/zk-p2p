@@ -190,8 +190,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               return;
             }
             break;
-
-            break;
         }
   
         const hash = crypto.createHash('sha256');
