@@ -203,8 +203,9 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           mineTransactionStatus={mineReleaseTransactionStatus}
           defaultLabel={"Submit Transaction"}
           minedLabel={"Go to Deposits"}
-          onClick={ctaOnClick}
+          defaultOnClick={ctaOnClick}
           fullWidth={true}
+          minedOnClick={onBackClick}
         />
       </ModalContainer>
     </ModalAndOverlayContainer>
