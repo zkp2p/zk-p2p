@@ -83,6 +83,8 @@ export const LegacyDepositTable: React.FC = () => {
       refetchUsdcBalance?.();
 
       refetchLegacyVenmoDeposits?.();
+
+      setShouldConfigureWithdrawWrite(false);
     },
   });
 
