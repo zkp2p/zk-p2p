@@ -19,7 +19,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 }) => {
   const currentDeviceSize = useMediaQuery();
 
-  const { connectWallet } = usePrivy();
+  const { connectWallet, authenticated } = usePrivy();
 
   return (
     <ConnectButton.Custom>
@@ -28,7 +28,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
         chain,
         openAccountModal,
         openChainModal,
-        openConnectModal,
         authenticationStatus,
         mounted,
       }) => {
@@ -44,7 +43,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
         return (
           <div
-            {...(!ready && {
+            // If authenticated with Privy, do not display account or balance
+            {...((!ready || authenticated) && {
               'style': {
                 width: '100%',
                 opacity: 0,
