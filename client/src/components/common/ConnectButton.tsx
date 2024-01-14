@@ -85,7 +85,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                       onClick={openChainModal}
                       style={{ display: 'flex', alignItems: 'center' }}
                     >
-                      {chain.hasIcon && (
+                      {/* {chain.hasIcon && (
                         <div
                           style={{
                             background: chain.iconBackground,
@@ -104,7 +104,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                             />
                           )}
                         </div>
-                      )}
+                      )} */}
                       {chain.name}
                     </NetworkSelector>
                   </NetworkAndBridgeContainer>

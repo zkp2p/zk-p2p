@@ -75,7 +75,7 @@ const zkp2pTheme = merge(darkTheme(), {
 const zeroDevOptions = {
   projectIds: [process.env.ZERODEV_APP_ID],
   projectId: process.env.ZERODEV_APP_ID,
-  useSmartWalletForExternalEOA: false,
+  useSmartWalletForExternalEOA: false, // Only sponsor gas for embedded wallets
 }
 
 ReactDOM.render(
