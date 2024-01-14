@@ -46,7 +46,7 @@ const config: HardhatUserConfig = {
       },
     },
     sepolia: {
-      url: "https://optimism-sepolia.infura.io/v3/" + process.env.INFURA_TOKEN,
+      url: "https://sepolia.infura.io/v3/" + process.env.INFURA_TOKEN,
       // @ts-ignore
       accounts: [
         `0x${process.env.TESTNET_DEPLOY_PRIVATE_KEY}`,

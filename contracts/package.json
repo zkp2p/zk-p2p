@@ -14,6 +14,7 @@
     "coverage": "yarn clean && yarn build && npx hardhat coverage --testfiles 'test/{libs,processors,ramps}/{*,**/*}.ts'",
     "deploy:localhost": "npx hardhat deploy --network localhost",
     "deploy:goerli": "npx hardhat deploy --network goerli",
+    "deploy:sepolia": "npx hardhat deploy --network sepolia",
     "deploy:base": "npx hardhat deploy --network base  && npx hardhat export --network base --export ./deployments/outputs/baseContracts.ts",
     "deploy:base_staging": "npx hardhat deploy --network base_staging && npx hardhat export --network base_staging --export ./deployments/outputs/baseStagingContracts.ts",
     "etherscan:goerli": "yarn hardhat --network goerli etherscan-verify",

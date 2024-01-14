@@ -24,12 +24,14 @@ export const MIN_DEPOSIT_AMOUNT: any = {
   "venmo": {
     "localhost": usdc(20),
     "goerli": usdc(20),
+    "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
   },
   "hdfc": {
     "localhost": usdc(21),
     "goerli": usdc(20),
+    "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
   },
@@ -38,12 +40,14 @@ export const MAX_ONRAMP_AMOUNT: any = {
   "venmo": {
     "localhost": usdc(999),
     "goerli": usdc(999),
+    "sepolia": usdc(999),
     "base": usdc(500),
     "base_staging": usdc(999),
   },
   "hdfc": {
     "localhost": usdc(998),
     "goerli": usdc(999),
+    "sepolia": usdc(999),
     "base": usdc(50),
     "base_staging": usdc(50),
   },
@@ -52,12 +56,14 @@ export const INTENT_EXPIRATION_PERIOD: any = {
   "venmo": {
     "localhost": ONE_DAY_IN_SECONDS,
     "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": ONE_DAY_IN_SECONDS.sub(1),
     "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
@@ -66,12 +72,14 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
   "venmo": {
     "localhost": THREE_MINUTES_IN_SECONDS,
     "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(1),
     "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
@@ -80,12 +88,14 @@ export const SUSTAINABILITY_FEE: any = {
   "venmo": {
     "localhost": ether(.001),
     "goerli": ether(.001),
+    "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
   },
   "hdfc": {
     "localhost": ether(.002),
     "goerli": ether(.001),
+    "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
   },
@@ -94,12 +104,14 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
   "venmo": {
     "localhost": "",
     "goerli": "",
+    "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
   },
   "hdfc": {
     "localhost": "",
     "goerli": "",
+    "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
   },
@@ -109,6 +121,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
 export const MULTI_SIG: any = {
   "localhost": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
   "goerli": "",
+  "sepolia": "",
   "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
   "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
 };
