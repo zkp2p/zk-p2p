@@ -18,6 +18,7 @@
     "deploy:base": "npx hardhat deploy --network base  && npx hardhat export --network base --export ./deployments/outputs/baseContracts.ts",
     "deploy:base_staging": "npx hardhat deploy --network base_staging && npx hardhat export --network base_staging --export ./deployments/outputs/baseStagingContracts.ts",
     "etherscan:goerli": "yarn hardhat --network goerli etherscan-verify",
+    "etherscan:sepolia": "yarn hardhat --network sepolia etherscan-verify",
     "etherscan:base": "yarn hardhat --network base etherscan-verify",
     "etherscan:base_staging": "yarn hardhat --network base_staging etherscan-verify",
     "importVerifier": "rm -rf ./contracts/verifiers/ && cp -r ../circuits-circom/circuits/hdfc/contracts/ ./contracts/verifiers && cp -r ../circuits-circom/circuits/venmo/contracts/ ./contracts/verifiers",
