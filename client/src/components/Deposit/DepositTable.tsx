@@ -7,7 +7,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
 import { PositionRow } from "@components/Deposit/DepositRow";
-import { CustomConnectButton } from "@components/common/ConnectButton";
+import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { Abi } from '@helpers/types';
@@ -296,7 +296,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                   Your active deposits will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <AccountSelectorButton />
             </ErrorContainer>
           ) : !isRegistered ? (
             <ErrorContainer>

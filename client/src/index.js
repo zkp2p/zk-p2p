@@ -45,32 +45,32 @@ const configureChainsConfig = configureChains(
 export const alchemyMainnetEthersProvider =
   new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY)
 
-const { connectors } = getDefaultWallets({
-  appName: 'ZK P2P On-Ramp',
-  projectId: process.env.WALLET_CONNECT_PROJECT_ID,
-  chains
-});
+// const { connectors } = getDefaultWallets({
+//   appName: 'ZK P2P On-Ramp',
+//   projectId: process.env.WALLET_CONNECT_PROJECT_ID,
+//   chains
+// });
 
-const config = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient: configureChainsConfig.publicClient
-})
+// const config = createConfig({
+//   autoConnect: true,
+//   connectors,
+//   publicClient: configureChainsConfig.publicClient
+// })
 
-const zkp2pTheme = merge(darkTheme(), {
-  colors: {
-    accentColor: '#df2e2d',
-  },
-  radii: {
-    connectButton: '20px',
-  },
-  fonts: {
-    body: 'Graphik',
-  },
-  shadows: {
-    connectButton: 'inset 0px -4px 0px rgba(0, 0, 0, 0.16)',
-  }
-});
+// const zkp2pTheme = merge(darkTheme(), {
+//   colors: {
+//     accentColor: '#df2e2d',
+//   },
+//   radii: {
+//     connectButton: '20px',
+//   },
+//   fonts: {
+//     body: 'Graphik',
+//   },
+//   shadows: {
+//     connectButton: 'inset 0px -4px 0px rgba(0, 0, 0, 0.16)',
+//   }
+// });
 
 const zeroDevOptions = {
   projectIds: [process.env.ZERODEV_APP_ID],
@@ -81,8 +81,8 @@ const zeroDevOptions = {
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <WagmiConfig config={config}>
-        <RainbowKitProvider chains={chains} theme={zkp2pTheme}>
+      {/* <WagmiConfig config={config}> */}
+        {/* <RainbowKitProvider chains={chains} theme={zkp2pTheme}> */}
           <PrivyProvider
             appId={process.env.PRIVY_APP_ID}
             config={{
@@ -103,8 +103,8 @@ ReactDOM.render(
               <App />
             </ZeroDevPrivyWagmiProvider>
           </PrivyProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
+        {/* </RainbowKitProvider> */}
+      {/* </WagmiConfig> */}
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")

@@ -6,7 +6,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 
 import { Button } from "@components/common/Button";
 import { Col } from "@components/legacy/Layout";
-import { CustomConnectButton } from "@components/common/ConnectButton";
+import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { ReadOnlyInput } from "@components/Registration/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
@@ -127,7 +127,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                   Your platform registrations will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <AccountSelectorButton />
             </ErrorContainer>
           ) : (
             <Body>

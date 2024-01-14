@@ -7,7 +7,7 @@ import { Input } from "@components/Swap/Input";
 import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
 import { AutoColumn } from '@components/layouts/Column';
 import { Button } from '@components/common/Button';
-import { CustomConnectButton } from "@components/common/ConnectButton";
+import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
 import { ThemedText } from '@theme/text';
 import { IndicativeQuote } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
@@ -477,7 +477,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             readOnly={true}
           />
           {!isLoggedIn ? (
-            <CustomConnectButton
+            <AccountSelectorButton
               fullWidth={true}
             />
           ) : (!isRegistered && currentQuote.requestedUSDC) ? (
