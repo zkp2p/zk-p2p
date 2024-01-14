@@ -31,18 +31,18 @@ export const contractAddresses: Contracts = {
     'hdfcRegistrationProcessor': '0xeBf794338D092fb9353F92fDcad3CB578E120A07',
     'hdfcNft': '0x6b64BC61cd03cdD7Ac3aF6Ad6A02977265d21ecB',
   },
-  'goerli_staging': {
-    'legacyRamp': '0x9916fec54D428bAf38d43B9D91ac968b8DDA51Bd',
-    'legacyNft': '0x102d57a3b5471ab2648f0f0ea8ed29325998251e',
-    'usdc': '0x8374d6e81363fE432F98E46E8A6Fe0873e526FB8',
-    'venmoRamp': '0xfD04fb0538479ad70DFae539c875B2C180205012',
-    'venmoSendProcessor': '0x3C754B95F72Aeb2447244402155779A8B69f3d70',
-    'venmoRegistrationProcessor': '0xcE2f93E2f05Fc4B65E771e5b982d0dbD41cE307D',
-    'venmoNft': '0x8dfb97f8401d5da4f5ac712863ec2d92757861d3',
-    'hdfcRamp': '0x7edd66b19a22293af86a2d96761fd7146ba3ff6c',
-    'hdfcSendProcessor': '0xEF14b8a0196002dA629c1eC585371274FA9Da7d8',
-    'hdfcRegistrationProcessor': '0x8E9ca43089F380A904D2d121fAa021bb4fbb0f4a',
-    'hdfcNft': '0x3F3e10c0617911B4C91e366A586797F1d09e5158',
+  'sepolia_staging': {
+    'legacyRamp': '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
+    'legacyNft': '',
+    'usdc': '0xBBA5C9bd54a4293f4261b38e5aD41820eC41ed86',
+    'venmoRamp': '0x38637CD256d70994f2d5533BEAfe52eEfC2a96Ab',
+    'venmoSendProcessor': '0x8644C2B4293923BF60c909171F089f4c5F75474c',
+    'venmoRegistrationProcessor': '0xD228a3DD033037306727bdC11097B43aA9d6e671',
+    'venmoNft': '',
+    'hdfcRamp': '0xb4A7486b0EFa264D5FC6A8181bfc7A150cD57849',
+    'hdfcSendProcessor': '0x8D54b20922aEA549224D61501225a0DaB5bC3839',
+    'hdfcRegistrationProcessor': '0x6c90ae078d8a6009666ad061521C091f57C808db',
+    'hdfcNft': '',
   },
   'localhardhat': {
     'legacyRamp': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
@@ -61,6 +61,6 @@ export const contractAddresses: Contracts = {
 
 export const blockExplorerUrls: { [network: string]: string } = {
   'hardhat': 'https://etherscan.io',
-  'goerli': 'https://goerli.etherscan.io',
+  'sepolia': 'https://sepolia.etherscan.io/',
   'base': 'https://basescan.org'
 };

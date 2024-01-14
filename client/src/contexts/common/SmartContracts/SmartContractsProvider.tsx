@@ -108,8 +108,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
               setAddressWithNetworkEnvKey(networkToUse, 'base_staging');
               break;
   
-            case 'goerli':
-              setAddressWithNetworkEnvKey(networkToUse, 'goerli_staging');
+            case 'sepolia':
+              setAddressWithNetworkEnvKey(networkToUse, 'sepolia_staging');
               break;
   
             case 'hardhat':

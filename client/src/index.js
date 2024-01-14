@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { publicProvider } from "wagmi/providers/public";
-import { hardhat, goerli, base } from 'wagmi/chains'
+import { hardhat, sepolia, base } from 'wagmi/chains'
 import {
   RainbowKitProvider,
   darkTheme,
@@ -26,7 +26,7 @@ const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
   } else {
-    return [base, goerli, hardhat];
+    return [base, sepolia, hardhat];
   }
 };
 
