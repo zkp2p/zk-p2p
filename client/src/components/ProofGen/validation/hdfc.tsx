@@ -87,9 +87,23 @@ function sanitizeHdfcPasteEmail(emailContent: string): string {
   const subjectLinePattern = /^(Subject: ).*$/m;
   const subjectSanitizedEmail = emailContent.replace(subjectLinePattern, '$1=?UTF-8?q?=E2=9D=97_You_have_done_a_UPI_txn._Check_details!?=');
 
+  // Update to email address; If before the @ is caps, make it all caps
+  const toEmailPattern = /^(To: )([^@]+)@(.+)$/m;
+  const toEmailMatch = subjectSanitizedEmail.match(toEmailPattern);
+  if (!toEmailMatch) {
+      throw new Error('No to email address found in the email content.');
+  }
+  // Extract the relevant parts
+  const prefix = toEmailMatch[1];  // 'To: '
+  const localPart = toEmailMatch[2]; // Part before '@'
+  const domainPart = toEmailMatch[3]; // Part after '@'
+
+  const sanitizedToEmail = localPart === localPart.toUpperCase() ? `${prefix}${localPart}@${domainPart}`.toUpperCase() : `${prefix}${localPart}@${domainPart}`;
+  const toEmailSanitizedEmail = subjectSanitizedEmail.replace(toEmailPattern, sanitizedToEmail);  
+
   // Update First Tab encoding occurrence
   const firstTabEncodedPattern = `=09=09=09  <tr>`;
-  const tabEncodedSanitizedEmail = subjectSanitizedEmail.replace(firstTabEncodedPattern,'\t\t\t  <tr>');
+  const tabEncodedSanitizedEmail = toEmailSanitizedEmail.replace(firstTabEncodedPattern,'\t\t\t  <tr>');
 
   // Update Second Tab encoding occurrence
   const secondTabEncodedPattern = /=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>/g; // multiple occurrences
