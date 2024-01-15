@@ -32,7 +32,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
   // Venmo
   const {
-    isRegistered: isRegisteredOnVenmo
+    isRegistered: isRegisteredOnVenmo,
+    registrationHash: venmoRegistrationHash
   } = useVenmoRegistration();
   const {
     refetchDeposits: refetchVenmoDeposits,
@@ -54,7 +55,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
   // Hdfc
   const {
-    isRegistered: isRegisteredOnHdfc
+    isRegistered: isRegisteredOnHdfc,
+    registrationHash: hdfcRegistrationHash
   } = useHdfcRegistration();
   const {
     refetchDeposits: refetchHdfcDeposits,
@@ -79,6 +81,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
    */
 
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [registrationHash, setRegistrationHash] = useState<string | null>(null);
 
   const [refetchDeposits, setRefetchDeposits] = useState<(() => void) | null>(null);
   const [getBestDepositForAmount, setGetBestDepositForAmount] = useState<((requestedOnRampInputAmount: string) => IndicativeQuote) | null>(null);
@@ -105,6 +108,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         setIsRegistered(isRegisteredOnVenmo);
+
         break;
 
       case PaymentPlatform.HDFC:
@@ -118,6 +122,26 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentPlatform, isRegisteredOnVenmo, isRegisteredOnHdfc]);
 
+  useEffect(() => {
+    esl && console.log('venmoRegistrationHash: ', venmoRegistrationHash);
+    esl && console.log('hdfcRegistrationHash: ', hdfcRegistrationHash);
+
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setRegistrationHash(venmoRegistrationHash);
+        
+        break;
+
+      case PaymentPlatform.HDFC:
+        setRegistrationHash(hdfcRegistrationHash);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, hdfcRegistrationHash, venmoRegistrationHash]);
 
   /*
    * Liquidity
@@ -354,6 +378,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     <SwapQuoteContext.Provider
       value={{
         isRegistered,
+        registrationHash,
         refetchDeposits,
         getBestDepositForAmount,
         shouldFetchDeposits,

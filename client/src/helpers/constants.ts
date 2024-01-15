@@ -16,6 +16,8 @@ export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
 export const USDC_UNITS = BigInt(1_000_000); // 6
 export const PENNY_IN_USDC_UNITS = BigInt(10_000); // 6
 
+export const EMPTY_STRING = '';
+
 // the numeric form of the payload1 passed into the primitive
 // corresponds to the openssh signature produced by the following command:
 // echo "E PLURIBUS UNUM; DO NOT SHARE" | ssh-keygen -Y sign -n double-blind.xyz -f ~/.ssh/id_rsa | pbcopy
