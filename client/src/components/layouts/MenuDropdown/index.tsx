@@ -89,7 +89,7 @@ export const MenuDropdown = () => {
             />
 
             <VersionLabel>
-              v0.2.1
+              v0.2.0
             </VersionLabel>
           </IconRow>
         </NavDropdown>

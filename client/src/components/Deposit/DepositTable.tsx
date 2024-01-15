@@ -236,6 +236,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     navigate('/register');
   };
 
+  const navigateToWithdrawHandler = () => {
+    navigate('/withdraw');
+  };
+
   const handleWithdrawClick = async (rowIndex: number) => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -277,48 +281,47 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   return (
     <Container>
-      <Column>
-        <TitleRow>
-          <ThemedText.HeadlineMedium>
-            Deposits
-          </ThemedText.HeadlineMedium>
-          {isLoggedIn && isRegistered ? (
-            <Button onClick={handleNewPositionClick} height={40}>
-                + New Deposit
+      <TitleRow>
+        <ThemedText.HeadlineMedium>
+          Deposits
+        </ThemedText.HeadlineMedium>
+        {isLoggedIn && isRegistered ? (
+          <Button onClick={handleNewPositionClick} height={40}>
+              + New Deposit
+          </Button>
+        ) : null}
+      </TitleRow>
+
+      <Content>
+        {!isLoggedIn ? (
+          <ErrorContainer>
+            <ThemedText.DeprecatedBody textAlign="center">
+              <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+              <div>
+                Your active deposits will appear here.
+              </div>
+            </ThemedText.DeprecatedBody>
+            <CustomConnectButton />
+          </ErrorContainer>
+        ) : !isRegistered ? (
+          <ErrorContainer>
+            <PlatformSelectorContainer>
+              <PlatformSelector />
+            </PlatformSelectorContainer>
+
+            <ThemedText.DeprecatedBody textAlign="center">
+              <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+              <div>
+                You must register to create a deposit.
+              </div>
+            </ThemedText.DeprecatedBody>
+            <Button
+              onClick={navigateToRegistrationHandler}
+            >
+              Complete Registration
             </Button>
-          ) : null}
-        </TitleRow>
-
-        <Content>
-          {!isLoggedIn ? (
-            <ErrorContainer>
-              <ThemedText.DeprecatedBody textAlign="center">
-                <InboxIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-                <div>
-                  Your active deposits will appear here.
-                </div>
-              </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
-            </ErrorContainer>
-          ) : !isRegistered ? (
-            <ErrorContainer>
-              <PlatformSelectorContainer>
-                <PlatformSelector />
-              </PlatformSelectorContainer>
-
-              <ThemedText.DeprecatedBody textAlign="center">
-                <FileTextIcon strokeWidth={1} style={{ marginTop: '2em' }} />
-                <div>
-                  You must register to create a deposit.
-                </div>
-              </ThemedText.DeprecatedBody>
-              <Button
-                onClick={navigateToRegistrationHandler}
-              >
-                Complete Registration
-              </Button>
-            </ErrorContainer>
-          ) : positionsRowData.length === 0 ? (
+          </ErrorContainer>
+        ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <PlatformSelectorContainer>
                 <PlatformSelector />
@@ -331,43 +334,49 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 </div>
               </ThemedText.DeprecatedBody>
             </ErrorContainer>
-          ) : (
-            <PositionsContainer>
+        ) : (
+          <PositionsContainer>
+            <PlatformSelectorContainer>
+              <PlatformSelector />
+            </PlatformSelectorContainer>
+            
+            <PositionCountTitle>
+              <ThemedText.LabelSmall textAlign="left">
+                Your active deposits ({positionsRowData.length})
+              </ThemedText.LabelSmall>
+
               <PlatformSelectorContainer>
                 <PlatformSelector />
               </PlatformSelectorContainer>
-              
-              <PositionCountTitle>
-                <ThemedText.LabelSmall textAlign="left">
-                  Your active deposits ({positionsRowData.length})
-                </ThemedText.LabelSmall>
+            </PositionCountTitle>
 
-                <PlatformSelectorContainer>
-                  <PlatformSelector />
-                </PlatformSelectorContainer>
-              </PositionCountTitle>
-              <Table>
-                {positionsRowData.map((positionRow, rowIndex) => (
-                  <PositionRowStyled key={rowIndex}>
-                    <PositionRow
-                      availableDepositAmount={positionRow.availableDepositAmount}
-                      totalDepositAmount={positionRow.totalDepositAmount}
-                      outstandingIntentAmount={positionRow.outstandingIntentAmount}
-                      intentCount={positionRow.intentCount}
-                      conversionRate={positionRow.conversionRate}
-                      rowIndex={rowIndex}
-                      isCancelDepositLoading={rowIndex === selectedRowIndexToWithdraw && (isSubmitWithdrawLoading || isSubmitWithdrawMining)}
-                      handleWithdrawClick={() => {
-                        handleWithdrawClick(rowIndex)
-                      }}
-                    />
-                  </PositionRowStyled>
-                ))}
-              </Table>
-            </PositionsContainer>
-          )}
-        </Content>
-      </Column>
+            <Table>
+              {positionsRowData.map((positionRow, rowIndex) => (
+                <PositionRowStyled key={rowIndex}>
+                  <PositionRow
+                    availableDepositAmount={positionRow.availableDepositAmount}
+                    totalDepositAmount={positionRow.totalDepositAmount}
+                    outstandingIntentAmount={positionRow.outstandingIntentAmount}
+                    intentCount={positionRow.intentCount}
+                    conversionRate={positionRow.conversionRate}
+                    rowIndex={rowIndex}
+                    isCancelDepositLoading={rowIndex === selectedRowIndexToWithdraw && (isSubmitWithdrawLoading || isSubmitWithdrawMining)}
+                    handleWithdrawClick={() => {
+                      handleWithdrawClick(rowIndex)
+                    }}
+                  />
+                </PositionRowStyled>
+              ))}
+            </Table>
+          </PositionsContainer>
+        )}
+      </Content>
+
+      {isLoggedIn ? (
+        <LiquidityLink onClick={navigateToWithdrawHandler}>
+          Looking for your legacy deposits?
+        </LiquidityLink>
+      ) : null}
     </Container>
   )
 };
@@ -375,13 +384,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 const Container = styled.div`
   width: 100%;
   gap: 1rem;
-`;
-
-const Column = styled.div`
-  gap: 1rem;
-  align-self: flex-start;
-  border-radius: 16px;
-  justify-content: center;
 `;
 
 const TitleRow = styled(RowBetween)`
@@ -487,4 +489,19 @@ const PositionRowStyled = styled.div`
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
   }
+`;
+
+const LiquidityLink = styled.button`
+  width: 100%;
+  font-size: 14px;
+  font-family: 'Graphik';
+  color: #FFFFFF;
+  opacity: 0.3;
+  text-align: center;
+  padding: 20px 0px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
 `;
