@@ -14,6 +14,7 @@ import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { SettingsDropdown } from './SettingsDropdown';
 import {
   DEPOSIT_REFETCH_INTERVAL,
+  EMPTY_STRING,
   MAX_USDC_TRANSFER_SIZE,
   ZERO
 } from "@helpers/constants";
@@ -75,6 +76,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
   
   const { 
     isRegistered,
+    registrationHash,
     refetchDeposits,
     getBestDepositForAmount,
     shouldFetchDeposits,
@@ -248,9 +250,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
     const fetchUsdAmountToSendAndVerifyOrder = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
       const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
+      const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
+      const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
 
       if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
-        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC);
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
@@ -320,7 +324,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
       lastOnRampTimestamp,
       onRampCooldownPeriod,
       recipientAddress,
-      loggedInEthereumAddress
+      registrationHash,
+      isLoggedIn,
+      isRegistered
     ]
   );
 

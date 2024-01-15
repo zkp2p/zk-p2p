@@ -14,7 +14,7 @@ import {
 interface LiquidityValues {
   deposits: DepositWithAvailableLiquidity[] | null;
   depositStore: StoredDeposit[] | null;
-  getBestDepositForAmount: ((requestedOnRampInputAmount: string, onRamperAddress: string) => IndicativeQuote) | null;
+  getBestDepositForAmount: ((requestedOnRampInputAmount: string, onRamperRegistrationHash: string) => IndicativeQuote) | null;
   refetchDeposits: (() => void) | null;
   shouldFetchDeposits: boolean;
   calculateUsdFromRequestedUSDC: (requestedOnRampInputAmount: bigint, conversionRate: bigint) => bigint;

@@ -159,6 +159,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposit,
         availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
         depositId: depositWithAvailableLiquidityData.depositId,
+        depositorIdHash: depositWithAvailableLiquidityData.depositorIdHash,
       }
 
       sanitizedDeposits.push(depositWithLiquidity);
@@ -227,12 +228,12 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     setFetchDepositsTrigger(prev => prev + 1);
   };
 
-  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, onRamperAddress: string): IndicativeQuote => {
+  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, onRamperRegistrationHash: string): IndicativeQuote => {
     if (depositStore) {
       return fetchBestDepositForAmount(
         requestedOnRampInputAmount,
         depositStore,
-        onRamperAddress
+        onRamperRegistrationHash
       );
     } else {
       return {

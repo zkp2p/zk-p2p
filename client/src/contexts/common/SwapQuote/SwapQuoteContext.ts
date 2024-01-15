@@ -5,8 +5,9 @@ import { IndicativeQuote } from '@helpers/types';
 
 interface SwapQuoteValues {
   isRegistered: boolean;
+  registrationHash: string | null;
   refetchDeposits: (() => void) | null;
-  getBestDepositForAmount: ((requestedOnRampInputAmount: string) => IndicativeQuote) | null;
+  getBestDepositForAmount: ((requestedOnRampInputAmount: string, onRamperRegistrationHash: string) => IndicativeQuote) | null;
   shouldFetchDeposits: boolean;
   refetchDepositCounter: (() => void) | null;
   shouldFetchRampState: boolean;
@@ -20,6 +21,7 @@ interface SwapQuoteValues {
 
 const defaultValues: SwapQuoteValues = {
   isRegistered: false,
+  registrationHash: null,
   refetchDeposits: null,
   getBestDepositForAmount: null,
   shouldFetchDeposits: false,
