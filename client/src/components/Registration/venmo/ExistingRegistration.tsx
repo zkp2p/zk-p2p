@@ -30,9 +30,9 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    * Contexts
    */
 
-  const { isLoggedIn } = useAccount();
+  const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
-  const { legacyNftAddress, venmoNftAddress, nftAbi } = useSmartContracts();
+  const { venmoNftAddress, nftAbi } = useSmartContracts();
 
   const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
 
@@ -88,7 +88,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   };
 
   const openSeaLegacyNftLink = () => {
-    const url = "https://opensea.io/assets/base/" + legacyNftAddress;
+    const url = "https://opensea.io/collection/proof-of-p2p-v1-1?search[owner][address]=" + loggedInEthereumAddress ;
     window.open(url, '_blank');
   };
 
