@@ -32,7 +32,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 
   const { isLoggedIn } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
-  const { venmoNftAddress, nftAbi } = useSmartContracts();
+  const { legacyNftAddress, venmoNftAddress, nftAbi } = useSmartContracts();
 
   const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
 
@@ -85,6 +85,11 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 
   const openSeaNftLink = () => {
     return "https://opensea.io/assets/base/" + venmoNftAddress + "/" + venmoNftId;
+  };
+
+  const openSeaLegacyNftLink = () => {
+    const url = "https://opensea.io/assets/base/" + legacyNftAddress;
+    window.open(url, '_blank');
   };
 
   /*
@@ -200,6 +205,13 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           )}
         </Content>
       </Column>
+
+      {isLoggedIn ? (
+        <LiquidityLink onClick={openSeaLegacyNftLink}>
+          Looking for your V1 Registration NFT?
+        </LiquidityLink>
+      ) : null}
+
     </Container>
   );
 };
@@ -325,4 +337,19 @@ const MintNftContainer = styled.div`
 const DescriptionAndHelperContainer = styled.div`
   vertical-align: middle;
   line-height: 1.3;
+`;
+
+const LiquidityLink = styled.button`
+  width: 100%;
+  font-size: 15px;
+  font-family: 'Graphik';
+  color: #FFFFFF;
+  opacity: 0.3;
+  text-align: center;
+  padding: 20px 0px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
 `;

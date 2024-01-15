@@ -320,7 +320,7 @@ const PositionRowStyled = styled.div`
 `;
 
 const LiquidityLink = styled.button`
-  font-size: 14px;
+  font-size: 15px;
   font-family: 'Graphik';
   color: #FFFFFF;
   opacity: 0.3;
