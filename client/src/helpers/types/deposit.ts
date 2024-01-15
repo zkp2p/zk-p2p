@@ -22,13 +22,16 @@ export interface Deposit {
 }
 
 // struct DepositWithAvailableLiquidity {
-// deposit: Deposit;
-// uint256: availableLiquidity;
+//    deposit: Deposit;
+//    uint256: availableLiquidity;
+//    bytes32: depositorIdHash;
+//    uint256: depositId;
 // }
 export interface DepositWithAvailableLiquidity {
   depositId: bigint;
   deposit: Deposit;
   availableLiquidity: bigint;
+  depositorIdHash: string;
 } // DepositsProvider.getAccountDeposits, LiquidityProvider.getDepositFromIds
 
 export interface StoredDeposit extends DepositWithAvailableLiquidity {
