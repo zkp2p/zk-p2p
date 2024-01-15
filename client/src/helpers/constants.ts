@@ -10,7 +10,7 @@ export const STATE_REFETCH_INTERVAL = 60000; // 1 minute
 // export const STATE_REFETCH_INTERVAL = 6000000; // 100 minute
 
 export const VENMO_EMAIL_FILTER = `from:venmo@venmo.com subject:"You paid" after:2024/01/10`;
-export const HDFC_EMAIL_FULTER = `from:alerts@hdfcbank.net subject:"❗ You have done a UPI txn. Check details!" after:2023/11/04`;
+export const HDFC_EMAIL_FULTER = `from:alerts@hdfcbank.net subject:"❗ You have done a UPI txn. Check details!" after:2023/09/01`;
 
 export const PRECISION = BigInt(1_000_000_000_000_000_000); // 18
 export const USDC_UNITS = BigInt(1_000_000); // 6
