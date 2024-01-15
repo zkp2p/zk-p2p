@@ -2,25 +2,28 @@ import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft, Unlock } from 'react-feather';
 import { usePrivy } from '@privy-io/react-auth';
+import { useDisconnect } from 'wagmi';
 
 import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
 
 
-interface AccountSelectorProps {
-  onBackClick: () => void
+interface AccountDetailsProps {
+  onBackClick: () => void,
+  isExternalEOA: boolean
 }
 
-export const AccountSelector: React.FC<AccountSelectorProps> = ({
-    onBackClick
+export const AccountDetails: React.FC<AccountDetailsProps> = ({
+    onBackClick,
+    isExternalEOA
   }) => {
   /*
    * Contexts
    */
 
-  const { connectWallet, login } = usePrivy();
-
+  const { logout } = usePrivy();
+  const { disconnect } = useDisconnect();
   
   /*
   * Handlers
@@ -50,23 +53,17 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Create Account or Sign In'}
+            {'Sign out'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
 
         <Button
-          onClick={login}
+          onClick={isExternalEOA ? disconnect : logout}
           fullWidth={true}
         >
-          Login using Email
-        </Button>
-        <Button
-          onClick={connectWallet}
-          fullWidth={true}
-        >
-          Login using Wallet
+          Logout
         </Button>
       </ModalContainer>
     </ModalAndOverlayContainer>

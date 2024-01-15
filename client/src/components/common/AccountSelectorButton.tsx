@@ -1,17 +1,15 @@
 import styled from 'styled-components';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect, useNetwork } from 'wagmi';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { usePrivyWagmi } from '@privy-io/wagmi-connector';
-import { usePrivySmartAccount } from "@zerodev/privy";
 import { useSwitchNetwork } from '@privy-io/wagmi-connector';
 import useAccount from '@hooks/useAccount';
 
 import Link from '@mui/material/Link';
 
 import { AccountSelector } from "@components/modals/AccountSelector";
+import { AccountDetails } from "@components/modals/AccountDetails";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 
@@ -24,18 +22,36 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
   fullWidth = false,
   height = 48
 }) => {
-  const [shouldShowAccountSelectorModal, setShouldShowAccountSelectorModal] = useState<boolean>(false);
-
-  // Privy hooks
-  const {ready, user, authenticated, login, connectWallet, logout, linkWallet} = usePrivy();
+  /*
+   * Contexts
+   */
+  const { ready, authenticated } = usePrivy();
   const { loggedInEthereumAddress, isLoggedIn } = useAccount();
-
-  // wagmi hooks
+  const { switchNetwork } = useSwitchNetwork();
   const { chain } = useNetwork();
-  const {disconnect} = useDisconnect();
+  const currentDeviceSize = useMediaQuery();
+  
+  /*
+   * State
+   */
+  const [shouldShowAccountSelectorModal, setShouldShowAccountSelectorModal] = useState<boolean>(false);
+  const [shouldShowAccountDetailsModal, setShouldShowAccountDetailsModal] = useState<boolean>(false);
+  const [isExternalEOA, setIsExternalEOA] = useState<boolean>(false);
 
-  const {wallet: activeWallet, setActiveWallet} = usePrivyWagmi();
+  /*
+   * Hooks
+   */
+  useEffect(() => {
+    if (ready && isLoggedIn && authenticated) {
+      setIsExternalEOA(false);
+    } else {
+      setIsExternalEOA(true);
+    }
+  }, [ready, isLoggedIn, authenticated]);
 
+  /*
+  * Handlers
+  */
   const onAccountSelectorClick = () => {
     setShouldShowAccountSelectorModal(true);
   };
@@ -44,7 +60,13 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
     setShouldShowAccountSelectorModal(false);
   };
 
-  const currentDeviceSize = useMediaQuery();
+  const onAccountDetailsClick = () => {
+    setShouldShowAccountDetailsModal(true);
+  };
+
+  const onCloseAccountDetailsModal = () => {
+    setShouldShowAccountDetailsModal(false);
+  };
 
   return (
     // Case 1: App is loading
@@ -64,7 +86,7 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
           return (
             <Button
               fullWidth={fullWidth}
-              // onClick={openChainModal} // TODO: Implement this
+              onClick={() => switchNetwork?.(5)} // TODO: use env
               height={height}
             >
               Wrong Network
@@ -85,26 +107,20 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
           );
         }
 
-        // Case 3: User is logged in to Privy which is prioritized over EOA
+        // Case 3: User is logged in to Privy which is prioritized over external EOA
         if (ready && isLoggedIn && authenticated) {
           return (
-            <LoggedInButton onClick={() => {
-              logout(); // Logout from Privy
-              disconnect(); // And disconnect from any EOA
-            }}>
-              {loggedInEthereumAddress?.slice(0, 4)}...{loggedInEthereumAddress?.slice(-4)}
+            <LoggedInButton onClick={onAccountDetailsClick}>
+              {loggedInEthereumAddress?.slice(0, 6)}...{loggedInEthereumAddress?.slice(-4)}
             </LoggedInButton>
           );
         }
 
-        // Case 4: User is logged in to EOA
+        // Case 4: User is logged in to external EOA
         return (
           <div style={{ display: 'flex', gap: 12 }}>
             <NetworkAndBridgeContainer>
-              <NetworkSelector
-                // onClick={openChainModal}
-                style={{ display: 'flex', alignItems: 'center' }}
-              >
+              <NetworkSelector style={{ display: 'flex', alignItems: 'center' }}>
                 {chain?.hasIcon && (
                   <div
                     style={{
@@ -129,8 +145,8 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
               </NetworkSelector>
             </NetworkAndBridgeContainer>
             <AccountContainer>
-              <LoggedInButton onClick={disconnect}>
-                {loggedInEthereumAddress?.slice(0, 4)}...{loggedInEthereumAddress?.slice(-4)}
+              <LoggedInButton onClick={onAccountDetailsClick}>
+                {loggedInEthereumAddress?.slice(0, 6)}...{loggedInEthereumAddress?.slice(-4)}
               </LoggedInButton>
 
               {
@@ -157,6 +173,11 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
           <AccountSelector onBackClick={onCloseAccountSelectorModal} />
         )
       }
+      {
+        shouldShowAccountDetailsModal && (
+          <AccountDetails onBackClick={onCloseAccountDetailsModal} isExternalEOA={isExternalEOA} />
+        )
+      }
     </div>
   );
 };
@@ -167,7 +188,7 @@ const NetworkAndBridgeContainer = styled.div`
   background: #1A1B1F;
 `;
 
-const NetworkSelector = styled.button`
+const NetworkSelector = styled.div`
   border: none;
   background: #1A1B1F;
   color: #ffffff;
