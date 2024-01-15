@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useDisconnect, useNetwork } from 'wagmi';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { usePrivyWagmi } from '@privy-io/wagmi-connector';
-import { usePrivySmartAccount } from "@zerodev/privy";
 import { useSwitchNetwork } from '@privy-io/wagmi-connector';
 import useAccount from '@hooks/useAccount';
 

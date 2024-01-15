@@ -42,6 +42,8 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     esl && console.log('addressRaw_1');
     esl && console.log('checking address: ', address);
 
+    console.log("privy wallets", activeWallet, wallets, address);
+
     if (address) {
       esl && console.log('addressRaw_2');
 

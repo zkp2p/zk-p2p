@@ -75,7 +75,7 @@ export const alchemyMainnetEthersProvider =
 const zeroDevOptions = {
   projectIds: [process.env.ZERODEV_APP_ID],
   projectId: process.env.ZERODEV_APP_ID,
-  useSmartWalletForExternalEOA: false, // Only sponsor gas for embedded wallets
+  useSmartWalletForExternalEOA: true, // TODO: BUG need to set to true to use zerodev. Might be due to race conditions
 }
 
 ReactDOM.render(
