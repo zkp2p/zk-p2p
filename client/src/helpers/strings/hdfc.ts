@@ -4,7 +4,7 @@ const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
     Provide a historical transaction email sent from HDFC InstaAlerts containing "You have done a UPI txn" in
-    the subject received after January 10th, 2024 to complete registration. Base ETH is required to submit a
+    the subject received after November 4th, 2023 to complete registration. Base ETH is required to submit a
     registration transaction.
   `,
 
