@@ -12,12 +12,7 @@ import { ThemedText } from '@theme/text';
 import { IndicativeQuote } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { SettingsDropdown } from './SettingsDropdown';
-import {
-  DEPOSIT_REFETCH_INTERVAL,
-  EMPTY_STRING,
-  MAX_USDC_TRANSFER_SIZE,
-  ZERO
-} from "@helpers/constants";
+import { DEPOSIT_REFETCH_INTERVAL, EMPTY_STRING, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
@@ -87,7 +82,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
     refetchIntentHash,
     shouldFetchIntentHash,
     lastOnRampTimestamp,
-    refetchLastOnRampTimestamp
+    refetchLastOnRampTimestamp,
+    maxTransferSize
   } = useSwapQuote();
 
   /*
@@ -282,7 +278,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
               if (!onRampCooldownElapsed) {
                 updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
-              } else if (toBigInt(requestedUsdcAmount) > MAX_USDC_TRANSFER_SIZE) {
+              } else if (toBigInt(requestedUsdcAmount) > maxTransferSize) {
                 updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
@@ -326,7 +322,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
       recipientAddress,
       registrationHash,
       isLoggedIn,
-      isRegistered
+      isRegistered,
+      maxTransferSize
     ]
   );
 
@@ -424,7 +421,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
         return 'Invalid recipient address';
       
       case QuoteState.EXCEEDS_MAX_SIZE:
-        return 'Exceeded USD transfer limit of 250';
+        const maxTransferSizeString = toUsdcString(maxTransferSize, true);
+        return `Exceeded USD transfer limit of ${maxTransferSizeString}`;
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';

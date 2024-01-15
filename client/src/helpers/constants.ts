@@ -2,7 +2,8 @@
 export const ZERO = BigInt(0);
 export const SECONDS_IN_DAY = BigInt(86400);
 
-export const MAX_USDC_TRANSFER_SIZE = 500000000n;
+export const MAX_USDC_TRANSFER_SIZE_VENMO = 500000000n; // 500 USD
+export const MAX_USDC_TRANSFER_SIZE_HDFC = 100000000n; // 100 USD
 
 export const DEPOSIT_REFETCH_INTERVAL = 20000; // 0.3 minutes
 export const STATE_REFETCH_INTERVAL = 60000; // 1 minute

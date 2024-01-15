@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import { IndicativeQuote } from '@helpers/types';
-import { esl } from '@helpers/constants';
+import { esl, MAX_USDC_TRANSFER_SIZE_HDFC, MAX_USDC_TRANSFER_SIZE_VENMO, ZERO } from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
@@ -96,6 +96,31 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
   const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
+
+  const [maxTransferSize, setMaxTransferSize] = useState<bigint>(ZERO);
+
+  /*
+   * Miscellaneous
+   */
+
+  useEffect(() => {
+    esl && console.log('paymentPlatform: ', paymentPlatform);
+
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_VENMO);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_HDFC);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform]);
 
   /*
    * Registration
@@ -389,7 +414,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         refetchLastOnRampTimestamp,
         refetchDepositCounter,
         shouldFetchRampState,
-        onRampCooldownPeriod
+        onRampCooldownPeriod,
+        maxTransferSize
       }}
     >
       {children}
