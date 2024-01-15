@@ -38,11 +38,11 @@ export const contractAddresses: Contracts = {
     'venmoRamp': '0x38637CD256d70994f2d5533BEAfe52eEfC2a96Ab',
     'venmoSendProcessor': '0x8644C2B4293923BF60c909171F089f4c5F75474c',
     'venmoRegistrationProcessor': '0xD228a3DD033037306727bdC11097B43aA9d6e671',
-    'venmoNft': '',
+    'venmoNft': '0x73ca27fd61afa3823046f9f9101b17a0cfa5c1ad',
     'hdfcRamp': '0xb4A7486b0EFa264D5FC6A8181bfc7A150cD57849',
     'hdfcSendProcessor': '0x8D54b20922aEA549224D61501225a0DaB5bC3839',
     'hdfcRegistrationProcessor': '0x6c90ae078d8a6009666ad061521C091f57C808db',
-    'hdfcNft': '',
+    'hdfcNft': '0x1bb5f399a50050d76ebffb52ae8a526493ef8916',
   },
   'localhardhat': {
     'legacyRamp': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
