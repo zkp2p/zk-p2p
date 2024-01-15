@@ -48,8 +48,8 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "localhost": usdc(998),
     "goerli": usdc(999),
     "sepolia": usdc(999),
-    "base": usdc(50),
-    "base_staging": usdc(50),
+    "base": usdc(100),
+    "base_staging": usdc(100),
   },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
