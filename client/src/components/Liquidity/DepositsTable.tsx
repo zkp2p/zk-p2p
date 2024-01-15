@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-feather';
 import styled, { css } from 'styled-components/macro';
+import { useNavigate } from 'react-router-dom';
 
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
@@ -10,6 +11,7 @@ import { ThemedText } from '@theme/text';
 
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useAccount from '@hooks/useAccount';
 
 
 const ROWS_PER_PAGE = 10;
@@ -24,6 +26,8 @@ export interface DepositPrime {
 }
 
 export const DepositsTable: React.FC = () => {
+  const navigate = useNavigate();
+
   /*
    * Contexts
    */
@@ -35,6 +39,10 @@ export const DepositsTable: React.FC = () => {
   const {
     depositStore: hdfcDepositStore,
   } = useHdfcLiquidity();
+
+  const {
+    isLoggedIn
+  } = useAccount();
 
   /*
    * State
@@ -95,6 +103,10 @@ export const DepositsTable: React.FC = () => {
 
   const handleChangePage = (newPage: number) => {
     setCurrentPage(newPage);
+  };
+
+  const navigateToWithdrawHandler = () => {
+    navigate('/withdraw');
   };
 
   /*
@@ -159,6 +171,12 @@ export const DepositsTable: React.FC = () => {
           </TableContainer>
         )}
       </Content>
+
+      {isLoggedIn ? (
+        <LiquidityLink onClick={navigateToWithdrawHandler}>
+          Looking for your legacy deposits?
+        </LiquidityLink>
+      ) : null}
 
       {positionsRowData.length > ROWS_PER_PAGE && (
         <PaginationContainer>
@@ -299,4 +317,18 @@ const PositionRowStyled = styled.div`
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
   }
+`;
+
+const LiquidityLink = styled.button`
+  font-size: 14px;
+  font-family: 'Graphik';
+  color: #FFFFFF;
+  opacity: 0.3;
+  text-align: center;
+  padding: 20px 0px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
 `;

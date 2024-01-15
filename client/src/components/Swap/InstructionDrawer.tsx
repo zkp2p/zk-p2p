@@ -35,7 +35,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
    * Handlers
    */
 
-  const navigateToSwapHandler = () => {
+  const navigateToDepositsHandler = () => {
     navigate('/deposits');
   };
 
@@ -87,7 +87,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
           </InstructionStep>
         </InstructionListContainer>
 
-        <LiquidityLink onClick={navigateToSwapHandler}>
+        <LiquidityLink onClick={navigateToDepositsHandler}>
           Interested in providing liquidity?
         </LiquidityLink>
       </InstructionsDropdown>
