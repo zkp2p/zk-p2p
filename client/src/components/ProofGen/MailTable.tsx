@@ -75,6 +75,14 @@ export const MailTable: React.FC<MailTableProps> = ({
     }
   };
 
+  const handleLogoutPressed = () => {
+    if (googleLogOut) {
+      googleLogOut();
+    }
+
+    setFetchedEmails([]);
+  }
+
   /*
    * Helpers
    */
@@ -257,7 +265,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             </ThemedText.SubHeader>
 
             <AccessoryButton
-              onClick={googleLogOut}
+              onClick={handleLogoutPressed}
               height={36}
               title={'Logout'}
               icon={'logout'}
@@ -285,9 +293,9 @@ export const MailTable: React.FC<MailTableProps> = ({
             {fetchedEmails.length === 0 ? (
               <EmptyMailContainer>
                 <StyledInbox />
-                <ThemedText.LabelSmall textAlign="center" lineHeight={1.3}>
+                <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
                   { platformStrings.getForPlatform(paymentPlatform, 'NO_EMAILS_ERROR') }
-                </ThemedText.LabelSmall>
+                </ThemedText.SubHeaderSmall>
               </EmptyMailContainer>
             ) : (
               <Table>
@@ -327,7 +335,7 @@ const EmptyMailContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4rem 0rem;
+  padding: 1.9rem 0rem;
   max-width: 75%;
   margin: auto;
   gap: 1rem;
@@ -443,4 +451,6 @@ const LoginOrUploadButtonContainer = styled.div`
 
 const StyledInbox = styled(Inbox)`
   color: #FFF;
+  width: 28px;
+  height: 28px;
 `;

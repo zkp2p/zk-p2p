@@ -14,8 +14,8 @@ const strings: PlatformStrings = {
     leave your browser. Read more:
   `,
   NO_EMAILS_ERROR: `
-    No HDFC emails found.
-    Please ensure you are using an email attached to a valid HDFC account.
+    No emails found.
+    Please ensure you are using an email attached to a HDFC account with a receipt after 11/4/23.
   `,
 
   // New Registration

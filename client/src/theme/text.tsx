@@ -62,7 +62,7 @@ export const ThemedText = {
     return <TextWrapper fontWeight={500} fontSize={16} color="textPrimary" lineHeight="24px" {...props} />
   },
   SubHeaderSmall(props: TextProps) {
-    return <TextWrapper fontWeight={500} fontSize={14} color="textSecondary" {...props} />
+    return <TextWrapper fontWeight={500} fontSize={15} color="textSecondary" {...props} />
   },
   UtilityBadge(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize="8px" lineHeight="12px" {...props} />

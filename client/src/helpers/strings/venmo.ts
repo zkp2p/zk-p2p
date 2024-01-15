@@ -13,8 +13,8 @@ const strings: PlatformStrings = {
     leave your browser. Read more:
   `,
   NO_EMAILS_ERROR: `
-    No Venmo emails found.
-    Please ensure you are using an email attached to a valid Venmo account.
+    No emails found.
+    Please ensure you are using an email attached to a Venmo account with a receipt after 1/10/24.
   `,
 
   // New Registration
