@@ -451,7 +451,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
             type="number"
             inputLabel="INR"
-            placeholder="1050"
+            placeholder="82800"
             helperText={hdfcStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 
