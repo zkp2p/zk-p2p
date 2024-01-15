@@ -7,7 +7,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
 import { PositionRow } from "@components/Deposit/DepositRow";
-import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
+import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { Abi } from '@helpers/types';

@@ -3,8 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import { NavItem } from "@components/layouts/TopNav/NavItem";
-import { AccountSelectorButton } from '@components/common/AccountSelectorButton';
-
+import { CustomConnectButton } from "@components/common/ConnectButton";
 
 export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
   const location = useLocation();
@@ -33,7 +32,7 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
         </LogoAndNavItems>
       )}
 
-      {!withoutLinks && <AccountSelectorButton height={40} />}
+      {!withoutLinks && <CustomConnectButton height={40} />}
     </NavBar>
   );
 }

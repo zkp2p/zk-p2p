@@ -7,7 +7,7 @@ import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { PermissionRow } from "@components/Permissions/PermissionRow";
-import { AccountSelectorButton } from "@components/common/AccountSelectorButton";
+import { CustomConnectButton } from "@components/common/ConnectButton";
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/venmo/useRegistration';
 import usePermissions from '@hooks/usePermissions';
@@ -85,7 +85,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
                   Your denied users list will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <AccountSelectorButton />
+              <CustomConnectButton />
             </ErrorContainer>
           ) : !isRegistered ? (
             <ErrorContainer>
