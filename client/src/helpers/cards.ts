@@ -1,7 +1,7 @@
 export const MAIN_CARDS = [
 	{
 		title: 'Get Started',
-		description: 'Buy and sell USDC on-chain using Venmo. No additional KYC required.',
+		description: 'Buy and sell USDC on-chain using Venmo and UPI. Entirely peer-to-peer.',
 		cta: 'Go to the App',
 		navigateTo: '/swap',
 	},
