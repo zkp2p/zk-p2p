@@ -5,6 +5,7 @@ import { Deposit, DepositWithAvailableLiquidity } from '../../../helpers/types/d
 import { PaymentPlatform } from '../../../helpers/types/paymentPlatform';
 import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+import { EMPTY_STRING } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 
@@ -101,6 +102,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           deposit,
           availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
           depositId: depositWithAvailableLiquidityData.depositId,
+          depositorIdHash: EMPTY_STRING,
         }
 
         sanitizedDeposits.push(depositWithLiquidity);
