@@ -32,6 +32,27 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
     onBackClick();
   }
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      await disconnect();
+  
+      onBackClick();
+    } catch (error) {
+      console.error("Failed to logout");
+    }
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnect();
+  
+      onBackClick();
+    } catch (error) {
+      console.error("Failed to disconnect wallet");
+    }
+  };
+
   /*
    * Component
    */
@@ -46,7 +67,7 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
             <button
               onClick={handleOverlayClick}
               style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+            >
 
               <StyledArrowLeft/>
             </button>
@@ -60,7 +81,7 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
         </TitleCenteredRow>
 
         <Button
-          onClick={isExternalEOA ? disconnect : logout}
+          onClick={isExternalEOA ? handleDisconnect : handleLogout}
           fullWidth={true}
         >
           Logout

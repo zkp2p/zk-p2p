@@ -29,6 +29,26 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
     onBackClick();
   }
 
+  const handleLogin = async () => {
+    try {
+      await login();
+  
+      onBackClick();
+    } catch (error) {
+      console.error("Failed to login");
+    }
+  };
+
+  const handleConnectWallet = async () => {
+    try {
+      await connectWallet();
+  
+      onBackClick();
+    } catch (error) {
+      console.error("Failed to connect wallet");
+    }
+  };
+
   /*
    * Component
    */
@@ -57,13 +77,13 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
         </TitleCenteredRow>
 
         <Button
-          onClick={login}
+          onClick={handleLogin}
           fullWidth={true}
         >
           Login using Email
         </Button>
         <Button
-          onClick={connectWallet}
+          onClick={handleConnectWallet}
           fullWidth={true}
         >
           Login using Wallet
