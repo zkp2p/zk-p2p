@@ -6790,7 +6790,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^12.12.54":
+"@types/node@npm:^12.12.54, @types/node@npm:^12.12.6":
   version: 12.20.55
   resolution: "@types/node@npm:12.20.55"
   checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
@@ -8528,6 +8528,65 @@ __metadata:
   version: 2.29.0
   resolution: "@zeit/schemas@npm:2.29.0"
   checksum: 3cea06bb67d790336aca0cc17580fd492ff3fc66ef4d180dce7053ff7ff54ab81b56bf718ba6f537148c581161d06306a481ec218d540bff922e0e009844ffd1
+  languageName: node
+  linkType: hard
+
+"@zerodev/privy@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "@zerodev/privy@npm:1.4.4"
+  dependencies:
+    "@zerodev/sdk": 4.5.5
+  peerDependencies:
+    "@privy-io/react-auth": ">=1.30.1"
+    react: ^18
+  checksum: d8ba21568cdcfe7e351c5d3c838b6a3d36a98b4b6bd3b1f5cbdb34e7f9ac23c738a8be6a998d5e5af3ae8707aefdbff000c94d34c4ccfb7f253e208e9d96fe51
+  languageName: node
+  linkType: hard
+
+"@zerodev/sdk@npm:4.5.5":
+  version: 4.5.5
+  resolution: "@zerodev/sdk@npm:4.5.5"
+  dependencies:
+    "@alchemy/aa-core": 0.1.0-alpha.23
+    "@alchemy/aa-ethers": 0.1.0-alpha.23
+    "@openzeppelin/merkle-tree": ^1.0.5
+    axios: ^1.4.0
+    merkletreejs: ^0.3.10
+    viem: ^1.5.3
+  checksum: b0a56ab4bee0cf459f4600f261993dccb599c1ab8d80b72f6113119fefc79bac5b168dcdb11d68dd645ca2d19dd9135fc4cc29b9ac86dbd97f966bf3faef9417
+  languageName: node
+  linkType: hard
+
+"@zerodev/wagmi@npm:^4.5.5":
+  version: 4.5.6
+  resolution: "@zerodev/wagmi@npm:4.5.6"
+  dependencies:
+    "@zerodev/sdk": 4.5.5
+    "@zerodev/web3auth": 4.5.4
+    ethers: 5.7.2
+  peerDependencies:
+    "@privy-io/react-auth": ">=1.33.x"
+    "@privy-io/wagmi-connector": ">=0.1.8"
+    "@wagmi/core": ">=1.3.x"
+    react: ">=17"
+    react-dom: ">=17"
+    viem: ">=1.1.7"
+    wagmi: ">=1.3.x"
+  checksum: d566ab0977dcc1c77b187afa2575677cdeac38d6a47181d03e219cfbf8ded53d3d9fbc479cf86518c758a3fe3d5187b712f38c908cf08c42d50d9bc7f61e0325
+  languageName: node
+  linkType: hard
+
+"@zerodev/web3auth@npm:4.5.4":
+  version: 4.5.4
+  resolution: "@zerodev/web3auth@npm:4.5.4"
+  dependencies:
+    "@web3auth/base": 7.0.1
+    "@web3auth/ethereum-provider": 7.0.2
+    "@web3auth/modal": 7.0.3
+    "@web3auth/no-modal": 7.0.1
+    "@web3auth/openlogin-adapter": 7.0.1
+    "@zerodev/sdk": 4.5.5
+  checksum: 0f9b1298409e2717441fc75236247b1aa14f78e96d2d4946324f491e47f9a397f4bb68784094618629ecb77491e552c5941ec7a70ca57c7cac1811936b67d998
   languageName: node
   linkType: hard
 
@@ -12779,6 +12838,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^4.5.0
     "@typescript-eslint/parser": ^4.5.0
     "@uidotdev/usehooks": ^2.4.1
+    "@zerodev/privy": ^1.4.4
+    "@zerodev/wagmi": ^4.5.5
     "@zkp2p/circuits-circom-helpers": ^0.1.3-rc8
     addressparser: ^1.0.1
     assert: ^2.1.0
@@ -12845,7 +12906,13 @@ __metadata:
     postcss-flexbugs-fixes: ^5.0.2
     postcss-loader: ^6.2.1
     postcss-normalize: ^10.0.1
+    postcss-preset-env: ^7.0.1
     postcss-safe-parser: 5.0.2
+    prettier: ^2.7.1
+    prettier-plugin-solidity: ^1.0.0-beta.24
+    process: ^0.11.10
+    prompts: ^2.4.2
+    puppeteer: 18.1
     react: ^18.2.0
     react-app-polyfill: ^3.0.0
     react-app-rewired: ^2.2.1
@@ -14161,7 +14228,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethjs-util@npm:0.1.6":
+"ethjs-unit@npm:0.1.6":
+  version: 0.1.6
+  resolution: "ethjs-unit@npm:0.1.6"
+  dependencies:
+    bn.js: 4.11.6
+    number-to-bn: 1.7.0
+  checksum: df6b4752ff7461a59a20219f4b1684c631ea601241c39660e3f6c6bd63c950189723841c22b3c6c0ebeb3c9fc99e0e803e3c613101206132603705fcbcf4def5
+  languageName: node
+  linkType: hard
+
+"ethjs-util@npm:0.1.6, ethjs-util@npm:^0.1.6":
   version: 0.1.6
   resolution: "ethjs-util@npm:0.1.6"
   dependencies:

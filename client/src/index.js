@@ -95,8 +95,8 @@ ReactDOM.render(
                 accentColor: "#df2e2d",
                 showWalletLoginFirst: false,
               },
-              defaultChain: goerli, // TODO: Switch back to base
-              supportedChains: [goerli, base, hardhat]
+              defaultChain: sepolia, // TODO: Switch back to base
+              supportedChains: [sepolia, base, hardhat]
             }}
           >
             <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>

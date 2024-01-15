@@ -86,7 +86,7 @@ export const AccountSelectorButton: React.FC<AccountSelectorButtonProps> = ({
           return (
             <Button
               fullWidth={fullWidth}
-              onClick={() => switchNetwork?.(5)} // TODO: use env
+              onClick={() => switchNetwork?.(11155111)} // TODO: use env
               height={height}
             >
               Wrong Network
