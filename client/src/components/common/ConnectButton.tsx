@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React, { useEffect, useState } from "react";
 
-import {  useNetwork } from 'wagmi';
+import { useNetwork } from 'wagmi';
 import { usePrivy } from '@privy-io/react-auth';
 import { useSwitchNetwork } from '@privy-io/wagmi-connector';
 import useAccount from '@hooks/useAccount';

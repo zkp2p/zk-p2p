@@ -8029,8 +8029,8 @@ __metadata:
   linkType: hard
 
 "@zerodev/wagmi@npm:^4.5.5":
-  version: 4.5.6
-  resolution: "@zerodev/wagmi@npm:4.5.6"
+  version: 4.5.7
+  resolution: "@zerodev/wagmi@npm:4.5.7"
   dependencies:
     "@zerodev/sdk": 4.5.5
     "@zerodev/web3auth": 4.5.4
@@ -8043,7 +8043,7 @@ __metadata:
     react-dom: ">=17"
     viem: ">=1.1.7"
     wagmi: ">=1.3.x"
-  checksum: d566ab0977dcc1c77b187afa2575677cdeac38d6a47181d03e219cfbf8ded53d3d9fbc479cf86518c758a3fe3d5187b712f38c908cf08c42d50d9bc7f61e0325
+  checksum: 1c6f318571ffea58aaa3d4135039283a69f40646b8b72d34a7f65369d42821c6a2066b53931afa4c88d0395154196065b2ae3a0fbb88a2a1f6a7f0f07fd2fe2d
   languageName: node
   linkType: hard
 

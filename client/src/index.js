@@ -52,15 +52,14 @@ ReactDOM.render(
         config={{
           embeddedWallets: {
             createOnLogin: 'users-without-wallets',
-            noPromptOnSignature: true // TODO: Any custom logic we want here
+            noPromptOnSignature: true
           },
           appearance: {
             theme: "#0E111C",
-            accentColor: "#df2e2d",
-            showWalletLoginFirst: false,
+            accentColor: "#df2e2d"
           },
           defaultChain: sepolia, // TODO: Switch back to base
-          supportedChains: [sepolia, base, hardhat]
+          supportedChains: [sepolia] // TODO: add base and hardhat
         }}
       >
         <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 import { useWallets } from '@privy-io/react-auth';
 import { usePrivyWagmi } from '@privy-io/wagmi-connector';
@@ -34,15 +34,13 @@ const AccountProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     if (wallets[0] && !activeWallet) {
-        setActiveWallet(wallets[0]);
+      setActiveWallet(wallets[0]);
     }
   }, [activeWallet, wallets, setActiveWallet]);
 
   useEffect(() => {
     esl && console.log('addressRaw_1');
     esl && console.log('checking address: ', address);
-
-    console.log("privy wallets", activeWallet, wallets, address);
 
     if (address) {
       esl && console.log('addressRaw_2');
