@@ -112,7 +112,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("ManagedKeyHashAdapter", keyHashAdapter.address),
+    await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapter.address),
     multiSig
   );
 
