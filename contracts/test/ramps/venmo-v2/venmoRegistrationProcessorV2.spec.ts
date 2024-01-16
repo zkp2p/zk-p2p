@@ -19,7 +19,7 @@ const abiCoder = new ethers.utils.AbiCoder();
 
 const rawSignals = ["0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f","0x0000000000000000000000000000000000000000000000000076406f6d6e6576","0x000000000000000000000000000000000000000000000000006f632e6f6d6e65","0x000000000000000000000000000000000000000000000000000000000000006d","0x0741728e3aae72eda484e8ccbf00f843c38eae9c399b9bd7fb2b5ee7a055b6bf"];
 
-describe("VenmoRegistrationProcessorV2", () => {
+describe.only("VenmoRegistrationProcessorV2", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
@@ -216,6 +216,39 @@ describe("VenmoRegistrationProcessorV2", () => {
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await registrationProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });
 
     describe("when the caller is not the owner", async () => {

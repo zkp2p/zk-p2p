@@ -19,7 +19,7 @@ const expect = getWaffleExpect();
 
 const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x0000000000000000000000000000000000000000000000000000000030302e32","0x0000000000000000000000000000000000000000000000000000000000000000","0x000000000000000000000000000000000000000000000000003132202c657554","0x00000000000000000000000000000000000000000000000000303220766f4e20","0x00000000000000000000000000000000000000000000000000353a3131203332","0x00000000000000000000000000000000000000000000000000302b2038303a38","0x0000000000000000000000000000000000000000000000000000000000303335","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7","0x2e77b67e4f7d868c763d4539ca8483672e522d3aafb015f27aef9090f6790a18","0x0bd3bb4a2060e5b6d300226add771815983afad1c596b4cf191639ccd74874a9","0x0000000000000000000000000000000000000000000000000000000000003039"];
 
-describe("HDFCSendProcessor", () => {
+describe.only("HDFCSendProcessor", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
@@ -96,7 +96,7 @@ describe("HDFCSendProcessor", () => {
       } = await subjectCallStatic();
 
       expect(amount).to.eq(usdc(2));
-      expect(timestamp).to.eq(BigNumber.from(1700548088));
+      expect(timestamp).to.eq(BigNumber.from(1700548088).add(30));  // 30s is default timestamp buffer);
       expect(offRamperIdHash).to.eq(rawSignals[12]);
       expect(onRamperIdHash).to.eq(rawSignals[11]);
       expect(intentHash).to.eq(rawSignals[14]);
@@ -213,6 +213,39 @@ describe("HDFCSendProcessor", () => {
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await sendProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await sendProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });
 
     describe("when the caller is not the owner", async () => {

@@ -22,10 +22,17 @@ contract HDFCRegistrationProcessor is Groth16Verifier, IRegistrationProcessor, B
         address _ramp,
         IKeyHashAdapterV2 _hdfcMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        string memory _emailFromAddress
+        string memory _emailFromAddress,
+        uint256 _timestampBuffer
     )
         Groth16Verifier()
-        BaseProcessorV2(_ramp, _hdfcMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(
+            _ramp,
+            _hdfcMailserverKeyHashAdapter,
+            _nullifierRegistry,
+            _emailFromAddress,
+            _timestampBuffer
+        )
     {}
 
     /* ============ External Functions ============ */

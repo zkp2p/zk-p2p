@@ -20,13 +20,15 @@ contract BaseProcessorV2 is Ownable {
     IKeyHashAdapterV2 public mailServerKeyHashAdapter;
     INullifierRegistry public nullifierRegistry;
     bytes public emailFromAddress;
+    uint256 public timestampBuffer;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapterV2 _mailServerKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        string memory _emailFromAddress
+        string memory _emailFromAddress,
+        uint256 _timestampBuffer
     )
         Ownable()
     {
@@ -34,6 +36,7 @@ contract BaseProcessorV2 is Ownable {
         mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
         nullifierRegistry = _nullifierRegistry;
         emailFromAddress = bytes(_emailFromAddress);
+        timestampBuffer = _timestampBuffer;
     }
 
     /* ============ External Functions ============ */
@@ -50,6 +53,17 @@ contract BaseProcessorV2 is Ownable {
      */
     function setEmailFromAddress(string memory _emailFromAddress) external onlyOwner {
         emailFromAddress = bytes(_emailFromAddress);
+    }
+
+    /**
+     * @notice ONLY OWNER: Sets the timestamp buffer for validated emails. This is the amount of time in seconds
+     * that the timestamp can be off by and still be considered valid. Necessary to build in flexibility with L2
+     * timestamps.
+     *
+     * @param _timestampBuffer    The timestamp buffer for validated emails
+     */
+    function setTimestampBuffer(uint256 _timestampBuffer) external onlyOwner {
+        timestampBuffer = _timestampBuffer;
     }
 
     /* ============ External Getters ============ */

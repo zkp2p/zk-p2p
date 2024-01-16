@@ -19,7 +19,7 @@ const abiCoder = new ethers.utils.AbiCoder();
 
 const rawSignals = ["0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa","0x0000000000000000000000000000000000000000000000000040737472656c61","0x000000000000000000000000000000000000000000000000006e616263666468","0x00000000000000000000000000000000000000000000000000000074656e2e6b","0x2282c0b9cd1bedb8f14f72c2c434886a10b0c539ad1a5d62041c4bfa3ef5c7c7"];
 
-describe("HDFCRegistrationProcessor", () => {
+describe.only("HDFCRegistrationProcessor", () => {
   let owner: Account;
   let attacker: Account;
   let ramp: Account;
@@ -209,6 +209,39 @@ describe("HDFCRegistrationProcessor", () => {
       const emailFromAddress = await registrationProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-alerts@hdfcbank.net".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await registrationProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });
 
     describe("when the caller is not the owner", async () => {
