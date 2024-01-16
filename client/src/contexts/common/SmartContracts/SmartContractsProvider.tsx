@@ -72,13 +72,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       const isConnectStatusValid = connectStatus === 'idle';
       const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
 
-      console.log('accountStatus: ', accountStatus);
-      console.log('connectStatus: ', connectStatus);
-      console.log('disconnectStatus: ', disconnectStatus);
+      // console.log('accountStatus: ', accountStatus);
+      // console.log('connectStatus: ', connectStatus);
+      // console.log('disconnectStatus: ', disconnectStatus);
 
       const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      console.log('validLoggedInState: ', validLoggedInState);
+      // console.log('validLoggedInState: ', validLoggedInState);
 
       if (validLoggedInState) {
         networkToUse = network;
@@ -88,13 +88,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       const isConnectStatusValid = connectStatus === 'idle';
       const isDisconnectStatusValid = disconnectStatus === 'idle';
 
-      console.log('accountStatus: ', accountStatus);
-      console.log('connectStatus: ', connectStatus);
-      console.log('disconnectStatus: ', disconnectStatus);
+      // console.log('accountStatus: ', accountStatus);
+      // console.log('connectStatus: ', connectStatus);
+      // console.log('disconnectStatus: ', disconnectStatus);
 
       const validLoggedOutState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
 
-      console.log('validLoggedOutState: ', validLoggedOutState);
+      // console.log('validLoggedOutState: ', validLoggedOutState);
 
       if (validLoggedOutState) {
         networkToUse = DEFAULT_NETWORK;
