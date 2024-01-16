@@ -15,7 +15,7 @@ const strings: PlatformStrings = {
   `,
   NO_EMAILS_ERROR: `
     No emails found.
-    Please ensure you are using an email attached to a HDFC account with a receipt after 01/09/23.
+    Please ensure you are using an email attached to a HDFC account with a receipt after 01 Sep.
   `,
 
   // New Registration
