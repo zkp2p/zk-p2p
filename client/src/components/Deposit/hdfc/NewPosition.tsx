@@ -215,9 +215,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     if (!depositAmountInput || !usdcApprovalToRampLoaded) {
       setAmountToApprove(ZERO);
     } else {
-      const approvalDifference = toBigInt(depositAmountInput.toString()) - usdcApprovalToHdfcRamp;
+      const depositAmountBI = toBigInt(depositAmountInput.toString());
+      const approvalDifference = depositAmountBI - usdcApprovalToHdfcRamp;
       if (approvalDifference > ZERO) {
-        setAmountToApprove(approvalDifference);
+        setAmountToApprove(depositAmountBI);
       } else {
         setAmountToApprove(ZERO);
       }
