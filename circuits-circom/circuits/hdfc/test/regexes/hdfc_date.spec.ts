@@ -35,7 +35,7 @@ describe("HDFC date", function () {
     it("Should generate witnesses", async () => {
         // No commas in amount.
         const input = {
-            "msg": textToAsciiArray("\r\ndate:Sat, 14 Oct 2023 22:09:12 +0530\r\n")
+            "msg": textToAsciiArray("\r\ndate:Tue, 16 Jan 2024 13:18:32 +0530\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -46,7 +46,7 @@ describe("HDFC date", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\ndate:Sat, 14 Oct 2023 22:09:12 +0530\r\n")
+            "msg": textToAsciiArray("\r\ndate:Tue, 16 Jan 2024 13:18:32 +0530\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -58,14 +58,14 @@ describe("HDFC date", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\ndate:Sat, 14 Oct 2023 22:09:12 +0530\r\n")
+            "msg": textToAsciiArray("\r\ndate:Tue, 16 Jan 2024 13:18:32 +0530\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
         const expected = Array(textToAsciiArray("\r\ndate:").length).fill("0")
-            .concat(textToAsciiArray("Sat, 14 Oct 2023 22:09:12 +0530"))
+            .concat(textToAsciiArray("Tue, 16 Jan 2024 13:18:32 +0530"))
             .concat(Array(textToAsciiArray("\r\n").length).fill("0"));
         const result = witness.slice(2, input.msg.length + 2);
 

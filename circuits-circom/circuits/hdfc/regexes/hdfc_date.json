@@ -2,7 +2,7 @@
   "parts": [
     {
       "is_public": false,
-      "regex_def": "\r\ndate:"
+      "regex_def": "((\r\n)|^)date:"
     },
     {
       "is_public": true,
