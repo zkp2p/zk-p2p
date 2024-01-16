@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import { ArrowLeft, Unlock } from 'react-feather';
+import { ArrowLeft, LogOut } from 'react-feather';
 import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
 
@@ -74,11 +74,13 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Sign out'}
+            {'Account'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
+
+        <StyledLogOut />
 
         <Button
           onClick={isExternalEOA ? handleDisconnect : handleLogout}
@@ -130,4 +132,11 @@ const TitleCenteredRow = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
+`;
+
+const StyledLogOut = styled(LogOut)`
+  width: 36px;
+  height: 26px;
+  color: #FFF;
+  padding: 0.25rem 0;
 `;
