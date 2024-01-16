@@ -4443,9 +4443,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@privy-io/react-auth@npm:^1.52.5":
-  version: 1.52.6
-  resolution: "@privy-io/react-auth@npm:1.52.6"
+"@privy-io/react-auth@npm:1.52.1":
+  version: 1.52.1
+  resolution: "@privy-io/react-auth@npm:1.52.1"
   dependencies:
     "@coinbase/wallet-sdk": ^3.9.0
     "@ethersproject/abstract-signer": ^5.7.0
@@ -4489,20 +4489,20 @@ __metadata:
   peerDependencies:
     react: ^18
     react-dom: ^18
-  checksum: e88f5bfa6f4063027c852f0fd7a911a92c00b21b63d00b66ccbe148e87e0aef3e6aec225839b670c9295dda1ac27b93febf7ec2b0f48e3bcd98322b5f8dbe524
+  checksum: 3e91bf7a378eeece0b42941e992a65cf094b73e8ca3ac72497cb504f0c8e1f98ae5e6c1c3d399aff84add97a0141d527c284c06cba4208baa854922122ec11ea
   languageName: node
   linkType: hard
 
-"@privy-io/wagmi-connector@npm:^0.1.12":
-  version: 0.1.12
-  resolution: "@privy-io/wagmi-connector@npm:0.1.12"
+"@privy-io/wagmi-connector@npm:0.1.9":
+  version: 0.1.9
+  resolution: "@privy-io/wagmi-connector@npm:0.1.9"
   peerDependencies:
     "@privy-io/react-auth": ^1.33.0
     react: ^18
     react-dom: ^18
     viem: ">=0.3.35"
     wagmi: ">=1.4.12 <2"
-  checksum: 9116da5e7e055081278dde9420f2cd6db7b62f9194664f9f3f8890253248bb108f875f7c0ad6a9437d9c19a64abbdb952747e0aa9d6decdda88cc83d26df7e32
+  checksum: f6a88476480945cd0341332bf028715d7e0754fdbf35b59eb8fc7b36788faf4d9f91f1e676f29cd23072fdb36f32bcf4b4dc95f07deb255244b8d46f1e334e33
   languageName: node
   linkType: hard
 
@@ -8079,9 +8079,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zerodev/sdk@npm:4.5.5":
-  version: 4.5.5
-  resolution: "@zerodev/sdk@npm:4.5.5"
+"@zerodev/sdk@npm:4.5.0":
+  version: 4.5.0
+  resolution: "@zerodev/sdk@npm:4.5.0"
   dependencies:
     "@alchemy/aa-core": 0.1.0-alpha.23
     "@alchemy/aa-ethers": 0.1.0-alpha.23
@@ -8089,16 +8089,16 @@ __metadata:
     axios: ^1.4.0
     merkletreejs: ^0.3.10
     viem: ^1.5.3
-  checksum: b0a56ab4bee0cf459f4600f261993dccb599c1ab8d80b72f6113119fefc79bac5b168dcdb11d68dd645ca2d19dd9135fc4cc29b9ac86dbd97f966bf3faef9417
+  checksum: 540cb6a1ec081ae726f4879bb5fe519efb0f0e7e9c55b2f4776636f799ebe1226fb2fef845dd5bc308f5b93e50383dd8ebcf0bf4ebc839a2544971ba93444501
   languageName: node
   linkType: hard
 
-"@zerodev/wagmi@npm:^4.5.5":
-  version: 4.5.7
-  resolution: "@zerodev/wagmi@npm:4.5.7"
+"@zerodev/wagmi@npm:4.5.1":
+  version: 4.5.1
+  resolution: "@zerodev/wagmi@npm:4.5.1"
   dependencies:
-    "@zerodev/sdk": 4.5.5
-    "@zerodev/web3auth": 4.5.4
+    "@zerodev/sdk": 4.5.0
+    "@zerodev/web3auth": 4.5.0
     ethers: 5.7.2
   peerDependencies:
     "@privy-io/react-auth": ">=1.33.x"
@@ -8108,21 +8108,21 @@ __metadata:
     react-dom: ">=17"
     viem: ">=1.1.7"
     wagmi: ">=1.3.x"
-  checksum: 1c6f318571ffea58aaa3d4135039283a69f40646b8b72d34a7f65369d42821c6a2066b53931afa4c88d0395154196065b2ae3a0fbb88a2a1f6a7f0f07fd2fe2d
+  checksum: cc6cae167458fd7e179ccc72dc5143c94a3de0ab9986cf74a617b8361ba45cb35c36e3e0eca2a784ccfa8303bb1d50229abfea2b7363cc31041a5811c53426c2
   languageName: node
   linkType: hard
 
-"@zerodev/web3auth@npm:4.5.4":
-  version: 4.5.4
-  resolution: "@zerodev/web3auth@npm:4.5.4"
+"@zerodev/web3auth@npm:4.5.0":
+  version: 4.5.0
+  resolution: "@zerodev/web3auth@npm:4.5.0"
   dependencies:
     "@web3auth/base": 7.0.1
     "@web3auth/ethereum-provider": 7.0.2
     "@web3auth/modal": 7.0.3
     "@web3auth/no-modal": 7.0.1
     "@web3auth/openlogin-adapter": 7.0.1
-    "@zerodev/sdk": 4.5.5
-  checksum: 0f9b1298409e2717441fc75236247b1aa14f78e96d2d4946324f491e47f9a397f4bb68784094618629ecb77491e552c5941ec7a70ca57c7cac1811936b67d998
+    "@zerodev/sdk": 4.5.0
+  checksum: df0aa854430288a5c108541a70bcc97bcf37f48e05f54ef43132b749061eb832d151c197c42da7aac363fc9013d6fe60018ac79b23e32bb59b4c31611796cc24
   languageName: node
   linkType: hard
 
@@ -12290,8 +12290,8 @@ __metadata:
     "@mui/material": ^5.14.3
     "@openzeppelin/contracts": ^4.7.1
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
-    "@privy-io/react-auth": ^1.52.5
-    "@privy-io/wagmi-connector": ^0.1.12
+    "@privy-io/react-auth": 1.52.1
+    "@privy-io/wagmi-connector": 0.1.9
     "@rainbow-me/rainbowkit": 1.3.2
     "@reach/portal": ^0.10.3
     "@react-oauth/google": ^0.11.1
@@ -12310,7 +12310,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^4.5.0
     "@typescript-eslint/parser": ^4.5.0
     "@uidotdev/usehooks": ^2.4.1
-    "@zerodev/wagmi": ^4.5.5
+    "@zerodev/wagmi": 4.5.1
     "@zkp2p/circuits-circom-helpers": ^0.1.3-rc8
     addressparser: ^1.0.1
     assert: ^2.1.0

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft, LogOut } from 'react-feather';
 import { usePrivy } from '@privy-io/react-auth';
@@ -8,23 +8,23 @@ import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
 
-
+import useBalances from '@hooks/useBalance';
+ 
 interface AccountDetailsProps {
-  onBackClick: () => void,
-  isExternalEOA: boolean
+  onBackClick: () => void
 }
 
 export const AccountDetails: React.FC<AccountDetailsProps> = ({
-    onBackClick,
-    isExternalEOA
+    onBackClick
   }) => {
   /*
    * Contexts
    */
 
-  const { logout } = usePrivy();
+  const { ready, authenticated, logout } = usePrivy();
   const { disconnect } = useDisconnect();
-  
+  const { usdcBalance, refetchUsdcBalance } = useBalances();
+
   /*
   * Handlers
   */
@@ -34,8 +34,8 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
 
   const handleLogout = async () => {
     try {
-      await logout();
       await disconnect();
+      await logout();
   
       onBackClick();
     } catch (error) {
@@ -82,12 +82,30 @@ export const AccountDetails: React.FC<AccountDetailsProps> = ({
 
         <StyledLogOut />
 
-        <Button
-          onClick={isExternalEOA ? handleDisconnect : handleLogout}
-          fullWidth={true}
-        >
-          Logout
-        </Button>
+        { ready && authenticated ? (
+          <EmbeddedWalletContainer>
+            <Button
+              // onClick={handleLogout}
+              fullWidth={true}
+            >
+              Send USDC
+            </Button>
+            <Button
+              onClick={handleLogout}
+              fullWidth={true}
+            >
+              Logout
+            </Button>
+          </EmbeddedWalletContainer>
+        ) : (
+          <Button
+            onClick={handleDisconnect}
+            fullWidth={true}
+          >
+            Disconnect
+          </Button>
+        )}
+
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -127,6 +145,16 @@ const TitleCenteredRow = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 1.5rem;
+  color: #FFF;
+`;
+
+const EmbeddedWalletContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 1.75rem;
   color: #FFF;
 `;
 

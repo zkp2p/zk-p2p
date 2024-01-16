@@ -28,7 +28,7 @@ const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
   } else {
-    return [sepolia]; // TODO: add back hardhat and base. Disabled because we need zerodev project ids for each chain
+    return [sepolia, base, hardhat]; // TODO: add back hardhat and base. Disabled because we need zerodev project ids for each chain
   }
 };
 
@@ -75,7 +75,7 @@ const zkp2pTheme = merge(darkTheme(), {
 const zeroDevOptions = {
   projectIds: [process.env.ZERODEV_APP_ID],
   projectId: process.env.ZERODEV_APP_ID,
-  useSmartWalletForExternalEOA: true, // TODO: bug, should be false but something is causing zerodev to not overload embedded wallets correctly
+  useSmartWalletForExternalEOA: false, // Only sponsor gas for embedded wallets
 }
 
 ReactDOM.render(
@@ -88,15 +88,15 @@ ReactDOM.render(
             config={{
               embeddedWallets: {
                 createOnLogin: 'users-without-wallets',
-                noPromptOnSignature: true // TODO: Any custom logic we want here
+                noPromptOnSignature: true
               },
               appearance: {
                 theme: "#0E111C",
                 accentColor: "#df2e2d",
                 showWalletLoginFirst: false,
               },
-              defaultChain: sepolia, // TODO: Switch back to base
-              supportedChains: [sepolia, base, hardhat]
+              defaultChain: chains[0], // Sepolia is first in dev environments
+              supportedChains: chains
             }}
           >
             <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>

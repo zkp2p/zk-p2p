@@ -1,16 +1,14 @@
 import styled from 'styled-components';
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from '@mui/material/Link';
-import { useNetwork } from 'wagmi';
 import { usePrivy } from '@privy-io/react-auth';
-import { useSwitchNetwork } from '@privy-io/wagmi-connector';
 
 import { AccountSelector } from "@components/modals/AccountSelector";
 import { AccountDetails } from "@components/modals/AccountDetails";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
-import useAccount from '@hooks/useAccount';
+import useBalances from '@hooks/useBalance';
 
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
@@ -21,21 +19,18 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   fullWidth = false,
   height = 48
 }) => {
+  /*
+   * Contexts
+   */
   const { ready, authenticated } = usePrivy();
+  const { usdcBalance } = useBalances();
   const currentDeviceSize = useMediaQuery();
 
+  /*
+   * State
+   */
   const [shouldShowAccountSelectorModal, setShouldShowAccountSelectorModal] = useState<boolean>(false);
   const [shouldShowAccountDetailsModal, setShouldShowAccountDetailsModal] = useState<boolean>(false);
-  const [isExternalEOA, setIsExternalEOA] = useState<boolean>(false);
-
-
-  useEffect(() => {
-    if (ready && authenticated) {
-      setIsExternalEOA(false);
-    } else {
-      setIsExternalEOA(true);
-    }
-  }, [ready, authenticated]);
 
   /*
   * Handlers
@@ -61,9 +56,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
       {({
         account,
         chain,
-        openAccountModal,
         openChainModal,
-        openConnectModal,
         authenticationStatus,
         mounted,
       }) => {
@@ -95,7 +88,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
             }
             {
               shouldShowAccountDetailsModal && (
-                <AccountDetails onBackClick={onCloseAccountDetailsModal} isExternalEOA={isExternalEOA} />
+                <AccountDetails onBackClick={onCloseAccountDetailsModal} />
               )
             }
             {(() => {
@@ -106,7 +99,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                     onClick={onAccountSelectorClick}
                     height={height}
                   >
-                    {currentDeviceSize === 'mobile' ? 'Connect' : 'Connect Wallet'}
+                    {currentDeviceSize === 'mobile' ? 'Login' : 'Login'}
                   </Button>
                 );
               }
@@ -157,7 +150,10 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   <AccountContainer>
                     <LoggedInBalanceAndAccount onClick={onAccountDetailsClick}>
                       <AccountBalance>
-                        {account.displayBalance}
+                        { (authenticated && usdcBalance !== null) ?
+                            usdcBalance.toString() + ' USDC' :   // If logged into Privy display USDC
+                            account.displayBalance               // Else display ETH balance
+                        }
                       </AccountBalance>
 
                       <LoggedInButton>
@@ -251,6 +247,16 @@ const LoggedInButton = styled.button`
   font-size: 15px;
   align-self: stretch;
   padding: 0px 20px;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    background: #4A4B4F;
+  }
+
+  &:active:not([disabled]) {
+    background: #202124;
+    box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
+  }
 `;
 
 const BridgeLink = styled.button`
