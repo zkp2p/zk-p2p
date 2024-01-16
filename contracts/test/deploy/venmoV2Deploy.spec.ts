@@ -38,6 +38,7 @@ import {
   SERVER_KEY_HASH,
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
+  TIMESTAMP_BUFFER,
   USDC,
 } from "../../deployments/parameters";
 import { PaymentProviders } from "../../utils/types"
@@ -134,12 +135,14 @@ describe("VenmoV2 Deploy", () => {
       const actualKeyHashAdapter = await venmoRegistrationProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await venmoRegistrationProcessor.nullifierRegistry();
       const actualEmailFromAddress = await venmoRegistrationProcessor.emailFromAddress();
+      const actualTimestampBuffer = await venmoRegistrationProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(ramp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
+      expect(actualTimestampBuffer).to.eq(0);
     });
   });
 
@@ -150,12 +153,14 @@ describe("VenmoV2 Deploy", () => {
       const actualKeyHashAdapter = await venmoSendProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await venmoSendProcessor.nullifierRegistry();
       const actualEmailFromAddress = await venmoSendProcessor.emailFromAddress();
+      const actualTimestampBuffer = await venmoSendProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(ramp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
+      expect(actualTimestampBuffer).to.eq(TIMESTAMP_BUFFER[paymentProvider]);
     });
   });
 

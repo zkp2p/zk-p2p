@@ -20,6 +20,11 @@ export const FROM_EMAIL = {
   "hdfc": "alerts@hdfcbank.net",
 };
 
+export const TIMESTAMP_BUFFER = {
+  "venmo": BigNumber.from(30),
+  "hdfc": BigNumber.from(30),
+};
+
 export const MIN_DEPOSIT_AMOUNT: any = {
   "venmo": {
     "localhost": usdc(20),

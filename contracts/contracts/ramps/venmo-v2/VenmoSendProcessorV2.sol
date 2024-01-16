@@ -24,10 +24,17 @@ contract VenmoSendProcessorV2 is Groth16Verifier, ISendProcessor, BaseProcessorV
         address _ramp,
         IKeyHashAdapterV2 _venmoMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        string memory _emailFromAddress
+        string memory _emailFromAddress,
+        uint256 _timestampBuffer
     )
         Groth16Verifier()
-        BaseProcessorV2(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(
+            _ramp,
+            _venmoMailserverKeyHashAdapter,
+            _nullifierRegistry,
+            _emailFromAddress,
+            _timestampBuffer
+        )
     {}
     
     /* ============ External Functions ============ */
@@ -53,7 +60,8 @@ contract VenmoSendProcessorV2 is Groth16Verifier, ISendProcessor, BaseProcessorV
 
         // Signals [5:7] are the packed timestamp, we do not expect there to be any decimal places in this number so we
         // specify 0 decimals, if any decimal appears this function will revert
-        timestamp = _parseSignalArray(_proof.signals, 6, 8).stringToUint(0);
+        // Add the buffer to build in flexibility with L2 timestamps
+        timestamp = _parseSignalArray(_proof.signals, 6, 8).stringToUint(0) + timestampBuffer;
 
         // Signals [8] is the packed offRamperIdHash
         offRamperIdHash = bytes32(_proof.signals[8]);

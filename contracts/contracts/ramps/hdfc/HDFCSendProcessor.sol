@@ -27,10 +27,17 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         address _ramp,
         IKeyHashAdapterV2 _hdfcMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        string memory _emailFromAddress
+        string memory _emailFromAddress,
+        uint256 _timestampBuffer
     )
         Groth16Verifier()
-        BaseProcessorV2(_ramp, _hdfcMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(
+            _ramp,
+            _hdfcMailserverKeyHashAdapter,
+            _nullifierRegistry,
+            _emailFromAddress,
+            _timestampBuffer
+        )
     {}
     
     /* ============ External Functions ============ */
@@ -63,7 +70,8 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
         // parse and convert to a unix timestamp
         string memory rawTimestamp = _parseSignalArray(_proof.signals, 6, 11);
-        timestamp = _dateStringToTimestamp(rawTimestamp);
+        // Add the buffer to build in flexibility with L2 timestamps
+        timestamp = _dateStringToTimestamp(rawTimestamp) + timestampBuffer;
 
         // Signals [11] is the packed onRamperIdHash
         onRamperIdHash = bytes32(_proof.signals[11]);
@@ -77,7 +85,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         // Signals [14] is intentHash
         intentHash = bytes32(_proof.signals[14]);
     }
-
+    
     /* ============ Internal Functions ============ */
 
     function _parseSignalArray(uint256[15] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {

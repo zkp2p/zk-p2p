@@ -147,12 +147,14 @@ export default class DeployHelper {
     keyHashAdapter: Address,
     nullifierRegistry: Address,
     emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<VenmoRegistrationProcessorV2> {
     return await new VenmoRegistrationProcessorV2__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
-      emailFromAddress
+      emailFromAddress,
+      timestampBuffer
     );
   }
 
@@ -161,12 +163,14 @@ export default class DeployHelper {
     keyHashAdapter: Address,
     nullifierRegistry: Address,
     emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<VenmoSendProcessorV2> {
     return await new VenmoSendProcessorV2__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
-      emailFromAddress
+      emailFromAddress,
+      timestampBuffer
     );
   }
 
@@ -202,12 +206,14 @@ export default class DeployHelper {
     keyHashAdapter: Address,
     nullifierRegistry: Address,
     emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<HDFCRegistrationProcessor> {
     return await new HDFCRegistrationProcessor__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
-      emailFromAddress
+      emailFromAddress,
+      timestampBuffer
     );
   }
 
@@ -216,12 +222,14 @@ export default class DeployHelper {
     keyHashAdapter: Address,
     nullifierRegistry: Address,
     emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<HDFCSendProcessor> {
     return await new HDFCSendProcessor__factory(this._deployerSigner).deploy(
       ramp,
       keyHashAdapter,
       nullifierRegistry,
-      emailFromAddress
+      emailFromAddress,
+      timestampBuffer
     );
   }
 

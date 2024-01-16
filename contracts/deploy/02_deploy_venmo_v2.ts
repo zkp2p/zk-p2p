@@ -14,10 +14,12 @@ import {
   SERVER_KEY_HASH,
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
+  TIMESTAMP_BUFFER,
   USDC,
 } from "../deployments/parameters";
 import { addWritePermission, getDeployedContractAddress, setNewOwner } from "../deployments/helpers";
 import { PaymentProviders } from "../utils/types";
+import { ZERO } from "../utils/constants";
 
 // Deployment Scripts
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -63,13 +65,25 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const registrationProcessor = await deploy("VenmoRegistrationProcessorV2", {
     from: deployer,
-    args: [ramp.address, keyHashAdapterDeploy.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
+    args: [
+      ramp.address,
+      keyHashAdapterDeploy.address,
+      nullifierRegistryContract.address,
+      FROM_EMAIL[paymentProvider],
+      ZERO,
+    ],
   });
   console.log("RegistrationProcessorV2 deployed at", registrationProcessor.address);
 
   const sendProcessor = await deploy("VenmoSendProcessorV2", {
     from: deployer,
-    args: [ramp.address, keyHashAdapterDeploy.address, nullifierRegistryContract.address, FROM_EMAIL[paymentProvider]],
+    args: [
+      ramp.address,
+      keyHashAdapterDeploy.address,
+      nullifierRegistryContract.address,
+      FROM_EMAIL[paymentProvider],
+      TIMESTAMP_BUFFER[paymentProvider],
+    ],
   });
   console.log("SendProcessorV2 deployed at", sendProcessor.address);
   console.log("Processors deployed...");

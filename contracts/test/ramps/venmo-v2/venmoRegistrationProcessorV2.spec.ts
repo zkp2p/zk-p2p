@@ -228,4 +228,37 @@ describe("VenmoRegistrationProcessorV2", () => {
       });
     });
   });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await registrationProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await registrationProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
 });

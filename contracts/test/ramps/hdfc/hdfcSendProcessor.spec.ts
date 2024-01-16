@@ -69,9 +69,9 @@ describe("HDFCSendProcessor", () => {
 
     beforeEach(async () => {
       subjectProof = createTypedSendProof(
-        ["0x28d1a59d3c7349166163957890343640612fe57c73000eb60e556f300affdc49", "0x01f6d6d36abc8606353cf9af44a8c288dd80751693efb41ead4c0fef8bf2124e"],
-        [["0x007d0f11d95b5ebb59dd80a60002b12337845f853af3470d118fbc79f2346c7f", "0x134989fa4dbabc421fe5bfb7710cb841b6c7483d9b569beac16f8e4ec69478ea"],["0x105a2d84c5bd1f7b0cb73c03d18b47241ac16c190bee56eaa95ab2bbba1d9fc7", "0x0ba354539e9aa52a07215130f98cb15d0e363a75dff556a6cc926e7ef1186066"]],
-        ["0x27e2096257a409293708a7eff4afe58523be960a3f019e596f72cb8cfdd4197e", "0x1d9c224590242b4c1d1f99b921ad9927cbc96e879f75f3b10dfeb810183617dd"],
+        ["0x1864dc6d23136e626e5069fd78d406369ac88e2441748a37afac5085a29a7ac2", "0x2c0d997cb37111cb9f1077129f33c10f07f07bb8363466b3924e79a424c165fd"],
+        [["0x20047cd9583014484c81a1bcbfbc393d8cf1cf973dd480e58843c380bf1eaaf1", "0x1452c4b5e34281b84edf3b6a4c9a84c931743132d0d168a1b72760a397267213"],["0x1c0a4597a01b9fb4bb6c0786658f70aefa341da4ffde1fd0f2e1a5a2b15f6303", "0x225124d3b047270d5aaa18ab6d9b056027e5c2437ec6fdb2dbe03391e22945fe"]],
+        ["0x2d5b9e7ff805b8ea1dd61e7dad7a8231e0b38b0a924998f2a121283760b6afd6", "0x2af6a782acfd6c315ae9a531bd3121d0217de7c7cd8691575ebee8d977e808ac"],
         rawSignals
       );
 
@@ -96,7 +96,7 @@ describe("HDFCSendProcessor", () => {
       } = await subjectCallStatic();
 
       expect(amount).to.eq(usdc(2));
-      expect(timestamp).to.eq(BigNumber.from(1700548088));
+      expect(timestamp).to.eq(BigNumber.from(1700548088).add(30));  // 30s is default timestamp buffer);
       expect(offRamperIdHash).to.eq(rawSignals[12]);
       expect(onRamperIdHash).to.eq(rawSignals[11]);
       expect(intentHash).to.eq(rawSignals[14]);
@@ -213,6 +213,39 @@ describe("HDFCSendProcessor", () => {
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await sendProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await sendProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });
 
     describe("when the caller is not the owner", async () => {

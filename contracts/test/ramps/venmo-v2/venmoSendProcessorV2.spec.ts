@@ -96,7 +96,7 @@ describe("VenmoSendProcessorV2", () => {
       } = await subjectCallStatic();
 
       expect(amount).to.eq(usdc(30));
-      expect(timestamp).to.eq(BigNumber.from(1683673439));
+      expect(timestamp).to.eq(BigNumber.from(1683673439).add(30));  // 30s is default timestamp buffer
       expect(offRamperIdHash).to.eq(rawSignals[8]);
       expect(onRamperIdHash).to.eq(rawSignals[9]);
       expect(intentHash).to.eq(rawSignals[11]);
@@ -213,6 +213,39 @@ describe("VenmoSendProcessorV2", () => {
       const emailFromAddress = await sendProcessor.getEmailFromAddress();
 
       expect(ethers.utils.toUtf8Bytes("new-venmo@venmo.com".padEnd(21, "\0"))).to.deep.equal(ethers.utils.arrayify(emailFromAddress));
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = attacker;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#setTimestampBuffer", async () => {
+    let subjectTimestampBuffer: BigNumber;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+
+      subjectTimestampBuffer = BigNumber.from(60);
+    });
+
+    async function subject(): Promise<any> {
+      return await sendProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+    }
+
+    it("should set the timestamp buffer", async () => {
+      await subject();
+
+      const timestampBuffer = await sendProcessor.timestampBuffer();
+
+      expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });
 
     describe("when the caller is not the owner", async () => {

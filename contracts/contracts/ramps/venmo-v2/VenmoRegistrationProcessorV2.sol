@@ -22,10 +22,17 @@ contract VenmoRegistrationProcessorV2 is Groth16Verifier, IRegistrationProcessor
         address _ramp,
         IKeyHashAdapterV2 _venmoMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        string memory _emailFromAddress
+        string memory _emailFromAddress,
+        uint256 _timestampBuffer
     )
         Groth16Verifier()
-        BaseProcessorV2(_ramp, _venmoMailserverKeyHashAdapter, _nullifierRegistry, _emailFromAddress)
+        BaseProcessorV2(
+            _ramp,
+            _venmoMailserverKeyHashAdapter,
+            _nullifierRegistry,
+            _emailFromAddress,
+            _timestampBuffer
+        )
     {}
 
     /* ============ External Functions ============ */
