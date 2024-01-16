@@ -60,6 +60,7 @@ contract VenmoSendProcessorV2 is Groth16Verifier, ISendProcessor, BaseProcessorV
 
         // Signals [5:7] are the packed timestamp, we do not expect there to be any decimal places in this number so we
         // specify 0 decimals, if any decimal appears this function will revert
+        // Add the buffer to build in flexibility with L2 timestamps
         timestamp = _parseSignalArray(_proof.signals, 6, 8).stringToUint(0) + timestampBuffer;
 
         // Signals [8] is the packed offRamperIdHash

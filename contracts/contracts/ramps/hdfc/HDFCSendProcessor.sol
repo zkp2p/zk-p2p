@@ -70,6 +70,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
         // parse and convert to a unix timestamp
         string memory rawTimestamp = _parseSignalArray(_proof.signals, 6, 11);
+        // Add the buffer to build in flexibility with L2 timestamps
         timestamp = _dateStringToTimestamp(rawTimestamp) + timestampBuffer;
 
         // Signals [11] is the packed onRamperIdHash

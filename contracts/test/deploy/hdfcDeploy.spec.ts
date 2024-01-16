@@ -38,6 +38,7 @@ import {
   SERVER_KEY_HASH,
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
+  TIMESTAMP_BUFFER,
   USDC,
 } from "../../deployments/parameters";
 import { PaymentProviders } from "../../utils/types"
@@ -136,12 +137,14 @@ describe("HDFC Deploy", () => {
       const actualKeyHashAdapter = await hdfcRegistrationProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await hdfcRegistrationProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcRegistrationProcessor.emailFromAddress();
+      const actualTimestampBuffer = await hdfcRegistrationProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(hdfcRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
+      expect(actualTimestampBuffer).to.eq(0);
     });
   });
 
@@ -152,12 +155,14 @@ describe("HDFC Deploy", () => {
       const actualKeyHashAdapter = await hdfcSendProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await hdfcSendProcessor.nullifierRegistry();
       const actualEmailFromAddress = await hdfcSendProcessor.emailFromAddress();
+      const actualTimestampBuffer = await hdfcSendProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(hdfcRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(ethers.utils.arrayify(actualEmailFromAddress)).to.deep.eq(ethers.utils.toUtf8Bytes(FROM_EMAIL[paymentProvider]));
+      expect(actualTimestampBuffer).to.eq(TIMESTAMP_BUFFER[paymentProvider]);
     });
   });
 

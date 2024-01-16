@@ -20,6 +20,7 @@ import {
 } from "../deployments/parameters";
 import { addWritePermission, getDeployedContractAddress, setNewOwner } from "../deployments/helpers";
 import { PaymentProviders } from "../utils/types";
+import { ZERO } from "../utils/constants";
 
 // Deployment Scripts
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -79,7 +80,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       keyHashAdapter.address,
       nullifierRegistryContract.address,
       FROM_EMAIL[paymentProvider],
-      TIMESTAMP_BUFFER[paymentProvider]
+      ZERO
     ],
   });
   console.log("RegistrationProcessor deployed at", registrationProcessor.address);
