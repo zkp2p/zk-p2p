@@ -125,13 +125,13 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 372px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0D111C;
+  background: #0E111C;
   justify-content: space-between;
   align-items: center;
   z-index: 40;
