@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 import { usePrivy } from '@privy-io/react-auth';
 
 import { AccountSelector } from "@components/modals/AccountSelector";
-import { AccountDetails } from "@components/modals/AccountDetails";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useBalances from '@hooks/useBalance';
@@ -22,7 +21,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   /*
    * Contexts
    */
-  const { ready, authenticated } = usePrivy();
+  const { authenticated } = usePrivy();
   const { usdcBalance } = useBalances();
   const currentDeviceSize = useMediaQuery();
 
@@ -30,7 +29,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    * State
    */
   const [shouldShowAccountSelectorModal, setShouldShowAccountSelectorModal] = useState<boolean>(false);
-  const [shouldShowAccountDetailsModal, setShouldShowAccountDetailsModal] = useState<boolean>(false);
 
   /*
   * Handlers
@@ -41,14 +39,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
   const onCloseAccountSelectorModal = () => {
     setShouldShowAccountSelectorModal(false);
-  };
-
-  const onAccountDetailsClick = () => {
-    setShouldShowAccountDetailsModal(true);
-  };
-
-  const onCloseAccountDetailsModal = () => {
-    setShouldShowAccountDetailsModal(false);
   };
 
   return (
@@ -84,11 +74,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
             {
               shouldShowAccountSelectorModal && (
                 <AccountSelector onBackClick={onCloseAccountSelectorModal} />
-              )
-            }
-            {
-              shouldShowAccountDetailsModal && (
-                <AccountDetails onBackClick={onCloseAccountDetailsModal} />
               )
             }
             {(() => {
@@ -148,7 +133,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={onAccountDetailsClick}>
+                    <LoggedInBalanceAndAccount /* onClick={} */>
                       <AccountBalance>
                         { (authenticated && usdcBalance !== null) ?
                             usdcBalance.toString() + ' USDC' :   // If logged into Privy display USDC

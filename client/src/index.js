@@ -28,7 +28,7 @@ const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
   } else {
-    return [sepolia, base, hardhat]; // TODO: add back hardhat and base. Disabled because we need zerodev project ids for each chain
+    return [sepolia, base, hardhat];
   }
 };
 
@@ -96,7 +96,7 @@ ReactDOM.render(
                 showWalletLoginFirst: false,
               },
               defaultChain: chains[0], // Sepolia is first in dev environments
-              supportedChains: chains
+              supportedChains: [chains[0]] // TODO: Zerodev requires a project ID per environment. Only set to Sepolia for now
             }}
           >
             <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
