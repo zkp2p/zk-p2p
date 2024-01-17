@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft, User, Unlock } from 'react-feather';
 import { usePrivy } from '@privy-io/react-auth';
 
-import { Button } from "@components/common/Button";
-import { SignInButton } from "@components/common/SignInButton";
+import { LoginButton } from "@components/common/LoginButton";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
 import QuestionHelper from '@components/common/QuestionHelper';
@@ -74,7 +73,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
           
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Sign in to ZKP2P'}
+            {'Log in to ZKP2P'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
@@ -83,21 +82,8 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
         </Logo>
 
-        {/* <Button
-          onClick={handleLogin}
-          fullWidth={true}
-        >
-          Login using Email
-        </Button>
-        <Button
-          onClick={handleConnectWallet}
-          fullWidth={true}
-        >
-          Login using Wallet
-        </Button> */}
-
         <InputsContainer>
-          <SignInButton
+          <LoginButton
             onClick={handleLogin}
             label="Use Email or Google"
             name={`loginEmail`}
@@ -105,7 +91,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             value={"Sign in with Social"}
           />
           <HorizontalDivider/>
-          <SignInButton
+          <LoginButton
             onClick={handleConnectWallet}
             label="Connect using wallet"
             name={`connectWallet`}

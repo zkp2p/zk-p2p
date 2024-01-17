@@ -2,7 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 import { ArrowRight } from 'react-feather';
 
-interface SignInButtonProps {
+interface LoginButtonProps {
   label: string;
   name: string;
   value?: string;
@@ -17,7 +17,7 @@ interface SignInButtonProps {
   onClick?: () => void;
 }
 
-export const SignInButton: React.FC<SignInButtonProps> = ({
+export const LoginButton: React.FC<LoginButtonProps> = ({
   label,
   name,
   value,
@@ -30,8 +30,8 @@ export const SignInButton: React.FC<SignInButtonProps> = ({
   helperText="",
   icon,
   onClick,
-}: SignInButtonProps) => {
-  SignInButton.displayName = "Input";
+}: LoginButtonProps) => {
+  LoginButton.displayName = "Input";
 
   return (
       <Container onClick={onClick}>

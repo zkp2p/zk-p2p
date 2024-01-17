@@ -1,6 +1,5 @@
 import { useRef, useReducer } from 'react';
-import { MoreHorizontal, ChevronDown } from 'react-feather';
-import { Link } from 'react-router-dom';
+import { MoreHorizontal } from 'react-feather';
 import styled from "styled-components";
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
@@ -35,13 +34,13 @@ export const LoginDropdown = () => {
       {isOpen && (
         <NavDropdown>
           <NavDropdownItemContainer>
-            <NavDropdownItem as={Link} to="/withdraw">
+            <NavDropdownItem>
               <ThemedText.LabelSmall textAlign="left">
                 Sign in With Social
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem as={Link} to="/tos">
+            <NavDropdownItem>
               <ThemedText.LabelSmall textAlign="left">
                 Sign in with Ethereum
               </ThemedText.LabelSmall>
@@ -107,14 +106,6 @@ const NavDropdownItem = styled.a`
   }
 `;
 
-const IconRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  align-items: center;
-`;
-
 const Icon = styled(SVGIconThemed)`
   width: 20px;
   height: 20px;
@@ -124,11 +115,4 @@ const Icon = styled(SVGIconThemed)`
   &:hover {
     opacity: 0.6;
   }
-`;
-
-const VersionLabel = styled.div`
-  font-size: 14px;
-  color: #FFFFFF;
-  opacity: 0.3;
-  text-align: left;
 `;
