@@ -9,7 +9,6 @@ import { AccountLogin } from "@components/modals/AccountLogin";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useBalances from '@hooks/useBalance';
-import { disconnect } from 'process';
 
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
@@ -136,7 +135,14 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={authenticated ? logout : disconnect}>
+                    <LoggedInBalanceAndAccount onClick={
+                      authenticated ? 
+                      () => {
+                        disconnect();
+                        logout();
+                      } : () => { 
+                        disconnect()
+                      }}>
                       <AccountBalance>
                         { (authenticated && usdcBalance !== null) ?
                             usdcBalance.toString() + ' USDC' :   // If logged into Privy display USDC

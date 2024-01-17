@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft, User, Unlock } from 'react-feather';
-import { usePrivy } from '@privy-io/react-auth';
+import { usePrivy, useLogin, useConnectWallet } from '@privy-io/react-auth';
 
 import { LoginButton } from "@components/common/LoginButton";
 import { Overlay } from '@components/modals/Overlay';
@@ -20,8 +20,16 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
    * Contexts
    */
 
-  const { connectWallet, login } = usePrivy();
-
+  const { login } = useLogin({
+    onComplete: () => {
+      onBackClick();
+    }
+  });
+  const { connectWallet } = useConnectWallet({
+    onSuccess: () => {
+      onBackClick();
+    }
+  });
   
   /*
   * Handlers
@@ -33,8 +41,6 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
   const handleLogin = async () => {
     try {
       await login();
-  
-      onBackClick();
     } catch (error) {
       console.error("Failed to login");
     }
@@ -43,8 +49,6 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
   const handleConnectWallet = async () => {
     try {
       await connectWallet();
-  
-      onBackClick();
     } catch (error) {
       console.error("Failed to connect wallet");
     }
