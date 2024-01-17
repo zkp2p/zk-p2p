@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components';
-import { ArrowLeft, Unlock } from 'react-feather';
+import { ArrowLeft, User, Unlock } from 'react-feather';
 import { usePrivy } from '@privy-io/react-auth';
 
 import { Button } from "@components/common/Button";
+import { SignInButton } from "@components/common/SignInButton";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
 
 
-interface AccountSelectorProps {
+interface AccountLoginProps {
   onBackClick: () => void
 }
 
-export const AccountSelector: React.FC<AccountSelectorProps> = ({
+export const AccountLogin: React.FC<AccountLoginProps> = ({
     onBackClick
   }) => {
   /*
@@ -69,14 +70,16 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
             </button>
           </div>
 
+          
+
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Create Account or Sign In'}
+            {'Sign in to ZKP2P'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
 
-        <Button
+        {/* <Button
           onClick={handleLogin}
           fullWidth={true}
         >
@@ -87,7 +90,25 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
           fullWidth={true}
         >
           Login using Wallet
-        </Button>
+        </Button> */}
+
+        <InputsContainer>
+          <SignInButton
+            onClick={handleLogin}
+            label="Use Email or Google"
+            name={`loginEmail`}
+            icon={<StyledUser/>}
+            value={"Sign in with Social"}
+          />
+          <div style={{ flex: 0.5 }}/>
+          <SignInButton
+            onClick={handleConnectWallet}
+            label="Connect using wallet"
+            name={`connectWallet`}
+            icon={<StyledUnlock/>}
+            value={"Sign in with Ethereum"}
+          />
+        </InputsContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -132,4 +153,18 @@ const TitleCenteredRow = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
+`;
+
+const StyledUser = styled(User)`
+  color: #FFF;
+`;
+
+const StyledUnlock = styled(Unlock)`
+  color: #FFF;
+`;
+
+const InputsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;

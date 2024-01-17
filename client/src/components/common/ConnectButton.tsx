@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Link from '@mui/material/Link';
 import { usePrivy } from '@privy-io/react-auth';
+import { useDisconnect } from 'wagmi';
 
-import { AccountSelector } from "@components/modals/AccountSelector";
+import { AccountLogin } from "@components/modals/AccountLogin";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useBalances from '@hooks/useBalance';
+import { disconnect } from 'process';
 
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
@@ -21,24 +23,25 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   /*
    * Contexts
    */
-  const { authenticated } = usePrivy();
+  const { authenticated, logout } = usePrivy();
+  const { disconnect } = useDisconnect();
   const { usdcBalance } = useBalances();
   const currentDeviceSize = useMediaQuery();
 
   /*
    * State
    */
-  const [shouldShowAccountSelectorModal, setShouldShowAccountSelectorModal] = useState<boolean>(false);
+  const [shouldShowAccountLoginModal, setShouldShowAccountLoginModal] = useState<boolean>(false);
 
   /*
   * Handlers
   */
-  const onAccountSelectorClick = () => {
-    setShouldShowAccountSelectorModal(true);
+  const onAccountLoginClick = () => {
+    setShouldShowAccountLoginModal(true);
   };
 
-  const onCloseAccountSelectorModal = () => {
-    setShouldShowAccountSelectorModal(false);
+  const onCloseAccountLoginModal = () => {
+    setShouldShowAccountLoginModal(false);
   };
 
   return (
@@ -72,8 +75,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
             })}
           >
             {
-              shouldShowAccountSelectorModal && (
-                <AccountSelector onBackClick={onCloseAccountSelectorModal} />
+              shouldShowAccountLoginModal && (
+                <AccountLogin onBackClick={onCloseAccountLoginModal} />
               )
             }
             {(() => {
@@ -81,7 +84,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    onClick={onAccountSelectorClick}
+                    onClick={onAccountLoginClick}
                     height={height}
                   >
                     {currentDeviceSize === 'mobile' ? 'Login' : 'Login'}
@@ -133,7 +136,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount /* onClick={} */>
+                    <LoggedInBalanceAndAccount onClick={authenticated ? logout : disconnect}>
                       <AccountBalance>
                         { (authenticated && usdcBalance !== null) ?
                             usdcBalance.toString() + ' USDC' :   // If logged into Privy display USDC
