@@ -7,6 +7,7 @@ import { Button } from "@components/common/Button";
 import { SignInButton } from "@components/common/SignInButton";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
+import QuestionHelper from '@components/common/QuestionHelper';
 
 
 interface AccountLoginProps {
@@ -78,6 +79,9 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
+        <Logo size={88}>
+            <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+        </Logo>
 
         {/* <Button
           onClick={handleLogin}
@@ -100,7 +104,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             icon={<StyledUser/>}
             value={"Sign in with Social"}
           />
-          <div style={{ flex: 0.5 }}/>
+          <HorizontalDivider/>
           <SignInButton
             onClick={handleConnectWallet}
             label="Connect using wallet"
@@ -109,6 +113,14 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             value={"Sign in with Ethereum"}
           />
         </InputsContainer>
+        <TextAndHelperContainer>
+          <ThemedText.BodySmall>
+            {'What is the difference? '}
+          </ThemedText.BodySmall> 
+          <QuestionHelper
+            text={"Use a social account if you do not have already have funds on the blockchain. Use an Ethereum wallet if you already have one."}
+          />
+        </TextAndHelperContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -138,7 +150,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 40;
   gap: 1.3rem;
-  top: 33%;
+  top: 25%;
   position: relative;
 `;
 
@@ -167,4 +179,33 @@ const InputsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const Logo = styled.div<{ size?: number }>`
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 1.2rem;
+
+  img {
+    width: ${({ size }) => size || 32}px;
+    height: ${({ size }) => size || 32}px;
+    object-fit: cover;
+  }
+`;
+
+const HorizontalDivider = styled.div`
+  width: 100%;
+  border-top: 1px solid #98a1c03d;
+  margin: 1rem 0;
+`;
+
+const TextAndHelperContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem;
+  width: 100%;
 `;

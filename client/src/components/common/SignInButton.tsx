@@ -1,6 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
-
+import { ArrowRight } from 'react-feather';
 
 interface SignInButtonProps {
   label: string;
@@ -56,12 +56,15 @@ export const SignInButton: React.FC<SignInButtonProps> = ({
               readOnly={true}
             />
           </InputWrapper>
-          <LabelAndTooltipContainer>
+          <LabelContainer>
             <Label htmlFor={name}>
               {label}
             </Label>
-          </LabelAndTooltipContainer>
+          </LabelContainer>
         </LabelAndInputContainer>
+        <ArrowRightContainer>
+          <StyledArrowRight />
+        </ArrowRightContainer>
       </Container>
   );
 };
@@ -75,6 +78,12 @@ const Container = styled.button`
   border: 1px solid #98a1c03d;
   background-color: #131A2A;
 
+  &:hover {
+    background-color: #1A2236;
+    border-color: #CED4DA;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
   &:focus-within {
     border-color: #CED4DA;
     border-width: 1px;
@@ -83,6 +92,7 @@ const Container = styled.button`
   cursor: pointer;
   transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   position: relative;
+  align-items: center;
 `;
 
 const LabelAndInputContainer = styled.div`
@@ -92,7 +102,7 @@ const LabelAndInputContainer = styled.div`
   align-items: flex-start;
 `;
 
-const LabelAndTooltipContainer = styled.div`
+const LabelContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -106,6 +116,7 @@ const Label = styled.label`
   display: flex;
   font-size: 14px;
   font-weight: 550;
+  cursor: pointer;
 `;
 
 const InputWrapper = styled.div`
@@ -114,7 +125,7 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  margin-top: 8px;
+  margin-top: 6px;
 `;
 
 interface StyledInputProps {
@@ -170,5 +181,17 @@ const StyledIconBorder = styled.div`
 const IconAndLabelContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Adjust the gap as needed */
+  gap: 0.5rem;
+  padding-right: 1rem;
+`;
+
+const StyledArrowRight = styled(ArrowRight)`
+  color: #FFF;
+`;
+
+const ArrowRightContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 `;
