@@ -20,6 +20,11 @@ export const abi = [
         "internalType": "string",
         "name": "_emailFromAddress",
         "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_timestampBuffer",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -233,6 +238,32 @@ export const abi = [
     "name": "setMailserverKeyHashAdapter",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_timestampBuffer",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTimestampBuffer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "timestampBuffer",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
