@@ -4493,16 +4493,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@privy-io/wagmi-connector@npm:0.1.9":
-  version: 0.1.9
-  resolution: "@privy-io/wagmi-connector@npm:0.1.9"
+"@privy-io/wagmi-connector@npm:^0.1.12":
+  version: 0.1.12
+  resolution: "@privy-io/wagmi-connector@npm:0.1.12"
   peerDependencies:
     "@privy-io/react-auth": ^1.33.0
     react: ^18
     react-dom: ^18
     viem: ">=0.3.35"
     wagmi: ">=1.4.12 <2"
-  checksum: f6a88476480945cd0341332bf028715d7e0754fdbf35b59eb8fc7b36788faf4d9f91f1e676f29cd23072fdb36f32bcf4b4dc95f07deb255244b8d46f1e334e33
+  checksum: 9116da5e7e055081278dde9420f2cd6db7b62f9194664f9f3f8890253248bb108f875f7c0ad6a9437d9c19a64abbdb952747e0aa9d6decdda88cc83d26df7e32
   languageName: node
   linkType: hard
 
@@ -12291,7 +12291,7 @@ __metadata:
     "@openzeppelin/contracts": ^4.7.1
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@privy-io/react-auth": 1.52.1
-    "@privy-io/wagmi-connector": 0.1.9
+    "@privy-io/wagmi-connector": ^0.1.12
     "@rainbow-me/rainbowkit": 1.3.2
     "@reach/portal": ^0.10.3
     "@react-oauth/google": ^0.11.1

@@ -11,7 +11,7 @@
     "@openzeppelin/contracts": "^4.7.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@privy-io/react-auth": "1.52.1",
-    "@privy-io/wagmi-connector": "0.1.9",
+    "@privy-io/wagmi-connector": "0.1.12",
     "@rainbow-me/rainbowkit": "1.3.2",
     "@reach/portal": "^0.10.3",
     "@react-oauth/google": "^0.11.1",

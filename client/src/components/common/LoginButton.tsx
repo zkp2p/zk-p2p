@@ -69,32 +69,6 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
   );
 };
 
-const Container = styled.button`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid #98a1c03d;
-  background-color: #131A2A;
-
-  &:hover {
-    background-color: #1A2236;
-    border-color: #CED4DA;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  &:focus-within {
-    border-color: #CED4DA;
-    border-width: 1px;
-  }
-  font-family: 'Graphik';
-  cursor: pointer;
-  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  position: relative;
-  align-items: center;
-`;
-
 const LabelAndInputContainer = styled.div`
   width: 100%;
   display: flex;
@@ -194,4 +168,35 @@ const ArrowRightContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
+`;
+
+const Container = styled.button`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #98a1c03d;
+  background-color: #131A2A;
+
+  &:hover {
+    background-color: #1A2236;
+    border-color: #CED4DA;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    ${StyledInput} {
+      background-color: #1A2236; // Match this with the Container's hover background
+      transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+  }
+
+  &:focus-within {
+    border-color: #CED4DA;
+    border-width: 1px;
+  }
+  
+  font-family: 'Graphik';
+  cursor: pointer;
+  transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  position: relative;
+  align-items: center;
 `;
