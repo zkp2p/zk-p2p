@@ -34,7 +34,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     if (wallets[0] && !activeWallet) {
-      console.log('setting active wallet', wallets);
       setActiveWallet(wallets[0]);
     }
   }, [activeWallet, wallets, setActiveWallet]);
