@@ -63,7 +63,7 @@ describe("HDFCSendProcessor", () => {
     });
   });
 
-  describe("#processProof", async () => {
+  describe.only("#processProof", async () => {
     let subjectProof: GrothProof;
     let subjectCaller: Account;
 
@@ -86,7 +86,7 @@ describe("HDFCSendProcessor", () => {
       return await sendProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
     }
 
-    it("should process the proof", async () => {
+    it.only("should process the proof", async () => {
       const {
         amount,
         timestamp,

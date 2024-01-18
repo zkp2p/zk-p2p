@@ -113,6 +113,9 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
                 breakCounter++;
             }
         }
+        // Need to add last substring to array
+        extractedStrings[breakCounter] = _dateString.substring(lastBreak, bytes(_dateString).length);
+
         // Check that exactly 8 substrings were found (string is split at 7 different places)
         require(breakCounter == 7, "Invalid date string");
 
@@ -144,8 +147,8 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
 
         uint256 rawOffset = tzHours * 3600 + tzMinutes * 60;
 
-        // Check if tz offset is positive or negative relative to GMT, 0x43 is the hex value for "+"
-        return bytes(_timeOffsetString.substring(0, 1))[0] == 0x43 ? unOffsetTimestamp - rawOffset : unOffsetTimestamp + rawOffset;
+        // Check if tz offset is positive or negative relative to GMT, 0x2b is the hex value for "+"
+        return bytes(_timeOffsetString.substring(0, 1))[0] == 0x2b ? unOffsetTimestamp - rawOffset : unOffsetTimestamp + rawOffset;
     }
 
     function _parseMonth(string memory _month) internal pure returns (uint256) {
