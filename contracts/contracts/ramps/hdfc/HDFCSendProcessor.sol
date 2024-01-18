@@ -116,14 +116,36 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
         // Check that exactly 8 substrings were found (string is split at 7 different places)
         require(breakCounter == 7, "Invalid date string");
 
-        return DateTime.timestampFromDateTime(
+        uint256 unOffsetTimestamp = DateTime.timestampFromDateTime(
             extractedStrings[3].stringToUint(0), // year
             _parseMonth(extractedStrings[2]), // month
             extractedStrings[1].stringToUint(0), // day
             extractedStrings[4].stringToUint(0), // hour
             extractedStrings[5].stringToUint(0), // minute
             extractedStrings[6].stringToUint(0) // second
-        ) - IST_OFFSET;
+        );
+
+        return _calculateTimestampWithOffset(unOffsetTimestamp, extractedStrings[7]);
+    }
+
+    /**
+     * @notice Adds or subtracts an offset from the calculated unOffset timestamp based on the timezone offset string. The timezone offset
+     * string is of the format "+0530" or "-0530" where the first character is either a "+" or a "-" and the next 4 characters are hhmm. If
+     * the _timeOffsetString is "+0530" then we subtract 5 hours and 30 minutes (19800s) from the unOffset timestamp, to get a GMT timestamp.
+     * We constrain the _timeOffsetString to be 5 characters long to be of the format +/-hhmm.
+     *
+     * @param unOffsetTimestamp     The unix timestamp without any timezone offset applied
+     * @param _timeOffsetString     The timezone offset string indicating the magnitude and direction of the timezone offset
+     */
+    function _calculateTimestampWithOffset(uint256 unOffsetTimestamp, string memory _timeOffsetString) internal pure returns (uint256) {
+        require(bytes(_timeOffsetString).length == 5, "Invalid timezone offset");
+        uint256 tzHours = _timeOffsetString.substring(1, 3).stringToUint(0);
+        uint256 tzMinutes = _timeOffsetString.substring(3, 5).stringToUint(0);
+
+        uint256 rawOffset = tzHours * 3600 + tzMinutes * 60;
+
+        // Check if tz offset is positive or negative relative to GMT, 0x43 is the hex value for "+"
+        return bytes(_timeOffsetString.substring(0, 1))[0] == 0x43 ? unOffsetTimestamp - rawOffset : unOffsetTimestamp + rawOffset;
     }
 
     function _parseMonth(string memory _month) internal pure returns (uint256) {
