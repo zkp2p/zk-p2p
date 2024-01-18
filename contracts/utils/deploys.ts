@@ -10,6 +10,7 @@ import {
   HDFCRegistrationProcessor,
   HDFCSendProcessorMock,
   HDFCSendProcessor,
+  HDFCTimestampParsingMock,
   ManagedKeyHashAdapter,
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
@@ -260,6 +261,10 @@ export default class DeployHelper {
   public async deployHDFCRegistrationProcessorMock(): Promise<HDFCRegistrationProcessorMock> {
     return await new hdfcMocks.HDFCRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
+
+  public async deployHDFCTimestampParsingMock(): Promise<HDFCTimestampParsingMock> {
+    return await new hdfcMocks.HDFCTimestampParsingMock__factory(this._deployerSigner).deploy();
+  }  
 
   public async deployPoseidon3(): Promise<any> {
     const contract = new ethers.ContractFactory(

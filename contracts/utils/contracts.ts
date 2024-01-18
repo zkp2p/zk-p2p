@@ -4,6 +4,7 @@ export {
   HDFCRegistrationProcessor,
   HDFCSendProcessorMock,
   HDFCSendProcessor,
+  HDFCTimestampParsingMock,
   ManagedKeyHashAdapter,
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
