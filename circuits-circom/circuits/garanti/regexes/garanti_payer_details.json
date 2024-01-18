@@ -1,0 +1,28 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|0|1|2|3|4|5|6|7|8|9|-| |\\.|'|_|,|\u00c3|\u00c4|\u00c5|\u0082|\u00a2|\u00b0|\u00b1|\u0096|\u00b6|\u009c|\u00bc|\u0087|\u00a7|\u009e|\u009f)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "<br>"
+        },
+        {
+            "is_public": false,
+            "regex_def": "[^\r\n]+<br>"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9)+"
+        },
+        {
+            "is_public": false,
+            "regex_def": "</strong></p>\r\n"
+        }
+    ]
+}

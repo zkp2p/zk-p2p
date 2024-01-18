@@ -76,6 +76,10 @@ export interface ICircuitInputs {
   paylah_payee_name_idx?: string;
   paylah_payee_mobile_num_idx?: string;
   paylah_payment_id_idx?: string;
+  garanti_payer_name_idx?: string;
+  garanti_payer_mobile_num_idx?: string;
+  garanti_payee_acc_num_idx?: string;
+  garanti_amount_idx?: string;
   email_date_idx?: string;
   intent_hash?: string;
 
@@ -100,7 +104,9 @@ export enum CircuitType {
   EMAIL_HDFC_SEND = "hdfc_send",
   EMAIL_HDFC_REGISTRATION = "hdfc_registration",
   EMAIL_PAYLAH_SEND = "paylah_send",
-  EMAIL_PAYLAH_REGISTRATION = "paylah_registration"
+  EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
+  EMAIL_GARANTI_REGISTRATION = "garanti_registration",
+  EMAIL_GARANTI_SEND = "garanti_send",
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -179,6 +185,12 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_PAYLAH_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "ontenttable\" align=3D\"left\"><br />";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
+  } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
   }
 
   // Derive modulus from signature
@@ -424,6 +436,89 @@ export async function getCircuitInputs(
       paylah_payer_mobile_num_idx,
       email_from_idx,
       email_to_idx,
+    }
+  } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
+
+    const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
+    const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
+
+    // Index of mobile number is index of first </strong></p> after payer_name - 7 (length of mobile number)
+    const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
+    const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
+
+    const garanti_payee_acc_num_selector = Buffer.from("TR");
+    const garanti_payee_acc_num_idx = Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector).toString();
+
+    const garanti_amount_selector = Buffer.from("<p>Tutar: <strong>");
+    const garanti_amount_idx = (Buffer.from(bodyRemaining).indexOf(garanti_amount_selector) + garanti_amount_selector.length).toString();
+
+    let email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "From:"), "<").length;    // Capital F
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "To: ").length;    // Capital T
+    // TODO: MIGHT NOT WORK ALWAYS!!
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();    // Look for the first occurence of t=
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'email_timestamp_idx': email_timestamp_idx,
+      'garanti_payer_name_idx': garanti_payer_name_idx,
+      'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx,
+      'garanti_payee_acc_num_idx': garanti_payee_acc_num_idx,
+      'garanti_amount_idx': garanti_amount_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // garanti specific indices
+      email_from_idx,
+      email_to_idx,
+      email_timestamp_idx,
+      garanti_payer_name_idx,
+      garanti_payer_mobile_num_idx,
+      garanti_payee_acc_num_idx,
+      garanti_amount_idx,
+      // IDs
+      intent_hash,
+    }
+
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
+    const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
+    const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
+
+    // Index of mobile number is index of first </strong></p> after payer_name - 7 (length of mobile number)
+    const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
+    const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
+
+    let email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "From:"), "<").length;    // Capital F
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "To: ").length;    // Capital T
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'garanti_payer_name_idx': garanti_payer_name_idx,
+      'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // garanti specific indices
+      email_from_idx,
+      email_to_idx,
+      garanti_payer_name_idx,
+      garanti_payer_mobile_num_idx
     }
   }
   else {
