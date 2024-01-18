@@ -108,7 +108,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   //   console.log("HDFCRamp initialized...");
   // }
 
-  // await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
+  await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
   // await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
   // console.log("NullifierRegistry permissions added...");
 
