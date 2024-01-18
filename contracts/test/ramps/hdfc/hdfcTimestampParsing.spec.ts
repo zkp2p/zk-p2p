@@ -13,7 +13,7 @@ import { ONE, ZERO } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
-describe("StringConversionUtils", () => {
+describe("HDFCTimestampParsing", () => {
   let owner: Account;
 
   let timestampParsingMock: HDFCTimestampParsingMock;
