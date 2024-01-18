@@ -135,13 +135,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   </NetworkAndBridgeContainer>
 
                   <AccountContainer>
-                    <LoggedInBalanceAndAccount onClick={
-                      authenticated ? 
-                      () => {
-                        disconnect();
-                        logout();
-                      } : () => { 
-                        disconnect()
+                    <LoggedInBalanceAndAccount onClick={async () => {
+                        if (authenticated) {
+                          await logout();
+                        }
+                        await disconnect();
                       }}>
                       <AccountBalance>
                         { (authenticated && usdcBalance !== null) ?

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft, User, Unlock } from 'react-feather';
-import { usePrivy, useLogin, useConnectWallet } from '@privy-io/react-auth';
+import { useLogin, useConnectWallet } from '@privy-io/react-auth';
 
 import { LoginButton } from "@components/common/LoginButton";
 import { Overlay } from '@components/modals/Overlay';

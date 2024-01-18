@@ -10,9 +10,6 @@ interface LoginButtonProps {
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  inputLabel?: string;
-  accessoryLabel?: string;
-  helperText?: string;
   icon?: React.ReactNode;
   onClick?: () => void;
 }
@@ -24,10 +21,7 @@ export const LoginButton: React.FC<LoginButtonProps> = ({
   onFocus,
   onKeyDown,
   placeholder,
-  inputLabel,
   type = "text",
-  accessoryLabel="",
-  helperText="",
   icon,
   onClick,
 }: LoginButtonProps) => {
