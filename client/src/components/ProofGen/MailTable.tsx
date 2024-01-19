@@ -102,10 +102,19 @@ export const MailTable: React.FC<MailTableProps> = ({
         hour12: true
       });
     } else {
-      return date.toLocaleDateString('en-US', {
-        month: 'numeric',
-        day: 'numeric'
-      });
+      switch (paymentPlatform) {
+        case PaymentPlatform.VENMO:
+          return date.toLocaleDateString('en-US', {
+            month: 'numeric',
+            day: 'numeric'
+          });
+
+        case PaymentPlatform.HDFC:
+          return date.toLocaleDateString('en-IN', {
+            month: 'numeric',
+            day: 'numeric'
+          });
+      }
     }
   };
 
