@@ -1,7 +1,8 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-include "@zk-email/circuits/email-verifier.circom";
+// include "@zk-email/circuits/email-verifier.circom";
+include "./helpers/email-verifier-header.circom"; // Use divided verifier which does not check body hash
 include "@zk-email/circuits/helpers/extract.circom";
 
 include "../utils/ceil.circom";
@@ -22,8 +23,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal input signature[k]; // rsa signature. split up into k parts of n bits each.
     signal input in_len_padded_bytes; // length of in email data including the padding, which will inform the sha256 block length
 
-    // Base 64 body hash variables
-    signal input body_hash_idx;
     // The precomputed_sha value is the Merkle-Damgard state of our SHA hash uptil our first regex match which allows us to save SHA constraints by only hashing the relevant part of the body
     signal input precomputed_sha[32];
     // Suffix of the body after precomputed SHA
@@ -32,19 +31,33 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal input in_body_len_padded_bytes;
 
     signal output modulus_hash;
+    signal output intermediate_hash_packed[2];
 
     // DKIM VERIFICATION
-    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
+    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k, 0);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
     EV.in_len_padded_bytes <== in_len_padded_bytes;
-    EV.body_hash_idx <== body_hash_idx;
-    EV.precomputed_sha <== precomputed_sha;
-    EV.in_body_padded <== in_body_padded;
-    EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
 
     modulus_hash <== EV.pubkey_hash;
+
+    //-------HASH INTERMEDIATE----------//
+
+    // This verifies that the hash of the body, when calculated from the precomputed part forwards,
+    // actually matches the hash in the header
+    signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    // When we convert the manually hashed email sha_body into bytes, it matches the
+    // base64 decoding of the final hash state that the signature signs (sha_b64)
+    // PACK INTERMEDIATE HASH INTO 128 BITS TO LOWER CALLDATA
+    component sha_body_packed[2];
+    for (var i = 0; i < 2; i++) {
+        sha_body_packed[i] = Bits2Num(32);
+        for (var j = 0; j < 32; j++) {
+            sha_body_packed[i].in[31 - j] <== sha_body_out[i * 32 + j];
+        }
+        intermediate_hash_packed[i] <== sha_body_packed[i].out;
+    }
 
     //-------CONSTANTS----------//
 
@@ -148,4 +161,4 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
 // component main = GarantiRegistrationEmail(1024, 15040, 121, 17, 7);
-component main = GarantiRegistrationEmail(1024, 640, 121, 17, 7);
+component main = GarantiRegistrationEmail(1024, 3968, 121, 17, 7);
