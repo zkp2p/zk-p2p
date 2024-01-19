@@ -60,6 +60,7 @@ export interface ICircuitInputs {
   in_body_hash?: string[];
   precomputed_sha?: string[];
   body_hash_idx?: string;
+  body_hash_b64?: string[];
   venmo_payer_id_idx?: string;
   email_from_idx?: string | number;
   email_to_idx?: string | number;
@@ -166,6 +167,7 @@ export async function getCircuitInputs(
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
   let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = STRING_PRESELECTOR;
 
   // Update preselector string based on circuit type
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
@@ -192,11 +194,12 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 3968 is the length until cutoff
-    MAX_INTERMEDIATE_PADDING_LENGTH = 3968; // For divided circuits, we calculate where we want the cutoff to be
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is max observed body length
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Bilgilendirme Ayarlar"; // Should be the same as secondary circuit
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3968; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Bilgilendirme Ayarlar";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 9408;  // 9408 is the length from cutoff to end
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 9408;  // 9408 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -445,9 +448,8 @@ export async function getCircuitInputs(
       email_to_idx,
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
-    // Calculate SHA end selector
-    const garanti_intermediate_selector = "Bilgilendirme Ayarlar";
-    const intermediateShaSelector = garanti_intermediate_selector.split("").map((char) => char.charCodeAt(0));
+    // Calculate SHA end selector.
+    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
     let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
     
@@ -483,6 +485,7 @@ export async function getCircuitInputs(
       precomputed_sha,
       in_body_padded: in_body_intermediate,
       in_body_len_padded_bytes: in_body_len_intermediate_bytes,
+      body_hash_idx,
       // garanti specific indices
       email_from_idx,
       email_to_idx,
@@ -490,9 +493,13 @@ export async function getCircuitInputs(
       garanti_payer_mobile_num_idx
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
+    const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
+
+    console.log("body hash in b64: ", body_hash_b64);
+    
     circuitInputs = {
       in_padded,
-      body_hash_idx,
+      body_hash_b64,
       precomputed_sha,
       in_body_padded,
       in_body_len_padded_bytes,

@@ -23,6 +23,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal input signature[k]; // rsa signature. split up into k parts of n bits each.
     signal input in_len_padded_bytes; // length of in email data including the padding, which will inform the sha256 block length
 
+    signal input body_hash_idx;
     // The precomputed_sha value is the Merkle-Damgard state of our SHA hash uptil our first regex match which allows us to save SHA constraints by only hashing the relevant part of the body
     signal input precomputed_sha[32];
     // Suffix of the body after precomputed SHA
@@ -32,12 +33,14 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     signal output modulus_hash;
     signal output intermediate_hash_packed[2];
+    signal output body_hash_packed[2];
 
     // DKIM VERIFICATION
     component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k, 0);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
+    EV.body_hash_idx <== body_hash_idx;
     EV.in_len_padded_bytes <== in_len_padded_bytes;
 
     modulus_hash <== EV.pubkey_hash;
@@ -58,7 +61,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         log("intermediate_hash_bytes", sha_body_bytes[i].out);
     }
 
-    // PACK INTERMEDIATE HASH INTO 128 BITS TO LOWER CALLDATA
+    // OUTPUT: PACK INTERMEDIATE HASH INTO 128 BITS TO LOWER CALLDATA
     component packer[2];
     for (var i = 0; i < 2; i++) {
         packer[i] = Bytes2Packed(16);
@@ -68,6 +71,18 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         }
         intermediate_hash_packed[i] <== packer[i].out;
         log("intermediate_hash_packed", intermediate_hash_packed[i]);
+    }
+
+    // OUTPUT: PACK BH INTO 128 BITS
+    component body_hash_packer[2];
+    for (var i = 0; i < 2; i++) {
+        body_hash_packer[i] = Bytes2Packed(16);
+        for (var j = 0; j < 16; j++) {
+            var idx = i * 16 + j;
+            body_hash_packer[i].in[j] <== EV.sha_b64_out[i * 16 + j];
+        }
+        body_hash_packed[i] <== body_hash_packer[i].out;
+        log("body_hash_packed", body_hash_packed[i]);
     }
 
     //-------CONSTANTS----------//
@@ -88,81 +103,79 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     var max_payer_mobile_num_packed_bytes = count_packed(max_payer_mobile_num_len, pack_size);
     assert(max_payer_mobile_num_packed_bytes < max_body_bytes);
 
-    // //-------REGEXES----------//
+    //-------REGEXES----------//
 
-    // // Garanti subject regex
-    // signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
-    // subject_regex_out === 1;
+    // Garanti subject regex
+    signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
+    subject_regex_out === 1;
 
-    // // From header V3 regex
-    // signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
-    // from_regex_out === 1;
+    // From header V3 regex
+    signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
+    from_regex_out === 1;
 
-    // // To V2 regex
-    // signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegexV2(max_header_bytes)(in_padded);
-    // to_regex_out === 1;
+    // To V2 regex
+    signal (to_regex_out, to_regex_reveal[max_header_bytes]) <== ToRegexV2(max_header_bytes)(in_padded);
+    to_regex_out === 1;
 
-    // // Garanti payer details regex
-    // signal (
-    //     garanti_payer_details_regex_out, 
-    //     payer_name_regex_reveal[max_body_bytes], 
-    //     payer_mobile_num_regex_reveal[max_body_bytes]
-    // ) <== GarantiPayerDetailsRegex(max_body_bytes)(in_body_padded);
-    // garanti_payer_details_regex_out === 1;
+    // Garanti payer details regex
+    signal (
+        garanti_payer_details_regex_out, 
+        payer_name_regex_reveal[max_body_bytes], 
+        payer_mobile_num_regex_reveal[max_body_bytes]
+    ) <== GarantiPayerDetailsRegex(max_body_bytes)(in_body_padded);
+    garanti_payer_details_regex_out === 1;
 
-    // //-------BUSINESS LOGIC----------//
+    //-------BUSINESS LOGIC----------//
 
-    // // Output packed email from
+    // Output packed email from
     signal input email_from_idx;
-    // signal output reveal_email_from_packed[max_email_from_packed_bytes] <== ShiftAndPackMaskedStr(
-    //     max_header_bytes, 
-    //     max_email_from_len, 
-    //     pack_size
-    // )(from_regex_reveal, email_from_idx);
+    signal output reveal_email_from_packed[max_email_from_packed_bytes] <== ShiftAndPackMaskedStr(
+        max_header_bytes, 
+        max_email_from_len, 
+        pack_size
+    )(from_regex_reveal, email_from_idx);
 
-    // // Packed to (Not an output. Used used to compute user id)
+    // Packed to (Not an output. Used used to compute user id)
     signal input email_to_idx;
-    // signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
-    //     max_header_bytes, 
-    //     max_email_to_len, 
-    //     pack_size
-    // )(to_regex_reveal, email_to_idx);
+    signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
+        max_header_bytes, 
+        max_email_to_len, 
+        pack_size
+    )(to_regex_reveal, email_to_idx);
     
-    // // Packed payer name (Not an output. Used used to compute user id)
+    // Packed payer name (Not an output. Used used to compute user id)
     signal input garanti_payer_name_idx;
-    // signal reveal_payer_name_packed[max_payer_name_packed_bytes] <== ShiftAndPackMaskedStr(
-    //     max_body_bytes, 
-    //     max_payer_name_len, 
-    //     pack_size
-    // )(payer_name_regex_reveal, garanti_payer_name_idx);
+    signal reveal_payer_name_packed[max_payer_name_packed_bytes] <== ShiftAndPackMaskedStr(
+        max_body_bytes, 
+        max_payer_name_len, 
+        pack_size
+    )(payer_name_regex_reveal, garanti_payer_name_idx);
 
-    // // Packed payer mobile number (Not an output. Used used to compute user id)
+    // Packed payer mobile number (Not an output. Used used to compute user id)
     signal input garanti_payer_mobile_num_idx;
-    // signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
-    //     max_body_bytes, 
-    //     max_payer_mobile_num_len, 
-    //     pack_size
-    // )(payer_mobile_num_regex_reveal, garanti_payer_mobile_num_idx);
+    signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
+        max_body_bytes, 
+        max_payer_mobile_num_len, 
+        pack_size
+    )(payer_mobile_num_regex_reveal, garanti_payer_mobile_num_idx);
 
-    // //-------USER REGISTRATION ID----------//
+    //-------USER REGISTRATION ID----------//
 
-    // // Output hashed registration id = hash(to_packed + payer_name_packed + payer_mobile_num_packed)
-    // var max_id_bytes = max_email_to_packed_bytes + max_payer_name_packed_bytes + max_payer_mobile_num_packed_bytes;
-    // assert(max_id_bytes < 16);
+    // Output hashed registration id = hash(to_packed + payer_name_packed + payer_mobile_num_packed)
+    var max_id_bytes = max_email_to_packed_bytes + max_payer_name_packed_bytes + max_payer_mobile_num_packed_bytes;
+    assert(max_id_bytes < 16);
     
-    // component hash = Poseidon(max_id_bytes);
-    // for (var i = 0; i < max_email_to_packed_bytes; i++) {
-    //     hash.inputs[i] <== reveal_email_to_packed[i];
-    // }
-    // for (var i = 0; i < max_payer_name_packed_bytes; i++) {
-    //     hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_name_packed[i];
-    // }
-    // for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
-    //     hash.inputs[max_email_to_packed_bytes + max_payer_name_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
-    // }
-    // signal output registration_id <== hash.out;
-
-    // TODO: Return email sig hash or body hash to validate onchain
+    component hash = Poseidon(max_id_bytes);
+    for (var i = 0; i < max_email_to_packed_bytes; i++) {
+        hash.inputs[i] <== reveal_email_to_packed[i];
+    }
+    for (var i = 0; i < max_payer_name_packed_bytes; i++) {
+        hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_name_packed[i];
+    }
+    for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
+        hash.inputs[max_email_to_packed_bytes + max_payer_name_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
+    }
+    signal output registration_id <== hash.out;
 
     // TOTAL CONSTRAINTS: X
 }

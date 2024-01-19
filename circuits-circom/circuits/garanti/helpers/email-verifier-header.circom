@@ -6,7 +6,7 @@ include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/rsa.circom";
 include "@zk-email/circuits/helpers/base64.circom";
 include "@zk-email/circuits/helpers/extract.circom";
-
+include "../../common-v2/regexes/body_hash_regex_v2.circom";
 
 // Here, n and k are the biginteger parameters for RSA
 // This is because the number is chunked into k pack_size of n bits each
@@ -61,6 +61,18 @@ template EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k, ignore_body
     }
     rsa.modulus <== pubkey;
     rsa.signature <== signature;
+
+    // BODY HASH REGEX: 617,597 constraints
+    // This extracts the body hash from the header (i.e. the part after bh= within the DKIM-signature section)
+    // which is used to verify the body text matches this signed hash + the signature verifies this hash is legit
+    signal input body_hash_idx;
+    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegexV2(max_header_bytes)(in_padded);
+    bh_regex_out === 1;
+    signal shifted_bh_out[LEN_SHA_B64] <== VarShiftMaskedStr(max_header_bytes, LEN_SHA_B64)(bh_reveal, body_hash_idx);
+    // log(body_hash_regex.out);
+
+    // Output body hash
+    signal output sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);
 
     // Calculate the Poseidon hash of DKIM public key and produce as an output
     // This can be used to verify the public key is correct in contract without requiring the actual key
