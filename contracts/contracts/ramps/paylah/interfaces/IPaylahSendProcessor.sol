@@ -8,7 +8,7 @@ interface IPaylahSendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[15] signals;
+        uint256[11] signals;
     }
 
     function processProof(

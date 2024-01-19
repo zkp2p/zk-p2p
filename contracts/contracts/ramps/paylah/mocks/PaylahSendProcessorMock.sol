@@ -1,10 +1,10 @@
 //SPDX-License-Identifier: MIT
 
-import { IHDFCSendProcessor } from "../interfaces/IHDFCSendProcessor.sol";
+import { IPaylahSendProcessor } from "../interfaces/IPaylahSendProcessor.sol";
 
 pragma solidity ^0.8.18;
 
-contract PaylahSendProcessorMock is IHDFCSendProcessor {
+contract PaylahSendProcessorMock is IPaylahSendProcessor {
 
     /* ============ Constructor ============ */
     constructor() {}

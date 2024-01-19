@@ -78,7 +78,9 @@ contract PaylahRamp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[8] upiId;
+        bytes32 offRampIdHash;              // Identifying hash used for off-ramping, hash(alias+4 mobile digits) different
+                                            // from user's idHash which is used as a global identifier because emails only
+                                            // contain alias + 4 mobile digits instead of e-mail + 4 mobile digits
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -114,7 +116,7 @@ contract PaylahRamp is Ownable {
 
     // A Global Account is defined as an account represented by one idHash. This is used to enforce limitations on actions across
     // all Ethereum addresses that are associated with that idHash. In this case we use it to enforce a cooldown period between on ramps,
-    // restrict each HDFC account to one outstanding intent at a time, and to enforce deny lists.
+    // restrict each Paylah account to one outstanding intent at a time, and to enforce deny lists.
     struct GlobalAccountInfo {
         bytes32 currentIntentHash;          // Hash of the current open intent (if exists)
         uint256 lastOnrampTimestamp;        // Timestamp of the last on-ramp transaction used to check if cooldown period elapsed
@@ -138,12 +140,13 @@ contract PaylahRamp is Ownable {
     IPoseidon3 public immutable poseidon3;                           // Poseidon hashing contract
     IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
-    IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
+    IPaylahSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
     bool public isInitialized;                                      // Indicates if contract has been initialized
 
     mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
     mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)
+    mapping(bytes32 => bytes) public paymentLinks;                  // Links a depositor's offRampIdHash to matching payment link validated by governance
     mapping(uint256 => Deposit) public deposits;                    // Mapping of depositIds to deposit structs
     mapping(bytes32 => Intent) public intents;                      // Mapping of intentHashes to intent structs
 
@@ -194,7 +197,7 @@ contract PaylahRamp is Ownable {
      */
     function initialize(
         IRegistrationProcessor _registrationProcessor,
-        IHDFCSendProcessor _sendProcessor
+        IPaylahSendProcessor _sendProcessor
     )
         external
         onlyOwner
@@ -209,7 +212,7 @@ contract PaylahRamp is Ownable {
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction. One HDFC account can be registered to multiple Ethereum addresses.
+     * sender of the transaction. One Paylah account can be registered to multiple Ethereum addresses.
      *
      * @param _a        Parameter of zk proof
      * @param _b        Parameter of zk proof
@@ -235,20 +238,22 @@ contract PaylahRamp is Ownable {
     /**
      * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to
      * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
-     * of USDC.
+     * of USDC. In order to create a deposit the depositor must submit an offRampIdHash that has been linked to a valid payment link
+     * and added via governance. If the passed _offRampIdHash is not linked to a paymentLink then the function will revert.
      *
-     * @param _upiId            The packed upi ID of the depositor
+     * @param _offRampIdHash    Depositor's off-ramp id hash which has been linked to a valid payment link and validated by governance
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      */
     function offRamp(
-        uint256[8] memory _upiId,
+        bytes32 _offRampIdHash,
         uint256 _depositAmount,
         uint256 _receiveAmount
     )
         external
         onlyRegisteredUser
     {
+        require(paymentLinks[_offRampIdHash].length != 0, "Payment link does not exist for offRampIdHash");
         require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -261,7 +266,7 @@ contract PaylahRamp is Ownable {
 
         deposits[depositId] = Deposit({
             depositor: msg.sender,
-            upiId: _upiId,
+            offRampIdHash: _offRampIdHash,
             depositAmount: _depositAmount,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
@@ -287,16 +292,17 @@ contract PaylahRamp is Ownable {
     function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
         bytes32 idHash = accounts[msg.sender].idHash;
         Deposit storage deposit = deposits[_depositId];
-        bytes32 depositorIdHash = accounts[deposit.depositor].idHash;
+        // Depositors Global idHash which is created upon registration and links to all of depositor's user information
+        bytes32 depositorGlobalIdHash = accounts[deposit.depositor].idHash;
 
         // Caller validity checks
-        require(!globalAccount[depositorIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
+        require(!globalAccount[depositorGlobalIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
         require(
             globalAccount[idHash].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
             "On ramp cool down period not elapsed"
         );
         require(globalAccount[idHash].currentIntentHash == bytes32(0), "Intent still outstanding");
-        require(depositorIdHash != idHash, "Sender cannot be the depositor");
+        require(depositorGlobalIdHash != idHash, "Sender cannot be the depositor");
 
         // Intent information checks
         require(deposit.depositor != address(0), "Deposit does not exist");
@@ -373,7 +379,7 @@ contract PaylahRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[15] memory _signals
+        uint256[11] memory _signals
     )
         external
     {
@@ -487,11 +493,23 @@ contract PaylahRamp is Ownable {
     /* ============ Governance Functions ============ */
 
     /**
+     * @notice GOVERNANCE ONLY: Adds a payment link to the paymentLinks mapping. This payment link has been verified to be
+     * tied to a specific off-ramp id hash hash(alias + 4 mobile digits). All confirmation e-mails sent to on-rampers that
+     * paid the payment link above will contain information to build the matching off-ramp id hash.
+     *
+     * @param _offRampIdHash   Off-ramp id hash that the payment link is tied to calculated as hash(alias + 4 mobile digits)
+     * @param _paymentLink     Payment link that has been verified to be tied to the off-ramp id hash
+     */
+    function addVerifiedPaymentLink(bytes32 _offRampIdHash, bytes calldata _paymentLink) external onlyOwner {
+        paymentLinks[_offRampIdHash] = _paymentLink;
+    }
+
+    /**
      * @notice GOVERNANCE ONLY: Updates the send processor address used for validating and interpreting zk proofs.
      *
      * @param _sendProcessor   New send proccesor address
      */
-    function setSendProcessor(IHDFCSendProcessor _sendProcessor) external onlyOwner {
+    function setSendProcessor(IPaylahSendProcessor _sendProcessor) external onlyOwner {
         sendProcessor = _sendProcessor;
         emit NewSendProcessorSet(address(_sendProcessor));
     }
@@ -762,7 +780,7 @@ contract PaylahRamp is Ownable {
         uint256[2] memory _a,
         uint256[2][2] memory _b,
         uint256[2] memory _c,
-        uint256[15] memory _signals
+        uint256[11] memory _signals
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -774,7 +792,7 @@ contract PaylahRamp is Ownable {
             bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
-            IHDFCSendProcessor.SendProof({
+            IPaylahSendProcessor.SendProof({
                 a: _a,
                 b: _b,
                 c: _c,
@@ -787,7 +805,7 @@ contract PaylahRamp is Ownable {
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(bytes32(_getUpiIdHash(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
+        require(deposit.offRampIdHash == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
@@ -795,7 +813,7 @@ contract PaylahRamp is Ownable {
     }
 
     /**
-     * @notice Validate the user has an HDFC account, we do not nullify this email since it can be reused to register under
+     * @notice Validate the user has an Paylah account, we do not nullify this email since it can be reused to register under
      * different addresses.
      */
     function _verifyRegistrationProof(
@@ -817,22 +835,5 @@ contract PaylahRamp is Ownable {
         );
 
         return idHash;
-    }
-
-    /**
-     * @notice Returns the poseidon hash of the given raw UPI ID    
-     */
-    function _getUpiIdHash(uint256[8] memory _upiId) internal view returns (bytes32) {
-        uint256[6] memory temp1;
-        uint256[3] memory temp2;
-
-        for (uint256 i = 0; i < 6; ++i) {
-            temp1[i] = _upiId[i];
-        }
-        temp2[0] = poseidon6.poseidon(temp1);
-        temp2[1] = _upiId[6];
-        temp2[2] = _upiId[7];
-
-        return bytes32(poseidon3.poseidon(temp2));
     }
 }
