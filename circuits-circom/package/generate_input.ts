@@ -57,6 +57,7 @@ export interface ICircuitInputs {
   in_body_padded?: string[];
   in_body_intermediate?: string[];
   in_body_len_padded_bytes?: string;
+  in_body_len_intermediate_bytes?: string;
   in_padded_n_bytes?: string[];
   in_len_padded_bytes?: string;
   in_body_hash?: string[];
@@ -95,10 +96,6 @@ export interface ICircuitInputs {
   custom_message_id_recipient?: string[];
   nullifier?: string;
   relayer?: string;
-}
-
-export interface IContractInputs {
-  remaining_body_calldata?: string;
 }
 
 export enum CircuitType {
@@ -165,7 +162,6 @@ export async function getCircuitInputs(
     validMessage?: boolean;
   };
   circuitInputs: ICircuitInputs;
-  contractInputs: IContractInputs;
 }> {
   console.log("Starting processing of inputs");
 
@@ -197,7 +193,7 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 131git20 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3968;  // 3968 is the length until cutoff
   }
 
   // Derive modulus from signature
@@ -260,9 +256,6 @@ export async function getCircuitInputs(
 
   let email_subject = trimStrByStr(raw_header, "\r\nsubject:");
   //in javascript, give me a function that extracts the first word in a string, everything before the first space
-
-  // For certain integrations, parts of the email input can be submitted directly to smart contracts
-  let contractInputs: IContractInputs = {};
 
   if (circuit === CircuitType.RSA) {
     circuitInputs = {
@@ -514,8 +507,9 @@ export async function getCircuitInputs(
     console.log(postShaBodyRemainingLen, " bytes remaining in body (public and to be and hashed in contract)");
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
 
-    const remaining_body_calldata = ethers.utils.hexlify(remainingBodyText);
-    console.log("Remaining email body to submit as calldata: ", remaining_body_calldata);
+    // TODO: divided circuit input script
+
+    const in_body_len_intermediate_bytes = shaBodyRemainingLen.toString();
 
     const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
     const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
@@ -540,17 +534,13 @@ export async function getCircuitInputs(
       in_len_padded_bytes,
       precomputed_sha,
       in_body_intermediate,
-      in_body_len_padded_bytes,
+      in_body_len_intermediate_bytes,
       body_hash_idx,
       // garanti specific indices
       email_from_idx,
       email_to_idx,
       garanti_payer_name_idx,
       garanti_payer_mobile_num_idx
-    }
-
-    contractInputs = {
-      remaining_body_calldata
     }
   }
   else {
@@ -563,26 +553,17 @@ export async function getCircuitInputs(
   }
   return {
     circuitInputs,
-    contractInputs,
     valid: {},
   };
 }
 
 // Nonce is useful to disambiguate files for input/output when calling from the command line, it is usually null or hash(email)
-// Certain integrations do not require parts of the email to be passed into the circuit, instead they can be passed directly to the smart contract
-// shouldReturnContractCalldata can be set to true in these cases
 export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
   intent_hash: string,
-  nonce_raw: number | string | null = null,
-  shouldReturnContractCalldata: boolean = false
-): Promise<
-  ICircuitInputs | {
-    circuitInputs: ICircuitInputs;
-    contractInputs: IContractInputs;
-  }
-> {
+  nonce_raw: number | string | null = null
+): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
 
   var result, email: Buffer;
@@ -628,13 +609,6 @@ export async function generate_inputs(
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
   let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type);
-
-  if (shouldReturnContractCalldata) {
-    return {
-      circuitInputs: fin_result.circuitInputs,
-      contractInputs: fin_result.contractInputs
-    }
-  }
   return fin_result.circuitInputs;
 }
 
