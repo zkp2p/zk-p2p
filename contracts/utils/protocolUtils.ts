@@ -53,7 +53,7 @@ export const calculatePackedUPIId = (upiId: string): [BigNumber, BigNumber, BigN
 export const calculatePackedId = (venmoId: string): [BigNumber, BigNumber, BigNumber] => {
   const venmoIdArray: number[] = venmoId.split('').map(char => char.charCodeAt(0));
 
-  // Pad with zeros until length is 30
+  // Pad with zeros until length is 21
   while (venmoIdArray.length < 21) {
     venmoIdArray.push(0);
   }
