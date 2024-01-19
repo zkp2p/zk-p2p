@@ -3,6 +3,9 @@ export { ProofGenerationStatus, EmailInputStatus } from './proofGeneration';
 export { TransactionStatus } from './transactionStatus';
 export type { TransactionStatusType } from './transactionStatus';
 
+export { NewDepositTransactionStatus } from './newDepositStatus';
+export type { NewDepositTransactionStatusType } from './newDepositStatus';
+
 export type { RawEmailResponse } from './googleMailApi';
 
 export { PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';

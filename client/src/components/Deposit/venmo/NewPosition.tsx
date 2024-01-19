@@ -4,15 +4,13 @@ import styled from 'styled-components';
 import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { TransactionButton } from "@components/common/TransactionButton";
+import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
-import {
-  calculatePackedVenmoId,
-  isProvidedIdEqualToRegistration
-} from '@helpers/poseidonHash';
+import { calculatePackedVenmoId, isProvidedIdEqualToRegistration } from '@helpers/poseidonHash';
+import { NewDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
@@ -23,20 +21,6 @@ import useRampState from '@hooks/venmo/useRampState';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
-
-const NewDepositState = {
-  MISSING_REGISTRATION: 'missing_registration',
-  DEFAULT: 'default',
-  INVALID_VENMO_ID: 'invalid_venmo_id',
-  MISSING_AMOUNTS: 'missing_amounts',
-  INSUFFICIENT_BALANCE: 'insufficient_balance',
-  APPROVAL_REQUIRED: 'approval_required',
-  CONVENIENCE_FEE_INVALID: 'convenience_fee_invalid',
-  MAX_INTENTS_REACHED: 'max_intents_reached',
-  MIN_DEPOSIT_THRESHOLD_NOT_MET: 'min_deposit_threshold_not_met',
-  VALID: 'valid',
-  TRANSACTION_SUCCEEDED: 'transaction_succeeded'
-};
 
 interface NewPositionProps {
   handleBackClick: () => void;
@@ -59,7 +43,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * State
    */
-  const [depositState, setDepositState] = useState(NewDepositState.DEFAULT);
+  const [depositState, setDepositState] = useState(NewDepositTransactionStatus.DEFAULT);
   const [venmoIdInput, setVenmoIdInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
@@ -106,7 +90,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       refetchUsdcApprovalToRamp?.();
 
-      setDepositState(NewDepositState.TRANSACTION_SUCCEEDED);
+      setDepositState(NewDepositTransactionStatus.TRANSACTION_SUCCEEDED);
     },
   });
 
@@ -149,40 +133,65 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     const updateDepositState = async () => {
-      if(!registrationHash) {
-        setDepositState(NewDepositState.MISSING_REGISTRATION);
+      const successfulDepositTransaction = mineDepositTransactionStatus === 'success';
+
+      if (successfulDepositTransaction) {
+        setDepositState(NewDepositTransactionStatus.TRANSACTION_SUCCEEDED);
       } else {
-        if (!venmoIdInput) { 
-          setDepositState(NewDepositState.DEFAULT);
+        if(!registrationHash) {
+          setDepositState(NewDepositTransactionStatus.MISSING_REGISTRATION);
         } else {
-          if (!isVenmoIdInputValid) {
-            setDepositState(NewDepositState.INVALID_VENMO_ID);
+          if (!venmoIdInput) { 
+            setDepositState(NewDepositTransactionStatus.DEFAULT);
           } else {
-            const usdcBalanceLoaded = usdcBalance !== null;
-            const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
-            const minimumDepositAmountLoaded = minimumDepositAmount !== null;
-  
-            if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-              const depositAmountBI = toBigInt(depositAmountInput);
-              const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
-              const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-              const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
-        
-              if (isDepositAmountGreaterThanBalance) {
-                setDepositState(NewDepositState.INSUFFICIENT_BALANCE);
-              } else if (isDepositAmountLessThanMinDepositSize) {
-                setDepositState(NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-              } else if (isDepositAmountGreaterThanApprovedBalance) {
-                setDepositState(NewDepositState.APPROVAL_REQUIRED);
-              } else {
-                if (receiveAmountInput) {
-                  setDepositState(NewDepositState.VALID);
-                } else {
-                  setDepositState(NewDepositState.MISSING_AMOUNTS);
-                }
-              }
+            if (!isVenmoIdInputValid) {
+              setDepositState(NewDepositTransactionStatus.INVALID_DEPOSITOR_ID);
             } else {
-              setDepositState(NewDepositState.MISSING_AMOUNTS);
+              const usdcBalanceLoaded = usdcBalance !== null;
+              const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
+              const minimumDepositAmountLoaded = minimumDepositAmount !== null;
+  
+              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+                const depositAmountBI = toBigInt(depositAmountInput);
+                const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+                const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
+          
+                const signingApproveTransaction = signApproveTransactionStatus === 'loading';
+                const miningApproveTransaction = mineApproveTransactionStatus === 'loading';
+                const successfulApproveTransaction = mineApproveTransactionStatus === 'success';
+
+                if (isDepositAmountGreaterThanBalance) {
+                  setDepositState(NewDepositTransactionStatus.INSUFFICIENT_BALANCE);
+                } else if (isDepositAmountLessThanMinDepositSize) {
+                  setDepositState(NewDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+                } else if (isDepositAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
+                  if (signingApproveTransaction) {
+                    setDepositState(NewDepositTransactionStatus.TRANSACTION_SIGNING);
+                  } else if (miningApproveTransaction) {
+                    setDepositState(NewDepositTransactionStatus.TRANSACTION_MINING);
+                  } else {
+                    setDepositState(NewDepositTransactionStatus.APPROVAL_REQUIRED);
+                  }
+                } else {
+                  if (receiveAmountInput) {
+                    const signingDepositTransaction = signDepositTransactionStatus === 'loading';
+                    const miningDepositTransaction = mineDepositTransactionStatus === 'loading';
+
+                    if (signingDepositTransaction) {
+                      setDepositState(NewDepositTransactionStatus.TRANSACTION_SIGNING);
+                    } else if (miningDepositTransaction){
+                      setDepositState(NewDepositTransactionStatus.TRANSACTION_MINING);
+                    } else {
+                      setDepositState(NewDepositTransactionStatus.VALID);
+                    }
+                  } else {
+                    setDepositState(NewDepositTransactionStatus.MISSING_AMOUNTS);
+                  }
+                }
+              } else {
+                setDepositState(NewDepositTransactionStatus.MISSING_AMOUNTS);
+              }
             }
           }
         }
@@ -199,14 +208,18 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       usdcBalance,
       usdcApprovalToRamp,
       isVenmoIdInputValid,
+      signApproveTransactionStatus,
+      mineApproveTransactionStatus,
+      signDepositTransactionStatus,
+      mineDepositTransactionStatus,
     ]
   );
 
   useEffect(() => {
-    const isApprovalRequired = depositState === NewDepositState.APPROVAL_REQUIRED;
+    const isApprovalRequired = depositState === NewDepositTransactionStatus.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
-    setShouldConfigureNewDepositWrite(depositState === NewDepositState.VALID);
+    setShouldConfigureNewDepositWrite(depositState === NewDepositTransactionStatus.VALID);
   }, [depositState]);
 
   useEffect(() => {
@@ -268,20 +281,22 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaDisabled = (): boolean => {
     switch (depositState) {
-      case NewDepositState.DEFAULT:
-      case NewDepositState.INVALID_VENMO_ID:
-      case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
-      case NewDepositState.CONVENIENCE_FEE_INVALID:
-      case NewDepositState.INSUFFICIENT_BALANCE:
-      case NewDepositState.MAX_INTENTS_REACHED:
-      case NewDepositState.MISSING_REGISTRATION:
-      case NewDepositState.MISSING_AMOUNTS:
+      case NewDepositTransactionStatus.DEFAULT:
+      case NewDepositTransactionStatus.INVALID_DEPOSITOR_ID:
+      case NewDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewDepositTransactionStatus.CONVENIENCE_FEE_INVALID:
+      case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
+      case NewDepositTransactionStatus.MAX_INTENTS_REACHED:
+      case NewDepositTransactionStatus.MISSING_REGISTRATION:
+      case NewDepositTransactionStatus.MISSING_AMOUNTS:
+      case NewDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewDepositTransactionStatus.TRANSACTION_MINING:
         return true;
 
-      case NewDepositState.APPROVAL_REQUIRED:
+      case NewDepositTransactionStatus.APPROVAL_REQUIRED:
         return false;
 
-      case NewDepositState.VALID:
+      case NewDepositTransactionStatus.VALID:
       default:
         return false;
     }
@@ -289,34 +304,40 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaText = (): string => {
     switch (depositState) {
-      case NewDepositState.MISSING_REGISTRATION:
+      case NewDepositTransactionStatus.MISSING_REGISTRATION:
         return 'Missing registration';
 
-      case NewDepositState.INVALID_VENMO_ID:
+      case NewDepositTransactionStatus.INVALID_DEPOSITOR_ID:
         return 'Venmo id does not match registration';
 
-      case NewDepositState.MISSING_AMOUNTS:
+      case NewDepositTransactionStatus.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
       
-      case NewDepositState.INSUFFICIENT_BALANCE:
+      case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
         return `Insufficient USDC balance: ${humanReadableUsdcBalance}`;
       
-      case NewDepositState.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
         const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount) : '0';
         return `Minimum deposit amount is ${minimumDepositAmountString}`;
 
-      case NewDepositState.APPROVAL_REQUIRED:
+      case NewDepositTransactionStatus.TRANSACTION_SIGNING:
+        return 'Signing Transaction';
+
+      case NewDepositTransactionStatus.TRANSACTION_MINING:
+        return 'Mining Transaction';
+
+      case NewDepositTransactionStatus.APPROVAL_REQUIRED:
         const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp) : '0';
         return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
 
-      case NewDepositState.VALID:
+      case NewDepositTransactionStatus.VALID:
         return 'Create Deposit';
 
-      case NewDepositState.TRANSACTION_SUCCEEDED:
+      case NewDepositTransactionStatus.TRANSACTION_SUCCEEDED:
         return 'Go to Deposits';
 
-      case NewDepositState.DEFAULT:
+      case NewDepositTransactionStatus.DEFAULT:
       default:
         return 'Input valid Venmo Id';
     }
@@ -324,7 +345,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaOnClick = async () => {
     switch (depositState) {
-      case NewDepositState.APPROVAL_REQUIRED:
+      case NewDepositTransactionStatus.APPROVAL_REQUIRED:
         try {
           await writeSubmitApproveAsync?.();
         } catch (error) {
@@ -332,7 +353,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         }
         break;
 
-      case NewDepositState.VALID:
+      case NewDepositTransactionStatus.VALID:
         try {
           await writeSubmitDepositAsync?.();
         } catch (error) {
@@ -340,38 +361,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         }
         break;
 
-      case NewDepositState.TRANSACTION_SUCCEEDED:
+      case NewDepositTransactionStatus.TRANSACTION_SUCCEEDED:
         handleBackClick();
         break;
 
       default:
         break;
-    }
-  }
-
-  const signTransactionStateFromDepositState = () => {
-    switch (depositState) {
-      case NewDepositState.APPROVAL_REQUIRED:
-        return signApproveTransactionStatus;
-
-      case NewDepositState.VALID:
-        return signDepositTransactionStatus;
-
-      default:
-        return signDepositTransactionStatus;
-    }
-  }
-
-  const mineTransactionStateFromDepositState = () => {
-    switch (depositState) {
-      case NewDepositState.APPROVAL_REQUIRED:
-        return mineApproveTransactionStatus;
-
-      case NewDepositState.VALID:
-        return mineDepositTransactionStatus;
-
-      default:
-        return mineDepositTransactionStatus;
     }
   }
 
@@ -460,19 +455,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
 
           <ButtonContainer>
-            <TransactionButton
-              signTransactionStatus={signTransactionStateFromDepositState()}
-              mineTransactionStatus={mineTransactionStateFromDepositState()}
+            <Button
+              fullWidth={true}
               disabled={ctaDisabled()}
-              defaultLabel={ctaText()}
-              minedLabel={'Go to Deposits'}
-              defaultOnClick={async () => {
+              onClick={async () => {
                 ctaOnClick();
-              }}
-              minedOnClick={() => {
-                handleBackClick();
-              }}
-            />
+              }}>
+              { ctaText() }
+            </Button>
           </ButtonContainer>
         </InputsContainer>
       </Body>
