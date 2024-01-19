@@ -12,9 +12,9 @@ template GarantiRegistrationEmailSha(max_header_bytes, max_body_bytes, n, k, pac
 
 
     signal input in_padded[max_header_bytes]; // prehashed email data, includes up to 512 + 64? bytes of padding pre SHA256, and padded with lots of 0s at end after the length
-    signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
-    signal input signature[k]; // rsa signature. split up into k parts of n bits each.
-    signal input in_len_padded_bytes; // length of in email data including the padding, which will inform the sha256 block length
+    // signal input modulus[k]; // rsa pubkey, verified with smart contract + DNSSEC proof. split up into k parts of n bits each.
+    // signal input signature[k]; // rsa signature. split up into k parts of n bits each.
+    // signal input in_len_padded_bytes; // length of in email data including the padding, which will inform the sha256 block length
 
     // Base 64 body hash variables
     signal input body_hash_idx;
@@ -37,18 +37,24 @@ template GarantiRegistrationEmailSha(max_header_bytes, max_body_bytes, n, k, pac
     EV.in_body_padded <== in_body_padded;
     EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
 
-    intermediate_hash_packed <== EV.sha_body_packed_out;
+    for (var i = 0; i < 32; i++) {
+        log("intermediate_hash_bytes", precomputed_sha[i]);
+    }
 
     // TODO: PACK INTERMEDIATE HASH INTO 128 BITS TO LOWER CALLDATA
-    // component sha_body_packed[2];
-    // signal output sha_body_packed_out[2];
-    // for (var i = 0; i < 2; i++) {
-    //     sha_body_packed[i] = Bits2Num(32);
-    //     for (var j = 0; j < 32; j++) {
-    //         sha_body_packed[i].in[31 - j] <== sha_body_out[i * 32 + j];
-    //     }
-    //     sha_body_packed_out[i] <== sha_body_packed[i].out;
-    // }
+    component packer[2];
+    for (var i = 0; i < 2; i++) {
+        packer[i] = Bytes2Packed(16);
+        for (var j = 0; j < 16; j++) {
+            var idx = i * 16 + j;
+            packer[i].in[j] <== precomputed_sha[i * 16 + j];
+        }
+        intermediate_hash_packed[i] <== packer[i].out;
+        log("intermediate_hash_packed", intermediate_hash_packed[i]);
+    }
+
+    // TODO: Return email sig hash or body hash to validate onchain
+    
 
     // TOTAL CONSTRAINTS: X
 }

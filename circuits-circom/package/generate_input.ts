@@ -20,7 +20,6 @@ import { dkimVerify } from "@zk-email/helpers/dist/dkim";
 import * as fs from "fs";
 import { pki } from "node-forge";
 import { hdfcReplaceMessageIdWithXGoogleOriginalMessageId } from "./preprocess";
-import { ethers } from 'ethers';
 
 async function getArgs() {
   const args = process.argv.slice(2);
@@ -55,9 +54,7 @@ export interface ICircuitInputs {
   base_message?: string[];
   in_padded?: string[];
   in_body_padded?: string[];
-  in_body_intermediate?: string[];
   in_body_len_padded_bytes?: string;
-  in_body_len_intermediate_bytes?: string;
   in_padded_n_bytes?: string[];
   in_len_padded_bytes?: string;
   in_body_hash?: string[];
@@ -109,6 +106,7 @@ export enum CircuitType {
   EMAIL_PAYLAH_SEND = "paylah_send",
   EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
+  EMAIL_GARANTI_REGISTRATION_SHA = "garanti_registration_sha",
   EMAIL_GARANTI_SEND = "garanti_send",
 }
 
@@ -166,6 +164,7 @@ export async function getCircuitInputs(
   console.log("Starting processing of inputs");
 
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
+  let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
 
   // Update preselector string based on circuit type
@@ -190,10 +189,14 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 131git20 is the max observed body length
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 3968;  // 3968 is the length until cutoff
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 3968 is the length until cutoff
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3968; // For divided circuits, we calculate where we want the cutoff to be
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Bilgilendirme Ayarlar";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 9408;  // 9408 is the length from cutoff to end
   }
 
   // Derive modulus from signature
@@ -201,6 +204,7 @@ export async function getCircuitInputs(
   const modulusBigInt = rsa_modulus;
   // Message is the email header with the body hash
   const prehash_message_string = message;
+  console.log(prehash_message_string.toString());
   // const baseMessageBigInt = AAYUSH_PREHASH_MESSAGE_INT; // bytesToBigInt(stringToBytes(message)) ||
   // const postShaBigint = AAYUSH_POSTHASH_MESSAGE_PADDED_INT;
   const signatureBigInt = rsa_signature;
@@ -440,77 +444,21 @@ export async function getCircuitInputs(
       email_from_idx,
       email_to_idx,
     }
-  } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
-
-    const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
-    const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
-
-    // Index of mobile number is index of first </strong></p> after payer_name - 7 (length of mobile number)
-    const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
-    const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
-
-    const garanti_payee_acc_num_selector = Buffer.from("TR");
-    const garanti_payee_acc_num_idx = Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector).toString();
-
-    const garanti_amount_selector = Buffer.from("<p>Tutar: <strong>");
-    const garanti_amount_idx = (Buffer.from(bodyRemaining).indexOf(garanti_amount_selector) + garanti_amount_selector.length).toString();
-
-    let email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "From:"), "<").length;    // Capital F
-    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "To: ").length;    // Capital T
-    // TODO: MIGHT NOT WORK ALWAYS!!
-    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();    // Look for the first occurence of t=
-
-    console.log({
-      'email_from_idx': email_from_idx,
-      'email_to_idx': email_to_idx,
-      'email_timestamp_idx': email_timestamp_idx,
-      'garanti_payer_name_idx': garanti_payer_name_idx,
-      'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx,
-      'garanti_payee_acc_num_idx': garanti_payee_acc_num_idx,
-      'garanti_amount_idx': garanti_amount_idx
-    });
-
-    circuitInputs = {
-      in_padded,
-      modulus,
-      signature,
-      in_len_padded_bytes,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-      body_hash_idx,
-      // garanti specific indices
-      email_from_idx,
-      email_to_idx,
-      email_timestamp_idx,
-      garanti_payer_name_idx,
-      garanti_payer_mobile_num_idx,
-      garanti_payee_acc_num_idx,
-      garanti_amount_idx,
-      // IDs
-      intent_hash,
-    }
-
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     // Calculate SHA end selector
-    const garanti_end_sha_selector = "Bilgilendirme Ayarlar";
-    const endShaSelector = garanti_end_sha_selector.split("").map((char) => char.charCodeAt(0));
-    const end_sha_selector_loc = await findSelector(bodyRemaining, endShaSelector);
-    console.log("End SHA selector found at: ", end_sha_selector_loc);
-
-    let endShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, endShaSelector)) / 64) * 64;
-    const intermediateBodyText = bodyRemaining.slice(0, endShaCutoffIndex);
-    const remainingBodyText = bodyRemaining.slice(endShaCutoffIndex);
-    const shaBodyRemainingLen = bodyRemainingLen - remainingBodyText.length;
-    const postShaBodyRemainingLen = remainingBodyText.length;
-    console.log(shaBodyRemainingLen, " bytes in intermediate body (private and to be hashed in circuit)");
-    console.log(postShaBodyRemainingLen, " bytes remaining in body (public and to be and hashed in contract)");
+    const garanti_intermediate_selector = "Bilgilendirme Ayarlar";
+    const intermediateShaSelector = garanti_intermediate_selector.split("").map((char) => char.charCodeAt(0));
+    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+    
+    intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
-
-    // TODO: divided circuit input script
-
-    const in_body_len_intermediate_bytes = shaBodyRemainingLen.toString();
-
+   
+    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
+    console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
+    
+    // Regexes
     const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
     const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
 
@@ -533,14 +481,21 @@ export async function getCircuitInputs(
       signature,
       in_len_padded_bytes,
       precomputed_sha,
-      in_body_intermediate,
-      in_body_len_intermediate_bytes,
-      body_hash_idx,
+      in_body_padded: in_body_intermediate,
+      in_body_len_padded_bytes: in_body_len_intermediate_bytes,
       // garanti specific indices
       email_from_idx,
       email_to_idx,
       garanti_payer_name_idx,
       garanti_payer_mobile_num_idx
+    }
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
+    circuitInputs = {
+      in_padded,
+      body_hash_idx,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
     }
   }
   else {

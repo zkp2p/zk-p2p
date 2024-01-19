@@ -6,8 +6,7 @@ include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/rsa.circom";
 include "@zk-email/circuits/helpers/base64.circom";
 include "@zk-email/circuits/helpers/extract.circom";
-include "@zk-email/zk-regex-circom/circuits/common/body_hash_regex.circom";
-
+include "../../common-v2/regexes/body_hash_regex_v2.circom";
 
 // Here, n and k are the biginteger parameters for RSA
 // This is because the number is chunked into k pack_size of n bits each
@@ -31,38 +30,38 @@ template EmailVerifierBody(max_header_bytes, max_body_bytes, n, k, ignore_body_h
     // BODY HASH REGEX: 617,597 constraints
     // This extracts the body hash from the header (i.e. the part after bh= within the DKIM-signature section)
     // which is used to verify the body text matches this signed hash + the signature verifies this hash is legit
-    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegex(max_header_bytes)(in_padded);
+    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegexV2(max_header_bytes)(in_padded);
     bh_regex_out === 1;
     signal shifted_bh_out[LEN_SHA_B64] <== VarShiftMaskedStr(max_header_bytes, LEN_SHA_B64)(bh_reveal, body_hash_idx);
     // log(body_hash_regex.out);
 
 
-    // SHA BODY: 760,142 constraints
+    // // SHA BODY: 760,142 constraints
 
-    // Precomputed sha vars for big body hashing
-    // Next 3 signals are for decreasing SHA constraints for parsing out information from the in-body text
-    // The precomputed_sha value is the Merkle-Damgard state of our SHA hash uptil our first regex match
-    // This allows us to save a ton of SHA constraints by only hashing the relevant part of the body
-    // It doesn't have an impact on security since a user must have known the pre-image of a signed message to be able to fake it
-    // The lower two body signals describe the suffix of the body that we care about
-    // The part before these signals, a significant prefix of the body, has been pre-hashed into precomputed_sha.
-    signal input precomputed_sha[32];
-    signal input in_body_padded[max_body_bytes];
-    signal input in_body_len_padded_bytes;
+    // // Precomputed sha vars for big body hashing
+    // // Next 3 signals are for decreasing SHA constraints for parsing out information from the in-body text
+    // // The precomputed_sha value is the Merkle-Damgard state of our SHA hash uptil our first regex match
+    // // This allows us to save a ton of SHA constraints by only hashing the relevant part of the body
+    // // It doesn't have an impact on security since a user must have known the pre-image of a signed message to be able to fake it
+    // // The lower two body signals describe the suffix of the body that we care about
+    // // The part before these signals, a significant prefix of the body, has been pre-hashed into precomputed_sha.
+    // signal input precomputed_sha[32];
+    // signal input in_body_padded[max_body_bytes];
+    // signal input in_body_len_padded_bytes;
 
-    // This verifies that the hash of the body, when calculated from the precomputed part forwards,
-    // actually matches the hash in the header
-    signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
-    signal sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);
+    // // This verifies that the hash of the body, when calculated from the precomputed part forwards,
+    // // actually matches the hash in the header
+    // signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    // signal sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);
 
-    // When we convert the manually hashed email sha_body into bytes, it matches the
-    // base64 decoding of the final hash state that the signature signs (sha_b64)
-    component sha_body_bytes[32];
-    for (var i = 0; i < 32; i++) {
-        sha_body_bytes[i] = Bits2Num(8);
-        for (var j = 0; j < 8; j++) {
-            sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
-        }
-        sha_body_bytes[i].out === sha_b64_out[i];
-    }
+    // // When we convert the manually hashed email sha_body into bytes, it matches the
+    // // base64 decoding of the final hash state that the signature signs (sha_b64)
+    // component sha_body_bytes[32];
+    // for (var i = 0; i < 32; i++) {
+    //     sha_body_bytes[i] = Bits2Num(8);
+    //     for (var j = 0; j < 8; j++) {
+    //         sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
+    //     }
+    //     sha_body_bytes[i].out === sha_b64_out[i];
+    // }
 }

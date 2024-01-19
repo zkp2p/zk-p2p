@@ -25,6 +25,7 @@
         "build": "tsc",
         "gen-input:garanti:send": "npx tsx ../../package/generate_input.ts --email_file=./emls/garanti_send.eml --payment_type=garanti --circuit_type=send --output_file=input_garanti_send",
         "gen-input:garanti:registration": "npx tsx ../../package/generate_input.ts --email_file=./emls/garanti_send.eml --payment_type=garanti --circuit_type=registration --output_file=input_garanti_registration",
+        "gen-input:garanti:registration:sha": "npx tsx ../../package/generate_input.ts --email_file=./emls/garanti_send.eml --payment_type=garanti --circuit_type=registration_sha --output_file=input_garanti_registration_sha",
         "compile:garanti:send": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_send && cd ../../scripts && ./1_compile.sh && cd ..",
         "compile:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./1_compile.sh && cd ..",
         "compile:garanti:registration:sha": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration_sha && cd ../../scripts && ./1_compile.sh && cd ..",
@@ -40,6 +41,7 @@
         "gencalldata:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./9_gen_sol_calldata.sh && cd ..",
         "genwitness:garanti:send": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_send && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
         "genwitness:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
+        "genwitness:garanti:registration:sha": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration_sha && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
         "genproof:garanti:send": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_send && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
         "genproof:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd .."
     },
