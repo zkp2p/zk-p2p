@@ -42,24 +42,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("Poseidon6 deployed at ", poseidon6.address);
 
-  const hdfcRamp = await deploy("HDFCRamp", {
-    from: deployer,
-    args: [
-      deployer,
-      usdcAddress,
-      getDeployedContractAddress(network, "Poseidon3"),
-      poseidon6.address,
-      MIN_DEPOSIT_AMOUNT[paymentProvider][network],
-      MAX_ONRAMP_AMOUNT[paymentProvider][network],
-      INTENT_EXPIRATION_PERIOD[paymentProvider][network],
-      ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
-      SUSTAINABILITY_FEE[paymentProvider][network],
-      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
-        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
-        : deployer,
-    ],
-  });
-  console.log("HDFCRamp deployed at", hdfcRamp.address);
+  // const hdfcRamp = await deploy("HDFCRamp", {
+  //   from: deployer,
+  //   args: [
+  //     deployer,
+  //     usdcAddress,
+  //     getDeployedContractAddress(network, "Poseidon3"),
+  //     poseidon6.address,
+  //     MIN_DEPOSIT_AMOUNT[paymentProvider][network],
+  //     MAX_ONRAMP_AMOUNT[paymentProvider][network],
+  //     INTENT_EXPIRATION_PERIOD[paymentProvider][network],
+  //     ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
+  //     SUSTAINABILITY_FEE[paymentProvider][network],
+  //     SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+  //       ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
+  //       : deployer,
+  //   ],
+  // });
+  // console.log("HDFCRamp deployed at", hdfcRamp.address);
 
   const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
     contract: "ManagedKeyHashAdapterV2",
@@ -88,7 +88,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const sendProcessor = await deploy("HDFCSendProcessor", {
     from: deployer,
     args: [
-      hdfcRamp.address,
+      getDeployedContractAddress(network, "HDFCRamp"),
       keyHashAdapter.address,
       nullifierRegistryContract.address,
       FROM_EMAIL[paymentProvider],
