@@ -19,7 +19,6 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
 
     /* ============ Constants ============ */
     uint256 constant PACK_SIZE = 7;
-    uint256 constant IST_OFFSET = 19800;
 
     /* ============ Constructor ============ */
     constructor(
