@@ -47,8 +47,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     //-------HASH INTERMEDIATE----------//
 
-    // This verifies that the hash of the body, when calculated from the precomputed part forwards,
-    // actually matches the hash in the header
+    // This hashes the body after the precomputed SHA, and outputs the intermediate hash to be fed into the final hasher circuit
     signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
     // When we convert the manually hashed email sha_body into bytes, it matches the
     // base64 decoding of the final hash state that the signature signs (sha_b64)
@@ -61,19 +60,19 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         log("intermediate_hash_bytes", sha_body_bytes[i].out);
     }
 
-    // OUTPUT: PACK INTERMEDIATE HASH INTO 128 BITS TO LOWER CALLDATA
-    component packer[2];
+    //-------PACKING HASHES FOR CALLDATA----------//
+
+    component intermediate_hash_packer[2];
     for (var i = 0; i < 2; i++) {
-        packer[i] = Bytes2Packed(16);
+        intermediate_hash_packer[i] = Bytes2Packed(16);
         for (var j = 0; j < 16; j++) {
             var idx = i * 16 + j;
-            packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
+            intermediate_hash_packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
         }
-        intermediate_hash_packed[i] <== packer[i].out;
+        intermediate_hash_packed[i] <== intermediate_hash_packer[i].out;
         log("intermediate_hash_packed", intermediate_hash_packed[i]);
     }
 
-    // OUTPUT: PACK BH INTO 128 BITS
     component body_hash_packer[2];
     for (var i = 0; i < 2; i++) {
         body_hash_packer[i] = Bytes2Packed(16);
@@ -177,12 +176,12 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: X
+    // TOTAL CONSTRAINTS: 6067630
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 15040 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 3328 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
