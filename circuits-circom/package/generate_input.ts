@@ -207,7 +207,7 @@ export async function getCircuitInputs(
   const modulusBigInt = rsa_modulus;
   // Message is the email header with the body hash
   const prehash_message_string = message;
-  console.log(prehash_message_string.toString());
+
   // const baseMessageBigInt = AAYUSH_PREHASH_MESSAGE_INT; // bytesToBigInt(stringToBytes(message)) ||
   // const postShaBigint = AAYUSH_POSTHASH_MESSAGE_PADDED_INT;
   const signatureBigInt = rsa_signature;
@@ -495,7 +495,7 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
     const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
 
-    console.log("body hash in b64: ", body_hash_b64);
+    console.log("body hash in b64: ", JSON.stringify(body_hash_b64));
     
     circuitInputs = {
       in_padded,
