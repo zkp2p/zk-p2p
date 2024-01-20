@@ -44,9 +44,22 @@ describe("Body Hash Regex V2", function () {
     
             assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
         });
+
         it("Should match regex once", async () => {
             const input = {
                 "msg": textToAsciiArray("\r\nDKIM-Signature: v=1; a=rsa-sha256;\tq=dns/txt;\tc=simple/simple;\r\n\ts=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Should match regex once", async () => {
+            const input = {
+                "msg": textToAsciiArray("\r\nDKIM-Signature:v=1; a=rsa-sha256;\r\n\tq=dns/txt;\tc=simple/simple;\r\ns=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -73,8 +86,9 @@ describe("Body Hash Regex V2", function () {
         });
 
         it("Should fail to match regex", async () => {
+            // Because we only allow 1 D or d
             const input = {
-                "msg": textToAsciiArray("\r\nDKIM-SIgnature: v=1; a=rsa-sha256;\tq=dns/txt;\tc=simple/simple;\r\n\ts=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
+                "msg": textToAsciiArray("\r\nDdKIM-Signature: v=1; a=rsa-sha256;\tq=dns/txt;\tc=simple/simple;\r\ts=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
             };
             const witness = await cir.calculateWitness(
                 input,

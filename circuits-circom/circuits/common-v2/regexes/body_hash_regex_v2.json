@@ -2,7 +2,7 @@
     "parts": [
         {
             "is_public": false,
-            "regex_def": "((\r\n)|^)(d|D)+(k|K)+(i|I)+(m|M)+-(s|S)+ignature(:| )+"
+            "regex_def": "((\r\n)|^)(d|D)(k|K)(i|I)(m|M)-(s|S)ignature:( )?"
         },
         {
             "is_public": false,
