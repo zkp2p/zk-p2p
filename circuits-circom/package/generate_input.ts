@@ -107,7 +107,7 @@ export enum CircuitType {
   EMAIL_PAYLAH_SEND = "paylah_send",
   EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
-  EMAIL_GARANTI_REGISTRATION_SHA = "garanti_registration_sha",
+  EMAIL_GARANTI_DIVIDED_BODY_HASHER = "garanti_divided_body_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
 }
 
@@ -195,11 +195,11 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is max observed body length
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Bilgilendirme Ayarlar"; // Should be the same as secondary circuit
-    MAX_INTERMEDIATE_PADDING_LENGTH = 3968; // For divided circuits, we calculate what the padded intermediate length should be
-  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Bilgilendirme Ayarlar";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 9408;  // 9408 is estimated length plus padding from intermediate cutoff to end
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as secondary circuit
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
+  } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -492,7 +492,7 @@ export async function getCircuitInputs(
       garanti_payer_name_idx,
       garanti_payer_mobile_num_idx
     }
-  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION_SHA) {
+  } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
     const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
 
     console.log("body hash in b64: ", body_hash_b64);
