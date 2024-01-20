@@ -20,6 +20,6 @@
     "types": ["node", "jest"],
     "incremental": true
   },
-  "include": ["test/*.ts",  "test/regexes/*.ts"],
+  "include": ["test/*.ts", "test/*/*.ts"],
   "exclude": ["node_modules"]
 }
