@@ -2,7 +2,7 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, chunkedBytesToBigInt, base64ToByteArray } from "../../utils/test-utils";
+import { chunkArray, bytesToPacked, chunkedBytesToBigInt, base64ToByteArray, packedToBytes } from "../../utils/test-utils";
 import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
 import ganache from "ganache";
@@ -22,6 +22,7 @@ describe("Garanti registration WASM tester", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
+    let cir_hasher;
     let poseidon;
     let mimcSponge;
     let account;
@@ -32,6 +33,16 @@ describe("Garanti registration WASM tester", function () {
             {
                 include: path.join(__dirname, "../node_modules"),
                 output: path.join(__dirname, "../build/garanti_registration"),
+                recompile: false, // setting this to true will recompile the circuit (~3-5min)
+                verbose: true,
+            }
+        );
+
+        cir_hasher = await wasm_tester(
+            path.join(__dirname, "../../common-v2/divided_hasher_10752.circom"),
+            {
+                include: path.join(__dirname, "../../common-v2/node_modules"),
+                output: path.join(__dirname, "../../common-v2/build/divided_hasher_10752"),
                 recompile: false, // setting this to true will recompile the circuit (~3-5min)
                 verbose: true,
             }
@@ -56,8 +67,6 @@ describe("Garanti registration WASM tester", function () {
     });
 
     it("Should return the correct modulus hash", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any garanti receive payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -78,10 +87,7 @@ describe("Garanti registration WASM tester", function () {
         assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
     });
 
-    // TODO
-    it.only("Should return the correct intermediate hash packed", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any garanti receive payment transaction
+    it("Should return the correct intermediate hash packed", async () => {
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -89,23 +95,32 @@ describe("Garanti registration WASM tester", function () {
             input,
             true
         );
+
+        // This is a workaround to use our divided hasher because no JS SHA256 libraries do not support a precomputed initial state
+        // We test that the precomputed SHA hashed + intermediate body is equal to the expected SHA from the registration circuit
         
-        // const expectedIntermediateHash = sha256Precomputed(input["in_padded"].slice(0, Number(input["in_len_padded_bytes"])));
-        // console.log(expectedIntermediateHash)
-        // console.log(input["in_body_padded"].slice(0, Number(input["in_body_len_padded_bytes"])))
+        // Unpack intermediate hash bytes
+        let expected_hash_one = packedToBytes(witness[2]);
+        let expected_hash_two = packedToBytes(witness[3]);
 
-        // const expectedIntermediateHashPacked = chunkArray(expectedIntermediateHash, 16, 32);
-        // const expectedFirst = bytesToPacked(expectedIntermediateHashPacked[0]);
-        // const expectedSecond = bytesToPacked(expectedIntermediateHashPacked[1]);
-        // console.log(expectedFirst, expectedSecond)
+        let paddedArray = Array.from({ length: 10752 }, (v, i) => input["in_body_padded"][i] || "0");
+        
+        const hasher_witness = await cir_hasher.calculateWitness(
+            {
+                precomputed_sha: input["precomputed_sha"],
+                expected_sha: expected_hash_one.concat(expected_hash_two),
+                in_body_padded: paddedArray,
+                in_body_len_padded_bytes: input["in_body_len_padded_bytes"],
+            },
+            true
+        );
 
-        // assert.equal(witness[1], expectedFirst);
-        // assert.equal(witness[2], expectedSecond);
+        assert(Fr.eq(Fr.e(hasher_witness[0]), Fr.e(1)));
+        assert.equal(witness[2], hasher_witness[3]);
+        assert.equal(witness[3], hasher_witness[4]);
     });
 
     it("Should return the correct body hash packed", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any garanti receive payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -222,4 +237,8 @@ describe("Garanti registration WASM tester", function () {
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     });
+
+    // describe("Integration with divided hasher", function () {
+
+    // })
 });

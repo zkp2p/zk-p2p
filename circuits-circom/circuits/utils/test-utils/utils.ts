@@ -99,3 +99,16 @@ export function base64ToByteArray(base64Array) {
 
     return stringArray;
 }
+
+export function packedToBytes(packed) {
+    const bytes = [];
+    while (packed > 0) {
+        // Extract the least significant byte
+        let byte = Number(packed & BigInt(0xFF));
+        bytes.push(byte);
+
+        // Shift right by 8 bits to process the next byte
+        packed >>= BigInt(8);
+    }
+    return bytes;
+}
