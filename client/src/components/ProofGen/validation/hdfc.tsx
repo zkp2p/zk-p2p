@@ -117,5 +117,9 @@ function sanitizeHdfcPasteEmail(emailContent: string): string {
   const fourthTabEncodingPattern = `=09=09=09 =20`;
   const fourthTabEncodedSanitizedEmail = thirdTabEncodedSanitizedEmail.replace(fourthTabEncodingPattern, '\t\t\t =20');
 
-  return fourthTabEncodedSanitizedEmail;
+  // Update Fifth Tab encoding occurrence
+  const fifthTabEncodingPattern = `=09=09=09=09=09=09=09=09=09=09=09=09=09=09`;
+  const fifthTabEncodedSanitizedEmail = fourthTabEncodedSanitizedEmail.replace(fifthTabEncodingPattern, '\t\t\t\t\t\t\t\t=09');
+
+  return fifthTabEncodedSanitizedEmail;
 };
