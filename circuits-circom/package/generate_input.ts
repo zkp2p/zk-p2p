@@ -57,10 +57,9 @@ export interface ICircuitInputs {
   in_body_len_padded_bytes?: string;
   in_padded_n_bytes?: string[];
   in_len_padded_bytes?: string;
-  in_body_hash?: string[];
+  expected_sha?: string[];
   precomputed_sha?: string[];
   body_hash_idx?: string;
-  body_hash_b64?: string[];
   venmo_payer_id_idx?: string;
   email_from_idx?: string | number;
   email_to_idx?: string | number;
@@ -107,7 +106,7 @@ export enum CircuitType {
   EMAIL_PAYLAH_SEND = "paylah_send",
   EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
-  EMAIL_GARANTI_DIVIDED_BODY_HASHER = "garanti_divided_body_hasher",
+  EMAIL_GARANTI_DIVIDED_BODY_HASHER = "garanti_divided_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
 }
 
@@ -145,6 +144,18 @@ function padWithZero(arr: Uint8Array, length: number) {
     arr = mergeUInt8Arrays(arr, int8toBytes(0));
   }
   return arr;
+}
+
+function base64ToByteArray(base64Array) {
+  const base64String = base64Array.map(base64Val => String.fromCharCode(parseInt(base64Val, 10))).join('');
+  let binaryString = atob(base64String);
+  let stringArray = new Array(binaryString.length);
+
+  for (let i = 0; i < binaryString.length; i++) {
+      stringArray[i] = binaryString.charCodeAt(i).toString();
+  }
+
+  return stringArray;
 }
 
 export async function getCircuitInputs(
@@ -494,12 +505,12 @@ export async function getCircuitInputs(
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
     const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
+    const expected_sha = base64ToByteArray(body_hash_b64);
 
-    console.log("body hash in b64: ", JSON.stringify(body_hash_b64));
+    console.log("decoded body hash: ", JSON.stringify(expected_sha));
     
     circuitInputs = {
-      in_padded,
-      body_hash_b64,
+      expected_sha,
       precomputed_sha,
       in_body_padded,
       in_body_len_padded_bytes,
