@@ -79,7 +79,7 @@ describe("Garanti registration WASM tester", function () {
     });
 
     // TODO
-    it("Should return the correct intermediate hash packed", async () => {
+    it.only("Should return the correct intermediate hash packed", async () => {
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
         // Otherwise, you can download the original eml from any garanti receive payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
@@ -89,10 +89,15 @@ describe("Garanti registration WASM tester", function () {
             input,
             true
         );
+        
+        // const expectedIntermediateHash = sha256Precomputed(input["in_padded"].slice(0, Number(input["in_len_padded_bytes"])));
+        // console.log(expectedIntermediateHash)
+        // console.log(input["in_body_padded"].slice(0, Number(input["in_body_len_padded_bytes"])))
 
-        // const expectedPrecomputedShaPacked = chunkArray(input.precomputed_sha, 16, 32);
-        // const expectedFirst = bytesToPacked(expectedPrecomputedShaPacked[0]);
-        // const expectedSecond = bytesToPacked(expectedPrecomputedShaPacked[1]);
+        // const expectedIntermediateHashPacked = chunkArray(expectedIntermediateHash, 16, 32);
+        // const expectedFirst = bytesToPacked(expectedIntermediateHashPacked[0]);
+        // const expectedSecond = bytesToPacked(expectedIntermediateHashPacked[1]);
+        // console.log(expectedFirst, expectedSecond)
 
         // assert.equal(witness[1], expectedFirst);
         // assert.equal(witness[2], expectedSecond);
