@@ -2,7 +2,8 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../utils/test-utils";
+import { chunkArray, bytesToPacked, chunkedBytesToBigInt, base64ToByteArray } from "../../utils/test-utils";
+import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
 import ganache from "ganache";
 
@@ -41,8 +42,8 @@ describe("Garanti registration WASM tester", function () {
     });
 
     it("Should generate witnesses", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti send payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -55,8 +56,8 @@ describe("Garanti registration WASM tester", function () {
     });
 
     it("Should return the correct modulus hash", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti receive payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -68,15 +69,66 @@ describe("Garanti registration WASM tester", function () {
         // Get returned modulus hash
         const modulus_hash = witness[1];
 
-        // Get expected modulus hash
-        const expected_hash = mimcSponge.multiHash(input["modulus"], 123, 1);
+        // Calculate the expected poseidon hash with pubkey chunked to 9*242 like in circuit
+        const poseidon = await buildPoseidon();
+        const modulus = chunkedBytesToBigInt(input["modulus"], 121);
+        const pubkeyChunked = bigIntToChunkedBytes(modulus, 242, 9);
+        const expected_hash = poseidon(pubkeyChunked);
 
         assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
     });
 
+    // TODO
+    it("Should return the correct intermediate hash packed", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti receive payment transaction
+        const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // const expectedPrecomputedShaPacked = chunkArray(input.precomputed_sha, 16, 32);
+        // const expectedFirst = bytesToPacked(expectedPrecomputedShaPacked[0]);
+        // const expectedSecond = bytesToPacked(expectedPrecomputedShaPacked[1]);
+
+        // assert.equal(witness[1], expectedFirst);
+        // assert.equal(witness[2], expectedSecond);
+    });
+
+    it("Should return the correct body hash packed", async () => {
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_receive.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti receive payment transaction
+        const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get expected body hash packed
+        const regex_start_body_hash = Number(input["body_hash_idx"]);
+        const regex_start_sub_array_body_hash = input["in_padded"].slice(regex_start_body_hash);
+        const regex_end_body_hash = regex_start_sub_array_body_hash.indexOf("59"); // Look for ; to end the from which is 59 in ascii.
+        const body_hash_array = regex_start_sub_array_body_hash.slice(0, regex_end_body_hash);
+
+        // Decode body hash
+        const expectedBodyHashArray = base64ToByteArray(body_hash_array);
+    
+        const bodyHashChunkedArray = chunkArray(expectedBodyHashArray, 16, 32);
+        const expectedFirst = bytesToPacked(bodyHashChunkedArray[0]);
+        const expectedSecond = bytesToPacked(bodyHashChunkedArray[1]);
+        
+        assert.equal(witness[4], expectedFirst);
+        assert.equal(witness[5], expectedSecond);
+    });
+
     it("Should return the correct packed from email", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti send payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -86,13 +138,13 @@ describe("Garanti registration WASM tester", function () {
         );
 
         // Get returned packed from email
-        // Indexes 2 to 5 represent the packed from email (31 \ 7)
-        const packed_from_email = witness.slice(2, 7);
+        // Indexes 6 to 11 represent the packed from email (31 \ 7)
+        const packed_from_email = witness.slice(6, 11);
 
         // Get expected packed from email
         const regex_start = Number(input["email_from_idx"]);
         const regex_start_sub_array = input["in_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
+        const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<garanti@garanti.com>`
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
@@ -119,8 +171,8 @@ describe("Garanti registration WASM tester", function () {
         );
         account = provider.getSigner(0);
 
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
+        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
+        // Otherwise, you can download the original eml from any garanti send payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -130,7 +182,7 @@ describe("Garanti registration WASM tester", function () {
         );
 
         // Get returned hashed onramper id
-        const hashed_onramper_id = witness[7];
+        const hashed_onramper_id = witness[11];
 
         // Get expected packed to email
         const regex_start_to_email = Number(input["email_to_idx"]);
