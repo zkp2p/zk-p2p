@@ -11,7 +11,7 @@ const wasm_tester = require("circom_tester").wasm;
 
 const fs = require('fs');
 
-describe("Divided body hasher helper", function () {
+describe("Divided hasher helper", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -57,10 +57,10 @@ describe("Divided body hasher helper", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../mocks/test_divided_body_hasher.circom"),
+            path.join(__dirname, "../mocks/test_divided_hasher.circom"),
             {
                 include: path.join(__dirname, "../../node_modules"),
-                output: path.join(__dirname, "../../build/test_divided_body_hasher"),
+                output: path.join(__dirname, "../../build/test_divided_hasher"),
                 recompile: true,
                 verbose: true,
             }
@@ -69,7 +69,7 @@ describe("Divided body hasher helper", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "body_hash_b64": textToAsciiArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
+            "expected_sha": base64ToByteArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
             "precomputed_sha": ["163","0","85","101","126","105","88","222","225","117","247","171","171","60","248","120","123","118","154","220","154","233","231","77","116","7","2","200","78","54","132","118"],
             "in_body_padded": [
                 "49","34","32","98","111","114","100","101","114","61","34","48","34","32","47","62",
@@ -104,7 +104,7 @@ describe("Divided body hasher helper", function () {
 
     it("Should match pack precomputed SHA", async () => {
         const input = {
-            "body_hash_b64": textToAsciiArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
+            "expected_sha": base64ToByteArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
             "precomputed_sha": ["163","0","85","101","126","105","88","222","225","117","247","171","171","60","248","120","123","118","154","220","154","233","231","77","116","7","2","200","78","54","132","118"],
             "in_body_padded": [
                 "49","34","32","98","111","114","100","101","114","61","34","48","34","32","47","62",
@@ -144,7 +144,7 @@ describe("Divided body hasher helper", function () {
 
     it("Should match pack body hash SHA", async () => {
         const input = {
-            "body_hash_b64": textToAsciiArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
+            "expected_sha": base64ToByteArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
             "precomputed_sha": ["163","0","85","101","126","105","88","222","225","117","247","171","171","60","248","120","123","118","154","220","154","233","231","77","116","7","2","200","78","54","132","118"],
             "in_body_padded": [
                 "49","34","32","98","111","114","100","101","114","61","34","48","34","32","47","62",
@@ -174,8 +174,7 @@ describe("Divided body hasher helper", function () {
             true
         );
 
-        const expectedBodyHashArray = base64ToByteArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0=");
-        const expectedBodyHashArrayPacked = chunkArray(expectedBodyHashArray, 16, 32);
+        const expectedBodyHashArrayPacked = chunkArray(input.expected_sha, 16, 32);
         const expectedFirst = bytesToPacked(expectedBodyHashArrayPacked[0]);
         const expectedSecond = bytesToPacked(expectedBodyHashArrayPacked[1]);
 
@@ -185,7 +184,7 @@ describe("Divided body hasher helper", function () {
 
     it("Should fail if preimage does not match", async () => {
         const input = {
-            "body_hash_b64": textToAsciiArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
+            "expected_sha": base64ToByteArray("gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0="),
             "precomputed_sha": ["163","0","85","101","126","105","88","222","225","117","247","171","171","60","248","120","123","118","154","220","154","233","231","77","116","7","2","200","78","54","132","118"],
             "in_body_padded": [
                 "49","34","32","98","111","114","100","101","114","61","34","48","34","32","47","62",
