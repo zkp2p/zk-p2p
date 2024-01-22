@@ -25,7 +25,7 @@ const ProofGenSettingsProvider = ({ children }: ProvidersProps) => {
   );
 
   const [isEmailInputSettingDrag, setIsEmailInputSettingDrag] = useState<boolean>(
-    storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : false
+    storedEmailInputSetting !== null ? JSON.parse(storedEmailInputSetting) : true
   );
 
   const [isEmailModeAuth, setIsEmailModeAuth] = useState<boolean>(
