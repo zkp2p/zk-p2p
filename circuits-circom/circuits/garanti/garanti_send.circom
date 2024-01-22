@@ -5,8 +5,11 @@ include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/circuits/helpers/extract.circom";
 
 include "../utils/ceil.circom";
+include "../utils/email_nullifier.circom";
+include "../utils/hash_sign_gen_rand.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
+include "./helpers/email-verifier-header.circom"; // Use local email verifier
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
 include "./regexes/garanti_payment_details.circom";
@@ -33,20 +36,54 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input in_body_len_padded_bytes;
 
     signal output modulus_hash;
+    signal output intermediate_hash_packed[2];
+    signal output body_hash_packed[2];
 
     // DKIM VERIFICATION
-    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
+    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
-    EV.in_len_padded_bytes <== in_len_padded_bytes;
     EV.body_hash_idx <== body_hash_idx;
-    EV.precomputed_sha <== precomputed_sha;
-    EV.in_body_padded <== in_body_padded;
-    EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
+    EV.in_len_padded_bytes <== in_len_padded_bytes;
+
     signal header_hash[256] <== EV.sha;
 
     modulus_hash <== EV.pubkey_hash;
+
+    //-------HASH INTERMEDIATE----------//
+
+    // This hashes the body after the precomputed SHA, and outputs the intermediate hash to be fed into the final hasher circuit
+    signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    component sha_body_bytes[32];
+    for (var i = 0; i < 32; i++) {
+        sha_body_bytes[i] = Bits2Num(8);
+        for (var j = 0; j < 8; j++) {
+            sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
+        }
+    }
+
+    //-------PACKING HASHES FOR CALLDATA----------//
+
+    component intermediate_hash_packer[2];
+    for (var i = 0; i < 2; i++) {
+        intermediate_hash_packer[i] = Bytes2Packed(16);
+        for (var j = 0; j < 16; j++) {
+            var idx = i * 16 + j;
+            intermediate_hash_packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
+        }
+        intermediate_hash_packed[i] <== intermediate_hash_packer[i].out;
+    }
+
+    component body_hash_packer[2];
+    for (var i = 0; i < 2; i++) {
+        body_hash_packer[i] = Bytes2Packed(16);
+        for (var j = 0; j < 16; j++) {
+            var idx = i * 16 + j;
+            body_hash_packer[i].in[j] <== EV.sha_b64_out[i * 16 + j];
+        }
+        body_hash_packed[i] <== body_hash_packer[i].out;
+    }
 
     //-------CONSTANTS----------//
 
@@ -204,15 +241,14 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: X
+    // TOTAL CONSTRAINTS: 5520033
 }
 
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 15040 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 2496 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-// component main = GarantiSendEmail(1024, 15040, 121, 17, 7);
-component main { public [ intent_hash ] } = GarantiSendEmail(1024, 640, 121, 17, 7);
+component main { public [ intent_hash ] } = GarantiSendEmail(1024, 2496, 121, 17, 7);
