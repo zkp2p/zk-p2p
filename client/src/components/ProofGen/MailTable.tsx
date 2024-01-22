@@ -185,7 +185,7 @@ export const MailTable: React.FC<MailTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scopesApproved]);
+  }, [googleAuthToken, scopesApproved]);
 
   useEffect(() => {
     setSelectedIndex(null);

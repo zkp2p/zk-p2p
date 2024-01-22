@@ -121,6 +121,8 @@ const GoogleAuthProvider = ({ children }: ProvidersProps) => {
   });
 
   const googleLogOut = () => {
+    setIsScopesApproved(false);
+
     setGoogleAuthToken(null);
     localStorage.removeItem(getGoogleAuthTokenKey());
   
