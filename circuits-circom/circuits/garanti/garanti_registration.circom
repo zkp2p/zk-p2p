@@ -1,13 +1,12 @@
 pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
-// include "@zk-email/circuits/email-verifier.circom";
-include "./helpers/email-verifier-header.circom"; // Use divided verifier which does not check body hash
 include "@zk-email/circuits/helpers/extract.circom";
 
 include "../utils/ceil.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
+include "./helpers/email-verifier-header.circom"; // Use local email verifier
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
 include "./regexes/garanti_subject.circom";
@@ -36,7 +35,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal output body_hash_packed[2];
 
     // DKIM VERIFICATION
-    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k, 0);
+    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
@@ -49,15 +48,12 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     // This hashes the body after the precomputed SHA, and outputs the intermediate hash to be fed into the final hasher circuit
     signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
-    // When we convert the manually hashed email sha_body into bytes, it matches the
-    // base64 decoding of the final hash state that the signature signs (sha_b64)
     component sha_body_bytes[32];
     for (var i = 0; i < 32; i++) {
         sha_body_bytes[i] = Bits2Num(8);
         for (var j = 0; j < 8; j++) {
             sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
         }
-        log("intermediate_hash_bytes", sha_body_bytes[i].out);
     }
 
     //-------PACKING HASHES FOR CALLDATA----------//
@@ -70,7 +66,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
             intermediate_hash_packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
         }
         intermediate_hash_packed[i] <== intermediate_hash_packer[i].out;
-        log("intermediate_hash_packed", intermediate_hash_packed[i]);
     }
 
     component body_hash_packer[2];
@@ -81,7 +76,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
             body_hash_packer[i].in[j] <== EV.sha_b64_out[i * 16 + j];
         }
         body_hash_packed[i] <== body_hash_packer[i].out;
-        log("body_hash_packed", body_hash_packed[i]);
     }
 
     //-------CONSTANTS----------//
