@@ -116,8 +116,8 @@ describe("Garanti registration WASM tester", function () {
         );
 
         assert(Fr.eq(Fr.e(hasher_witness[0]), Fr.e(1)));
-        assert.equal(witness[2], hasher_witness[3]);
-        assert.equal(witness[3], hasher_witness[4]);
+        assert.equal(witness[2], hasher_witness[3], true);
+        assert.equal(witness[3], hasher_witness[4], true);
     });
 
     it("Should return the correct body hash packed", async () => {
@@ -142,8 +142,8 @@ describe("Garanti registration WASM tester", function () {
         const expectedFirst = bytesToPacked(bodyHashChunkedArray[0]);
         const expectedSecond = bytesToPacked(bodyHashChunkedArray[1]);
         
-        assert.equal(witness[4], expectedFirst);
-        assert.equal(witness[5], expectedSecond);
+        assert.equal(witness[4], expectedFirst, true);
+        assert.equal(witness[5], expectedSecond, true);
     });
 
     it("Should return the correct packed from email", async () => {
@@ -238,7 +238,59 @@ describe("Garanti registration WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     });
 
-    // describe("Integration with divided hasher", function () {
+    describe("Divided hasher", function () {
+        it("Should generate witnesses", async () => {
+            // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
+            // Otherwise, you can download the original eml from any garanti send payment transaction
+            const input_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir_hasher.calculateWitness(
+                input,
+                true
+            );
+    
+            assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
+        });
 
-    // })
+        it("Should return the packed precomputed SHA equal to output SHA of Garanti registration", async () => {
+            const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
+            const input_hasher = JSON.parse(jsonStringHasher);
+            const witness_hasher = await cir_hasher.calculateWitness(
+                input_hasher,
+                true
+            );
+            const input_registration_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
+            const jsonStringRegistration = fs.readFileSync(input_registration_path, "utf8");
+            const input_registration = JSON.parse(jsonStringRegistration);
+            const witness_registration = await cir.calculateWitness(
+                input_registration,
+                true
+            );
+    
+            assert.equal(witness_hasher[1], witness_registration[2], true);
+            assert.equal(witness_hasher[2], witness_registration[3], true);
+        });
+        
+        it("Should return the same body hash packed as Garanti registration", async () => {
+            const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
+            const input_hasher = JSON.parse(jsonStringHasher);
+            const witness_hasher = await cir_hasher.calculateWitness(
+                input_hasher,
+                true
+            );
+            const input_registration_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
+            const jsonStringRegistration = fs.readFileSync(input_registration_path, "utf8");
+            const input_registration = JSON.parse(jsonStringRegistration);
+            const witness_registration = await cir.calculateWitness(
+                input_registration,
+                true
+            );
+    
+            assert.equal(witness_hasher[3], witness_registration[4], true);
+            assert.equal(witness_hasher[4], witness_registration[5], true);
+        });
+    })
 });

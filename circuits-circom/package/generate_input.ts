@@ -207,7 +207,7 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is max observed body length
     STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as hashing helper circuit
-    MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
+    MAX_INTERMEDIATE_PADDING_LENGTH = 2496; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
