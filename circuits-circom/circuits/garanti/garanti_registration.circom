@@ -176,13 +176,13 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 6067630
+    // TOTAL CONSTRAINTS: 4982806
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 3328 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 2496 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main = GarantiRegistrationEmail(1024, 3328, 121, 17, 7);
+component main = GarantiRegistrationEmail(1024, 2496, 121, 17, 7);
