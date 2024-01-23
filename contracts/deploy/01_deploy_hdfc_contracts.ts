@@ -42,24 +42,24 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("Poseidon6 deployed at ", poseidon6.address);
 
-  // const hdfcRamp = await deploy("HDFCRamp", {
-  //   from: deployer,
-  //   args: [
-  //     deployer,
-  //     usdcAddress,
-  //     getDeployedContractAddress(network, "Poseidon3"),
-  //     poseidon6.address,
-  //     MIN_DEPOSIT_AMOUNT[paymentProvider][network],
-  //     MAX_ONRAMP_AMOUNT[paymentProvider][network],
-  //     INTENT_EXPIRATION_PERIOD[paymentProvider][network],
-  //     ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
-  //     SUSTAINABILITY_FEE[paymentProvider][network],
-  //     SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
-  //       ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
-  //       : deployer,
-  //   ],
-  // });
-  // console.log("HDFCRamp deployed at", hdfcRamp.address);
+  const hdfcRamp = await deploy("HDFCRamp", {
+    from: deployer,
+    args: [
+      deployer,
+      usdcAddress,
+      getDeployedContractAddress(network, "Poseidon3"),
+      poseidon6.address,
+      MIN_DEPOSIT_AMOUNT[paymentProvider][network],
+      MAX_ONRAMP_AMOUNT[paymentProvider][network],
+      INTENT_EXPIRATION_PERIOD[paymentProvider][network],
+      ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
+      SUSTAINABILITY_FEE[paymentProvider][network],
+      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
+        : deployer,
+    ],
+  });
+  console.log("HDFCRamp deployed at", hdfcRamp.address);
 
   const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
     contract: "ManagedKeyHashAdapterV2",
@@ -73,17 +73,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     getDeployedContractAddress(network, "NullifierRegistry")
   );
 
-  // const registrationProcessor = await deploy("HDFCRegistrationProcessor", {
-  //   from: deployer,
-  //   args: [
-  //     hdfcRamp.address,
-  //     keyHashAdapter.address,
-  //     nullifierRegistryContract.address,
-  //     FROM_EMAIL[paymentProvider],
-  //     ZERO
-  //   ],
-  // });
-  // console.log("RegistrationProcessor deployed at", registrationProcessor.address);
+  const registrationProcessor = await deploy("HDFCRegistrationProcessor", {
+    from: deployer,
+    args: [
+      hdfcRamp.address,
+      keyHashAdapter.address,
+      nullifierRegistryContract.address,
+      FROM_EMAIL[paymentProvider],
+      ZERO
+    ],
+  });
+  console.log("RegistrationProcessor deployed at", registrationProcessor.address);
 
   const sendProcessor = await deploy("HDFCSendProcessor", {
     from: deployer,
@@ -98,37 +98,37 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
-  // const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
-  // if (!(await hdfcRampContract.isInitialized())) {
-  //   await hdfcRampContract.initialize(
-  //     registrationProcessor.address,
-  //     sendProcessor.address
-  //   );
+  const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
+  if (!(await hdfcRampContract.isInitialized())) {
+    await hdfcRampContract.initialize(
+      registrationProcessor.address,
+      sendProcessor.address
+    );
   
-  //   console.log("HDFCRamp initialized...");
-  // }
+    console.log("HDFCRamp initialized...");
+  }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
-  // await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
-  // console.log("NullifierRegistry permissions added...");
+  await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
+  console.log("NullifierRegistry permissions added...");
 
-  // console.log("Transferring ownership of contracts...");
-  // await setNewOwner(hre, hdfcRampContract, multiSig);
-  // await setNewOwner(
-  //   hre,
-  //   await ethers.getContractAt("HDFCRegistrationProcessor", registrationProcessor.address),
-  //   multiSig
-  // );
+  console.log("Transferring ownership of contracts...");
+  await setNewOwner(hre, hdfcRampContract, multiSig);
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("HDFCRegistrationProcessor", registrationProcessor.address),
+    multiSig
+  );
   await setNewOwner(
     hre,
     await ethers.getContractAt("HDFCSendProcessor", sendProcessor.address),
     multiSig
   );
-  // await setNewOwner(
-  //   hre,
-  //   await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapter.address),
-  //   multiSig
-  // );
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapter.address),
+    multiSig
+  );
 
   console.log("Deploy finished...");
 };
