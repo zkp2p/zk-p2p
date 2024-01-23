@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import { ArrowLeft, User, Unlock } from 'react-feather';
 import { useLogin, useConnectWallet } from '@privy-io/react-auth';
 
-import { LoginButton } from "@components/common/LoginButton";
+import { LoginTypeButton } from "@components/Account/LoginTypeButton";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
+import { commonStrings } from '@helpers/strings';
 import QuestionHelper from '@components/common/QuestionHelper';
 
 
@@ -74,31 +75,30 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             </button>
           </div>
 
-          
-
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Log in to ZKP2P'}
+            {'Log In'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
+        
         <Logo size={88}>
-            <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+          <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
         </Logo>
 
         <InputsContainer>
-          <LoginButton
+          <LoginTypeButton
             onClick={handleLogin}
             label="Use Email or Google"
-            name={`loginEmail`}
             icon={<StyledUser/>}
             value={"Sign in with Social"}
           />
+
           <HorizontalDivider/>
-          <LoginButton
+
+          <LoginTypeButton
             onClick={handleConnectWallet}
             label="Connect using wallet"
-            name={`connectWallet`}
             icon={<StyledUnlock/>}
             value={"Sign in with Ethereum"}
           />
@@ -108,7 +108,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             {'What is the difference? '}
           </ThemedText.BodySmall> 
           <QuestionHelper
-            text={"Use a social account if you do not have already have funds on the blockchain. Use an Ethereum wallet if you already have one."}
+            text={commonStrings.get('LOGIN_MODAL_TOOLTIP')}
           />
         </TextAndHelperContainer>
       </ModalContainer>
@@ -139,7 +139,6 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 40;
-  gap: 1.3rem;
   top: 25%;
   position: relative;
 `;
@@ -149,7 +148,6 @@ const TitleCenteredRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
   color: #FFF;
 `;
 
@@ -159,16 +157,19 @@ const StyledArrowLeft = styled(ArrowLeft)`
 
 const StyledUser = styled(User)`
   color: #FFF;
+  height: 18px;
+  width: 18px;
 `;
 
 const StyledUnlock = styled(Unlock)`
   color: #FFF;
+  height: 18px;
+  width: 18px;
 `;
 
 const InputsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 `;
 
 const Logo = styled.div<{ size?: number }>`
@@ -177,6 +178,7 @@ const Logo = styled.div<{ size?: number }>`
   color: #ffffff;
   text-decoration: none;
   font-size: 1.2rem;
+  padding: 1.75rem 0rem;
 
   img {
     width: ${({ size }) => size || 32}px;
@@ -192,10 +194,10 @@ const HorizontalDivider = styled.div`
 `;
 
 const TextAndHelperContainer = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   justify-content: center;
-  padding: 0.5rem;
-  width: 100%;
+  padding-top: 1rem;
 `;

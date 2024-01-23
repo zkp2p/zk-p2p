@@ -21,6 +21,9 @@ export interface CommonStrings {
   RELEASE_FUNDS_WARNING_ONE: string,
   RELEASE_FUNDS_WARNING_TWO: string,
 
+  // Login Modal
+  LOGIN_MODAL_TOOLTIP: string,
+
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
 
@@ -98,6 +101,12 @@ const strings: CommonStrings = {
   RELEASE_FUNDS_WARNING_TWO: `
     to the requester. This bypasses requiring the user to submit proof of the transaction
     and may result in loss of funds.
+  `,
+
+  // Login Modal
+  LOGIN_MODAL_TOOLTIP: `
+    Use a social account if you do not have already have funds on the blockchain.
+    Use an Ethereum wallet if you already have one.
   `,
 
   // Pay Modal
