@@ -118,8 +118,8 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     //-------REGEXES----------//
 
     // Garanti subject regex
-    // signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
-    // subject_regex_out === 1;
+    signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
+    subject_regex_out === 1;
 
     // From header V3 regex
     signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
@@ -193,10 +193,6 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // Output packed payment account number
     signal input garanti_payee_acc_num_idx;
-    // signal output reveal_payee_acc_num_packed[max_payee_acc_num_packed_bytes];
-    // for (var i = 0; i < max_payee_acc_num_packed_bytes; i++) {
-    //     reveal_payee_acc_num_packed[i] <== 0;
-    // }
     signal output reveal_payee_acc_num_packed[max_payee_acc_num_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 
         max_payee_acc_num_len, 
@@ -241,7 +237,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5520033
+    // TOTAL CONSTRAINTS: 5606166
 }
 
 
