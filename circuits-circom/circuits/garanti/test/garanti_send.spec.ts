@@ -109,7 +109,7 @@ describe("Garanti send WASM tester", function () {
         );
 
         // This is a workaround to use our divided hasher because no JS SHA256 libraries do not support a precomputed initial state
-        // We test that the precomputed SHA hashed + intermediate body is equal to the expected SHA from the registration circuit
+        // We test that the precomputed SHA hashed + intermediate body is equal to the expected SHA from the send circuit
         
         // Unpack intermediate hash bytes
         let expected_hash_one = packedToBytes(witness[2]);
@@ -311,12 +311,6 @@ describe("Garanti send WASM tester", function () {
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
 
-        // Get expected packed payer name array
-        const regex_start_payer_name = Number(input["garanti_payer_name_idx"]);
-        const regex_start_sub_array_payer_name = input["in_body_padded"].slice(regex_start_payer_name);
-        const regex_end_payer_name = regex_start_sub_array_payer_name.indexOf("60"); // Look for `<` to end the from which is 60 in ascii.
-        const payer_name_array = regex_start_sub_array_payer_name.slice(0, regex_end_payer_name);
-
         // Get expected packed account number array
         const regex_start_mobile_number = Number(input["garanti_payer_mobile_num_idx"]);
         const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
@@ -327,13 +321,10 @@ describe("Garanti send WASM tester", function () {
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
         const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const nameChunkedArray = chunkArray(payer_name_array, 7, 49);
-        const packed_payer_name_array = nameChunkedArray.map((arr, i) => bytesToPacked(arr));
-
         const mobileNumberChunkedArray = chunkArray(mobile_number_array, 7, 7);
         const packed_mobile_number_array = mobileNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const combinedArray = packed_to_email_array.concat(packed_payer_name_array).concat(packed_mobile_number_array);
+        const combinedArray = packed_to_email_array.concat(packed_mobile_number_array);
         const expected_hash = poseidon(combinedArray)
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
@@ -392,7 +383,7 @@ describe("Garanti send WASM tester", function () {
             assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
         });
 
-        it("Should return the packed precomputed SHA equal to output SHA of Garanti registration", async () => {
+        it("Should return the packed precomputed SHA equal to output SHA of Garanti send", async () => {
             const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
@@ -400,19 +391,19 @@ describe("Garanti send WASM tester", function () {
                 input_hasher,
                 true
             );
-            const input_registration_path = path.join(__dirname, "../inputs/input_garanti_send.json");
-            const jsonStringRegistration = fs.readFileSync(input_registration_path, "utf8");
-            const input_registration = JSON.parse(jsonStringRegistration);
-            const witness_registration = await cir.calculateWitness(
-                input_registration,
+            const input_send_path = path.join(__dirname, "../inputs/input_garanti_send.json");
+            const jsonStringSend = fs.readFileSync(input_send_path, "utf8");
+            const input_send = JSON.parse(jsonStringSend);
+            const witness_send = await cir.calculateWitness(
+                input_send,
                 true
             );
     
-            assert.equal(witness_hasher[1], witness_registration[2], true);
-            assert.equal(witness_hasher[2], witness_registration[3], true);
+            assert.equal(witness_hasher[1], witness_send[2], true);
+            assert.equal(witness_hasher[2], witness_send[3], true);
         });
         
-        it("Should return the same body hash packed as Garanti registration", async () => {
+        it("Should return the same body hash packed as Garanti send", async () => {
             const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
@@ -420,16 +411,16 @@ describe("Garanti send WASM tester", function () {
                 input_hasher,
                 true
             );
-            const input_registration_path = path.join(__dirname, "../inputs/input_garanti_send.json");
-            const jsonStringRegistration = fs.readFileSync(input_registration_path, "utf8");
-            const input_registration = JSON.parse(jsonStringRegistration);
-            const witness_registration = await cir.calculateWitness(
-                input_registration,
+            const input_send_path = path.join(__dirname, "../inputs/input_garanti_send.json");
+            const jsonStringSend = fs.readFileSync(input_send_path, "utf8");
+            const input_send = JSON.parse(jsonStringSend);
+            const witness_send = await cir.calculateWitness(
+                input_send,
                 true
             );
     
-            assert.equal(witness_hasher[3], witness_registration[4], true);
-            assert.equal(witness_hasher[4], witness_registration[5], true);
+            assert.equal(witness_hasher[3], witness_send[4], true);
+            assert.equal(witness_hasher[4], witness_send[5], true);
         });
     });
 });

@@ -210,12 +210,6 @@ describe("Garanti registration WASM tester", function () {
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
 
-        // Get expected packed payer name array
-        const regex_start_payer_name = Number(input["garanti_payer_name_idx"]);
-        const regex_start_sub_array_payer_name = input["in_body_padded"].slice(regex_start_payer_name);
-        const regex_end_payer_name = regex_start_sub_array_payer_name.indexOf("60"); // Look for `<` to end the from which is 60 in ascii.
-        const payer_name_array = regex_start_sub_array_payer_name.slice(0, regex_end_payer_name);
-
         // Get expected packed account number array
         const regex_start_mobile_number = Number(input["garanti_payer_mobile_num_idx"]);
         const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
@@ -226,13 +220,10 @@ describe("Garanti registration WASM tester", function () {
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
         const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const nameChunkedArray = chunkArray(payer_name_array, 7, 49);
-        const packed_payer_name_array = nameChunkedArray.map((arr, i) => bytesToPacked(arr));
-
         const mobileNumberChunkedArray = chunkArray(mobile_number_array, 7, 7);
         const packed_mobile_number_array = mobileNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const combinedArray = packed_to_email_array.concat(packed_payer_name_array).concat(packed_mobile_number_array);
+        const combinedArray = packed_to_email_array.concat(packed_mobile_number_array);
         const expected_hash = poseidon(combinedArray)
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);

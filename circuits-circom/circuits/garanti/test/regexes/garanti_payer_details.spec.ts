@@ -64,28 +64,7 @@ describe("Garanti payer details", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
-
-    it("Should reveal first regex correctly", async () => {
-        const input = {
-           "msg": textUtf8ToAsciiArray(
-                "          <p>G&ouml;nderen Bilgileri:<br>\r\n" +
-                "                    <strong>ĞÜÖÇıİçğİ SSŞİşöü<br>Ş BBESEE -  1111<br>1233362</strong></p>\r\n" +
-                "        <p>"
-            )
-        };
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-        const expected = Array(textUtf8ToAsciiArray("          <p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>").length).fill("0")
-            .concat(textUtf8ToAsciiArray("ĞÜÖÇıİçğİ SSŞİşöü"))
-            .concat(Array(textUtf8ToAsciiArray("<br>Ş BBESEE -  1111<br>1233362</strong></p>\r\n        <p>").length).fill("0"))
-        const result = witness.slice(2, input.msg.length + 2);
-
-        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
-    });
-
-    it("Should reveal second regex correctly", async () => {
+    it("Should reveal number regex correctly", async () => {
         const input = {
            "msg": textUtf8ToAsciiArray(
                 "          <p>G&ouml;nderen Bilgileri:<br>\r\n" +
@@ -100,7 +79,7 @@ describe("Garanti payer details", function () {
         const expected = Array(textUtf8ToAsciiArray("          <p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>ĞÜÖÇıİçğİ SSŞİşöü<br>Ş BBESEE -  1111<br>").length).fill("0")
             .concat(textUtf8ToAsciiArray("1233362"))
             .concat(Array(textUtf8ToAsciiArray("</strong></p>\r\n        <p>").length).fill("0"))
-        const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
+        const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
