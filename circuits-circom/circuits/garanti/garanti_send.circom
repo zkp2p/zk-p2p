@@ -99,10 +99,6 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_timestamp_packed_bytes = count_packed(max_timestamp_len, pack_size);
     assert(max_timestamp_packed_bytes < max_header_bytes);
 
-    var max_payer_name_len = 49; // 49 is max length of payer name in the email
-    var max_payer_name_packed_bytes = count_packed(max_payer_name_len, pack_size);
-    assert(max_payer_name_packed_bytes < max_body_bytes);
-
     var max_payer_mobile_num_len = 7; // +90 5XX XXX XXXX, 90 is country code for Turkey, 5XX is mobile phone code, XXX XXXX is subscriber number in the email
     var max_payer_mobile_num_packed_bytes = count_packed(max_payer_mobile_num_len, pack_size);
     assert(max_payer_mobile_num_packed_bytes < max_body_bytes);
@@ -136,7 +132,6 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // Garanti payer details regex
     signal (
         garanti_payer_details_regex_out, 
-        payer_name_regex_reveal[max_body_bytes], 
         payer_mobile_num_regex_reveal[max_body_bytes]
     ) <== GarantiPayerDetailsRegex(max_body_bytes)(in_body_padded);
     garanti_payer_details_regex_out === 1;
@@ -174,14 +169,6 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         max_email_to_len, 
         pack_size
     )(to_regex_reveal, email_to_idx);
-    
-    // Packed payer name (Not an output. Used used to compute onramper id)
-    signal input garanti_payer_name_idx;
-    signal reveal_payer_name_packed[max_payer_name_packed_bytes] <== ShiftAndPackMaskedStr(
-        max_body_bytes, 
-        max_payer_name_len, 
-        pack_size
-    )(payer_name_regex_reveal, garanti_payer_name_idx);
 
     // Packed payer mobile number (Not an output. Used used to compute onramper id)
     signal input garanti_payer_mobile_num_idx;
@@ -210,19 +197,16 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     //-------POSEIDON HASHING----------//
 
-    // Output hashed onramper id = hash(to_packed + payer_name_packed + payer_mobile_num_packed)
-    var max_id_bytes = max_email_to_packed_bytes + max_payer_name_packed_bytes + max_payer_mobile_num_packed_bytes;
+    // Output hashed onramper id = hash(to_packed + payer_mobile_num_packed)
+    var max_id_bytes = max_email_to_packed_bytes + max_payer_mobile_num_packed_bytes;
     assert(max_id_bytes < 16);
     
     component onramper_hash = Poseidon(max_id_bytes);
     for (var i = 0; i < max_email_to_packed_bytes; i++) {
         onramper_hash.inputs[i] <== reveal_email_to_packed[i];
     }
-    for (var i = 0; i < max_payer_name_packed_bytes; i++) {
-        onramper_hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_name_packed[i];
-    }
     for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
-        onramper_hash.inputs[max_email_to_packed_bytes + max_payer_name_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
+        onramper_hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
     }
     signal output onramper_id <== onramper_hash.out;
 
@@ -237,7 +221,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5606166
+    // TOTAL CONSTRAINTS: 5368455
 }
 
 

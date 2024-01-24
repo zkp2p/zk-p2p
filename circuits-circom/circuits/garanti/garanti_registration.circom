@@ -9,8 +9,6 @@ include "../common-v2/regexes/to_regex_v2.circom";
 include "./helpers/email-verifier-header.circom"; // Use local email verifier
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
-include "./regexes/garanti_subject.circom";
-include "./regexes/garanti_payer_details.circom";
 
 template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 2048); // constraints for 2048 bit RSA
@@ -88,10 +86,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     var max_email_to_packed_bytes = count_packed(max_email_to_len, pack_size);
     assert(max_email_to_packed_bytes < max_header_bytes);
 
-    var max_payer_name_len = 49; // 49 is max length of payer name in the email
-    var max_payer_name_packed_bytes = count_packed(max_payer_name_len, pack_size);
-    assert(max_payer_name_packed_bytes < max_body_bytes);
-
     var max_payer_mobile_num_len = 7; // +90 5XX XXX XXXX, 90 is country code for Turkey, 5XX is mobile phone code, XXX XXXX is subscriber number in the email
     var max_payer_mobile_num_packed_bytes = count_packed(max_payer_mobile_num_len, pack_size);
     assert(max_payer_mobile_num_packed_bytes < max_body_bytes);
@@ -113,7 +107,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     // Garanti payer details regex
     signal (
         garanti_payer_details_regex_out, 
-        payer_name_regex_reveal[max_body_bytes], 
         payer_mobile_num_regex_reveal[max_body_bytes]
     ) <== GarantiPayerDetailsRegex(max_body_bytes)(in_body_padded);
     garanti_payer_details_regex_out === 1;
@@ -135,14 +128,6 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         max_email_to_len, 
         pack_size
     )(to_regex_reveal, email_to_idx);
-    
-    // Packed payer name (Not an output. Used used to compute user id)
-    signal input garanti_payer_name_idx;
-    signal reveal_payer_name_packed[max_payer_name_packed_bytes] <== ShiftAndPackMaskedStr(
-        max_body_bytes, 
-        max_payer_name_len, 
-        pack_size
-    )(payer_name_regex_reveal, garanti_payer_name_idx);
 
     // Packed payer mobile number (Not an output. Used used to compute user id)
     signal input garanti_payer_mobile_num_idx;
@@ -154,23 +139,20 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     //-------USER REGISTRATION ID----------//
 
-    // Output hashed registration id = hash(to_packed + payer_name_packed + payer_mobile_num_packed)
-    var max_id_bytes = max_email_to_packed_bytes + max_payer_name_packed_bytes + max_payer_mobile_num_packed_bytes;
+    // Output hashed registration id = hash(to_packed + payer_mobile_num_packed)
+    var max_id_bytes = max_email_to_packed_bytes + max_payer_mobile_num_packed_bytes;
     assert(max_id_bytes < 16);
     
     component hash = Poseidon(max_id_bytes);
     for (var i = 0; i < max_email_to_packed_bytes; i++) {
         hash.inputs[i] <== reveal_email_to_packed[i];
     }
-    for (var i = 0; i < max_payer_name_packed_bytes; i++) {
-        hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_name_packed[i];
-    }
     for (var i = 0; i < max_payer_mobile_num_packed_bytes; i++) {
-        hash.inputs[max_email_to_packed_bytes + max_payer_name_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
+        hash.inputs[max_email_to_packed_bytes + i] <== reveal_payer_mobile_num_packed[i];
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 4974610
+    // TOTAL CONSTRAINTS: 4736899
 }
 
 // Args:

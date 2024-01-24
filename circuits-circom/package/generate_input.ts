@@ -76,7 +76,6 @@ export interface ICircuitInputs {
   paylah_payee_name_idx?: string;
   paylah_payee_mobile_num_idx?: string;
   paylah_payment_id_idx?: string;
-  garanti_payer_name_idx?: string;
   garanti_payer_mobile_num_idx?: string;
   garanti_payee_acc_num_idx?: string;
   garanti_amount_idx?: string;
@@ -502,7 +501,6 @@ export async function getCircuitInputs(
       // garanti specific indices
       email_from_idx,
       email_to_idx,
-      garanti_payer_name_idx,
       garanti_payer_mobile_num_idx
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
@@ -541,7 +539,6 @@ export async function getCircuitInputs(
       'email_from_idx': email_from_idx,
       'email_to_idx': email_to_idx,
       'email_timestamp_idx': email_timestamp_idx,
-      'garanti_payer_name_idx': garanti_payer_name_idx,
       'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx,
       'garanti_payee_acc_num_idx': garanti_payee_acc_num_idx,
       'garanti_amount_idx': garanti_amount_idx
@@ -560,7 +557,6 @@ export async function getCircuitInputs(
       email_from_idx,
       email_to_idx,
       email_timestamp_idx,
-      garanti_payer_name_idx,
       garanti_payer_mobile_num_idx,
       garanti_payee_acc_num_idx,
       garanti_amount_idx,
