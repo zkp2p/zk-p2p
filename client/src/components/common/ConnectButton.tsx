@@ -5,10 +5,11 @@ import Link from '@mui/material/Link';
 import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
 
-import { AccountLogin } from "@components/modals/AccountLogin";
+import { AccountLogin } from "@components/Account/AccountLogin";
 import { Button } from '@components/common/Button';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useBalances from '@hooks/useBalance';
+
 
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
@@ -22,6 +23,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   /*
    * Contexts
    */
+
   const { authenticated, logout } = usePrivy();
   const { disconnect } = useDisconnect();
   const { usdcBalance } = useBalances();
@@ -30,11 +32,13 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   /*
    * State
    */
+
   const [shouldShowAccountLoginModal, setShouldShowAccountLoginModal] = useState<boolean>(false);
 
   /*
-  * Handlers
-  */
+   * Handlers
+   */
+
   const onAccountLoginClick = () => {
     setShouldShowAccountLoginModal(true);
   };
@@ -83,10 +87,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
+                    width={112}
                     onClick={onAccountLoginClick}
                     height={height}
                   >
-                    {currentDeviceSize === 'mobile' ? 'Login' : 'Login'}
+                    {currentDeviceSize === 'mobile' ? 'Log In' : 'Log In'}
                   </Button>
                 );
               }
