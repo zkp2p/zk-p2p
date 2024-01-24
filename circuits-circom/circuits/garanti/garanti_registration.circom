@@ -170,7 +170,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 4982806
+    // TOTAL CONSTRAINTS: 4974610
 }
 
 // Args:
