@@ -80,6 +80,9 @@ export interface ICircuitInputs {
   garanti_payee_acc_num_idx?: string;
   garanti_amount_idx?: string;
   email_date_idx?: string;
+  intermediate_hash?: string[];
+  in_body_suffix_padded?: string[];
+  in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -568,18 +571,17 @@ export async function getCircuitInputs(
     }
 
   } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
-    // TODO: FIX THIS.
-    // const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
-    // const intermediate_hash = base64ToByteArray(body_hash_b64);
+    const intermediate_hash = precomputed_sha;
+    const in_body_suffix_padded = in_body_padded;
+    const in_body_suffix_len_padded_bytes = in_body_len_padded_bytes;
 
     // console.log("decoded body hash: ", JSON.stringify(intermediate_hash));
 
-    // circuitInputs = {
-    //   intermediate_hash,
-    //   precomputed_sha,
-    //   in_body_suffix_padded,
-    //   in_body_suffix_len_padded_bytes,
-    // }
+    circuitInputs = {
+      intermediate_hash,
+      in_body_suffix_padded,
+      in_body_suffix_len_padded_bytes,
+    }
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
