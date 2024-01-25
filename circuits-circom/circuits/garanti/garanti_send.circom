@@ -36,8 +36,6 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal input in_body_len_padded_bytes;
 
     signal output modulus_hash;
-    signal output intermediate_hash_packed[2];
-    signal output body_hash_packed[2];
 
     // DKIM VERIFICATION
     component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k);
@@ -53,37 +51,22 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     //-------HASH INTERMEDIATE----------//
 
-    // This hashes the body after the precomputed SHA, and outputs the intermediate hash to be fed into the final hasher circuit
-    signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
-    component sha_body_bytes[32];
+    // This hashes the body after the precomputed SHA, and outputs the intermediate hash
+    signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    signal intermediate_hash_bytes[32];
+    component bits2Num[32];
     for (var i = 0; i < 32; i++) {
-        sha_body_bytes[i] = Bits2Num(8);
+        bits2Num[i] = Bits2Num(8);
         for (var j = 0; j < 8; j++) {
-            sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
+            bits2Num[i].in[7 - j] <== intermediate_hash_bits[i * 8 + j];
         }
+        intermediate_hash_bytes[i] <== bits2Num[i].out;
     }
 
     //-------PACKING HASHES FOR CALLDATA----------//
 
-    component intermediate_hash_packer[2];
-    for (var i = 0; i < 2; i++) {
-        intermediate_hash_packer[i] = Bytes2Packed(16);
-        for (var j = 0; j < 16; j++) {
-            var idx = i * 16 + j;
-            intermediate_hash_packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
-        }
-        intermediate_hash_packed[i] <== intermediate_hash_packer[i].out;
-    }
-
-    component body_hash_packer[2];
-    for (var i = 0; i < 2; i++) {
-        body_hash_packer[i] = Bytes2Packed(16);
-        for (var j = 0; j < 16; j++) {
-            var idx = i * 16 + j;
-            body_hash_packer[i].in[j] <== EV.sha_b64_out[i * 16 + j];
-        }
-        body_hash_packed[i] <== body_hash_packer[i].out;
-    }
+    signal output intermediate_hash_packed[2] <== PackBytes(32, 2, 16)(intermediate_hash_bytes);
+    signal output body_hash_packed[2] <== PackBytes(32, 2, 16)(EV.sha_b64_out);
 
     //-------CONSTANTS----------//
 
