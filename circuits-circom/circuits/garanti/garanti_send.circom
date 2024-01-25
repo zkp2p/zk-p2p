@@ -106,7 +106,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
     subject_regex_out === 1;
 
-    // From header V3 regex
+    // From header V2 regex
     signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
     from_regex_out === 1;
 
@@ -151,7 +151,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(timestamp_regex_reveal, email_timestamp_idx);
 
-    // Packed to (Not an output. Used used to compute onramper id)
+    // Packed to (Not an output. Used to compute onramper id)
     signal input email_to_idx;
     signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
         max_header_bytes, 
@@ -159,7 +159,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(to_regex_reveal, email_to_idx);
 
-    // Packed payer mobile number (Not an output. Used used to compute onramper id)
+    // Packed payer mobile number (Not an output. Used to compute onramper id)
     signal input garanti_payer_mobile_num_idx;
     signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 

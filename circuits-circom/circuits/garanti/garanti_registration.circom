@@ -87,7 +87,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
     subject_regex_out === 1;
 
-    // From header V3 regex
+    // From header V2 regex
     signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
     from_regex_out === 1;
 
@@ -112,7 +112,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         pack_size
     )(from_regex_reveal, email_from_idx);
 
-    // Packed to (Not an output. Used used to compute user id)
+    // Packed to (Not an output. Used to compute user id)
     signal input email_to_idx;
     signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
         max_header_bytes, 
@@ -120,7 +120,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         pack_size
     )(to_regex_reveal, email_to_idx);
 
-    // Packed payer mobile number (Not an output. Used used to compute user id)
+    // Packed payer mobile number (Not an output. Used to compute user id)
     signal input garanti_payer_mobile_num_idx;
     signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 
