@@ -1,0 +1,8 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "(Entidad:|E=\r\nntidad:|En=\r\ntidad:|Ent=\r\nidad:|Enti=\r\ndad:|Entid=\r\nad:|Entida=\r\nd:|Entidad=\r\n:)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?(<strong>|<=\r\nstrong>|<s=\r\ntrong>|<st=\r\nrong>|<str=\r\nong>|<stro=\r\nng>|<stron=\r\ng>|<strong=\r\n>)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?(Mercado Pago|M=\r\nercado Pago|Me=\r\nrcado Pago|Mer=\r\ncado Pago|Merc=\r\nado Pago|Mercad=\r\no Pago|Mercado=\r\n Pago|Mercado =\r\nPago|Mercado P=\r\nago|Mercado Pa=\r\ngo|Mercado Pag=\r\no)"
+        }
+    ]
+}

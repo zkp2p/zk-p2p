@@ -1,0 +1,12 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "(CVU:|C=\r\nVU:|CV=\r\nU:|CVU=\r\n:)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?(<strong>|<=\r\nstrong>|<s=\r\ntrong>|<st=\r\nrong>|<str=\r\nong>|<stro=\r\nng>|<stron=\r\ng>|<strong=\r\n>)"
+        },
+        {
+            "is_public": true,
+            "regex_def": "(0|1|2|3|4|5|6|7|8|9|\r|\n|=)+"
+        }
+    ]
+}
