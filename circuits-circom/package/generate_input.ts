@@ -105,7 +105,7 @@ export enum CircuitType {
   EMAIL_PAYLAH_SEND = "paylah_send",
   EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
-  EMAIL_GARANTI_DIVIDED_BODY_HASHER = "garanti_divided_hasher",
+  EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
 }
 
@@ -151,7 +151,7 @@ function base64ToByteArray(base64Array) {
   let stringArray = new Array(binaryString.length);
 
   for (let i = 0; i < binaryString.length; i++) {
-      stringArray[i] = binaryString.charCodeAt(i).toString();
+    stringArray[i] = binaryString.charCodeAt(i).toString();
   }
 
   return stringArray;
@@ -174,6 +174,7 @@ export async function getCircuitInputs(
 }> {
   console.log("Starting processing of inputs");
 
+  let MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_HEADER_PADDED_BYTES;
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
   let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
@@ -201,15 +202,17 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
   } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 512;
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
     STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as hashing helper circuit
     MAX_INTERMEDIATE_PADDING_LENGTH = 2496; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 512;
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is max observed body length
     STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as hashing helper circuit
     MAX_INTERMEDIATE_PADDING_LENGTH = 2496; // For divided circuits, we calculate what the padded intermediate length should be
-  } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
+  } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
   }
@@ -231,7 +234,7 @@ export async function getCircuitInputs(
   // Sha add padding
   // 65 comes from the 64 at the end and the 1 bit in the start, then 63 comes from the formula to round it up to the nearest 64. see sha256algorithm.com for a more full explanation of paddnig length
   const calc_length = Math.floor((body.length + 63 + 65) / 64) * 64;
-  const [messagePadded, messagePaddedLen] = await sha256Pad(prehashBytesUnpadded, MAX_HEADER_PADDED_BYTES);
+  const [messagePadded, messagePaddedLen] = await sha256Pad(prehashBytesUnpadded, MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE);
   const [bodyPadded, bodyPaddedLen] = await sha256Pad(body, Math.max(MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE, calc_length));
 
   // Convet messagePadded to string to print the specific header data that is signed
@@ -464,14 +467,14 @@ export async function getCircuitInputs(
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
     let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
-    
+
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
-   
+
     const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
     const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
     console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
-    
+
     // Regexes
     const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
     const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
@@ -508,10 +511,10 @@ export async function getCircuitInputs(
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
     let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
-    
+
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
-   
+
     const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
     const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
     console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
@@ -564,18 +567,19 @@ export async function getCircuitInputs(
       intent_hash,
     }
 
-  } else if (circuit == CircuitType.EMAIL_GARANTI_DIVIDED_BODY_HASHER) {
-    const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
-    const expected_sha = base64ToByteArray(body_hash_b64);
+  } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
+    // TODO: FIX THIS.
+    // const body_hash_b64 = in_padded.slice(Number(body_hash_idx), Number(body_hash_idx) + 44);
+    // const intermediate_hash = base64ToByteArray(body_hash_b64);
 
-    console.log("decoded body hash: ", JSON.stringify(expected_sha));
-    
-    circuitInputs = {
-      expected_sha,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-    }
+    // console.log("decoded body hash: ", JSON.stringify(intermediate_hash));
+
+    // circuitInputs = {
+    //   intermediate_hash,
+    //   precomputed_sha,
+    //   in_body_suffix_padded,
+    //   in_body_suffix_len_padded_bytes,
+    // }
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
