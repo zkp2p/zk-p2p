@@ -9,7 +9,7 @@ include "../utils/email_nullifier.circom";
 include "../utils/hash_sign_gen_rand.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
-include "./helpers/email-verifier-header.circom"; // Use local email verifier
+include "../common-v2/regexes/body_hash_regex_v2.circom";
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
 include "./regexes/garanti_payment_details.circom";
@@ -38,16 +38,15 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output modulus_hash;
 
     // DKIM VERIFICATION
-    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k);
+    var ignore_body_hash_check = 1; // Ignore body hash check
+    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, ignore_body_hash_check);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
-    EV.body_hash_idx <== body_hash_idx;
     EV.in_len_padded_bytes <== in_len_padded_bytes;
 
-    signal header_hash[256] <== EV.sha;
-
     modulus_hash <== EV.pubkey_hash;
+    signal header_hash[256] <== EV.sha;
 
     //-------HASH INTERMEDIATE----------//
 
@@ -62,11 +61,18 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         }
         intermediate_hash_bytes[i] <== bits2Num[i].out;
     }
-
-    //-------PACKING HASHES FOR CALLDATA----------//
-
+    // Pack intermediate hash for calldata
     signal output intermediate_hash_packed[2] <== PackBytes(32, 2, 16)(intermediate_hash_bytes);
-    signal output body_hash_packed[2] <== PackBytes(32, 2, 16)(EV.sha_b64_out);
+
+    //-------BODY HASH V2 REGEX----------//
+
+    var LEN_SHA_B64 = 44;     // ceil(32 / 3) * 4, due to base64 encoding.
+    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegexV2(max_header_bytes)(in_padded);
+    bh_regex_out === 1;
+    signal shifted_bh_out[LEN_SHA_B64] <== VarShiftMaskedStr(max_header_bytes, LEN_SHA_B64)(bh_reveal, body_hash_idx);
+    
+    signal sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);    
+    signal output body_hash_packed[2] <== PackBytes(32, 2, 16)(sha_b64_out);
 
     //-------CONSTANTS----------//
 
