@@ -38,6 +38,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const {
     refetchDeposits: refetchVenmoDeposits,
     getBestDepositForAmount: getBestVenmoDepositForAmount,
+    getDepositForMaxAvailableTransferSize: getVenmoDepositForMaxAvailableTransferSize,
     shouldFetchDeposits: shouldFetchVenmoDeposits
   } = useLiquidity();
   const {
@@ -61,6 +62,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const {
     refetchDeposits: refetchHdfcDeposits,
     getBestDepositForAmount: getBestHdfcDepositForAmount,
+    getDepositForMaxAvailableTransferSize: getHdfcDepositForMaxAvailableTransferSize,
     shouldFetchDeposits: shouldFetchHdfcDeposits
   } = useHdfcLiquidity();
   const {
@@ -85,6 +87,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
   const [refetchDeposits, setRefetchDeposits] = useState<(() => void) | null>(null);
   const [getBestDepositForAmount, setGetBestDepositForAmount] = useState<((requestedOnRampInputAmount: string) => IndicativeQuote) | null>(null);
+  const [getDepositForMaxAvailableTransferSize, setGetDepositForMaxAvailableTransferSize] = useState<(() => IndicativeQuote) | null>(null);
   const [shouldFetchDeposits, setShouldFetchDeposits] = useState<boolean>(false);
 
   const [refetchDepositCounter, setRefetchDepositCounter] = useState<(() => void) | null>(null);
@@ -211,6 +214,26 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentPlatform, getBestVenmoDepositForAmount, getBestHdfcDepositForAmount]);
+
+  useEffect(() => {
+    esl && console.log('getVenmoDepositForMaxAvailableTransferSize: ', getVenmoDepositForMaxAvailableTransferSize);
+    esl && console.log('getHdfcDepositForMaxAvailableTransferSize: ', getHdfcDepositForMaxAvailableTransferSize);
+
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setGetDepositForMaxAvailableTransferSize(() => getVenmoDepositForMaxAvailableTransferSize as any);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setGetDepositForMaxAvailableTransferSize(() => getHdfcDepositForMaxAvailableTransferSize as any);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, getVenmoDepositForMaxAvailableTransferSize, getHdfcDepositForMaxAvailableTransferSize]);
 
   useEffect(() => {
     esl && console.log('shouldFetchVenmoDeposits: ', shouldFetchVenmoDeposits);
@@ -406,6 +429,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         registrationHash,
         refetchDeposits,
         getBestDepositForAmount,
+        getDepositForMaxAvailableTransferSize,
         shouldFetchDeposits,
         currentIntentHash,
         refetchIntentHash,

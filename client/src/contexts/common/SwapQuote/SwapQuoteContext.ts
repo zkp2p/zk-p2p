@@ -8,6 +8,7 @@ interface SwapQuoteValues {
   registrationHash: string | null;
   refetchDeposits: (() => void) | null;
   getBestDepositForAmount: ((requestedOnRampInputAmount: string, onRamperRegistrationHash: string) => IndicativeQuote) | null;
+  getDepositForMaxAvailableTransferSize: ((onRamperRegistrationHash: string) => IndicativeQuote) | null;
   shouldFetchDeposits: boolean;
   refetchDepositCounter: (() => void) | null;
   shouldFetchRampState: boolean;
@@ -25,6 +26,7 @@ const defaultValues: SwapQuoteValues = {
   registrationHash: null,
   refetchDeposits: null,
   getBestDepositForAmount: null,
+  getDepositForMaxAvailableTransferSize: null,
   shouldFetchDeposits: false,
   refetchDepositCounter: null,
   shouldFetchRampState: false,
