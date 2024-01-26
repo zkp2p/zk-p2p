@@ -82,8 +82,6 @@ export const fetchDepositForMaxAvailableTransferSize = (
   let largestAvailableDeposit: StoredDeposit | null = null;
   let largestAmount: bigint = BigInt(0);
 
-  console.log('called: fetchDepositForMaxAvailableTransferSize');
-
   for (const deposit of depositStore) {
     const isUserDepositor = deposit.depositorIdHash === userCurrentIdHash;
     const isSufficientLiquidity = deposit.availableLiquidity >= maxAmount;
