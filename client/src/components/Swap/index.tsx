@@ -371,6 +371,15 @@ const SwapForm: React.FC<SwapFormProps> = ({
     navigate('/register');
   };
 
+  const setInputToMax = () => {
+    setCurrentQuote(prevState => ({
+      ...prevState,
+      requestedUSDC: toUsdcString(maxTransferSize, true),
+      conversionRate: ZERO,
+      fiatToSend: '',
+    }));
+  };
+
   /*
    * Helpers
    */
@@ -465,6 +474,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
             onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
             accessoryLabel={usdcBalanceLabel}
+            accessoryButtonLabel="Max"
+            onAccessoryButtonClick={setInputToMax}
             placeholder="0"
           />
           <Input
