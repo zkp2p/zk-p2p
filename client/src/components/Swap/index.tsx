@@ -378,8 +378,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   const setInputToMax = () => {
     let maxQuote: IndicativeQuote;
-    if (registrationHash && getDepositForMaxAvailableTransferSize) {
-      maxQuote = getDepositForMaxAvailableTransferSize(registrationHash);
+    if (getDepositForMaxAvailableTransferSize) {
+      const registrationHashForQuote = EMPTY_STRING;
+      maxQuote = getDepositForMaxAvailableTransferSize(registrationHashForQuote);
     } else {
       maxQuote = { error: 'No deposits available' } as IndicativeQuote;
     }

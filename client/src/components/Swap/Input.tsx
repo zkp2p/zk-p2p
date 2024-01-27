@@ -73,13 +73,13 @@ export const Input: React.FC<InputProps> = ({
       </LabelInputAndAccessoryContainer>
       
       <AccessoryContainer alignment={accessoryLabelAlignment}>
-        <AccessoryLabel>
-          {accessoryLabel}
-        </AccessoryLabel>
-
         <AccessoryTextButton onClick={onAccessoryButtonClick}>
           {accessoryButtonLabel}
         </AccessoryTextButton>
+
+        <AccessoryLabel>
+          {accessoryLabel}
+        </AccessoryLabel>
       </AccessoryContainer>
     </Container>
   );
@@ -180,7 +180,7 @@ const AccessoryContainer = styled.div<{ alignment?: string, accessoryButtonLabel
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: ${({ alignment }) => alignment === 'right' ? 'flex-end' : 'flex-start'};
+  justify-content: ${({ alignment }) => alignment === 'right' ? 'space-between' : 'flex-start'};
 `;
 
 const AccessoryLabel = styled.div`
@@ -192,7 +192,6 @@ const AccessoryLabel = styled.div`
 const AccessoryTextButton = styled.div`
   color: #FFFFFF;
   cursor: pointer;
-  padding: 0px 6px;
   font-size: 14px;
   font-weight: 600;
 `;
