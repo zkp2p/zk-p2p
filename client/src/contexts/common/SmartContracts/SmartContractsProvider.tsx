@@ -57,12 +57,12 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('smartContracts_1');
-    esl && console.log('checking network: ', network);
-    esl && console.log('isLoggedIn: ', isLoggedIn);
-    esl && console.log('accountStatus: ', accountStatus);
-    esl && console.log('connectStatus: ', connectStatus);
-    esl && console.log('disconnectStatus: ', disconnectStatus);
+    console.log('smartContracts_1');
+    console.log('checking network: ', network);
+    console.log('isLoggedIn: ', isLoggedIn);
+    console.log('accountStatus: ', accountStatus);
+    console.log('connectStatus: ', connectStatus);
+    console.log('disconnectStatus: ', disconnectStatus);
 
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
@@ -72,13 +72,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
       const isConnectStatusValid = connectStatus === 'idle';
       const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
 
-      // console.log('accountStatus: ', accountStatus);
-      // console.log('connectStatus: ', connectStatus);
-      // console.log('disconnectStatus: ', disconnectStatus);
-
       const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
-
-      // console.log('validLoggedInState: ', validLoggedInState);
 
       if (validLoggedInState) {
         networkToUse = network;
@@ -86,15 +80,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     } else {
       const isAccountStatusValid = accountStatus === 'disconnected';
       const isConnectStatusValid = connectStatus === 'idle';
-      const isDisconnectStatusValid = disconnectStatus === 'idle';
-
-      // console.log('accountStatus: ', accountStatus);
-      // console.log('connectStatus: ', connectStatus);
-      // console.log('disconnectStatus: ', disconnectStatus);
+      const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
 
       const validLoggedOutState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
-
-      // console.log('validLoggedOutState: ', validLoggedOutState);
 
       if (validLoggedOutState) {
         networkToUse = DEFAULT_NETWORK;
