@@ -247,8 +247,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [shouldFetchRampState, refetchDepositCounter]);
 
   useEffect(() => {
-    console.log('called fetchUsdAmountToSendAndVerifyOrder');
-
     const fetchUsdAmountToSendAndVerifyOrder = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
       const isRequestedUsdcAmountPositive = requestedUsdcAmount !== '0';
@@ -257,7 +255,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
 
       if (isValidRequestedUsdcAmount) {
-        const indicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
+        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
         
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
@@ -330,7 +328,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       registrationHash,
       isLoggedIn,
       isRegistered,
-      maxTransferSize,
+      maxTransferSize
     ]
   );
 
@@ -486,9 +484,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             label="Requesting"
             name={`requestedUSDC`}
             value={currentQuote.requestedUSDC}
-            onChange={event => {
-              handleInputChange(event, 'requestedUSDC');
-            }}
+            onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
             accessoryLabel={usdcBalanceLabel}
             accessoryButtonLabel="Max"
