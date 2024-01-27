@@ -74,6 +74,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     registrationHash,
     refetchDeposits,
     getBestDepositForAmount,
+    getDepositForMaxAvailableTransferSize,
     shouldFetchDeposits,
     refetchDepositCounter,
     shouldFetchRampState,
@@ -92,6 +93,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   const [quoteState, setQuoteState] = useState(QuoteState.DEFAULT);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>(ZERO_QUOTE);
+  const [didRequestMaxQuote, setDidRequestMaxQuote] = useState<boolean>(false);
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
 
@@ -182,6 +184,10 @@ const SwapForm: React.FC<SwapFormProps> = ({
     onSuccess(data: any) {
       console.log('writeSubmitIntentAsync successful: ', data);
 
+      setShouldConfigureSignalIntentWrite(false);
+      setCurrentQuote(ZERO_QUOTE);
+      setDidRequestMaxQuote(false);
+
       refetchIntentHash?.();
       refetchLastOnRampTimestamp?.();
 
@@ -249,23 +255,38 @@ const SwapForm: React.FC<SwapFormProps> = ({
       const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
       const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
 
-      if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
-        const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
+      if (getBestDepositForAmount && getDepositForMaxAvailableTransferSize && (isValidRequestedUsdcAmount || didRequestMaxQuote)) {
+        let indicativeQuote: IndicativeQuote;
+        if (didRequestMaxQuote) {
+          indicativeQuote = await getDepositForMaxAvailableTransferSize(registrationHashForQuote);
+        } else {
+          indicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
+        }
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
+        const usdcAmount = indicativeQuote.maxUSDCAmountAvailable;
 
         const isAmountToSendValid = usdAmountToSend !== undefined;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
         if (isAmountToSendValid && isDepositIdValid && isConversionRateValid) {
-          setCurrentQuote(prevState => ({
-            ...prevState,
-            fiatToSend: usdAmountToSend,
-            depositId,
-            conversionRate,
-          }));
+          if (usdcAmount !== undefined) {
+            setCurrentQuote({
+              requestedUSDC: usdcAmount,
+              fiatToSend: usdAmountToSend,
+              depositId,
+              conversionRate,
+            });
+          } else {
+            setCurrentQuote(prevState => ({
+              ...prevState,
+              fiatToSend: usdAmountToSend,
+              depositId,
+              conversionRate,
+            }));
+          }
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
           if (doesNotHaveOpenIntent) {
@@ -316,6 +337,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [
       currentQuote.requestedUSDC,
       getBestDepositForAmount,
+      getDepositForMaxAvailableTransferSize,
       currentIntentHash,
       lastOnRampTimestamp,
       onRampCooldownPeriod,
@@ -323,7 +345,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
       registrationHash,
       isLoggedIn,
       isRegistered,
-      maxTransferSize
+      maxTransferSize,
+      didRequestMaxQuote,
     ]
   );
 
@@ -372,12 +395,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
   };
 
   const setInputToMax = () => {
-    setCurrentQuote(prevState => ({
-      ...prevState,
-      requestedUSDC: toUsdcString(maxTransferSize, true),
-      conversionRate: ZERO,
-      fiatToSend: '',
-    }));
+    if (!didRequestMaxQuote) {
+      setDidRequestMaxQuote(true);
+    }
   };
 
   /*
@@ -471,7 +491,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
             label="Requesting"
             name={`requestedUSDC`}
             value={currentQuote.requestedUSDC}
-            onChange={event => handleInputChange(event, 'requestedUSDC')}
+            onChange={event => {
+              handleInputChange(event, 'requestedUSDC');
+
+              setDidRequestMaxQuote(false);
+            }}
             type="number"
             accessoryLabel={usdcBalanceLabel}
             accessoryButtonLabel="Max"
