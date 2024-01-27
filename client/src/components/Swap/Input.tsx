@@ -73,13 +73,14 @@ export const Input: React.FC<InputProps> = ({
       </LabelInputAndAccessoryContainer>
       
       <AccessoryContainer alignment={accessoryLabelAlignment}>
+        <AccessoryLabel>
+          {accessoryLabel}
+        </AccessoryLabel>
+
         <AccessoryTextButton onClick={onAccessoryButtonClick}>
           {accessoryButtonLabel}
         </AccessoryTextButton>
 
-        <AccessoryLabel>
-          {accessoryLabel}
-        </AccessoryLabel>
       </AccessoryContainer>
     </Container>
   );
@@ -193,5 +194,6 @@ const AccessoryTextButton = styled.div`
   color: #FFFFFF;
   cursor: pointer;
   font-size: 14px;
+  padding-right: 12px;
   font-weight: 600;
 `;

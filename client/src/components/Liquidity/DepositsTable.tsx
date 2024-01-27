@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
+import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
@@ -12,6 +13,7 @@ import { ThemedText } from '@theme/text';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useAccount from '@hooks/useAccount';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 const ROWS_PER_PAGE = 10;
@@ -44,6 +46,10 @@ export const DepositsTable: React.FC = () => {
     isLoggedIn
   } = useAccount();
 
+  const {
+    paymentPlatform
+  } = usePlatformSettings();
+
   /*
    * State
    */
@@ -57,20 +63,23 @@ export const DepositsTable: React.FC = () => {
    */
 
   useEffect(() => {
-    let combinedDepositStore: DepositWithAvailableLiquidity[] = [];
-    if (venmoDepositStore && hdfcDepositStore) {
-      combinedDepositStore = [...venmoDepositStore, ...hdfcDepositStore];
-    } else if (venmoDepositStore) {
-      combinedDepositStore = venmoDepositStore;
-    } else if (hdfcDepositStore) {
-      combinedDepositStore = hdfcDepositStore;
+    let depositStoreToDisplay: DepositWithAvailableLiquidity[] = [];
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        depositStoreToDisplay = venmoDepositStore ?? [];
+        break;
+      case PaymentPlatform.HDFC:
+        depositStoreToDisplay = hdfcDepositStore ?? [];
+        break;
+      default:
+        break;
     }
 
-    if (combinedDepositStore.length === 0) {
+    if (depositStoreToDisplay.length === 0) {
       setPositionsRowData([]);  
     } else {
       var sanitizedDeposits: DepositPrime[] = [];
-      sanitizedDeposits = combinedDepositStore.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedDeposits = depositStoreToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
         const deposit = depositWithLiquidity.deposit
         const platformType = deposit.platformType
         const depositor = deposit.depositor;
@@ -91,7 +100,7 @@ export const DepositsTable: React.FC = () => {
 
       setPositionsRowData(sanitizedDeposits);
     }
-  }, [venmoDepositStore, hdfcDepositStore]);
+  }, [venmoDepositStore, hdfcDepositStore, paymentPlatform]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -127,6 +136,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
+        <PlatformSelector />
       </TitleRow>
 
       <Content>
