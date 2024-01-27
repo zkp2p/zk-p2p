@@ -5,6 +5,7 @@ import styled from "styled-components";
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
+import { CLIENT_VERSION } from '@helpers/constants';
 import { ThemedText } from '@theme/text';
 
 
@@ -89,7 +90,7 @@ export const MenuDropdown = () => {
             />
 
             <VersionLabel>
-              v0.2.0
+              v{CLIENT_VERSION}
             </VersionLabel>
           </IconRow>
         </NavDropdown>
