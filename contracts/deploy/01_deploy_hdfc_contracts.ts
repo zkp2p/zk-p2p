@@ -88,7 +88,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const sendProcessor = await deploy("HDFCSendProcessor", {
     from: deployer,
     args: [
-      hdfcRamp.address,
+      getDeployedContractAddress(network, "HDFCRamp"),
       keyHashAdapter.address,
       nullifierRegistryContract.address,
       FROM_EMAIL[paymentProvider],

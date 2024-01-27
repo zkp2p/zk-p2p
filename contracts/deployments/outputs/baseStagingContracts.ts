@@ -1845,7 +1845,7 @@ export default {
       ]
     },
     "HDFCSendProcessor": {
-      "address": "0x5b29E9C2A8c21d4B671b8AC7BDE5b60cb421c12A",
+      "address": "0xD49470bb17776a51472B05c617e06538e8465bB5",
       "abi": [
         {
           "inputs": [
@@ -1868,6 +1868,11 @@ export default {
               "internalType": "string",
               "name": "_emailFromAddress",
               "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
             }
           ],
           "stateMutability": "nonpayable",
@@ -2081,6 +2086,32 @@ export default {
           "name": "setMailserverKeyHashAdapter",
           "outputs": [],
           "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
+            }
+          ],
+          "name": "setTimestampBuffer",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "timestampBuffer",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
           "type": "function"
         },
         {
