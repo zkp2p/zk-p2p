@@ -26,7 +26,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    * Context
    */
 
-  const { network, isLoggedIn, accountStatus, connectStatus, disconnectStatus } = useAccount();
+  const { network, isLoggedIn, accountStatus } = useAccount();
 
   /*
    * State
@@ -57,34 +57,22 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('smartContracts_1');
-    console.log('checking network: ', network);
-    console.log('isLoggedIn: ', isLoggedIn);
-    console.log('accountStatus: ', accountStatus);
-    console.log('connectStatus: ', connectStatus);
-    console.log('disconnectStatus: ', disconnectStatus);
+    esl && console.log('smartContracts_1');
+    esl && console.log('checking network: ', network);
+    esl && console.log('isLoggedIn: ', isLoggedIn);
+    esl && console.log('accountStatus: ', accountStatus);
 
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
     let networkToUse = null;
     if (isLoggedIn) {
       const isAccountStatusValid = accountStatus === 'connected';
-      const isConnectStatusValid = connectStatus === 'idle';
-      const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
-
-      const validLoggedInState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
-
-      if (validLoggedInState) {
+      if (isAccountStatusValid) {
         networkToUse = network;
       }
     } else {
       const isAccountStatusValid = accountStatus === 'disconnected';
-      const isConnectStatusValid = connectStatus === 'idle';
-      const isDisconnectStatusValid = disconnectStatus === 'success' || disconnectStatus === 'idle';
-
-      const validLoggedOutState = isAccountStatusValid && isConnectStatusValid && isDisconnectStatusValid;
-
-      if (validLoggedOutState) {
+      if (isAccountStatusValid) {
         networkToUse = DEFAULT_NETWORK;
       }
     }
@@ -114,7 +102,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     } else {
       setEmptyAddresses();
     }
-  }, [network, isLoggedIn, accountStatus, connectStatus, disconnectStatus]);
+  }, [network, isLoggedIn, accountStatus]);
 
   /*
    * Helpers
