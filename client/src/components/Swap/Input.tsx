@@ -181,7 +181,6 @@ const AccessoryContainer = styled.div<{ alignment?: string, accessoryButtonLabel
   flex-direction: row;
   align-items: center;
   justify-content: ${({ alignment }) => alignment === 'right' ? 'flex-end' : 'flex-start'};
-  gap: 4px;
 `;
 
 const AccessoryLabel = styled.div`
@@ -191,8 +190,9 @@ const AccessoryLabel = styled.div`
 `;
 
 const AccessoryTextButton = styled.div`
-  color: #CED4DA;
+  color: #FFFFFF;
   cursor: pointer;
+  padding: 0px 4px;
   font-size: 14px;
-  font-weight: 660;
+  font-weight: 600;
 `;
