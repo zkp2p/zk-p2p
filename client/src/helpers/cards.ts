@@ -1,7 +1,7 @@
 export const MAIN_CARDS = [
 	{
 		title: 'Get Started',
-		description: 'Buy and sell USDC on-chain using Venmo and UPI. Entirely peer-to-peer.',
+		description: 'Receive USDC on-chain using Venmo and UPI. Entirely peer-to-peer.',
 		cta: 'Go to the App',
 		navigateTo: '/swap',
 	},
@@ -16,7 +16,7 @@ export const MAIN_CARDS = [
 export const SECONDARY_CARDS = [
 	{
 		title: 'Fast',
-		description: 'Get your USD on-chain fast using Venmo and the magic of zero knowledge proofs',
+		description: 'Get your fiat on-chain fast using the magic of zero knowledge proofs',
 		icon: 'lightning',
 	},
 	{
@@ -25,8 +25,8 @@ export const SECONDARY_CARDS = [
 		icon: 'cash',
 	},
 	{
-		title: 'Permissionless',
-		description: 'Global from day one, anyone can interact or integrate with the protocol',
+		title: 'Open',
+		description: 'Available to anyone with an account on integrated payment networks',
 		icon: 'padlock',
 	},
 ];

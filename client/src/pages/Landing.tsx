@@ -76,7 +76,7 @@ export const Landing: React.FC = () => {
 
           <SubHeaderContainer>
             <ThemedText.SubHeaderLarge style={{ textAlign: 'center', lineHeight: '1.3', fontSize: currentDeviceSize === 'mobile' ? 20 : 24 }}>
-              Completely peer-to-peer without trusting anyone
+              Completely peer-to-peer leveraging everyday payment networks
             </ThemedText.SubHeaderLarge>
           </SubHeaderContainer>
 
