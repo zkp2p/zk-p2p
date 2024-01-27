@@ -64,5 +64,5 @@ export const RemoteProofGenEmailTypes = {
     SEND: "send",
 };
 
-const ENABLE_STATE_LOGGING = true;
+const ENABLE_STATE_LOGGING = false;
 export const esl = ENABLE_STATE_LOGGING;

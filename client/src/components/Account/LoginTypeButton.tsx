@@ -48,7 +48,7 @@ const Container = styled.button`
   display: flex;
   flex-direction: row;
   gap: 1.5rem;
-  padding: 16px 24px;
+  padding: 16px 20px 16px 24px;
   border-radius: 16px;
   border: 1px solid #98a1c03d;
   background-color: #131A2A;
