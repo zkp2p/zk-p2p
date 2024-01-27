@@ -93,7 +93,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   const [quoteState, setQuoteState] = useState(QuoteState.DEFAULT);
   const [currentQuote, setCurrentQuote] = useState<SwapQuote>(ZERO_QUOTE);
-  const [didRequestMaxQuote, setDidRequestMaxQuote] = useState<boolean>(false);
 
   const [recipientAddress, setRecipientAddress] = useState<string>('');
 
@@ -186,7 +185,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
       setShouldConfigureSignalIntentWrite(false);
       setCurrentQuote(ZERO_QUOTE);
-      setDidRequestMaxQuote(false);
 
       refetchIntentHash?.();
       refetchLastOnRampTimestamp?.();
@@ -249,48 +247,36 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [shouldFetchRampState, refetchDepositCounter]);
 
   useEffect(() => {
+    console.log('called fetchUsdAmountToSendAndVerifyOrder');
+
     const fetchUsdAmountToSendAndVerifyOrder = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
-      const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
+      const isRequestedUsdcAmountPositive = requestedUsdcAmount !== '0';
+      const isValidRequestedUsdcAmount = getBestDepositForAmount && requestedUsdcAmount && isRequestedUsdcAmountPositive;
       const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
       const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
 
-      if (getBestDepositForAmount && getDepositForMaxAvailableTransferSize && (isValidRequestedUsdcAmount || didRequestMaxQuote)) {
-        let indicativeQuote: IndicativeQuote;
-        if (didRequestMaxQuote) {
-          indicativeQuote = await getDepositForMaxAvailableTransferSize(registrationHashForQuote);
-        } else {
-          indicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
-        }
+      if (isValidRequestedUsdcAmount) {
+        const indicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
+        
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
-        const usdcAmount = indicativeQuote.maxUSDCAmountAvailable;
 
         const isAmountToSendValid = usdAmountToSend !== undefined;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
         if (isAmountToSendValid && isDepositIdValid && isConversionRateValid) {
-          if (usdcAmount !== undefined) {
-            setCurrentQuote({
-              requestedUSDC: usdcAmount,
-              fiatToSend: usdAmountToSend,
-              depositId,
-              conversionRate,
-            });
-          } else {
-            setCurrentQuote(prevState => ({
-              ...prevState,
-              fiatToSend: usdAmountToSend,
-              depositId,
-              conversionRate,
-            }));
-          }
+          setCurrentQuote(prevState => ({
+            ...prevState,
+            fiatToSend: usdAmountToSend,
+            depositId,
+            conversionRate,
+          }));
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
           if (doesNotHaveOpenIntent) {
-
             const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
             const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
@@ -337,7 +323,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [
       currentQuote.requestedUSDC,
       getBestDepositForAmount,
-      getDepositForMaxAvailableTransferSize,
       currentIntentHash,
       lastOnRampTimestamp,
       onRampCooldownPeriod,
@@ -346,7 +331,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
       isLoggedIn,
       isRegistered,
       maxTransferSize,
-      didRequestMaxQuote,
     ]
   );
 
@@ -395,8 +379,19 @@ const SwapForm: React.FC<SwapFormProps> = ({
   };
 
   const setInputToMax = () => {
-    if (!didRequestMaxQuote) {
-      setDidRequestMaxQuote(true);
+    let maxQuote: IndicativeQuote;
+    if (registrationHash && getDepositForMaxAvailableTransferSize) {
+      maxQuote = getDepositForMaxAvailableTransferSize(registrationHash);
+    } else {
+      maxQuote = { error: 'No deposits available' } as IndicativeQuote;
+    }
+
+    const usdcAmount = maxQuote.maxUSDCAmountAvailable;
+    if (usdcAmount !== undefined) {
+      setCurrentQuote(prevState => ({
+        ...prevState,
+        requestedUSDC: usdcAmount,
+      }));
     }
   };
 
@@ -493,8 +488,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
             value={currentQuote.requestedUSDC}
             onChange={event => {
               handleInputChange(event, 'requestedUSDC');
-
-              setDidRequestMaxQuote(false);
             }}
             type="number"
             accessoryLabel={usdcBalanceLabel}

@@ -192,7 +192,7 @@ const AccessoryLabel = styled.div`
 const AccessoryTextButton = styled.div`
   color: #FFFFFF;
   cursor: pointer;
-  padding: 0px 4px;
+  padding: 0px 6px;
   font-size: 14px;
   font-weight: 600;
 `;
