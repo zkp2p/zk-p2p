@@ -74,6 +74,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     registrationHash,
     refetchDeposits,
     getBestDepositForAmount,
+    getDepositForMaxAvailableTransferSize,
     shouldFetchDeposits,
     refetchDepositCounter,
     shouldFetchRampState,
@@ -182,6 +183,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
     onSuccess(data: any) {
       console.log('writeSubmitIntentAsync successful: ', data);
 
+      setShouldConfigureSignalIntentWrite(false);
+      setCurrentQuote(ZERO_QUOTE);
+
       refetchIntentHash?.();
       refetchLastOnRampTimestamp?.();
 
@@ -245,12 +249,14 @@ const SwapForm: React.FC<SwapFormProps> = ({
   useEffect(() => {
     const fetchUsdAmountToSendAndVerifyOrder = async () => {
       const requestedUsdcAmount = currentQuote.requestedUSDC;
-      const isValidRequestedUsdcAmount = requestedUsdcAmount && requestedUsdcAmount !== '0';
+      const isRequestedUsdcAmountPositive = requestedUsdcAmount !== '0';
+      const isValidRequestedUsdcAmount = getBestDepositForAmount && requestedUsdcAmount && isRequestedUsdcAmountPositive;
       const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
       const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
 
-      if (getBestDepositForAmount && isValidRequestedUsdcAmount) {
+      if (isValidRequestedUsdcAmount) {
         const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);
+        
         const usdAmountToSend = indicativeQuote.usdAmountToSend;
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
@@ -269,7 +275,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
           if (doesNotHaveOpenIntent) {
-
             const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
             const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
@@ -371,6 +376,23 @@ const SwapForm: React.FC<SwapFormProps> = ({
     navigate('/register');
   };
 
+  const setInputToMax = () => {
+    let maxQuote: IndicativeQuote;
+    if (registrationHash && getDepositForMaxAvailableTransferSize) {
+      maxQuote = getDepositForMaxAvailableTransferSize(registrationHash);
+    } else {
+      maxQuote = { error: 'No deposits available' } as IndicativeQuote;
+    }
+
+    const usdcAmount = maxQuote.maxUSDCAmountAvailable;
+    if (usdcAmount !== undefined) {
+      setCurrentQuote(prevState => ({
+        ...prevState,
+        requestedUSDC: usdcAmount,
+      }));
+    }
+  };
+
   /*
    * Helpers
    */
@@ -465,6 +487,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
             onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
             accessoryLabel={usdcBalanceLabel}
+            accessoryButtonLabel="Max"
+            onAccessoryButtonClick={setInputToMax}
             placeholder="0"
           />
           <Input

@@ -63,11 +63,13 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       <TitleAndValueContainer>
         <Value>
           <Link href={depositorEtherscanLink} target="_blank">
-            <ENSName
-              provider={alchemyMainnetEthersProvider}
-              address={depositorAddress}
-              displayType={AddressDisplayEnum.FIRST6}
-            />
+            <ENSNameWrapper>
+              <ENSName
+                provider={alchemyMainnetEthersProvider}
+                address={depositorAddress}
+                displayType={AddressDisplayEnum.FIRST6}
+              />
+            </ENSNameWrapper>
           </Link>
         </Value>
       </TitleAndValueContainer>
@@ -86,7 +88,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 const Container = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: .2fr .9fr .6fr .8fr repeat(2, minmax(0,1fr));
+  grid-template-columns: .2fr .9fr .6fr 1.1fr repeat(2, minmax(0,1fr));
   gap: 8px;
   flex-direction: row;
   align-items: center;
@@ -116,4 +118,11 @@ const PercentageLabel = styled.div`
 const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
+`;
+
+const ENSNameWrapper = styled.div`
+  max-width: 144px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;

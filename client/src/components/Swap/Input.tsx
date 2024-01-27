@@ -16,6 +16,8 @@ interface InputProps {
   placeholder?: string;
   inputLabel?: string;
   readOnly?: boolean;
+  accessoryButtonLabel?: string;
+  onAccessoryButtonClick?: () => void;
   accessoryLabel?: string;
   accessoryLabelAlignment?: 'left' | 'right';
 }
@@ -31,6 +33,8 @@ export const Input: React.FC<InputProps> = ({
   inputLabel,
   type = "text",
   readOnly = false,
+  accessoryButtonLabel = "",
+  onAccessoryButtonClick = () => {},
   accessoryLabel="",
   accessoryLabelAlignment = "right",
 }: InputProps) => {
@@ -41,7 +45,7 @@ export const Input: React.FC<InputProps> = ({
       <LabelInputAndAccessoryContainer>
         <LabelAndInputContainer>
           <Label htmlFor={name}>
-              {label}
+            {label}
           </Label>
 
           <InputWrapper>
@@ -69,7 +73,13 @@ export const Input: React.FC<InputProps> = ({
       </LabelInputAndAccessoryContainer>
       
       <AccessoryContainer alignment={accessoryLabelAlignment}>
-        {accessoryLabel}
+        <AccessoryLabel>
+          {accessoryLabel}
+        </AccessoryLabel>
+
+        <AccessoryTextButton onClick={onAccessoryButtonClick}>
+          {accessoryButtonLabel}
+        </AccessoryTextButton>
       </AccessoryContainer>
     </Container>
   );
@@ -166,10 +176,23 @@ const SelectorAccessory = styled.div<SelectorAccessoryProps>`
   padding-top: 8px;
 `;
 
-const AccessoryContainer = styled.div<{ alignment?: string }>`
-  padding-right: 4px;
+const AccessoryContainer = styled.div<{ alignment?: string, accessoryButtonLabel?: string, onAccessoryButtonClick?: () => void }>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: ${({ alignment }) => alignment === 'right' ? 'flex-end' : 'flex-start'};
+`;
+
+const AccessoryLabel = styled.div`
   font-size: 14px;
-  text-align: ${({ alignment }) => alignment || 'right'};
   font-weight: 500;
   color: #6C757D;
+`;
+
+const AccessoryTextButton = styled.div`
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 0px 6px;
+  font-size: 14px;
+  font-weight: 600;
 `;

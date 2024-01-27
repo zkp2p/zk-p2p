@@ -19,8 +19,9 @@ import {
   calculateUsdFromRequestedUSDC,
   createDepositsStore,
   fetchBestDepositForAmount,
+  fetchDepositForMaxAvailableTransferSize
  } from '../../venmo/Liquidity/helper';
-import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
+import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_HDFC } from '@helpers/constants';
 import { unpackPackedUpiId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
@@ -242,6 +243,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     }
   }, [depositStore]);
 
+  const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
+    if (depositStore) {
+      return fetchDepositForMaxAvailableTransferSize(
+        MAX_USDC_TRANSFER_SIZE_HDFC,
+        depositStore,
+        onRamperRegistrationHash
+      );
+    } else {
+      return {
+        error: 'No deposits available'
+      } as IndicativeQuote;
+    }
+  }, [depositStore]);
+
   /*
    * Helpers
    */
@@ -268,6 +283,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposits,
         depositStore,
         getBestDepositForAmount,
+        getDepositForMaxAvailableTransferSize,
         refetchDeposits,
         shouldFetchDeposits,
         calculateUsdFromRequestedUSDC

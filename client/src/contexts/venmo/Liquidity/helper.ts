@@ -4,7 +4,7 @@ import {
   StoredDeposit
 } from '@helpers/types';
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
-import { toBigInt, toUsdString } from "@helpers/units";
+import { toBigInt, toUsdString, toUsdcString } from "@helpers/units";
 
 
 export const createDepositsStore = (deposits: DepositWithAvailableLiquidity[]): StoredDeposit[] => {
@@ -67,6 +67,57 @@ export const fetchBestDepositForAmount = (
         conversionRate,
       } as IndicativeQuote;
     }
+  }
+
+  return {
+    error: "No deposits available to fulfill requested amount"
+  } as IndicativeQuote;
+};
+
+export const fetchDepositForMaxAvailableTransferSize = (
+  maxAmount: bigint,
+  depositStore: StoredDeposit[],
+  userCurrentIdHash: string = ''
+): IndicativeQuote => {
+  let largestAvailableDeposit: StoredDeposit | null = null;
+  let largestAmount: bigint = BigInt(0);
+
+  for (const deposit of depositStore) {
+    const isUserDepositor = deposit.depositorIdHash === userCurrentIdHash;
+    const isSufficientLiquidity = deposit.availableLiquidity >= maxAmount;
+
+    if (!isUserDepositor) {
+      if (isSufficientLiquidity) {
+        const conversionRate = deposit.deposit.conversionRate;
+        const usdToSend = calculateUsdFromRequestedUSDC(maxAmount, conversionRate);
+        const usdAmountToSend = toUsdString(usdToSend);
+        const maxAmountString = toUsdcString(maxAmount);
+
+        return {
+          depositId: deposit.depositId,
+          maxUSDCAmountAvailable: maxAmountString,
+          usdAmountToSend,
+          conversionRate,
+        } as IndicativeQuote;
+      } else if (deposit.availableLiquidity > largestAmount) {
+        largestAvailableDeposit = deposit;
+        largestAmount = deposit.availableLiquidity;
+      }
+    }
+  }
+
+  if (largestAvailableDeposit) {
+    const conversionRate = largestAvailableDeposit.deposit.conversionRate;
+    const usdToSend = calculateUsdFromRequestedUSDC(largestAmount, conversionRate);
+    const usdAmountToSend = toUsdString(usdToSend);
+    const largestAmountString = toUsdcString(largestAmount);
+
+    return {
+      depositId: largestAvailableDeposit.depositId,
+      maxUSDCAmountAvailable: largestAmountString,
+      usdAmountToSend,
+      conversionRate,
+    } as IndicativeQuote;
   }
 
   return {
