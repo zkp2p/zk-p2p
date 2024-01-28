@@ -1,21 +1,19 @@
-import { forwardRef, useRef, useReducer } from 'react';
-import { User, Copy } from 'react-feather';
+import { forwardRef } from 'react';
+import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
 import { Link as RouterLink } from 'react-router-dom';
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
-import { ENSName, AddressDisplayEnum } from 'react-ens-name';
-import { formatAddress } from '@helpers/addressFormat';
+import { ENSName } from 'react-ens-name';
 
 // import { TransferModal } from '@components/Account/TransferModal';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
-import { ThemedText } from '@theme/text';
-import { toUsdcString } from "@helpers/units";
+import { toUsdcString, toEthString } from "@helpers/units";
+import { formatAddress } from '@helpers/addressFormat';
 import { alchemyMainnetEthersProvider } from "index";
-import { format } from 'path';
 
 
 export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
@@ -23,19 +21,17 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
    * Contexts
    */
 
-  const { authenticated, logout } = usePrivy();
+  const { authenticated, logout, user } = usePrivy();
   const { disconnect } = useDisconnect();
   const { usdcBalance, ethBalance } = useBalances();
   const { loggedInEthereumAddress } = useAccount();
   const { blockscanUrl } = useSmartContracts();
 
+  console.log(user);
+
   /*
    * Handler
    */
-
-  // const jumpToMedia = (url: string) => {
-  //   window.open(url, '_blank');
-  // };
 
   const handleLogout = async () => {
     if (authenticated) {
@@ -43,6 +39,16 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
     }
 
     await disconnect();
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+  };
+
+  const handleCopyClick = () => {
+    if (loggedInEthereumAddress) {
+      copyToClipboard(loggedInEthereumAddress);
+    }
   };
 
   /*
@@ -62,6 +68,9 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
           <IconBorder>
             <StyledUser />
           </IconBorder>
+          <AccountTypeLabel>
+            {user ? user.email.address : 'Connected'}
+          </AccountTypeLabel>
           <AccountAddressAndENSContainer>
             <AccountAddress>
               <Link href={depositorEtherscanLink} target="_blank">
@@ -72,55 +81,61 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
                 />
               </Link>
             </AccountAddress>
-            <AccountAddress>
-              {loggedInEthereumAddress ? formatAddress(loggedInEthereumAddress) : formatAddress(undefined)}
-            </AccountAddress>
+            <StyledCopy onClick={handleCopyClick} />
           </AccountAddressAndENSContainer>
-          <StyledCopy />
         </AccountAndUserIconContainer>
 
         <BalancesContainer>
-          {
-            usdcBalance !== null && usdcBalance !== undefined ?
-              `${toUsdcString(usdcBalance, true)} USDC` :
-              ethBalance !== null && ethBalance !== undefined ?
-                `${ethBalance.toString()} ETH` :
-                'No balance available'
-          }
+          <BalanceValue>
+            {usdcBalance ? toUsdcString(usdcBalance, true) : "0"}
+          </BalanceValue>
+
+          <BalanceLabel>
+            {`USDC`}
+          </BalanceLabel>
         </BalancesContainer>
         
         <NavDropdownItemsContainer>
-          <NavDropdownItem as={RouterLink} to="/tos">
-            Deposit
-          </NavDropdownItem>
+          <ItemAndIconContainer>
+            <StyledArrowUpCircle />
+
+            <NavDropdownItem as={RouterLink} to="/tos">
+              Deposit
+            </NavDropdownItem>
+          </ItemAndIconContainer>
           
-          <NavDropdownItem as={RouterLink} to="/withdraw">
-            Withdraw
-          </NavDropdownItem>
+          <ItemAndIconContainer>
+            <StyledArrowDownCircle />
 
-          <NavDropdownItem as={RouterLink} to="/tos">
-            Bridge ↗
-          </NavDropdownItem>
+            <NavDropdownItem as={RouterLink} to="/withdraw">
+              Withdraw
+            </NavDropdownItem>
+          </ItemAndIconContainer>
 
-          {/* {
-            (chain.name === 'Base') && (
-              <BridgeLink>
-                <Link
-                  href={ "https://bridge.base.org/deposit" }
-                  target="_blank"
-                  color="inherit"
-                  underline="none"
-                >
-                  Bridge
-                </Link>
+          <ItemAndIconContainer>
+            <StyledRepeat />
+            <BridgeLinkAndBalance>
+              <BridgeLink
+                href="https://bridge.base.org/deposit"
+                target="_blank"
+              >
+                Bridge ↗
               </BridgeLink>
-            )
-          } */}
-        </NavDropdownItemsContainer>
+              {!user && (
+                <EthBalance>
+                  {ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...'}
+                </EthBalance>
+              )}
+            </BridgeLinkAndBalance>
+          </ItemAndIconContainer>
 
-        <LogoutContainer onClick={handleLogout}>
-          Logout
-        </LogoutContainer>
+          <ItemAndIconContainer>
+            <StyledLogOut />
+            <LogoutContainer onClick={handleLogout}>
+              Logout
+            </LogoutContainer>
+          </ItemAndIconContainer>
+        </NavDropdownItemsContainer>
       </NavDropdown>
     </Wrapper>
   );
@@ -135,7 +150,7 @@ const Wrapper = styled.div`
 
 const NavDropdown = styled.div`
   display: flex;
-  min-width: 280px;
+  min-width: 300px;
   flex-direction: column;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -149,7 +164,7 @@ const NavDropdown = styled.div`
 
 const AccountAndUserIconContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1rem;
   white-space: nowrap;
   align-items: center;
@@ -157,101 +172,156 @@ const AccountAndUserIconContainer = styled.div`
   border-bottom: 1px solid #98a1c03d;
 `;
 
+const AccountTypeLabel = styled.div`
+  font-weight: 700;
+`;
+
 const AccountAddressAndENSContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.5rem;
 `;
 
 const AccountAddress = styled.div`
-  padding-top: 2px;
 `;
 
 const StyledUser = styled(User)`
   color: #FFF;
-  height: 18px;
-  width: 18px;
+  background-color: #C5C5C5;
+  height: 24px;
+  width: 24px;
 `;
 
 const StyledCopy = styled(Copy)`
   color: #FFF;
+  height: 16px;
+  width: 16px;
+  cursor: pointer;
+`;
+
+const StyledArrowUpCircle = styled(ArrowUpCircle)`
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+`;
+
+const StyledArrowDownCircle = styled(ArrowDownCircle)`
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+`;
+
+const StyledRepeat = styled(Repeat)`
+  color: #FFF;
   height: 18px;
   width: 18px;
+`;
+
+const StyledLogOut = styled(LogOut)`
+  color: #E96069;
+  height: 20px;
+  width: 20px;
 `;
 
 const IconBorder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #C5C5C5;
   padding: 10px;
   border-radius: 50%;
-  border: 1px solid #FFF;
+  border: 1px solid #C5C5C5;
 `;
 
 const BalancesContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 16px 24px;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 24px;
+  gap: 12px;
 
-  color: #ffffff;
   font-family: 'Graphik';
-  font-weight: 700;
-  font-size: 28px;
   border-bottom: 1px solid #98a1c03d;
+`;
+
+const BalanceValue = styled.div`
+  color: #FFFFFF;
+  font-size: 24px;
+  font-weight: 500;
+`;
+
+const BalanceLabel = styled.div`
+  color: #9ca3af;  
+  font-size: 20px;
+  font-weight: 500;
 `;
 
 const NavDropdownItemsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
   white-space: nowrap;
-`;
-
-const NavDropdownItem = styled.a`
-  color: inherit;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  padding: 16px 24px;
-  text-align: left;
-  font-size: 14px;
-  font-weight: 600;
-
-  &:hover {
-    background-color: #191D28;
-    box-shadow: none;
-  }
+  padding: 8px 0px;
 `;
 
 const LogoutContainer = styled.div`
-  text-align: center;
-  text-decoration: none;
   cursor: pointer;
-  padding: 16px 24px 20px 24px;
-  text-align: left;
-  font-size: 14px;
-  font-weight: 600;
+  text-decoration: none;
+  color: #E96069;
+  padding-top: 2px;
+`;
+
+const ItemAndIconContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: flex-start;
+  padding: 16px 24px;
 
   &:hover {
-    background-color: #191D28;
-    border-radius: 0 0 16px 16px;
+    color: #6C757D;
+    box-shadow: none;
+
+    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat} {
+      color: #6C757D;
+    }
+
+    ${StyledLogOut} {
+      color: #CA2221;
+    }
+
+    ${LogoutContainer} {
+      color: #CA2221;
+    }
   }
 `;
 
-const BridgeLink = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: #1A1B1F;
-  border-radius: 24px;
-  letter-spacing: 0.75px;
-  align-self: stretch;
-  padding-right: 16px;
-  margin-left: -6px;
+const NavDropdownItem = styled.div`
+  color: inherit;
+  text-decoration: none;
+  padding-top: 2px;
+`;
 
-  font-family: 'Graphik';
-  font-weight: 700;
-  color: #ffffff;
+const BridgeLinkAndBalance = styled.div`
+  display: flex;  
+  flex-direction: row;
+  justify-content: space-between;
+  flex-grow: 1;
+`;
+
+const BridgeLink = styled.a`
+  color: inherit;
+  text-decoration: none;
+  background-color: #1B1B1B;
+`;
+
+const EthBalance = styled.a`
+  color: #9ca3af;
   font-size: 16px;
+  font-weight: 500;
+  padding-top: 2px;
 `;

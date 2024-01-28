@@ -99,3 +99,10 @@ export function conversionRateToMultiplierString(rate: bigint): string {
 
   return ratioString;
 };
+
+export function toEthString(value: bigint): string {
+  const reducedValue = value / BigInt(1e15);  
+  const ethValue = Number(reducedValue) / 1e3;
+
+  return ethValue.toFixed(3);
+}
