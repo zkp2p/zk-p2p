@@ -3,18 +3,22 @@ import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'reac
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
+import { useEcdsaProvider } from '@zerodev/wagmi';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
+import useLifiBridge from '@hooks/useLifiBridge';
+import useSocketBridge from '@hooks/useSocketBridge';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
 import { toUsdcString, toEthString } from "@helpers/units";
 import { formatAddress } from '@helpers/addressFormat';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
+import { Button } from '@mui/material';
 
 
 interface AccountDropdownProps {
@@ -32,6 +36,29 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   const { loggedInEthereumAddress } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
+
+
+  const {
+    data: lifiQuoteResponse,
+    loading: isLifiQuoteLoading,
+    error: lifiQuoteError,
+    fetchQuote: fetchLifiQuote
+  } = useLifiBridge();
+
+  const {
+    getQuoteData: socketResponse,
+    getRouteTransactionData: socketRouteTransactionData,
+    getAllowance: socketAllowance,
+    getApprovalTransactionData: socketApprovalTransactionData,
+    getTransactionStatus: socketTransactionStatus,
+    loading: isSocketQuoteLoading,
+    error: socketQuoteError,
+    fetchQuote: fetchSocketQuote,
+    fetchRouteTransactionData: fetchSocketRouteTransactionData,
+    fetchAllowance: fetchSocketAllowance,
+    fetchApprovalTransactionData: fetchSocketApprovalTransactionData,
+    fetchTransactionStatus: fetchSocketTransactionStatus,
+  } = useSocketBridge();
 
   /*
    * Handler
@@ -65,6 +92,82 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     if (loggedInEthereumAddress) {
       copyToClipboard(loggedInEthereumAddress);
     }
+  };
+
+  const handleClicked = async () => {
+    await fetchLifiQuote({
+      "fromChain": 'bas',
+      "toChain": 'pol', // hardcode polygon
+      "fromToken": 'USDC',
+      "toToken": 'USDT', // hardcode USDT
+      "fromAmount": '100000000',
+      "fromAddress": loggedInEthereumAddress as string,
+      "toAddress": loggedInEthereumAddress as string,
+    });
+    console.log("returned Lifi quote", lifiQuoteResponse);
+
+    const fromChainId = '8453';
+    const toChainId = '137';
+    const fromTokenAddress = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+    const toTokenAddress = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+    const fromAmount = '100000000'; // 100 USDC, USDC is 6 decimals
+    const userAddress = loggedInEthereumAddress as string;
+    const uniqueRoutesPerBridge = 'true'; // Returns the best route for a given DEX / bridge combination
+    const sort = "time"; // "output" | "gas" | "time"
+    const singleTxOnly = 'true';
+
+    await fetchSocketQuote({
+      fromChainId,
+      toChainId,
+      fromTokenAddress,
+      toTokenAddress,
+      fromAmount,
+      userAddress,
+      uniqueRoutesPerBridge,
+      sort,
+      singleTxOnly,
+    });
+
+    console.log("returned Socket quote", socketResponse);
+    
+    const route = socketResponse?.result.routes[0];
+    if (!route) {
+      return;
+    }
+    await fetchSocketRouteTransactionData({ route })
+
+    console.log("returned Socket route transaction data", socketRouteTransactionData);
+
+    const approvalData = socketRouteTransactionData?.result.approvalData;
+    if (!approvalData) {
+      return;
+    }
+    const { allowanceTarget, minimumApprovalAmount, approvalTokenAddress } = approvalData;
+
+    await fetchSocketApprovalTransactionData({
+      chainId: fromChainId,
+      owner: loggedInEthereumAddress as string,
+      allowanceTarget,
+      tokenAddress: approvalTokenAddress,
+      amount: minimumApprovalAmount,
+    });
+
+    console.log("returned Socket approval transaction data", socketApprovalTransactionData);
+
+    // // Send a batched userop with the ECDSAProvider
+    // const txn = await ecdsaProvider?.sendUserOperation([
+    //   {
+    //     target: "targetAddress1",
+    //     data: "callData1",
+    //     value: value1,
+    //   },
+    //   {
+    //     target: "targetAddress2",
+    //     data: "callData2",
+    //     value: value2,
+    //   },
+    // ])
+
   };
 
   /*
