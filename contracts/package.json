@@ -21,7 +21,7 @@
     "etherscan:sepolia": "yarn hardhat --network sepolia etherscan-verify",
     "etherscan:base": "yarn hardhat --network base etherscan-verify",
     "etherscan:base_staging": "yarn hardhat --network base_staging etherscan-verify",
-    "importVerifier": "rm -rf ./contracts/verifiers/ && cp -r ../circuits-circom/circuits/hdfc/contracts/ ./contracts/verifiers && cp -r ../circuits-circom/circuits/venmo/contracts/ ./contracts/verifiers",
+    "importVerifier": "rm -r ./contracts/verifiers/* && find ../circuits-circom -type d -name 'circuits' -exec sh -c 'cp -r {}/*/contracts/* ./contracts/verifiers/' \\;",
     "test": "npx hardhat test test/libs/*.ts test/processors/*.ts test/ramps/**/*.ts",
     "test:clean": "yarn build && yarn test",
     "test:fast": "NO_COMPILE=true TS_NODE_TRANSPILE_ONLY=1 yarn test --no-compile",
