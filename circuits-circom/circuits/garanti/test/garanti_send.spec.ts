@@ -38,8 +38,6 @@ describe("Garanti send WASM tester", function () {
     let poseidon;
     let mimcSponge;
     let account;
-    let poseidonContract1;
-    let poseidonContract2;
 
     beforeAll(async () => {
         cir = await wasm_tester(
@@ -53,10 +51,10 @@ describe("Garanti send WASM tester", function () {
         );
 
         cir_hasher = await wasm_tester(
-            path.join(__dirname, "../../common-v2/divided_hasher_10752.circom"),
+            path.join(__dirname, "../garanti_body_suffix_hasher.circom"),
             {
-                include: path.join(__dirname, "../../common-v2/node_modules"),
-                output: path.join(__dirname, "../../common-v2/build/divided_hasher_10752"),
+                include: path.join(__dirname, "../node_modules"),
+                output: path.join(__dirname, "../build/garanti_body_suffix_hasher"),
                 recompile: false, // setting this to true will recompile the circuit (~3-5min)
                 verbose: true,
             }
@@ -110,19 +108,13 @@ describe("Garanti send WASM tester", function () {
 
         // This is a workaround to use our divided hasher because no JS SHA256 libraries do not support a precomputed initial state
         // We test that the precomputed SHA hashed + intermediate body is equal to the expected SHA from the send circuit
-        
-        // Unpack intermediate hash bytes
-        let expected_hash_one = packedToBytes(witness[2]);
-        let expected_hash_two = packedToBytes(witness[3]);
-
         let paddedArray = Array.from({ length: 10752 }, (v, i) => input["in_body_padded"][i] || "0");
-        
+
         const hasher_witness = await cir_hasher.calculateWitness(
             {
-                precomputed_sha: input["precomputed_sha"],
-                expected_sha: expected_hash_one.concat(expected_hash_two),
-                in_body_padded: paddedArray,
-                in_body_len_padded_bytes: input["in_body_len_padded_bytes"],
+                intermediate_hash: input["precomputed_sha"],
+                in_body_suffix_padded: paddedArray,
+                in_body_suffix_len_padded_bytes: input["in_body_len_padded_bytes"],
             },
             true
         );
@@ -149,11 +141,11 @@ describe("Garanti send WASM tester", function () {
 
         // Decode body hash
         const expectedBodyHashArray = base64ToByteArray(body_hash_array);
-    
+
         const bodyHashChunkedArray = chunkArray(expectedBodyHashArray, 16, 32);
         const expectedFirst = bytesToPacked(bodyHashChunkedArray[0]);
         const expectedSecond = bytesToPacked(bodyHashChunkedArray[1]);
-        
+
         assert.equal(witness[4], expectedFirst, true);
         assert.equal(witness[5], expectedSecond, true);
     });
@@ -368,23 +360,23 @@ describe("Garanti send WASM tester", function () {
         assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
     });
 
-    describe("Divided hasher", function () {
+    describe("Body Suffix Hasher", function () {
         it("Should generate witnesses", async () => {
             // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
             // Otherwise, you can download the original eml from any garanti send payment transaction
-            const input_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const input_path = path.join(__dirname, "../inputs/input_garanti_body_suffix_hasher.json");
             const jsonString = fs.readFileSync(input_path, "utf8");
             const input = JSON.parse(jsonString);
             const witness = await cir_hasher.calculateWitness(
                 input,
                 true
             );
-    
+
             assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
         });
 
         it("Should return the packed precomputed SHA equal to output SHA of Garanti send", async () => {
-            const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const input_hasher_path = path.join(__dirname, "../inputs/input_garanti_body_suffix_hasher.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
             const witness_hasher = await cir_hasher.calculateWitness(
@@ -398,13 +390,13 @@ describe("Garanti send WASM tester", function () {
                 input_send,
                 true
             );
-    
+
             assert.equal(witness_hasher[1], witness_send[2], true);
             assert.equal(witness_hasher[2], witness_send[3], true);
         });
-        
+
         it("Should return the same body hash packed as Garanti send", async () => {
-            const input_hasher_path = path.join(__dirname, "../inputs/input_divided_hasher_10752.json");
+            const input_hasher_path = path.join(__dirname, "../inputs/input_garanti_body_suffix_hasher.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
             const witness_hasher = await cir_hasher.calculateWitness(
@@ -418,7 +410,7 @@ describe("Garanti send WASM tester", function () {
                 input_send,
                 true
             );
-    
+
             assert.equal(witness_hasher[3], witness_send[4], true);
             assert.equal(witness_hasher[4], witness_send[5], true);
         });

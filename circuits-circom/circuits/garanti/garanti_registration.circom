@@ -2,11 +2,12 @@ pragma circom 2.1.5;
 
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/helpers/extract.circom";
+include "@zk-email/circuits/email-verifier.circom";
 
 include "../utils/ceil.circom";
+include "../common-v2/regexes/body_hash_regex_v2.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
-include "./helpers/email-verifier-header.circom"; // Use local email verifier
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
 
@@ -29,52 +30,42 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal input in_body_len_padded_bytes;
 
     signal output modulus_hash;
-    signal output intermediate_hash_packed[2];
-    signal output body_hash_packed[2];
-
+    
     // DKIM VERIFICATION
-    component EV = EmailVerifierHeader(max_header_bytes, max_body_bytes, n, k);
+    var ignore_body_hash_check = 1; // Ignore body hash check
+    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, ignore_body_hash_check);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
-    EV.body_hash_idx <== body_hash_idx;
     EV.in_len_padded_bytes <== in_len_padded_bytes;
 
     modulus_hash <== EV.pubkey_hash;
 
     //-------HASH INTERMEDIATE----------//
 
-    // This hashes the body after the precomputed SHA, and outputs the intermediate hash to be fed into the final hasher circuit
-    signal sha_body_out[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
-    component sha_body_bytes[32];
+    // This hashes the body after the precomputed SHA, and outputs the intermediate hash
+    signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    signal intermediate_hash_bytes[32];
+    component bits2Num[32];
     for (var i = 0; i < 32; i++) {
-        sha_body_bytes[i] = Bits2Num(8);
+        bits2Num[i] = Bits2Num(8);
         for (var j = 0; j < 8; j++) {
-            sha_body_bytes[i].in[7 - j] <== sha_body_out[i * 8 + j];
+            bits2Num[i].in[7 - j] <== intermediate_hash_bits[i * 8 + j];
         }
+        intermediate_hash_bytes[i] <== bits2Num[i].out;
     }
+    // Pack intermediate hash for calldata
+    signal output intermediate_hash_packed[2] <== PackBytes(32, 2, 16)(intermediate_hash_bytes);
 
-    //-------PACKING HASHES FOR CALLDATA----------//
+    //-------BODY HASH V2 REGEX----------//
 
-    component intermediate_hash_packer[2];
-    for (var i = 0; i < 2; i++) {
-        intermediate_hash_packer[i] = Bytes2Packed(16);
-        for (var j = 0; j < 16; j++) {
-            var idx = i * 16 + j;
-            intermediate_hash_packer[i].in[j] <== sha_body_bytes[i * 16 + j].out;
-        }
-        intermediate_hash_packed[i] <== intermediate_hash_packer[i].out;
-    }
-
-    component body_hash_packer[2];
-    for (var i = 0; i < 2; i++) {
-        body_hash_packer[i] = Bytes2Packed(16);
-        for (var j = 0; j < 16; j++) {
-            var idx = i * 16 + j;
-            body_hash_packer[i].in[j] <== EV.sha_b64_out[i * 16 + j];
-        }
-        body_hash_packed[i] <== body_hash_packer[i].out;
-    }
+    var LEN_SHA_B64 = 44;     // ceil(32 / 3) * 4, due to base64 encoding.
+    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegexV2(max_header_bytes)(in_padded);
+    bh_regex_out === 1;
+    signal shifted_bh_out[LEN_SHA_B64] <== VarShiftMaskedStr(max_header_bytes, LEN_SHA_B64)(bh_reveal, body_hash_idx);
+    
+    signal sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);    
+    signal output body_hash_packed[2] <== PackBytes(32, 2, 16)(sha_b64_out);
 
     //-------CONSTANTS----------//
 
@@ -96,7 +87,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal subject_regex_out <== GarantiSubjectRegex(max_header_bytes)(in_padded);
     subject_regex_out === 1;
 
-    // From header V3 regex
+    // From header V2 regex
     signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
     from_regex_out === 1;
 
@@ -121,7 +112,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         pack_size
     )(from_regex_reveal, email_from_idx);
 
-    // Packed to (Not an output. Used used to compute user id)
+    // Packed to (Not an output. Used to compute user id)
     signal input email_to_idx;
     signal reveal_email_to_packed[max_email_to_packed_bytes] <== ShiftAndPackMaskedStr(
         max_header_bytes, 
@@ -129,7 +120,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
         pack_size
     )(to_regex_reveal, email_to_idx);
 
-    // Packed payer mobile number (Not an output. Used used to compute user id)
+    // Packed payer mobile number (Not an output. Used to compute user id)
     signal input garanti_payer_mobile_num_idx;
     signal reveal_payer_mobile_num_packed[max_payer_mobile_num_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 
@@ -152,13 +143,13 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 4736899
+    // TOTAL CONSTRAINTS: 3951211
 }
 
 // Args:
-// * max_header_bytes = 1024 is the max number of bytes in the header
+// * max_header_bytes = 512 is the max number of bytes in the header
 // * max_body_bytes = 2496 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main = GarantiRegistrationEmail(1024, 2496, 121, 17, 7);
+component main = GarantiRegistrationEmail(512, 2496, 121, 17, 7);
