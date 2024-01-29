@@ -6,7 +6,7 @@
         },
         {
             "is_public": false,
-            "regex_def": "((a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)+=[^;]+;(\r|\n|\u0009| )+)+bh="
+            "regex_def": "((a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)+=[^;]+;(\r\n)?[\u0009 ]+)+bh="
         },
         {
             "is_public": true,

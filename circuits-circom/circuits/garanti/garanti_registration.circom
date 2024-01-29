@@ -5,9 +5,9 @@ include "@zk-email/circuits/helpers/extract.circom";
 include "@zk-email/circuits/email-verifier.circom";
 
 include "../utils/ceil.circom";
+include "../common-v2/regexes/body_hash_regex_v2.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
-include "../common-v2/regexes/body_hash_regex_v2.circom";
 include "./regexes/garanti_subject.circom";
 include "./regexes/garanti_payer_details.circom";
 
@@ -143,7 +143,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 4736899
+    // TOTAL CONSTRAINTS: 3951211
 }
 
 // Args:
