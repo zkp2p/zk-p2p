@@ -87,3 +87,28 @@ export function hashSignatureGenRand(signature, n, k, poseidon) {
     let cm_rand = poseidon(cm_rand_input);
     return cm_rand;
 }
+
+export function base64ToByteArray(base64Array) {
+    const base64String = base64Array.map(base64Val => String.fromCharCode(parseInt(base64Val, 10))).join('');
+    let binaryString = atob(base64String);
+    let stringArray = new Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+        stringArray[i] = binaryString.charCodeAt(i).toString();
+    }
+
+    return stringArray;
+}
+
+export function packedToBytes(packed) {
+    const bytes = [];
+    while (packed > 0) {
+        // Extract the least significant byte
+        let byte = Number(packed & BigInt(0xFF));
+        bytes.push(byte);
+
+        // Shift right by 8 bits to process the next byte
+        packed >>= BigInt(8);
+    }
+    return bytes;
+}

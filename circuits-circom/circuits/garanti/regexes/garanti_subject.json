@@ -1,0 +1,9 @@
+{
+    "parts": [
+      {
+        "is_public": false,
+        "regex_def": "Subject: Para Transferi Bilgilendirmesi\r\n"
+      }
+    ]
+  }
+  

@@ -21,6 +21,18 @@ jobs:
       - name: Create env...
         run: cp scripts/circuit.env.example scripts/circuit.env
         working-directory: ./circuits-circom
+      - name: Installing Common Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/common
+      - name: Testing Common circuits...
+        run: yarn test
+        working-directory: ./circuits-circom/circuits/common
+      - name: Installing Common V2 Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/common-v2
+      - name: Testing Common V2 circuits...
+        run: yarn test
+        working-directory: ./circuits-circom/circuits/common-v2
       - name: Install Venmo Dependencies
         run: yarn install
         working-directory: ./circuits-circom/circuits/venmo
@@ -39,3 +51,9 @@ jobs:
       - name: Testing Paylah regexes...
         run: yarn test test/regexes
         working-directory: ./circuits-circom/circuits/paylah
+      - name: Installing Garanti Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/garanti
+      - name: Testing Garanti regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/garanti

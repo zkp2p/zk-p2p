@@ -57,7 +57,7 @@ export interface ICircuitInputs {
   in_body_len_padded_bytes?: string;
   in_padded_n_bytes?: string[];
   in_len_padded_bytes?: string;
-  in_body_hash?: string[];
+  expected_sha?: string[];
   precomputed_sha?: string[];
   body_hash_idx?: string;
   venmo_payer_id_idx?: string;
@@ -76,7 +76,13 @@ export interface ICircuitInputs {
   paylah_payee_name_idx?: string;
   paylah_payee_mobile_num_idx?: string;
   paylah_payment_id_idx?: string;
+  garanti_payer_mobile_num_idx?: string;
+  garanti_payee_acc_num_idx?: string;
+  garanti_amount_idx?: string;
   email_date_idx?: string;
+  intermediate_hash?: string[];
+  in_body_suffix_padded?: string[];
+  in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -100,7 +106,10 @@ export enum CircuitType {
   EMAIL_HDFC_SEND = "hdfc_send",
   EMAIL_HDFC_REGISTRATION = "hdfc_registration",
   EMAIL_PAYLAH_SEND = "paylah_send",
-  EMAIL_PAYLAH_REGISTRATION = "paylah_registration"
+  EMAIL_PAYLAH_REGISTRATION = "paylah_registration",
+  EMAIL_GARANTI_REGISTRATION = "garanti_registration",
+  EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
+  EMAIL_GARANTI_SEND = "garanti_send",
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -139,6 +148,18 @@ function padWithZero(arr: Uint8Array, length: number) {
   return arr;
 }
 
+function base64ToByteArray(base64Array) {
+  const base64String = base64Array.map(base64Val => String.fromCharCode(parseInt(base64Val, 10))).join('');
+  let binaryString = atob(base64String);
+  let stringArray = new Array(binaryString.length);
+
+  for (let i = 0; i < binaryString.length; i++) {
+    stringArray[i] = binaryString.charCodeAt(i).toString();
+  }
+
+  return stringArray;
+}
+
 export async function getCircuitInputs(
   rsa_signature: BigInt,
   rsa_modulus: BigInt,
@@ -156,8 +177,11 @@ export async function getCircuitInputs(
 }> {
   console.log("Starting processing of inputs");
 
+  let MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_HEADER_PADDED_BYTES;
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
+  let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = STRING_PRESELECTOR;
 
   // Update preselector string based on circuit type
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
@@ -179,6 +203,21 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_PAYLAH_REGISTRATION) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "ontenttable\" align=3D\"left\"><br />";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 2240;  // 2240 is the max observed body length
+  } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 512;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is the max observed body length
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as hashing helper circuit
+    MAX_INTERMEDIATE_PADDING_LENGTH = 2496; // For divided circuits, we calculate what the padded intermediate length should be
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<p>G&ouml;nderen Bilgileri:<br>";
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 512;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 13120;  // 13120 is max observed body length
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Para transferleri bilgilendirmeleri"; // Should be the same as hashing helper circuit
+    MAX_INTERMEDIATE_PADDING_LENGTH = 2496; // For divided circuits, we calculate what the padded intermediate length should be
+  } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -186,6 +225,7 @@ export async function getCircuitInputs(
   const modulusBigInt = rsa_modulus;
   // Message is the email header with the body hash
   const prehash_message_string = message;
+
   // const baseMessageBigInt = AAYUSH_PREHASH_MESSAGE_INT; // bytesToBigInt(stringToBytes(message)) ||
   // const postShaBigint = AAYUSH_POSTHASH_MESSAGE_PADDED_INT;
   const signatureBigInt = rsa_signature;
@@ -197,7 +237,7 @@ export async function getCircuitInputs(
   // Sha add padding
   // 65 comes from the 64 at the end and the 1 bit in the start, then 63 comes from the formula to round it up to the nearest 64. see sha256algorithm.com for a more full explanation of paddnig length
   const calc_length = Math.floor((body.length + 63 + 65) / 64) * 64;
-  const [messagePadded, messagePaddedLen] = await sha256Pad(prehashBytesUnpadded, MAX_HEADER_PADDED_BYTES);
+  const [messagePadded, messagePaddedLen] = await sha256Pad(prehashBytesUnpadded, MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE);
   const [bodyPadded, bodyPaddedLen] = await sha256Pad(body, Math.max(MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE, calc_length));
 
   // Convet messagePadded to string to print the specific header data that is signed
@@ -424,6 +464,123 @@ export async function getCircuitInputs(
       paylah_payer_mobile_num_idx,
       email_from_idx,
       email_to_idx,
+    }
+  } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
+    // Calculate SHA end selector.
+    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
+    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+
+    intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
+    const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
+
+    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
+    console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
+
+    // Regexes
+    const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
+    const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
+
+    // Index of mobile number is index of first </strong></p> after payer_name - 7 (length of mobile number)
+    const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
+    const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
+
+    let email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "From:"), "<").length;    // Capital F
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "To: ").length;    // Capital T
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'garanti_payer_name_idx': garanti_payer_name_idx,
+      'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded: in_body_intermediate,
+      in_body_len_padded_bytes: in_body_len_intermediate_bytes,
+      body_hash_idx,
+      // garanti specific indices
+      email_from_idx,
+      email_to_idx,
+      garanti_payer_mobile_num_idx
+    }
+  } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
+    // Calculate SHA end selector.
+    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
+    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+
+    intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
+    const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
+
+    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
+    console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
+
+    // Regexes
+    const garanti_payer_name_selector = Buffer.from("<p>G&ouml;nderen Bilgileri:<br>\r\n                    <strong>");
+    const garanti_payer_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_name_selector) + garanti_payer_name_selector.length).toString();
+
+    // Index of mobile number is index of first </strong></p> after payer_name - 7 (length of mobile number)
+    const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
+    const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
+
+    const garanti_payee_acc_num_selector = Buffer.from("TR");
+    const garanti_payee_acc_num_idx = Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector).toString();
+
+    const garanti_amount_selector = Buffer.from("<p>Tutar: <strong>");
+    const garanti_amount_idx = (Buffer.from(bodyRemaining).indexOf(garanti_amount_selector) + garanti_amount_selector.length).toString();
+
+    let email_from_idx = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "From:"), "<").length;    // Capital F
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "To: ").length;    // Capital T
+    // TODO: MIGHT NOT WORK ALWAYS!!
+    const email_timestamp_idx = (raw_header.length - trimStrByStr(raw_header, "t=").length).toString();    // Look for the first occurence of t=
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'email_timestamp_idx': email_timestamp_idx,
+      'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx,
+      'garanti_payee_acc_num_idx': garanti_payee_acc_num_idx,
+      'garanti_amount_idx': garanti_amount_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded: in_body_intermediate,
+      in_body_len_padded_bytes: in_body_len_intermediate_bytes,
+      body_hash_idx,
+      // garanti specific indices
+      email_from_idx,
+      email_to_idx,
+      email_timestamp_idx,
+      garanti_payer_mobile_num_idx,
+      garanti_payee_acc_num_idx,
+      garanti_amount_idx,
+      // IDs
+      intent_hash,
+    }
+
+  } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
+    const intermediate_hash = precomputed_sha;
+    const in_body_suffix_padded = in_body_padded;
+    const in_body_suffix_len_padded_bytes = in_body_len_padded_bytes;
+
+    // console.log("decoded body hash: ", JSON.stringify(intermediate_hash));
+
+    circuitInputs = {
+      intermediate_hash,
+      in_body_suffix_padded,
+      in_body_suffix_len_padded_bytes,
     }
   }
   else {

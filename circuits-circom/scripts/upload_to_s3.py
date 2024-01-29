@@ -12,15 +12,18 @@ parser = argparse.ArgumentParser(description='Upload files to S3 bucket')
 parser.add_argument('--bucket_name', type=str, default='zk-p2p', help='Name of the S3 bucket')
 # parser.add_argument('--build_dir', type=str, default='build', help='Name of the build directory directory with the circuitname/ folder')
 # parser.add_argument('--circuit_name', type=str, default='venmo_send', help='Name of the circuit (i.e. the foldername in build_dir/)')
-parser.add_argument('--prefix_to_tar', type=str, default='venmo_send.zkey,venmo_registration.zkey,hdfc_send.zkey,hdfc_registration.zkey', help='Prefix to match for files in order to compress to a .tar.gz and upload')
+parser.add_argument('--prefix_to_tar', type=str, default='venmo_send.zkey,venmo_registration.zkey,hdfc_send.zkey,hdfc_registration.zkey,garanti_registration.zkey,garanti_send.zkey,garanti_body_suffix_hasher.zkey', help='Prefix to match for files in order to compress to a .tar.gz and upload')
 parser.add_argument('--prefix', type=str, default=
                     'venmo_send.wasm,venmo_registration.wasm,venmo_send_vkey.json,' +
                     'venmo_registration_vkey.json,venmo_send.dat,venmo_registration.dat,' +
                     'hdfc_send.wasm,hdfc_registration.wasm,hdfc_send_vkey.json,' +
                     'hdfc_registration_vkey.json,hdfc_send.dat,hdfc_registration.dat,' +
-                    'venmo_send.wasm,venmo_registration.wasm,' +
                     'paylah_send.wasm,paylah_send_vkey.json,paylah_send.dat,paylah_send.zkey,' +
-                    'paylah_registration.wasm,paylah_registration_vkey.json,paylah_registration.dat,paylah_registration.zkey', help='Comma-seperated prefixes to upload without compression')
+                    'paylah_registration.wasm,paylah_registration_vkey.json,paylah_registration.dat,paylah_registration.zkey' +
+                    'garanti_body_suffix_hasher.wasm,garanti_body_suffix_hasher_vkey.json,garanti_body_suffix_hasher.dat,garanti_body_suffix_hasher.zkey' +
+                    'garanti_registration.wasm,garanti_registration_vkey.json,garanti_registration.dat,garanti_registration.zkey' +
+                    'garanti_send.wasm,garanti_send_vkey.json,garanti_send.dat,garanti_send.zkey',
+                    help='Comma-seperated prefixes to upload without compression')
 parser.add_argument('--dirs', type=str, default='', help='Comma-separated list of directories to upload from')
 parser.add_argument('--upload_dir', type=str, default='', help='Directory to upload to')
 args = parser.parse_args()
