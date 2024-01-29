@@ -59,8 +59,9 @@ describe("Body Hash Regex V2", function () {
 
         it("Should match regex once", async () => {
             const input = {
-                "msg": textToAsciiArray("\r\nDKIM-Signature:v=1; a=rsa-sha256;\r\n\tq=dns/txt;\tc=simple/simple;\r\ns=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
+                "msg": textToAsciiArray("\r\nDKIM-Signature: v=1;\r\n\ta=rsa-sha256;\r\n d=info.garantibbva.com.tr;\r\n\ts=BulkMailSelector1;\r\n\tc=simple/simple;\r\n\tq=dns/txt;\r\n i=@info.garantibbva.com.tr;\r\n\tt=1703416861; h=from:subject:to:cc;\r\n\tbh=gmhfwkcqvc0+z9C9jn4s7JtbkCL8Bc6ysyMgln+cHH0=;\r\n b=123")
             };
+
             const witness = await cir.calculateWitness(
                 input,
                 true
@@ -85,10 +86,23 @@ describe("Body Hash Regex V2", function () {
             assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
         });
 
-        it("Should fail to match regex", async () => {
+        it("Should fail to match regex (only one half of new line)", async () => {
             // Because we only allow 1 D or d
             const input = {
-                "msg": textToAsciiArray("\r\nDdKIM-Signature: v=1; a=rsa-sha256;\tq=dns/txt;\tc=simple/simple;\r\ts=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=")
+                "msg": textToAsciiArray("\r\nDKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=simple/simple; s=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\r\tbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=1")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(0)));
+        });
+        
+        it("Should fail to match regex (no space or tab after new line)", async () => {
+            // Because we only allow 1 D or d
+            const input = {
+                "msg": textToAsciiArray("\r\nDKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=simple/simple; s=ylavq3ml4jl4lt6dltbgmnoftxftkly; d=gggg.com; t=1698260687; h=From:Reply-To:To:Subject:MIME-Version:Content-Type:Message-ID:Date;\r\nbh=C9JrSSzQ+HxrQ6y65Bb/5BE511a00wfrddEQySR9PLI=; b=1")
             };
             const witness = await cir.calculateWitness(
                 input,
