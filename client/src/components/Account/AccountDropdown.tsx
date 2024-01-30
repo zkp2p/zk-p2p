@@ -33,8 +33,6 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
-  console.log(user);
-
   /*
    * Handler
    */
