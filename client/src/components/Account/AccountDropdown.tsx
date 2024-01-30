@@ -1,11 +1,12 @@
-import { forwardRef } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
-import { useDisconnect } from 'wagmi';
+import { useDisconnect, usePrepareSendTransaction, useSendTransaction, useContractRead, erc20ABI, useWaitForTransaction, usePrepareContractWrite, useContractWrite } from 'wagmi';
 import { useEcdsaProvider } from '@zerodev/wagmi';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
+import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
 
 import { Overlay } from '@components/modals/Overlay';
 import useAccount from '@hooks/useAccount';
@@ -37,28 +38,157 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
-
   const {
-    data: lifiQuoteResponse,
+    quoteData: lifiQuoteResponse,
+    statusData: lifiStatusResponse,
     loading: isLifiQuoteLoading,
     error: lifiQuoteError,
-    fetchQuote: fetchLifiQuote
+    fetchQuote: fetchLifiQuote,
+    fetchTransactionStatus: fetchLifiTransactionStatus,
   } = useLifiBridge();
 
+
+  /*
+   * State
+   */
+  const [usdcApprovalToBridge, setUsdcApprovalToBridge] = useState<bigint | null>(null);
+  const [shouldFetchUsdcApprovalToBridge, setShouldFetchUsdcApprovalToBridge] = useState<boolean>(false);
+  const [shouldConfigureBridgeWrite, setShouldConfigureBridgeWrite] = useState<boolean>(false);
+  const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
+
+
+  /*
+   * Contract Reads
+   */
+  
   const {
-    getQuoteData: socketResponse,
-    getRouteTransactionData: socketRouteTransactionData,
-    getAllowance: socketAllowance,
-    getApprovalTransactionData: socketApprovalTransactionData,
-    getTransactionStatus: socketTransactionStatus,
-    loading: isSocketQuoteLoading,
-    error: socketQuoteError,
-    fetchQuote: fetchSocketQuote,
-    fetchRouteTransactionData: fetchSocketRouteTransactionData,
-    fetchAllowance: fetchSocketAllowance,
-    fetchApprovalTransactionData: fetchSocketApprovalTransactionData,
-    fetchTransactionStatus: fetchSocketTransactionStatus,
-  } = useSocketBridge();
+    data: usdcApprovalToBridgeRaw,
+    refetch: refetchUsdcApprovalToBridge,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+      lifiQuoteResponse?.estimate.approvalAddress ?? ZERO_ADDRESS
+    ],
+    enabled: shouldFetchUsdcApprovalToBridge,
+  });
+
+  /*
+   * Contract Writes
+   */
+  const { config: writeApproveConfig } = usePrepareContractWrite({
+    address: usdcAddress,
+    abi: usdcAbi,
+    functionName: "approve",
+    args: [
+      lifiQuoteResponse?.estimate.approvalAddress ?? ZERO_ADDRESS,
+      lifiQuoteResponse?.estimate.fromAmount ?? ZERO
+    ],
+    enabled: shouldConfigureApprovalWrite
+  });
+
+  const {
+    data: submitApproveResult,
+    status: signApproveTransactionStatus,
+    writeAsync: writeSubmitApproveAsync
+  } = useContractWrite(writeApproveConfig);
+
+  const {
+    status: mineApproveTransactionStatus
+  } = useWaitForTransaction({
+    hash: submitApproveResult ? submitApproveResult.hash : undefined,
+    onSuccess(data: any) {
+      console.log('writeSubmitApproveAsync successful: ', data);
+      
+      refetchUsdcApprovalToBridge?.();
+
+      refetchUsdcBalance?.();
+    },
+  });
+
+  const {
+    config: writeSubmitBridgeConfig
+  } = usePrepareSendTransaction({
+    to: lifiQuoteResponse?.transactionRequest.to,
+    value: lifiQuoteResponse?.transactionRequest.value,
+    data: lifiQuoteResponse?.transactionRequest.data,
+    onError: (error: { message: any }) => {
+      console.error(error.message);
+    },
+    enabled: shouldConfigureBridgeWrite
+  });
+
+  const {
+    data: submitBridgeResult,
+    status: submitBridgeStatus,
+    sendTransaction: writeSubmitBridgeAsync
+  } = useSendTransaction(writeSubmitBridgeConfig);
+
+  const {
+    isLoading: isSubmitBridgeMining,
+    isSuccess: isSubmitBridgeSuccessful
+  } = useWaitForTransaction({
+    hash: submitBridgeResult ? submitBridgeResult.hash : undefined,
+    async onSuccess(data: any) {
+      console.log('writeSubmitBridgeAsync successful: ', data);
+
+      await fetchLifiTransactionStatus(data.transactionHash);
+
+      // Log status
+      console.log('lifiStatusResponse', lifiStatusResponse);
+      
+      refetchUsdcApprovalToBridge?.();
+
+      refetchUsdcBalance?.();
+    },
+  });
+  
+  /*
+   * Effects
+   */
+  useEffect(() => {
+    console.log("usdcApprovalToBridge", usdcApprovalToBridge)
+    const isApprovalRequired = usdcApprovalToBridge as any < lifiQuoteResponse?.estimate.fromAmount;
+    setShouldConfigureApprovalWrite(isApprovalRequired);
+    setShouldConfigureBridgeWrite(!isApprovalRequired);
+  }, [usdcApprovalToBridge]);
+
+  
+  useEffect(() => {
+    esl && console.log('usdcApprovalToBridgeRaw_1');
+    esl && console.log('checking usdcApprovalToBridgeRaw: ', usdcApprovalToBridgeRaw);
+  
+    if (usdcApprovalToBridgeRaw || usdcApprovalToBridgeRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToBridgeRaw_2');
+
+      setUsdcApprovalToBridge(usdcApprovalToBridgeRaw);
+    } else {
+      esl && console.log('usdcApprovalToBridgeRaw_3');
+      
+      setUsdcApprovalToBridge(null);
+    }
+  }, [usdcApprovalToBridgeRaw]);
+
+  useEffect(() => {
+    esl && console.log('shouldFetchUsdcBalanceAndApproval_1');
+    esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
+    esl && console.log('checking bridgeAddress: ', lifiQuoteResponse?.estimate.approvalAddress);
+    esl && console.log('checking usdcAddress: ', usdcAddress);
+
+    if (isLoggedIn && loggedInEthereumAddress && lifiQuoteResponse?.estimate.approvalAddress && usdcAddress) {
+      esl && console.log('shouldFetchUsdcBalanceAndApproval_2');
+
+      setShouldFetchUsdcApprovalToBridge(true);
+    } else {
+      esl && console.log('shouldFetchUsdcBalanceAndApproval_3');
+
+      setShouldFetchUsdcApprovalToBridge(false);
+
+      setUsdcApprovalToBridge(null);
+    }
+  }, [isLoggedIn, loggedInEthereumAddress, lifiQuoteResponse, usdcAddress]);
 
   /*
    * Handler
@@ -94,65 +224,43 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     }
   };
 
-  const handleClicked = async () => {
+  const handleFetchQuote = async () => {
     await fetchLifiQuote({
       "fromChain": 'bas',
       "toChain": 'pol', // hardcode polygon
-      "fromToken": 'USDC',
-      "toToken": 'USDT', // hardcode USDT
-      "fromAmount": '100000000',
+      "fromToken": '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      "toToken": '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // hardcode USDT
+      "fromAmount": '10000000', // hardcoded amount
       "fromAddress": loggedInEthereumAddress as string,
-      "toAddress": loggedInEthereumAddress as string,
+      "toAddress": loggedInEthereumAddress as string, // hardcoded to address
     });
+
     console.log("returned Lifi quote", lifiQuoteResponse);
+  };
+  
+  const handleApproveUsdc = async () => {  
+    if (shouldConfigureApprovalWrite && writeSubmitApproveAsync) {
+      try {
+        await writeSubmitApproveAsync();
+      } catch (error) {
+        console.log('writeSubmitBridgeAsync failed: ', error);
 
-    const fromChainId = '8453';
-    const toChainId = '137';
-    const fromTokenAddress = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
-    const toTokenAddress = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
-    const fromAmount = '100000000'; // 100 USDC, USDC is 6 decimals
-    const userAddress = loggedInEthereumAddress as string;
-    const uniqueRoutesPerBridge = 'true'; // Returns the best route for a given DEX / bridge combination
-    const sort = "time"; // "output" | "gas" | "time"
-    const singleTxOnly = 'true';
-
-    await fetchSocketQuote({
-      fromChainId,
-      toChainId,
-      fromTokenAddress,
-      toTokenAddress,
-      fromAmount,
-      userAddress,
-      uniqueRoutesPerBridge,
-      sort,
-      singleTxOnly,
-    });
-
-    console.log("returned Socket quote", socketResponse);
-    
-    const route = socketResponse?.result.routes[0];
-    if (!route) {
-      return;
+        setShouldConfigureApprovalWrite(false);
+      }
     }
-    await fetchSocketRouteTransactionData({ route })
+  };
+  
+  const handleBridge = async () => {  
+    console.log(shouldConfigureBridgeWrite, writeSubmitBridgeAsync)
+    if (shouldConfigureBridgeWrite && writeSubmitBridgeAsync) {
+      try {
+        await writeSubmitBridgeAsync();
+      } catch (error) {
+        console.log('writeSubmitBridgeAsync failed: ', error);
 
-    console.log("returned Socket route transaction data", socketRouteTransactionData);
-
-    const approvalData = socketRouteTransactionData?.result.approvalData;
-    if (!approvalData) {
-      return;
+        setShouldConfigureBridgeWrite(false);
+      }
     }
-    const { allowanceTarget, minimumApprovalAmount, approvalTokenAddress } = approvalData;
-
-    await fetchSocketApprovalTransactionData({
-      chainId: fromChainId,
-      owner: loggedInEthereumAddress as string,
-      allowanceTarget,
-      tokenAddress: approvalTokenAddress,
-      amount: minimumApprovalAmount,
-    });
-
-    console.log("returned Socket approval transaction data", socketApprovalTransactionData);
 
     // // Send a batched userop with the ECDSAProvider
     // const txn = await ecdsaProvider?.sendUserOperation([
@@ -167,7 +275,6 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     //     value: value2,
     //   },
     // ])
-
   };
 
   /*
