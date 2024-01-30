@@ -8,6 +8,7 @@ import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
 // import { TransferModal } from '@components/Account/TransferModal';
+import { Overlay } from '@components/modals/Overlay';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
@@ -62,8 +63,10 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
    */
 
   return (
-    <Wrapper ref={ref}>
-      <NavDropdown>
+    <Wrapper>
+      <Overlay />
+
+      <NavDropdown ref={ref}>
         <AccountAndUserIconContainer>
           <IconBorder>
             <StyledUser />
