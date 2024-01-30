@@ -50,12 +50,6 @@ export default function DepositModal() {
         </TitleCenteredRow>
 
         <StyledUnlock />
-
-        <InstructionsContainer>
-          <InstructionsLabel>
-            { `1000 USDC` }
-          </InstructionsLabel>
-        </InstructionsContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );

@@ -43,6 +43,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * State
    */
+  
   const [depositState, setDepositState] = useState(NewDepositTransactionStatus.DEFAULT);
   const [venmoIdInput, setVenmoIdInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
