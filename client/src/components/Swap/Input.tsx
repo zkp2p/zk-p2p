@@ -40,9 +40,11 @@ export const Input: React.FC<InputProps> = ({
 }: InputProps) => {
   Input.displayName = "Input";
 
+  const hasAccessoryLabel = accessoryLabel !== "" || accessoryButtonLabel !== "";
+
   return (
     <Container>
-      <LabelInputAndAccessoryContainer>
+      <LabelInputAndAccessoryContainer hasAccessoryLabel={hasAccessoryLabel}>
         <LabelAndInputContainer>
           <Label htmlFor={name}>
             {label}
@@ -100,10 +102,10 @@ const Container = styled.div`
   }
 `;
 
-const LabelInputAndAccessoryContainer = styled.div`
+const LabelInputAndAccessoryContainer = styled.div<{ hasAccessoryLabel: boolean }>`
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: ${({ hasAccessoryLabel }) => hasAccessoryLabel ? 'flex-end' : 'center'};
 `;
 
 const LabelAndInputContainer = styled.div`
