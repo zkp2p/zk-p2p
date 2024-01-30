@@ -93,7 +93,7 @@ const IconBorder = styled.div`
 const LabelContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.4rem;
   padding-top: 4px;
   min-width: 165px;
   color: #CED4DA;

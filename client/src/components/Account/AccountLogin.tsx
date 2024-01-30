@@ -1,6 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
-import { ArrowLeft, User, Unlock } from 'react-feather';
+import { X, User, Unlock } from 'react-feather';
 import { useLogin, useConnectWallet } from '@privy-io/react-auth';
 
 import { LoginTypeButton } from "@components/Account/LoginTypeButton";
@@ -71,7 +71,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
               style={{ background: 'none', border: 'none', cursor: 'pointer' }}
               >
 
-              <StyledArrowLeft/>
+              <StyledX/>
             </button>
           </div>
 
@@ -151,7 +151,7 @@ const TitleCenteredRow = styled.div`
   color: #FFF;
 `;
 
-const StyledArrowLeft = styled(ArrowLeft)`
+const StyledX = styled(X)`
   color: #FFF;
 `;
 

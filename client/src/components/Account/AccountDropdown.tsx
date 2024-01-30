@@ -7,13 +7,13 @@ import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
-import { MODALS } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
 import { toUsdcString, toEthString } from "@helpers/units";
 import { formatAddress } from '@helpers/addressFormat';
+import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
 
 
