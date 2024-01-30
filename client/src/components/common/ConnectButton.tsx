@@ -149,6 +149,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   {isDropdownOppen && (
                     <AccountDropdown
                       ref={accountDropdownRef}
+                      onOptionSelect={toggleDropdown}
                      />
                   )}
                 </div>

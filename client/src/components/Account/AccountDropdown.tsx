@@ -1,23 +1,27 @@
 import { forwardRef } from 'react';
 import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
-import { Link as RouterLink } from 'react-router-dom';
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
-// import { TransferModal } from '@components/Account/TransferModal';
 import { Overlay } from '@components/modals/Overlay';
+import { MODALS } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
+import useModal from '@hooks/useModal';
 import { toUsdcString, toEthString } from "@helpers/units";
 import { formatAddress } from '@helpers/addressFormat';
 import { alchemyMainnetEthersProvider } from "index";
 
 
-export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
+interface AccountDropdownProps {
+  onOptionSelect: () => void;
+}
+
+export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(({ onOptionSelect }, ref) => {
   /*
    * Contexts
    */
@@ -27,12 +31,25 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
   const { usdcBalance, ethBalance } = useBalances();
   const { loggedInEthereumAddress } = useAccount();
   const { blockscanUrl } = useSmartContracts();
+  const { openModal } = useModal();
 
   console.log(user);
 
   /*
    * Handler
    */
+
+  const handleDepositClick = () => {
+    openModal(MODALS.DEPOSIT);
+
+    onOptionSelect();
+  };
+
+  const handleWithdrawClick = () => {
+    openModal(MODALS.WITHDRAW);
+
+    onOptionSelect();
+  };
 
   const handleLogout = async () => {
     if (authenticated) {
@@ -99,18 +116,18 @@ export const AccountDropdown = forwardRef<HTMLDivElement>((props, ref) => {
         </BalancesContainer>
         
         <NavDropdownItemsContainer>
-          <ItemAndIconContainer>
+          <ItemAndIconContainer onClick={handleDepositClick}>
             <StyledArrowUpCircle />
 
-            <NavDropdownItem as={RouterLink} to="/tos">
+            <NavDropdownItem>
               Deposit
             </NavDropdownItem>
           </ItemAndIconContainer>
           
-          <ItemAndIconContainer>
+          <ItemAndIconContainer onClick={handleWithdrawClick}>
             <StyledArrowDownCircle />
 
-            <NavDropdownItem as={RouterLink} to="/withdraw">
+            <NavDropdownItem>
               Withdraw
             </NavDropdownItem>
           </ItemAndIconContainer>
