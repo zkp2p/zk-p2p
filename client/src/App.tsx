@@ -15,6 +15,7 @@ import { Liquidity } from "./pages/Liquidity";
 import { Deposit } from "./pages/Deposit";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
+import Modals from "./pages/Modals";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
@@ -86,6 +87,7 @@ const App = () => {
           <div className="app-container">
             <EnvironmentBanner />
             <TopNav />
+            <Modals />
             <div className="app-content">
               <Routes>
                 <Route path="/" element={<Landing />} />
