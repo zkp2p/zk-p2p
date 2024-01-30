@@ -264,14 +264,13 @@ const BalancesContainer = styled.div`
 
 const BalanceValue = styled.div`
   color: #FFFFFF;
-  font-size: 24px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 700;
 `;
 
 const BalanceLabel = styled.div`
   color: #9ca3af;  
   font-size: 20px;
-  font-weight: 500;
 `;
 
 const NavDropdownItemsContainer = styled.div`
