@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
-import { X, Unlock } from 'react-feather';
+import { X, ArrowRight } from 'react-feather';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
+import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
+import { NetworkSelector } from '@components/Account/NetworkSelector';
 import { ThemedText } from '@theme/text'
+import { toBigInt, toUsdcString } from '@helpers/units';
+import { Input } from '@components/Account/Input';
+import { WithdrawTransactionStatus } from '@helpers/types';
+import { formatAddress } from '@helpers/addressFormat';
+import useAccount from '@hooks/useAccount';
+import useBalances from '@hooks/useBalance';
 import useModal from '@hooks/useModal';
+import useSmartContracts from '@hooks/useSmartContracts';
 
+import baseSvg from '../../assets/images/base.svg';
+
+
+type RecipientAddress = {
+  ensName: string;
+  rawAddress: string;
+  displayAddress: string;
+};
+
+const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
+  ensName: '',
+  rawAddress: '',
+  displayAddress: '',
+};
 
 export default function WithdrawModal() {
   /*
@@ -13,6 +37,58 @@ export default function WithdrawModal() {
    */
 
   const { closeModal } = useModal();
+  const { isLoggedIn } = useAccount();
+  const { usdcBalance, refetchUsdcBalance } = useBalances();
+  const { usdcAddress, usdcAbi } = useSmartContracts();
+
+  /*
+   * State
+   */
+
+  const [withdrawState, setWithdrawState] = useState(WithdrawTransactionStatus.DEFAULT);
+  const [withdrawAmountInput, setWithdrawAmountInput] = useState<string>('');
+  const [recipientAddressInput, setRecipientAddressInput] = useState<RecipientAddress>(EMPTY_RECIPIENT_ADDRESS);
+
+  const [isRecipientInputFocused, setIsRecipientInputFocused] = useState(false);
+
+  const [isValidRecipientAddress, setIsValidRecipientAddress] = useState<boolean>(false);
+
+  const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
+
+  /*
+   * Contract Writes
+   */
+
+  //
+  // transfer(address spender, uint256 value)
+  //
+  const { config: writeTransferConfig } = usePrepareContractWrite({
+    address: usdcAddress,
+    abi: usdcAbi,
+    functionName: "transfer",
+    args: [
+      recipientAddressInput.rawAddress,
+      toBigInt(withdrawAmountInput.toString()),
+    ],
+    enabled: shouldConfigureTransferWrite
+  });
+
+  const {
+    data: submitTransferResult,
+    status: signTransferTransactionStatus,
+    writeAsync: writeSubmitTransferAsync
+  } = useContractWrite(writeTransferConfig);
+
+  const {
+    status: mineTransferTransactionStatus
+  } = useWaitForTransaction({
+    hash: submitTransferResult ? submitTransferResult.hash : undefined,
+    onSuccess(data: any) {
+      console.log('writeSubmitTransferAsync successful: ', data);
+
+      refetchUsdcBalance?.();
+    },
+  });
 
   /*
    * Handlers
@@ -20,6 +96,164 @@ export default function WithdrawModal() {
 
   const handleCloseModal = () => {
     closeModal();
+  };
+
+  const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
+    if (value === "") {
+      setInputFunction('');
+    } else if (value === ".") {
+      setInputFunction('0.');
+    } else if (isValidInput(value)) {
+      setInputFunction(value);
+    }
+  };
+
+  const handleRecipientInputChange = (value: string) => {
+    const updatedAddress: RecipientAddress = {
+      ...recipientAddressInput,
+      rawAddress: value,
+      displayAddress: formatAddress(value),
+    };
+
+    setRecipientAddressInput(updatedAddress);
+  };
+
+  /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    const updateWithdrawState = async () => {
+      const successfulDepositTransaction = mineTransferTransactionStatus === 'success';
+
+      if (successfulDepositTransaction) {
+        setWithdrawState(WithdrawTransactionStatus.TRANSACTION_SUCCEEDED);
+      } else {
+        if (!withdrawAmountInput) { 
+          setWithdrawState(WithdrawTransactionStatus.MISSING_AMOUNTS);
+        } else {
+          const usdcBalanceLoaded = usdcBalance !== null;
+
+          if (withdrawAmountInput && usdcBalanceLoaded) {
+            const depositAmountBI = toBigInt(withdrawAmountInput);
+            const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+
+            if (isDepositAmountGreaterThanBalance) {
+              setWithdrawState(WithdrawTransactionStatus.INSUFFICIENT_BALANCE);
+            } else {
+              if (!recipientAddressInput.rawAddress) {
+                setWithdrawState(WithdrawTransactionStatus.DEFAULT);
+              } else if (!isValidRecipientAddress) {
+                setWithdrawState(WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS);
+              } else {
+                const signingDepositTransaction = signTransferTransactionStatus === 'loading';
+                const miningDepositTransaction = mineTransferTransactionStatus === 'loading';
+  
+                if (signingDepositTransaction) {
+                  setWithdrawState(WithdrawTransactionStatus.TRANSACTION_SIGNING);
+                } else if (miningDepositTransaction){
+                  setWithdrawState(WithdrawTransactionStatus.TRANSACTION_MINING);
+                } else {
+                  setWithdrawState(WithdrawTransactionStatus.VALID);
+                }
+              }
+            }
+          } else {
+            setWithdrawState(WithdrawTransactionStatus.MISSING_AMOUNTS);
+          }
+        }
+      }
+    }
+
+    updateWithdrawState();
+  }, [
+      recipientAddressInput,
+      withdrawAmountInput,
+      usdcBalance,
+      isValidRecipientAddress,
+      signTransferTransactionStatus,
+      mineTransferTransactionStatus,
+    ]
+  );
+
+  useEffect(() => {
+    setShouldConfigureTransferWrite(withdrawState === WithdrawTransactionStatus.VALID);
+  }, [withdrawState]);
+
+  useEffect(() => {
+    const verifyRecipientInput = async () => {
+      if (recipientAddressInput.rawAddress.length !== 42) {
+        setIsValidRecipientAddress(false);
+      } else {
+        setIsValidRecipientAddress(true);
+      }
+    };
+
+    verifyRecipientInput();
+  }, [recipientAddressInput]);
+
+  /*
+   * Helpers
+   */
+
+  function isValidInput(value: string) {
+    const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
+    
+    return parseFloat(value) >= 0 && isValid;
+  };
+
+  const usdcBalanceLabel = useMemo(() => {
+    if (isLoggedIn && usdcBalance !== null) {
+      return `Balance: ${toUsdcString(usdcBalance, true)}`
+    } else {
+      return '';
+    }
+  }, [usdcBalance, isLoggedIn]);
+
+  const ctaDisabled = (): boolean => {
+    switch (withdrawState) {
+      case WithdrawTransactionStatus.DEFAULT:
+      case WithdrawTransactionStatus.INSUFFICIENT_BALANCE:
+      case WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS:
+      case WithdrawTransactionStatus.MISSING_AMOUNTS:
+      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
+      case WithdrawTransactionStatus.TRANSACTION_MINING:
+        return true;
+
+      case WithdrawTransactionStatus.VALID:
+      default:
+        return false;
+    }
+  };
+
+  const ctaText = (): string => {
+    switch (withdrawState) {
+      case WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS:
+        return 'Invalid recipient address';
+
+      case WithdrawTransactionStatus.MISSING_AMOUNTS:
+        return 'Input withdraw amount';
+      
+      case WithdrawTransactionStatus.INSUFFICIENT_BALANCE:
+        const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
+        return `Insufficient USDC balance: ${humanReadableUsdcBalance}`;
+
+      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
+        return 'Signing Transaction';
+
+      case WithdrawTransactionStatus.TRANSACTION_MINING:
+        return 'Mining Transaction';
+
+      case WithdrawTransactionStatus.VALID:
+        return 'Withdraw';
+
+      case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
+        return 'Withdraw';
+
+      case WithdrawTransactionStatus.DEFAULT:
+      default:
+        return 'Input recipient address';
+    }
   };
 
   /*
@@ -49,17 +283,73 @@ export default function WithdrawModal() {
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
 
-        <StyledUnlock />
+        <NetworkContainer>
+          <ThemedText.HeadlineSmall style={{ textAlign: 'left' }}>
+            Network
+          </ThemedText.HeadlineSmall>
+          
+          <NetworkTransitionContainer>
+            <NetworkLogoAndNameContainer>
+              <NetworkSvg src={baseSvg} />
 
-        <InstructionsContainer>
-          <InstructionsLabel>
-            { `1000 USDC` }
-          </InstructionsLabel>
-        </InstructionsContainer>
+              <NetworkNameContainer>
+                <ThemedText.LabelSmall>
+                  {'From'}
+                </ThemedText.LabelSmall>
+                <ThemedText.BodySmall>
+                  {'Base'}
+                </ThemedText.BodySmall>
+              </NetworkNameContainer>
+            </NetworkLogoAndNameContainer>
+
+            <StyledArrowRight/>
+
+            <NetworkSelector />
+          </NetworkTransitionContainer>
+        </NetworkContainer>
+
+        <InputsContainer>
+          <Input
+            label="Amount"
+            name={`withdrawAmount`}
+            value={withdrawAmountInput}
+            onChange={(e) => handleInputChange(e.currentTarget.value, setWithdrawAmountInput)}
+            type="number"
+            inputLabel="USDC"
+            placeholder="0"
+            accessoryLabel={usdcBalanceLabel}
+          />
+
+          <Input
+            label="To"
+            name={`to`}
+            value={isRecipientInputFocused ? recipientAddressInput.rawAddress : recipientAddressInput.displayAddress}
+            onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
+            onFocus={() => setIsRecipientInputFocused(true)}
+            onBlur={() => setIsRecipientInputFocused(false)}
+            type="string"
+            placeholder="alexsoong.eth"
+          />
+        </InputsContainer>
+
+        <ButtonContainer>
+          <Button
+            fullWidth={true}
+            disabled={ctaDisabled()}
+            onClick={async () => {
+              try {
+                await writeSubmitTransferAsync?.();
+              } catch (error) {
+                console.log('writeSubmitTransferAsync failed: ', error);
+              }
+            }}>
+            { ctaText() }
+          </Button>
+        </ButtonContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
-}
+};
 
 const ModalAndOverlayContainer = styled.div`
   width: 100vw;
@@ -74,7 +364,7 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 440px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -84,9 +374,18 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 20;
-  gap: 1.3rem;
+  gap: 1rem;
   top: 33%;
   position: relative;
+`;
+
+const NetworkContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  padding-top: 12px;
+  gap: 0.8rem;
 `;
 
 const TitleCenteredRow = styled.div`
@@ -102,24 +401,49 @@ const StyledX = styled(X)`
   color: #FFF;
 `;
 
-const StyledUnlock = styled(Unlock)`
-  width: 56px;
-  height: 56px;
-  color: #FFF;
-  padding: 0.5rem 0;
+const NetworkTransitionContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1.25rem;
+  align-items: center;
+  justify-content: flex-start;
 `;
 
-const InstructionsContainer = styled.div`
+const NetworkLogoAndNameContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const NetworkNameContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  align-items: center;
-  padding: 0 1.75rem;
-  color: #FFF;
+  justify-content: center;
+  text-align: left;
 `;
 
-const InstructionsLabel = styled.div`
-  font-size: 16px;
-  text-align: center;
-  line-height: 1.5;
+const NetworkSvg = styled.img`
+  width: 32px;
+  height: 32px;
+`;
+
+const StyledArrowRight = styled(ArrowRight)`
+  color: #FFF;
+  height: 24px;
+  width: 24px;
+`;
+
+const InputsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 12px;
+`;
+
+const ButtonContainer = styled.div`
+  width: 100%;
 `;
