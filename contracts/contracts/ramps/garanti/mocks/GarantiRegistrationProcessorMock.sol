@@ -1,17 +1,19 @@
 //SPDX-License-Identifier: MIT
 
-import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
+import { IGarantiBodyHashVerifier } from "../interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiRegistrationProcessor } from "../interfaces/IGarantiRegistrationProcessor.sol";
 
 pragma solidity ^0.8.18;
 
-contract GarantiRegistrationProcessorMock is IRegistrationProcessor {
+contract GarantiRegistrationProcessorMock is IGarantiRegistrationProcessor {
 
     /* ============ Constructor ============ */
     constructor() {}
 
     /* ============ External View Functions ============ */
     function processProof(
-        RegistrationProof calldata _proof
+        RegistrationProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata /*_bodyHashProof*/
     )
         public
         pure
