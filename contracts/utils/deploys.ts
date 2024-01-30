@@ -5,6 +5,12 @@ import { Address } from "@utils/types";
 const circom = require("circomlibjs");
 
 import {
+  GarantiBodyHashVerifier,
+  GarantiRamp,
+  GarantiRegistrationProcessor,
+  GarantiRegistrationProcessorMock,
+  GarantiSendProcessor,
+  GarantiSendProcessorMock,
   HDFCRamp,
   HDFCRegistrationProcessorMock,
   HDFCRegistrationProcessor,
@@ -25,6 +31,15 @@ import {
   VenmoSendProcessor,
   VenmoSendProcessorV2,
 } from "./contracts";
+import {
+  GarantiRamp__factory,
+  GarantiRegistrationProcessor__factory,
+  GarantiSendProcessor__factory,
+  mocks as garantiMocks
+} from "../typechain/factories/contracts/ramps/garanti";
+import {
+  Groth16Verifier__factory as GarantiBodyHashVerifier__factory,
+} from "../typechain/factories/contracts/verifiers/garanti_body_suffix_hasher_verifier.sol";
 import {
   HDFCRamp__factory,
   HDFCRegistrationProcessor__factory,
@@ -234,6 +249,69 @@ export default class DeployHelper {
     );
   }
 
+  // Garanti Contracts
+  public async deployGarantiRamp(
+    owner: Address,
+    usdcToken: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<GarantiRamp> {
+    return await new GarantiRamp__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  public async deployGarantiRegistrationProcessor(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    bodyHashVerifier: Address,
+    emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<GarantiRegistrationProcessor> {
+    return await new GarantiRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      bodyHashVerifier,
+      emailFromAddress,
+      timestampBuffer
+    );
+  }
+
+  public async deployGarantiSendProcessor(
+    ramp: Address,
+    keyHashAdapter: Address,
+    nullifierRegistry: Address,
+    bodyHashVerifier: Address,
+    emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<GarantiSendProcessor> {
+    return await new GarantiSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      keyHashAdapter,
+      nullifierRegistry,
+      bodyHashVerifier,
+      emailFromAddress,
+      timestampBuffer
+    );
+  }
+
+  public async deployGarantiBodyHashVerifier(): Promise<GarantiBodyHashVerifier> {
+    return await new GarantiBodyHashVerifier__factory(this._deployerSigner).deploy();
+  }
+
   public async deployManagedKeyHashAdapter(venmoKeyHash: string): Promise<ManagedKeyHashAdapter> {
     return await new ManagedKeyHashAdapter__factory(this._deployerSigner).deploy(venmoKeyHash);
   }
@@ -266,6 +344,13 @@ export default class DeployHelper {
     return await new hdfcMocks.HDFCTimestampParsingMock__factory(this._deployerSigner).deploy();
   }  
 
+  public async deployGarantiSendProcessorMock(): Promise<GarantiSendProcessorMock> {
+    return await new garantiMocks.GarantiSendProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployGarantiRegistrationProcessorMock(): Promise<GarantiRegistrationProcessorMock> {
+    return await new garantiMocks.GarantiRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
   public async deployPoseidon3(): Promise<any> {
     const contract = new ethers.ContractFactory(
       circom.poseidonContract.generateABI(3),

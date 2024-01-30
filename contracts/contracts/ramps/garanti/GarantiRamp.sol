@@ -8,7 +8,8 @@ import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
 import { IPoseidon3 } from "../../interfaces/IPoseidon3.sol";
 import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
-import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
+import { IGarantiBodyHashVerifier } from "./interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiRegistrationProcessor } from "./interfaces/IGarantiRegistrationProcessor.sol";
 import { IGarantiSendProcessor } from "./interfaces/IGarantiSendProcessor.sol";
 
 pragma solidity ^0.8.18;
@@ -78,7 +79,7 @@ contract GarantiRamp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[8] garantiId;
+        string garantiIban;                 // IBAN number of the depositor with spacing as such: "TR## #### #### #### #### #### ##"
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -135,9 +136,7 @@ contract GarantiRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
-    IPoseidon3 public immutable poseidon3;                          // Poseidon hashing contract
-    IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
-    IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
+    IGarantiRegistrationProcessor public registrationProcessor;     // Address of registration processor contract, verifies registration e-mails
     IGarantiSendProcessor public sendProcessor;                     // Address of send processor contract, verifies onRamp emails
 
     bool public isInitialized;                                      // Indicates if contract has been initialized
@@ -160,8 +159,6 @@ contract GarantiRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
-        IPoseidon3 _poseidon3,
-        IPoseidon6 _poseidon6,
         uint256 _minDepositAmount,
         uint256 _maxOnRampAmount,
         uint256 _intentExpirationPeriod,
@@ -172,8 +169,6 @@ contract GarantiRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
-        poseidon3 = _poseidon3;
-        poseidon6 = _poseidon6;
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
         intentExpirationPeriod = _intentExpirationPeriod;
@@ -193,7 +188,7 @@ contract GarantiRamp is Ownable {
      * @param _sendProcessor            Send processor address
      */
     function initialize(
-        IRegistrationProcessor _registrationProcessor,
+        IGarantiRegistrationProcessor _registrationProcessor,
         IGarantiSendProcessor _sendProcessor
     )
         external
@@ -211,21 +206,17 @@ contract GarantiRamp is Ownable {
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
      * sender of the transaction. One Garanti account can be registered to multiple Ethereum addresses.
      *
-     * @param _a        Parameter of zk proof
-     * @param _b        Parameter of zk proof
-     * @param _c        Parameter of zk proof
-     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, userIdHash
+     * @param _proof            Parameters and signals for registration email proof
+     * @param _bodyHashProof    Parameters and signals for body hash proof
      */
     function register(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[5] memory _signals
+        IGarantiRegistrationProcessor.RegistrationProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
     )
         external
     {
         require(accounts[msg.sender].idHash == bytes32(0), "Account already associated with idHash");
-        bytes32 idHash = _verifyRegistrationProof(_a, _b, _c, _signals);
+        bytes32 idHash = _verifyRegistrationProof(_proof, _bodyHashProof);
 
         accounts[msg.sender].idHash = idHash;
 
@@ -237,18 +228,19 @@ contract GarantiRamp is Ownable {
      * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
      * of USDC.
      *
-     * @param _garantiId            The packed garanti ID of the depositor
+     * @param _garantiIban      IBAN number of the depositor with spacing as such: "TR## #### #### #### #### #### ##"
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      */
     function offRamp(
-        uint256[8] memory _garantiId,
+        string memory _garantiIban,
         uint256 _depositAmount,
         uint256 _receiveAmount
     )
         external
         onlyRegisteredUser
     {
+        require(isValidIban(_garantiIban), "Invalid IBAN");
         require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -261,7 +253,7 @@ contract GarantiRamp is Ownable {
 
         deposits[depositId] = Deposit({
             depositor: msg.sender,
-            garantiId: _garantiId,
+            garantiIban: _garantiIban,
             depositAmount: _depositAmount,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
@@ -363,17 +355,12 @@ contract GarantiRamp is Ownable {
      * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
      * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
-     * @param _a        Parameter of zk proof
-     * @param _b        Parameter of zk proof
-     * @param _c        Parameter of zk proof
-     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
-     *                  nullifier, intentHash
+     * @param _proof            Parameters and signals for send email proof
+     * @param _bodyHashProof    Parameters and signals for body hash proof
      */
     function onRamp(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[15] memory _signals
+        IGarantiSendProcessor.SendProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
     )
         external
     {
@@ -381,7 +368,7 @@ contract GarantiRamp is Ownable {
             Intent memory intent,
             Deposit storage deposit,
             bytes32 intentHash
-        ) = _verifyOnRampProof(_a, _b, _c, _signals);
+        ) = _verifyOnRampProof(_proof, _bodyHashProof);
 
         _pruneIntent(deposit, intentHash);
 
@@ -501,7 +488,7 @@ contract GarantiRamp is Ownable {
      *
      * @param _registrationProcessor   New registration proccesor address
      */
-    function setRegistrationProcessor(IRegistrationProcessor _registrationProcessor) external onlyOwner {
+    function setRegistrationProcessor(IGarantiRegistrationProcessor _registrationProcessor) external onlyOwner {
         registrationProcessor = _registrationProcessor;
         emit NewRegistrationProcessorSet(address(_registrationProcessor));
     }
@@ -659,6 +646,24 @@ contract GarantiRamp is Ownable {
         return depositArray;
     }
 
+    function isValidIban(string memory _iban) public pure returns(bool) {
+        bytes memory ibanBytes = bytes(_iban);
+        if(ibanBytes.length != 32) { return false; }
+
+        for (uint256 i = 0; i < ibanBytes.length; ++i) {
+            if (i < 2) {
+                if(ibanBytes[i] < 0x41 || ibanBytes[i] > 0x5a) { return false; }
+            } else if (i % 5 == 4) {
+                // i = 4, 9, 14, 19, 24, 29 should be spaces
+                if(ibanBytes[i] != 0x20) { return false; }
+            } else {
+                if(ibanBytes[i] < 0x30 || ibanBytes[i] > 0x39) { return false; }
+            }
+        }
+
+        return true;
+    }
+
     /* ============ Internal Functions ============ */
 
     /**
@@ -759,10 +764,8 @@ contract GarantiRamp is Ownable {
      * was paid off-chain inclusive of the conversionRate.
      */
     function _verifyOnRampProof(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[15] memory _signals
+        IGarantiSendProcessor.SendProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -773,21 +776,14 @@ contract GarantiRamp is Ownable {
             bytes32 offRamperIdHash,
             bytes32 onRamperIdHash,
             bytes32 intentHash
-        ) = sendProcessor.processProof(
-            IGarantiSendProcessor.SendProof({
-                a: _a,
-                b: _b,
-                c: _c,
-                signals: _signals
-            })
-        );
+        ) = sendProcessor.processProof(_proof, _bodyHashProof);
 
         Intent memory intent = intents[intentHash];
         Deposit storage deposit = deposits[intent.deposit];
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(bytes32(_getGarantiIdHash(deposit.garantiId)) == offRamperIdHash, "Offramper id does not match");
+        require(keccak256(abi.encodePacked(deposit.garantiIban)) == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
@@ -799,40 +795,14 @@ contract GarantiRamp is Ownable {
      * different addresses.
      */
     function _verifyRegistrationProof(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[5] memory _signals
+        IGarantiRegistrationProcessor.RegistrationProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
     )
         internal
         returns(bytes32)
     {
-        bytes32 idHash = registrationProcessor.processProof(
-            IRegistrationProcessor.RegistrationProof({
-                a: _a,
-                b: _b,
-                c: _c,
-                signals: _signals
-            })
-        );
+        bytes32 idHash = registrationProcessor.processProof(_proof, _bodyHashProof);
 
         return idHash;
-    }
-
-    /**
-     * @notice Returns the poseidon hash of the given raw UPI ID    
-     */
-    function _getGarantiIdHash(uint256[8] memory _garantiId) internal view returns (bytes32) {
-        uint256[6] memory temp1;
-        uint256[3] memory temp2;
-
-        for (uint256 i = 0; i < 6; ++i) {
-            temp1[i] = _garantiId[i];
-        }
-        temp2[0] = poseidon6.poseidon(temp1);
-        temp2[1] = _garantiId[6];
-        temp2[2] = _garantiId[7];
-
-        return bytes32(poseidon3.poseidon(temp2));
     }
 }

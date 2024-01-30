@@ -21,6 +21,18 @@ library StringConversionUtils {
      * @param _desiredDecimals      Desired amount of decimal places
      */
     function stringToUint(string memory _s, uint256 _desiredDecimals) internal pure returns (uint256) {
+        return stringToUint(_s, 0x2E, _desiredDecimals);
+    }
+
+    function stringToUint(
+        string memory _s,
+        bytes1 _decimalCharacter,
+        uint256 _desiredDecimals
+    )
+        internal
+        pure
+        returns (uint256)
+    {
         bytes memory b = bytes(_s);
 
         uint256 result = 0;
@@ -36,7 +48,7 @@ library StringConversionUtils {
                 decimalPlaces++;
             }
 
-            if (b[i] == 0x2E) {
+            if (b[i] == _decimalCharacter) {
                 require(decimals == false, "String has multiple decimals");
                 decimals = true;
             }

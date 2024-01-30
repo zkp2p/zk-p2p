@@ -1,5 +1,6 @@
 //SPDX-License-Identifier: MIT
 
+import { IGarantiBodyHashVerifier } from "../interfaces/IGarantiBodyHashVerifier.sol";
 import { IGarantiSendProcessor } from "../interfaces/IGarantiSendProcessor.sol";
 
 pragma solidity ^0.8.18;
@@ -11,7 +12,8 @@ contract GarantiSendProcessorMock is IGarantiSendProcessor {
 
     /* ============ External View Functions ============ */
     function processProof(
-        SendProof calldata _proof
+        SendProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata /*_bodyHashProof*/
     )
         public
         pure

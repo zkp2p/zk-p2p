@@ -4,10 +4,13 @@ import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
 import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
 import { Groth16Verifier } from "../../verifiers/garanti_send_verifier.sol";
+import { IGarantiBodyHashVerifier } from "./interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiSendProcessor } from "./interfaces/IGarantiSendProcessor.sol";
 import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
-import { IGarantiSendProcessor } from "./interfaces/IGarantiSendProcessor.sol";
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
+
+import "hardhat/console.sol";
 
 pragma solidity ^0.8.18;
 
@@ -19,11 +22,15 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
     /* ============ Constants ============ */
     uint256 constant PACK_SIZE = 7;
 
+    /* ============ Public Variables ============ */
+    IGarantiBodyHashVerifier public bodyHashVerifier;
+
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapterV2 _garantiMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
+        IGarantiBodyHashVerifier _bodyHashVerifier,
         string memory _emailFromAddress,
         uint256 _timestampBuffer
     )
@@ -35,11 +42,14 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
             _emailFromAddress,
             _timestampBuffer
         )
-    {}
+    {
+        bodyHashVerifier = _bodyHashVerifier;
+    }
     
     /* ============ External Functions ============ */
     function processProof(
-        IGarantiSendProcessor.SendProof calldata _proof
+        IGarantiSendProcessor.SendProof calldata _proof,
+        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
     )
         public
         override
@@ -53,43 +63,55 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
         )
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof"); // checks effects iteractions, this should come first
+        require(
+            bodyHashVerifier.verifyProof(_bodyHashProof.a, _bodyHashProof.b, _bodyHashProof.c, _bodyHashProof.signals),
+            "Invalid body hash proof"
+        );
+
+        _validateIntermediateHash(_proof.signals, _bodyHashProof.signals);
 
         require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
 
-        // Signals [1:4] are the packed from email address
-        string memory fromEmail = _parseSignalArray(_proof.signals, 1, 4);
+        // Signals [5:10] are the packed from email address
+        string memory fromEmail = _parseSignalArray(_proof.signals, 5, 10);
         require(keccak256(abi.encodePacked(fromEmail)) == keccak256(emailFromAddress), "Invalid email from address");
 
-        // Signals [4:6] is the packed amount, since this is a USDC amount we want to make sure the returned number is
+        // Signals [17:19] is the packed amount, since this is a USDC amount we want to make sure the returned number is
         // properly padded to 6 decimals. If the parsed has more than 6 figures to the right of the decimal it will revert
-        amount = _parseSignalArray(_proof.signals, 4, 6).stringToUint(6);
+        amount = _parseSignalArray(_proof.signals, 17, 19).stringToUint(0x2C, 6);
 
-        // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
+        // Signals [10:12] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
         // parse and convert to a unix timestamp
         // Add the buffer to build in flexibility with L2 timestamps
-        timestamp = _parseSignalArray(_proof.signals, 6, 11).stringToUint(0) + timestampBuffer;
+        timestamp = _parseSignalArray(_proof.signals, 10, 12).stringToUint(0) + timestampBuffer;
 
-        // Signals [11] is the packed onRamperIdHash
-        onRamperIdHash = bytes32(_proof.signals[11]);
+        // Signals [19] is the packed onRamperIdHash
+        onRamperIdHash = bytes32(_proof.signals[19]);
 
-        // Signals [12] is the packed offRamper UPI ID hash
-        offRamperIdHash = bytes32(_proof.signals[12]);
+        // Signals [12:17] is the packed IBAN number which must be hashed to get the offRamperIdHash
+        offRamperIdHash = keccak256(abi.encodePacked(_parseSignalArray(_proof.signals, 12, 17)));
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        _validateAndAddNullifier(bytes32(_proof.signals[13]));
+        _validateAndAddNullifier(bytes32(_proof.signals[20]));
 
         // Signals [14] is intentHash
-        intentHash = bytes32(_proof.signals[14]);
+        intentHash = bytes32(_proof.signals[21]);
     }
     
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[15] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[22] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
         uint256[] memory signalArray = new uint256[](_to - _from);
         for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
         }
 
         return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
+    }
+
+    function _validateIntermediateHash(uint256[22] calldata _sendSignals, uint256[4] calldata _bodyHashSignals) internal pure {
+        bytes32 intermediateHash = keccak256(abi.encode(_sendSignals[1], _sendSignals[2], _sendSignals[3], _sendSignals[4]));
+        bytes32 inputHash = keccak256(abi.encode(_bodyHashSignals[0], _bodyHashSignals[1], _bodyHashSignals[2], _bodyHashSignals[3]));
+        require(intermediateHash == inputHash, "Invalid intermediate hash");
     }
 }
