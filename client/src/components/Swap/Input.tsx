@@ -103,6 +103,7 @@ const Container = styled.div`
 const LabelInputAndAccessoryContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
 `;
 
 const LabelAndInputContainer = styled.div`
@@ -186,11 +187,11 @@ const AccessoryContainer = styled.div<{ alignment?: string, accessoryButtonLabel
 
 const AccessoryLabel = styled.div`
   font-weight: 500;
+  padding-right: 6px;
   color: #6C757D;
 `;
 
 const AccessoryTextButton = styled.div`
   cursor: pointer;
-  font-weight: 600;
   color: #FFFFFF;
 `;
