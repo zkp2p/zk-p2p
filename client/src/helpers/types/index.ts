@@ -26,3 +26,5 @@ export type {
 export type {
   AccountInfo
 } from './registration';
+
+export { MODALS } from './modals';

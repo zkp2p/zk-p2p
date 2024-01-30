@@ -28,6 +28,7 @@ import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGe
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
+import { ModalSettingsProvider } from 'contexts/common/ModalSettings';
 
 // Legacy Contexts
 import LegacyDepositsProvider  from './contexts/legacy/Deposits/DepositsProvider';
@@ -152,6 +153,7 @@ const providersWithProps: ProvidersType[] = [
   [HdfcOnRamperIntentsProvider, {}],
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
+  [ModalSettingsProvider, {}],
   [GoogleOAuthProvider, { clientId: process.env.GOOGLE_CLIENT_ID || "" }],
   [GoogleAuthProvider, {}],
 ];
