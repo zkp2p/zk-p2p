@@ -1,25 +1,20 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef } from 'react';
 import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
-import { useDisconnect, usePrepareSendTransaction, useSendTransaction, useContractRead, erc20ABI, useWaitForTransaction, usePrepareContractWrite, useContractWrite } from 'wagmi';
-import { useEcdsaProvider } from '@zerodev/wagmi';
+import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
-import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants'
 
 import { Overlay } from '@components/modals/Overlay';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
-import useLifiBridge from '@hooks/useLifiBridge';
-import useSocketBridge from '@hooks/useSocketBridge';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
 import { toUsdcString, toEthString } from "@helpers/units";
 import { formatAddress } from '@helpers/addressFormat';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
-import { Button } from '@mui/material';
 
 
 interface AccountDropdownProps {
@@ -222,59 +217,6 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     if (loggedInEthereumAddress) {
       copyToClipboard(loggedInEthereumAddress);
     }
-  };
-
-  const handleFetchQuote = async () => {
-    await fetchLifiQuote({
-      "fromChain": 'bas',
-      "toChain": 'pol', // hardcode polygon
-      "fromToken": '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      "toToken": '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // hardcode USDT
-      "fromAmount": '10000000', // hardcoded amount
-      "fromAddress": loggedInEthereumAddress as string,
-      "toAddress": loggedInEthereumAddress as string, // hardcoded to address
-    });
-
-    console.log("returned Lifi quote", lifiQuoteResponse);
-  };
-  
-  const handleApproveUsdc = async () => {  
-    if (shouldConfigureApprovalWrite && writeSubmitApproveAsync) {
-      try {
-        await writeSubmitApproveAsync();
-      } catch (error) {
-        console.log('writeSubmitBridgeAsync failed: ', error);
-
-        setShouldConfigureApprovalWrite(false);
-      }
-    }
-  };
-  
-  const handleBridge = async () => {  
-    console.log(shouldConfigureBridgeWrite, writeSubmitBridgeAsync)
-    if (shouldConfigureBridgeWrite && writeSubmitBridgeAsync) {
-      try {
-        await writeSubmitBridgeAsync();
-      } catch (error) {
-        console.log('writeSubmitBridgeAsync failed: ', error);
-
-        setShouldConfigureBridgeWrite(false);
-      }
-    }
-
-    // // Send a batched userop with the ECDSAProvider
-    // const txn = await ecdsaProvider?.sendUserOperation([
-    //   {
-    //     target: "targetAddress1",
-    //     data: "callData1",
-    //     value: value1,
-    //   },
-    //   {
-    //     target: "targetAddress2",
-    //     data: "callData2",
-    //     value: value2,
-    //   },
-    // ])
   };
 
   /*
