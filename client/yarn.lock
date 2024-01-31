@@ -3482,6 +3482,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lifi/sdk@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@lifi/sdk@npm:2.5.0"
+  dependencies:
+    "@ethersproject/abi": ^5.7.0
+    "@ethersproject/contracts": ^5.7.0
+    "@lifi/types": ^9.3.0
+    bignumber.js: ^9.1.2
+    eth-rpc-errors: ^4.0.3
+    ethers: ^5.7.2
+  checksum: 5348be1e9837f55aa590ff3fc940ba6f67d44bfa33f8a3ce20b4c227065aefcb1f61f99f4cf6822faa6a7033c9b396cff04d59157c2a59b5dd97457a75147fe0
+  languageName: node
+  linkType: hard
+
+"@lifi/types@npm:^9.3.0":
+  version: 9.3.3
+  resolution: "@lifi/types@npm:9.3.3"
+  dependencies:
+    ethers: ^5.7.2
+  checksum: 8f11fe296d7faa0a448c03b4c23b3615ab4a2545e080f01ce9fa1cbbb241627db72943dc5e82cc564ed69ed11ffabf44e6f10ca8b42e86cf23f4552d1b699dfa
+  languageName: node
+  linkType: hard
+
 "@lit-labs/ssr-dom-shim@npm:^1.0.0, @lit-labs/ssr-dom-shim@npm:^1.1.0":
   version: 1.1.2
   resolution: "@lit-labs/ssr-dom-shim@npm:1.1.2"
@@ -12312,6 +12335,7 @@ __metadata:
     "@babel/preset-typescript": ^7.22.11
     "@emotion/react": ^11.11.1
     "@emotion/styled": ^11.11.0
+    "@lifi/sdk": ^2.5.0
     "@mui/joy": ^5.0.0-beta.15
     "@mui/material": ^5.14.3
     "@openzeppelin/contracts": ^4.7.1
@@ -13598,7 +13622,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:5.7.2, ethers@npm:^5.4.5, ethers@npm:^5.5.1, ethers@npm:^5.7.1":
+"ethers@npm:5.7.2, ethers@npm:^5.4.5, ethers@npm:^5.5.1, ethers@npm:^5.7.1, ethers@npm:^5.7.2":
   version: 5.7.2
   resolution: "ethers@npm:5.7.2"
   dependencies:
@@ -14615,7 +14639,7 @@ __metadata:
 
 "fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -23632,7 +23656,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.4#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>":
   version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -23645,7 +23669,7 @@ __metadata:
 
 "resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
   version: 2.0.0-next.5
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#~builtin<compat/resolve>::version=2.0.0-next.5&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#~builtin<compat/resolve>::version=2.0.0-next.5&hash=c3c19d"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -26426,7 +26450,7 @@ __metadata:
 
 "typescript@patch:typescript@^5.3.3#~builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=f3b441"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
