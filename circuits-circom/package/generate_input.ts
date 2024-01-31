@@ -671,10 +671,6 @@ export async function getCircuitInputs(
       modulus,
       signature,
       in_len_padded_bytes,
-      precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
-      body_hash_idx,
       // mercado specific indices
       email_from_idx,
       email_to_idx
