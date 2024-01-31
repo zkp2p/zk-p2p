@@ -150,10 +150,13 @@ const ModalContainer = styled.div<{$isVenmo?: boolean}>`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 12%;
-  position: relative;
   height: ${({ $isVenmo }) => $isVenmo ? '588px' : '612px'};
   overflow-y: auto;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const QRContainer = styled.div`

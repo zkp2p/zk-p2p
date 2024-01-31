@@ -128,8 +128,11 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.5rem;
-  top: 33%;
-  position: relative;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const RowBetween = styled.div`

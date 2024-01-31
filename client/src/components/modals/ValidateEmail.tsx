@@ -438,8 +438,11 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.3rem;
-  top: 20%;
-  position: relative;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const StyledArrowLeft = styled(ArrowLeft)`

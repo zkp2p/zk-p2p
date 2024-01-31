@@ -151,8 +151,11 @@ const ModalContainer = styled.div`
   color: #FFF;
   align-items: center;
   z-index: 20;
-  top: 33%;
-  position: relative;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const TableHeader = styled.div`
