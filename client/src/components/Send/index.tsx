@@ -1,7 +1,8 @@
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components/macro';
 import { X } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useSendTransaction, usePrepareSendTransaction } from 'wagmi';
+import debounce from 'lodash/debounce';
 
 import { Button } from "@components/common/Button";
 import { CustomConnectButton } from "@components/common/ConnectButton";
@@ -13,6 +14,7 @@ import { ZERO } from '@helpers/constants';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, SendTransactionStatus } from '@helpers/types';
 import { resolveEnsName } from '@helpers/ens';
+import { tokens } from '@helpers/tokens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -41,7 +43,7 @@ export default function SendForm() {
    * Contexts
    */
 
-  const { isLoggedIn, network, loginStatus } = useAccount();
+  const { isLoggedIn, network, loginStatus, loggedInEthereumAddress } = useAccount();
   const { usdcBalance, refetchUsdcBalance, usdcApprovalToLifiBridge, refetchUsdcApprovalToLifiBridge } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
   const { getLifiQuotes, getLifiTransactionHistory, getLifiTransactionStatus } = useLifiBridge();
@@ -135,6 +137,38 @@ export default function SendForm() {
     },
   });
 
+  //
+  // Bridge
+  //
+  // const { config: writeBridgeConfig } = usePrepareSendTransaction({
+  //   to: lifiBridgeAddress,
+  //   value: ZERO,
+  //   data: lifiQuoteResponse?.transactionRequest.data,
+  //   onError: (error: { message: any }) => {
+  //     console.error(error.message);
+  //   },
+  //   enabled: shouldConfigureBridgeWrite
+  // });
+
+  // const {
+  //   data: submitBridgeResult,
+  //   status: signBridgeTransactionStatus,
+  //   writeAsync: writeSubmitBridgeAsync
+  // } = useContractWrite(writeBridgeConfig);
+
+  // const {
+  //   status: mineBridgeTransactionStatus
+  // } = useWaitForTransaction({
+  //   hash: submitBridgeResult ? submitBridgeResult.hash : undefined,
+  //   onSuccess(data: any) {
+  //     console.log('writeSubmitBridgeAsync successful: ', data);
+      
+  //     refetchUsdcApprovalToLifiBridge?.();
+
+  //     refetchUsdcBalance?.();
+  //   },
+  // });
+
   /*
    * Handlers
    */
@@ -148,6 +182,8 @@ export default function SendForm() {
       setInputFunction('0.');
     } else if (isValidInput(value)) {
       setInputFunction(value);
+      // Add debounce
+      debouncedGetQuotes(value);
     }
   };
 
@@ -193,6 +229,22 @@ export default function SendForm() {
   /*
    * Hooks
    */
+
+  const debouncedGetQuotes = useCallback(debounce(async (value) => {
+    if (!usdcAddress || !loggedInEthereumAddress || !recipientAddressInput.rawAddress) {
+      return;
+    }
+    const result = await getLifiQuotes({
+        fromAmount: value,
+        fromToken: tokens['8453']['USDC'].address, // Bridge only works on Mainnet, so we use Base USDC from token constants
+        fromAddress: loggedInEthereumAddress,
+        toChain: '137', // TODO Hardcoded to Polygon for now
+        toToken: tokens['137']['USDCe'].address, // TODO Hardcoded to USDCe for now
+        toAddress: recipientAddressInput.rawAddress,
+    });
+    console.log('lifi', result)
+    return result;
+  }, 1000), [usdcAddress, loggedInEthereumAddress, recipientAddressInput]); // Adjust the delay as needed
 
   useEffect(() => {
     const updateSendState = async () => {
