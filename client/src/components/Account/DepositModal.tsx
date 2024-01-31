@@ -1,10 +1,17 @@
 import React from 'react';
 import styled from 'styled-components/macro';
-import { X, Unlock } from 'react-feather';
+import QRCode from "react-qr-code";
+import { X, Copy } from 'react-feather';
+import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
+import useAccount from '@hooks/useAccount';
 import useModal from '@hooks/useModal';
+import { commonStrings } from '@helpers/strings';
+import { alchemyMainnetEthersProvider } from "index";
+
+import baseSvg from '../../assets/images/base.svg';
 
 
 export default function DepositModal() {
@@ -13,6 +20,7 @@ export default function DepositModal() {
    */
 
   const { closeModal } = useModal();
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * Handlers
@@ -20,6 +28,16 @@ export default function DepositModal() {
 
   const handleCloseModal = () => {
     closeModal();
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+  };
+
+  const handleCopyClick = () => {
+    if (loggedInEthereumAddress) {
+      copyToClipboard(loggedInEthereumAddress);
+    }
   };
 
   /*
@@ -49,7 +67,39 @@ export default function DepositModal() {
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
 
-        <StyledUnlock />
+        <QRContainer>
+          <QRCode
+            value={`ethereum:${loggedInEthereumAddress}`}
+            size={192}/>
+        </QRContainer>
+
+        <AccountAddressContainer>
+          <AddressAndEnsNameContainer>
+            <ThemedText.LabelSmall style={{ textAlign: 'left', color: '#FFF' }}>
+              Base Address (Ethereum)
+            </ThemedText.LabelSmall>
+
+            <AddressLabel>
+              <ENSName
+                provider={alchemyMainnetEthersProvider}
+                address={loggedInEthereumAddress || ''}
+                displayType={AddressDisplayEnum.FULL}
+              />
+            </AddressLabel>
+          </AddressAndEnsNameContainer>
+
+          <IconBorder>
+            <StyledCopy onClick={handleCopyClick} />
+          </IconBorder>
+        </AccountAddressContainer>
+
+        <InstructionsContainer>
+          <NetworkSvg src={baseSvg} />
+
+          <InstructionsLabel>
+            { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS') }
+          </InstructionsLabel>
+        </InstructionsContainer>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -68,7 +118,7 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 440px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -99,24 +149,74 @@ const StyledX = styled(X)`
   color: #FFF;
 `;
 
-const StyledUnlock = styled(Unlock)`
-  width: 56px;
-  height: 56px;
+const StyledCopy = styled(Copy)`
   color: #FFF;
-  padding: 0.5rem 0;
+  height: 18px;
+  width: 18px;
+  cursor: pointer;
+`;
+
+const IconBorder = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #3A3D44;
+
+  &:hover {
+    background-color: #4A4D54;
+  }
+`;
+
+const QRContainer = styled.div`
+  padding: 1.4rem 1.5rem 1.2rem;
+  border: 1px solid #98a1c03d;
+  border-radius: 16px;
+  background: #131A2A;
+`;
+
+const AccountAddressContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 1.5rem;
+  text-align: left;
+`;
+
+const AddressAndEnsNameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  color: #9ca3af;
+  gap: 1rem;
+`;
+
+const AddressLabel = styled.div`
+  max-width: calc(100% - 32px);
+  word-break: break-all;
+  line-height: 1.4;
+`;
+
+const NetworkSvg = styled.img`
+  width: 32px;
+  height: 32px;
 `;
 
 const InstructionsContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  border: 1px solid #98a1c03d;
+  border-radius: 16px;
   align-items: center;
-  padding: 0 1.75rem;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
   color: #FFF;
 `;
 
 const InstructionsLabel = styled.div`
-  font-size: 16px;
-  text-align: center;
+  font-size: 15px;
   line-height: 1.5;
+  text-align: left;
 `;

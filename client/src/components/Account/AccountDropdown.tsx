@@ -11,8 +11,8 @@ import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
-import { toUsdcString, toEthString } from "@helpers/units";
 import { formatAddress } from '@helpers/addressFormat';
+import { toUsdcString, toEthString } from "@helpers/units";
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
 
@@ -71,7 +71,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    * Helpers
    */
 
-  const depositorEtherscanLink = `${blockscanUrl}/address/${loggedInEthereumAddress}`;
+  const userEtherscanLink = `${blockscanUrl}/address/${loggedInEthereumAddress}`;
 
   /*
    * Component
@@ -91,7 +91,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
           </AccountTypeLabel>
           <AccountAddressAndENSContainer>
             <AccountAddress>
-              <Link href={depositorEtherscanLink} target="_blank">
+              <Link href={userEtherscanLink} target="_blank">
                 <ENSName
                   provider={alchemyMainnetEthersProvider}
                   address={loggedInEthereumAddress || ''}

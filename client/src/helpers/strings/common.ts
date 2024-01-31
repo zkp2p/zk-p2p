@@ -24,6 +24,9 @@ export interface CommonStrings {
   // Login Modal
   LOGIN_MODAL_TOOLTIP: string,
 
+  // Deposit Modal
+  DEPOSIT_FUNDS_INSTRUCTIONS: string
+
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
 
@@ -107,6 +110,12 @@ const strings: CommonStrings = {
   LOGIN_MODAL_TOOLTIP: `
     Use a social account if you do not have already have funds on the blockchain.
     Use an Ethereum wallet if you already have one.
+  `,
+
+  // Deposit Modal
+  DEPOSIT_FUNDS_INSTRUCTIONS: `
+    This address can only receive USDC from Base Network. Don't send any tokens from other networks,
+    or it may result in lots funds.
   `,
 
   // Pay Modal
