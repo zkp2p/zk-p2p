@@ -83,6 +83,8 @@ export interface ICircuitInputs {
   intermediate_hash?: string[];
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
+  mercado_payee_id_idx: string;
+  mercado_amount_idx: string;
   intent_hash?: string;
 
   // subject commands only
@@ -110,7 +112,7 @@ export enum CircuitType {
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
   EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
-  EMAIL_MERCADO_REGSITRATION = "mercado_registration",
+  EMAIL_MERCADO_REGISTRATION = "mercado_registration",
   EMAIL_MERCADO_SEND = "mercado_send"
 }
 
@@ -589,12 +591,94 @@ export async function getCircuitInputs(
     }
   } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
     // Iterate over in_body_padded and convert each int to a char
-    for (let i = 0; i < in_body_padded.length; i++) {
-      in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
-    }
-    // log in_body_padded
-    console.log(in_body_padded.join(''));
+    // for (let i = 0; i < in_body_padded.length; i++) {
+    //   in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    // }
+    // // log in_body_padded
+    // console.log(in_body_padded.join(''));
 
+    const mercado_amount_selector = Buffer.from("$");
+    let mercado_amount_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_amount_selector);
+    // Find the first digit after mercado_amount_selector_index to get mercado_amount_idx
+    while (mercado_amount_selector_index < bodyRemaining.length) {
+      if (Number.isInteger(Number(bodyRemaining[mercado_amount_selector_index]))) {
+        break;
+      }
+      mercado_amount_selector_index++;
+    }
+    const mercado_amount_idx = mercado_amount_selector_index.toString();
+
+    const mercado_payee_id_selector = [
+      Buffer.from("CVU:"), Buffer.from("C=\r\nVU:"), Buffer.from("CV=\r\nU:"), Buffer.from("CVU\r\n:"), Buffer.from("CVU:\r\n")
+    ];
+    let mercado_payee_id_selector_index = -1;
+    let i = 0;
+    for (i = 0; i < mercado_payee_id_selector.length; i++) {
+      mercado_payee_id_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_payee_id_selector[i]);
+      if (mercado_payee_id_selector_index !== -1) {
+        break;
+      }
+    }
+    // Find the first digit after mercado_payee_id_selector_index to get mercado_payee_id_idx
+    while (mercado_payee_id_selector_index < bodyRemaining.length) {
+      if (Number.isInteger(Number(bodyRemaining[mercado_payee_id_selector_index]))) {
+        break;
+      }
+      mercado_payee_id_selector_index++;
+    }
+    const mercado_payee_id_idx = mercado_payee_id_selector_index.toString();
+
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // mercado specific indices
+      email_from_idx,
+      email_to_idx,
+      mercado_payee_id_idx,
+      mercado_amount_idx
+    }
+
+  } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
+    // Iterate over in_body_padded and convert each int to a char
+    // for (let i = 0; i < in_body_padded.length; i++) {
+    //   in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    // }
+    // // log in_body_padded
+    // console.log(in_body_padded.join(''));
+
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded,
+      in_body_len_padded_bytes,
+      body_hash_idx,
+      // mercado specific indices
+      email_from_idx,
+      email_to_idx
+    }
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
