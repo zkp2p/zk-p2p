@@ -19,7 +19,7 @@ import { LoginStatus } from '@helpers/types';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
 
-import usdcSvg from '../../assets/images/usdc.svg';
+import usdcSvg from '../../assets/images/tokens/usdc.svg';
 
 
 interface AccountDropdownProps {

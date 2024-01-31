@@ -2,20 +2,22 @@ import React from "react";
 import styled from 'styled-components';
 
 
-interface NetworkRowProps {
-  platformName: string;
+interface TokenRowProps {
+  receiveTokenName: string;
+  receiveTokenSymbol: string;
   isSelected: boolean;
-  flagSvg: string;
+  tokenSvg: string;
   onRowClick: () => void;
 }
 
-export const NetworkRow: React.FC<NetworkRowProps> = ({
-  platformName,
+export const TokenRow: React.FC<TokenRowProps> = ({
+  receiveTokenName,
+  receiveTokenSymbol,
   isSelected,
-  flagSvg,
+  tokenSvg,
   onRowClick,
-}: NetworkRowProps) => {
-  NetworkRow.displayName = "NetworkRow";
+}: TokenRowProps) => {
+  TokenRow.displayName = "TokenRow";
 
   return (
     <Container
@@ -23,10 +25,11 @@ export const NetworkRow: React.FC<NetworkRowProps> = ({
       selected={isSelected}
     >
       <DetailsContainer>
-        <FlagSvg src={flagSvg} />
-        <PlatformAndCurrencyLabel>
-          <PlatformLabel>{platformName}</PlatformLabel>
-        </PlatformAndCurrencyLabel>
+        <TokenSvg src={tokenSvg} />
+        <TokenNameAndSymbolContainer>
+          <TokenNameLabel>{receiveTokenName}</TokenNameLabel>
+          <TokenSymbolLabel>{receiveTokenSymbol}</TokenSymbolLabel>
+        </TokenNameAndSymbolContainer>
       </DetailsContainer>
     </Container>
   );
@@ -58,21 +61,26 @@ const DetailsContainer = styled.div`
   flex: 1;
 `;
 
-const PlatformAndCurrencyLabel = styled.div`
+const TokenNameAndSymbolContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-grow: 1;
 `;
 
-const PlatformLabel = styled.div`
+const TokenNameLabel = styled.div`
   display: flex;
   flex-direction: row;
   padding-top: 2px;
   color: #FFFFFF;
 `;
 
-const FlagSvg = styled.img`
+const TokenSymbolLabel = styled.div`
+  padding-top: 4px;
+  color: #FFFFFF;
+`;
+
+const TokenSvg = styled.img`
   border-radius: 18px;
   width: 36px;
   height: 36px;

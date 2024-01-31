@@ -18,7 +18,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, hdfcRampAddress, garantiRampAddress, usdcAddress } = useSmartContracts();
+  const { venmoRampAddress, hdfcRampAddress, garantiRampAddress, usdcAddress, socketBridgeAddress } = useSmartContracts();
 
   /*
    * State
@@ -29,10 +29,12 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
   const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
   const [usdcApprovalToGarantiRamp, setUsdcApprovalToGarantiRamp] = useState<bigint | null>(null);
+  const [usdcApprovalToSocketBridge, setUsdcApprovalToSocketBridge] = useState<bigint | null>(null);
 
   const [shouldFetchEthBalance, setShouldFetchEthBalance] = useState<boolean>(false);
   const [shouldFetchUsdcBalance, setShouldFetchUsdcBalance] = useState<boolean>(false);
   const [shouldFetchUsdcApprovalToRamp, setShouldFetchUsdcApprovalToRamp] = useState<boolean>(false);
+  const [shouldFetchUsdcApprovalToSocketBridge, setShouldFetchUsdcApprovalToSocketBridge] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -97,6 +99,20 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     enabled: shouldFetchUsdcApprovalToRamp,
   });
 
+  const {
+    data: usdcApprovalToSocketBridgeRaw,
+    refetch: refetchUsdcApprovalToSocketBridge,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+        socketBridgeAddress
+    ],
+    enabled: shouldFetchUsdcApprovalToSocketBridge,
+  });
+
   /*
    * Hooks
    */
@@ -133,11 +149,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
       setShouldFetchUsdcBalance(true);
       setShouldFetchUsdcApprovalToRamp(true);
+      setShouldFetchUsdcApprovalToSocketBridge(true);
     } else {
       esl && console.log('shouldFetchUsdcBalanceAndApproval_3');
 
       setShouldFetchUsdcBalance(false);
       setShouldFetchUsdcApprovalToRamp(false);
+      setShouldFetchUsdcApprovalToSocketBridge(false);
 
       setEthBalance(null);
       setUsdcBalance(null);
@@ -224,6 +242,21 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     }
   }, [usdcApprovalToGarantiRampRaw]);
 
+  useEffect(() => {
+    esl && console.log('usdcApprovalToSocketBridgeRaw_1');
+    esl && console.log('checking usdcApprovalToSocketBridgeRaw: ', usdcApprovalToSocketBridgeRaw);
+  
+    if (usdcApprovalToSocketBridgeRaw || usdcApprovalToSocketBridgeRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToSocketBridgeRaw_2');
+
+      setUsdcApprovalToSocketBridge(usdcApprovalToSocketBridgeRaw);
+    } else {
+      esl && console.log('usdcApprovalToSocketBridgeRaw_3');
+      
+      setUsdcApprovalToSocketBridge(null);
+    }
+  }, [usdcApprovalToSocketBridgeRaw]);
+
   return (
     <BalancesContext.Provider
       value={{
@@ -239,6 +272,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToHdfcRamp,
         usdcApprovalToGarantiRamp,
         refetchUsdcApprovalToGarantiRamp,
+        usdcApprovalToSocketBridge,
+        refetchUsdcApprovalToSocketBridge
       }}
     >
       {children}
