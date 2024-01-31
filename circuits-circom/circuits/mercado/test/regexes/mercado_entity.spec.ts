@@ -30,15 +30,19 @@ describe("Mercado Entity Regex", () => {
     });
 
     function textToAsciiArray(text: string): string[] {
-        while (text.length < MIN_LEN) {
-            text += " ";
-        }
         return Array.from(text).map(char => char.charCodeAt(0).toString());
+    }
+
+    function textToAsciiArrayPadded(text: string, padChar: string = " "): string[] {
+        while (text.length < MIN_LEN) {
+            text += padChar;
+        }
+        return textToAsciiArray(text);
     }
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("Entidad: <strong>")
+            "msg": textToAsciiArrayPadded("Entidad: <strong>")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -51,7 +55,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -62,7 +66,7 @@ describe("Mercado Entity Regex", () => {
 
         it("E=ntidad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("E=\r\nntidad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("E=\r\nntidad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -73,7 +77,7 @@ describe("Mercado Entity Regex", () => {
 
         it("En=tidad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("En=\r\ntidad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("En=\r\ntidad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -84,7 +88,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Ent=idad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Ent=\r\nidad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Ent=\r\nidad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -95,7 +99,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Enti=dad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Enti=\r\ndad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Enti=\r\ndad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -106,7 +110,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entid=ad: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entid=\r\nad: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entid=\r\nad: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -117,7 +121,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entida=d: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entida=\r\nd: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entida=\r\nd: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -128,7 +132,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad=: <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad=\r\n: <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad=\r\n: <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -139,7 +143,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: =<strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -150,7 +154,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -161,7 +165,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: =<=strong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <=\r\nstrong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <=\r\nstrong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -172,7 +176,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <s=trong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -183,7 +187,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <st=rong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <st=\r\nrong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <st=\r\nrong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -194,7 +198,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <str=ong> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <str=\r\nong> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <str=\r\nong> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -205,7 +209,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <stro=ng> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <stro=\r\nng> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <stro=\r\nng> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -216,7 +220,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <stron=g> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <stron=\r\ng> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <stron=\r\ng> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -227,7 +231,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong=> Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong=\r\n> Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong=\r\n> Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -238,7 +242,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong>= Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong>=\r\n Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong>=\r\n Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -249,7 +253,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> =Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\nMercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\nMercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -260,7 +264,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -271,7 +275,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = =Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\nMercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\nMercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -282,7 +286,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -293,7 +297,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = M=ercado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n M=\r\nercado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n M=\r\nercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -304,7 +308,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Me=rcado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Me=\r\nrcado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n Me=\r\nrcado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -315,7 +319,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mer=cado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mer=\r\ncado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n Mer=\r\ncado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -326,7 +330,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Merc=ado Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Merc=\r\nado Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n Merc=\r\nado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -337,7 +341,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercad=o Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mercad=\r\no Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n Mercad=\r\no Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -348,7 +352,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado= Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n <strong> =\r\n =\r\n Mercado=\r\n Pago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n <strong> =\r\n =\r\n Mercado=\r\n Pago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -359,7 +363,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado =Pago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado =\r\nPago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado =\r\nPago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -370,7 +374,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado P=ago", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado P=\r\nago")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado P=\r\nago")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -381,7 +385,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado Pa=go", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pa=\r\ngo")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pa=\r\ngo")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -392,7 +396,7 @@ describe("Mercado Entity Regex", () => {
 
         it("Entidad: = <strong> = = Mercado Pag=o", async () => {
             const input = {
-                "msg": textToAsciiArray("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pag=\r\no")
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pag=\r\no")
             };
             const witness = await cir.calculateWitness(
                 input,
@@ -404,7 +408,7 @@ describe("Mercado Entity Regex", () => {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Entity: <strong> Mercado Pago")
+            "msg": textToAsciiArrayPadded("Entity: <strong> Mercado Pago")
         };
         const witness = await cir.calculateWitness(
             input,

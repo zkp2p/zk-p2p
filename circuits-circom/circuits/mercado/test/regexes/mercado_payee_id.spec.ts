@@ -62,6 +62,30 @@ describe.only("Mercado Payee ID Regex", () => {
 
     describe("Should match regex once", () => {
 
+        it("CVU: <strong> 0000003100097214822524", async () => {
+            const input = {
+                "msg": textToAsciiArrayPadded("CVU: <strong> 0000003100097214822524")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("CVU: = <strong> = = 0000003100097214822524", async () => {
+            const input = {
+                "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 0000003100097214822524")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
         it("C=VU: = <strong> = = 0000003100097214822524", async () => {
             const input = {
                 "msg": textToAsciiArrayPadded("C=\r\nVU: =\r\n <strong> =\r\n =\r\n 0000003100097214822524")
@@ -95,6 +119,17 @@ describe.only("Mercado Payee ID Regex", () => {
                 true
             );
 
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("CVU=: <strong> = = 0000003100097214822524", async () => {
+            const input = {
+                "msg": textToAsciiArrayPadded("CVU=\r\n: <strong> =\r\n =\r\n 0000003100097214822524")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
             assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
         });
 
@@ -204,7 +239,7 @@ describe.only("Mercado Payee ID Regex", () => {
 
     it("should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 0000003100097214822524", "e")  // Pad with e's
+            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 0000003100097214822524", "e")   // Pad with e's (TODO: CAPTURES THE EXTRA SPACE AS WELL; ADD A STOPPER FOR THIS)
         };
         const witness = await cir.calculateWitness(
             input,
