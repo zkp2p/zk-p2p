@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
-import { X, ArrowRight } from 'react-feather';
+import { X } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
@@ -18,6 +18,7 @@ import useModal from '@hooks/useModal';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import baseSvg from '../../assets/images/base.svg';
+import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
 type RecipientAddress = {
@@ -305,7 +306,23 @@ export default function WithdrawModal() {
         return recipientAddressInput.input;
       }
     }
-  }
+  };
+
+  const networkSvg = (): string => {
+    if (network === 'sepolia') {
+      return sepoliaSvg;
+    } else {
+      return baseSvg;
+    }
+  };
+
+  const networkName = (): string => {
+    if (network === 'sepolia') {
+      return 'Sepolia';
+    } else {
+      return 'Base';
+    }
+  };
 
   /*
    * Component
@@ -341,15 +358,15 @@ export default function WithdrawModal() {
           
           <NetworkTransitionContainer>
             <NetworkLogoAndNameContainer>
-              <NetworkSvg src={baseSvg} />
+              <NetworkSvg src={networkSvg()} />
 
               <NetworkNameContainer>
                 <ThemedText.LabelSmall>
                   {'From'}
                 </ThemedText.LabelSmall>
-                <ThemedText.BodySmall>
-                  {'Base'}
-                </ThemedText.BodySmall>
+                <ThemedText.Link>
+                  {networkName()}
+                </ThemedText.Link>
               </NetworkNameContainer>
             </NetworkLogoAndNameContainer>
 

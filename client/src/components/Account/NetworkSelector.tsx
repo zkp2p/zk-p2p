@@ -8,10 +8,11 @@ import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Account/NetworkRow';
 import { withdrawNetworks, networksInfo, WithdrawNetworkType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
+import useAccount from '@hooks/useAccount';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
-// import usePlatformSettings from "@hooks/usePlatformSettings";
 
 import baseSvg from '../../assets/images/base.svg';
+import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
 export const NetworkSelector: React.FC = () => {
@@ -24,7 +25,7 @@ export const NetworkSelector: React.FC = () => {
    * Contexts
    */
 
-  // const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+  const { network } = useAccount();
 
   /*
    * Handlers
@@ -43,21 +44,41 @@ export const NetworkSelector: React.FC = () => {
   };
 
   /*
+   * Helpers
+   */
+
+  const networkSvg = (): string => {
+    if (network === 'sepolia') {
+      return sepoliaSvg;
+    } else {
+      return baseSvg;
+    }
+  };
+
+  const networkName = (): string => {
+    if (network === 'sepolia') {
+      return 'Sepolia';
+    } else {
+      return 'Base';
+    }
+  };
+
+  /*
    * Component
    */
 
   return (
     <Wrapper ref={ref}>
       <NetworkLogoAndNameContainer>
-        <NetworkSvg src={baseSvg} />
+        <NetworkSvg src={networkSvg()} />
 
         <NetworkNameContainer>
           <ThemedText.LabelSmall>
             {'To'}
           </ThemedText.LabelSmall>
-          <ThemedText.BodySmall>
-            {'Base'}
-          </ThemedText.BodySmall>
+          <ThemedText.Link>
+            {networkName()}
+          </ThemedText.Link>
         </NetworkNameContainer>
 
         <ComingSoonContainer>
