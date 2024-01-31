@@ -124,4 +124,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("Deploy finished...");
 };
 
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
+  const network = hre.network.name;
+  if (network == "base") {
+    try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
+    return true;
+  }
+  return false;
+};
+
 export default func;
