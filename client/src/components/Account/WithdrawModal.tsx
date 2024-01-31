@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
 import { X } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
@@ -332,100 +332,102 @@ export default function WithdrawModal() {
     <ModalAndOverlayContainer>
       <Overlay onClick={handleCloseModal} />
 
-      <ModalContainer>
-        <TitleCenteredRow>
-          <div style={{ flex: 0.25 }}>
-            <button
-              onClick={handleCloseModal}
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+      <Suspense>
+        <ModalContainer>
+          <TitleCenteredRow>
+            <div style={{ flex: 0.25 }}>
+              <button
+                onClick={handleCloseModal}
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
 
-              <StyledX/>
-            </button>
-          </div>
+                <StyledX/>
+              </button>
+            </div>
 
-          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Withdraw'}
-          </ThemedText.ModalHeadline>
+            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+              {'Withdraw'}
+            </ThemedText.HeadlineSmall>
 
-          <div style={{ flex: 0.25 }}/>
-        </TitleCenteredRow>
+            <div style={{ flex: 0.25 }}/>
+          </TitleCenteredRow>
 
-        <NetworkContainer>
-          {/* <ThemedText.ModalHeadline style={{ textAlign: 'left' }}>
-            Network
-          </ThemedText.ModalHeadline> */}
-          
-          <NetworkTransitionContainer>
-            <NetworkLogoAndNameContainer>
-              <NetworkSvg src={networkSvg()} />
+          <NetworkContainer>
+            {/* <ThemedText.HeadlineSmall style={{ textAlign: 'left' }}>
+              Network
+            </ThemedText.HeadlineSmall> */}
+            
+            <NetworkTransitionContainer>
+              <NetworkLogoAndNameContainer>
+                <NetworkSvg src={networkSvg()} />
 
-              <NetworkNameContainer>
-                <ThemedText.LabelSmall>
-                  {'From'}
+                <NetworkNameContainer>
+                  <ThemedText.LabelSmall>
+                    {'From'}
+                  </ThemedText.LabelSmall>
+                  <ThemedText.Link>
+                    {networkName()}
+                  </ThemedText.Link>
+                </NetworkNameContainer>
+              </NetworkLogoAndNameContainer>
+
+              <NetworkSelector />
+            </NetworkTransitionContainer>
+          </NetworkContainer>
+
+          <InputsContainer>
+            <Input
+              label="Amount"
+              name={`withdrawAmount`}
+              value={withdrawAmountInput}
+              onChange={(e) => handleInputChange(e.currentTarget.value, setWithdrawAmountInput)}
+              type="number"
+              inputLabel="USDC"
+              placeholder="0"
+              accessoryLabel={usdcBalanceLabel}
+            />
+
+            <Input
+              label="To"
+              name={`to`}
+              value={recipientInputText()}
+              onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
+              onFocus={() => setIsRecipientInputFocused(true)}
+              onBlur={() => setIsRecipientInputFocused(false)}
+              type="string"
+              placeholder="Wallet address or ENS name"
+            />
+          </InputsContainer>
+
+          { transactionHash?.length ? (
+            <Link
+              href={`${blockscanUrl}/tx/${transactionHash}`}
+              target="_blank"
+              rel="noopener noreferrer">
+                <ThemedText.LabelSmall textAlign="left">
+                  View on Explorer ↗
                 </ThemedText.LabelSmall>
-                <ThemedText.Link>
-                  {networkName()}
-                </ThemedText.Link>
-              </NetworkNameContainer>
-            </NetworkLogoAndNameContainer>
+            </Link>
+          ) : null}
 
-            <NetworkSelector />
-          </NetworkTransitionContainer>
-        </NetworkContainer>
+          <ButtonContainer>
+            <Button
+              fullWidth={true}
+              disabled={ctaDisabled()}
+              onClick={async () => {
+                try {
+                  setTransactionHash('');
 
-        <InputsContainer>
-          <Input
-            label="Amount"
-            name={`withdrawAmount`}
-            value={withdrawAmountInput}
-            onChange={(e) => handleInputChange(e.currentTarget.value, setWithdrawAmountInput)}
-            type="number"
-            inputLabel="USDC"
-            placeholder="0"
-            accessoryLabel={usdcBalanceLabel}
-          />
-
-          <Input
-            label="To"
-            name={`to`}
-            value={recipientInputText()}
-            onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
-            onFocus={() => setIsRecipientInputFocused(true)}
-            onBlur={() => setIsRecipientInputFocused(false)}
-            type="string"
-            placeholder="Wallet address or ENS name"
-          />
-        </InputsContainer>
-
-        { transactionHash?.length ? (
-          <Link
-            href={`${blockscanUrl}/tx/${transactionHash}`}
-            target="_blank"
-            rel="noopener noreferrer">
-              <ThemedText.LabelSmall textAlign="left">
-                View on Explorer ↗
-              </ThemedText.LabelSmall>
-          </Link>
-        ) : null}
-
-        <ButtonContainer>
-          <Button
-            fullWidth={true}
-            disabled={ctaDisabled()}
-            onClick={async () => {
-              try {
-                setTransactionHash('');
-
-                await writeSubmitTransferAsync?.();
-              } catch (error) {
-                console.log('writeSubmitTransferAsync failed: ', error);
-              }
-            }}>
-            { ctaText() }
-          </Button>
-        </ButtonContainer>
-      </ModalContainer>
+                  await writeSubmitTransferAsync?.();
+                } catch (error) {
+                  console.log('writeSubmitTransferAsync failed: ', error);
+                }
+              }}>
+              { ctaText() }
+            </Button>
+          </ButtonContainer>
+        </ModalContainer>
+      </Suspense>
     </ModalAndOverlayContainer>
   );
 };

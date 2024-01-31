@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import styled from 'styled-components/macro';
 import QRCode from "react-qr-code";
 import { X, Copy } from 'react-feather';
@@ -48,59 +48,61 @@ export default function DepositModal() {
     <ModalAndOverlayContainer>
       <Overlay onClick={handleCloseModal} />
 
-      <ModalContainer>
-        <TitleCenteredRow>
-          <div style={{ flex: 0.25 }}>
-            <button
-              onClick={handleCloseModal}
-              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+      <Suspense>
+        <ModalContainer>
+          <TitleCenteredRow>
+            <div style={{ flex: 0.25 }}>
+              <button
+                onClick={handleCloseModal}
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
 
-              <StyledX/>
-            </button>
-          </div>
+                <StyledX/>
+              </button>
+            </div>
 
-          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Deposit'}
-          </ThemedText.ModalHeadline>
+            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+              {'Deposit'}
+            </ThemedText.HeadlineSmall>
 
-          <div style={{ flex: 0.25 }}/>
-        </TitleCenteredRow>
+            <div style={{ flex: 0.25 }}/>
+          </TitleCenteredRow>
 
-        <QRContainer>
-          <QRCode
-            value={`ethereum:${loggedInEthereumAddress}`}
-            size={192}/>
-        </QRContainer>
+          <QRContainer>
+            <QRCode
+              value={`ethereum:${loggedInEthereumAddress}`}
+              size={192}/>
+          </QRContainer>
 
-        <AccountAddressContainer>
-          <AddressAndEnsNameContainer>
-            <ThemedText.LabelSmall style={{ textAlign: 'left', color: '#FFF' }}>
-              Base Address (Ethereum)
-            </ThemedText.LabelSmall>
+          <AccountAddressContainer>
+            <AddressAndEnsNameContainer>
+              <ThemedText.LabelSmall style={{ textAlign: 'left', color: '#FFF' }}>
+                Base Address (Ethereum)
+              </ThemedText.LabelSmall>
 
-            <AddressLabel>
-              <ENSName
-                provider={alchemyMainnetEthersProvider}
-                address={loggedInEthereumAddress || ''}
-                displayType={AddressDisplayEnum.FULL}
-              />
-            </AddressLabel>
-          </AddressAndEnsNameContainer>
+              <AddressLabel>
+                <ENSName
+                  provider={alchemyMainnetEthersProvider}
+                  address={loggedInEthereumAddress || ''}
+                  displayType={AddressDisplayEnum.FULL}
+                />
+              </AddressLabel>
+            </AddressAndEnsNameContainer>
 
-          <IconBorder>
-            <StyledCopy onClick={handleCopyClick} />
-          </IconBorder>
-        </AccountAddressContainer>
+            <IconBorder>
+              <StyledCopy onClick={handleCopyClick} />
+            </IconBorder>
+          </AccountAddressContainer>
 
-        <InstructionsContainer>
-          <NetworkSvg src={baseSvg} />
+          <InstructionsContainer>
+            <NetworkSvg src={baseSvg} />
 
-          <InstructionsLabel>
-            { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS') }
-          </InstructionsLabel>
-        </InstructionsContainer>
-      </ModalContainer>
+            <InstructionsLabel>
+              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS') }
+            </InstructionsLabel>
+          </InstructionsContainer>
+        </ModalContainer>
+      </Suspense>
     </ModalAndOverlayContainer>
   );
 }

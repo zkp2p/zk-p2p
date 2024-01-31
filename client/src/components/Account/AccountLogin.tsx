@@ -75,9 +75,9 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             </button>
           </div>
 
-          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {'Log In'}
-          </ThemedText.ModalHeadline>
+          </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>

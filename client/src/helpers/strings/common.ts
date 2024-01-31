@@ -115,7 +115,7 @@ const strings: CommonStrings = {
   // Deposit Modal
   DEPOSIT_FUNDS_INSTRUCTIONS: `
     This address can only receive USDC from Base Network. Don't send any tokens from other networks,
-    or it may result in lots funds.
+    or it may result in loss of funds.
   `,
 
   // Pay Modal
