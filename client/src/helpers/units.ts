@@ -101,8 +101,12 @@ export function conversionRateToMultiplierString(rate: bigint): string {
 };
 
 export function toEthString(value: bigint): string {
+  if (typeof value !== 'bigint') {
+    return '0';
+  }
+
   const reducedValue = value / BigInt(1e15);  
   const ethValue = Number(reducedValue) / 1e3;
 
   return ethValue.toFixed(3);
-}
+};

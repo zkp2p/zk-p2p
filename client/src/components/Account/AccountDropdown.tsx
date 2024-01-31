@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import React, { useEffect, forwardRef } from 'react';
 import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
 import styled from "styled-components";
 import { usePrivy } from '@privy-io/react-auth';
@@ -28,7 +28,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
 
   const { authenticated, logout, user } = usePrivy();
   const { disconnect } = useDisconnect();
-  const { usdcBalance, ethBalance } = useBalances();
+  const { usdcBalance, ethBalance, refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
   const { loggedInEthereumAddress } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
@@ -50,11 +50,13 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   const handleLogout = async () => {
+    await disconnect();
+    
     if (authenticated) {
       await logout();
     }
 
-    await disconnect();
+    onOptionSelect();
   };
 
   const copyToClipboard = (text: string) => {
@@ -68,10 +70,24 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   /*
+   * Hooks
+   */
+
+  useEffect(() => {
+    if (shouldFetchUsdcBalance) {
+      refetchUsdcBalance?.();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /*
    * Helpers
    */
 
   const userEtherscanLink = `${blockscanUrl}/address/${loggedInEthereumAddress}`;
+
+  const ethBalanceDisplay = ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...';
 
   /*
    * Component
@@ -142,7 +158,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
                 </BridgeLink>
                 {!user && (
                   <EthBalance>
-                    {ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...'}
+                    {ethBalanceDisplay}
                   </EthBalance>
                 )}
               </BridgeLinkAndBalance>
