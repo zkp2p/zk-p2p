@@ -48,7 +48,7 @@ export const NetworkSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <NetworkLogoAndNameContainer onClick={toggleOpen}>
+      <NetworkLogoAndNameContainer>
         <NetworkSvg src={baseSvg} />
 
         <NetworkNameContainer>
@@ -59,6 +59,10 @@ export const NetworkSelector: React.FC = () => {
             {'Base'}
           </ThemedText.BodySmall>
         </NetworkNameContainer>
+
+        <ComingSoonContainer>
+          Coming Soon
+        </ComingSoonContainer>
       </NetworkLogoAndNameContainer>
 
       {isOpen && (
@@ -116,9 +120,25 @@ const Wrapper = styled.div`
 const NetworkLogoAndNameContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 180px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
+  background: #0E111C;
+  padding: 1rem;
+`;
+
+const ComingSoonContainer = styled.div`
+  display: flex;
+  text-align: right;
+  align-self: center;
+  color: #6C757D;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding-top: 2px;
 `;
 
 const NetworkNameContainer = styled.div`

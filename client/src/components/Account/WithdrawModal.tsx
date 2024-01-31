@@ -40,7 +40,7 @@ export default function WithdrawModal() {
    */
 
   const { closeModal } = useModal();
-  const { isLoggedIn } = useAccount();
+  const { isLoggedIn, network } = useAccount();
   const { usdcBalance, refetchUsdcBalance } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
 
@@ -335,9 +335,9 @@ export default function WithdrawModal() {
         </TitleCenteredRow>
 
         <NetworkContainer>
-          <ThemedText.HeadlineSmall style={{ textAlign: 'left' }}>
+          {/* <ThemedText.ModalHeadline style={{ textAlign: 'left' }}>
             Network
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline> */}
           
           <NetworkTransitionContainer>
             <NetworkLogoAndNameContainer>
@@ -352,8 +352,6 @@ export default function WithdrawModal() {
                 </ThemedText.BodySmall>
               </NetworkNameContainer>
             </NetworkLogoAndNameContainer>
-
-            <StyledArrowRight/>
 
             <NetworkSelector />
           </NetworkTransitionContainer>
@@ -438,7 +436,6 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 20;
-  gap: 1rem;
 
   position: fixed;
   top: 50%;
@@ -450,9 +447,7 @@ const NetworkContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-left: 16px;
-  padding-top: 12px;
-  gap: 0.8rem;
+  padding-top: 1.5rem;
 `;
 
 const TitleCenteredRow = styled.div`
@@ -471,17 +466,22 @@ const StyledX = styled(X)`
 const NetworkTransitionContainer = styled.div`
   display: flex;
   flex-direction: row;
-  gap: 1.25rem;
+  gap: 0.5rem;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
 `;
 
 const NetworkLogoAndNameContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 180px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
+  background: #0E111C;
+  padding: 1rem;
 `;
 
 const NetworkNameContainer = styled.div`
@@ -497,18 +497,12 @@ const NetworkSvg = styled.img`
   height: 32px;
 `;
 
-const StyledArrowRight = styled(ArrowRight)`
-  color: #FFF;
-  height: 24px;
-  width: 24px;
-`;
-
 const InputsContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 12px;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
 `;
 
 const Link = styled.a`
@@ -524,4 +518,5 @@ const Link = styled.a`
 
 const ButtonContainer = styled.div`
   width: 100%;
+  padding-top: 1rem;
 `;
