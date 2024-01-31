@@ -75,14 +75,14 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {'Log In'}
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
         
-        <Logo size={88}>
+        <Logo size={80}>
           <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
         </Logo>
 
@@ -129,7 +129,7 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 372px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -139,8 +139,11 @@ const ModalContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   z-index: 40;
-  top: 23%;
-  position: relative;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const TitleCenteredRow = styled.div`

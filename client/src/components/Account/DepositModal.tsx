@@ -42,9 +42,9 @@ export default function DepositModal() {
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {'Deposit'}
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
@@ -79,8 +79,11 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1.3rem;
-  top: 33%;
-  position: relative;
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const TitleCenteredRow = styled.div`

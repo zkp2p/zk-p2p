@@ -276,9 +276,9 @@ export default function WithdrawModal() {
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {'Withdraw'}
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
@@ -375,8 +375,11 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1rem;
-  top: 33%;
-  position: relative;
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const NetworkContainer = styled.div`

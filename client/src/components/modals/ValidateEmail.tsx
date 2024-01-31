@@ -357,9 +357,9 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
             <StyledArrowLeft/>
           </button>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {title}
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline>
 
           <LabeledSwitch
             switchChecked={shouldShowProofAndSignals}

@@ -64,6 +64,9 @@ export const ThemedText = {
   SubHeaderSmall(props: TextProps) {
     return <TextWrapper fontWeight={500} fontSize={15} color="textSecondary" {...props} />
   },
+  ModalHeadline(props: TextProps) {
+    return <TextWrapper fontWeight={600} fontSize={18} lineHeight="28px" color="textPrimary" {...props} />
+  },
   UtilityBadge(props: TextProps) {
     return <TextWrapper fontWeight={600} fontSize="8px" lineHeight="12px" {...props} />
   },

@@ -48,7 +48,7 @@ const Container = styled.button`
   display: flex;
   flex-direction: row;
   gap: 1.5rem;
-  padding: 16px 20px 16px 24px;
+  padding: 12px 16px 12px 20px;
   border-radius: 16px;
   border: 1px solid #98a1c03d;
   background-color: #131A2A;
@@ -85,7 +85,7 @@ const IconBorder = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 8px;
   border-radius: 50%;
   border: 1px solid #FFF;
 `;
@@ -101,7 +101,7 @@ const LabelContainer = styled.div`
 
 const TitleLabel = styled.label`
   display: flex;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 `;
@@ -109,12 +109,13 @@ const TitleLabel = styled.label`
 const DescriptionLabel = styled.label`
   display: flex;
   font-size: 13px;
-  font-weight: 400;
   cursor: pointer;
 `;
 
 const StyledArrowRight = styled(ArrowRight)`
   color: #FFF;
+  height: 20px;
+  width: 20px;
 `;
 
 const ArrowRightContainer = styled.div`

@@ -170,9 +170,9 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.ModalHeadline style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
             {'Release Funds'}
-          </ThemedText.HeadlineSmall>
+          </ThemedText.ModalHeadline>
 
           <div style={{ flex: 0.25 }}/>
         </TitleCenteredRow>
