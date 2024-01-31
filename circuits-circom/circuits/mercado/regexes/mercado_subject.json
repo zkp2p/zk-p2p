@@ -1,0 +1,8 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "subject:Tu transferencia fue enviada\r\n"
+        }
+    ]
+}
