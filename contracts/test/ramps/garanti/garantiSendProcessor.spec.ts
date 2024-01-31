@@ -133,6 +133,31 @@ describe("GarantiSendProcessor", () => {
       });
     });
 
+    describe("when the body hash proof is invalid", async () => {
+      beforeEach(async () => {
+        subjectBodyHashProof.signals[0] = BigNumber.from("0x0000000000000000000000000000000000000000000000000076406f6d6e6476");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid body hash proof");
+      });
+    });
+
+    describe("when the intermediate hash inputs or body hash outputs do not match registration proof", async () => {
+      beforeEach(async () => {
+        subjectBodyHashProof = createTypedGarantiBodyHashProof(
+          ["0x0e66547750bf9cb8b1bac8aaff2a03abef9cf45c41dd854f23298122070e975c", "0x2a2b72d169e4e4d68a8b88992722e28e35ba9e4472c03f09c92e36dde7e3e22d"],
+          [["0x1b97359e1fb6f0fae93b63206f27dcb6d6ffc0b877112243463de0b6d39c34ec", "0x23e07c78b5bc6a5f7527b70d1af6598f1c194b8bdb2e20c7968921704666832f"],["0x29cfa6511c7abc33d469ecf639ba9c636d25f04f7b9a525606c5c5f86f1436a6", "0x003abf5ae8e461dbb08146232029102155e586a300bbc764a1b2f77cd57fddc0"]],
+          ["0x2a9929438e9855e63499be2def743cebcc02cebdf5e5e7332a63a75c7ff9b14d", "0x1103162cc9be5c964dd4f9f0e4fbcd7c4168d6d7eadabdca80062b1d511b395d"],
+          ["0x00000000000000000000000000000000956aea87342330c30659a03d50e9d366","0x000000000000000000000000000000002893a7e72bb6e18dad7d41195d3d0b1b","0x00000000000000000000000000000000a884191ca5f59e979b8b748037b64f28","0x000000000000000000000000000000009d8a7867dc7f86cc32ca8dad25bad3ef"]
+        );
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid intermediate or output hash");
+      });
+    });
+
     describe("when the email is from an invalid venmo address", async () => {
       beforeEach(async () => {
         await sendProcessor.setEmailFromAddress("bad-garanti@info.garantibbva.com.tr".padEnd(21, "\0"));

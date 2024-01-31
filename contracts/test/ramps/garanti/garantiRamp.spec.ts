@@ -28,7 +28,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("GarantiRamp", () => {
+describe.only("GarantiRamp", () => {
   let owner: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
@@ -275,20 +275,20 @@ describe("GarantiRamp", () => {
     });
 
     describe("#offRamp", async () => {
-      let subjectUpiId: string;
+      let subjectGarantiIban: string;
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        subjectUpiId = "TR01 2345 6789 0123 4567 8901 23";
+        subjectGarantiIban = "TR01 2345 6789 0123 4567 8901 23";
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(101);
         subjectCaller = offRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, subjectReceiveAmount);
+        return ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, subjectReceiveAmount);
       }
 
       it("should transfer the usdc to the Ramp contract", async () => {
@@ -308,7 +308,7 @@ describe("GarantiRamp", () => {
         const deposit = await ramp.getDeposit(ZERO);
 
         expect(deposit.depositor).to.eq(subjectCaller.address);
-        expect(JSON.stringify(deposit.garantiIban)).to.eq(JSON.stringify(subjectUpiId));
+        expect(JSON.stringify(deposit.garantiIban)).to.eq(JSON.stringify(subjectGarantiIban));
         expect(deposit.depositAmount).to.eq(subjectDepositAmount);
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
@@ -334,6 +334,16 @@ describe("GarantiRamp", () => {
         );
       });
 
+      describe("when an invalid IBAN is provided", async () => {
+        beforeEach(async () => {
+          subjectGarantiIban = "TR01 23456789 0123 4567 8901 23";
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Invalid IBAN");
+        });
+      });
+
       describe("when the deposited amount is less than the minimum", async () => {
         beforeEach(async () => {
           subjectDepositAmount = usdc(19.99);
@@ -346,11 +356,11 @@ describe("GarantiRamp", () => {
 
       describe("when the depositor has reached their max amount of deposits", async () => {
         beforeEach(async () => {
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, usdc(102));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, usdc(103));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, usdc(104));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, usdc(105));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectUpiId, subjectDepositAmount, usdc(106));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(102));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(103));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(104));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(105));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(106));
         });
 
         it("should revert", async () => {
@@ -2121,6 +2131,18 @@ describe("GarantiRamp", () => {
       });
     });
 
+    describe("when first two characters are a number", async () => {
+      beforeEach(async () => {
+        subjectIban = "0001 2345 6789 0123 4567 8901 23";
+      });
+
+      it("should return false", async () => {
+        const isValid = await subject();
+
+        expect(isValid).to.be.false;
+      });
+    });
+
     describe("when a space is misplaced", async () => {
       beforeEach(async () => {
         subjectIban = "TR01 23456 789 0123 4567 8901 23";
@@ -2133,9 +2155,21 @@ describe("GarantiRamp", () => {
       });
     });
 
-    describe("when other characters are not numbers", async () => {
+    describe("when other characters are not numbers (greater than number range)", async () => {
       beforeEach(async () => {
         subjectIban = "TR01 2345 6789 0a23 4567 8901 23";
+      });
+
+      it("should return false", async () => {
+        const isValid = await subject();
+
+        expect(isValid).to.be.false;
+      });
+    });
+
+    describe("when other characters are not numbers (less than number range)", async () => {
+      beforeEach(async () => {
+        subjectIban = "TR01 2345 6789 0/23 4567 8901 23";
       });
 
       it("should return false", async () => {

@@ -90,6 +90,6 @@ contract GarantiRegistrationProcessor is
     function _validateIntermediateHash(uint256[11] calldata _sendSignals, uint256[4] calldata _bodyHashSignals) internal pure {
         bytes32 intermediateHash = keccak256(abi.encode(_sendSignals[1], _sendSignals[2], _sendSignals[3], _sendSignals[4]));
         bytes32 inputHash = keccak256(abi.encode(_bodyHashSignals[0], _bodyHashSignals[1], _bodyHashSignals[2], _bodyHashSignals[3]));
-        require(intermediateHash == inputHash, "Invalid intermediate hash");
+        require(intermediateHash == inputHash, "Invalid intermediate or output hash");
     }
 }
