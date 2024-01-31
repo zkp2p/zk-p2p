@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { X } from 'react-feather';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useSendTransaction, usePrepareSendTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
 import { CustomConnectButton } from "@components/common/ConnectButton";
@@ -8,6 +9,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { NetworkSelector } from '@components/Send/NetworkSelector';
 import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text'
+import { ZERO } from '@helpers/constants';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, SendTransactionStatus } from '@helpers/types';
 import { formatAddressLong } from '@helpers/addressFormat';
@@ -15,6 +17,7 @@ import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useLifiBridge from '@hooks/useLifiBridge';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -40,8 +43,9 @@ export default function SendForm() {
    */
 
   const { isLoggedIn, network, loginStatus } = useAccount();
-  const { usdcBalance, refetchUsdcBalance } = useBalances();
-  const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
+  const { usdcBalance, refetchUsdcBalance, usdcApprovalToLifiBridge, refetchUsdcApprovalToLifiBridge } = useBalances();
+  const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
+  const { getLifiQuotes, getLifiTransactionHistory, getLifiTransactionStatus } = useLifiBridge();
 
   /*
    * State
@@ -56,8 +60,10 @@ export default function SendForm() {
   const [isRecipientInputFocused, setIsRecipientInputFocused] = useState(false);
 
   const [isValidRecipientAddress, setIsValidRecipientAddress] = useState<boolean>(false);
+  const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
+  const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
 
   /*
    * Contract Writes
@@ -92,6 +98,39 @@ export default function SendForm() {
 
       setSendAmountInput('');
       setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
+
+      refetchUsdcBalance?.();
+    },
+  });
+
+  //
+  // approve(address spender, uint256 value)
+  //
+  const { config: writeApproveConfig } = usePrepareContractWrite({
+    address: usdcAddress,
+    abi: usdcAbi,
+    functionName: "approve",
+    args: [
+      lifiBridgeAddress,
+      amountToApprove
+    ],
+    enabled: shouldConfigureApprovalWrite
+  });
+
+  const {
+    data: submitApproveResult,
+    status: signApproveTransactionStatus,
+    writeAsync: writeSubmitApproveAsync
+  } = useContractWrite(writeApproveConfig);
+
+  const {
+    status: mineApproveTransactionStatus
+  } = useWaitForTransaction({
+    hash: submitApproveResult ? submitApproveResult.hash : undefined,
+    onSuccess(data: any) {
+      console.log('writeSubmitApproveAsync successful: ', data);
+      
+      refetchUsdcApprovalToLifiBridge?.();
 
       refetchUsdcBalance?.();
     },
@@ -205,6 +244,10 @@ export default function SendForm() {
   );
 
   useEffect(() => {
+    // TODO: for 4337 wallets, skip approval check because we are batching approve + bridge + revoke approval
+    const isApprovalRequired = sendState === SendTransactionStatus.APPROVAL_REQUIRED;
+    setShouldConfigureApprovalWrite(isApprovalRequired);
+    
     setShouldConfigureTransferWrite(sendState === SendTransactionStatus.VALID);
   }, [sendState]);
 
@@ -214,6 +257,25 @@ export default function SendForm() {
     }
   }, [submitTransferResult])
 
+
+  useEffect(() => {
+    // TODO: skip approval if 4337 wallet
+    const usdcApprovalToLifiBridgeLoaded = usdcApprovalToLifiBridge !== null && usdcApprovalToLifiBridge !== undefined;
+
+    if (!sendAmountInput || !usdcApprovalToLifiBridgeLoaded) {
+      setAmountToApprove(ZERO);
+    } else {
+      // TODO: Check if USDC on Base transfer vs bridge transaction to skip approval
+      const depositAmountBI = toBigInt(sendAmountInput.toString());
+      const approvalDifference = depositAmountBI - usdcApprovalToLifiBridge;
+      if (approvalDifference > ZERO) {
+        setAmountToApprove(depositAmountBI);
+      } else {
+        setAmountToApprove(ZERO);
+      }
+    }
+  }, [sendAmountInput, usdcApprovalToLifiBridge]);
+  
   /*
    * Helpers
    */
@@ -248,6 +310,7 @@ export default function SendForm() {
       case SendTransactionStatus.TRANSACTION_MINING:
         return true;
 
+      case SendTransactionStatus.APPROVAL_REQUIRED:
       case SendTransactionStatus.VALID:
       case SendTransactionStatus.TRANSACTION_SUCCEEDED:
       default:
@@ -289,6 +352,10 @@ export default function SendForm() {
 
       case SendTransactionStatus.TRANSACTION_SUCCEEDED:
         return 'Send';
+
+      case SendTransactionStatus.APPROVAL_REQUIRED:
+        const usdcApprovalToLifiBridgeString = usdcApprovalToLifiBridge ? toUsdcString(usdcApprovalToLifiBridge) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToLifiBridgeString}`;
 
       case SendTransactionStatus.DEFAULT:
       default:

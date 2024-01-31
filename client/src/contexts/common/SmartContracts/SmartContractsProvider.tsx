@@ -52,6 +52,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
 
+  // LIFI
+  const [lifiBridgeAddress, setLifiBridgeAddress] = useState<string | null>(null);
+
   /*
    * Hooks
    */
@@ -128,6 +131,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // NFT
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
+    
+    // LIFI
+    setLifiBridgeAddress(null);
 
     esl && console.log('Set venmoRampAddress: null');
   };
@@ -154,6 +160,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
     setHdfcNftAddress(contractsForNetwork.hdfcNft);
+    
+    // LIFI
+    setLifiBridgeAddress(contractsForNetwork.lifiBridgeAddress);
 
     esl && console.log('Set venmoRampAddress to: ', contractsForNetwork.ramp);
   };
@@ -186,7 +195,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         // NFT
         nftAbi: nftAbi as Abi,
         venmoNftAddress,
-        hdfcNftAddress
+        hdfcNftAddress,
+
+        // LIFI
+        lifiBridgeAddress
       }}
     >
       {children}
