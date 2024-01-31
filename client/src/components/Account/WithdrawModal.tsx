@@ -6,11 +6,12 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkSelector } from '@components/Account/NetworkSelector';
+import { Input } from '@components/Account/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
-import { Input } from '@components/Account/Input';
 import { WithdrawTransactionStatus } from '@helpers/types';
 import { formatAddress } from '@helpers/addressFormat';
+import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useModal from '@hooks/useModal';
@@ -20,12 +21,14 @@ import baseSvg from '../../assets/images/base.svg';
 
 
 type RecipientAddress = {
+  input: string;
   ensName: string;
   rawAddress: string;
   displayAddress: string;
 };
 
 const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
+  input: '',
   ensName: '',
   rawAddress: '',
   displayAddress: '',
@@ -101,6 +104,8 @@ export default function WithdrawModal() {
   };
 
   const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
+    resetWithdrawStateOnInputChange();
+
     if (value === "") {
       setInputFunction('');
     } else if (value === ".") {
@@ -110,14 +115,45 @@ export default function WithdrawModal() {
     }
   };
 
-  const handleRecipientInputChange = (value: string) => {
-    const updatedAddress: RecipientAddress = {
-      ...recipientAddressInput,
-      rawAddress: value,
-      displayAddress: formatAddress(value),
-    };
+  const handleRecipientInputChange = async (value: string) => {
+    resetWithdrawStateOnInputChange();
 
-    setRecipientAddressInput(updatedAddress);
+    let rawAddress = '';
+    let ensName = '';
+    let displayAddress = '';
+    let isValidAddress = false;
+
+    setRecipientAddressInput({
+      input: value,
+      ensName,
+      rawAddress,
+      displayAddress,
+    });
+  
+    if (value.endsWith('.eth')) {
+      ensName = value;
+      const resolvedAddress = await resolveEnsName(value);
+      if (resolvedAddress) {
+        rawAddress = resolvedAddress;
+        displayAddress = formatAddress(resolvedAddress);
+        isValidAddress = true;
+      }
+    } else if (value.length === 42 && value.startsWith('0x')) {
+      rawAddress = value;
+      displayAddress = formatAddress(value);
+      isValidAddress = true;
+    }
+
+    setRecipientAddressInput(prevState => ({
+      ...prevState,
+      ensName: ensName,
+      rawAddress: rawAddress,
+      displayAddress: displayAddress,
+    }));
+  
+    console.log('isValidAddress', isValidAddress);
+
+    setIsValidRecipientAddress(isValidAddress);
   };
 
   /*
@@ -143,7 +179,7 @@ export default function WithdrawModal() {
             if (isDepositAmountGreaterThanBalance) {
               setWithdrawState(WithdrawTransactionStatus.INSUFFICIENT_BALANCE);
             } else {
-              if (!recipientAddressInput.rawAddress) {
+              if (!recipientAddressInput.input) {
                 setWithdrawState(WithdrawTransactionStatus.DEFAULT);
               } else if (!isValidRecipientAddress) {
                 setWithdrawState(WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS);
@@ -169,7 +205,7 @@ export default function WithdrawModal() {
 
     updateWithdrawState();
   }, [
-      recipientAddressInput,
+      recipientAddressInput.input,
       withdrawAmountInput,
       usdcBalance,
       isValidRecipientAddress,
@@ -183,18 +219,6 @@ export default function WithdrawModal() {
   }, [withdrawState]);
 
   useEffect(() => {
-    const verifyRecipientInput = async () => {
-      if (recipientAddressInput.rawAddress.length !== 42) {
-        setIsValidRecipientAddress(false);
-      } else {
-        setIsValidRecipientAddress(true);
-      }
-    };
-
-    verifyRecipientInput();
-  }, [recipientAddressInput]);
-
-  useEffect(() => {
     if (submitTransferResult?.hash) {
       setTransactionHash(submitTransferResult.hash);
     }
@@ -203,6 +227,12 @@ export default function WithdrawModal() {
   /*
    * Helpers
    */
+
+  function resetWithdrawStateOnInputChange() {
+    if (withdrawState === WithdrawTransactionStatus.TRANSACTION_SUCCEEDED) {
+      setWithdrawState(WithdrawTransactionStatus.DEFAULT);
+    }
+  };
 
   function isValidInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
@@ -229,6 +259,7 @@ export default function WithdrawModal() {
         return true;
 
       case WithdrawTransactionStatus.VALID:
+      case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
       default:
         return false;
     }
@@ -263,6 +294,20 @@ export default function WithdrawModal() {
         return 'Input recipient address';
     }
   };
+
+  const recipientInputText = (): string => {
+    if (isRecipientInputFocused) {
+      return recipientAddressInput.input;
+    } else {
+      if (recipientAddressInput.ensName) {
+        return recipientAddressInput.ensName;
+      } else if (recipientAddressInput.displayAddress) {
+        return recipientAddressInput.displayAddress;
+      } else {
+        return recipientAddressInput.input;
+      }
+    }
+  }
 
   /*
    * Component
@@ -331,12 +376,12 @@ export default function WithdrawModal() {
           <Input
             label="To"
             name={`to`}
-            value={isRecipientInputFocused ? recipientAddressInput.rawAddress : recipientAddressInput.displayAddress}
+            value={recipientInputText()}
             onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
             onFocus={() => setIsRecipientInputFocused(true)}
             onBlur={() => setIsRecipientInputFocused(false)}
             type="string"
-            placeholder="alexsoong.eth"
+            placeholder="Wallet address or ENS name"
           />
         </InputsContainer>
 
