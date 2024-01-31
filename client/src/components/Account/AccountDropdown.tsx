@@ -130,22 +130,24 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             </NavDropdownItem>
           </ItemAndIconContainer>
 
-          <ItemAndIconContainer>
-            <StyledRepeat />
-            <BridgeLinkAndBalance>
-              <BridgeLink
-                href="https://bridge.base.org/deposit"
-                target="_blank"
-              >
-                Bridge ↗
-              </BridgeLink>
-              {!user && (
-                <EthBalance>
-                  {ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...'}
-                </EthBalance>
-              )}
-            </BridgeLinkAndBalance>
-          </ItemAndIconContainer>
+          {!authenticated && (
+            <ItemAndIconContainer>
+              <StyledRepeat />
+              <BridgeLinkAndBalance>
+                <BridgeLink
+                  href="https://bridge.base.org/deposit"
+                  target="_blank"
+                >
+                  Bridge ↗
+                </BridgeLink>
+                {!user && (
+                  <EthBalance>
+                    {ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...'}
+                  </EthBalance>
+                )}
+              </BridgeLinkAndBalance>
+            </ItemAndIconContainer>
+          )}
 
           <ItemAndIconContainer>
             <StyledLogOut />

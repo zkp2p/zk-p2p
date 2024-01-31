@@ -150,8 +150,6 @@ export default function WithdrawModal() {
       rawAddress: rawAddress,
       displayAddress: displayAddress,
     }));
-  
-    console.log('isValidAddress', isValidAddress);
 
     setIsValidRecipientAddress(isValidAddress);
   };
