@@ -39,11 +39,13 @@ export default function WithdrawModal() {
   const { closeModal } = useModal();
   const { isLoggedIn } = useAccount();
   const { usdcBalance, refetchUsdcBalance } = useBalances();
-  const { usdcAddress, usdcAbi } = useSmartContracts();
+  const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
 
   /*
    * State
    */
+
+  const [transactionHash, setTransactionHash] = useState<string>('');
 
   const [withdrawState, setWithdrawState] = useState(WithdrawTransactionStatus.DEFAULT);
   const [withdrawAmountInput, setWithdrawAmountInput] = useState<string>('');
@@ -192,6 +194,12 @@ export default function WithdrawModal() {
     verifyRecipientInput();
   }, [recipientAddressInput]);
 
+  useEffect(() => {
+    if (submitTransferResult?.hash) {
+      setTransactionHash(submitTransferResult.hash);
+    }
+  }, [submitTransferResult])
+
   /*
    * Helpers
    */
@@ -332,12 +340,25 @@ export default function WithdrawModal() {
           />
         </InputsContainer>
 
+        { transactionHash?.length ? (
+          <Link
+            href={`${blockscanUrl}/tx/${transactionHash}`}
+            target="_blank"
+            rel="noopener noreferrer">
+              <ThemedText.LabelSmall textAlign="left">
+                View on Explorer ↗
+              </ThemedText.LabelSmall>
+          </Link>
+        ) : null}
+
         <ButtonContainer>
           <Button
             fullWidth={true}
             disabled={ctaDisabled()}
             onClick={async () => {
               try {
+                setTransactionHash('');
+
                 await writeSubmitTransferAsync?.();
               } catch (error) {
                 console.log('writeSubmitTransferAsync failed: ', error);
@@ -445,6 +466,17 @@ const InputsContainer = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   padding-top: 12px;
+`;
+
+const Link = styled.a`
+  white-space: pre;
+  display: inline-block;
+  color: #1F95E2;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const ButtonContainer = styled.div`
