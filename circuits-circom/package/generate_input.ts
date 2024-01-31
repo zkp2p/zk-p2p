@@ -110,6 +110,8 @@ export enum CircuitType {
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
   EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
+  EMAIL_MERCADO_REGSITRATION = "mercado_registration",
+  EMAIL_MERCADO_SEND = "mercado_send"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -218,6 +220,9 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Los";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10496 is the max observed body length for one email
   }
 
   // Derive modulus from signature
@@ -582,6 +587,14 @@ export async function getCircuitInputs(
       in_body_suffix_padded,
       in_body_suffix_len_padded_bytes,
     }
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    // Iterate over in_body_padded and convert each int to a char
+    for (let i = 0; i < in_body_padded.length; i++) {
+      in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    }
+    // log in_body_padded
+    console.log(in_body_padded.join(''));
+
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");

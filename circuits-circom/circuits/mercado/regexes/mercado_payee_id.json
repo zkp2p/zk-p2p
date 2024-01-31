@@ -2,7 +2,7 @@
     "parts": [
         {
             "is_public": false,
-            "regex_def": "(CVU:|C=\r\nVU:|CV=\r\nU:|CVU=\r\n:)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?(<strong>|<=\r\nstrong>|<s=\r\ntrong>|<st=\r\nrong>|<str=\r\nong>|<stro=\r\nng>|<stron=\r\ng>|<strong=\r\n>)"
+            "regex_def": "(CVU:|C=\r\nVU:|CV=\r\nU:|CVU=\r\n:)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )?(<strong>|<=\r\nstrong>|<s=\r\ntrong>|<st=\r\nrong>|<str=\r\nong>|<stro=\r\nng>|<stron=\r\ng>|<strong=\r\n>)( |=\r\n )(=\r\n|=\r\n |=\r\n =\r\n|=\r\n =\r\n )"  # It's the space
         },
         {
             "is_public": true,
