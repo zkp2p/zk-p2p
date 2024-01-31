@@ -18,7 +18,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts();
+  const { venmoRampAddress, hdfcRampAddress, usdcAddress, lifiBridgeAddress } = useSmartContracts();
 
   /*
    * State
@@ -28,10 +28,12 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [usdcBalance, setUsdcBalance] = useState<bigint | null>(null);
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
   const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
+  const [usdcApprovalToLifiBridge, setUsdcApprovalToLifiBridge] = useState<bigint | null>(null);
 
   const [shouldFetchEthBalance, setShouldFetchEthBalance] = useState<boolean>(false);
   const [shouldFetchUsdcBalance, setShouldFetchUsdcBalance] = useState<boolean>(false);
   const [shouldFetchUsdcApprovalToRamp, setShouldFetchUsdcApprovalToRamp] = useState<boolean>(false);
+  const [shouldFetchUsdcApprovalToLifiBridge, setShouldFetchUsdcApprovalToLifiBridge] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -82,6 +84,20 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     enabled: shouldFetchUsdcApprovalToRamp,
   });
 
+  const {
+    data: usdcApprovalToLifiBridgeRaw,
+    refetch: refetchUsdcApprovalToLifiBridge,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+      lifiBridgeAddress
+    ],
+    enabled: shouldFetchUsdcApprovalToLifiBridge,
+  });
+
   /*
    * Hooks
    */
@@ -118,11 +134,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
       setShouldFetchUsdcBalance(true);
       setShouldFetchUsdcApprovalToRamp(true);
+      setShouldFetchUsdcApprovalToLifiBridge(true);
     } else {
       esl && console.log('shouldFetchUsdcBalanceAndApproval_3');
 
       setShouldFetchUsdcBalance(false);
       setShouldFetchUsdcApprovalToRamp(false);
+      setShouldFetchUsdcApprovalToLifiBridge(false);
 
       setEthBalance(null);
       setUsdcBalance(null);
@@ -194,6 +212,21 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     }
   }, [usdcApprovalToHdfcRampRaw]);
 
+  useEffect(() => {
+    esl && console.log('usdcApprovalToLifiBridgeRaw_1');
+    esl && console.log('checking usdcApprovalToLifiBridgeRaw: ', usdcApprovalToLifiBridgeRaw);
+  
+    if (usdcApprovalToLifiBridgeRaw || usdcApprovalToLifiBridgeRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToLifiBridgeRaw_2');
+
+      setUsdcApprovalToLifiBridge(usdcApprovalToLifiBridgeRaw);
+    } else {
+      esl && console.log('usdcApprovalToLifiBridgeRaw_3');
+      
+      setUsdcApprovalToLifiBridge(null);
+    }
+  }, [usdcApprovalToLifiBridgeRaw]);
+
   return (
     <BalancesContext.Provider
       value={{
@@ -207,6 +240,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToRamp,
         usdcApprovalToHdfcRamp,
         refetchUsdcApprovalToHdfcRamp,
+        usdcApprovalToLifiBridge,
+        refetchUsdcApprovalToLifiBridge
       }}
     >
       {children}
