@@ -27,7 +27,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { authenticated, logout, user } = usePrivy();
+  const { user } = usePrivy();
 
   /*
    * State
