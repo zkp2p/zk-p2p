@@ -9,6 +9,7 @@ import { NetworkSelector } from '@components/Account/NetworkSelector';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { Input } from '@components/Account/Input';
+import { CustomLifiWidget } from '@components/Account/CustomLifiWidget'
 import { WithdrawTransactionStatus } from '@helpers/types';
 import { formatAddress } from '@helpers/addressFormat';
 import useAccount from '@hooks/useAccount';
@@ -265,7 +266,7 @@ export default function WithdrawModal() {
       <Overlay onClick={handleCloseModal} />
 
       <ModalContainer>
-        <TitleCenteredRow>
+        {/* <TitleCenteredRow>
           <div style={{ flex: 0.25 }}>
             <button
               onClick={handleCloseModal}
@@ -345,7 +346,9 @@ export default function WithdrawModal() {
             }}>
             { ctaText() }
           </Button>
-        </ButtonContainer>
+        </ButtonContainer> */}
+        
+        <CustomLifiWidget/>
       </ModalContainer>
     </ModalAndOverlayContainer>
   );
@@ -375,7 +378,7 @@ const ModalContainer = styled.div`
   align-items: center;
   z-index: 20;
   gap: 1rem;
-  top: 33%;
+  top: 20%;
   position: relative;
 `;
 
