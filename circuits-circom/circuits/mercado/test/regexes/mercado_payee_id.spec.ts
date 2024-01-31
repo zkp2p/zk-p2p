@@ -16,7 +16,7 @@ const wasm_tester = require("circom_tester").wasm;
 // =
 // 0000003100097214822524
 
-// TODO: HOW TO LIMIT THE CVU TO 22 CHARS?
+// TODO: CAN WE LIMIT THE CVU TO 22 CHARS?
 
 const fs = require('fs');
 const MIN_LEN = 61;     // C=\r\nVU: =\r\n= \r\n <stron=\r\ng> =\r\n =\r\n 000000310009=\r\n7214822524   // 73 - 12 = 61
@@ -42,9 +42,9 @@ describe.only("Mercado Payee ID Regex", () => {
         return Array.from(text).map(char => char.charCodeAt(0).toString());
     }
 
-    function textToAsciiArrayPadded(text: string): string[] {
+    function textToAsciiArrayPadded(text: string, padChar: string = " "): string[] {
         while (text.length < MIN_LEN) {
-            text += " ";
+            text += padChar;
         }
         return textToAsciiArray(text);
     }
@@ -202,19 +202,18 @@ describe.only("Mercado Payee ID Regex", () => {
         });
     });
 
-    it.skip("should reveal regex correctly", async () => {
+    it("should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 0000003100097214822524")
+            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 0000003100097214822524", "e")  // Pad with e's
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
 
-        // TODO: Fix this. For some reason, the =\r\n =\r\n right before digits are also being revealed.
-        const expected = Array(textToAsciiArray("CVU: =\r\n =\r\n <strong> =\r\n =\r\n ").length).fill("0")  // 38 - 8 = 30
-            .concat(textToAsciiArray("0000003100097214822524")) // 22
-            .concat(Array(9).fill("0"))    // 61 - 30 - 22 = 9
+        const expected = Array(textToAsciiArray("CVU: =\r\n =\r\n <strong>").length).fill("0")  // 25 - 4 = 21
+            .concat(textToAsciiArray(" =\r\n =\r\n 0000003100097214822524")) // 35 - 4 = 31
+            .concat(Array(9).fill("0"))    // 61 - 21 - 31 = 9
         const result = witness.slice(2, input.msg.length + 2);
         console.log(witness);
         console.log(JSON.stringify(result))
@@ -222,19 +221,18 @@ describe.only("Mercado Payee ID Regex", () => {
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
 
-    it.skip("should reveal regex correctly", async () => {
+    it("should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 000000310009=\r\n7214822524")
+            "msg": textToAsciiArrayPadded("CVU: =\r\n =\r\n <strong> =\r\n =\r\n 000000310009=\r\n7214822524", "e") // Pad with e's
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
 
-        // TODO: Fix this. For some reason, the =\r\n =\r\n right before digits are also being revealed.
-        const expected = Array(textToAsciiArray("CVU: =\r\n =\r\n <strong> =\r\n =\r\n ").length).fill("0")  // 38 - 8 = 30
-            .concat(textToAsciiArray("000000310009=\r\n7214822524")) // 25
-            .concat(Array(6).fill("0"))    // 61 - 30 - 25 = 6
+        const expected = Array(textToAsciiArray("CVU: =\r\n =\r\n <strong>").length).fill("0")  // 25 - 4 = 21
+            .concat(textToAsciiArray(" =\r\n =\r\n 000000310009=\r\n7214822524")) // 40 - 6 = 34
+            .concat(Array(6).fill("0"))    // 61 - 34 - 21 = 6
         const result = witness.slice(2, input.msg.length + 2);
         console.log(witness);
         console.log(JSON.stringify(result))
