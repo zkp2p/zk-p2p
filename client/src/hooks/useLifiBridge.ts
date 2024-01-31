@@ -9,7 +9,7 @@ type LifiRouteRequestParams = {
 
 export default function useLifiBridge() {
 
-  const getLifiQuotes = async ({fromAmount, fromToken, fromAddress, toChain, toToken, toAddress }: LifiRouteRequestParams) => {
+  const getLifiQuotes = async ({ fromAmount, fromToken, fromAddress, toChain, toToken, toAddress }: LifiRouteRequestParams) => {
     const routesRequest = {
       fromChain: '8453', // Always will be from Base
       toChain,
