@@ -7,4 +7,6 @@ export interface ContextValues {
   shouldFetchUsdcBalance: boolean | null
   usdcApprovalToHdfcRamp: bigint | null
   refetchUsdcApprovalToHdfcRamp: (() => void) | null
+  usdcApprovalToLifiBridge: bigint | null
+  refetchUsdcApprovalToLifiBridge: (() => void) | null
 }

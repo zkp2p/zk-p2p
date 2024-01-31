@@ -18,6 +18,7 @@ export default function useLifiBridge() {
       toToken,
       fromAddress,
       toAddress,
+      allowDestinationCall: 'false', // This is to toggle allowing a swap AFTER bridging to the new chain
       slippage: '0.005', // 0.5% slippage
       integrator: 'ZKP2P',
       fee: '0', // 0 fees

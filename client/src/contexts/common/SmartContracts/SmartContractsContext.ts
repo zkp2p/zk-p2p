@@ -30,6 +30,9 @@ interface SmartContractsValues {
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
   hdfcNftAddress: string | null;
+
+  // LIFI
+  lifiBridgeAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -59,6 +62,9 @@ const defaultValues: SmartContractsValues = {
   nftAbi: null,
   venmoNftAddress: null,
   hdfcNftAddress: null,
+
+  // LIFI
+  lifiBridgeAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

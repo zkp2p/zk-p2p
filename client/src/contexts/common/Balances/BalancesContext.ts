@@ -11,6 +11,8 @@ const defaultValues: ContextValues = {
   shouldFetchUsdcBalance: null,
   usdcApprovalToHdfcRamp: null,
   refetchUsdcApprovalToHdfcRamp: null,
+  usdcApprovalToLifiBridge: null,
+  refetchUsdcApprovalToLifiBridge: null,
 };
 
 const BalancesContext = createContext<ContextValues>(defaultValues)

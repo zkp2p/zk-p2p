@@ -17,6 +17,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0xD0A1Fa02432AaF662cC5BAA3e3BB91D6b3c7B67A',
     'hdfcRegistrationProcessor': '0xAEa884273Cd994Ea8C45c37990046900Ff3D8130',
     'hdfcNft': '0x94874b3a294becc3dea2c320c300d2d2a4b25451',
+    'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
   'base_staging': {
     'legacyRamp': '0xa08d9952196ABECB2BaCD14188093314053f6335',
@@ -30,6 +31,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0xD49470bb17776a51472B05c617e06538e8465bB5',
     'hdfcRegistrationProcessor': '0xeBf794338D092fb9353F92fDcad3CB578E120A07',
     'hdfcNft': '0x6b64BC61cd03cdD7Ac3aF6Ad6A02977265d21ecB',
+    'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
   'sepolia_staging': {
     'legacyRamp': '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
@@ -43,6 +45,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0xe00f0e2f64F6FA7Eda3278CBD66347029C9848bc',
     'hdfcRegistrationProcessor': '0x6c90ae078d8a6009666ad061521C091f57C808db',
     'hdfcNft': '0x1bb5f399a50050d76ebffb52ae8a526493ef8916',
+    'lifiBridge': ''
   },
   'localhardhat': {
     'legacyRamp': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
@@ -56,6 +59,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
     'hdfcRegistrationProcessor': '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
     'hdfcNft': '',
+    'lifiBridge': ''
   },
 };
 

@@ -1,13 +1,14 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
 import { X } from 'react-feather';
-import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction, useSendTransaction, usePrepareSendTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkSelector } from '@components/Account/NetworkSelector';
 import { Input } from '@components/Account/Input';
 import { ThemedText } from '@theme/text'
+import { ZERO } from '@helpers/constants';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { WithdrawTransactionStatus } from '@helpers/types';
 import { formatAddress } from '@helpers/addressFormat';
@@ -16,6 +17,7 @@ import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useModal from '@hooks/useModal';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useLifiBridge from '@hooks/useLifiBridge';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -42,8 +44,9 @@ export default function WithdrawModal() {
 
   const { closeModal } = useModal();
   const { isLoggedIn, network } = useAccount();
-  const { usdcBalance, refetchUsdcBalance } = useBalances();
-  const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
+  const { usdcBalance, refetchUsdcBalance, usdcApprovalToLifiBridge, refetchUsdcApprovalToLifiBridge } = useBalances();
+  const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
+  const { getLifiQuotes, getLifiTransactionHistory, getLifiTransactionStatus } = useLifiBridge();
 
   /*
    * State
@@ -58,8 +61,10 @@ export default function WithdrawModal() {
   const [isRecipientInputFocused, setIsRecipientInputFocused] = useState(false);
 
   const [isValidRecipientAddress, setIsValidRecipientAddress] = useState<boolean>(false);
+  const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
+  const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
 
   /*
    * Contract Writes
@@ -91,6 +96,39 @@ export default function WithdrawModal() {
     hash: submitTransferResult ? submitTransferResult.hash : undefined,
     onSuccess(data: any) {
       console.log('writeSubmitTransferAsync successful: ', data);
+
+      refetchUsdcBalance?.();
+    },
+  });
+
+  //
+  // approve(address spender, uint256 value)
+  //
+  const { config: writeApproveConfig } = usePrepareContractWrite({
+    address: usdcAddress,
+    abi: usdcAbi,
+    functionName: "approve",
+    args: [
+      lifiBridgeAddress,
+      amountToApprove
+    ],
+    enabled: shouldConfigureApprovalWrite
+  });
+
+  const {
+    data: submitApproveResult,
+    status: signApproveTransactionStatus,
+    writeAsync: writeSubmitApproveAsync
+  } = useContractWrite(writeApproveConfig);
+
+  const {
+    status: mineApproveTransactionStatus
+  } = useWaitForTransaction({
+    hash: submitApproveResult ? submitApproveResult.hash : undefined,
+    onSuccess(data: any) {
+      console.log('writeSubmitApproveAsync successful: ', data);
+      
+      refetchUsdcApprovalToLifiBridge?.();
 
       refetchUsdcBalance?.();
     },
@@ -214,6 +252,10 @@ export default function WithdrawModal() {
   );
 
   useEffect(() => {
+    // TODO: for 4337 wallets, skip approval check because we are batching approve + bridge + revoke approval
+    const isApprovalRequired = withdrawState === WithdrawTransactionStatus.APPROVAL_REQUIRED;
+    setShouldConfigureApprovalWrite(isApprovalRequired);
+    
     setShouldConfigureTransferWrite(withdrawState === WithdrawTransactionStatus.VALID);
   }, [withdrawState]);
 
@@ -223,6 +265,25 @@ export default function WithdrawModal() {
     }
   }, [submitTransferResult])
 
+
+  useEffect(() => {
+    // TODO: skip approval if 4337 wallet
+    const usdcApprovalToLifiBridgeLoaded = usdcApprovalToLifiBridge !== null && usdcApprovalToLifiBridge !== undefined;
+
+    if (!withdrawAmountInput || !usdcApprovalToLifiBridgeLoaded) {
+      setAmountToApprove(ZERO);
+    } else {
+      // TODO: Check if USDC on Base transfer vs bridge transaction to skip approval
+      const depositAmountBI = toBigInt(withdrawAmountInput.toString());
+      const approvalDifference = depositAmountBI - usdcApprovalToLifiBridge;
+      if (approvalDifference > ZERO) {
+        setAmountToApprove(depositAmountBI);
+      } else {
+        setAmountToApprove(ZERO);
+      }
+    }
+  }, [withdrawAmountInput, usdcApprovalToLifiBridge]);
+  
   /*
    * Helpers
    */
@@ -257,6 +318,8 @@ export default function WithdrawModal() {
       case WithdrawTransactionStatus.TRANSACTION_MINING:
         return true;
 
+      case WithdrawTransactionStatus.APPROVAL_REQUIRED:
+        return false;
       case WithdrawTransactionStatus.VALID:
       case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
       default:
@@ -287,6 +350,10 @@ export default function WithdrawModal() {
 
       case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
         return 'Withdraw';
+
+      case WithdrawTransactionStatus.APPROVAL_REQUIRED:
+        const usdcApprovalToLifiBridgeString = usdcApprovalToLifiBridge ? toUsdcString(usdcApprovalToLifiBridge) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToLifiBridgeString}`;
 
       case WithdrawTransactionStatus.DEFAULT:
       default:
