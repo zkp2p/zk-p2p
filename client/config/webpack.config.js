@@ -657,7 +657,6 @@ module.exports = function (webpackEnv) {
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
-        'process.env.REMOTE_VALIDATE_UPI_URL': JSON.stringify(process.env.REMOTE_VALIDATE_UPI_URL),
         'process.env.HDFC_DENY_LIST_URL': JSON.stringify(process.env.HDFC_DENY_LIST_URL),
         'process.env.VENMO_DOMAIN_KEYS': JSON.stringify(process.env.VENMO_DOMAIN_KEYS),
         'process.env.HDFC_DOMAIN_KEYS': JSON.stringify(process.env.HDFC_DOMAIN_KEYS),
