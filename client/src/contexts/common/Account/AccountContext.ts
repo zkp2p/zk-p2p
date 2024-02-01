@@ -6,6 +6,7 @@ interface AccountValues {
   loggedInEthereumAddress: string | null;
   loginStatus: string | null;
   authenticatedLogout: (() => void) | null;
+  authenticatedLogin: (() => void) | null;
   accountDisplay: string | null;
   network: string | null;
   accountStatus: string | null;
@@ -17,6 +18,7 @@ const defaultValues: AccountValues = {
   loggedInEthereumAddress: null,
   loginStatus: null,
   authenticatedLogout: null,
+  authenticatedLogin: null,
   accountDisplay: null,
   network: null,
   accountStatus: null,

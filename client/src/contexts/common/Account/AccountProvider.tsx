@@ -23,7 +23,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   
   const { wallets } = useWallets();
   const { wallet: activeWallet, setActiveWallet } = usePrivyWagmi();
-  const { authenticated, logout: authenticatedLogout, user } = usePrivy();
+  const { authenticated, logout: authenticatedLogout, user, login: authenticatedLogin } = usePrivy();
 
   /*
    * State
@@ -140,6 +140,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         isLoggedIn,
         loggedInEthereumAddress,
         loginStatus,
+        authenticatedLogin,
         authenticatedLogout,
         accountDisplay,
         network,

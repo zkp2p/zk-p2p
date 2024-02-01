@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
+import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, LogIn } from 'react-feather';
 import styled from "styled-components";
 import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
@@ -28,7 +28,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
 
   const { disconnect } = useDisconnect();
   const { usdcBalance, ethBalance, refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
-  const { accountDisplay, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
+  const { accountDisplay, authenticatedLogout, authenticatedLogin, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
@@ -71,6 +71,14 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   const handleCopyClick = () => {
     if (loggedInEthereumAddress) {
       copyToClipboard(loggedInEthereumAddress);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      await authenticatedLogin?.();
+    } catch (error) {
+      console.error("Failed to login");
     }
   };
 
@@ -135,8 +143,17 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
         </BalancesContainer>
         
         <NavDropdownItemsContainer>
+          {loginStatus === LoginStatus.EOA && (
+            <ItemAndIconContainer onClick={handleLogin}>
+              <StyledLogIn />
+
+              <NavDropdownItem>
+                Try Gasless ✨
+              </NavDropdownItem>
+            </ItemAndIconContainer>
+          )}
           <ItemAndIconContainer onClick={handleReceiveClick}>
-            <StyledArrowUpCircle />
+            <StyledArrowDownCircle />
 
             <NavDropdownItem>
               Receive
@@ -144,7 +161,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
           </ItemAndIconContainer>
           
           <ItemAndIconContainer onClick={handleSendClick}>
-            <StyledArrowDownCircle />
+            <StyledArrowUpCircle />
 
             <NavDropdownItem>
               Send
@@ -251,6 +268,12 @@ const StyledArrowDownCircle = styled(ArrowDownCircle)`
   width: 20px;
 `;
 
+const StyledLogIn = styled(LogIn)`
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+`;
+
 const StyledRepeat = styled(Repeat)`
   color: #FFF;
   height: 18px;
@@ -325,7 +348,7 @@ const ItemAndIconContainer = styled.div`
     color: #6C757D;
     box-shadow: none;
 
-    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat} {
+    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledLogIn} {
       color: #6C757D;
     }
 
