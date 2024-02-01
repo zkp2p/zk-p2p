@@ -145,7 +145,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
                     <LoggedInBalanceAndAccount onClick={toggleDropdown}>
                       <LoggedInButton>
-                        {user ? (
+                        {(user && user.email) ? (
                           user.email.address
                         ) : (
                           <ENSName

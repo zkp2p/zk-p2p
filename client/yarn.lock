@@ -2886,6 +2886,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@headlessui/react@npm:^1.7.18":
+  version: 1.7.18
+  resolution: "@headlessui/react@npm:1.7.18"
+  dependencies:
+    "@tanstack/react-virtual": ^3.0.0-beta.60
+    client-only: ^0.0.1
+  peerDependencies:
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+  checksum: 7463167b4cf2ad57f92c2deedd6429a245dfc4d979ead5533d2e83429e3e4dd39c346e5a8fd958e6bd9e2fba42486af97577b7dd3137f5a797dacc93632578ba
+  languageName: node
+  linkType: hard
+
 "@heroicons/react@npm:^2.0.18":
   version: 2.1.1
   resolution: "@heroicons/react@npm:2.1.1"
@@ -3498,13 +3511,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@marsidev/react-turnstile@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "@marsidev/react-turnstile@npm:0.3.2"
+"@marsidev/react-turnstile@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@marsidev/react-turnstile@npm:0.4.1"
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 2c192fa9dfb0f78d007293944de098865366b85ddbf80b19659dae565e54778a880721d325748b2f4a08985b1a66f9b9325e09ff4c05364c676246363abeb559
+  checksum: 18fb1f99be61204a6f46945bd3f61a52c11a338aa1ae3b36008f6dff08ff225caf5052e73e5f904bfaf373cc2379783fdb5b854c17ed44d7978ea43d3c667851
   languageName: node
   linkType: hard
 
@@ -4443,9 +4456,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@privy-io/react-auth@npm:1.52.1":
-  version: 1.52.1
-  resolution: "@privy-io/react-auth@npm:1.52.1"
+"@privy-io/react-auth@npm:^1.55.1":
+  version: 1.55.1
+  resolution: "@privy-io/react-auth@npm:1.55.1"
   dependencies:
     "@coinbase/wallet-sdk": ^3.9.0
     "@ethersproject/abstract-signer": ^5.7.0
@@ -4458,8 +4471,9 @@ __metadata:
     "@ethersproject/strings": ^5.7.0
     "@ethersproject/transactions": ^5.7.0
     "@ethersproject/units": ^5.7.0
+    "@headlessui/react": ^1.7.18
     "@heroicons/react": ^2.0.18
-    "@marsidev/react-turnstile": ^0.3.2
+    "@marsidev/react-turnstile": ^0.4.1
     "@metamask/eth-sig-util": ^6.0.0
     "@walletconnect/ethereum-provider": ^2.10.5
     "@walletconnect/modal": ^2.6.2
@@ -4485,15 +4499,14 @@ __metadata:
     uuid: ">=8 <10"
     web3-core: ^1.8.0
     web3-core-helpers: ^1.8.0
-    wicg-inert: ^3.1.2
   peerDependencies:
     react: ^18
     react-dom: ^18
-  checksum: 3e91bf7a378eeece0b42941e992a65cf094b73e8ca3ac72497cb504f0c8e1f98ae5e6c1c3d399aff84add97a0141d527c284c06cba4208baa854922122ec11ea
+  checksum: 5e7a5ff31c43084a456a7fe080504a91ca10429303a3e9f2d8ccfae75930fa6579698b741454250e384ab92dd608b94d3a6ddfb8297f5d742e1b1165536799ec
   languageName: node
   linkType: hard
 
-"@privy-io/wagmi-connector@npm:0.1.12":
+"@privy-io/wagmi-connector@npm:^0.1.12":
   version: 0.1.12
   resolution: "@privy-io/wagmi-connector@npm:0.1.12"
   peerDependencies:
@@ -5484,6 +5497,25 @@ __metadata:
     react-native:
       optional: true
   checksum: 1aff0a476859386f8d32253fa0d0bde7b81769a6d4d4d9cbd78778f0f955459a3bdb7ee27a0d2ee7373090f12998b45df80db0b5b313bd0a7a39d36c6e8e51c5
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-virtual@npm:^3.0.0-beta.60":
+  version: 3.0.2
+  resolution: "@tanstack/react-virtual@npm:3.0.2"
+  dependencies:
+    "@tanstack/virtual-core": 3.0.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: d8a370150582cf765a3e74e506cd1d95b65449a9b30c992865743d091b3953c03a6832f732439beef0a9c4f42bc211ea42a08d6b488122b32afd76b1cd7569bf
+  languageName: node
+  linkType: hard
+
+"@tanstack/virtual-core@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@tanstack/virtual-core@npm:3.0.0"
+  checksum: 7283d50fc7b7a56608c37a8e94a93b85890ff7e39c6281633a19c4d6f6f4fbf25f8418f1eec302a008a8746a0d1d0cd00630137b55e6cf019818d68af8ed16b6
   languageName: node
   linkType: hard
 
@@ -10514,6 +10546,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"client-only@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "client-only@npm:0.0.1"
+  checksum: 0c16bf660dadb90610553c1d8946a7fdfb81d624adea073b8440b7d795d5b5b08beb3c950c6a2cf16279365a3265158a236876d92bce16423c485c322d7dfaf8
+  languageName: node
+  linkType: hard
+
 "clipboardy@npm:3.0.0":
   version: 3.0.0
   resolution: "clipboardy@npm:3.0.0"
@@ -12316,8 +12355,8 @@ __metadata:
     "@mui/material": ^5.14.3
     "@openzeppelin/contracts": ^4.7.1
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
-    "@privy-io/react-auth": 1.52.1
-    "@privy-io/wagmi-connector": 0.1.12
+    "@privy-io/react-auth": ^1.55.1
+    "@privy-io/wagmi-connector": ^0.1.12
     "@rainbow-me/rainbowkit": 1.3.2
     "@reach/portal": ^0.10.3
     "@react-oauth/google": ^0.11.1
@@ -14615,7 +14654,7 @@ __metadata:
 
 "fsevents@patch:fsevents@^2.1.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@^2.3.2#~builtin<compat/fsevents>, fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.3
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.3#~builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
   dependencies:
     node-gyp: latest
   conditions: os=darwin
@@ -23632,7 +23671,7 @@ __metadata:
 
 "resolve@patch:resolve@^1.0.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.7#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.4#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>":
   version: 1.22.8
-  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -23645,7 +23684,7 @@ __metadata:
 
 "resolve@patch:resolve@^2.0.0-next.4#~builtin<compat/resolve>":
   version: 2.0.0-next.5
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#~builtin<compat/resolve>::version=2.0.0-next.5&hash=07638b"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#~builtin<compat/resolve>::version=2.0.0-next.5&hash=c3c19d"
   dependencies:
     is-core-module: ^2.13.0
     path-parse: ^1.0.7
@@ -26426,7 +26465,7 @@ __metadata:
 
 "typescript@patch:typescript@^5.3.3#~builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=a1c5e5"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=f3b441"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
@@ -27760,13 +27799,6 @@ __metadata:
   bin:
     node-which: bin/which.js
   checksum: f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
-  languageName: node
-  linkType: hard
-
-"wicg-inert@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "wicg-inert@npm:3.1.2"
-  checksum: 538c5cb7f240915a4c17741c644b135040764c6d8a05853099f2f342c95ce2645e6cf7c4f729775013dbc218e0da04b3f943875eba6ed4b38ff9dd431465d391
   languageName: node
   linkType: hard
 

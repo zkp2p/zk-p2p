@@ -103,7 +103,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             <StyledUser />
           </IconBorder>
           <AccountTypeLabel>
-            {user ? user.email.address : 'Connected'}
+            {(user && user.email) ? user.email.address : 'Connected'}
           </AccountTypeLabel>
           <AccountAddressAndENSContainer>
             <AccountAddress>
