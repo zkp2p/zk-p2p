@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, LogIn } from 'react-feather';
+import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, Zap } from 'react-feather';
 import styled from "styled-components";
 import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
@@ -145,7 +145,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
         <NavDropdownItemsContainer>
           {loginStatus === LoginStatus.EOA && (
             <ItemAndIconContainer onClick={handleLogin}>
-              <StyledLogIn />
+              <StyledZap />
 
               <NavDropdownItem>
                 Try Gasless ✨
@@ -268,7 +268,7 @@ const StyledArrowDownCircle = styled(ArrowDownCircle)`
   width: 20px;
 `;
 
-const StyledLogIn = styled(LogIn)`
+const StyledZap = styled(Zap)`
   color: #FFF;
   height: 20px;
   width: 20px;
@@ -348,7 +348,7 @@ const ItemAndIconContainer = styled.div`
     color: #6C757D;
     box-shadow: none;
 
-    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledLogIn} {
+    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledZap} {
       color: #6C757D;
     }
 
