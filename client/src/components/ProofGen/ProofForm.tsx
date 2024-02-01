@@ -102,7 +102,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const {
     data: remoteGenerateProofResponse,
-    loading: isRemoteGenerateProofLoading,
+    // loading: isRemoteGenerateProofLoading,
     error: remoteGenerateProofError,
     fetchData: remoteGenerateProof
   } = useRemoteProofGen({
@@ -425,7 +425,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           setEmailFull={setEmailAndToggleInputMode}
           handleVerifyEmailClicked={handleVerifyEmailClicked}
           emailInputStatus={emailInputStatus}
-          isProofModalOpen={isRemoteGenerateProofLoading}
+          isProofModalOpen={shouldShowVerificationModal}
         />
       ) : (
         <UploadEmail
@@ -434,7 +434,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           setEmail={setEmailFull}
           handleVerifyEmailClicked={handleVerifyEmailClicked}
           emailInputStatus={emailInputStatus}
-          isProofModalOpen={isRemoteGenerateProofLoading}
+          isProofModalOpen={shouldShowVerificationModal}
         />
       )}
     </Container>

@@ -222,11 +222,15 @@ export const MailTable: React.FC<MailTableProps> = ({
 
     case EmailInputStatus.VALID:
       default:
-        setCtaButtonTitle("Validate Email");
+        if (!isProofModalOpen) {
+          setCtaButtonTitle("Validate Email");
+        } else {
+          setCtaButtonTitle("Validating Email");
+        }
         break;
     }
 
-  }, [emailInputStatus, paymentPlatform]);
+  }, [emailInputStatus, paymentPlatform, isProofModalOpen]);
 
   /*
    * Component
@@ -325,8 +329,7 @@ export const MailTable: React.FC<MailTableProps> = ({
 
           <ButtonContainer>
             <Button
-              disabled={emailInputStatus !== EmailInputStatus.VALID}
-              loading={isProofModalOpen}
+              disabled={emailInputStatus !== EmailInputStatus.VALID || isProofModalOpen}
               onClick={handleVerifyEmailClicked}
             >
               {ctaButtonTitle}

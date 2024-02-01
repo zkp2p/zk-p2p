@@ -121,11 +121,15 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
       case EmailInputStatus.VALID:
       default:
-        setCtaButtonTitle("Validate Email");
+        if (!isProofModalOpen) {
+          setCtaButtonTitle("Validate Email");
+        } else {
+          setCtaButtonTitle("Validating Email");
+        }
         break;
     }
 
-  }, [emailInputStatus, paymentPlatform]);
+  }, [emailInputStatus, paymentPlatform, isProofModalOpen]);
 
   /*
    * Helpers
@@ -219,8 +223,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 
       <ButtonContainer>
         <Button
-          disabled={emailInputStatus !== EmailInputStatus.VALID}
-          loading={isProofModalOpen}
+          disabled={emailInputStatus !== EmailInputStatus.VALID || isProofModalOpen}
           onClick={handleVerifyEmailClicked}
         >
           {ctaButtonTitle}

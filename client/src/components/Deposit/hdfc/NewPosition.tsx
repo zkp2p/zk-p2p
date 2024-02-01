@@ -10,7 +10,7 @@ import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedUPIId } from '@helpers/poseidonHash';
 import { toBigInt, toUsdcString } from '@helpers/units';
-import { NewDepositTransactionStatus } from '@helpers/types';
+import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { ZERO } from '@helpers/constants';
 import { hdfcStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
@@ -34,7 +34,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Contexts
    */
 
-  const { isLoggedIn } = useAccount();
+  const { isLoggedIn, loginStatus } = useAccount();
   const { hdfcRampAddress, hdfcRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
   const { minimumDepositAmount } = useHdfcRampState();
   const { usdcApprovalToHdfcRamp, usdcBalance, refetchUsdcApprovalToHdfcRamp, refetchUsdcBalance } = useBalances();
@@ -298,6 +298,17 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }
 
+  const ctaLoading = (): boolean => {
+    switch (depositState) {
+      case NewDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewDepositTransactionStatus.TRANSACTION_MINING:
+        return loginStatus === LoginStatus.AUTHENTICATED;
+
+      default:
+        return false;
+    }
+  };
+
   const ctaText = (): string => {
     switch (depositState) {
       case NewDepositTransactionStatus.MISSING_REGISTRATION:
@@ -455,6 +466,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             <Button
               fullWidth={true}
               disabled={ctaDisabled()}
+              loading={ctaLoading()}
               onClick={async () => {
                 ctaOnClick();
               }}>

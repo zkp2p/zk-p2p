@@ -12,11 +12,11 @@ import { TitleCenteredRow } from '@components/layouts/Row';
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
 import { VerificationStepRow, VerificationState, VerificationStepType } from "@components/modals/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
-import { ProofGenerationStatus } from  "@helpers/types";
-import { ThemedText } from '@theme/text'
+import { LoginStatus, ProofGenerationStatus } from  "@helpers/types";
+import { ThemedText } from '@theme/text';
+import useAccount from '@hooks/useAccount';
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
-
 
 
 interface ValidateEmailProps {
@@ -58,6 +58,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
    * Context
    */
 
+  const { loginStatus } = useAccount();
   const { isProvingTypeFast } = useProofGenSettings();
   const size = useWindowSize();
   const { blockscanUrl } = useSmartContracts();
@@ -210,6 +211,17 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
         return true;
     }
   }, [status]);
+
+  const isSubmitVerificationButtonLoading = (): boolean => {
+    switch (status) {
+      case "transaction-configured":
+      case "done":
+        return false;
+        
+      default:
+        return loginStatus === LoginStatus.AUTHENTICATED;
+    }
+  };
 
   const getButtonHandler = () => {
     switch (status) {
@@ -399,6 +411,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
         ) : null}
 
         <Button
+          loading={isSubmitVerificationButtonLoading()}
           disabled={isSubmitVerificationButtonDisabled || isSubmitProcessing}
           onClick={getButtonHandler}
           fullWidth={true}

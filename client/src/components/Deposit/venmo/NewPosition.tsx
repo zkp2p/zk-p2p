@@ -10,7 +10,7 @@ import { ThemedText } from '@theme/text';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedVenmoId, isProvidedIdEqualToRegistration } from '@helpers/poseidonHash';
-import { NewDepositTransactionStatus } from '@helpers/types';
+import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
@@ -33,7 +33,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * Contexts
    */
 
-  const { isLoggedIn } = useAccount();
+  const { isLoggedIn, loginStatus } = useAccount();
   const { venmoRampAddress, venmoRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
@@ -303,6 +303,17 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }
 
+  const ctaLoading = (): boolean => {
+    switch (depositState) {
+      case NewDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewDepositTransactionStatus.TRANSACTION_MINING:
+        return loginStatus === LoginStatus.AUTHENTICATED;
+
+      default:
+        return false;
+    }
+  };
+
   const ctaText = (): string => {
     switch (depositState) {
       case NewDepositTransactionStatus.MISSING_REGISTRATION:
@@ -459,6 +470,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             <Button
               fullWidth={true}
               disabled={ctaDisabled()}
+              loading={ctaLoading()}
               onClick={async () => {
                 ctaOnClick();
               }}>

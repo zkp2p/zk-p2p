@@ -9,7 +9,7 @@ import { NetworkSelector } from '@components/Account/NetworkSelector';
 import { Input } from '@components/Account/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
-import { WithdrawTransactionStatus } from '@helpers/types';
+import { LoginStatus, WithdrawTransactionStatus } from '@helpers/types';
 import { formatAddress } from '@helpers/addressFormat';
 import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
@@ -41,7 +41,7 @@ export default function WithdrawModal() {
    */
 
   const { closeModal } = useModal();
-  const { isLoggedIn, network } = useAccount();
+  const { isLoggedIn, network, loginStatus } = useAccount();
   const { usdcBalance, refetchUsdcBalance } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
 
@@ -188,7 +188,7 @@ export default function WithdrawModal() {
   
                 if (signingDepositTransaction) {
                   setWithdrawState(WithdrawTransactionStatus.TRANSACTION_SIGNING);
-                } else if (miningDepositTransaction){
+                } else if (miningDepositTransaction) {
                   setWithdrawState(WithdrawTransactionStatus.TRANSACTION_MINING);
                 } else {
                   setWithdrawState(WithdrawTransactionStatus.VALID);
@@ -259,6 +259,17 @@ export default function WithdrawModal() {
 
       case WithdrawTransactionStatus.VALID:
       case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
+      default:
+        return false;
+    }
+  };
+
+  const ctaLoading = (): boolean => {
+    switch (withdrawState) {
+      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
+      case WithdrawTransactionStatus.TRANSACTION_MINING:
+        return loginStatus === LoginStatus.AUTHENTICATED;
+
       default:
         return false;
     }
@@ -353,10 +364,6 @@ export default function WithdrawModal() {
           </TitleCenteredRow>
 
           <NetworkContainer>
-            {/* <ThemedText.HeadlineSmall style={{ textAlign: 'left' }}>
-              Network
-            </ThemedText.HeadlineSmall> */}
-            
             <NetworkTransitionContainer>
               <NetworkLogoAndNameContainer>
                 <NetworkSvg src={networkSvg()} />
@@ -414,6 +421,7 @@ export default function WithdrawModal() {
             <Button
               fullWidth={true}
               disabled={ctaDisabled()}
+              loading={ctaLoading()}
               onClick={async () => {
                 try {
                   setTransactionHash('');
