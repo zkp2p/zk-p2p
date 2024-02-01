@@ -232,7 +232,7 @@ export async function getCircuitInputs(
     MAX_INTERMEDIATE_PADDING_LENGTH = 2944; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Cuenta";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7680;  // 7680 is the max observed body length for one email
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -483,7 +483,7 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     // Calculate SHA end selector.
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
-    let intermediateShaCutoffIndex = Math.ceil((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;   // Round up to nearest 64 (Not round down)
+    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);

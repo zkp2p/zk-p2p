@@ -163,6 +163,17 @@ describe("Mercado Entity Regex", () => {
             assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
         });
 
+        it("Entidad: = = <strong> Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n =\r\n <strong> Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
         it("Entidad: =<=strong> Mercado Pago", async () => {
             const input = {
                 "msg": textToAsciiArrayPadded("Entidad: =\r\n <=\r\nstrong> Mercado Pago")
@@ -287,6 +298,17 @@ describe("Mercado Entity Regex", () => {
         it("Entidad: = <strong> = = Mercado Pago", async () => {
             const input = {
                 "msg": textToAsciiArrayPadded("Entidad: =\r\n<strong> =\r\n =\r\n Mercado Pago")
+            };
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+            assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
+        });
+
+        it("Entidad: = = <strong> = = Mercado Pago", async () => {
+            const input = {
+                "msg": textToAsciiArrayPadded("Entidad: =\r\n =\r\n <strong> =\r\n =\r\n Mercado Pago")
             };
             const witness = await cir.calculateWitness(
                 input,

@@ -9,6 +9,7 @@ include "../utils/email_nullifier.circom";
 include "../utils/hash_sign_gen_rand.circom";
 include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
+include "../common-v2/regexes/body_hash_regex_v2.circom";
 
 include "./regexes/mercado_amount.circom";
 include "./regexes/mercado_entity.circom";
@@ -37,18 +38,41 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal output modulus_hash;
 
     // DKIM VERIFICATION
-    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, 0);
+    var ignore_body_hash_check = 1; // Ignore body hash check
+    component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, ignore_body_hash_check);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
     EV.signature <== signature;
     EV.in_len_padded_bytes <== in_len_padded_bytes;
-    EV.body_hash_idx <== body_hash_idx;
-    EV.precomputed_sha <== precomputed_sha;
-    EV.in_body_padded <== in_body_padded;
-    EV.in_body_len_padded_bytes <== in_body_len_padded_bytes;
 
     modulus_hash <== EV.pubkey_hash;
     signal header_hash[256] <== EV.sha;
+
+    //-------HASH INTERMEDIATE----------//
+
+    // // This hashes the body after the precomputed SHA, and outputs the intermediate hash
+    signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
+    signal intermediate_hash_bytes[32];
+    component bits2Num[32];
+    for (var i = 0; i < 32; i++) {
+        bits2Num[i] = Bits2Num(8);
+        for (var j = 0; j < 8; j++) {
+            bits2Num[i].in[7 - j] <== intermediate_hash_bits[i * 8 + j];
+        }
+        intermediate_hash_bytes[i] <== bits2Num[i].out;
+    }
+    // Pack intermediate hash for calldata
+    signal output intermediate_hash_packed[2] <== PackBytes(32, 2, 16)(intermediate_hash_bytes);
+
+    //-------BODY HASH V2 REGEX----------//
+
+    var LEN_SHA_B64 = 44;     // ceil(32 / 3) * 4, due to base64 encoding.
+    signal (bh_regex_out, bh_reveal[max_header_bytes]) <== BodyHashRegexV2(max_header_bytes)(in_padded);
+    bh_regex_out === 1;
+    signal shifted_bh_out[LEN_SHA_B64] <== VarShiftMaskedStr(max_header_bytes, LEN_SHA_B64)(bh_reveal, body_hash_idx);
+    
+    signal sha_b64_out[32] <== Base64Decode(32)(shifted_bh_out);    
+    signal output body_hash_packed[2] <== PackBytes(32, 2, 16)(sha_b64_out);
 
     //-------CONSTANTS----------//
 
@@ -65,7 +89,9 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_amount_packed_bytes = count_packed(max_amount_len, pack_size);
     assert(max_amount_packed_bytes < max_body_bytes);
 
-    var max_payee_id_len = 22; // Max length of payee id
+    // THIS MIGHT INCREASE BECAUSE OF =\r\n IN BETWEEN THE PAYEE ID DIGITS
+    // var max_payee_id_len = 22; // Max length of payee id
+    var max_payee_id_len = 35; // Max length of payee id including \r\n (TENTATIVE)
     var max_payee_id_packed_bytes = count_packed(max_payee_id_len, pack_size);
     assert(max_payee_id_packed_bytes < max_body_bytes);
 
@@ -76,7 +102,7 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     subject_regex_out === 1;
 
     // Mercado entity regex
-    signal entity_regex_out <== MercadoEntityRegex(max_header_bytes)(in_padded);
+    signal entity_regex_out <== MercadoEntityRegex(max_body_bytes)(in_body_padded);
     entity_regex_out === 1;
 
     // From regex V2
@@ -124,7 +150,7 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     // TODO: THIS PAYEE ID NEEDS TO BE CLEANED FIRST
     // Output packed payee id
     signal input mercado_payee_id_idx;
-    signal reveal_payee_id_packed[max_payee_id_packed_bytes] <== ShiftAndPackMaskedStr(
+    signal output reveal_payee_id_packed[max_payee_id_packed_bytes] <== ShiftAndPackMaskedStr(
         max_body_bytes, 
         max_payee_id_len, 
         pack_size
@@ -154,13 +180,13 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     intent_hash_squared <== intent_hash * intent_hash;
 
     // TODO: CAN WE DECREASE MAX HEADER BYTES TO BELOW 1024?
-    // TOTAL CONSTRAINTS: 3752903  
+    // TOTAL CONSTRAINTS: 4361919  
 }
 
 // Args:
 // * max_header_bytes = 1024 is the max number of bytes in the header
-// * max_body_bytes = 10752 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 2944 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ intent_hash ] } = MercadoSendEmail(1024, 10752, 121, 17, 7);
+component main { public [ intent_hash ] } = MercadoSendEmail(1024, 2944, 121, 17, 7);

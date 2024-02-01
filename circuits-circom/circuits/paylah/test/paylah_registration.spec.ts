@@ -101,10 +101,8 @@ describe("Paylah registration WASM tester", function () {
         const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
-        /// TODO: SUS???/// TODO: SUS???/// TODO: SUS???
-
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(from_email_array, 7, 20);    /// TODO: SUS???
+        let chunkedArrays = chunkArray(from_email_array, 7, 20);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
