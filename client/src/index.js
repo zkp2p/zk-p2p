@@ -95,8 +95,8 @@ ReactDOM.render(
                 accentColor: "#df2e2d",
                 showWalletLoginFirst: false,
               },
-              defaultChain: chains[0], // Sepolia is first in dev environments
-              supportedChains: [chains[0]] // TODO: Zerodev requires a project ID per environment. Only set to Sepolia for now
+              defaultChain: base,
+              supportedChains: [sepolia, base]
             }}
           >
             <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
