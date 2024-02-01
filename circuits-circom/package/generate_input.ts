@@ -624,7 +624,9 @@ export async function getCircuitInputs(
     // Find the first digit after mercado_amount_selector_index to get mercado_amount_idx
     while (mercado_amount_selector_index < bodyRemaining.length) {
       console.log(mercado_amount_selector_index, bodyRemaining[mercado_amount_selector_index]);
-      if (Number.isInteger(Number(bodyRemaining[mercado_amount_selector_index]))) {
+      if (
+        Number(bodyRemaining[mercado_amount_selector_index]) > 47
+        && Number(bodyRemaining[mercado_amount_selector_index]) < 58) {
         break;
       }
       mercado_amount_selector_index++;
@@ -645,7 +647,9 @@ export async function getCircuitInputs(
     }
     // Find the first digit after mercado_payee_id_selector_index to get mercado_payee_id_idx
     while (mercado_payee_id_selector_index < bodyRemaining.length) {
-      if (Number.isInteger(Number(bodyRemaining[mercado_payee_id_selector_index]))) {
+      if (
+        Number(bodyRemaining[mercado_payee_id_selector_index]) > 47
+        && Number(bodyRemaining[mercado_payee_id_selector_index]) < 58) {
         break;
       }
       mercado_payee_id_selector_index++;
