@@ -83,8 +83,8 @@ export interface ICircuitInputs {
   intermediate_hash?: string[];
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
-  mercado_payee_id_idx: string;
-  mercado_amount_idx: string;
+  mercado_payee_id_idx?: string;
+  mercado_amount_idx?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -113,7 +113,8 @@ export enum CircuitType {
   EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
   EMAIL_MERCADO_REGISTRATION = "mercado_registration",
-  EMAIL_MERCADO_SEND = "mercado_send"
+  EMAIL_MERCADO_SEND = "mercado_send",
+  EMAIL_MERCADO_BODY_SUFFIX_HASHER = "mercado_body_suffix_hasher"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -224,7 +225,14 @@ export async function getCircuitInputs(
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
   } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Los";
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10496 is the max observed body length for one email
+    // STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];  // TODO: THIS NEEDS TO BE UPDATED
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
+    // STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"]; // THIS NEEDS TO BE UPDATED
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Cuenta"; // THIS NEEDS TO BE UPDATED
+    MAX_INTERMEDIATE_PADDING_LENGTH = 2944; // For divided circuits, we calculate what the padded intermediate length should be
+  } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Cuenta";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7680;  // 7680 is the max observed body length for one email
   }
 
   // Derive modulus from signature
@@ -475,7 +483,7 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     // Calculate SHA end selector.
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
-    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    let intermediateShaCutoffIndex = Math.ceil((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;   // Round up to nearest 64 (Not round down)
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
@@ -597,6 +605,19 @@ export async function getCircuitInputs(
     // // log in_body_padded
     // console.log(in_body_padded.join(''));
 
+    // Calculate SHA end selector.
+    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
+    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+
+    intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
+    const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
+
+    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
+    console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
+
+    // Regexes
     const mercado_amount_selector = Buffer.from("$");
     let mercado_amount_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_amount_selector);
     // Find the first digit after mercado_amount_selector_index to get mercado_amount_idx
@@ -632,7 +653,9 @@ export async function getCircuitInputs(
 
     console.log({
       'email_from_idx': email_from_idx,
-      'email_to_idx': email_to_idx
+      'email_to_idx': email_to_idx,
+      'mercado_payee_id_idx': mercado_payee_id_idx,
+      'mercado_amount_idx': mercado_amount_idx
     });
 
     circuitInputs = {
@@ -641,8 +664,8 @@ export async function getCircuitInputs(
       signature,
       in_len_padded_bytes,
       precomputed_sha,
-      in_body_padded,
-      in_body_len_padded_bytes,
+      in_body_padded: in_body_intermediate,
+      in_body_len_padded_bytes: in_body_len_intermediate_bytes,
       body_hash_idx,
       // mercado specific indices
       email_from_idx,
@@ -674,6 +697,18 @@ export async function getCircuitInputs(
       // mercado specific indices
       email_from_idx,
       email_to_idx
+    }
+  } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
+    const intermediate_hash = precomputed_sha;
+    const in_body_suffix_padded = in_body_padded;
+    const in_body_suffix_len_padded_bytes = in_body_len_padded_bytes;
+
+    // console.log("decoded body hash: ", JSON.stringify(intermediate_hash));
+
+    circuitInputs = {
+      intermediate_hash,
+      in_body_suffix_padded,
+      in_body_suffix_len_padded_bytes,
     }
   }
   else {
