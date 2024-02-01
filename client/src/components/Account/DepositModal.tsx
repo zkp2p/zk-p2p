@@ -1,17 +1,20 @@
 import React, { Suspense } from 'react';
 import styled from 'styled-components/macro';
 import QRCode from "react-qr-code";
+import Link from '@mui/material/Link';
 import { X, Copy } from 'react-feather';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
 import useAccount from '@hooks/useAccount';
+import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 import { commonStrings } from '@helpers/strings';
 import { alchemyMainnetEthersProvider } from "index";
 
 import baseSvg from '../../assets/images/base.svg';
+import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
 export default function DepositModal() {
@@ -20,7 +23,8 @@ export default function DepositModal() {
    */
 
   const { closeModal } = useModal();
-  const { loggedInEthereumAddress } = useAccount();
+  const { loggedInEthereumAddress, network } = useAccount();
+  const { blockscanUrl, usdcAddress } = useSmartContracts();
 
   /*
    * Handlers
@@ -37,6 +41,28 @@ export default function DepositModal() {
   const handleCopyClick = () => {
     if (loggedInEthereumAddress) {
       copyToClipboard(loggedInEthereumAddress);
+    }
+  };
+
+  /*
+   * Helpers
+   */
+
+  const usdcEtherscanLink = `${blockscanUrl}/address/${usdcAddress}`;
+
+  const networkName = (): string => {
+    if (network === 'sepolia') {
+      return 'Sepolia';
+    } else {
+      return 'Base';
+    }
+  };
+
+  const networkSvg = (): string => {
+    if (network === 'sepolia') {
+      return sepoliaSvg;
+    } else {
+      return baseSvg;
     }
   };
 
@@ -77,7 +103,7 @@ export default function DepositModal() {
           <AccountAddressContainer>
             <AddressAndEnsNameContainer>
               <ThemedText.LabelSmall style={{ textAlign: 'left', color: '#FFF' }}>
-                Base Address (Ethereum)
+                {networkName()} Address (Ethereum)
               </ThemedText.LabelSmall>
 
               <AddressLabel>
@@ -95,10 +121,14 @@ export default function DepositModal() {
           </AccountAddressContainer>
 
           <InstructionsContainer>
-            <NetworkSvg src={baseSvg} />
+            <NetworkSvg src={networkSvg()} />
 
             <InstructionsLabel>
-              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS') }
+              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS_1') }
+              <Link href={usdcEtherscanLink} target="_blank">
+                Native USDC
+              </Link> from {networkName()}.
+              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS_2') }
             </InstructionsLabel>
           </InstructionsContainer>
         </ModalContainer>

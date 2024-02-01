@@ -25,7 +25,8 @@ export interface CommonStrings {
   LOGIN_MODAL_TOOLTIP: string,
 
   // Deposit Modal
-  DEPOSIT_FUNDS_INSTRUCTIONS: string
+  DEPOSIT_FUNDS_INSTRUCTIONS_1: string
+  DEPOSIT_FUNDS_INSTRUCTIONS_2: string
 
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
@@ -113,9 +114,11 @@ const strings: CommonStrings = {
   `,
 
   // Deposit Modal
-  DEPOSIT_FUNDS_INSTRUCTIONS: `
-    This address can only receive USDC from Base Network. Don't send any tokens from other networks,
-    or it may result in loss of funds.
+  DEPOSIT_FUNDS_INSTRUCTIONS_1: `
+    This address can ONLY receive
+  `,
+  DEPOSIT_FUNDS_INSTRUCTIONS_2: `
+    Sending invalid USDC or tokens from other networks will result in lost funds.
   `,
 
   // Pay Modal
