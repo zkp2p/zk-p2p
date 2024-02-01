@@ -86,6 +86,8 @@ const AccountProvider = ({ children }: ProvidersProps) => {
             setAccountDisplay(user.email.address);
           } else if (user.twitter && user.twitter.username) {
             setAccountDisplay(user.twitter.username);
+          } else if (user.farcaster && user.farcaster.displayName) {
+            setAccountDisplay(user.farcaster.displayName);
           } else {
             setAccountDisplay('Logged In');
           }
