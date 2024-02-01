@@ -36,14 +36,14 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    * Handler
    */
 
-  const handleDepositClick = () => {
-    openModal(MODALS.DEPOSIT);
+  const handleReceiveClick = () => {
+    openModal(MODALS.RECEIVE);
 
     onOptionSelect();
   };
 
-  const handleWithdrawClick = () => {
-    openModal(MODALS.WITHDRAW);
+  const handleSendClick = () => {
+    openModal(MODALS.SEND);
 
     onOptionSelect();
   };
@@ -135,19 +135,19 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
         </BalancesContainer>
         
         <NavDropdownItemsContainer>
-          <ItemAndIconContainer onClick={handleDepositClick}>
+          <ItemAndIconContainer onClick={handleReceiveClick}>
             <StyledArrowUpCircle />
 
             <NavDropdownItem>
-              Deposit
+              Receive
             </NavDropdownItem>
           </ItemAndIconContainer>
           
-          <ItemAndIconContainer onClick={handleWithdrawClick}>
+          <ItemAndIconContainer onClick={handleSendClick}>
             <StyledArrowDownCircle />
 
             <NavDropdownItem>
-              Withdraw
+              Send
             </NavDropdownItem>
           </ItemAndIconContainer>
 

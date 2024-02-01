@@ -24,9 +24,9 @@ export interface CommonStrings {
   // Login Modal
   LOGIN_MODAL_TOOLTIP: string,
 
-  // Deposit Modal
-  DEPOSIT_FUNDS_INSTRUCTIONS_1: string
-  DEPOSIT_FUNDS_INSTRUCTIONS_2: string
+  // Receive Modal
+  RECEIVE_FUNDS_INSTRUCTIONS_1: string
+  RECEIVE_FUNDS_INSTRUCTIONS_2: string
 
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
@@ -113,11 +113,11 @@ const strings: CommonStrings = {
     Use an Ethereum wallet if you already have one.
   `,
 
-  // Deposit Modal
-  DEPOSIT_FUNDS_INSTRUCTIONS_1: `
+  // Receive Modal
+  RECEIVE_FUNDS_INSTRUCTIONS_1: `
     This address can ONLY receive
   `,
-  DEPOSIT_FUNDS_INSTRUCTIONS_2: `
+  RECEIVE_FUNDS_INSTRUCTIONS_2: `
     Sending invalid USDC or tokens from other networks will result in lost funds.
   `,
 

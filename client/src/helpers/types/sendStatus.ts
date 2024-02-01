@@ -1,4 +1,4 @@
-export const WithdrawTransactionStatus = {
+export const SendTransactionStatus = {
   DEFAULT: 'default',
   INVALID_RECIPIENT_ADDRESS: 'invalid_recipient_address',
   MISSING_AMOUNTS: 'missing_amounts',
@@ -9,4 +9,4 @@ export const WithdrawTransactionStatus = {
   TRANSACTION_SUCCEEDED: 'transaction_succeeded'
 };
 
-export type WithdrawTransactionStatusType = typeof WithdrawTransactionStatus[keyof typeof WithdrawTransactionStatus];
+export type SendTransactionStatusType = typeof SendTransactionStatus[keyof typeof SendTransactionStatus];

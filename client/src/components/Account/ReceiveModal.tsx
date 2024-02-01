@@ -17,7 +17,7 @@ import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
-export default function DepositModal() {
+export default function ReceiveModal() {
   /*
    * Contexts
    */
@@ -88,7 +88,7 @@ export default function DepositModal() {
             </div>
 
             <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-              {'Deposit'}
+              {'Receive'}
             </ThemedText.HeadlineSmall>
 
             <div style={{ flex: 0.25 }}/>
@@ -124,11 +124,11 @@ export default function DepositModal() {
             <NetworkSvg src={networkSvg()} />
 
             <InstructionsLabel>
-              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS_1') }
+              { commonStrings.get('RECEIVE_FUNDS_INSTRUCTIONS_1') }
               <Link href={usdcEtherscanLink} target="_blank">
                 Native USDC
               </Link> from {networkName()}.
-              { commonStrings.get('DEPOSIT_FUNDS_INSTRUCTIONS_2') }
+              { commonStrings.get('RECEIVE_FUNDS_INSTRUCTIONS_2') }
             </InstructionsLabel>
           </InstructionsContainer>
         </ModalContainer>
