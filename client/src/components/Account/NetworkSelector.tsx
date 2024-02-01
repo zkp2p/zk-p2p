@@ -6,7 +6,7 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Account/NetworkRow';
-import { withdrawNetworks, networksInfo, WithdrawNetworkType } from '@helpers/types';
+import { sendNetworks, networksInfo, SendNetworkType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
@@ -35,7 +35,7 @@ export const NetworkSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (platform: WithdrawNetworkType) => {
+  const handleSelectPlatform = (platform: SendNetworkType) => {
     // if (setPaymentPlatform) {
     //   setPaymentPlatform(platform);
 
@@ -107,7 +107,7 @@ export const NetworkSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {withdrawNetworks.map((network, index) => (
+              {sendNetworks.map((network, index) => (
                 <NetworkRow
                   key={index}
                   platformName={networksInfo[network].platformName}

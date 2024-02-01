@@ -9,7 +9,7 @@ import { NetworkSelector } from '@components/Account/NetworkSelector';
 import { Input } from '@components/Account/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
-import { LoginStatus, WithdrawTransactionStatus } from '@helpers/types';
+import { LoginStatus, SendTransactionStatus } from '@helpers/types';
 import { formatAddress } from '@helpers/addressFormat';
 import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
@@ -35,7 +35,7 @@ const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
   displayAddress: '',
 };
 
-export default function WithdrawModal() {
+export default function SendModal() {
   /*
    * Contexts
    */
@@ -51,8 +51,8 @@ export default function WithdrawModal() {
 
   const [transactionHash, setTransactionHash] = useState<string>('');
 
-  const [withdrawState, setWithdrawState] = useState(WithdrawTransactionStatus.DEFAULT);
-  const [withdrawAmountInput, setWithdrawAmountInput] = useState<string>('');
+  const [sendState, setSendState] = useState(SendTransactionStatus.DEFAULT);
+  const [sendAmountInput, setSendAmountInput] = useState<string>('');
   const [recipientAddressInput, setRecipientAddressInput] = useState<RecipientAddress>(EMPTY_RECIPIENT_ADDRESS);
 
   const [isRecipientInputFocused, setIsRecipientInputFocused] = useState(false);
@@ -74,7 +74,7 @@ export default function WithdrawModal() {
     functionName: "transfer",
     args: [
       recipientAddressInput.rawAddress,
-      toBigInt(withdrawAmountInput.toString()),
+      toBigInt(sendAmountInput.toString()),
     ],
     enabled: shouldConfigureTransferWrite
   });
@@ -105,7 +105,7 @@ export default function WithdrawModal() {
   };
 
   const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
-    resetWithdrawStateOnInputChange();
+    resetSendStateOnInputChange();
 
     if (value === "") {
       setInputFunction('');
@@ -117,7 +117,7 @@ export default function WithdrawModal() {
   };
 
   const handleRecipientInputChange = async (value: string) => {
-    resetWithdrawStateOnInputChange();
+    resetSendStateOnInputChange();
 
     let rawAddress = '';
     let ensName = '';
@@ -160,52 +160,52 @@ export default function WithdrawModal() {
    */
 
   useEffect(() => {
-    const updateWithdrawState = async () => {
-      const successfulDepositTransaction = mineTransferTransactionStatus === 'success';
+    const updateSendState = async () => {
+      const successfulSendTransaction = mineTransferTransactionStatus === 'success';
 
-      if (successfulDepositTransaction) {
-        setWithdrawState(WithdrawTransactionStatus.TRANSACTION_SUCCEEDED);
+      if (successfulSendTransaction) {
+        setSendState(SendTransactionStatus.TRANSACTION_SUCCEEDED);
       } else {
-        if (!withdrawAmountInput) { 
-          setWithdrawState(WithdrawTransactionStatus.MISSING_AMOUNTS);
+        if (!sendAmountInput) { 
+          setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         } else {
           const usdcBalanceLoaded = usdcBalance !== null;
 
-          if (withdrawAmountInput && usdcBalanceLoaded) {
-            const depositAmountBI = toBigInt(withdrawAmountInput);
-            const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+          if (sendAmountInput && usdcBalanceLoaded) {
+            const sendAmountBI = toBigInt(sendAmountInput);
+            const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
-            if (isDepositAmountGreaterThanBalance) {
-              setWithdrawState(WithdrawTransactionStatus.INSUFFICIENT_BALANCE);
+            if (isSendAmountGreaterThanBalance) {
+              setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
             } else {
               if (!recipientAddressInput.input) {
-                setWithdrawState(WithdrawTransactionStatus.DEFAULT);
+                setSendState(SendTransactionStatus.DEFAULT);
               } else if (!isValidRecipientAddress) {
-                setWithdrawState(WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS);
+                setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
               } else {
-                const signingDepositTransaction = signTransferTransactionStatus === 'loading';
-                const miningDepositTransaction = mineTransferTransactionStatus === 'loading';
+                const signingSendTransaction = signTransferTransactionStatus === 'loading';
+                const miningSendTransaction = mineTransferTransactionStatus === 'loading';
   
-                if (signingDepositTransaction) {
-                  setWithdrawState(WithdrawTransactionStatus.TRANSACTION_SIGNING);
-                } else if (miningDepositTransaction) {
-                  setWithdrawState(WithdrawTransactionStatus.TRANSACTION_MINING);
+                if (signingSendTransaction) {
+                  setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
+                } else if (miningSendTransaction) {
+                  setSendState(SendTransactionStatus.TRANSACTION_MINING);
                 } else {
-                  setWithdrawState(WithdrawTransactionStatus.VALID);
+                  setSendState(SendTransactionStatus.VALID);
                 }
               }
             }
           } else {
-            setWithdrawState(WithdrawTransactionStatus.MISSING_AMOUNTS);
+            setSendState(SendTransactionStatus.MISSING_AMOUNTS);
           }
         }
       }
     }
 
-    updateWithdrawState();
+    updateSendState();
   }, [
       recipientAddressInput.input,
-      withdrawAmountInput,
+      sendAmountInput,
       usdcBalance,
       isValidRecipientAddress,
       signTransferTransactionStatus,
@@ -214,8 +214,8 @@ export default function WithdrawModal() {
   );
 
   useEffect(() => {
-    setShouldConfigureTransferWrite(withdrawState === WithdrawTransactionStatus.VALID);
-  }, [withdrawState]);
+    setShouldConfigureTransferWrite(sendState === SendTransactionStatus.VALID);
+  }, [sendState]);
 
   useEffect(() => {
     if (submitTransferResult?.hash) {
@@ -227,9 +227,9 @@ export default function WithdrawModal() {
    * Helpers
    */
 
-  function resetWithdrawStateOnInputChange() {
-    if (withdrawState === WithdrawTransactionStatus.TRANSACTION_SUCCEEDED) {
-      setWithdrawState(WithdrawTransactionStatus.DEFAULT);
+  function resetSendStateOnInputChange() {
+    if (sendState === SendTransactionStatus.TRANSACTION_SUCCEEDED) {
+      setSendState(SendTransactionStatus.DEFAULT);
     }
   };
 
@@ -248,26 +248,26 @@ export default function WithdrawModal() {
   }, [usdcBalance, isLoggedIn]);
 
   const ctaDisabled = (): boolean => {
-    switch (withdrawState) {
-      case WithdrawTransactionStatus.DEFAULT:
-      case WithdrawTransactionStatus.INSUFFICIENT_BALANCE:
-      case WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS:
-      case WithdrawTransactionStatus.MISSING_AMOUNTS:
-      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
-      case WithdrawTransactionStatus.TRANSACTION_MINING:
+    switch (sendState) {
+      case SendTransactionStatus.DEFAULT:
+      case SendTransactionStatus.INSUFFICIENT_BALANCE:
+      case SendTransactionStatus.INVALID_RECIPIENT_ADDRESS:
+      case SendTransactionStatus.MISSING_AMOUNTS:
+      case SendTransactionStatus.TRANSACTION_SIGNING:
+      case SendTransactionStatus.TRANSACTION_MINING:
         return true;
 
-      case WithdrawTransactionStatus.VALID:
-      case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
+      case SendTransactionStatus.VALID:
+      case SendTransactionStatus.TRANSACTION_SUCCEEDED:
       default:
         return false;
     }
   };
 
   const ctaLoading = (): boolean => {
-    switch (withdrawState) {
-      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
-      case WithdrawTransactionStatus.TRANSACTION_MINING:
+    switch (sendState) {
+      case SendTransactionStatus.TRANSACTION_SIGNING:
+      case SendTransactionStatus.TRANSACTION_MINING:
         return loginStatus === LoginStatus.AUTHENTICATED;
 
       default:
@@ -276,30 +276,30 @@ export default function WithdrawModal() {
   };
 
   const ctaText = (): string => {
-    switch (withdrawState) {
-      case WithdrawTransactionStatus.INVALID_RECIPIENT_ADDRESS:
+    switch (sendState) {
+      case SendTransactionStatus.INVALID_RECIPIENT_ADDRESS:
         return 'Invalid recipient address';
 
-      case WithdrawTransactionStatus.MISSING_AMOUNTS:
-        return 'Input withdraw amount';
+      case SendTransactionStatus.MISSING_AMOUNTS:
+        return 'Input Send amount';
       
-      case WithdrawTransactionStatus.INSUFFICIENT_BALANCE:
+      case SendTransactionStatus.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
         return `Insufficient USDC balance: ${humanReadableUsdcBalance}`;
 
-      case WithdrawTransactionStatus.TRANSACTION_SIGNING:
+      case SendTransactionStatus.TRANSACTION_SIGNING:
         return 'Signing Transaction';
 
-      case WithdrawTransactionStatus.TRANSACTION_MINING:
+      case SendTransactionStatus.TRANSACTION_MINING:
         return 'Mining Transaction';
 
-      case WithdrawTransactionStatus.VALID:
-        return 'Withdraw';
+      case SendTransactionStatus.VALID:
+        return 'Send';
 
-      case WithdrawTransactionStatus.TRANSACTION_SUCCEEDED:
-        return 'Withdraw';
+      case SendTransactionStatus.TRANSACTION_SUCCEEDED:
+        return 'Send';
 
-      case WithdrawTransactionStatus.DEFAULT:
+      case SendTransactionStatus.DEFAULT:
       default:
         return 'Input recipient address';
     }
@@ -357,7 +357,7 @@ export default function WithdrawModal() {
             </div>
 
             <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-              {'Withdraw'}
+              {'Send'}
             </ThemedText.HeadlineSmall>
 
             <div style={{ flex: 0.25 }}/>
@@ -385,9 +385,9 @@ export default function WithdrawModal() {
           <InputsContainer>
             <Input
               label="Amount"
-              name={`withdrawAmount`}
-              value={withdrawAmountInput}
-              onChange={(e) => handleInputChange(e.currentTarget.value, setWithdrawAmountInput)}
+              name={`SendAmount`}
+              value={sendAmountInput}
+              onChange={(e) => handleInputChange(e.currentTarget.value, setSendAmountInput)}
               type="number"
               inputLabel="USDC"
               placeholder="0"

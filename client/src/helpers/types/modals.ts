@@ -1,4 +1,4 @@
 export const MODALS = {
-  DEPOSIT: 'deposit',
-  WITHDRAW: 'withdraw',
+  RECEIVE: 'receive',
+  SEND: 'send',
 };

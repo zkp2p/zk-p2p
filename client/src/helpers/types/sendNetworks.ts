@@ -7,17 +7,17 @@ export const Networks = {
   BASE: "base"
 } as const;
 
-export const withdrawNetworks = [Networks.ETHEREUM, Networks.BASE];
+export const sendNetworks = [Networks.ETHEREUM, Networks.BASE];
 
-export type WithdrawNetworkType = typeof Networks[keyof typeof Networks];
+export type SendNetworkType = typeof Networks[keyof typeof Networks];
 
 interface NetworksData {
-  platformId: WithdrawNetworkType;
+  platformId: SendNetworkType;
   platformName: string;
   platformSvg: string;
 }
 
-export const networksInfo: Record<WithdrawNetworkType, NetworksData> = {
+export const networksInfo: Record<SendNetworkType, NetworksData> = {
   [Networks.ETHEREUM]: {
     platformId: Networks.ETHEREUM,
     platformName: 'Ethereum Mainnet',
