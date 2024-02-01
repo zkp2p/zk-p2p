@@ -28,7 +28,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
 
   const { disconnect } = useDisconnect();
   const { usdcBalance, ethBalance, refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
-  const { accountDisplay, authenticatedLogout, authenticatedLogin, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
+  const { accountDisplay, authenticatedLogin, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
@@ -80,6 +80,8 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     } catch (error) {
       console.error("Failed to login");
     }
+
+    onOptionSelect();
   };
 
   /*
