@@ -620,14 +620,17 @@ export async function getCircuitInputs(
     // Regexes
     const mercado_amount_selector = Buffer.from("$");
     let mercado_amount_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_amount_selector);
+    console.log("mercado_amount_selector_index: ", mercado_amount_selector_index)
     // Find the first digit after mercado_amount_selector_index to get mercado_amount_idx
     while (mercado_amount_selector_index < bodyRemaining.length) {
+      console.log(mercado_amount_selector_index, bodyRemaining[mercado_amount_selector_index]);
       if (Number.isInteger(Number(bodyRemaining[mercado_amount_selector_index]))) {
         break;
       }
       mercado_amount_selector_index++;
     }
     const mercado_amount_idx = mercado_amount_selector_index.toString();
+    console.log("mercado_amount_idx: ", mercado_amount_idx);
 
     const mercado_payee_id_selector = [
       Buffer.from("CVU:"), Buffer.from("C=\r\nVU:"), Buffer.from("CV=\r\nU:"), Buffer.from("CVU\r\n:"), Buffer.from("CVU:\r\n")
@@ -696,7 +699,9 @@ export async function getCircuitInputs(
       in_len_padded_bytes,
       // mercado specific indices
       email_from_idx,
-      email_to_idx
+      email_to_idx,
+      // IDs
+      intent_hash,
     }
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
     const intermediate_hash = precomputed_sha;
