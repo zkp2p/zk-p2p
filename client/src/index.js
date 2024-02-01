@@ -52,7 +52,7 @@ const { connectors } = getDefaultWallets({
 });
 
 const config = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   publicClient: configureChainsConfig.publicClient
 })

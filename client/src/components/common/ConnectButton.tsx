@@ -1,14 +1,14 @@
 import React, { useState, useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { usePrivy } from '@privy-io/react-auth';
 import { ENSName } from 'react-ens-name';
 
 import { AccountLogin } from "@components/Account/AccountLogin";
 import { Button } from '@components/common/Button';
+import { AccountDropdown } from "@components/Account/AccountDropdown";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useMediaQuery from '@hooks/useMediaQuery';
-import { AccountDropdown } from "@components/Account/AccountDropdown";
+import useAccount from '@hooks/useAccount';
 import { formatAddress } from '@helpers/addressFormat';
 import { alchemyMainnetEthersProvider } from "index";
 
@@ -27,7 +27,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { user } = usePrivy();
+  const { accountDisplay, isLoggedIn } = useAccount();
 
   /*
    * State
@@ -145,8 +145,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
                     <LoggedInBalanceAndAccount onClick={toggleDropdown}>
                       <LoggedInButton>
-                        {user ? (
-                          user.email.address
+                        {isLoggedIn ? (
+                          accountDisplay
                         ) : (
                           <ENSName
                             provider={alchemyMainnetEthersProvider}

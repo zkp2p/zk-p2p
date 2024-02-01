@@ -1,7 +1,6 @@
 import React, { useEffect, forwardRef } from 'react';
 import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut } from 'react-feather';
 import styled from "styled-components";
-import { usePrivy } from '@privy-io/react-auth';
 import { useDisconnect } from 'wagmi';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
@@ -13,6 +12,7 @@ import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
 import { formatAddress } from '@helpers/addressFormat';
 import { toUsdcString, toEthString } from "@helpers/units";
+import { LoginStatus } from '@helpers/types';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
 
@@ -26,10 +26,9 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    * Contexts
    */
 
-  const { authenticated, logout, user } = usePrivy();
   const { disconnect } = useDisconnect();
   const { usdcBalance, ethBalance, refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
-  const { loggedInEthereumAddress } = useAccount();
+  const { accountDisplay, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
@@ -50,10 +49,16 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   const handleLogout = async () => {
-    await disconnect();
-    
-    if (authenticated) {
-      await logout();
+    switch (loginStatus) {
+      case LoginStatus.AUTHENTICATED:
+        if (authenticatedLogout) {
+          authenticatedLogout();
+        }
+        break;
+
+      case LoginStatus.EOA:
+        disconnect();
+        break;
     }
 
     onOptionSelect();
@@ -103,7 +108,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             <StyledUser />
           </IconBorder>
           <AccountTypeLabel>
-            {user ? user.email.address : 'Connected'}
+            {isLoggedIn && loginStatus === LoginStatus.AUTHENTICATED ? accountDisplay : 'Connected'}
           </AccountTypeLabel>
           <AccountAddressAndENSContainer>
             <AccountAddress>
@@ -146,7 +151,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             </NavDropdownItem>
           </ItemAndIconContainer>
 
-          {!authenticated && (
+          {loginStatus === LoginStatus.EOA && (
             <ItemAndIconContainer>
               <StyledRepeat />
               <BridgeLinkAndBalance>
@@ -156,11 +161,10 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
                 >
                   Bridge ↗
                 </BridgeLink>
-                {!user && (
-                  <EthBalance>
-                    {ethBalanceDisplay}
-                  </EthBalance>
-                )}
+
+                <EthBalance>
+                  {ethBalanceDisplay}
+                </EthBalance>
               </BridgeLinkAndBalance>
             </ItemAndIconContainer>
           )}
@@ -345,6 +349,7 @@ const BridgeLinkAndBalance = styled.div`
   display: flex;  
   flex-direction: row;
   justify-content: space-between;
+  align-items: flex-end;
   flex-grow: 1;
 `;
 
@@ -358,5 +363,5 @@ const EthBalance = styled.a`
   color: #9ca3af;
   font-size: 16px;
   font-weight: 500;
-  padding-top: 2px;
+  padding-top: 2.5px;
 `;

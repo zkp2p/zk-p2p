@@ -9,6 +9,9 @@ export type { NewDepositTransactionStatusType } from './newDepositStatus';
 export { WithdrawTransactionStatus } from './withdrawStatus';
 export type { WithdrawTransactionStatusType } from './withdrawStatus';
 
+export { LoginStatus } from './loginStatus';
+export type { LoginStatusType } from './loginStatus';
+
 export type { RawEmailResponse } from './googleMailApi';
 
 export { PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
