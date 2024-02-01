@@ -466,7 +466,7 @@ const NetworkContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 1.5rem;
+  padding-top: 1.75rem;
 `;
 
 const TitleCenteredRow = styled.div`
@@ -529,6 +529,7 @@ const Link = styled.a`
   display: inline-block;
   color: #1F95E2;
   text-decoration: none;
+  padding-top: 1rem;
 
   &:hover {
     text-decoration: underline;

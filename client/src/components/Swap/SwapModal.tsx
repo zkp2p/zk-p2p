@@ -160,7 +160,7 @@ const ModalContainer = styled.div<{$isVenmo?: boolean}>`
 `;
 
 const QRContainer = styled.div`
-  padding: 1.4rem 1.5rem 1.2rem;
+  padding: 1.25rem 1.25rem 1rem 1.25rem;
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   background: #131A2A;

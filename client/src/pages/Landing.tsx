@@ -9,6 +9,7 @@ import Card from '@components/common/Card';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import SwapPreview from '@components/Landing/SwapPreview';
 import { MAIN_CARDS, SECONDARY_CARDS } from '@helpers/cards';
+import { Z_INDEX } from '@theme/zIndex';
 import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
 
@@ -191,7 +192,6 @@ const HeroContainer = styled.div`
 
 const SwapPreviewContainer = styled.div`
   position: absolute;
-  z-index: 10;
   margin-bottom: 520px;
   cursor: pointer;
   padding: 0px 48px;
@@ -225,7 +225,7 @@ const HeroTextContainer = styled.div`
   padding-top: 2rem;
   padding-left: 12px;
   gap: 1rem;
-  z-index: 20;
+  z-index: ${Z_INDEX.landing_hero};
 `;
 
 const HeartIcon = styled.span`
