@@ -6,6 +6,7 @@ import Spinner from "@components/common/Spinner";
 
 interface ButtonProps {
   fullWidth?: boolean;
+  width?: number;
   height?: number;
   fontSize?: number;
   disabled?: boolean;
@@ -17,6 +18,7 @@ interface ButtonProps {
 
 export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
+  width,
   height = 48,
   fontSize = 16,
   disabled = false,
@@ -30,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <BaseButton
       fullWidth={fullWidth}
+      width={width}
       height={height}
       fontSize={fontSize}
       disabled={disabled}
@@ -53,6 +56,7 @@ export const Button: React.FC<ButtonProps> = ({
 
 interface BaseButtonProps {
   fullWidth?: boolean;
+  width?: number;
   height?: number;
   fontSize?: number;
   $disabled?: boolean;
@@ -62,7 +66,7 @@ interface BaseButtonProps {
 }
 
 const BaseButton = styled.button<BaseButtonProps & { $svgLoaded: boolean }>`
-  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'auto')};
+  width: ${({ fullWidth, width }) => fullWidth ? '100%' : width ? `${width}px` : 'auto'};
   height: ${({ height }) => height}px;
   background: #df2e2d;
   box-shadow: inset -3px -6px 4px rgba(0, 0, 0, 0.16);

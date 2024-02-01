@@ -10,11 +10,7 @@ import { LabeledSwitch } from "@components/common/LabeledSwitch";
 import { Overlay } from '@components/modals/Overlay';
 import { TitleCenteredRow } from '@components/layouts/Row';
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
-import {
-  VerificationStepRow,
-  VerificationState,
-  VerificationStepType
-} from "@components/modals/VerificationStepRow";
+import { VerificationStepRow, VerificationState, VerificationStepType } from "@components/modals/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
 import { ProofGenerationStatus } from  "@helpers/types";
 import { ThemedText } from '@theme/text'

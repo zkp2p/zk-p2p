@@ -21,6 +21,12 @@ export interface CommonStrings {
   RELEASE_FUNDS_WARNING_ONE: string,
   RELEASE_FUNDS_WARNING_TWO: string,
 
+  // Login Modal
+  LOGIN_MODAL_TOOLTIP: string,
+
+  // Deposit Modal
+  DEPOSIT_FUNDS_INSTRUCTIONS: string
+
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
 
@@ -98,6 +104,18 @@ const strings: CommonStrings = {
   RELEASE_FUNDS_WARNING_TWO: `
     to the requester. This bypasses requiring the user to submit proof of the transaction
     and may result in loss of funds.
+  `,
+
+  // Login Modal
+  LOGIN_MODAL_TOOLTIP: `
+    Use a social account if you do not have already have funds on the blockchain.
+    Use an Ethereum wallet if you already have one.
+  `,
+
+  // Deposit Modal
+  DEPOSIT_FUNDS_INSTRUCTIONS: `
+    This address can only receive USDC from Base Network. Don't send any tokens from other networks,
+    or it may result in loss of funds.
   `,
 
   // Pay Modal

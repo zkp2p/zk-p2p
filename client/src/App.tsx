@@ -15,6 +15,7 @@ import { Liquidity } from "./pages/Liquidity";
 import { Deposit } from "./pages/Deposit";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
+import Modals from "./pages/Modals";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
 import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
@@ -28,6 +29,7 @@ import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGe
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
+import { ModalSettingsProvider } from 'contexts/common/ModalSettings';
 
 // Legacy Contexts
 import LegacyDepositsProvider  from './contexts/legacy/Deposits/DepositsProvider';
@@ -85,6 +87,7 @@ const App = () => {
           <div className="app-container">
             <EnvironmentBanner />
             <TopNav />
+            <Modals />
             <div className="app-content">
               <Routes>
                 <Route path="/" element={<Landing />} />
@@ -152,6 +155,7 @@ const providersWithProps: ProvidersType[] = [
   [HdfcOnRamperIntentsProvider, {}],
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
+  [ModalSettingsProvider, {}],
   [GoogleOAuthProvider, { clientId: process.env.GOOGLE_CLIENT_ID || "" }],
   [GoogleAuthProvider, {}],
 ];

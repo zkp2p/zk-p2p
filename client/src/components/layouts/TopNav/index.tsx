@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-import { CustomConnectButton } from "@components/common/ConnectButton";
 import { NavItem } from "@components/layouts/TopNav/NavItem";
-
+import { CustomConnectButton } from "@components/common/ConnectButton";
 
 export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
   const location = useLocation();

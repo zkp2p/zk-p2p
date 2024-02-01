@@ -480,7 +480,8 @@ module.exports = function (webpackEnv) {
                 plugins: [
                   '@babel/plugin-proposal-class-properties',
                   '@babel/plugin-proposal-optional-chaining',
-                  '@babel/plugin-proposal-nullish-coalescing-operator'
+                  '@babel/plugin-proposal-nullish-coalescing-operator',
+                  '@babel/plugin-transform-private-methods'
                 ],
                 cacheDirectory: true,
                 // See #6846 for context on why cacheCompression is disabled
@@ -656,10 +657,11 @@ module.exports = function (webpackEnv) {
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
-        'process.env.REACT_APP_PRIVY_APP_ID': JSON.stringify(process.env.REACT_APP_PRIVY_APP_ID),
         'process.env.HDFC_DENY_LIST_URL': JSON.stringify(process.env.HDFC_DENY_LIST_URL),
         'process.env.VENMO_DOMAIN_KEYS': JSON.stringify(process.env.VENMO_DOMAIN_KEYS),
         'process.env.HDFC_DOMAIN_KEYS': JSON.stringify(process.env.HDFC_DOMAIN_KEYS),
+        'process.env.PRIVY_APP_ID': JSON.stringify(process.env.PRIVY_APP_ID),
+        'process.env.ZERODEV_APP_ID': JSON.stringify(process.env.ZERODEV_APP_ID),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

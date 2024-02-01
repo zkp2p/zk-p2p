@@ -78,7 +78,6 @@ const SettingsButton = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
 `;
 
 const Dropdown = styled.div`

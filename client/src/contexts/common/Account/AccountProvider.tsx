@@ -1,7 +1,12 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
+import { useWallets } from '@privy-io/react-auth';
+import { usePrivyWagmi } from '@privy-io/wagmi-connector';
+import { usePrivy } from '@privy-io/react-auth';
 
 import { esl } from '@helpers/constants';
+import { LoginStatus, LoginStatusType } from '@helpers/types';
+import { formatAddress } from '@helpers/addressFormat';
 
 import AccountContext from './AccountContext';
 
@@ -13,15 +18,21 @@ interface ProvidersProps {
 const AccountProvider = ({ children }: ProvidersProps) => {
   const { address, status: accountStatus } = useAccount();
   const { chain } = useNetwork();
-  const { disconnect, status: disconnectStatus } = useDisconnect();
+  const { disconnect } = useDisconnect();
   const { status: connectStatus } = useConnect();
+  
+  const { wallets } = useWallets();
+  const { wallet: activeWallet, setActiveWallet } = usePrivyWagmi();
+  const { authenticated, logout: authenticatedLogout, user } = usePrivy();
 
   /*
    * State
    */
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loginStatus, setLoginStatus] = useState<LoginStatusType>(LoginStatus.LOGGED_OUT);
   const [loggedInEthereumAddress, setLoggedInEthereumAddress] = useState<string | null>(null);
+  const [accountDisplay, setAccountDisplay] = useState<string | null>(null);
   const [network, setNetwork] = useState<string | null>(null);
 
   /*
@@ -29,21 +40,84 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('addressRaw_1');
-    esl && console.log('checking address: ', address);
+    esl && console.log('activeWalet_1');
+    esl && console.log('checking wallets: ', wallets);
+    esl && console.log('checking activeWallet: ', activeWallet);
 
-    if (address) {
-      esl && console.log('addressRaw_2');
-
-      setLoggedInEthereumAddress(address);
-      setIsLoggedIn(true);
-    } else {
-      esl && console.log('addressRaw_3');
-
-      setLoggedInEthereumAddress(null);
-      setIsLoggedIn(false);
+    if (wallets[0] && !activeWallet) {
+      console.log('activeWalet_2');
+      setActiveWallet(wallets[0]);
     }
-  }, [address]);
+  }, [activeWallet, wallets, setActiveWallet]);
+
+  useEffect(() => {
+    esl && console.log('loginStatus_1');
+    esl && console.log('checking address: ', address);
+    esl && console.log('checking accountStatus: ', accountStatus);
+
+    if (accountStatus === 'connected') {
+      if (authenticated) {
+        esl && console.log('loginStatus_2');
+
+        setLoginStatus(LoginStatus.AUTHENTICATED);
+      } else {
+        esl && console.log('loginStatus_3');
+
+        setLoginStatus(LoginStatus.EOA);
+      } 
+    } else {
+      esl && console.log('loginStatus_4');
+
+      setLoginStatus(LoginStatus.LOGGED_OUT);
+    }
+  }, [address, accountStatus, authenticated]);
+
+  useEffect(() => {
+    esl && console.log('isLoggedIn_1');
+    esl && console.log('checking loginStatus: ', loginStatus);
+    esl && console.log('user: ', user);
+    
+    switch (loginStatus) {
+      case LoginStatus.AUTHENTICATED:
+        if (address && user) {
+          esl && console.log('isLoggedIn_2');
+
+          if (user.email && user.email.address) {
+            setAccountDisplay(user.email.address);
+          } else if (user.twitter && user.twitter.username) {
+            setAccountDisplay(user.twitter.username);
+          } else if (user.farcaster && user.farcaster.displayName) {
+            setAccountDisplay(user.farcaster.displayName);
+          } else {
+            setAccountDisplay('Logged In');
+          }
+
+          setIsLoggedIn(true);
+          setLoggedInEthereumAddress(address);
+        }
+        break;
+
+      case LoginStatus.EOA:
+        if (address) {
+          esl && console.log('isLoggedIn_3');
+
+          const formattedAddress = formatAddress(address);
+
+          setAccountDisplay(formattedAddress);
+          setIsLoggedIn(true);
+          setLoggedInEthereumAddress(address);
+        }
+        break;
+      
+      case LoginStatus.LOGGED_OUT:
+      default:
+        esl && console.log('isLoggedIn_4');
+
+        setAccountDisplay(null);
+        setIsLoggedIn(false);
+        setLoggedInEthereumAddress(null);
+    }
+  }, [user, address, loginStatus, disconnect]);
 
   useEffect(() => {
     esl && console.log('networkRaw_1');
@@ -60,31 +134,17 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     }
   }, [chain]);
 
-  useEffect(() => {
-    esl && console.log('status_1');
-    esl && console.log('checking accountStatus: ', accountStatus);
-
-    if (accountStatus === 'reconnecting') {
-      esl && console.log('status_2');
-
-      disconnect();
-
-      setIsLoggedIn(false);
-      setLoggedInEthereumAddress(null);
-    } else {
-      esl && console.log('status_3');
-    }
-  }, [accountStatus, disconnect]);
-
   return (
     <AccountContext.Provider
       value={{
         isLoggedIn,
         loggedInEthereumAddress,
+        loginStatus,
+        authenticatedLogout,
+        accountDisplay,
         network,
         accountStatus,
-        connectStatus,
-        disconnectStatus,
+        connectStatus
       }}
     >
       {children}

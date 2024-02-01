@@ -86,7 +86,7 @@ export function conversionRateToPercentageString(rate: bigint, premiumForOffRamp
 };
 
 export function conversionRateToMultiplierString(rate: bigint): string {
-  const scaledValue = rate * PRECISION;
+  const scaledValue = BigInt(rate) * PRECISION;
   const reciprocal = (PRECISION * (10000n * PRECISION)) / scaledValue;
 
   const adjustedRate = Number(reciprocal - 10000n);
@@ -98,4 +98,15 @@ export function conversionRateToMultiplierString(rate: bigint): string {
   ratioString = ratioString.replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 
   return ratioString;
+};
+
+export function toEthString(value: bigint): string {
+  if (typeof value !== 'bigint') {
+    return '0';
+  }
+
+  const reducedValue = value / BigInt(1e15);  
+  const ethValue = Number(reducedValue) / 1e3;
+
+  return ethValue.toFixed(3);
 };
