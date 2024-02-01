@@ -24,6 +24,15 @@ import ErrorBoundary from './ErrorBoundary';
 import App from "./App";
 
 
+
+const getDefaultChain = (env) => {
+  if (env === 'STAGING' || env === 'PRODUCTION') {
+    return base;
+  } else {
+    return sepolia;
+  }
+};
+
 const getChainsForEnvironment = (env) => {
   if (env === 'STAGING' || env === 'PRODUCTION') {
     return [base];
@@ -95,7 +104,7 @@ ReactDOM.render(
                 accentColor: "#df2e2d",
                 showWalletLoginFirst: false,
               },
-              defaultChain: base,
+              defaultChain: getDefaultChain(env),
               supportedChains: [sepolia, base]
             }}
           >
