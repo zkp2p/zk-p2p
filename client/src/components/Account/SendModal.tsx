@@ -86,11 +86,14 @@ export default function SendModal() {
   } = useContractWrite(writeTransferConfig);
 
   const {
-    status: mineTransferTransactionStatus
+    status: mineTransferTransactionStatus,
   } = useWaitForTransaction({
     hash: submitTransferResult ? submitTransferResult.hash : undefined,
     onSuccess(data: any) {
       console.log('writeSubmitTransferAsync successful: ', data);
+
+      setSendAmountInput('');
+      setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
 
       refetchUsdcBalance?.();
     },
@@ -161,43 +164,37 @@ export default function SendModal() {
 
   useEffect(() => {
     const updateSendState = async () => {
-      const successfulSendTransaction = mineTransferTransactionStatus === 'success';
-
-      if (successfulSendTransaction) {
-        setSendState(SendTransactionStatus.TRANSACTION_SUCCEEDED);
+      if (!sendAmountInput) { 
+        setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
-        if (!sendAmountInput) { 
-          setSendState(SendTransactionStatus.MISSING_AMOUNTS);
-        } else {
-          const usdcBalanceLoaded = usdcBalance !== null;
+        const usdcBalanceLoaded = usdcBalance !== null;
 
-          if (sendAmountInput && usdcBalanceLoaded) {
-            const sendAmountBI = toBigInt(sendAmountInput);
-            const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
+        if (sendAmountInput && usdcBalanceLoaded) {
+          const sendAmountBI = toBigInt(sendAmountInput);
+          const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
-            if (isSendAmountGreaterThanBalance) {
-              setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
+          if (isSendAmountGreaterThanBalance) {
+            setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
+          } else {
+            if (!recipientAddressInput.input) {
+              setSendState(SendTransactionStatus.DEFAULT);
+            } else if (!isValidRecipientAddress) {
+              setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
             } else {
-              if (!recipientAddressInput.input) {
-                setSendState(SendTransactionStatus.DEFAULT);
-              } else if (!isValidRecipientAddress) {
-                setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
+              const signingSendTransaction = signTransferTransactionStatus === 'loading';
+              const miningSendTransaction = mineTransferTransactionStatus === 'loading';
+
+              if (signingSendTransaction) {
+                setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
+              } else if (miningSendTransaction) {
+                setSendState(SendTransactionStatus.TRANSACTION_MINING);
               } else {
-                const signingSendTransaction = signTransferTransactionStatus === 'loading';
-                const miningSendTransaction = mineTransferTransactionStatus === 'loading';
-  
-                if (signingSendTransaction) {
-                  setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
-                } else if (miningSendTransaction) {
-                  setSendState(SendTransactionStatus.TRANSACTION_MINING);
-                } else {
-                  setSendState(SendTransactionStatus.VALID);
-                }
+                setSendState(SendTransactionStatus.VALID);
               }
             }
-          } else {
-            setSendState(SendTransactionStatus.MISSING_AMOUNTS);
           }
+        } else {
+          setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
       }
     }
@@ -209,7 +206,7 @@ export default function SendModal() {
       usdcBalance,
       isValidRecipientAddress,
       signTransferTransactionStatus,
-      mineTransferTransactionStatus,
+      mineTransferTransactionStatus
     ]
   );
 

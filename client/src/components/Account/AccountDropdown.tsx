@@ -272,8 +272,8 @@ const StyledArrowDownCircle = styled(ArrowDownCircle)`
 
 const StyledZap = styled(Zap)`
   color: #FFF;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
 `;
 
 const StyledRepeat = styled(Repeat)`
@@ -330,6 +330,7 @@ const NavDropdownItemsContainer = styled.div`
   text-decoration: none;
   cursor: pointer;
   padding: 8px 0px;
+  line-height: 1;
 `;
 
 const LogoutContainer = styled.div`
