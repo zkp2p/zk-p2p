@@ -137,6 +137,16 @@ async function findSelector(a: Uint8Array, selector: number[]): Promise<number> 
   return -1;
 }
 
+function createArrayWithLineBreaksInserted(str: string) {
+  // Create an array of strings with ith element having a =\r\n at ith position
+  let arr: string[] = [str];
+  for (let i = 1; i < str.length; i++) {
+    let temp = str.slice(0, i) + "=\r\n" + str.slice(i);
+    arr.push(temp);
+  }
+  return arr;
+}
+
 // Returns the part of str that appears after substr
 function trimStrByStr(str: string, substr: string) {
   const index = str.indexOf(substr);
@@ -192,6 +202,9 @@ export async function getCircuitInputs(
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE: string | string[] = STRING_PRESELECTOR;
   let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE: string | string[] = STRING_PRESELECTOR;
 
+
+
+
   // Update preselector string based on circuit type
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
@@ -233,10 +246,10 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];
     MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["right", "r=\r\night", "ri=\r\nght", "rig=\r\nht", "righ=\r\nt"]; // First occurence of right
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
     MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["right", "r=\r\night", "ri=\r\nght", "rig=\r\nht", "righ=\r\nt"];
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
   }
 
