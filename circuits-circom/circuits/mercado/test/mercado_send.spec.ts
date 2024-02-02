@@ -226,7 +226,7 @@ describe("Mercado send WASM tester", function () {
         );
 
         // Get returned packed offramper_id
-        const packed_offramper_id = witness.slice(11, 16);
+        const packed_offramper_id = witness.slice(11, 15);
 
         // Get expected packed offramper_id
         const regex_start = Number(input["mercado_payee_id_idx"]);
@@ -235,7 +235,7 @@ describe("Mercado send WASM tester", function () {
         const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(offramper_id_array, 7, 35);
+        let chunkedArrays = chunkArray(offramper_id_array, 7, 28);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -267,7 +267,7 @@ describe("Mercado send WASM tester", function () {
         );
 
         // Get returned hashed onramper id
-        const hashed_onramper_id = witness[16];
+        const hashed_onramper_id = witness[15];
 
         // Get expected packed to email
         const regex_start_to_email = Number(input["email_to_idx"]);
@@ -293,7 +293,7 @@ describe("Mercado send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[17];
+        const nullifier = witness[16];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -313,7 +313,7 @@ describe("Mercado send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[18];
+        const intent_hash = witness[17];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];

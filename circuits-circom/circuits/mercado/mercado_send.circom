@@ -85,14 +85,12 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_email_to_packed_bytes = count_packed(max_email_to_len, pack_size);
     assert(max_email_to_packed_bytes < max_header_bytes);
 
-    // TODO: CONFIRM THIS
-    var max_amount_len = 9; // Max 6 fig amount + one decimal point + 2 decimal places + . e.g. 999999.00
+    var max_amount_len = 10; // Max 6 fig amount + one decimal point + 3 chars for =\r\n . e.g. 999999 OR 999=\r\n999
     var max_amount_packed_bytes = count_packed(max_amount_len, pack_size);
     assert(max_amount_packed_bytes < max_body_bytes);
 
-    // Max length of CVU is 22; Assuming " =\r\n =\r\n " at the beginning and "=\r\n" in between the digits
-    // max length can be set to 22 + 12 + 1 (buffer) = 35
-    var max_payee_id_len = 35;
+    // Max length of CVU is 22; Assuming a potential "=\r\n" in between the digits max length can be set to 22 + 3 + 3 (buffer) = 28
+    var max_payee_id_len = 28;
     var max_payee_id_packed_bytes = count_packed(max_payee_id_len, pack_size);
     assert(max_payee_id_packed_bytes < max_body_bytes);
 
@@ -148,10 +146,14 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(amount_regex_reveal, mercado_amount_idx);
 
-    // TODO: THIS PAYEE ID NEEDS TO BE CLEANED FIRST
     // Output packed payee id
+    // The above regex extracts ( |=\r\n)+ at the begginging which we can skip by setting mercado_payee_id_idx 
+    // to the first digit of the CVU ignoring the previous matches. ShiftAndPackMaskedStrRemovingLineBreak requires
+    // the index to be at the start of the regex match. Hence use ShiftAndPackRemovingLineBreak instead, which is 
+    // susceptible to index shift malleability attack but it should be fine because if the index is shifted, the CVU 
+    // will be invalid and the transaction will fail. Assuming that partial CVU is not a valid CVU.
     signal input mercado_payee_id_idx;
-    signal output reveal_payee_id_packed[max_payee_id_packed_bytes] <== ShiftAndPackMaskedStr(
+    signal output reveal_payee_id_packed[max_payee_id_packed_bytes] <== ShiftAndPackRemovingLineBreak(
         max_body_bytes, 
         max_payee_id_len, 
         pack_size
@@ -180,7 +182,7 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4361919  
+    // TOTAL CONSTRAINTS: 4213182  
 }
 
 // Args:

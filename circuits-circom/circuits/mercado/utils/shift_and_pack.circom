@@ -66,3 +66,40 @@ template ShiftAndPackMaskedStrRemovingLineBreak(in_array_len, max_substr_len, pa
         out[i] <== packer.out[i];
     }
 }
+
+// Adapted from ShiftAndPack function in zkemail. Shfits the target string, removes line break, and packs.
+// https://github.com/zkemail/zk-email-verify/blob/main/packages/circuits/helpers/extract.circom
+// Assumes that the max_substr_len is set taking line break into account
+// So, the max_substr_len is the length of the string WITH the line break
+// Differennce from ShiftAndPackMaskedStrRemovingLineBreak is that this one doesn't check for index shift malleability
+template ShiftAndPackRemovingLineBreak(in_array_len, max_substr_len, pack_size) {
+    var max_substr_len_packed = ((max_substr_len - 1) \ pack_size + 1);
+
+    component shifter = VarShiftLeft(in_array_len, max_substr_len);
+    component packer = PackBytes(max_substr_len, max_substr_len_packed, pack_size);
+
+    signal input in[in_array_len];
+    signal input shift;
+    signal output out[max_substr_len_packed];
+
+    for (var i = 0; i < in_array_len; i++) {
+        shifter.in[i] <== in[i];
+    }
+    shifter.shift <== shift;
+
+    // Remove line break
+    component remove_line_break = RemoveLineBreak(max_substr_len);
+    for (var i = 0; i < max_substr_len; i++) {
+        remove_line_break.in[i] <== shifter.out[i];
+    }
+
+    // Note that this technically doesn't constrain the rest øf the bits after the max_substr_len to be 0/unmatched/unrevealed
+    // Because of the constraints on signed inputs, it seems this should be OK security wise
+    // But still, TODO unconstrained assert to double check they are 0
+    for (var i = 0; i < max_substr_len; i++) {
+        packer.in[i] <== remove_line_break.out[i];
+    }
+    for (var i = 0; i < max_substr_len_packed; i++) {
+        out[i] <== packer.out[i];
+    }
+}
