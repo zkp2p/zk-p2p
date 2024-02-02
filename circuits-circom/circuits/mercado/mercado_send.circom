@@ -179,14 +179,13 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TODO: CAN WE DECREASE MAX HEADER BYTES TO BELOW 1024?
     // TOTAL CONSTRAINTS: 4361919  
 }
 
 // Args:
-// * max_header_bytes = 1024 is the max number of bytes in the header
+// * max_header_bytes = 640 is the max number of bytes in the header
 // * max_body_bytes = 2944 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ intent_hash ] } = MercadoSendEmail(1024, 2944, 121, 17, 7);
+component main { public [ intent_hash ] } = MercadoSendEmail(640, 2944, 121, 17, 7);

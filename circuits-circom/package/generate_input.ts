@@ -223,8 +223,11 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
+  } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
   } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Los";
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
     // STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];  // TODO: THIS NEEDS TO BE UPDATED
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
     // STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"]; // THIS NEEDS TO BE UPDATED

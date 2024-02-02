@@ -23,7 +23,7 @@ template MercadoRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal output modulus_hash;
 
     // DKIM VERIFICATION
-    var ignore_body_hash_check = 1; // Ignore body hash check; WARNING: Set it back to 1 if extracting anything from body
+    var ignore_body_hash_check = 1; // Ignore body hash check; Not extracting anything from the body
     component EV = EmailVerifier(max_header_bytes, max_body_bytes, n, k, ignore_body_hash_check);
     EV.in_padded <== in_padded;
     EV.pubkey <== modulus;
@@ -48,8 +48,6 @@ template MercadoRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     signal subject_regex_out <== MercadoSubjectRegex(max_header_bytes)(in_padded);
     subject_regex_out === 1;
     
-    // TODO: SHOULD WE RESTRICT THE ENTITY AS WELL?
-
     // From regex V2
     signal (from_regex_out, from_regex_reveal[max_header_bytes]) <== FromRegexV2(max_header_bytes)(in_padded);
     from_regex_out === 1;
@@ -89,16 +87,15 @@ template MercadoRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TODO: CAN HEADER BE REDUCED TO 512 OR SOME <1024 BYTES?
     // TOTAL CONSTRAINTS: 1334706
 }
 
 // Args:
-// * max_header_bytes = 1024 is the max number of bytes in the header
+// * max_header_bytes = 640 is the max number of bytes in the header
 // * max_body_bytes = 0 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main = MercadoRegistrationEmail(1024, 0, 121, 17, 7);
+component main = MercadoRegistrationEmail(640, 0, 121, 17, 7);
 
 
