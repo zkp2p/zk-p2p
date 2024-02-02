@@ -701,7 +701,8 @@ export async function getCircuitInputs(
       'email_to_idx': email_to_idx,
       'mercado_payee_id_idx': mercado_payee_id_idx,
       'mercado_amount_idx': mercado_amount_idx,
-      'mercado_user_id_salt': mercado_user_id_salt
+      'mercado_user_id_salt': mercado_user_id_salt,
+      'intent_hash': intent_hash
     });
 
     circuitInputs = {
@@ -718,7 +719,9 @@ export async function getCircuitInputs(
       email_to_idx,
       mercado_payee_id_idx,
       mercado_amount_idx,
-      mercado_user_id_salt
+      mercado_user_id_salt,
+      // Ids
+      intent_hash
     }
 
   } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
