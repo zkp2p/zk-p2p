@@ -11,6 +11,7 @@ include "../common-v2/regexes/from_regex_v2.circom";
 include "../common-v2/regexes/to_regex_v2.circom";
 include "../common-v2/regexes/body_hash_regex_v2.circom";
 
+include "./utils/shift_and_pack.circom";
 include "./regexes/mercado_amount.circom";
 include "./regexes/mercado_entity.circom";
 include "./regexes/mercado_subject.circom";
@@ -85,13 +86,13 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(max_email_to_packed_bytes < max_header_bytes);
 
     // TODO: CONFIRM THIS
-    var max_amount_len = 9; // Max 6 fig amount + one decimal point + 2 decimal places. e.g. 999999.00
+    var max_amount_len = 9; // Max 6 fig amount + one decimal point + 2 decimal places + . e.g. 999999.00
     var max_amount_packed_bytes = count_packed(max_amount_len, pack_size);
     assert(max_amount_packed_bytes < max_body_bytes);
 
-    // THIS MIGHT INCREASE BECAUSE OF =\r\n IN BETWEEN THE PAYEE ID DIGITS
-    // var max_payee_id_len = 22; // Max length of payee id
-    var max_payee_id_len = 35; // Max length of payee id including \r\n (TENTATIVE)
+    // Max length of CVU is 22; Assuming " =\r\n =\r\n " at the beginning and "=\r\n" in between the digits
+    // max length can be set to 22 + 12 + 1 (buffer) = 35
+    var max_payee_id_len = 35;
     var max_payee_id_packed_bytes = count_packed(max_payee_id_len, pack_size);
     assert(max_payee_id_packed_bytes < max_body_bytes);
 
@@ -139,9 +140,9 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(to_regex_reveal, email_to_idx);
     
-    // Output packed amount (TODO: THIS AMOUNT NEEDS TO BE CLEANED FIRST)
+    // Output packed amount
     signal input mercado_amount_idx;
-    signal output reveal_amount_packed[max_amount_packed_bytes] <== ShiftAndPackMaskedStr(
+    signal output reveal_amount_packed[max_amount_packed_bytes] <== ShiftAndPackMaskedStrRemovingLineBreak(
         max_body_bytes, 
         max_amount_len, 
         pack_size
