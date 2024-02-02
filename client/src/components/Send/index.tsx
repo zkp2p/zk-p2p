@@ -1,11 +1,10 @@
 import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components/macro';
-import { X } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
-import { Overlay } from '@components/modals/Overlay';
-import { NetworkSelector } from '@components/Account/NetworkSelector';
+import { AutoColumn } from '@components/layouts/Column';
+import { NetworkSelector } from '@components/Send/NetworkSelector';
 import { Input } from '@components/Account/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
@@ -14,7 +13,6 @@ import { formatAddress } from '@helpers/addressFormat';
 import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
-import useModal from '@hooks/useModal';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import baseSvg from '../../assets/images/base.svg';
@@ -35,12 +33,11 @@ const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
   displayAddress: '',
 };
 
-export default function SendModal() {
+export default function SendForm() {
   /*
    * Contexts
    */
 
-  const { closeModal } = useModal();
   const { isLoggedIn, network, loginStatus } = useAccount();
   const { usdcBalance, refetchUsdcBalance } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi } = useSmartContracts();
@@ -102,10 +99,6 @@ export default function SendModal() {
   /*
    * Handlers
    */
-
-  const handleCloseModal = () => {
-    closeModal();
-  };
 
   const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
     resetSendStateOnInputChange();
@@ -337,49 +330,35 @@ export default function SendModal() {
    */
 
   return (
-    <ModalAndOverlayContainer>
-      <Overlay onClick={handleCloseModal} />
-
-      <Suspense>
-        <ModalContainer>
-          <TitleCenteredRow>
-            <div style={{ flex: 0.25 }}>
-              <button
-                onClick={handleCloseModal}
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-
-                <StyledX/>
-              </button>
-            </div>
-
-            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-              {'Send'}
+    <Suspense>
+      <Wrapper>
+        <SendFormContainer>
+          <TitleContainer>
+            <ThemedText.HeadlineSmall>
+              Transfer
             </ThemedText.HeadlineSmall>
+          </TitleContainer>
 
-            <div style={{ flex: 0.25 }}/>
-          </TitleCenteredRow>
+          <MainContentWrapper>
+            <NetworkContainer>
+              <NetworkTransitionContainer>
+                <NetworkLogoAndNameContainer>
+                  <NetworkSvg src={networkSvg()} />
 
-          <NetworkContainer>
-            <NetworkTransitionContainer>
-              <NetworkLogoAndNameContainer>
-                <NetworkSvg src={networkSvg()} />
+                  <NetworkNameContainer>
+                    <ThemedText.LabelSmall>
+                      {'From'}
+                    </ThemedText.LabelSmall>
+                    <ThemedText.Link>
+                      {networkName()}
+                    </ThemedText.Link>
+                  </NetworkNameContainer>
+                </NetworkLogoAndNameContainer>
 
-                <NetworkNameContainer>
-                  <ThemedText.LabelSmall>
-                    {'From'}
-                  </ThemedText.LabelSmall>
-                  <ThemedText.Link>
-                    {networkName()}
-                  </ThemedText.Link>
-                </NetworkNameContainer>
-              </NetworkLogoAndNameContainer>
+                <NetworkSelector />
+              </NetworkTransitionContainer>
+            </NetworkContainer>
 
-              <NetworkSelector />
-            </NetworkTransitionContainer>
-          </NetworkContainer>
-
-          <InputsContainer>
             <Input
               label="Amount"
               name={`SendAmount`}
@@ -401,90 +380,78 @@ export default function SendModal() {
               type="string"
               placeholder="Wallet address or ENS name"
             />
-          </InputsContainer>
 
-          { transactionHash?.length ? (
-            <Link
-              href={`${blockscanUrl}/tx/${transactionHash}`}
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  View on Explorer ↗
-                </ThemedText.LabelSmall>
-            </Link>
-          ) : null}
+            { transactionHash?.length ? (
+              <Link
+                href={`${blockscanUrl}/tx/${transactionHash}`}
+                target="_blank"
+                rel="noopener noreferrer">
+                  <ThemedText.LabelSmall textAlign="center">
+                    View on Explorer ↗
+                  </ThemedText.LabelSmall>
+              </Link>
+            ) : null}
 
-          <ButtonContainer>
-            <Button
-              fullWidth={true}
-              disabled={ctaDisabled()}
-              loading={ctaLoading()}
-              onClick={async () => {
-                try {
-                  setTransactionHash('');
+            <ButtonContainer>
+              <Button
+                fullWidth={true}
+                disabled={ctaDisabled()}
+                loading={ctaLoading()}
+                onClick={async () => {
+                  try {
+                    setTransactionHash('');
 
-                  await writeSubmitTransferAsync?.();
-                } catch (error) {
-                  console.log('writeSubmitTransferAsync failed: ', error);
-                }
-              }}>
-              { ctaText() }
-            </Button>
-          </ButtonContainer>
-        </ModalContainer>
-      </Suspense>
-    </ModalAndOverlayContainer>
+                    await writeSubmitTransferAsync?.();
+                  } catch (error) {
+                    console.log('writeSubmitTransferAsync failed: ', error);
+                  }
+                }}>
+                { ctaText() }
+              </Button>
+            </ButtonContainer>
+          </MainContentWrapper>
+        </SendFormContainer>
+      </Wrapper>
+    </Suspense>
   );
 };
 
-const ModalAndOverlayContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  position: fixed;
-  align-items: flex-start;
-  top: 0;
-  left: 0;
-  z-index: 10;
-`;
-
-const ModalContainer = styled.div`
-  width: 440px;
+const Wrapper = styled.div`
+  width: 100%;
+  max-width: 484px;
+  padding-top: 32px;
   display: flex;
   flex-direction: column;
+`;
+
+const SendFormContainer = styled(AutoColumn)`
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1.25rem;
+  padding: 1rem;
+  gap: 1rem;
   background: #0D111C;
+  border: 1px solid #98a1c03d;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  margin: 0rem 0.75rem;
   justify-content: space-between;
   align-items: center;
-  z-index: 20;
+`;
 
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+const MainContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-self: center;
+  border-radius: 4px;
+  justify-content: center;
 `;
 
 const NetworkContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  padding-top: 1.75rem;
-`;
-
-const TitleCenteredRow = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  color: #FFF;
-`;
-
-const StyledX = styled(X)`
-  color: #FFF;
 `;
 
 const NetworkTransitionContainer = styled.div`
@@ -498,7 +465,7 @@ const NetworkTransitionContainer = styled.div`
 const NetworkLogoAndNameContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 180px;
+  width: 188px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   gap: 1rem;
@@ -521,20 +488,13 @@ const NetworkSvg = styled.img`
   height: 32px;
 `;
 
-const InputsContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-top: 0.75rem;
-`;
-
 const Link = styled.a`
   white-space: pre;
   display: inline-block;
   color: #1F95E2;
   text-decoration: none;
-  padding-top: 1rem;
+  padding: 1rem;
+  justify-content: center;
 
   &:hover {
     text-decoration: underline;
@@ -543,5 +503,4 @@ const Link = styled.a`
 
 const ButtonContainer = styled.div`
   width: 100%;
-  padding-top: 1rem;
 `;
