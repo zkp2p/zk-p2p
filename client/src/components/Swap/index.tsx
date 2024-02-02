@@ -569,7 +569,6 @@ const Wrapper = styled.div`
 
 const SwapFormContainer = styled(AutoColumn)`
   border-radius: 16px;
-  border: 1px solid #DEE2E6;
   padding: 1rem;
   gap: 1rem;
   background-color: #0D111C;

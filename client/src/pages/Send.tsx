@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from "styled-components";
 
-import { RegistrationForm } from "@components/Registration";
+import SendForm from "@components/Send";
 import useBalances from '@hooks/useBalance';
 
 
@@ -27,7 +27,7 @@ export const Send: React.FC = () => {
   return (
     <PageWrapper>
       <Main>
-        <RegistrationForm />
+        <SendForm />
       </Main>
     </PageWrapper>
   );

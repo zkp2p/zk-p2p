@@ -1,7 +1,8 @@
 import React, { useEffect, forwardRef } from 'react';
-import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, Zap } from 'react-feather';
+import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
 import { useDisconnect } from 'wagmi';
+import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
@@ -22,6 +23,8 @@ interface AccountDropdownProps {
 }
 
 export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(({ onOptionSelect }, ref) => {
+  const navigate = useNavigate();
+
   /*
    * Contexts
    */
@@ -43,7 +46,13 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   const handleSendClick = () => {
-    openModal(MODALS.SEND);
+    navigate('/send');
+
+    onOptionSelect();
+  };
+
+  const handleRegistrationClick = () => {
+    navigate('/register');
 
     onOptionSelect();
   };
@@ -154,6 +163,14 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
               </NavDropdownItem>
             </ItemAndIconContainer>
           )}
+          <ItemAndIconContainer onClick={handleRegistrationClick}>
+            <StyledUserCheck />
+
+            <NavDropdownItem>
+              Registration
+            </NavDropdownItem>
+          </ItemAndIconContainer>
+
           <ItemAndIconContainer onClick={handleReceiveClick}>
             <StyledArrowDownCircle />
 
@@ -166,7 +183,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             <StyledArrowUpCircle />
 
             <NavDropdownItem>
-              Send
+              Transfer
             </NavDropdownItem>
           </ItemAndIconContainer>
 
@@ -256,6 +273,12 @@ const StyledCopy = styled(Copy)`
   height: 16px;
   width: 16px;
   cursor: pointer;
+`;
+
+const StyledUserCheck = styled(UserCheck)`
+  color: #FFF;
+  height: 20px;
+  width: 20px;
 `;
 
 const StyledArrowUpCircle = styled(ArrowUpCircle)`

@@ -28,7 +28,7 @@ export const NavItem: React.FC<NavItemProps> = ({
       href: '/liquidity',
     },
     {
-      name: 'Send',
+      name: 'Transfer',
       routeName: 'send',
       href: '/send',
     },
@@ -36,11 +36,6 @@ export const NavItem: React.FC<NavItemProps> = ({
       name: 'Deposits',
       routeName: 'deposits',
       href: '/deposits',
-    },
-    {
-      name: 'Registration',
-      routeName: 'register',
-      href: '/register',
     },
   ];
 

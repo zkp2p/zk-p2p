@@ -5,7 +5,7 @@ import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
-import { NetworkRow } from '@components/Account/NetworkRow';
+import { NetworkRow } from '@components/Send/NetworkRow';
 import { sendNetworks, networksInfo, SendNetworkType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
@@ -141,7 +141,7 @@ const Wrapper = styled.div`
 const NetworkLogoAndNameContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 180px;
+  width: 188px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   gap: 1rem;
