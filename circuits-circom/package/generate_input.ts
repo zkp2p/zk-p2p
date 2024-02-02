@@ -233,10 +233,10 @@ export async function getCircuitInputs(
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];
     MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"];
-    MAX_INTERMEDIATE_PADDING_LENGTH = 2944; // For divided circuits, we calculate what the padded intermediate length should be
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["right", "r=\r\night", "ri=\r\nght", "rig=\r\nht", "righ=\r\nt"]; // First occurence of right
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"];
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["right", "r=\r\night", "ri=\r\nght", "rig=\r\nht", "righ=\r\nt"];
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
   }
 
