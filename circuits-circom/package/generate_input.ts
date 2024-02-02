@@ -270,10 +270,10 @@ export async function getCircuitInputs(
 
   // Precompute SHA prefix
   let selector, selector_loc;
-  if (STRING_PRESELECTOR_FOR_EMAIL_TYPE == typeof (String)) {
+  if (typeof STRING_PRESELECTOR_FOR_EMAIL_TYPE == "string") {
     selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE.split("").map((char) => char.charCodeAt(0));
     selector_loc = await findSelector(bodyPadded, selector);
-  } else if (STRING_PRESELECTOR_FOR_EMAIL_TYPE == typeof (Array)) {
+  } else {
     for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE.length; i++) {
       console.log("Trying selector: ", STRING_PRESELECTOR_FOR_EMAIL_TYPE[i])
       selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
