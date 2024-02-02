@@ -28,7 +28,8 @@ async function getArgs() {
   const circuitTypeArg = args.find((arg) => arg.startsWith("--circuit_type="));
   const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
-  const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="))
+  const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="));
+  const mercadoUserIdSaltArg = args.find((arg) => arg.startsWith("--mercado_user_id_salt="));
 
   if (!emailFileArg || !paymentTypeArg || !circuitTypeArg) {
     console.log("Usage: npx ts-node generate_inputs.ts --email_file=emls/venmo_send.eml --payment_type=venmo --circuit_type=send --intent_hash=12345 --nonce=1 --output_file=inputs/input_venmo_send.json");
@@ -40,12 +41,13 @@ async function getArgs() {
   const circuit_type = circuitTypeArg.split("=")[1];
   const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
+  const mercaod_user_id_salt = mercadoUserIdSaltArg ? mercadoUserIdSaltArg.split("=")[1] : "11111";
 
   const email_file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
   const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_${payment_type}_${circuit_type}_${nonce}` : `input_${payment_type}_${circuit_type}`;
   const output_file_path = `${email_file_dir}/../inputs/${outputFileName}.json`;
 
-  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path };
+  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path, mercaod_user_id_salt };
 }
 
 export interface ICircuitInputs {
@@ -85,6 +87,7 @@ export interface ICircuitInputs {
   in_body_suffix_len_padded_bytes?: string;
   mercado_payee_id_idx?: string;
   mercado_amount_idx?: string;
+  mercado_user_id_salt?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -172,7 +175,8 @@ export async function getCircuitInputs(
   body: Buffer,
   body_hash: string,
   intent_hash: string,
-  circuit: CircuitType
+  circuit: CircuitType,
+  mercado_user_id_salt?: string
 ): Promise<{
   valid: {
     validSignatureFormat?: boolean;
@@ -660,12 +664,14 @@ export async function getCircuitInputs(
     const mercado_payee_id_idx = mercado_payee_id_selector_index.toString();
 
     const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const mercado_user_id_salt = "340282366920938463463374607431768211455"; // 2 ** 128 - 1
 
     console.log({
       'email_from_idx': email_from_idx,
       'email_to_idx': email_to_idx,
       'mercado_payee_id_idx': mercado_payee_id_idx,
-      'mercado_amount_idx': mercado_amount_idx
+      'mercado_amount_idx': mercado_amount_idx,
+      'mercado_user_id_salt': mercado_user_id_salt
     });
 
     circuitInputs = {
@@ -681,7 +687,8 @@ export async function getCircuitInputs(
       email_from_idx,
       email_to_idx,
       mercado_payee_id_idx,
-      mercado_amount_idx
+      mercado_amount_idx,
+      mercado_user_id_salt
     }
 
   } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
@@ -696,7 +703,8 @@ export async function getCircuitInputs(
 
     console.log({
       'email_from_idx': email_from_idx,
-      'email_to_idx': email_to_idx
+      'email_to_idx': email_to_idx,
+      'mercado_user_id_salt': mercado_user_id_salt
     });
 
     circuitInputs = {
@@ -707,6 +715,7 @@ export async function getCircuitInputs(
       // mercado specific indices
       email_from_idx,
       email_to_idx,
+      mercado_user_id_salt,
       // IDs
       intent_hash,
     }
@@ -742,7 +751,8 @@ export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
   intent_hash: string,
-  nonce_raw: number | string | null = null
+  nonce_raw: number | string | null = null,
+  mercado_user_id_salt?: string = "1111"
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
 
@@ -788,7 +798,7 @@ export async function generate_inputs(
   const pubKeyData = pki.publicKeyFromPem(pubkey.toString());
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
-  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type);
+  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type, mercado_user_id_salt);
   return fin_result.circuitInputs;
 }
 
@@ -827,7 +837,7 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Email file read");
 
   const type = `${args.payment_type}_${args.circuit_type}` as CircuitType;
-  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
+  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce, args.mercaod_user_id_salt);
   console.log("Input generation successful");
   if (writeToFile) {
     fs.writeFileSync(args.output_file_path, JSON.stringify(gen_inputs), { flag: "w" });

@@ -161,14 +161,16 @@ template MercadoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     //-------ONRAMPER_ID, NULLIFIER----------//
 
-    // TODO: INSERT SALT HERE FOR PRIVACY OF ONRAMPER ID
+    signal input mercado_user_id_salt;
+
     // Output hashed onramper id = hash(to_packed)
-    var max_id_bytes = max_email_to_packed_bytes;
+    var max_id_bytes = max_email_to_packed_bytes + 1;
     assert(max_id_bytes < 16);    
     component hash_onramper_id = Poseidon(max_id_bytes);
     for (var i = 0; i < max_email_to_packed_bytes; i++) {
         hash_onramper_id.inputs[i] <== reveal_email_to_packed[i];
     }
+    hash_onramper_id.inputs[max_email_to_packed_bytes] <== mercado_user_id_salt;
     signal output onramper_id <== hash_onramper_id.out;
 
     // NULLIFIER

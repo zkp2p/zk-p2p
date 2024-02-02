@@ -77,14 +77,16 @@ template MercadoRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     
     //-------REGISTRATION ID----------//
 
-    // TODO: INSERT SALT FOR PRIVACY OF REGISTRATION ID
-    // Output hashed user id = hash(to_packed)
-    var max_id_bytes = max_email_to_packed_bytes;
+    signal input mercado_user_id_salt;
+
+    // Output hashed user id = hash(to_packed + salt)
+    var max_id_bytes = max_email_to_packed_bytes + 1;
     assert(max_id_bytes < 16);
     component hash = Poseidon(max_id_bytes);
     for (var i = 0; i < max_email_to_packed_bytes; i++) {
         hash.inputs[i] <== reveal_email_to_packed[i];
     }
+    hash.inputs[max_email_to_packed_bytes] <== mercado_user_id_salt;
     signal output registration_id <== hash.out;
 
     // TOTAL CONSTRAINTS: 1334706

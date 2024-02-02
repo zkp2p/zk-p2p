@@ -135,11 +135,14 @@ describe("Mercado registration WASM tester", function () {
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
 
+        // Get mercado user id salt
+        const mercado_user_id_salt = input["mercado_user_id_salt"];
+
         // Chunk bytes into 7 and pack
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
         const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const expected_hash = poseidon(packed_to_email_array)
+        const expected_hash = poseidon(packed_to_email_array.concat(mercado_user_id_salt));
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     });
 
