@@ -13,6 +13,7 @@ import { Registration } from "./pages/Registration";
 import { Swap } from "./pages/Swap";
 import { Liquidity } from "./pages/Liquidity";
 import { Deposit } from "./pages/Deposit";
+import { Send } from "./pages/Send";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
 import Modals from "./pages/Modals";
@@ -72,6 +73,7 @@ const App = () => {
                 <Route path="/register" element={<MobileLandingPage />} />
                 <Route path="/permissions" element={<MobileLandingPage />} />
                 <Route path="/withdraw" element={<MobileLandingPage />} />
+                <Route path="/send" element={<MobileLandingPage />} />
                 <Route path="/pp" element={<Privacy />} />
                 <Route path="/tos" element={<Tos />} />
               </Routes>
@@ -97,6 +99,7 @@ const App = () => {
                 <Route path="/register" element={<Registration />} />
                 <Route path="/permissions" element={<Permissions />} />
                 <Route path="/withdraw" element={<Withdraw />} />
+                <Route path="/send" element={<Send />} />
                 <Route path="/pp" element={<Privacy />} />
                 <Route path="/tos" element={<Tos />} />
                 <Route element={<>Not found</>} />
