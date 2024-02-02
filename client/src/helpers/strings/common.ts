@@ -109,8 +109,8 @@ const strings: CommonStrings = {
 
   // Login Modal
   LOGIN_MODAL_TOOLTIP: `
-    Use a social account if you do not have already have funds on the blockchain.
-    Use an Ethereum wallet if you already have one.
+    Use a social account if you do not already have funds on the blockchain, 
+    or use an Ethereum wallet if you already have one.
   `,
 
   // Receive Modal
