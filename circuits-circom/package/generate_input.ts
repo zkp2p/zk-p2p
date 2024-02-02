@@ -638,7 +638,7 @@ export async function getCircuitInputs(
     // Calculate SHA end selector.
     let intermediateBodyText;
     for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.length; i++) {
-      const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
+      const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE[i].split("").map((char) => char.charCodeAt(0));
       const selector_loc = await findSelector(bodyPadded, selector);
       if (selector_loc != -1) {
         const intermediateShaCutoffIndex = Math.floor(selector_loc / 64) * 64;
