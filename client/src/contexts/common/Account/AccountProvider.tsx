@@ -89,7 +89,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
           } else if (user.farcaster && user.farcaster.displayName) {
             setAccountDisplay(user.farcaster.displayName);
           } else {
-            setAccountDisplay('Logged In');
+            setAccountDisplay('Account');
           }
 
           setIsLoggedIn(true);
