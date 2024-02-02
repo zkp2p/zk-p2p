@@ -202,7 +202,6 @@ describe("Mercado send WASM tester", function () {
         const regex_end_equals_idx = regex_start_sub_array.indexOf("61"); // Look for `=` to end the amount which is 61 in ascii
         const regex_end = Math.min(regex_end_space_idx, regex_end_equals_idx);  // Take the min of the two indexes
         const amount_array = regex_start_sub_array.slice(0, regex_end);
-        console.log(amount_array)
 
         // Chunk bytes into 7 and pack
         let chunkedArrays = chunkArray(amount_array, 7, 9);
@@ -337,7 +336,7 @@ describe("Mercado send WASM tester", function () {
             assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
         });
 
-        it("Should return the packed precomputed SHA equal to output SHA of Garanti send", async () => {
+        it("Should return the packed precomputed SHA equal to output SHA of Mercado send", async () => {
             const input_hasher_path = path.join(__dirname, "../inputs/input_mercado_body_suffix_hasher.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
@@ -357,7 +356,7 @@ describe("Mercado send WASM tester", function () {
             assert.equal(witness_hasher[2], witness_send[3], true);
         });
 
-        it("Should return the same body hash packed as Garanti send", async () => {
+        it("Should return the same body hash packed as Mercado send", async () => {
             const input_hasher_path = path.join(__dirname, "../inputs/input_mercado_body_suffix_hasher.json");
             const jsonStringHasher = fs.readFileSync(input_hasher_path, "utf8");
             const input_hasher = JSON.parse(jsonStringHasher);
