@@ -275,6 +275,7 @@ export async function getCircuitInputs(
     selector_loc = await findSelector(bodyPadded, selector);
   } else if (STRING_PRESELECTOR_FOR_EMAIL_TYPE == typeof (Array)) {
     for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE.length; i++) {
+      console.log("Trying selector: ", STRING_PRESELECTOR_FOR_EMAIL_TYPE[i])
       selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
       selector_loc = await findSelector(bodyPadded, selector);
       if (selector_loc != -1) {
