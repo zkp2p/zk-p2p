@@ -189,8 +189,8 @@ export async function getCircuitInputs(
   let MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_HEADER_PADDED_BYTES;
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
   let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
-  let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
-  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE: string | string[] = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE: string | string[] = STRING_PRESELECTOR;
 
   // Update preselector string based on circuit type
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
@@ -230,15 +230,13 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
     MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
   } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Los";
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];
     MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
-    // STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];  // TODO: THIS NEEDS TO BE UPDATED
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
-    // STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"]; // THIS NEEDS TO BE UPDATED
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = "Cuenta"; // THIS NEEDS TO BE UPDATED
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"];
     MAX_INTERMEDIATE_PADDING_LENGTH = 2944; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
-    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Cuenta";
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = ["Cuenta", "C=\r\nuenta", "Cu=\r\nenta", "Cue=\r\nta", "Cuen=\r\nta", "Cuent=\r\na"];
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
   }
 
@@ -271,8 +269,19 @@ export async function getCircuitInputs(
   assert((await Uint8ArrayToString(shaOut)) === (await Uint8ArrayToString(Uint8Array.from(await shaHash(prehashBytesUnpadded)))), "SHA256 calculation did not match!");
 
   // Precompute SHA prefix
-  const selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE.split("").map((char) => char.charCodeAt(0));
-  const selector_loc = await findSelector(bodyPadded, selector);
+  let selector, selector_loc;
+  if (STRING_PRESELECTOR_FOR_EMAIL_TYPE == typeof (String)) {
+    selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE.split("").map((char) => char.charCodeAt(0));
+    selector_loc = await findSelector(bodyPadded, selector);
+  } else if (STRING_PRESELECTOR_FOR_EMAIL_TYPE == typeof (Array)) {
+    for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE.length; i++) {
+      selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
+      selector_loc = await findSelector(bodyPadded, selector);
+      if (selector_loc != -1) {
+        break;
+      }
+    }
+  }
   console.log("Body selector found at: ", selector_loc);
   let shaCutoffIndex = Math.floor((await findSelector(bodyPadded, selector)) / 64) * 64;
   const precomputeText = bodyPadded.slice(0, shaCutoffIndex);
@@ -613,9 +622,16 @@ export async function getCircuitInputs(
     // console.log(in_body_padded.join(''));
 
     // Calculate SHA end selector.
-    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
-    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
-    let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+    let intermediateBodyText;
+    for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.length; i++) {
+      const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
+      const selector_loc = await findSelector(bodyPadded, selector);
+      if (selector_loc != -1) {
+        const intermediateShaCutoffIndex = Math.floor(selector_loc / 64) * 64;
+        intermediateBodyText = bodyPadded.slice(0, intermediateShaCutoffIndex);
+        break;
+      }
+    }
 
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
@@ -715,9 +731,7 @@ export async function getCircuitInputs(
       // mercado specific indices
       email_from_idx,
       email_to_idx,
-      mercado_user_id_salt,
-      // IDs
-      intent_hash,
+      mercado_user_id_salt
     }
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
     const intermediate_hash = precomputed_sha;
@@ -752,7 +766,7 @@ export async function generate_inputs(
   type: CircuitType,
   intent_hash: string,
   nonce_raw: number | string | null = null,
-  mercado_user_id_salt?: string = "1111"
+  mercado_user_id_salt: string = "1111"
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
 

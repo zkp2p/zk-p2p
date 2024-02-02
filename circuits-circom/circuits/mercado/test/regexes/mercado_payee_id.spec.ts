@@ -16,7 +16,6 @@ const wasm_tester = require("circom_tester").wasm;
 // =
 // 0000003100097214822524<
 
-// TODO: CAN WE LIMIT THE CVU TO 22 CHARS?
 
 const fs = require('fs');
 const MIN_LEN = 62;     // C=\r\nVU: =\r\n= \r\n <stron=\r\ng> =\r\n =\r\n 000000310009=\r\n7214822524<   // 73 - 12 = 61
