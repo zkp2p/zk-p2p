@@ -3,9 +3,10 @@ import styled from 'styled-components/macro';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
+import { CustomConnectButton } from "@components/common/ConnectButton";
 import { AutoColumn } from '@components/layouts/Column';
 import { NetworkSelector } from '@components/Send/NetworkSelector';
-import { Input } from '@components/Account/Input';
+import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, SendTransactionStatus } from '@helpers/types';
@@ -365,6 +366,7 @@ export default function SendForm() {
               value={sendAmountInput}
               onChange={(e) => handleInputChange(e.currentTarget.value, setSendAmountInput)}
               type="number"
+              readOnly={!isLoggedIn}
               inputLabel="USDC"
               placeholder="0"
               accessoryLabel={usdcBalanceLabel}
@@ -378,6 +380,7 @@ export default function SendForm() {
               onFocus={() => setIsRecipientInputFocused(true)}
               onBlur={() => setIsRecipientInputFocused(false)}
               type="string"
+              readOnly={!isLoggedIn}
               placeholder="Wallet address or ENS name"
             />
 
@@ -393,21 +396,27 @@ export default function SendForm() {
             ) : null}
 
             <ButtonContainer>
-              <Button
-                fullWidth={true}
-                disabled={ctaDisabled()}
-                loading={ctaLoading()}
-                onClick={async () => {
-                  try {
-                    setTransactionHash('');
+              {!isLoggedIn ? (
+                <CustomConnectButton
+                  fullWidth={true}
+                />
+              ) : (
+                <Button
+                  fullWidth={true}
+                  disabled={ctaDisabled()}
+                  loading={ctaLoading()}
+                  onClick={async () => {
+                    try {
+                      setTransactionHash('');
 
-                    await writeSubmitTransferAsync?.();
-                  } catch (error) {
-                    console.log('writeSubmitTransferAsync failed: ', error);
-                  }
-                }}>
-                { ctaText() }
-              </Button>
+                      await writeSubmitTransferAsync?.();
+                    } catch (error) {
+                      console.log('writeSubmitTransferAsync failed: ', error);
+                    }
+                  }}>
+                  { ctaText() }
+                </Button>
+               )}
             </ButtonContainer>
           </MainContentWrapper>
         </SendFormContainer>
