@@ -187,10 +187,12 @@ export async function getCircuitInputs(
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 768;
   } else if (circuit === CircuitType.EMAIL_VENMO_REGISTRATION) {
     // IMPORTANT: Only send payment email can be used to register
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "<!-- recipient name -->";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 6272;  // +320 (>280 limit for custom message)
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 768;
   } else if (circuit == CircuitType.EMAIL_HDFC_SEND) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "td esd-text\"";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 4352;  // 4096 is the max observed body length
