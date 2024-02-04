@@ -2,7 +2,8 @@ import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked } from "../../utils/test-utils";
+import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../utils/test-utils";
+import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
 import ganache from "ganache";
 
@@ -69,8 +70,11 @@ describe("Venmo Registration", function () {
         // Get returned modulus hash
         const modulus_hash = witness[1];
 
-        // Get expected modulus hash
-        const expected_hash = mimcSponge.multiHash(input["modulus"], 123, 1);
+        // Calculate the expected poseidon hash with pubkey chunked to 9*242 like in circuit
+        const poseidon = await buildPoseidon();
+        const modulus = chunkedBytesToBigInt(input["modulus"], 121);
+        const pubkeyChunked = bigIntToChunkedBytes(modulus, 242, 9);
+        const expected_hash = poseidon(pubkeyChunked);
 
         assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
     });
