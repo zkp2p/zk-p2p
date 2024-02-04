@@ -3,8 +3,9 @@ pragma circom 2.1.5;
 include "circomlib/circuits/poseidon.circom";
 include "../utils/ceil.circom";
 
-include "./utils/email_verifier.circom";
-include "./utils/extract.circom";
+include "@zk-email/circuits/email-verifier.circom";
+include "@zk-email/circuits/helpers/extract.circom";
+
 include "./helpers/hdfc_helpers.circom";
 include "./regexes/hdfc_amount.circom";
 include "./regexes/hdfc_date.circom";
@@ -126,7 +127,7 @@ template HdfcSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 5880023
+    // TOTAL CONSTRAINTS: 6040228
 }
 
 // Args:

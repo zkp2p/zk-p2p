@@ -5,6 +5,13 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@adraffy/ens-normalize@npm:1.10.0":
+  version: 1.10.0
+  resolution: "@adraffy/ens-normalize@npm:1.10.0"
+  checksum: af0540f963a2632da2bbc37e36ea6593dcfc607b937857133791781e246d47f870d5e3d21fa70d5cfe94e772c284588c81ea3f5b7f4ea8fbb824369444e4dbcb
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.0":
   version: 2.2.1
   resolution: "@ampproject/remapping@npm:2.2.1"
@@ -2354,6 +2361,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/curves@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@noble/curves@npm:1.2.0"
+  dependencies:
+    "@noble/hashes": 1.3.2
+  checksum: bb798d7a66d8e43789e93bc3c2ddff91a1e19fdb79a99b86cd98f1e5eff0ee2024a2672902c2576ef3577b6f282f3b5c778bebd55761ddbb30e36bf275e83dd0
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.3.2":
+  version: 1.3.2
+  resolution: "@noble/hashes@npm:1.3.2"
+  checksum: fe23536b436539d13f90e4b9be843cc63b1b17666a07634a2b1259dded6f490be3d050249e6af98076ea8f2ea0d56f578773c2197f2aa0eeaa5fba5bc18ba474
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -2930,6 +2953,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:18.15.13":
+  version: 18.15.13
+  resolution: "@types/node@npm:18.15.13"
+  checksum: 79cc5a2b5f98e8973061a4260a781425efd39161a0e117a69cd089603964816c1a14025e1387b4590c8e82d05133b7b4154fa53a7dffb3877890a66145e76515
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^18.0.6":
   version: 18.19.5
   resolution: "@types/node@npm:18.19.5"
@@ -3157,28 +3187,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zk-email/circuits@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@zk-email/circuits@npm:2.0.1"
-  checksum: 3a8e346bbfd8ea58c101c47e84c5fedcf8b2e135feef8e0a6188252d2059a12523846cf1d3b4b4fac70c9b4503e5b3107a01251d0e5739cfd8b37fc92dd6c453
+"@zk-email/circuits@npm:3.2.3":
+  version: 3.2.3
+  resolution: "@zk-email/circuits@npm:3.2.3"
+  dependencies:
+    "@zk-email/zk-regex-circom": ^1.1.1
+  checksum: 902041fc5f014b412ed052ff71c6956eb5c16996d9ae35594387d3e7ce462c39bd41335199febbb474a610ff9b6ca29f941417d44f4a82f1e2d929c012e43369
   languageName: node
   linkType: hard
 
-"@zk-email/helpers@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@zk-email/helpers@npm:2.0.0"
+"@zk-email/helpers@npm:^3.0.2":
+  version: 3.1.3
+  resolution: "@zk-email/helpers@npm:3.1.3"
   dependencies:
     addressparser: ^1.0.1
     atob: ^2.1.2
     circomlibjs: ^0.1.7
+    ethers: ^6.8.0
     libmime: ^5.2.1
     localforage: ^1.10.0
     lodash: ^4.17.21
     node-forge: ^1.3.1
     pako: ^2.1.0
+    pki: ^1.1.0
     psl: ^1.9.0
     snarkjs: "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
-  checksum: c5defc6b2fdfe78702217bf46a84bca1fd2cc5e0adec10fce7d8413f1abf5cd67191c06cf1ea834a0100efce858acb436a4148e9bd1ac82f102d4692f20a5f62
+  checksum: 36eab61ae9b6fdd2f19a38f278fd96d6fd289cda30fd0b7501ea79a6c6adc0678782cb01a7ec514e8acb126f2d4f807764665105e6e6ea67bf2953dcec1c9663
+  languageName: node
+  linkType: hard
+
+"@zk-email/zk-regex-circom@npm:1.2.1, @zk-email/zk-regex-circom@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "@zk-email/zk-regex-circom@npm:1.2.1"
+  dependencies:
+    commander: ^11.0.0
+    snarkjs: ^0.7.0
+  checksum: 45c01899ffa1891acbca69afd10e5f4d3d0db7f8696ecf7b3a9425c7ff55d293f4fea4b1644a62a9baf241ddbec4227a3335c81d909741d08f90dfe7d27f5f7a
   languageName: node
   linkType: hard
 
@@ -3198,8 +3242,9 @@ __metadata:
     "@types/node": ^18.0.6
     "@types/node-forge": ^1.3.2
     "@types/tar-stream": ^2.2.2
-    "@zk-email/circuits": ^2.0.1
-    "@zk-email/helpers": ^2.0.0
+    "@zk-email/circuits": 3.2.3
+    "@zk-email/helpers": ^3.0.2
+    "@zk-email/zk-regex-circom": 1.2.1
     babel-preset-jest: ^29.5.0
     browserify-fs: ^1.0.0
     browserstack-local: ^1.5.1
@@ -3348,6 +3393,13 @@ __metadata:
   version: 3.0.0
   resolution: "aes-js@npm:3.0.0"
   checksum: 251e26d533cd1a915b44896b17d5ed68c24a02484cfdd2e74ec700a309267db96651ea4eb657bf20aac32a3baa61f6e34edf8e2fec2de440a655da9942d334b8
+  languageName: node
+  linkType: hard
+
+"aes-js@npm:4.0.0-beta.5":
+  version: 4.0.0-beta.5
+  resolution: "aes-js@npm:4.0.0-beta.5"
+  checksum: cc2ea969d77df939c32057f7e361b6530aa6cb93cb10617a17a45cd164e6d761002f031ff6330af3e67e58b1f0a3a8fd0b63a720afd591a653b02f649470e15b
   languageName: node
   linkType: hard
 
@@ -4805,6 +4857,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^11.0.0":
+  version: 11.1.0
+  resolution: "commander@npm:11.1.0"
+  checksum: fd1a8557c6b5b622c89ecdfde703242ab7db3b628ea5d1755784c79b8e7cb0d74d65b4a262289b533359cd58e1bfc0bf50245dfbcd2954682a6f367c828b79ef
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.16.0, commander@npm:^2.20.3, commander@npm:^2.8.1":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
@@ -6017,6 +6076,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ethers@npm:^6.8.0":
+  version: 6.10.0
+  resolution: "ethers@npm:6.10.0"
+  dependencies:
+    "@adraffy/ens-normalize": 1.10.0
+    "@noble/curves": 1.2.0
+    "@noble/hashes": 1.3.2
+    "@types/node": 18.15.13
+    aes-js: 4.0.0-beta.5
+    tslib: 2.4.0
+    ws: 8.5.0
+  checksum: 6f0a834b9b9bb31eceda9ac0a841b1061d5e2eefb5d0b042013db1c5abf48fa993ec0a602ae4c64d9e259d495fc01c100cf61f17e928e09eb43f0c7860f2a317
+  languageName: node
+  linkType: hard
+
 "event-stream@npm:=3.3.4":
   version: 3.3.4
   resolution: "event-stream@npm:3.3.4"
@@ -6262,6 +6336,17 @@ __metadata:
     wasmcurves: 0.2.2
     web-worker: ^1.2.0
   checksum: c292e88fd160e16aadfac27870fc5532d3ed1f2306f51d77ef37d5077fca0146b475ffa44a52b80a489ce8834f9c1f4853265499dcb5d0b8f0ec551341c318da
+  languageName: node
+  linkType: hard
+
+"ffjavascript@npm:0.2.63":
+  version: 0.2.63
+  resolution: "ffjavascript@npm:0.2.63"
+  dependencies:
+    wasmbuilder: 0.0.16
+    wasmcurves: 0.2.2
+    web-worker: 1.2.0
+  checksum: d4c549228b31692bb8a44f7eb46720b0504a9ff5bc00e8a9c44ad104622cb83613542b4c321f83cb3027c9dcd1b0834da2b1ea679c3277642f754e9e5ea1c06f
   languageName: node
   linkType: hard
 
@@ -10366,6 +10451,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pki@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "pki@npm:1.1.0"
+  peerDependencies:
+    "@pulumi/kubernetes": ^0.25.6
+    "@pulumi/pulumi": ^0.17.28
+  checksum: 31b4ddc413be8508e816204d0eb52597ad23b02c6c0713b486967de6e7e4c42b560d1a8422702d32374c613c9302e6061a35ffbd1c1c5986d546798d775927a9
+  languageName: node
+  linkType: hard
+
 "pluralize@npm:^8.0.0":
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
@@ -11599,6 +11694,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"snarkjs@npm:^0.7.0":
+  version: 0.7.3
+  resolution: "snarkjs@npm:0.7.3"
+  dependencies:
+    "@iden3/binfileutils": 0.0.11
+    bfj: ^7.0.2
+    blake2b-wasm: ^2.4.0
+    circom_runtime: 0.1.24
+    ejs: ^3.1.6
+    fastfile: 0.0.20
+    ffjavascript: 0.2.63
+    js-sha3: ^0.8.0
+    logplease: ^1.2.15
+    r1csfile: 0.0.47
+  bin:
+    snarkjs: build/cli.cjs
+  checksum: 6a8818c0f23b1c213b3296b4a253ceb2f26accfd0259274230550dfce010e4c6d1f5ecaaea1d84ff9b9da54c42dc94869f820838af4e33ffd4e09d95e986d9ee
+  languageName: node
+  linkType: hard
+
 "snarkjs@npm:latest":
   version: 0.7.2
   resolution: "snarkjs@npm:0.7.2"
@@ -12406,6 +12521,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
@@ -13021,6 +13143,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"web-worker@npm:1.2.0":
+  version: 1.2.0
+  resolution: "web-worker@npm:1.2.0"
+  checksum: 1bb28348ddcf9b2e7c62c5fd02e49a84098795856cd905456de957271bba288e9618941cf69d8960f0a7ae81f5dfb74b427c0634be47ec69e3e955c4ec5213be
+  languageName: node
+  linkType: hard
+
 "web-worker@npm:^1.2.0":
   version: 1.3.0
   resolution: "web-worker@npm:1.3.0"
@@ -13264,6 +13393,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 53e991bbf928faf5dc6efac9b8eb9ab6497c69feeb94f963d648b7a3530a720b19ec2e0ec037344257e05a4f35bd9ad04d9de6f289615ffb133282031b18c61c
+  languageName: node
+  linkType: hard
+
+"ws@npm:8.5.0":
+  version: 8.5.0
+  resolution: "ws@npm:8.5.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ^5.0.2
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 76f2f90e40344bf18fd544194e7067812fb1372b2a37865678d8f12afe4b478ff2ebc0c7c0aff82cd5e6b66fc43d889eec0f1865c2365d8f7a66d92da7744a77
   languageName: node
   linkType: hard
 

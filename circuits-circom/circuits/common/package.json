@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts",
     "license": "MIT",
     "dependencies": {
-        "@zk-email/circuits": "^2.0.1",
+        "@zk-email/zk-regex-circom": "1.2.1",
         "circomlib": "^2.0.5"
     },
     "scripts": {

@@ -1,6 +1,6 @@
 pragma circom 2.1.5;
 
-include "@zk-email/circuits/regexes/regex_helpers.circom";
+include "@zk-email/zk-regex-circom/circuits/regex_helpers.circom";
 
 // `d=venmo.com; t=(0|1|2|3|4|5|6|7|8|9)+;\r\n` OR `;\r\nd=venmo.com; t=(0|1|2|3|4|5|6|7|8|9)+`
 template VenmoTimestampRegex (msg_bytes) {
