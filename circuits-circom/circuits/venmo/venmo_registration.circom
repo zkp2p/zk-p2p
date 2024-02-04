@@ -4,8 +4,9 @@ include "circomlib/circuits/poseidon.circom";
 include "../utils/ceil.circom";
 include "../common/regexes/from_regex.circom";
 
-include "./utils/email_verifier.circom";
+include "@zk-email/circuits/email-verifier.circom";
 include "./utils/extract.circom";
+
 include "./regexes/venmo_actor_id.circom";
 include "./regexes/venmo_send_amount.circom";
 

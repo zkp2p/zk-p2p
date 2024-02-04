@@ -6,8 +6,9 @@ include "../utils/email_nullifier.circom";
 include "../utils/hash_sign_gen_rand.circom";
 include "../common/regexes/from_regex.circom";
 
-include "./utils/email_verifier.circom";
+include "@zk-email/circuits/email-verifier.circom";
 include "./utils/extract.circom";
+
 include "./regexes/venmo_p2p_check.circom";
 include "./regexes/venmo_send_amount.circom";
 include "./regexes/venmo_send_id.circom";
