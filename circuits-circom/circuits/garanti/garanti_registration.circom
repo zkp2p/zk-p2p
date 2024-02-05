@@ -43,6 +43,9 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     //-------HASH INTERMEDIATE----------//
 
+    // Assert padding is all zeroes
+    AssertZeroes(max_body_bytes)(in_body_padded, in_body_len_padded_bytes + 1);
+
     // This hashes the body after the precomputed SHA, and outputs the intermediate hash
     signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
     signal intermediate_hash_bytes[32];
@@ -143,7 +146,7 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 3951211
+    // TOTAL CONSTRAINTS: 3994795
 }
 
 // Args:

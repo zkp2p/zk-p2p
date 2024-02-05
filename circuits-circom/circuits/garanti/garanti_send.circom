@@ -50,6 +50,9 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     //-------HASH INTERMEDIATE----------//
 
+    // Assert padding is all zeroes
+    AssertZeroes(max_body_bytes)(in_body_padded, in_body_len_padded_bytes + 1);
+
     // This hashes the body after the precomputed SHA, and outputs the intermediate hash
     signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
     signal intermediate_hash_bytes[32];
@@ -210,7 +213,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4523374
+    // TOTAL CONSTRAINTS: 4566958
 }
 
 
