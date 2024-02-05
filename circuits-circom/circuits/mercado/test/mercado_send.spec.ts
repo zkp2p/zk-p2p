@@ -352,6 +352,9 @@ describe("Mercado send WASM tester", function () {
                 true
             );
 
+            console.log(witness_hasher[1], witness_send[2])
+            console.log(witness_hasher[2], witness_send[3])
+
             assert.equal(witness_hasher[1], witness_send[2], true);
             assert.equal(witness_hasher[2], witness_send[3], true);
         });
