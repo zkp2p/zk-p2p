@@ -118,7 +118,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                   <AccountContainer>
                     <NetworkAndBridgeContainer>
                       <NetworkSelector
-                        onClick={openChainModal}
                         style={{ display: 'flex', alignItems: 'center' }}
                       >
                         {chain.hasIcon && (

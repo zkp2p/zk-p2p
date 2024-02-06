@@ -180,7 +180,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
       case ProofGenerationStatus.DONE:
         switch (circuitType) {
           case CircuitType.EMAIL_VENMO_SEND:
-            setCtaButtonTitle('Go to Swap');
+            setCtaButtonTitle('Go to Transfer');
             break;
     
           case CircuitType.EMAIL_VENMO_REGISTRATION:

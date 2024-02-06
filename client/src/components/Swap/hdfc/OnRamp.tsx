@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom-helpers/generate_input';
 import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
@@ -27,6 +28,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
   selectedIntentHash
 }) => {
+  const navigate = useNavigate();
+
   /*
    * Context
    */
@@ -162,6 +165,10 @@ export const OnRamp: React.FC<OnRampProps> = ({
     }
   };
 
+  const handleVerificationCompleteClick = () => {
+    navigate('/send');
+  };
+
   /*
    * Component
    */
@@ -206,7 +213,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
-        onVerifyEmailCompletion={handleBackClick}
+        onVerifyEmailCompletion={handleVerificationCompleteClick}
         submitTransactionStatus={submitOnRampStatus}
         isSubmitMining={isSubmitOnRampMining}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
