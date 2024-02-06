@@ -323,6 +323,266 @@ describe("Mercado send WASM tester", function () {
         assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
     });
 
+    describe("Second email", function () {
+        it("Should generate witnesses", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            assert(Fr.eq(Fr.e(witness[0]), Fr.e(1)));
+        });
+    
+        it("Should return the correct modulus hash", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned modulus hash
+            const modulus_hash = witness[1];
+    
+            // Calculate the expected poseidon hash with pubkey chunked to 9*242 like in circuit
+            const poseidon = await buildPoseidon();
+            const modulus = chunkedBytesToBigInt(input["modulus"], 121);
+            const pubkeyChunked = bigIntToChunkedBytes(modulus, 242, 9);
+            const expected_hash = poseidon(pubkeyChunked);
+    
+            assert.equal(JSON.stringify(mimcSponge.F.e(modulus_hash)), JSON.stringify(expected_hash), true);
+        });
+    
+        it("Should return the correct intermediate hash packed", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // This is a workaround to use our divided hasher because no JS SHA256 libraries do not support a precomputed initial state
+            // We test that the precomputed SHA hashed + intermediate body is equal to the expected SHA from the send circuit
+            let paddedArray = Array.from({ length: 7744 }, (v, i) => input["in_body_padded"][i] || "0");
+    
+            const hasher_witness = await cir_hasher.calculateWitness(
+                {
+                    intermediate_hash: input["precomputed_sha"],
+                    in_body_suffix_padded: paddedArray,
+                    in_body_suffix_len_padded_bytes: input["in_body_len_padded_bytes"],
+                },
+                true
+            );
+    
+            assert(Fr.eq(Fr.e(hasher_witness[0]), Fr.e(1)));
+            assert.equal(witness[2], hasher_witness[3], true);
+            assert.equal(witness[3], hasher_witness[4], true);
+        });
+    
+        it("Should return the correct body hash packed", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get expected body hash packed
+            const regex_start_body_hash = Number(input["body_hash_idx"]);
+            const regex_start_sub_array_body_hash = input["in_padded"].slice(regex_start_body_hash);
+            const regex_end_body_hash = regex_start_sub_array_body_hash.indexOf("59"); // Look for ; to end the from which is 59 in ascii.
+            const body_hash_array = regex_start_sub_array_body_hash.slice(0, regex_end_body_hash);
+    
+            // Decode body hash
+            const expectedBodyHashArray = base64ToByteArray(body_hash_array);
+    
+            const bodyHashChunkedArray = chunkArray(expectedBodyHashArray, 16, 32);
+            const expectedFirst = bytesToPacked(bodyHashChunkedArray[0]);
+            const expectedSecond = bytesToPacked(bodyHashChunkedArray[1]);
+    
+            assert.equal(witness[4], expectedFirst, true);
+            assert.equal(witness[5], expectedSecond, true);
+        });
+    
+        it("Should return the correct packed from email", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned packed from email
+            // Indexes 6 to 9 represent the packed from email (20 \ 7)
+            const packed_from_email = witness.slice(6, 9);
+    
+            // Get expected packed from email
+            const regex_start = Number(input["email_from_idx"]);
+            const regex_start_sub_array = input["in_padded"].slice(regex_start);
+            const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
+            const from_email_array = regex_start_sub_array.slice(0, regex_end);
+    
+            // Chunk bytes into 7 and pack
+            let chunkedArrays = chunkArray(from_email_array, 7, 20);
+    
+            chunkedArrays.map((arr, i) => {
+                // Pack each chunk
+                let expectedValue = bytesToPacked(arr);
+    
+                // Check packed email is the same
+                assert.equal(expectedValue, packed_from_email[i], true);
+            });
+        });
+    
+        it("Should return the correct packed amount", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned packed amount
+            // Indexes 9 to 11 represent the packed amount (9 \ 7)
+            const packed_amount = witness.slice(9, 11);
+    
+            // Get expected packed amount
+            const regex_start = Number(input["mercado_amount_idx"]);
+            const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+            const regex_end_space_idx = regex_start_sub_array.indexOf("32"); // Look for ` ` to end the amount which is 32 in ascii
+            const regex_end_equals_idx = regex_start_sub_array.indexOf("61"); // Look for `=` to end the amount which is 61 in ascii
+            const regex_end = Math.min(regex_end_space_idx, regex_end_equals_idx);  // Take the min of the two indexes
+            const amount_array = regex_start_sub_array.slice(0, regex_end);
+    
+            // Chunk bytes into 7 and pack
+            let chunkedArrays = chunkArray(amount_array, 7, 9);
+    
+            chunkedArrays.map((arr, i) => {
+                // Pack each chunk
+                let expectedValue = bytesToPacked(arr);
+    
+                // Check packed amount is the same
+                assert.equal(expectedValue, packed_amount[i], true);
+            });
+        });
+    
+        it("Should return the correct packed offramper id", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned packed offramper_id
+            const packed_offramper_id = witness.slice(11, 15);
+    
+            // Get expected packed offramper_id
+            const regex_start = Number(input["mercado_payee_id_idx"]);
+            const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+            const regex_end = regex_start_sub_array.indexOf("60");  // Look for `<` to end the offramper name which is 60 in ascii
+            const offramper_id_array = regex_start_sub_array.slice(0, regex_end);
+    
+            // Chunk bytes into 7 and pack
+            let chunkedArrays = chunkArray(offramper_id_array, 7, 28);
+    
+            chunkedArrays.map((arr, i) => {
+                // Pack each chunk
+                let expectedValue = bytesToPacked(arr);
+    
+                // Check packed amount is the same
+                assert.equal(expectedValue, packed_offramper_id[i], true);
+            });
+        });
+    
+        it("should return the correct hashed onramper id", async () => {
+            const provider = new ethers.providers.Web3Provider(
+                ganache.provider({
+                    logging: {
+                        logger: {
+                            log: () => { } // Turn off logging
+                        }
+                    }
+                })
+            );
+            account = provider.getSigner(0);
+    
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned hashed onramper id
+            const hashed_onramper_id = witness[15];
+    
+            // Get expected packed to email
+            const regex_start_to_email = Number(input["email_to_idx"]);
+            const regex_start_sub_array_to_email = input["in_padded"].slice(regex_start_to_email);
+            const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
+            const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
+    
+            // Mercado user id salt
+            const mercado_user_id_salt = input["mercado_user_id_salt"];
+    
+            // Chunk bytes into 7 and pack
+            const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
+            const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
+            const expected_hash = poseidon(packed_to_email_array.concat(mercado_user_id_salt));
+    
+            assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
+        });
+    
+        it("Should return the correct nullifier", async () => {
+            const venmo_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(venmo_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned nullifier
+            const nullifier = witness[16];
+    
+            // Get expected nullifier
+            const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
+            const packed_nullifier = packNullifier(sha_out);
+            const cm_rand = hashSignatureGenRand(input["signature"], N, K, poseidon);
+            const expected_nullifier = poseidon([cm_rand, packed_nullifier])
+            assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
+        });
+    
+        it("Should return the correct intent hash", async () => {
+            const input_path = path.join(__dirname, "../inputs/input_mercado_send_2.json");
+            const jsonString = fs.readFileSync(input_path, "utf8");
+            const input = JSON.parse(jsonString);
+            const witness = await cir.calculateWitness(
+                input,
+                true
+            );
+    
+            // Get returned modulus
+            const intent_hash = witness[17];
+    
+            // Get expected modulus
+            const expected_intent_hash = input["intent_hash"];
+    
+            assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
+        });
+    });
+
     describe("Body Suffix Hasher", function () {
         it("Should generate witnesses", async () => {
             const input_path = path.join(__dirname, "../inputs/input_mercado_body_suffix_hasher.json");
