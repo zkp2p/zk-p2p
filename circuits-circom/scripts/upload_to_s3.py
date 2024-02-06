@@ -22,7 +22,7 @@ parser.add_argument('--prefix', type=str, default=
                     'paylah_registration.wasm,paylah_registration_vkey.json,paylah_registration.dat,paylah_registration.zkey,' +
                     'garanti_body_suffix_hasher.wasm,garanti_body_suffix_hasher_vkey.json,garanti_body_suffix_hasher.dat,garanti_body_suffix_hasher.zkey,' +
                     'garanti_registration.wasm,garanti_registration_vkey.json,garanti_registration.dat,garanti_registration.zkey,' +
-                    'garanti_send.wasm,garanti_send_vkey.json,garanti_send.dat,garanti_send.zkey,',
+                    'garanti_send.wasm,garanti_send_vkey.json,garanti_send.dat,garanti_send.zkey',
                     help='Comma-seperated prefixes to upload without compression')
 parser.add_argument('--dirs', type=str, default='', help='Comma-separated list of directories to upload from')
 parser.add_argument('--upload_dir', type=str, default='', help='Directory to upload to')
