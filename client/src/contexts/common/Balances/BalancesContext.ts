@@ -4,11 +4,13 @@ import { ContextValues } from './types'
 
 const defaultValues: ContextValues = {
   ethBalance: null,
+  refetchEthBalance: null,
+  shouldFetchEthBalance: null,
   usdcBalance: null,
-  usdcApprovalToRamp: null,
-  refetchUsdcApprovalToRamp: null,
   refetchUsdcBalance: null,
   shouldFetchUsdcBalance: null,
+  usdcApprovalToRamp: null,
+  refetchUsdcApprovalToRamp: null,
   usdcApprovalToHdfcRamp: null,
   refetchUsdcApprovalToHdfcRamp: null,
 };

@@ -39,6 +39,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
   const {
     data: ethBalanceRaw,
+    refetch: refetchEthBalance,
   } = useBalance({
     address: loggedInEthereumAddress ?? ZERO_ADDRESS,
     enabled: shouldFetchEthBalance,
@@ -197,11 +198,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     <BalancesContext.Provider
       value={{
         ethBalance,
+        refetchEthBalance,
+        shouldFetchEthBalance,
         usdcBalance,
-        usdcApprovalToRamp,
-        refetchUsdcApprovalToRamp,
         refetchUsdcBalance,
         shouldFetchUsdcBalance,
+        usdcApprovalToRamp,
+        refetchUsdcApprovalToRamp,
         usdcApprovalToHdfcRamp,
         refetchUsdcApprovalToHdfcRamp,
       }}

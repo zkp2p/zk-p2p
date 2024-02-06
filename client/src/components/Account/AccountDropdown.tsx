@@ -30,7 +30,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    */
 
   const { disconnect } = useDisconnect();
-  const { usdcBalance, ethBalance, refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
+  const { usdcBalance, ethBalance, refetchUsdcBalance, refetchEthBalance, shouldFetchUsdcBalance, shouldFetchEthBalance } = useBalances();
   const { accountDisplay, authenticatedLogin, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
@@ -100,6 +100,10 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   useEffect(() => {
     if (shouldFetchUsdcBalance) {
       refetchUsdcBalance?.();
+    }
+
+    if(shouldFetchEthBalance) {
+      refetchEthBalance?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
