@@ -292,11 +292,6 @@ const StyledLogOut = styled(LogOut)`
   width: 20px;
 `;
 
-const IconBorder = styled.div`
-  width: 48px;
-  height: 48px;
-`;
-
 const BalancesContainer = styled.div`
   display: flex;
   align-items: flex-end;
