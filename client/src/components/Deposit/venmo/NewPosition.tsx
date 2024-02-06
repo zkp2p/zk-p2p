@@ -14,12 +14,14 @@ import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
+import { MODALS } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useRampState from '@hooks/venmo/useRampState';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useModal from '@hooks/useModal';
 
 
 interface NewPositionProps {
@@ -39,6 +41,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
   const { extractedVenmoId, registrationHash, setExtractedVenmoId } = useRegistration();
+  const { openModal } = useModal();
 
   /*
    * State
@@ -286,7 +289,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositTransactionStatus.INVALID_DEPOSITOR_ID:
       case NewDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
       case NewDepositTransactionStatus.CONVENIENCE_FEE_INVALID:
-      case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
       case NewDepositTransactionStatus.MAX_INTENTS_REACHED:
       case NewDepositTransactionStatus.MISSING_REGISTRATION:
       case NewDepositTransactionStatus.MISSING_AMOUNTS:
@@ -294,9 +296,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewDepositTransactionStatus.TRANSACTION_MINING:
         return true;
 
+      case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
       case NewDepositTransactionStatus.APPROVAL_REQUIRED:
-        return false;
-
       case NewDepositTransactionStatus.VALID:
       default:
         return false;
@@ -326,11 +327,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Input deposit and receive amounts';
       
       case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
-        const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
-        return `Insufficient USDC balance: ${humanReadableUsdcBalance}`;
+        return `Insufficient balance — Deposit USDC`;
       
       case NewDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
-        const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount) : '0';
+        const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount, true) : '0';
         return `Minimum deposit amount is ${minimumDepositAmountString}`;
 
       case NewDepositTransactionStatus.TRANSACTION_SIGNING:
@@ -340,7 +340,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Mining Transaction';
 
       case NewDepositTransactionStatus.APPROVAL_REQUIRED:
-        const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp) : '0';
+        const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp, true) : '0';
         return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
 
       case NewDepositTransactionStatus.VALID:
@@ -375,6 +375,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewDepositTransactionStatus.TRANSACTION_SUCCEEDED:
         handleBackClick();
+        break;
+
+      case NewDepositTransactionStatus.INSUFFICIENT_BALANCE:
+        openModal(MODALS.RECEIVE);
         break;
 
       default:
