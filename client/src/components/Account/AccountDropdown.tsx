@@ -345,7 +345,7 @@ const ItemAndIconContainer = styled.div`
     color: #6C757D;
     box-shadow: none;
 
-    ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledZap} {
+    ${StyledUserCheck}, ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledZap} {
       color: #6C757D;
     }
 

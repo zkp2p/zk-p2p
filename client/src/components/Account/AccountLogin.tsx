@@ -26,6 +26,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
       onBackClick();
     }
   });
+  
   const { connectWallet } = useConnectWallet({
     onSuccess: () => {
       onBackClick();
