@@ -2,10 +2,11 @@ import React, { Suspense } from 'react';
 import styled from 'styled-components/macro';
 import QRCode from "react-qr-code";
 import Link from '@mui/material/Link';
-import { X, Copy } from 'react-feather';
+import { X } from 'react-feather';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
+import { CopyButton } from '@components/common/CopyButton';
 import { ThemedText } from '@theme/text'
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -32,16 +33,6 @@ export default function ReceiveModal() {
 
   const handleCloseModal = () => {
     closeModal();
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  };
-
-  const handleCopyClick = () => {
-    if (loggedInEthereumAddress) {
-      copyToClipboard(loggedInEthereumAddress);
-    }
   };
 
   /*
@@ -115,9 +106,7 @@ export default function ReceiveModal() {
               </AddressLabel>
             </AddressAndEnsNameContainer>
 
-            <IconBorder>
-              <StyledCopy onClick={handleCopyClick} />
-            </IconBorder>
+            <CopyButton textToCopy={loggedInEthereumAddress || ''} />
           </AccountAddressContainer>
 
           <InstructionsContainer>
@@ -179,26 +168,6 @@ const TitleCenteredRow = styled.div`
 
 const StyledX = styled(X)`
   color: #FFF;
-`;
-
-const StyledCopy = styled(Copy)`
-  color: #FFF;
-  height: 18px;
-  width: 18px;
-  cursor: pointer;
-`;
-
-const IconBorder = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  border-radius: 50%;
-  background-color: #3A3D44;
-
-  &:hover {
-    background-color: #4A4D54;
-  }
 `;
 
 const QRContainer = styled.div`

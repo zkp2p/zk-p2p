@@ -28,7 +28,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { accountDisplay, loggedInEthereumAddress, isLoggedIn } = useAccount();
+  const { accountDisplay, isLoggedIn } = useAccount();
 
   /*
    * State

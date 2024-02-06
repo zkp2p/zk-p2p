@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
+import { ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
 import { useDisconnect } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { ENSName } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
 import { EthereumAvatar } from "@components/Account/Avatar";
+import { CopyButton } from "@components/common/CopyButton";
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
@@ -75,16 +76,6 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     onOptionSelect();
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-  };
-
-  const handleCopyClick = () => {
-    if (loggedInEthereumAddress) {
-      copyToClipboard(loggedInEthereumAddress);
-    }
-  };
-
   const handleLogin = async () => {
     try {
       await authenticatedLogin?.();
@@ -145,7 +136,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
                 />
               </Link>
             </AccountAddress>
-            <StyledCopy onClick={handleCopyClick} />
+            <CopyButton textToCopy={loggedInEthereumAddress || ''} size={'sm'}/>
           </AccountAddressAndENSContainer>
         </AccountAndUserIconContainer>
 
@@ -265,13 +256,6 @@ const AccountAddressAndENSContainer = styled.div`
 `;
 
 const AccountAddress = styled.div`
-`;
-
-const StyledCopy = styled(Copy)`
-  color: #FFF;
-  height: 16px;
-  width: 16px;
-  cursor: pointer;
 `;
 
 const StyledUserCheck = styled(UserCheck)`
