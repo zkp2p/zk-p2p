@@ -29,26 +29,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
-  const paymentProvider = PaymentProviders.HDFC;
+  const paymentProvider = PaymentProviders.Garanti;
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const poseidon6 = await deploy("Poseidon6", {
-    from: deployer,
-    contract: {
-      abi: circom.poseidonContract.generateABI(6),
-      bytecode: circom.poseidonContract.createCode(6),
-    }
-  });
-  console.log("Poseidon6 deployed at ", poseidon6.address);
-
-  const hdfcRamp = await deploy("HDFCRamp", {
+  const garantiRamp = await deploy("GarantiRamp", {
     from: deployer,
     args: [
       deployer,
       usdcAddress,
-      getDeployedContractAddress(network, "Poseidon3"),
-      poseidon6.address,
       MIN_DEPOSIT_AMOUNT[paymentProvider][network],
       MAX_ONRAMP_AMOUNT[paymentProvider][network],
       INTENT_EXPIRATION_PERIOD[paymentProvider][network],
@@ -58,13 +47,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
         : deployer,
     ],
+    log: true
   });
-  console.log("HDFCRamp deployed at", hdfcRamp.address);
+  console.log("GarantiRamp deployed at", garantiRamp.address);
 
-  const keyHashAdapter = await deploy("HDFCManagedKeyHashAdapter", {
+  const keyHashAdapter = await deploy("GarantiManagedKeyHashAdapter", {
     contract: "ManagedKeyHashAdapterV2",
     from: deployer,
     args: [SERVER_KEY_HASH[paymentProvider]],
+    log: true
   });
   console.log("KeyHashAdapter deployed at", keyHashAdapter.address);
 
@@ -73,39 +64,53 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     getDeployedContractAddress(network, "NullifierRegistry")
   );
 
-  const registrationProcessor = await deploy("HDFCRegistrationProcessor", {
+  const bodyHashVerifierDeploy = await deploy(
+    "GarantiBodyHashVerifier",
+    {
+      from: deployer,
+      args: [],
+      log: true,
+      contract: "contracts/verifiers/garanti_body_suffix_hasher_verifier.sol:Groth16Verifier"
+    }
+  );
+
+  const registrationProcessor = await deploy("GarantiRegistrationProcessor", {
     from: deployer,
     args: [
-      hdfcRamp.address,
+      garantiRamp.address,
       keyHashAdapter.address,
       nullifierRegistryContract.address,
+      bodyHashVerifierDeploy.address,
       FROM_EMAIL[paymentProvider],
       ZERO
     ],
+    log: true
   });
   console.log("RegistrationProcessor deployed at", registrationProcessor.address);
 
-  const sendProcessor = await deploy("HDFCSendProcessor", {
+  const sendProcessor = await deploy("GarantiSendProcessor", {
     from: deployer,
     args: [
-      getDeployedContractAddress(network, "HDFCRamp"),
+      getDeployedContractAddress(network, "GarantiRamp"),
       keyHashAdapter.address,
       nullifierRegistryContract.address,
+      bodyHashVerifierDeploy.address,
       FROM_EMAIL[paymentProvider],
       TIMESTAMP_BUFFER[paymentProvider]
     ],
+    log: true
   });
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const hdfcRampContract = await ethers.getContractAt("HDFCRamp", hdfcRamp.address);
-  if (!(await hdfcRampContract.isInitialized())) {
-    await hdfcRampContract.initialize(
+  const garantiRampContract = await ethers.getContractAt("GarantiRamp", garantiRamp.address);
+  if (!(await garantiRampContract.isInitialized())) {
+    await garantiRampContract.initialize(
       registrationProcessor.address,
       sendProcessor.address
     );
   
-    console.log("HDFCRamp initialized...");
+    console.log("GarantiRamp initialized...");
   }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
@@ -113,15 +118,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("NullifierRegistry permissions added...");
 
   console.log("Transferring ownership of contracts...");
-  await setNewOwner(hre, hdfcRampContract, multiSig);
+  await setNewOwner(hre, garantiRampContract, multiSig);
   await setNewOwner(
     hre,
-    await ethers.getContractAt("HDFCRegistrationProcessor", registrationProcessor.address),
+    await ethers.getContractAt("GarantiRegistrationProcessor", registrationProcessor.address),
     multiSig
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("HDFCSendProcessor", sendProcessor.address),
+    await ethers.getContractAt("GarantiSendProcessor", sendProcessor.address),
     multiSig
   );
   await setNewOwner(
@@ -136,7 +141,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
   const network = hre.network.name;
   if (network == "base") {
-    try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
+    try { getDeployedContractAddress(hre.network.name, "GarantiRamp") } catch (e) {return false;}
     return true;
   }
   return false;

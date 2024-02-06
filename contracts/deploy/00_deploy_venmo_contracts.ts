@@ -20,7 +20,7 @@ import {
   USDC_MINT_AMOUNT,
   USDC_RECIPIENT,
 } from "../deployments/parameters";
-import { addWritePermission, setNewOwner } from "../deployments/helpers";
+import { addWritePermission, getDeployedContractAddress, setNewOwner } from "../deployments/helpers";
 import { PaymentProviders } from "../utils/types";
 import { ADDRESS_ZERO } from "../utils/constants";
 
@@ -138,6 +138,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   );
 
   console.log("Deploy finished...");
+};
+
+func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
+  const network = hre.network.name;
+  if (network == "base") {
+    try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
+    return true;
+  }
+  return false;
 };
 
 export default func;

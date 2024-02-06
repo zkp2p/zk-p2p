@@ -12,4 +12,5 @@ export type GrothProof = {
 export enum PaymentProviders {
   Venmo = "venmo",
   HDFC = "hdfc",
+  Garanti = "garanti",
 }

@@ -48,4 +48,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   );
 };
 
+func.runAtTheEnd = true;
+
 export default func;
