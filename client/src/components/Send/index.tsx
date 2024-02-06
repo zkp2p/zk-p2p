@@ -10,7 +10,7 @@ import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, SendTransactionStatus } from '@helpers/types';
-import { formatAddress } from '@helpers/addressFormat';
+import { formatAddressLong } from '@helpers/addressFormat';
 import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
@@ -133,12 +133,12 @@ export default function SendForm() {
       const resolvedAddress = await resolveEnsName(value);
       if (resolvedAddress) {
         rawAddress = resolvedAddress;
-        displayAddress = formatAddress(resolvedAddress);
+        displayAddress = formatAddressLong(resolvedAddress);
         isValidAddress = true;
       }
     } else if (value.length === 42 && value.startsWith('0x')) {
       rawAddress = value;
-      displayAddress = formatAddress(value);
+      displayAddress = formatAddressLong(value);
       isValidAddress = true;
     }
 

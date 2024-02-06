@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { User, Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
+import { Copy, ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
 import { useDisconnect } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
@@ -7,11 +7,13 @@ import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
 import { Overlay } from '@components/modals/Overlay';
+import { EthereumAvatar } from "@components/Account/Avatar";
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
 import { formatAddress } from '@helpers/addressFormat';
+import { CALLER_ACCOUNT } from '@helpers/constants';
 import { toUsdcString, toEthString } from "@helpers/units";
 import { LoginStatus } from '@helpers/types';
 import { MODALS } from '@helpers/types';
@@ -128,7 +130,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
       <NavDropdown ref={ref}>
         <AccountAndUserIconContainer>
           <IconBorder>
-            <StyledUser />
+            <EthereumAvatar address={loggedInEthereumAddress ?? CALLER_ACCOUNT} size={42} />
           </IconBorder>
           <AccountTypeLabel>
             {isLoggedIn && loginStatus === LoginStatus.AUTHENTICATED ? accountDisplay : 'Connected'}
@@ -245,7 +247,7 @@ const NavDropdown = styled.div`
 const AccountAndUserIconContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   white-space: nowrap;
   align-items: center;
   padding: 1.5rem;
@@ -263,13 +265,6 @@ const AccountAddressAndENSContainer = styled.div`
 `;
 
 const AccountAddress = styled.div`
-`;
-
-const StyledUser = styled(User)`
-  color: #FFF;
-  background-color: #C5C5C5;
-  height: 24px;
-  width: 24px;
 `;
 
 const StyledCopy = styled(Copy)`
@@ -316,13 +311,8 @@ const StyledLogOut = styled(LogOut)`
 `;
 
 const IconBorder = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #C5C5C5;
-  padding: 10px;
-  border-radius: 50%;
-  border: 1px solid #C5C5C5;
+  width: 48px;
+  height: 48px;
 `;
 
 const BalancesContainer = styled.div`

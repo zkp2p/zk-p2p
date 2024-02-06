@@ -4,6 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ENSName } from 'react-ens-name';
 
 import { AccountLogin } from "@components/Account/AccountLogin";
+import { EthereumAvatar } from "@components/Account/Avatar";
 import { Button } from '@components/common/Button';
 import { AccountDropdown } from "@components/Account/AccountDropdown";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
@@ -27,7 +28,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { accountDisplay, isLoggedIn } = useAccount();
+  const { accountDisplay, loggedInEthereumAddress, isLoggedIn } = useAccount();
 
   /*
    * State
@@ -144,15 +145,18 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
                     <LoggedInBalanceAndAccount onClick={toggleDropdown}>
                       <LoggedInButton>
-                        {isLoggedIn ? (
-                          accountDisplay
-                        ) : (
-                          <ENSName
-                            provider={alchemyMainnetEthersProvider}
-                            address={account.address || ''}
-                            customDisplay={(address) => formatAddress(address)}
-                          />
-                        )}
+                        <EthereumAvatar address={account.address} />
+                        <AccountDisplay>
+                          {isLoggedIn ? (
+                            accountDisplay
+                          ) : (
+                            <ENSName
+                              provider={alchemyMainnetEthersProvider}
+                              address={account.address || ''}
+                              customDisplay={(address) => formatAddress(address)}
+                            />
+                          )}
+                        </AccountDisplay>
                       </LoggedInButton>
                     </LoggedInBalanceAndAccount>
                   </AccountContainer>
@@ -202,7 +206,6 @@ const LoggedInBalanceAndAccount = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
 `;
 
 const LoggedInButton = styled.button`
@@ -212,6 +215,7 @@ const LoggedInButton = styled.button`
   border: none;
   background: #3A3B3F;
   border-radius: 24px;
+  gap: 10px;
   
   letter-spacing: 0.75px;
   color: #ffffff;
@@ -219,8 +223,7 @@ const LoggedInButton = styled.button`
   font-weight: 600;
   font-size: 14px;
   align-self: stretch;
-  padding: 0px 20px;
-  padding-top: 2px;
+  padding: 0px 18px 0px 14px;
   cursor: pointer;
 
   &:hover:not([disabled]) {
@@ -231,4 +234,8 @@ const LoggedInButton = styled.button`
     background: #202124;
     box-shadow: inset 0px -8px 0px rgba(0, 0, 0, 0.16);
   }
+`;
+
+const AccountDisplay = styled.div`
+  padding-top: 3px;
 `;
