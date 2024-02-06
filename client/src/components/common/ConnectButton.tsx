@@ -187,7 +187,7 @@ const NetworkSelector = styled.button`
   border: none;
   background: #1A1B1F;
   color: #ffffff;
-  padding: 6px 12px 6px 16px;
+  padding: 6px 10px 6px 16px;
   border-radius: 24px;
 
   font-family: 'Graphik';

@@ -120,9 +120,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
 
       <NavDropdown ref={ref}>
         <AccountAndUserIconContainer>
-          <IconBorder>
-            <EthereumAvatar address={loggedInEthereumAddress ?? CALLER_ACCOUNT} size={42} />
-          </IconBorder>
+          <EthereumAvatar address={loggedInEthereumAddress ?? CALLER_ACCOUNT} size={42} />
           <AccountTypeLabel>
             {isLoggedIn && loginStatus === LoginStatus.AUTHENTICATED ? accountDisplay : 'Connected'}
           </AccountTypeLabel>
