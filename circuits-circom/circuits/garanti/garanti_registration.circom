@@ -43,6 +43,9 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
 
     //-------HASH INTERMEDIATE----------//
 
+    // Assert padding is all zeroes
+    AssertZeroes(max_body_bytes)(in_body_padded, in_body_len_padded_bytes + 1);
+
     // This hashes the body after the precomputed SHA, and outputs the intermediate hash
     signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
     signal intermediate_hash_bytes[32];
@@ -143,13 +146,13 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     }
     signal output registration_id <== hash.out;
 
-    // TOTAL CONSTRAINTS: 3951211
+    // TOTAL CONSTRAINTS: 4229779
 }
 
 // Args:
 // * max_header_bytes = 512 is the max number of bytes in the header
-// * max_body_bytes = 2496 is the max number of bytes in the body after precomputed slice
+// * max_body_bytes = 2688 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main = GarantiRegistrationEmail(512, 2496, 121, 17, 7);
+component main = GarantiRegistrationEmail(512, 2688, 121, 17, 7);

@@ -48,7 +48,9 @@
         "genwitness:garanti:body-suffix-hasher": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_body_suffix_hasher && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
         "genproof:garanti:send": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_send && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
         "genproof:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
-        "genproof:garanti:body-suffix-hasher": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_body_suffix_hasher && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd .."
+        "genproof:garanti:body-suffix-hasher": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_body_suffix_hasher && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
+        "runall:garanti:registration": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_registration && cd ../../scripts && ./10_run_all.sh && cd ..",
+        "runall:garanti:send": "CIRCUIT_DIR=garanti CIRCUIT_NAME=garanti_send && cd ../../scripts && ./10_run_all.sh && cd .."
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.2",

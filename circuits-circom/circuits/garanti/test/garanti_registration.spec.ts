@@ -5,9 +5,7 @@ import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } 
 import { chunkArray, bytesToPacked, chunkedBytesToBigInt, base64ToByteArray, packedToBytes } from "../../utils/test-utils";
 import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
-import ganache from "ganache";
 
-const { createCode, generateABI } = poseidonContract;
 export const p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(p);
 
@@ -175,17 +173,6 @@ describe("Garanti registration WASM tester", function () {
     });
 
     it("should return the correct hashed onramper id", async () => {
-        const provider = new ethers.providers.Web3Provider(
-            ganache.provider({
-                logging: {
-                    logger: {
-                        log: () => { } // Turn off logging
-                    }
-                }
-            })
-        );
-        account = provider.getSigner(0);
-
         // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example garanti_send.eml to run tests 
         // Otherwise, you can download the original eml from any garanti send payment transaction
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
@@ -222,6 +209,20 @@ describe("Garanti registration WASM tester", function () {
         const expected_hash = poseidon(combinedArray)
 
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
+    });
+
+    it("Should fail if padding is not all zeroes", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        input["in_body_padded"][input["in_body_padded"].length - 2] = "1";
+
+        try {
+            const witness = await cir.calculateWitness(input, true);
+            await cir.checkConstraints(witness);
+        } catch (error) {
+            expect((error as Error).message).toMatch("Assert Failed");
+        }
     });
 
     describe("Body Suffix Hasher", function () {

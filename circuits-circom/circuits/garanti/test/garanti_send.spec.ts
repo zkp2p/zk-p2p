@@ -13,10 +13,8 @@ import {
 } from "../../utils/test-utils";
 import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
 import { ethers } from "ethers";
-import ganache from "ganache";
 import { partialSha } from "@zk-email/helpers/src/shaHash";
 
-const { createCode, generateABI } = poseidonContract;
 export const p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(p);
 
@@ -275,17 +273,6 @@ describe("Garanti send WASM tester", function () {
     });
 
     it("should return the correct hashed onramper id", async () => {
-        const provider = new ethers.providers.Web3Provider(
-            ganache.provider({
-                logging: {
-                    logger: {
-                        log: () => { } // Turn off logging
-                    }
-                }
-            })
-        );
-        account = provider.getSigner(0);
-
         const input_path = path.join(__dirname, "../inputs/input_garanti_send.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -358,6 +345,20 @@ describe("Garanti send WASM tester", function () {
         const expected_intent_hash = input["intent_hash"];
 
         assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
+    });
+
+    it("Should fail if padding is not all zeroes", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_garanti_send.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        input["in_body_padded"][input["in_body_padded"].length - 2] = "1";
+
+        try {
+            const witness = await cir.calculateWitness(input, true);
+            await cir.checkConstraints(witness);
+        } catch (error) {
+            expect((error as Error).message).toMatch("Assert Failed");
+        }
     });
 
     describe("Body Suffix Hasher", function () {
