@@ -1,7 +1,6 @@
 import React, { useEffect, forwardRef } from 'react';
 import { ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
-import { useDisconnect } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
@@ -32,9 +31,8 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    * Contexts
    */
 
-  const { disconnect } = useDisconnect();
   const { usdcBalance, ethBalance, refetchUsdcBalance, refetchEthBalance, shouldFetchUsdcBalance, shouldFetchEthBalance } = useBalances();
-  const { accountDisplay, authenticatedLogin, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
+  const { accountDisplay, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
@@ -61,26 +59,10 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   const handleLogout = async () => {
-    switch (loginStatus) {
-      case LoginStatus.AUTHENTICATED:
-        if (authenticatedLogout) {
-          authenticatedLogout();
-        }
-        break;
-
-      case LoginStatus.EOA:
-        disconnect();
-        break;
-    }
-
-    onOptionSelect();
-  };
-
-  const handleLogin = async () => {
     try {
-      await authenticatedLogin?.();
+      await authenticatedLogout?.();
     } catch (error) {
-      console.error("Failed to login");
+      console.error("Failed to logout");
     }
 
     onOptionSelect();
@@ -149,15 +131,6 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
         </BalancesContainer>
         
         <NavDropdownItemsContainer>
-          {loginStatus === LoginStatus.EOA && (
-            <ItemAndIconContainer onClick={handleLogin}>
-              <StyledZap />
-
-              <NavDropdownItem>
-                Try Gasless ✨
-              </NavDropdownItem>
-            </ItemAndIconContainer>
-          )}
           <ItemAndIconContainer onClick={handleRegistrationClick}>
             <StyledUserCheck />
 
