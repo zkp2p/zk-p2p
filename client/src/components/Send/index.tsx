@@ -336,7 +336,7 @@ export default function SendForm() {
         <SendFormContainer>
           <TitleContainer>
             <ThemedText.HeadlineSmall>
-              Transfer
+              Send
             </ThemedText.HeadlineSmall>
           </TitleContainer>
 

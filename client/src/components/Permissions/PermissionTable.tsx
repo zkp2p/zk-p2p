@@ -85,7 +85,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
                   Your denied users list will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <CustomConnectButton width={152} />
             </ErrorContainer>
           ) : !isRegistered ? (
             <ErrorContainer>
