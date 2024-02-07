@@ -151,7 +151,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             <StyledArrowUpCircle />
 
             <NavDropdownItem>
-              Transfer
+              Send
             </NavDropdownItem>
           </ItemAndIconContainer>
 
