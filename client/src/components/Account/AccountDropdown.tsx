@@ -179,9 +179,9 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             </ItemAndIconContainer>
           )}
 
-          <ItemAndIconContainer>
+          <ItemAndIconContainer onClick={handleLogout}>
             <StyledLogOut />
-            <LogoutContainer onClick={handleLogout}>
+            <LogoutContainer>
               Logout
             </LogoutContainer>
           </ItemAndIconContainer>
