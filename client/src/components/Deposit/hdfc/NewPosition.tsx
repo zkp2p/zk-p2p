@@ -453,6 +453,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             placeholder="1000"
             accessoryLabel={usdcBalanceLabel}
             helperText={hdfcStrings.get('NEW_DEPOSIT_AMOUNT_TOOLTIP')}
+            enableMax={true}
+            maxButtonOnClick={() => {
+              if (usdcBalance) {
+                setDepositAmountInput(toUsdcString(usdcBalance, false));
+              }
+            }}
           />
 
           <Input

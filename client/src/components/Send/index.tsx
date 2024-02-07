@@ -370,6 +370,12 @@ export default function SendForm() {
               inputLabel="USDC"
               placeholder="0"
               accessoryLabel={usdcBalanceLabel}
+              enableMax={true}
+              maxButtonOnClick={() => {
+                if (usdcBalance) {
+                  setSendAmountInput(toUsdcString(usdcBalance, false));
+                }
+              }}
             />
 
             <Input

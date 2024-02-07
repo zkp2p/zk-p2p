@@ -17,6 +17,8 @@ interface InputProps {
   readOnly?: boolean;
   accessoryLabel?: string;
   helperText?: string;
+  enableMax?: boolean
+  maxButtonOnClick?: () => void;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -32,6 +34,8 @@ export const Input: React.FC<InputProps> = ({
   readOnly = false,
   accessoryLabel="",
   helperText="",
+  enableMax=false,
+  maxButtonOnClick=() => {}
 }: InputProps) => {
   Input.displayName = "Input";
 
@@ -68,9 +72,17 @@ export const Input: React.FC<InputProps> = ({
         </LabelAndInputContainer>
 
         <AccessoryAndInputLabelWrapper>
-          <AccessoryLabel>
-            {accessoryLabel}
-          </AccessoryLabel>
+          <AccessoryLabelAndMax>
+            <AccessoryLabel>
+              {accessoryLabel}
+            </AccessoryLabel>
+
+            {enableMax && accessoryLabel && (
+              <MaxButton onClick={maxButtonOnClick}>
+                Max
+              </MaxButton>
+            )}
+          </AccessoryLabelAndMax>
 
           {inputLabel ? (
             <InputLabel>
@@ -173,6 +185,21 @@ const AccessoryAndInputLabelWrapper = styled.div`
   justify-content: space-between;
   color: #CED4DA;
   margin: 9px 0px 2px 0px;
+`;
+
+const AccessoryLabelAndMax = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+`;
+
+const MaxButton = styled.div`
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 600;
+  padding-bottom: 1px;
+  cursor: pointer;
 `;
 
 const AccessoryLabel = styled.div`
