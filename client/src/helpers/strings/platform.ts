@@ -2,6 +2,7 @@ import { PaymentPlatform, PaymentPlatformType } from '@helpers/types';
 
 import venmoCopy from './venmo';
 import hdfcCopy from './hdfc';
+import garantiCopy from './garanti';
 
 
 // Platform strings
@@ -43,8 +44,10 @@ export class PlatformStringProvider {
   constructor(platformType: PaymentPlatformType) {
     if (platformType === PaymentPlatform.VENMO) {
       this.strings = venmoCopy;
+    // } else if (platformType === PaymentPlatform.HDFC) {
+    //   this.strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
-      this.strings = hdfcCopy;
+      this.strings = garantiCopy;
     } else {
       throw new Error('Invalid platform type');
     }

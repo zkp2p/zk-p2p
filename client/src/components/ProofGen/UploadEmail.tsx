@@ -106,13 +106,25 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
             break;
 
           case PaymentPlatform.HDFC:
-            setCtaButtonTitle("Invalid email: must be from HDFC");
+            // setCtaButtonTitle("Invalid email: must be from HDFC");
+            // break;
+            setCtaButtonTitle("Invalid email: must be from Garanti");
             break;
         }
         break;
 
       case EmailInputStatus.INVALID_SUBJECT:
-        setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+        switch (paymentPlatform) {
+          case PaymentPlatform.VENMO:
+            setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+            break;
+
+          case PaymentPlatform.HDFC:
+            // setCtaButtonTitle("Invalid email: must be contain 'You have done a UPI txn'");
+            // break;
+            setCtaButtonTitle("Invalid email: must contain 'Para Transferi Bilgilendirmesi'");
+            break;
+        }
         break;
 
       case EmailInputStatus.INVALID_DOMAIN_KEY:

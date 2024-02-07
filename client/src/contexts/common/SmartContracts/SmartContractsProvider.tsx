@@ -9,6 +9,10 @@ import { abi as sendProcessorAbi } from "@helpers/abi/venmo/send.abi";
 
 import { abi as hdfcRampAbi } from "@helpers/abi/hdfc/ramp.abi";
 import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
+
+import { abi as garantiRampAbi } from "@helpers/abi/garanti/ramp.abi";
+import { abi as garantiSendProcessorAbi } from "@helpers/abi/garanti/send.abi";
+
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
 import { Abi } from '@helpers/types';
@@ -48,9 +52,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [hdfcRampAddress, setHdfcRampAddress] = useState<string | null>(null);
   const [hdfcSendProcessorAddress, setHdfcSendProcessorAddress] = useState<string | null>(null);
 
+  // Garanti
+  const [garantiRampAddress, setGarantiRampAddress] = useState<string | null>(null);
+  const [garantiSendProcessorAddress, setGarantiSendProcessorAddress] = useState<string | null>(null);
+
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
+  const [garantiNftAddress, setGarantiNftAddress] = useState<string | null>(null);
 
   /*
    * Hooks
@@ -125,10 +134,15 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Hdfc
     setHdfcRampAddress(null); 
     setHdfcSendProcessorAddress(null);
+
+    // Garanti
+    setGarantiRampAddress(null); 
+    setGarantiSendProcessorAddress(null);
     
     // NFT
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
+    setGarantiNftAddress(null);
 
     esl && console.log('Set venmoRampAddress: null');
   };
@@ -152,9 +166,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setHdfcRampAddress(contractsForNetwork.hdfcRamp);
     setHdfcSendProcessorAddress(contractsForNetwork.hdfcSendProcessor);
 
+    // Garanti
+    setGarantiRampAddress(contractsForNetwork.garantiRamp);
+    setGarantiSendProcessorAddress(contractsForNetwork.garantiSendProcessor);
+
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
     setHdfcNftAddress(contractsForNetwork.hdfcNft);
+    setGarantiNftAddress(contractsForNetwork.garanti);
 
     esl && console.log('Set venmoRampAddress to: ', contractsForNetwork.ramp);
   };
@@ -184,10 +203,17 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         hdfcSendProcessorAddress,
         hdfcSendProcessorAbi: hdfcSendProcessorAbi as Abi,
 
+        // Garanti
+        garantiRampAddress,
+        garantiRampAbi: garantiRampAbi as Abi,
+        garantiSendProcessorAddress,
+        garantiSendProcessorAbi: garantiSendProcessorAbi as Abi,
+
         // NFT
         nftAbi: nftAbi as Abi,
         venmoNftAddress,
-        hdfcNftAddress
+        hdfcNftAddress,
+        garantiNftAddress,
       }}
     >
       {children}

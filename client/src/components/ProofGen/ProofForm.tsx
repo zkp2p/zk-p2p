@@ -26,6 +26,10 @@ import {
   validateDKIMSignature as validateHdfcDKIMSignature,
   sanitizeAndProcessHdfcEmailSubject
 } from '@components/ProofGen/validation/hdfc';
+import {
+  validateDKIMSignature as validateGarantiDKIMSignature,
+  sanitizeAndProcessGarantiEmailSubject
+} from '@components/ProofGen/validation/garanti';
 import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/venmo/useRegistration';
@@ -112,6 +116,19 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     intentHash: circuitInputs,
   });
 
+  // const {
+  //   data: remoteBodyHashProofResponse,
+  //   error: remoteBodyHashProofError,
+  // }
+  // if (paymentPlatformType === PaymentPlatform.HDFC) {
+  //   useRemoteProofGen({
+  //     paymentType: paymentPlatformType,
+  //     circuitType: remoteProofGenEmailType,
+  //     emailBody: emailFull,
+  //     intentHash: circuitInputs,
+  //   });
+  // }
+
   useEffect(() => {
     if (remoteGenerateProofResponse) {
       processRemoteProofGenerationResponse(remoteGenerateProofResponse);
@@ -170,9 +187,19 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
           case PaymentPlatform.HDFC:
             // sanitizeAndProcessHdfcEmailSubject
-            try {
-              const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
+            // try {
+            //   const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
     
+            //   if (didSanitize) {
+            //     setEmailFull(processedEmail);
+            //     return;
+            //   };
+            // } catch (e) {
+            //   setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
+            //   return;
+            // }
+            try {
+              const { processedEmail, didSanitize } = sanitizeAndProcessGarantiEmailSubject(emailFull);
               if (didSanitize) {
                 setEmailFull(processedEmail);
                 return;
@@ -183,8 +210,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             }
 
             // validateHdfcDKIMSignature
+            // try {
+            //   await validateHdfcDKIMSignature(emailFull);
+            // } catch (e) {
+            //   setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+            //   return;
+            // }
+            // break;
             try {
-              await validateHdfcDKIMSignature(emailFull);
+              await validateGarantiDKIMSignature(emailFull);
             } catch (e) {
               setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
               return;
