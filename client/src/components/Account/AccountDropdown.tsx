@@ -19,6 +19,8 @@ import { LoginStatus } from '@helpers/types';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
 
+import usdcSvg from '../../assets/images/usdc.svg';
+
 
 interface AccountDropdownProps {
   onOptionSelect: () => void;
@@ -120,15 +122,19 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
           </AccountAddressAndENSContainer>
         </AccountAndUserIconContainer>
 
-        <BalancesContainer>
-          <BalanceValue>
-            {usdcBalance ? toUsdcString(usdcBalance, true) : "0"}
-          </BalanceValue>
+        <BalancesAndLogoContainer>
+          <UsdcSvg src={usdcSvg} />
 
-          <BalanceLabel>
-            {`USDC`}
-          </BalanceLabel>
-        </BalancesContainer>
+          <BalanceContainer>
+            <BalanceLabel>
+              {`USDC`}
+            </BalanceLabel>
+
+            <BalanceValue>
+              {usdcBalance ? toUsdcString(usdcBalance, true) : "0"}
+            </BalanceValue>
+          </BalanceContainer>
+        </BalancesAndLogoContainer>
         
         <NavDropdownItemsContainer>
           <ItemAndIconContainer onClick={handleRegistrationClick}>
@@ -265,26 +271,38 @@ const StyledLogOut = styled(LogOut)`
   width: 20px;
 `;
 
-const BalancesContainer = styled.div`
+const BalancesAndLogoContainer = styled.div`
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 24px;
-  gap: 12px;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 20px 24px;
+  gap: 20px;
 
   font-family: 'Graphik';
   border-bottom: 1px solid #98a1c03d;
 `;
 
+const UsdcSvg = styled.img`
+  width: 32px;
+  height: 32px;
+`;
+
+const BalanceContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  justify-content: flex-start;
+`;
+
 const BalanceValue = styled.div`
   color: #FFFFFF;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
 `;
 
 const BalanceLabel = styled.div`
   color: #9ca3af;  
-  font-size: 20px;
+  font-size: 16px;
 `;
 
 const NavDropdownItemsContainer = styled.div`
