@@ -9,7 +9,6 @@ interface AccountValues {
   authenticatedLogin: (() => void) | null;
   accountDisplay: string | null;
   network: string | null;
-  accountStatus: string | null;
   connectStatus: string | null;
 };
 
@@ -21,7 +20,6 @@ const defaultValues: AccountValues = {
   authenticatedLogin: null,
   accountDisplay: null,
   network: null,
-  accountStatus: null,
   connectStatus: null
 };
 

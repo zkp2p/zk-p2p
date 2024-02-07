@@ -16,7 +16,7 @@ interface ProvidersProps {
 }
 
 const AccountProvider = ({ children }: ProvidersProps) => {
-  const { address, status: accountStatus } = useAccount();
+  const { address } = useAccount();
   const { chain } = useNetwork();
   const { disconnect } = useDisconnect();
   const { status: connectStatus } = useConnect();
@@ -40,37 +40,41 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('activeWalet_1');
+    esl && console.log('activeWallet_1');
     esl && console.log('checking wallets: ', wallets);
     esl && console.log('checking activeWallet: ', activeWallet);
 
     if (wallets[0] && !activeWallet) {
-      console.log('activeWalet_2');
+      console.log('activeWallet_2');
       setActiveWallet(wallets[0]);
     }
   }, [activeWallet, wallets, setActiveWallet]);
 
   useEffect(() => {
     esl && console.log('loginStatus_1');
-    esl && console.log('checking address: ', address);
-    esl && console.log('checking accountStatus: ', accountStatus);
+    esl && console.log('user: ', user);
 
-    if (accountStatus === 'connected') {
-      if (authenticated) {
+    if (authenticated && user?.wallet?.connectorType) {
+      const connectorType = user.wallet.connectorType;
+      if (connectorType === 'embedded') {
         esl && console.log('loginStatus_2');
 
         setLoginStatus(LoginStatus.AUTHENTICATED);
-      } else {
+      } else if (connectorType === 'injected') {
         esl && console.log('loginStatus_3');
 
         setLoginStatus(LoginStatus.EOA);
-      } 
+      } else {
+        esl && console.log('loginStatus_4');
+
+        setLoginStatus(LoginStatus.LOGGED_OUT);
+      }
     } else {
-      esl && console.log('loginStatus_4');
+      esl && console.log('loginStatus_5');
 
       setLoginStatus(LoginStatus.LOGGED_OUT);
     }
-  }, [address, accountStatus, authenticated]);
+  }, [authenticated, user]);
 
   useEffect(() => {
     esl && console.log('isLoggedIn_1');
@@ -144,7 +148,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         authenticatedLogout,
         accountDisplay,
         network,
-        accountStatus,
         connectStatus
       }}
     >

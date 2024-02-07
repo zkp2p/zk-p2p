@@ -1,9 +1,8 @@
-import React, { useState, useReducer, useRef } from "react";
+import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ENSName } from 'react-ens-name';
 
-import { AccountLogin } from "@components/Account/AccountLogin";
 import { EthereumAvatar } from "@components/Account/Avatar";
 import { Button } from '@components/common/Button';
 import { AccountDropdown } from "@components/Account/AccountDropdown";
@@ -28,13 +27,11 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { accountDisplay, isLoggedIn } = useAccount();
+  const { accountDisplay, authenticatedLogin, authenticatedLogout, isLoggedIn, loggedInEthereumAddress } = useAccount();
 
   /*
    * State
    */
-
-  const [shouldShowAccountLoginModal, setShouldShowAccountLoginModal] = useState<boolean>(false);
 
   const [isDropdownOppen, toggleDropdown] = useReducer((s) => !s, false)
 
@@ -46,11 +43,13 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const onAccountLoginClick = () => {
-    setShouldShowAccountLoginModal(true);
-  };
+    if (authenticatedLogin) {
+      authenticatedLogin();
+    }
 
-  const onCloseAccountLoginModal = () => {
-    setShouldShowAccountLoginModal(false);
+    // if (authenticatedLogout) {
+    //   authenticatedLogout();
+    // }
   };
 
   return (
@@ -83,13 +82,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
               },
             })}
           >
-            {
-              shouldShowAccountLoginModal && (
-                <AccountLogin onBackClick={onCloseAccountLoginModal} />
-              )
-            }
             {(() => {
-              if (!connected) {
+              if (!isLoggedIn) {
                 return (
                   <Button
                     fullWidth={fullWidth}
@@ -102,7 +96,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 );
               }
 
-              if (chain.unsupported) {
+              if (chain && chain.unsupported) {
                 return (
                   <Button
                     fullWidth={fullWidth}
@@ -121,7 +115,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                       <NetworkSelector
                         style={{ display: 'flex', alignItems: 'center' }}
                       >
-                        {chain.hasIcon && (
+                        {chain && chain.hasIcon && (
                           <div
                             style={{
                               background: chain.iconBackground,
@@ -145,14 +139,14 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
 
                     <LoggedInBalanceAndAccount onClick={toggleDropdown}>
                       <LoggedInButton>
-                        <EthereumAvatar address={account.address} />
+                        <EthereumAvatar address={loggedInEthereumAddress || ''} />
                         <AccountDisplay>
                           {isLoggedIn ? (
                             accountDisplay
                           ) : (
                             <ENSName
                               provider={alchemyMainnetEthersProvider}
-                              address={account.address || ''}
+                              address={loggedInEthereumAddress || ''}
                               customDisplay={(address) => formatAddress(address)}
                             />
                           )}

@@ -26,7 +26,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
    * Context
    */
 
-  const { network, isLoggedIn, accountStatus } = useAccount();
+  const { network, isLoggedIn } = useAccount();
 
   /*
    * State
@@ -60,20 +60,20 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     esl && console.log('smartContracts_1');
     esl && console.log('checking network: ', network);
     esl && console.log('isLoggedIn: ', isLoggedIn);
-    esl && console.log('accountStatus: ', accountStatus);
 
     const deploymentEnvironment = process.env.DEPLOYMENT_ENVIRONMENT || 'LOCAL';
 
     let networkToUse = null;
     if (isLoggedIn) {
-      const isAccountStatusValid = accountStatus === 'connected';
-      if (isAccountStatusValid) {
-        networkToUse = network;
-      }
+      networkToUse = network;
     } else {
-      const isAccountStatusValid = accountStatus === 'disconnected';
-      if (isAccountStatusValid) {
-        networkToUse = DEFAULT_NETWORK;
+      switch (deploymentEnvironment) {
+        case 'PRODUCTION':
+          networkToUse = 'base';
+          break;
+  
+        default:
+          networkToUse = 'sepolia';
       }
     }
 
@@ -102,7 +102,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     } else {
       setEmptyAddresses();
     }
-  }, [network, isLoggedIn, accountStatus]);
+  }, [network, isLoggedIn]);
 
   /*
    * Helpers
