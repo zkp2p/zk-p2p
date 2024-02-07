@@ -301,7 +301,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                 Your active deposits will appear here.
               </div>
             </ThemedText.DeprecatedBody>
-            <CustomConnectButton />
+            <CustomConnectButton width={152} />
           </ErrorContainer>
         ) : !isRegistered ? (
           <ErrorContainer>

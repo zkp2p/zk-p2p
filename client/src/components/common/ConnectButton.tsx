@@ -16,11 +16,13 @@ import { alchemyMainnetEthersProvider } from "index";
 interface CustomConnectButtonProps {
   fullWidth?: boolean;
   height?: number;
+  width?: number;
 }
 
 export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   fullWidth = false,
-  height = 48
+  height = 48,
+  width = 112
 }) => {
   /*
    * Contexts
@@ -81,7 +83,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    width={112}
+                    width={width}
                     onClick={onAccountLoginClick}
                     height={height}
                   >

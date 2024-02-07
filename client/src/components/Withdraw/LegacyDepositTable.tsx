@@ -178,7 +178,7 @@ export const LegacyDepositTable: React.FC = () => {
                   Your legacy deposits will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <CustomConnectButton width={152} />
             </ErrorContainer>
           ) : positionsRowData.length === 0 ? (
             <ErrorContainer>

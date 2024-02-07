@@ -132,7 +132,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                   Your platform registrations will appear here.
                 </div>
               </ThemedText.DeprecatedBody>
-              <CustomConnectButton />
+              <CustomConnectButton width={152} />
             </ErrorContainer>
           ) : (
             <Body>
