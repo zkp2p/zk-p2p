@@ -27,7 +27,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { accountDisplay, authenticatedLogin, authenticatedLogout, isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { accountDisplay, authenticatedLogin, isLoggedIn, loggedInEthereumAddress } = useAccount();
 
   /*
    * State
@@ -64,12 +64,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
         // Note: If your app doesn't use authentication, you
         // can remove all 'authenticationStatus' checks
         const ready = mounted && authenticationStatus !== 'loading';
-        const connected =
-          ready &&
-          account &&
-          chain &&
-          (!authenticationStatus ||
-            authenticationStatus === 'authenticated');
 
         return (
           <div
