@@ -211,11 +211,11 @@ describe("Garanti registration WASM tester", function () {
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     });
 
-    it.skip("Should fail if padding is not all zeroes", async () => {
+    it("Should fail if padding is not all zeroes", async () => {
         const input_path = path.join(__dirname, "../inputs/input_garanti_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
-        input["in_body_padded"][-1] = "1";
+        input["in_body_padded"][input["in_body_padded"].length - 2] = "1";
 
         try {
             const witness = await cir.calculateWitness(input, true);

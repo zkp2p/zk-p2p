@@ -347,11 +347,11 @@ describe("Garanti send WASM tester", function () {
         assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
     });
 
-    it.skip("Should fail if padding is not all zeroes", async () => {
+    it("Should fail if padding is not all zeroes", async () => {
         const input_path = path.join(__dirname, "../inputs/input_garanti_send.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
-        input["in_body_padded"][-1] = "1";
+        input["in_body_padded"][input["in_body_padded"].length - 2] = "1";
 
         try {
             const witness = await cir.calculateWitness(input, true);
