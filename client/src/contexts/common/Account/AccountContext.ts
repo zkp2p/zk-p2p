@@ -10,6 +10,7 @@ interface AccountValues {
   accountDisplay: string | null;
   network: string | null;
   connectStatus: string | null;
+  exportAuthenticatedWallet: (() => void) | null;
 };
 
 const defaultValues: AccountValues = {
@@ -20,7 +21,8 @@ const defaultValues: AccountValues = {
   authenticatedLogin: null,
   accountDisplay: null,
   network: null,
-  connectStatus: null
+  connectStatus: null,
+  exportAuthenticatedWallet: null
 };
 
 const AccountContext = createContext<AccountValues>(defaultValues);

@@ -1,5 +1,5 @@
 import React, { useEffect, forwardRef } from 'react';
-import { ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, UserCheck, Zap } from 'react-feather';
+import { ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, Key, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
@@ -33,8 +33,22 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
    * Contexts
    */
 
-  const { usdcBalance, ethBalance, refetchUsdcBalance, refetchEthBalance, shouldFetchUsdcBalance, shouldFetchEthBalance } = useBalances();
-  const { accountDisplay, authenticatedLogout, loggedInEthereumAddress, isLoggedIn, loginStatus } = useAccount();
+  const {
+    usdcBalance,
+    ethBalance,
+    refetchUsdcBalance,
+    refetchEthBalance,
+    shouldFetchUsdcBalance,
+    shouldFetchEthBalance
+  } = useBalances();
+  const {
+    accountDisplay,
+    authenticatedLogout,
+    loggedInEthereumAddress,
+    isLoggedIn,
+    loginStatus,
+    exportAuthenticatedWallet
+  } = useAccount();
   const { blockscanUrl } = useSmartContracts();
   const { openModal } = useModal();
 
@@ -66,6 +80,12 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
     } catch (error) {
       console.error("Failed to logout");
     }
+
+    onOptionSelect();
+  };
+
+  const handleExportWallet = () => {
+    exportAuthenticatedWallet?.();
 
     onOptionSelect();
   };
@@ -179,6 +199,16 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
             </ItemAndIconContainer>
           )}
 
+          {loginStatus === LoginStatus.AUTHENTICATED && (
+            <ItemAndIconContainer onClick={handleExportWallet}>
+              <StyledKey />
+
+              <NavDropdownItem>
+                Export Wallet
+              </NavDropdownItem>
+            </ItemAndIconContainer>
+          )}
+
           <ItemAndIconContainer onClick={handleLogout}>
             <StyledLogOut />
             <LogoutContainer>
@@ -265,6 +295,12 @@ const StyledRepeat = styled(Repeat)`
   width: 18px;
 `;
 
+const StyledKey = styled(Key)`
+  color: #FFF;
+  height: 18px;
+  width: 18px;
+`;
+
 const StyledLogOut = styled(LogOut)`
   color: #E96069;
   height: 20px;
@@ -336,7 +372,12 @@ const ItemAndIconContainer = styled.div`
     color: #6C757D;
     box-shadow: none;
 
-    ${StyledUserCheck}, ${StyledArrowUpCircle}, ${StyledArrowDownCircle}, ${StyledRepeat}, ${StyledZap} {
+    ${StyledKey},
+    ${StyledUserCheck},
+    ${StyledArrowUpCircle},
+    ${StyledArrowDownCircle},
+    ${StyledRepeat},
+    ${StyledZap} {
       color: #6C757D;
     }
 
