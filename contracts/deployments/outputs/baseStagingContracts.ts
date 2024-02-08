@@ -1564,7 +1564,7 @@ export default {
       ]
     },
     "HDFCRegistrationProcessor": {
-      "address": "0xeBf794338D092fb9353F92fDcad3CB578E120A07",
+      "address": "0xC8d7C6a5a8B2158012FB679DB1c3d7fbC1cC2980",
       "abi": [
         {
           "inputs": [
@@ -1587,6 +1587,11 @@ export default {
               "internalType": "string",
               "name": "_emailFromAddress",
               "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
             }
           ],
           "stateMutability": "nonpayable",
@@ -1798,6 +1803,32 @@ export default {
         {
           "inputs": [
             {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
+            }
+          ],
+          "name": "setTimestampBuffer",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "timestampBuffer",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
               "internalType": "address",
               "name": "newOwner",
               "type": "address"
@@ -1845,7 +1876,7 @@ export default {
       ]
     },
     "HDFCSendProcessor": {
-      "address": "0xD49470bb17776a51472B05c617e06538e8465bB5",
+      "address": "0x3bCC71916d9d2BB5F52Fdb386814bd84C9312A04",
       "abi": [
         {
           "inputs": [
@@ -5754,7 +5785,7 @@ export default {
       ]
     },
     "VenmoRegistrationProcessorV2": {
-      "address": "0xe4b53E766e67c0b5d8d2b4419189F53f00991E2F",
+      "address": "0x358fDD11e573fEE0a92B93AE7362D2B531B7Bc63",
       "abi": [
         {
           "inputs": [
@@ -5777,6 +5808,11 @@ export default {
               "internalType": "string",
               "name": "_emailFromAddress",
               "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
             }
           ],
           "stateMutability": "nonpayable",
@@ -5983,6 +6019,32 @@ export default {
           "name": "setMailserverKeyHashAdapter",
           "outputs": [],
           "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
+            }
+          ],
+          "name": "setTimestampBuffer",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "timestampBuffer",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
           "type": "function"
         },
         {
@@ -6330,7 +6392,7 @@ export default {
       ]
     },
     "VenmoSendProcessorV2": {
-      "address": "0x91D8C4CE84dF7A4e3253822236d14e7A623C61a8",
+      "address": "0xABB08332794969f5CBE790930E96c80CFaA35119",
       "abi": [
         {
           "inputs": [
@@ -6353,6 +6415,11 @@ export default {
               "internalType": "string",
               "name": "_emailFromAddress",
               "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
             }
           ],
           "stateMutability": "nonpayable",
@@ -6579,6 +6646,32 @@ export default {
           "name": "setMailserverKeyHashAdapter",
           "outputs": [],
           "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_timestampBuffer",
+              "type": "uint256"
+            }
+          ],
+          "name": "setTimestampBuffer",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "timestampBuffer",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
           "type": "function"
         },
         {
