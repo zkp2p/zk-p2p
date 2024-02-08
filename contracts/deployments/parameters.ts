@@ -6,12 +6,16 @@ import { ether, usdc } from "@utils/common/units";
 // Deployment Parameters
 export const SERVER_KEY_HASH = {
   "venmo": [
-    "0x2cf6a95f35c0d2b6160f07626e9737449a53d173d65d1683263892555b448d8f",   // selector: yzlavq3ml4jl4lt6dltbgmnoftxftkly
-    "0x1163C7F4AF2E63FE2DCB73B8EDF51A3AC04A257979D7877EDFE4AB37B9C807B1",   // selector: lycwyfwp74k6gitv7a7jiergkl3mgkrg
+    "0x2ea3f223adbee4865e0cbfa3a6e748b1505a0094fd92c53d3d0dd2d4b0cd19d3", // selector: lycwyfwp74k6gitv7a7jiergkl3mgkrg
+    // Below modulus hashes are out of date because they use an old hashing algorithm
+    //"0x1163C7F4AF2E63FE2DCB73B8EDF51A3AC04A257979D7877EDFE4AB37B9C807B1",   // selector: lycwyfwp74k6gitv7a7jiergkl3mgkrg
   ],
   "hdfc": [
-    "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", // acls01
-    "0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8" // acls03
+    "0x23421f99fa0b530a42c1d1cd7c7b45e09cf4a02963646248bee3ec4aee13c214", // acls01
+    "0x2d6f556514af89727d18b24fc9f30e24015663eb289cb69c712b5814420b3fed" // acls03
+    // Below modulus hashes are out of date because they use an old hashing algorithm
+    // "0x06b0ad846d386f60e777f1d11b82922c6bb694216eed9c23535796ac404a7dfa", // acls01
+    // "0x1c1b5a203a9f1f15f6172969b9359e6a7572001de09471efd1586a67f7956fd8" // acls03
   ]
 };
 
