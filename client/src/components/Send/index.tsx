@@ -271,7 +271,7 @@ export default function SendForm() {
         return 'Invalid recipient address';
 
       case SendTransactionStatus.MISSING_AMOUNTS:
-        return 'Input Send amount';
+        return 'Input send amount';
       
       case SendTransactionStatus.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';

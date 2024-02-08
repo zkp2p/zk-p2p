@@ -29,7 +29,13 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
-  const { accountDisplay, authenticatedLogin, isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const {
+    accountDisplay,
+    authenticatedLogin,
+    isLoggedIn,
+    loggedInEthereumAddress,
+    authenticatedLogout
+  } = useAccount();
 
   /*
    * State
@@ -50,12 +56,16 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
     }
   };
 
+  const onWrongNetworkLogout = () => {
+    if (authenticatedLogout) {
+      authenticatedLogout();
+    }
+  };
+
   return (
     <ConnectButton.Custom>
       {({
-        account,
         chain,
-        openChainModal,
         authenticationStatus,
         mounted,
       }) => {
@@ -92,7 +102,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                 return (
                   <Button
                     fullWidth={fullWidth}
-                    onClick={openChainModal}
+                    onClick={onWrongNetworkLogout}
                     height={height}
                   >
                     Wrong Network
