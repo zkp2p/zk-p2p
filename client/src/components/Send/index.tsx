@@ -366,7 +366,6 @@ export default function SendForm() {
               value={sendAmountInput}
               onChange={(e) => handleInputChange(e.currentTarget.value, setSendAmountInput)}
               type="number"
-              readOnly={!isLoggedIn}
               inputLabel="USDC"
               placeholder="0"
               accessoryLabel={usdcBalanceLabel}
@@ -386,7 +385,6 @@ export default function SendForm() {
               onFocus={() => setIsRecipientInputFocused(true)}
               onBlur={() => setIsRecipientInputFocused(false)}
               type="string"
-              readOnly={!isLoggedIn}
               placeholder="Wallet address or ENS name"
             />
 
