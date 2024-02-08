@@ -133,12 +133,12 @@ export default function SendForm() {
       const resolvedAddress = await resolveEnsName(value);
       if (resolvedAddress) {
         rawAddress = resolvedAddress;
-        displayAddress = formatAddressLong(resolvedAddress);
+        displayAddress = resolvedAddress;
         isValidAddress = true;
       }
     } else if (value.length === 42 && value.startsWith('0x')) {
       rawAddress = value;
-      displayAddress = formatAddressLong(value);
+      displayAddress = value;
       isValidAddress = true;
     }
 
@@ -386,6 +386,7 @@ export default function SendForm() {
               onBlur={() => setIsRecipientInputFocused(false)}
               type="string"
               placeholder="Wallet address or ENS name"
+              fontSize={22}
             />
 
             { transactionHash?.length ? (

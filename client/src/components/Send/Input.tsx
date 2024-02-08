@@ -20,6 +20,7 @@ interface InputProps {
   helperText?: string;
   enableMax?: boolean
   maxButtonOnClick?: () => void;
+  fontSize?: number;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -37,9 +38,18 @@ export const Input: React.FC<InputProps> = ({
   accessoryLabel="",
   helperText="",
   enableMax=false,
-  maxButtonOnClick=() => {}
+  maxButtonOnClick=() => {},
+  fontSize = 24
 }: InputProps) => {
   Input.displayName = "Input";
+
+  /*
+   * Helper
+   */
+
+  const dynamicFontSize = value && value.length > 0 
+      ? Math.max(fontSize - Math.floor(value.length / 32) * 6, 12)
+      : fontSize;
 
   return (
     <Container>
@@ -70,6 +80,7 @@ export const Input: React.FC<InputProps> = ({
             onBlur={onBlur}
             onKeyDown={onKeyDown}
             readOnly={readOnly}
+            fontSize={dynamicFontSize}
           />
         </InputWrapper>
       </LabelAndInputContainer>
@@ -148,14 +159,14 @@ interface StyledInputProps {
   readOnly?: boolean;
 }
 
-const StyledInput = styled.input<StyledInputProps>`
+const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   width: 100%;
-  flex-grow: 1;
+  height: 27.5px;
   border: 0;
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: 24px;
+  font-size: ${({ fontSize }) => fontSize || '24'}px;
 
   &:focus {
     box-shadow: none;
@@ -164,6 +175,7 @@ const StyledInput = styled.input<StyledInputProps>`
 
   &:placeholder {
     color: #6C757D;
+    font-size: 24px;
   }
 
   &[type='number'] {
