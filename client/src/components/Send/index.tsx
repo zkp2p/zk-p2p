@@ -10,7 +10,6 @@ import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text'
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, SendTransactionStatus } from '@helpers/types';
-import { formatAddressLong } from '@helpers/addressFormat';
 import { resolveEnsName } from '@helpers/ens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
@@ -347,12 +346,12 @@ export default function SendForm() {
                   <NetworkSvg src={networkSvg()} />
 
                   <NetworkNameContainer>
-                    <ThemedText.LabelSmall>
+                    <NetworkHeader>
                       {'From'}
-                    </ThemedText.LabelSmall>
-                    <ThemedText.Link>
+                    </NetworkHeader>
+                    <NetworkNameLabel>
                       {networkName()}
-                    </ThemedText.Link>
+                    </NetworkNameLabel>
                   </NetworkNameContainer>
                 </NetworkLogoAndNameContainer>
 
@@ -486,15 +485,26 @@ const NetworkLogoAndNameContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   background: #0E111C;
-  padding: 1rem;
+  padding: 1.05rem 1rem;
 `;
 
 const NetworkNameContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
   justify-content: center;
   text-align: left;
+`;
+
+const NetworkHeader = styled.div`
+  font-size: 14px;
+  color: #CED4DA;
+`;
+
+const NetworkNameLabel = styled.div`
+  font-size: 16px;
+  color: #FFF;
+  font-weight: 600;
 `;
 
 const NetworkSvg = styled.img`

@@ -76,12 +76,12 @@ export const NetworkSelector: React.FC = () => {
           <NetworkSvg src={networkSvg()} />
 
           <NetworkNameContainer>
-            <ThemedText.LabelSmall>
+            <NetworkHeader>
               {'To'}
-            </ThemedText.LabelSmall>
-            <ThemedText.Link>
+            </NetworkHeader>
+            <NetworkNameLabel>
               {networkName()}
-            </ThemedText.Link>
+            </NetworkNameLabel>
           </NetworkNameContainer>
         </NetworkLogoAndNameContainer>
 
@@ -154,7 +154,7 @@ const NetworkContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   background: #0E111C;
-  padding: 1rem;
+  padding: 1.05rem 1rem;
 `;
 
 const NetworkLogoAndNameContainer = styled.div`
@@ -174,9 +174,20 @@ const QuestionHelperContainer = styled.div`
 const NetworkNameContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
   justify-content: center;
   text-align: left;
+`;
+
+const NetworkHeader = styled.div`
+  font-size: 14px;
+  color: #CED4DA;
+`;
+
+const NetworkNameLabel = styled.div`
+  font-size: 16px;
+  color: #FFF;
+  font-weight: 600;
 `;
 
 const NetworkSvg = styled.img`
