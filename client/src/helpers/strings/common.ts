@@ -24,6 +24,9 @@ export interface CommonStrings {
   // Login Modal
   LOGIN_MODAL_TOOLTIP: string,
 
+  // Send Modal
+  SEND_MODAL_TOOLTIP: string,
+
   // Receive Modal
   RECEIVE_FUNDS_INSTRUCTIONS_1: string
   RECEIVE_FUNDS_INSTRUCTIONS_2: string
@@ -111,6 +114,10 @@ const strings: CommonStrings = {
   LOGIN_MODAL_TOOLTIP: `
     Use a social account if you do not already have funds on the blockchain, 
     or use an Ethereum wallet if you already have one.
+  `,
+
+  SEND_MODAL_TOOLTIP: `
+    Coming soon: transfer to wallets on any chain including Solana, Polygon, Arbitrum, zkSync, and others.
   `,
 
   // Receive Modal

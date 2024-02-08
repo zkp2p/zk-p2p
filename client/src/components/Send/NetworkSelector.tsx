@@ -9,7 +9,9 @@ import { NetworkRow } from '@components/Send/NetworkRow';
 import { sendNetworks, networksInfo, SendNetworkType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
-import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
+import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
+import { commonStrings } from '@helpers/strings';
+import QuestionHelper from '@components/common/QuestionHelper';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -69,22 +71,27 @@ export const NetworkSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <NetworkLogoAndNameContainer>
-        <NetworkSvg src={networkSvg()} />
+      <NetworkContainer>
+        <NetworkLogoAndNameContainer>
+          <NetworkSvg src={networkSvg()} />
 
-        <NetworkNameContainer>
-          <ThemedText.LabelSmall>
-            {'To'}
-          </ThemedText.LabelSmall>
-          <ThemedText.Link>
-            {networkName()}
-          </ThemedText.Link>
-        </NetworkNameContainer>
+          <NetworkNameContainer>
+            <ThemedText.LabelSmall>
+              {'To'}
+            </ThemedText.LabelSmall>
+            <ThemedText.Link>
+              {networkName()}
+            </ThemedText.Link>
+          </NetworkNameContainer>
+        </NetworkLogoAndNameContainer>
 
-        <ComingSoonContainer>
-          Coming Soon
-        </ComingSoonContainer>
-      </NetworkLogoAndNameContainer>
+        <QuestionHelperContainer>
+          <QuestionHelper
+            text={commonStrings.get('SEND_MODAL_TOOLTIP')}
+            size={'medium'}
+          />
+        </QuestionHelperContainer>
+      </NetworkContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -138,28 +145,30 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const NetworkLogoAndNameContainer = styled.div`
+const NetworkContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  gap: 1rem;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
   background: #0E111C;
   padding: 1rem;
 `;
 
-const ComingSoonContainer = styled.div`
+const NetworkLogoAndNameContainer = styled.div`
   display: flex;
-  text-align: right;
-  align-self: center;
-  color: #6C757D;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.2;
-  padding-top: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+`;
+
+const QuestionHelperContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding-right: 1.25rem;
 `;
 
 const NetworkNameContainer = styled.div`
