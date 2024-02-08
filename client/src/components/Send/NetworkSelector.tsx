@@ -168,7 +168,7 @@ const NetworkLogoAndNameContainer = styled.div`
 const QuestionHelperContainer = styled.div`
   display: flex;
   align-items: center;
-  padding-right: 1.25rem;
+  padding-right: 1rem;
 `;
 
 const NetworkNameContainer = styled.div`
