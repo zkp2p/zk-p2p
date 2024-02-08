@@ -36,33 +36,33 @@ export const MenuDropdown = () => {
       {isOpen && (
         <NavDropdown>
           <NavDropdownItemContainer>
-            <NavDropdownItem
-              href="https://docs.zkp2p.xyz/zkp2p/"
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  View Documentation ↗
-                </ThemedText.LabelSmall>
-            </NavDropdownItem>
-            
-            <NavDropdownItem as={Link} to="/withdraw">
+            <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem as={Link} to="/tos">
+            <NavDropdownItem as={Link} to="/tos" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Terms of Service
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem as={Link} to="/pp">
+            <NavDropdownItem as={Link} to="/pp" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Privacy Policy
               </ThemedText.LabelSmall>
             </NavDropdownItem>
           </NavDropdownItemContainer>
+
+          <NavDropdownItem
+              href="https://docs.zkp2p.xyz/zkp2p/"
+              target="_blank"
+              rel="noopener noreferrer">
+                <ThemedText.LabelSmall textAlign="left">
+                  Documentation ↗
+                </ThemedText.LabelSmall>
+            </NavDropdownItem>
 
           <NavDropdownItem
               href="https://v1.zkp2p.xyz/"
@@ -124,6 +124,7 @@ const NavButton = styled.div`
 const NavDropdown = styled.div`
   display: flex;
   flex-direction: column;
+  width: 172px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;

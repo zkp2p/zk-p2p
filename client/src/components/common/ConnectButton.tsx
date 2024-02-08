@@ -48,10 +48,6 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
     if (authenticatedLogin) {
       authenticatedLogin();
     }
-
-    // if (authenticatedLogout) {
-    //   authenticatedLogout();
-    // }
   };
 
   return (
