@@ -81,6 +81,7 @@ export const Input: React.FC<InputProps> = ({
             onKeyDown={onKeyDown}
             readOnly={readOnly}
             fontSize={dynamicFontSize}
+            spellCheck={false}
           />
         </InputWrapper>
       </LabelAndInputContainer>
