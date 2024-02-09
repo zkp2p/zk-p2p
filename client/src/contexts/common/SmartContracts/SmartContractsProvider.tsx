@@ -69,9 +69,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     } else {
       switch (deploymentEnvironment) {
         case 'PRODUCTION':
+        case 'STAGING':
           networkToUse = 'base';
           break;
-  
+
         default:
           networkToUse = 'sepolia';
       }
