@@ -236,10 +236,10 @@ export default function SendForm() {
     }
     const result = await getLifiQuotes({
         fromAmount: value,
-        fromToken: tokens['8453']['USDC'].address, // Bridge only works on Mainnet, so we use Base USDC from token constants
+        fromToken: usdcAddress,
         fromAddress: loggedInEthereumAddress,
         toChain: '137', // TODO Hardcoded to Polygon for now
-        toToken: tokens['137']['USDCe'].address, // TODO Hardcoded to USDCe for now
+        toToken: tokens['137'][0].address, // TODO Hardcoded to USDCe for now
         toAddress: recipientAddressInput.rawAddress,
     });
     console.log('lifi', result)
