@@ -127,7 +127,7 @@ export default function SendForm() {
       displayAddress,
     });
   
-    if (value.endsWith('.eth')) {
+    if (value.endsWith('.eth') || value.endsWith('.xyz')) {
       ensName = value;
       const resolvedAddress = await resolveEnsName(value);
       if (resolvedAddress) {
