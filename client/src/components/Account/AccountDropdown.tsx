@@ -112,7 +112,7 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
 
   const userEtherscanLink = `${blockscanUrl}/address/${loggedInEthereumAddress}`;
 
-  const ethBalanceDisplay = ethBalance ? `${toEthString(ethBalance)} ETH` : 'Fetching ETH balance...';
+  const ethBalanceDisplay = ethBalance ? `${toEthString(ethBalance)} ETH` : '0 ETH';
 
   /*
    * Component

@@ -46,52 +46,52 @@ const AccountProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    console.log('activeWallet_1');
-    console.log('checking wallets: ', wallets);
-    console.log('checking activeWallet: ', activeWallet);
+    esl && console.log('activeWallet_1');
+    esl && console.log('checking wallets: ', wallets);
+    esl && console.log('checking activeWallet: ', activeWallet);
 
     if (wallets[0] && !activeWallet) {
-      console.log('activeWallet_2');
+      esl && console.log('activeWallet_2');
       setActiveWallet(wallets[0]);
     }
   }, [activeWallet, wallets, setActiveWallet]);
 
   useEffect(() => {
-    console.log('loginStatus_1');
-    console.log('user: ', user);
+    esl && console.log('loginStatus_1');
+    esl && console.log('user: ', user);
 
     if (authenticated && user?.wallet?.connectorType) {
       const connectorType = user.wallet.connectorType;
       if (connectorType === 'embedded') {
-        console.log('loginStatus_2');
+        esl && console.log('loginStatus_2');
 
         setLoginStatus(LoginStatus.AUTHENTICATED);
       } else if (connectorType === 'injected' || connectorType === 'coinbase_wallet' || connectorType === 'wallet_connect') {
-        console.log('loginStatus_3');
+        esl && console.log('loginStatus_3');
 
         setLoginStatus(LoginStatus.EOA);
       } else {
-        console.log('loginStatus_4');
+        esl && console.log('loginStatus_4');
 
         setLoginStatus(LoginStatus.LOGGED_OUT);
       }
     } else {
-      console.log('loginStatus_5');
+      esl && console.log('loginStatus_5');
 
       setLoginStatus(LoginStatus.LOGGED_OUT);
     }
   }, [authenticated, user]);
 
   useEffect(() => {
-    console.log('isLoggedIn_1');
-    console.log('checking loginStatus: ', loginStatus);
-    console.log('user: ', user);
-    console.log('address: ', address);
+    esl && console.log('isLoggedIn_1');
+    esl && console.log('checking loginStatus: ', loginStatus);
+    esl && console.log('user: ', user);
+    esl && console.log('address: ', address);
     
     switch (loginStatus) {
       case LoginStatus.AUTHENTICATED:
         if (address && user) {
-          console.log('isLoggedIn_2');
+          esl && console.log('isLoggedIn_2');
 
           if (user.email && user.email.address) {
             setAccountDisplay(user.email.address);
@@ -112,7 +112,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
 
       case LoginStatus.EOA:
         if (address) {
-          console.log('isLoggedIn_3');
+          esl && console.log('isLoggedIn_3');
 
           const formattedAddress = formatAddress(address);
 
@@ -124,7 +124,7 @@ const AccountProvider = ({ children }: ProvidersProps) => {
       
       case LoginStatus.LOGGED_OUT:
       default:
-        console.log('isLoggedIn_4');
+        esl && console.log('isLoggedIn_4');
 
         setAccountDisplay(null);
         setIsLoggedIn(false);
@@ -133,15 +133,15 @@ const AccountProvider = ({ children }: ProvidersProps) => {
   }, [user, address, loginStatus, disconnect]);
 
   useEffect(() => {
-    console.log('networkRaw_1');
-    console.log('checking chain: ', chain);
+    esl && console.log('networkRaw_1');
+    esl && console.log('checking chain: ', chain);
 
     if (chain) {
-      console.log('networkRaw_2');
+      esl && console.log('networkRaw_2');
 
       setNetwork(chain.network);
     } else {
-      console.log('networkRaw_3');
+      esl && console.log('networkRaw_3');
 
       setNetwork(null);
     }
