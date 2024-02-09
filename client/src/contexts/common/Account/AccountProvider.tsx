@@ -94,6 +94,8 @@ const AccountProvider = ({ children }: ProvidersProps) => {
 
           if (user.email && user.email.address) {
             setAccountDisplay(user.email.address);
+          } else if (user.google && user.google.email) {
+            setAccountDisplay(user.google.email);
           } else if (user.twitter && user.twitter.username) {
             setAccountDisplay(user.twitter.username);
           } else if (user.farcaster && user.farcaster.displayName) {
