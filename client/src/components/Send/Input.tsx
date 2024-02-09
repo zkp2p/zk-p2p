@@ -82,6 +82,7 @@ export const Input: React.FC<InputProps> = ({
             readOnly={readOnly}
             fontSize={dynamicFontSize}
             spellCheck={false}
+            autoComplete={"off"}
           />
         </InputWrapper>
       </LabelAndInputContainer>

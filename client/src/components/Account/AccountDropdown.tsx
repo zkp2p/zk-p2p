@@ -182,13 +182,10 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
           </ItemAndIconContainer>
 
           {loginStatus === LoginStatus.EOA && (
-            <ItemAndIconContainer>
+            <ItemAndIconContainer onClick={() => window.open("https://bridge.base.org/deposit", "_blank")}>
               <StyledRepeat />
               <BridgeLinkAndBalance>
-                <BridgeLink
-                  href="https://bridge.base.org/deposit"
-                  target="_blank"
-                >
+                <BridgeLink>
                   Bridge ↗
                 </BridgeLink>
 
