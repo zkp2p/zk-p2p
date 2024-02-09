@@ -385,7 +385,7 @@ export default function SendForm() {
               onBlur={() => setIsRecipientInputFocused(false)}
               type="string"
               placeholder="Wallet address or ENS name"
-              fontSize={22}
+              fontSize={24}
             />
 
             { transactionHash?.length ? (

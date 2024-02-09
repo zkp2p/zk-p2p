@@ -39,7 +39,7 @@ export const Input: React.FC<InputProps> = ({
   helperText="",
   enableMax=false,
   maxButtonOnClick=() => {},
-  fontSize = 24
+  fontSize = 28
 }: InputProps) => {
   Input.displayName = "Input";
 
@@ -48,7 +48,7 @@ export const Input: React.FC<InputProps> = ({
    */
 
   const dynamicFontSize = value && value.length > 0 
-      ? Math.max(fontSize - Math.floor(value.length / 32) * 6, 12)
+      ? Math.max(fontSize - Math.floor(value.length / 18) * 4, 12)
       : fontSize;
 
   return (
@@ -168,7 +168,7 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: ${({ fontSize }) => fontSize || '24'}px;
+  font-size: ${({ fontSize }) => fontSize || '28'}px;
 
   &:focus {
     box-shadow: none;
@@ -177,7 +177,6 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
 
   &:placeholder {
     color: #6C757D;
-    font-size: 24px;
   }
 
   &[type='number'] {
