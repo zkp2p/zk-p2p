@@ -66,7 +66,12 @@ const AccountProvider = ({ children }: ProvidersProps) => {
         esl && console.log('loginStatus_2');
 
         setLoginStatus(LoginStatus.AUTHENTICATED);
-      } else if (connectorType === 'injected' || connectorType === 'coinbase_wallet' || connectorType === 'wallet_connect') {
+      } else if (
+          connectorType === 'injected' ||
+          connectorType === 'coinbase_wallet' ||
+          connectorType === 'wallet_connect' ||
+          connectorType === 'wallet_connect_v2'
+        ) {
         esl && console.log('loginStatus_3');
 
         setLoginStatus(LoginStatus.EOA);
