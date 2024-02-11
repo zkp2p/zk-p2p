@@ -12,7 +12,7 @@ import { NumberedStep } from "@components/common/NumberedStep";
 import { PaymentPlatform } from '@helpers/types';
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
 import { garantiStrings } from "@helpers/strings";
-import { reformatProofForChain } from "@helpers/submitProof";
+import { reformatMultiProofAndSignalsForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/garanti/useRegistration';
 
@@ -33,12 +33,14 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
+  const [bodyHashProof, setBodyHashProof] = useState<string>('');
   const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
 
   const [publicSignals, setPublicSignals] = useState<string>('');
+  const [bodyHashPublicSignals, setBodyHashPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
   // );
@@ -56,7 +58,12 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   //
   // register(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[msgLen] memory _signals)
   //
-  console.log(...reformatProofForChain(proof));
+  const formattedProofAndSignals = reformatMultiProofAndSignalsForChain(
+    proof,
+    publicSignals,
+    bodyHashProof,
+    bodyHashPublicSignals
+  );
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
@@ -64,8 +71,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     abi: garantiRampAbi,
     functionName: 'register',
     args: [
-      ...reformatProofForChain(proof),
-      publicSignals ? JSON.parse(publicSignals) : null,
+      formattedProofAndSignals[0],
+      formattedProofAndSignals[1]
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -96,14 +103,16 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    */
 
   useEffect(() => {
-    if (proof && publicSignals) {
+    console.log("proof and publicSignals updated");
+    console.log("Proof:", proof, publicSignals, "BodyHash Proof:", bodyHashProof, bodyHashPublicSignals);
+    if (proof && bodyHashProof && publicSignals && bodyHashPublicSignals) {
       // TODO: perform local verification
-
+      console.log("proof and publicSignals are valid")
       setShouldConfigureRegistrationWrite(true);
     } else {
       setShouldConfigureRegistrationWrite(false);
     }
-  }, [proof, publicSignals]);
+  }, [proof, publicSignals, bodyHashProof, bodyHashPublicSignals]);
 
   useEffect(() => {
     if (submitRegistrationResult?.hash) {
@@ -169,6 +178,10 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
+        bodyHashProof={bodyHashProof}
+        bodyHashPublicSignals={bodyHashPublicSignals}
+        setBodyHashProof={setBodyHashProof}
+        setBodyHashPublicSignals={setBodyHashPublicSignals}
         submitTransactionStatus={submitRegistrationStatus}
         isSubmitMining={isSubmitRegistrationMining}
         isSubmitSuccessful={isSubmitRegistrationSuccessful}

@@ -53,11 +53,13 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
+  const [bodyHashProof, setBodyHashProof] = useState<string>('');
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
 
   const [publicSignals, setPublicSignals] = useState<string>('');
+  const [bodyHashPublicSignals, setBodyHashPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
   // );
@@ -73,8 +75,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
     abi: hdfcSendProcessorAbi,
     functionName: "verifyProof",
     args: [
-      ...reformatProofForChain(proof),
-      publicSignals ? JSON.parse(publicSignals) : null,
+      ...reformatProofForChain(proof[0]),
+      publicSignals ? JSON.parse(publicSignals[0]) : null,
     ],
     enabled: shouldFetchVerifyProof,
   });
@@ -91,8 +93,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
     abi: hdfcRampAbi,
     functionName: 'onRamp',
     args: [
-      ...reformatProofForChain(proof),
-      publicSignals ? JSON.parse(publicSignals) : null,
+      ...reformatProofForChain(proof[0]),
+      publicSignals ? JSON.parse(publicSignals[0]) : null,
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -213,6 +215,10 @@ export const OnRamp: React.FC<OnRampProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
+        bodyHashProof={bodyHashProof}
+        bodyHashPublicSignals={bodyHashPublicSignals}
+        setBodyHashProof={setBodyHashProof}
+        setBodyHashPublicSignals={setBodyHashPublicSignals}
         onVerifyEmailCompletion={handleVerificationCompleteClick}
         submitTransactionStatus={submitOnRampStatus}
         isSubmitMining={isSubmitOnRampMining}

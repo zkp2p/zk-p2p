@@ -46,6 +46,10 @@ interface ProofGenerationFormProps {
   publicSignals: string;
   setProof: (proof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
+  bodyHashProof: string;
+  bodyHashPublicSignals: string;
+  setBodyHashProof: (proof: string) => void;
+  setBodyHashPublicSignals: (publicSignals: string) => void;
   submitTransactionStatus: string;
   isSubmitMining: boolean;
   isSubmitSuccessful: boolean;
@@ -64,6 +68,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   publicSignals,
   setProof,
   setPublicSignals,
+  bodyHashProof,
+  bodyHashPublicSignals,
+  setBodyHashProof,
+  setBodyHashPublicSignals,
   submitTransactionStatus,
   isSubmitMining,
   isSubmitSuccessful,
@@ -90,8 +98,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const [emailFull, setEmailFull] = useState<string>("");
 
   const [emailHash, setEmailHash] = useState<string>("");
-  const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${emailHash}_PROOF`, "");
-  const [storedSignalsValue, setStoredSignalsValue] = useLocalStorage<string>(`${emailHash}_SIGNALS`, "");
+  const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${emailHash}_PROOF`, '');
+  const [storedSignalsValue, setStoredSignalsValue] = useLocalStorage<string>(`${emailHash}_SIGNALS`, '');
+  const [storedBodyHashProofValue, setStoredBodyHashProofValue] = useLocalStorage<string>(`${emailHash}_BODY_PROOF`, '');
+  const [storedBodyHashSignalsValue, setStoredBodyHashSignalsValue] = useLocalStorage<string>(`${emailHash}_BODY_SIGNALS`, '');
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
@@ -116,20 +126,20 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     intentHash: circuitInputs,
   });
 
-  // const {
-  //   data: remoteBodyHashProofResponse,
-  //   error: remoteBodyHashProofError,
-  // }
-  // if (paymentPlatformType === PaymentPlatform.HDFC) {
-  //   useRemoteProofGen({
-  //     paymentType: paymentPlatformType,
-  //     circuitType: remoteProofGenEmailType,
-  //     emailBody: emailFull,
-  //     intentHash: circuitInputs,
-  //   });
-  // }
+  const {
+    data: remoteBodyHashProofResponse,
+    // loading: isRemoteGenerateBodyHashProofLoading,
+    error: remoteBodyHashProofError,
+    fetchData: remoteGenerateBodyHashProof
+  } = useRemoteProofGen({
+    paymentType: paymentPlatformType,
+    circuitType: "body_suffix_hasher",
+    emailBody: emailFull,
+    intentHash: circuitInputs,
+  });
 
   useEffect(() => {
+    console.log("remoteGenerateProofResponse", remoteGenerateProofResponse);
     if (remoteGenerateProofResponse) {
       processRemoteProofGenerationResponse(remoteGenerateProofResponse);
     }
@@ -138,12 +148,21 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }, [remoteGenerateProofResponse]);
 
   useEffect(() => {
+    console.log("remoteBodyHashProofResponse", remoteBodyHashProofResponse);
+    if (remoteGenerateProofResponse) {
+      processRemoteProofGenerationResponse(remoteBodyHashProofResponse, true);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remoteBodyHashProofResponse]);
+
+  useEffect(() => {
     if (remoteGenerateProofError) {
       setProvingFailureErrorCode(remoteGenerateProofError.code);
 
       setProofGenStatus(ProofGenerationStatus.ERROR_FAILED_TO_PROVE);
     }
-  }, [remoteGenerateProofError]);
+  }, [remoteGenerateProofError, remoteBodyHashProofError]);
 
   useEffect(() => {
     async function verifyEmail() {
@@ -256,14 +275,23 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const handleVerifyEmailClicked = async () => {
     setShouldShowVerificationModal(true);
 
-    if (storedProofValue && storedSignalsValue) {
+    if (storedProofValue && storedSignalsValue && storedBodyHashProofValue && storedBodyHashSignalsValue) {
+      console.log("here");
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
 
       setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
     } else {
       if (isProvingTypeFast) {
-        await generateFastProof();
+        // Change to GARANTI
+        if (paymentPlatformType === PaymentPlatform.HDFC) {
+          await Promise.all([
+            generateFastProof(remoteGenerateProof),
+            generateFastProof(remoteGenerateBodyHashProof),
+          ]);
+        } else {
+          await generateFastProof(remoteGenerateProof);
+        }
       } else {
         await generatePrivateProof();
       }
@@ -321,7 +349,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
    * Proof Generation
    */
 
-  const generateFastProof = async () => {
+  const generateFastProof = async (callback: any) => {
     setProofGenStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
 
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -329,12 +357,12 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setProofGenStatus(ProofGenerationStatus.GENERATING_PROOF);
 
     console.time("remote-proof-gen");
-    await remoteGenerateProof();
+    await callback();
     console.timeEnd("remote-proof-gen");
   }
 
-  const processRemoteProofGenerationResponse = (response: any) => {
-    setAndStoreProvingState(response.proof, response.public_values)
+  const processRemoteProofGenerationResponse = (response: any, isBodyHashProof: boolean = false) => {
+    setAndStoreProvingState(response.proof, response.public_values, isBodyHashProof)
 
     setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
   }
@@ -411,18 +439,31 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     return { proof, publicSignals }
   }
 
-  const setAndStoreProvingState = (proof: string, publicSignals: string) => {
+  const setAndStoreProvingState = (
+    proofString: string,
+    publicSignalsString: string,
+    isBodyHashProof: boolean = false
+  ) => {
     // Generate email hash to cache proof and signals
     const hash = crypto.createHash('sha256');
     hash.update(emailFull);
     const hashedEmail = hash.digest('hex');
     setEmailHash(hashedEmail);
-
+    console.log(isBodyHashProof, proofString, publicSignalsString);
     // Set proof and public signals
-    setProof(proof);
-    setStoredProofValue(proof);
-    setPublicSignals(publicSignals);
-    setStoredSignalsValue(publicSignals);
+    if (isBodyHashProof) {
+      setBodyHashProof(proofString);
+      setStoredBodyHashProofValue(proofString);
+
+      setBodyHashPublicSignals(publicSignalsString);
+      setStoredBodyHashSignalsValue(publicSignalsString);
+    } else {
+      setProof(proofString);
+      setStoredProofValue(proofString);
+
+      setPublicSignals(publicSignalsString);
+      setStoredSignalsValue(publicSignalsString);
+    }
   }
 
   /*
