@@ -6,7 +6,7 @@ type SocketQuoteRequestParams = {
   userAddress: string
 }
 
-const API_KEY = '72a5b4b0-e727-48be-8aa1-5da9d62fe635'; // TODO: Move to .env
+const API_KEY = process.env.SOCKET_API_KEY || "";
   
 export default function useSocketBridge() {
 
