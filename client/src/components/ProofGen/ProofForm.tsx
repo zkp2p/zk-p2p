@@ -149,7 +149,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   useEffect(() => {
     console.log("remoteBodyHashProofResponse", remoteBodyHashProofResponse);
-    if (remoteGenerateProofResponse) {
+    if (remoteBodyHashProofResponse) {
       processRemoteProofGenerationResponse(remoteBodyHashProofResponse, true);
     }
 
@@ -364,7 +364,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const processRemoteProofGenerationResponse = (response: any, isBodyHashProof: boolean = false) => {
     setAndStoreProvingState(response.proof, response.public_values, isBodyHashProof)
 
-    setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+    if (storedBodyHashProofValue && storedBodyHashSignalsValue && storedProofValue && storedSignalsValue) {
+      console.log("Update Proof Gen Status");
+      setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+    }
   }
 
   const generatePrivateProof = async () => {
