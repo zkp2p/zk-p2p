@@ -18,7 +18,7 @@ import { tokens } from '@helpers/tokens';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLifiBridge from '@hooks/useLifiBridge';
+import useSocketBridge from '@hooks/useSocketBridge';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -44,9 +44,9 @@ export default function SendForm() {
    */
 
   const { isLoggedIn, network, loginStatus, loggedInEthereumAddress } = useAccount();
-  const { usdcBalance, refetchUsdcBalance, usdcApprovalToLifiBridge, refetchUsdcApprovalToLifiBridge } = useBalances();
-  const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
-  const { getLifiQuotes, getLifiTransactionHistory, getLifiTransactionStatus } = useLifiBridge();
+  const { usdcBalance, refetchUsdcBalance, usdcApprovalToSocketBridge, refetchUsdcApprovalToSocketBridge } = useBalances();
+  const { blockscanUrl, usdcAddress, usdcAbi, socketBridgeAddress } = useSmartContracts();
+  const { getSocketQuote, getSocketTransactionData, getSocketTransactionStatus } = useSocketBridge();
 
   /*
    * State
@@ -112,7 +112,7 @@ export default function SendForm() {
     abi: usdcAbi,
     functionName: "approve",
     args: [
-      lifiBridgeAddress,
+      socketBridgeAddress,
       amountToApprove
     ],
     enabled: shouldConfigureApprovalWrite
@@ -131,7 +131,7 @@ export default function SendForm() {
     onSuccess(data: any) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
-      refetchUsdcApprovalToLifiBridge?.();
+      refetchUsdcApprovalToSocketBridge?.();
 
       refetchUsdcBalance?.();
     },
@@ -141,9 +141,9 @@ export default function SendForm() {
   // Bridge
   //
   // const { config: writeBridgeConfig } = usePrepareSendTransaction({
-  //   to: lifiBridgeAddress,
+  //   to: socketBridgeAddress,
   //   value: ZERO,
-  //   data: lifiQuoteResponse?.transactionRequest.data,
+  //   data: socketTransactionDataResponse?.result.txData ,
   //   onError: (error: { message: any }) => {
   //     console.error(error.message);
   //   },
@@ -163,7 +163,7 @@ export default function SendForm() {
   //   onSuccess(data: any) {
   //     console.log('writeSubmitBridgeAsync successful: ', data);
       
-  //     refetchUsdcApprovalToLifiBridge?.();
+  //     refetchUsdcApprovalToSocketBridge?.();
 
   //     refetchUsdcBalance?.();
   //   },
@@ -231,20 +231,29 @@ export default function SendForm() {
    */
 
   const debouncedGetQuotes = useCallback(debounce(async (value) => {
-    if (!usdcAddress || !loggedInEthereumAddress || !recipientAddressInput.rawAddress) {
+    if (!loggedInEthereumAddress || !recipientAddressInput.rawAddress) {
       return;
     }
-    const result = await getLifiQuotes({
-        fromAmount: value,
-        fromToken: usdcAddress,
-        fromAddress: loggedInEthereumAddress,
-        toChain: '137', // TODO Hardcoded to Polygon for now
-        toToken: tokens['137'][0].address, // TODO Hardcoded to USDCe for now
-        toAddress: recipientAddressInput.rawAddress,
+
+    const quote = await getSocketQuote({
+      fromAmount: toBigInt(sendAmountInput.toString()).toString(),
+      userAddress: loggedInEthereumAddress,
+      toChainId: '137', // TODO Hardcoded to Polygon for now
+      toTokenAddress: tokens['polygon'][0].address, // TODO Hardcoded to USDCe for now
+      recipient: recipientAddressInput.rawAddress,
     });
-    console.log('lifi', result)
-    return result;
-  }, 1000), [usdcAddress, loggedInEthereumAddress, recipientAddressInput]); // Adjust the delay as needed
+    console.log('socket quote', quote);
+
+    // Get transaction data by passing in route from quote
+    if (!quote.success && quote.route.length === 0) {
+      return;
+    }
+    const transactionData = await getSocketTransactionData(quote.result.routes[0]);
+    
+    console.log('socket txn data', transactionData)
+    
+    return transactionData;
+  }, 1000), [loggedInEthereumAddress, recipientAddressInput]); // Adjust the delay as needed
 
   useEffect(() => {
     const updateSendState = async () => {
@@ -311,21 +320,21 @@ export default function SendForm() {
 
   useEffect(() => {
     // TODO: skip approval if 4337 wallet
-    const usdcApprovalToLifiBridgeLoaded = usdcApprovalToLifiBridge !== null && usdcApprovalToLifiBridge !== undefined;
+    const usdcApprovalToSocketBridgeLoaded = usdcApprovalToSocketBridge !== null && usdcApprovalToSocketBridge !== undefined;
 
-    if (!sendAmountInput || !usdcApprovalToLifiBridgeLoaded) {
+    if (!sendAmountInput || !usdcApprovalToSocketBridgeLoaded) {
       setAmountToApprove(ZERO);
     } else {
       // TODO: Check if USDC on Base transfer vs bridge transaction to skip approval
-      const depositAmountBI = toBigInt(sendAmountInput.toString());
-      const approvalDifference = depositAmountBI - usdcApprovalToLifiBridge;
+      const sendAmountBI = toBigInt(sendAmountInput.toString());
+      const approvalDifference = sendAmountBI - usdcApprovalToSocketBridge;
       if (approvalDifference > ZERO) {
-        setAmountToApprove(depositAmountBI);
+        setAmountToApprove(sendAmountBI);
       } else {
         setAmountToApprove(ZERO);
       }
     }
-  }, [sendAmountInput, usdcApprovalToLifiBridge]);
+  }, [sendAmountInput, usdcApprovalToSocketBridge]);
   
   /*
    * Helpers
@@ -405,8 +414,8 @@ export default function SendForm() {
         return 'Send';
 
       case SendTransactionStatus.APPROVAL_REQUIRED:
-        const usdcApprovalToLifiBridgeString = usdcApprovalToLifiBridge ? toUsdcString(usdcApprovalToLifiBridge) : '0';
-        return `Insufficient USDC transfer approval: ${usdcApprovalToLifiBridgeString}`;
+        const usdcApprovalToSocketBridgeString = usdcApprovalToSocketBridge ? toUsdcString(usdcApprovalToSocketBridge) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToSocketBridgeString}`;
 
       case SendTransactionStatus.DEFAULT:
       default:
