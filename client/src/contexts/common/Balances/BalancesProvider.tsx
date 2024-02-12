@@ -18,7 +18,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, hdfcRampAddress, usdcAddress, lifiBridgeAddress } = useSmartContracts();
+  const { venmoRampAddress, hdfcRampAddress, usdcAddress, socketBridgeAddress } = useSmartContracts();
 
   /*
    * State
@@ -28,12 +28,12 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [usdcBalance, setUsdcBalance] = useState<bigint | null>(null);
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
   const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
-  const [usdcApprovalToLifiBridge, setUsdcApprovalToLifiBridge] = useState<bigint | null>(null);
+  const [usdcApprovalToSocketBridge, setUsdcApprovalToSocketBridge] = useState<bigint | null>(null);
 
   const [shouldFetchEthBalance, setShouldFetchEthBalance] = useState<boolean>(false);
   const [shouldFetchUsdcBalance, setShouldFetchUsdcBalance] = useState<boolean>(false);
   const [shouldFetchUsdcApprovalToRamp, setShouldFetchUsdcApprovalToRamp] = useState<boolean>(false);
-  const [shouldFetchUsdcApprovalToLifiBridge, setShouldFetchUsdcApprovalToLifiBridge] = useState<boolean>(false);
+  const [shouldFetchUsdcApprovalToSocketBridge, setShouldFetchUsdcApprovalToSocketBridge] = useState<boolean>(false);
 
   /*
    * Contract Reads
@@ -85,17 +85,17 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   });
 
   const {
-    data: usdcApprovalToLifiBridgeRaw,
-    refetch: refetchUsdcApprovalToLifiBridge,
+    data: usdcApprovalToSocketBridgeRaw,
+    refetch: refetchUsdcApprovalToSocketBridge,
   } = useContractRead({
     address: usdcAddress,
     abi: erc20ABI,
     functionName: "allowance",
     args: [
       loggedInEthereumAddress ?? ZERO_ADDRESS,
-      lifiBridgeAddress
+      socketBridgeAddress
     ],
-    enabled: shouldFetchUsdcApprovalToLifiBridge,
+    enabled: shouldFetchUsdcApprovalToSocketBridge,
   });
 
   /*
@@ -134,13 +134,13 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
 
       setShouldFetchUsdcBalance(true);
       setShouldFetchUsdcApprovalToRamp(true);
-      setShouldFetchUsdcApprovalToLifiBridge(true);
+      setShouldFetchUsdcApprovalToSocketBridge(true);
     } else {
       esl && console.log('shouldFetchUsdcBalanceAndApproval_3');
 
       setShouldFetchUsdcBalance(false);
       setShouldFetchUsdcApprovalToRamp(false);
-      setShouldFetchUsdcApprovalToLifiBridge(false);
+      setShouldFetchUsdcApprovalToSocketBridge(false);
 
       setEthBalance(null);
       setUsdcBalance(null);
@@ -213,19 +213,19 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [usdcApprovalToHdfcRampRaw]);
 
   useEffect(() => {
-    esl && console.log('usdcApprovalToLifiBridgeRaw_1');
-    esl && console.log('checking usdcApprovalToLifiBridgeRaw: ', usdcApprovalToLifiBridgeRaw);
+    esl && console.log('usdcApprovalToSocketBridgeRaw_1');
+    esl && console.log('checking usdcApprovalToSocketBridgeRaw: ', usdcApprovalToSocketBridgeRaw);
   
-    if (usdcApprovalToLifiBridgeRaw || usdcApprovalToLifiBridgeRaw === ZERO) { // BigInt(0) is falsy
-      esl && console.log('usdcApprovalToLifiBridgeRaw_2');
+    if (usdcApprovalToSocketBridgeRaw || usdcApprovalToSocketBridgeRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToSocketBridgeRaw_2');
 
-      setUsdcApprovalToLifiBridge(usdcApprovalToLifiBridgeRaw);
+      setUsdcApprovalToSocketBridge(usdcApprovalToSocketBridgeRaw);
     } else {
-      esl && console.log('usdcApprovalToLifiBridgeRaw_3');
+      esl && console.log('usdcApprovalToSocketBridgeRaw_3');
       
-      setUsdcApprovalToLifiBridge(null);
+      setUsdcApprovalToSocketBridge(null);
     }
-  }, [usdcApprovalToLifiBridgeRaw]);
+  }, [usdcApprovalToSocketBridgeRaw]);
 
   return (
     <BalancesContext.Provider
@@ -240,8 +240,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToRamp,
         usdcApprovalToHdfcRamp,
         refetchUsdcApprovalToHdfcRamp,
-        usdcApprovalToLifiBridge,
-        refetchUsdcApprovalToLifiBridge
+        usdcApprovalToSocketBridge,
+        refetchUsdcApprovalToSocketBridge
       }}
     >
       {children}
