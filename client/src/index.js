@@ -103,7 +103,7 @@ ReactDOM.render(
                 accentColor: "#df2e2d",
               },
               defaultChain: getDefaultChain(env),
-              supportedChains: [sepolia]
+              supportedChains: [sepolia, base]
             }}
           >
             <ZeroDevPrivyWagmiProvider wagmiChainsConfig={configureChainsConfig} options={zeroDevOptions}>
