@@ -6,12 +6,11 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Send/NetworkRow';
-import { sendNetworks, networksInfo, SendNetworkType } from '@helpers/types';
+import { networksInfo, SendNetworkType } from '@helpers/types';
+import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
-import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
-import { commonStrings } from '@helpers/strings';
-import QuestionHelper from '@components/common/QuestionHelper';
+import useSendSettings from '@hooks/useSendSettings';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -28,6 +27,7 @@ export const NetworkSelector: React.FC = () => {
    */
 
   const { network } = useAccount();
+  const { sendNetwork, setSendNetwork, sendNetworks } = useSendSettings();
 
   /*
    * Handlers
@@ -37,12 +37,12 @@ export const NetworkSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (platform: SendNetworkType) => {
-    // if (setPaymentPlatform) {
-    //   setPaymentPlatform(platform);
+  const handleSelectPlatform = (network: SendNetworkType) => {
+    if (setSendNetwork) {
+      setSendNetwork(network);
 
-    //   toggleOpen();
-    // }
+      toggleOpen();
+    }
   };
 
   /*
@@ -53,7 +53,11 @@ export const NetworkSelector: React.FC = () => {
     if (network === 'sepolia') {
       return sepoliaSvg;
     } else {
-      return baseSvg;
+      if (sendNetwork) {
+        return networksInfo[sendNetwork].networkSvg;
+      } else {
+        return baseSvg;
+      }
     }
   };
 
@@ -61,7 +65,11 @@ export const NetworkSelector: React.FC = () => {
     if (network === 'sepolia') {
       return 'Sepolia';
     } else {
-      return 'Base';
+      if (sendNetwork) {
+        return networksInfo[sendNetwork].networkName;
+      } else {
+        return 'Loading';
+      }
     }
   };
 
@@ -71,7 +79,7 @@ export const NetworkSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <NetworkContainer>
+      <NetworkContainer onClick={toggleOpen}>
         <NetworkLogoAndNameContainer>
           <NetworkSvg src={networkSvg()} />
 
@@ -84,13 +92,6 @@ export const NetworkSelector: React.FC = () => {
             </NetworkNameLabel>
           </NetworkNameContainer>
         </NetworkLogoAndNameContainer>
-
-        <QuestionHelperContainer>
-          <QuestionHelper
-            text={commonStrings.get('SEND_MODAL_TOOLTIP')}
-            size={'medium'}
-          />
-        </QuestionHelperContainer>
       </NetworkContainer>
 
       {isOpen && (
@@ -117,10 +118,9 @@ export const NetworkSelector: React.FC = () => {
               {sendNetworks.map((network, index) => (
                 <NetworkRow
                   key={index}
-                  platformName={networksInfo[network].platformName}
-                  platformCurrency={'$'}
-                  flagSvg={networksInfo[network].platformSvg}
-                  isSelected={false}
+                  platformName={networksInfo[network].networkName}
+                  flagSvg={networksInfo[network].networkSvg}
+                  isSelected={sendNetwork === network}
                   onRowClick={() => handleSelectPlatform(network)}
                 />
               ))}
@@ -153,7 +153,7 @@ const NetworkContainer = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   justify-content: space-between;
   align-items: center;
-  background: #0E111C;
+  background: #141A2A;
   padding: 1.05rem 1rem;
 `;
 
@@ -163,12 +163,6 @@ const NetworkLogoAndNameContainer = styled.div`
   align-items: center;
   gap: 1rem;
   justify-content: flex-start;
-`;
-
-const QuestionHelperContainer = styled.div`
-  display: flex;
-  align-items: center;
-  padding-right: 1rem;
 `;
 
 const NetworkNameContainer = styled.div`
@@ -191,6 +185,7 @@ const NetworkNameLabel = styled.div`
 `;
 
 const NetworkSvg = styled.img`
+  border-radius: 18px;
   width: 32px;
   height: 32px;
 `;

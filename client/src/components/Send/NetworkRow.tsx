@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 interface NetworkRowProps {
   platformName: string;
-  platformCurrency: string;
   isSelected: boolean;
   flagSvg: string;
   onRowClick: () => void;
@@ -12,7 +11,6 @@ interface NetworkRowProps {
 
 export const NetworkRow: React.FC<NetworkRowProps> = ({
   platformName,
-  platformCurrency,
   isSelected,
   flagSvg,
   onRowClick,
@@ -75,6 +73,7 @@ const PlatformLabel = styled.div`
 `;
 
 const FlagSvg = styled.img`
+  border-radius: 18px;
   width: 36px;
   height: 36px;
 `;
