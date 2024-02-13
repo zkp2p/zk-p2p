@@ -9,17 +9,17 @@ type SocketQuoteRequestParams = {
 const API_KEY = process.env.SOCKET_API_KEY || "";
   
 export default function useSocketBridge() {
-
+  
   const getSocketQuote = async ({ fromAmount, recipient, toChainId, toTokenAddress, userAddress }: SocketQuoteRequestParams) => {
     const quotesRequest = {
-      fromChainId: '8453', // Always will be from Base
+      fromChainId: '8453',                                            // Always will be from Base
       toChainId,
       fromTokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Will always be USDC on Base
       fromAmount,
       toTokenAddress,
       recipient,
       userAddress,
-      singleTxOnly: 'true', // This is to toggle not allowing a swap AFTER bridging to the new chain
+      singleTxOnly: 'true',                                           // This is to toggle not allowing a swap AFTER bridging to the new chain
       sort: 'output',
       uniqueRoutesPerBridge: 'true'
     }
@@ -33,9 +33,9 @@ export default function useSocketBridge() {
     const response = await fetch(urlWithParams, {
       method: 'GET',
       headers: {
-          'API-KEY': API_KEY,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+        'API-KEY': API_KEY,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
     });
 
@@ -56,9 +56,9 @@ export default function useSocketBridge() {
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-          'API-KEY': API_KEY,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+        'API-KEY': API_KEY,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ "route": route })
     });
