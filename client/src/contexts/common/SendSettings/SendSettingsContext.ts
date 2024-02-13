@@ -1,6 +1,11 @@
 import { createContext } from 'react';
 
-import { SendNetworkType, SendNetwork, sendNetworks } from '@helpers/types';
+import {
+  SendNetworkType,
+  SendNetwork,
+  sendNetworks,
+  ReceiveTokenType,
+} from '@helpers/types';
 
 
 interface SendSettingsValues {
@@ -8,6 +13,7 @@ interface SendSettingsValues {
   setSendNetwork?: React.Dispatch<React.SetStateAction<SendNetworkType>>;
   SendNetwork: typeof SendNetwork;
   sendNetworks: SendNetworkType[];
+  receiveToken?: ReceiveTokenType;
 };
 
 const defaultValues: SendSettingsValues = {

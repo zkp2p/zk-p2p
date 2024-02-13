@@ -1,6 +1,12 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { SendNetworkType, SendNetwork, sendNetworks } from '@helpers/types';
+import {
+  SendNetworkType,
+  SendNetwork,
+  sendNetworks,
+  ReceiveTokenType,
+  ReceiveToken
+} from '@helpers/types';
 
 import SendSettingsContext from './SendSettingsContext'
 
@@ -16,23 +22,40 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
 
   const [sendNetwork, setSendNetwork] = useState<SendNetworkType>(SendNetwork.BASE);
 
+
+  const [receiveToken, setReceiveToken] = useState<ReceiveTokenType>(ReceiveToken.USDC);
+
   /*
    * Hooks
    */
 
-    useEffect(() => {
-      const storedSelectedSendNetwork = localStorage.getItem('storedSelectedSendNetwork');
-      
-      if (storedSelectedSendNetwork) {
-        setSendNetwork(JSON.parse(storedSelectedSendNetwork));
-      }
-    }, []);
-  
-    useEffect(() => {
-      if (sendNetwork) {
-        localStorage.setItem('storedSelectedSendNetwork', JSON.stringify(sendNetwork));
-      }
-    }, [sendNetwork]);
+  useEffect(() => {
+    const storedSelectedSendNetwork = localStorage.getItem('storedSelectedSendNetwork');
+    
+    if (storedSelectedSendNetwork) {
+      setSendNetwork(JSON.parse(storedSelectedSendNetwork));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sendNetwork) {
+      localStorage.setItem('storedSelectedSendNetwork', JSON.stringify(sendNetwork));
+    }
+  }, [sendNetwork]);
+
+  useEffect(() => {
+    const storedSelectedReceiveToken = localStorage.getItem('storedSelectedReceiveToken');
+    
+    if (storedSelectedReceiveToken) {
+      setReceiveToken(JSON.parse(storedSelectedReceiveToken));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (receiveToken) {
+      localStorage.setItem('storedSelectedReceiveToken', JSON.stringify(receiveToken));
+    }
+  }, [receiveToken]);
 
   return (
     <SendSettingsContext.Provider
@@ -40,7 +63,8 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
         sendNetwork,
         setSendNetwork,
         SendNetwork,
-        sendNetworks
+        sendNetworks,
+        receiveToken
       }}
     >
       {children}

@@ -20,8 +20,8 @@ export type { PaymentPlatformType  } from './paymentPlatform';
 export { SendNetwork, sendNetworks, networksInfo } from './sendNetworks';
 export type { SendNetworkType } from './sendNetworks';
 
-export { receiveTokens, receiveTokenData, networkSupportedTokens } from './receiveTokens';
-export type { ReceiveToken, ReceiveTokenData, ReceiveTokenType } from './receiveTokens';
+export { ReceiveToken, receiveTokens, receiveTokenData, networkSupportedTokens } from './receiveTokens';
+export type { ReceiveTokenData, ReceiveTokenType } from './receiveTokens';
 
 export type { Abi, AbiEntry } from './smartContracts';
 
