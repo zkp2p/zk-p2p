@@ -14,6 +14,7 @@ interface SendSettingsValues {
   SendNetwork: typeof SendNetwork;
   sendNetworks: SendNetworkType[];
   receiveToken?: ReceiveTokenType;
+  setReceiveToken?: React.Dispatch<React.SetStateAction<ReceiveTokenType>>;
 };
 
 const defaultValues: SendSettingsValues = {

@@ -5,7 +5,8 @@ import {
   SendNetwork,
   sendNetworks,
   ReceiveTokenType,
-  ReceiveToken
+  ReceiveToken,
+  networkSupportedTokens
 } from '@helpers/types';
 
 import SendSettingsContext from './SendSettingsContext'
@@ -40,6 +41,9 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     if (sendNetwork) {
       localStorage.setItem('storedSelectedSendNetwork', JSON.stringify(sendNetwork));
+
+      const newReceiveToken = networkSupportedTokens[sendNetwork][0];
+      setReceiveToken(newReceiveToken);
     }
   }, [sendNetwork]);
 
@@ -64,7 +68,8 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
         setSendNetwork,
         SendNetwork,
         sendNetworks,
-        receiveToken
+        receiveToken,
+        setReceiveToken
       }}
     >
       {children}
