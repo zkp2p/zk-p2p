@@ -17,8 +17,8 @@ export type { RawEmailResponse } from './googleMailApi';
 export { PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
 export type { PaymentPlatformType  } from './paymentPlatform';
 
-export { Networks, sendNetworks, networksInfo } from './sendNetworks';
-export type { SendNetworkType  } from './sendNetworks';
+export { SendNetwork, sendNetworks, networksInfo } from './sendNetworks';
+export type { SendNetworkType } from './sendNetworks';
 
 export type { Abi, AbiEntry } from './smartContracts';
 
