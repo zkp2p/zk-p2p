@@ -21,6 +21,7 @@ export const SendNetwork = {
 
 export const sendNetworks = [
   SendNetwork.ARBITRUM,
+  SendNetwork.AVALANCHE,
   SendNetwork.BASE,
   SendNetwork.BINANCE,
   SendNetwork.ETHEREUM,
