@@ -3,14 +3,14 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide a historical transaction email sent from Garanti InstaAlerts containing "You have done a UPI txn" in
+    Provide a historical transaction email sent from Garanti BBVA containing "Para Transferi Bilgilendirmesi" in
     the subject received after 01 September 2023 to complete registration. Base ETH is required to submit a
-    registration transaction.
+    registration transaction if using an injected wallet.
   `,
 
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: `
-    Sign in with Google to pull in your HDFC transaction emails. The emails are not stored and never
+    Sign in with Google to pull in your Garanti transaction emails. The emails are not stored and never
     leave your browser. Read more:
   `,
   NO_EMAILS_ERROR: `
@@ -34,21 +34,21 @@ const strings: PlatformStrings = {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Creating a new deposit requires you to submit your UPI ID, the USDC liquidity to deposit and
-    desired USDC/INR conversion rate. You will receive INR payments from users who claim your deposit.
-    Your UPI ID is made public on-chain hence do not use your phone number UPI ID.
+    Creating a new deposit requires you to submit your Garanti IBAN, the USDC liquidity to deposit, and
+    desired USDC/TRL conversion rate. You will receive TRL payments from users who claim your deposit.
+    Your Garanti IBAN will be made public on-chain.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
-    This is a valid UPI ID where users will send payments.
-    This connects your UPI account to your wallet address on chain.
-    This must match the HDFC account you used to register.
+    This is a valid IBAN where users will send payments.
+    This connects your Garanti IBAN to your wallet address on chain.
+    This must match the IBAN associated with your Garanti account.
   `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
-    This is the amount of USDC you will deposit for users to claim by sending you HDFC payments.
+    This is the amount of USDC you will deposit for users to claim by sending you Garanti payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
-    This is the amount of INR you will receive if your entire deposit is claimed.
+    This is the amount of TRL you will receive if your entire deposit is claimed.
   `,
 
   // Instruction Drawer

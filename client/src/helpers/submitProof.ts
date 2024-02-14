@@ -27,7 +27,7 @@ export const reformatMultiProofAndSignalsForChain = (
 
   const parsedProof = JSON.parse(proof);
   const parsedBodyHashProof = JSON.parse(bodyHashProof);
-  console.log(parsedProof, parsedBodyHashProof, signals, bodyHashPublicSignals);
+
   const proofAndSignals = {
     a: parsedProof["pi_a"].slice(0, 2),
     b: parsedProof["pi_b"].slice(0, 2).map((g2point: any[]) => g2point.reverse()),

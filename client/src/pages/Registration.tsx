@@ -66,6 +66,7 @@ export const Registration: React.FC = () => {
         //   break;
 
         case PaymentPlatform.HDFC:
+          console.log("Should fetch Garanti Registration: ", shouldFetchGarantiRegistration);
           if (shouldFetchGarantiRegistration) {
             refetchGarantiAccount?.();
           }

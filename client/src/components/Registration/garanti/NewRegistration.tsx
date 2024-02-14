@@ -104,10 +104,9 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   useEffect(() => {
     console.log("proof and publicSignals updated");
-    console.log("Proof:", proof, publicSignals, "BodyHash Proof:", bodyHashProof, bodyHashPublicSignals);
     if (proof && bodyHashProof && publicSignals && bodyHashPublicSignals) {
       // TODO: perform local verification
-      console.log("proof and publicSignals are valid")
+
       setShouldConfigureRegistrationWrite(true);
     } else {
       setShouldConfigureRegistrationWrite(false);

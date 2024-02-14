@@ -157,6 +157,27 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   }, [remoteBodyHashProofResponse]);
 
   useEffect(() => {
+    console.log("Status Check", storedBodyHashProofValue, storedBodyHashSignalsValue, storedProofValue, storedSignalsValue);
+    switch (paymentPlatformType) {
+      case PaymentPlatform.VENMO:
+        if (storedProofValue && storedSignalsValue) {
+          console.log("Update Proof Gen Status");
+          setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+        }
+        break;
+      // Change to GARANTI
+      case PaymentPlatform.HDFC:
+        if (storedBodyHashProofValue && storedBodyHashSignalsValue && storedProofValue && storedSignalsValue) {
+          console.log("Update Proof Gen Status");
+          setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+        }
+        break;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storedBodyHashProofValue, storedBodyHashSignalsValue, storedProofValue, storedSignalsValue]);
+
+  useEffect(() => {
     if (remoteGenerateProofError) {
       setProvingFailureErrorCode(remoteGenerateProofError.code);
 
@@ -276,9 +297,10 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     setShouldShowVerificationModal(true);
 
     if (storedProofValue && storedSignalsValue && storedBodyHashProofValue && storedBodyHashSignalsValue) {
-      console.log("here");
       setProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
+      setBodyHashProof(storedBodyHashProofValue);
+      setBodyHashPublicSignals(storedBodyHashSignalsValue);
 
       setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
     } else {
@@ -363,11 +385,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   const processRemoteProofGenerationResponse = (response: any, isBodyHashProof: boolean = false) => {
     setAndStoreProvingState(response.proof, response.public_values, isBodyHashProof)
-
-    if (storedBodyHashProofValue && storedBodyHashSignalsValue && storedProofValue && storedSignalsValue) {
-      console.log("Update Proof Gen Status");
-      setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
-    }
   }
 
   const generatePrivateProof = async () => {
@@ -452,7 +469,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     hash.update(emailFull);
     const hashedEmail = hash.digest('hex');
     setEmailHash(hashedEmail);
-    console.log(isBodyHashProof, proofString, publicSignalsString);
+
     // Set proof and public signals
     if (isBodyHashProof) {
       setBodyHashProof(proofString);
