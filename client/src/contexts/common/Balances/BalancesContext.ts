@@ -1,8 +1,21 @@
 import { createContext } from 'react'
 
-import { ContextValues } from './types'
+interface BalancesValues {
+  ethBalance: bigint | null
+  refetchEthBalance: (() => void) | null
+  shouldFetchEthBalance: boolean | null
+  usdcBalance: bigint | null
+  refetchUsdcBalance: (() => void) | null
+  shouldFetchUsdcBalance: boolean | null
+  usdcApprovalToRamp: bigint | null
+  refetchUsdcApprovalToRamp: (() => void) | null
+  usdcApprovalToHdfcRamp: bigint | null
+  refetchUsdcApprovalToHdfcRamp: (() => void) | null
+  usdcApprovalToSocketBridge: bigint | null
+  refetchUsdcApprovalToSocketBridge: (() => void) | null
+}
 
-const defaultValues: ContextValues = {
+const defaultValues: BalancesValues = {
   ethBalance: null,
   refetchEthBalance: null,
   shouldFetchEthBalance: null,
@@ -17,6 +30,6 @@ const defaultValues: ContextValues = {
   refetchUsdcApprovalToSocketBridge: null,
 };
 
-const BalancesContext = createContext<ContextValues>(defaultValues)
+const BalancesContext = createContext<BalancesValues>(defaultValues)
 
 export default BalancesContext
