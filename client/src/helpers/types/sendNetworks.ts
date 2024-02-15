@@ -36,47 +36,56 @@ interface NetworksData {
   networkId: SendNetworkType;
   networkName: string;
   networkSvg: string;
+  networkChainId: string;
 }
 
 export const networksInfo: Record<SendNetworkType, NetworksData> = {
   [SendNetwork.ARBITRUM]: {
     networkId: SendNetwork.ARBITRUM,
     networkName: 'Arbitrum',
-    networkSvg: arbitrumSvg
+    networkSvg: arbitrumSvg,
+    networkChainId: '42161'
   },
   [SendNetwork.AVALANCHE]: {
     networkId: SendNetwork.AVALANCHE,
     networkName: 'Avalanche',
-    networkSvg: avalancheSvg
+    networkSvg: avalancheSvg,
+    networkChainId: '43114'
   },
   [SendNetwork.BASE]: {
     networkId: SendNetwork.BASE,
     networkName: 'Base',
-    networkSvg: baseSvg
+    networkSvg: baseSvg,
+    networkChainId: '8453'
   },
   [SendNetwork.BINANCE]: {
     networkId: SendNetwork.BINANCE,
     networkName: 'Binance',
-    networkSvg: binanceSvg
+    networkSvg: binanceSvg,
+    networkChainId: '56'
   },
   [SendNetwork.ETHEREUM]: {
     networkId: SendNetwork.ETHEREUM,
     networkName: 'Ethereum Mainnet',
-    networkSvg: ethereumSvg
+    networkSvg: ethereumSvg,
+    networkChainId: '1'
   },
   [SendNetwork.OPTIMISM]: {
     networkId: SendNetwork.OPTIMISM,
     networkName: 'Optimism',
-    networkSvg: optimismSvg
+    networkSvg: optimismSvg,
+    networkChainId: '10'
   },
   [SendNetwork.POLYGON]: {
     networkId: SendNetwork.POLYGON,
     networkName: 'Polygon',
-    networkSvg: polygonSvg
+    networkSvg: polygonSvg,
+    networkChainId: '137'
   },
   [SendNetwork.ZKSYNC]: {
     networkId: SendNetwork.ZKSYNC,
     networkName: 'zkSync',
-    networkSvg: zksyncSvg
+    networkSvg: zksyncSvg,
+    networkChainId: '324'
   },
 };
