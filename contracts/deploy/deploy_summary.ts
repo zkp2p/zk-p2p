@@ -31,6 +31,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Ramp:                         ${getDeployedContractAddress(network, "Ramp")}
     HDFCRamp:                     ${getDeployedContractAddress(network, "HDFCRamp")}
     VenmoRampV2:                  ${getDeployedContractAddress(network, "VenmoRampV2")}
+    GarantiRamp:                  ${getDeployedContractAddress(network, "GarantiRamp")}
     VenmoRegistrationProcessor:   ${getDeployedContractAddress(network, "VenmoRegistrationProcessor")}
     VenmoSendProcessor:           ${getDeployedContractAddress(network, "VenmoSendProcessor")}
     VenmoRegistrationProcessorV2: ${getDeployedContractAddress(network, "VenmoRegistrationProcessorV2")}
@@ -40,6 +41,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     HDFCRegistrationProcessor:    ${getDeployedContractAddress(network, "HDFCRegistrationProcessor")}
     HDFCSendProcessor:            ${getDeployedContractAddress(network, "HDFCSendProcessor")}
     HDFCKeyHashAdapter:           ${getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter")}
+    GarantiRegistrationProcessor: ${getDeployedContractAddress(network, "GarantiRegistrationProcessor")}
+    GarantiSendProcessor:         ${getDeployedContractAddress(network, "GarantiSendProcessor")}
+    GarantiKeyHashAdapter:        ${getDeployedContractAddress(network, "GarantiManagedKeyHashAdapter")}
     NullifierRegistry:            ${getDeployedContractAddress(network, "NullifierRegistry")}
     USDC:                         ${USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock")}
     Poseidon3:                    ${getDeployedContractAddress(network, "Poseidon3")}
