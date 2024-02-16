@@ -2,6 +2,7 @@ import americaFlagSvg from '../../assets/images/america-flag.svg';
 import indiaFlagSvg from '../../assets/images/india-flag.svg';
 import turkeyFlagSvg from '../../assets/images/turkey-flag.svg';
 
+const USE_GARANTI = process.env.USE_GARANTI === 'true';
 
 export const PaymentPlatform = {
   VENMO: "venmo",
@@ -9,7 +10,9 @@ export const PaymentPlatform = {
   GARANTI: "garanti"
 } as const;
 
-export const paymentPlatforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC, PaymentPlatform.GARANTI];
+export const paymentPlatforms = USE_GARANTI ? 
+  [PaymentPlatform.VENMO, PaymentPlatform.HDFC, PaymentPlatform.GARANTI] :
+  [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 
