@@ -1,7 +1,13 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import { IndicativeQuote } from '@helpers/types';
-import { esl, MAX_USDC_TRANSFER_SIZE_HDFC, MAX_USDC_TRANSFER_SIZE_VENMO, ZERO } from '@helpers/constants';
+import {
+  esl,
+  MAX_USDC_TRANSFER_SIZE_GARANTI,
+  MAX_USDC_TRANSFER_SIZE_HDFC,
+  MAX_USDC_TRANSFER_SIZE_VENMO,
+  ZERO
+} from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
@@ -15,6 +21,12 @@ import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useHdfcRampState from "@hooks/hdfc/useRampState";
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
+
+// Garanti
+import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
+import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
+import useGarantiRampState from "@hooks/garanti/useRampState";
+import useGarantiRegistration from '@hooks/garanti/useRegistration';
 
 import SwapQuoteContext from './SwapQuoteContext';
 
@@ -78,6 +90,30 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     refetchLastOnRampTimestamp: refetchHdfcLastOnRampTimestamp
   } = useHdfcOnRamperIntents();
 
+  // Garanti
+  const {
+    isRegistered: isRegisteredOnGaranti,
+    registrationHash: garantiRegistrationHash
+  } = useGarantiRegistration();
+  const {
+    refetchDeposits: refetchGarantiDeposits,
+    getBestDepositForAmount: getBestGarantiDepositForAmount,
+    getDepositForMaxAvailableTransferSize: getGarantiDepositForMaxAvailableTransferSize,
+    shouldFetchDeposits: shouldFetchGarantiDeposits
+  } = useGarantiLiquidity();
+  const {
+    refetchDepositCounter: refetchGarantiDepositCounter,
+    shouldFetchRampState: shouldFetchGarantiRampState,
+    onRampCooldownPeriod: garantiOnRampCooldownPeriod
+  } = useGarantiRampState();
+  const {
+    currentIntentHash: currentGarantiIntentHash,
+    refetchIntentHash: refetchGarantiIntentHash,
+    shouldFetchIntentHash: shouldFetchGarantiIntentHash,
+    lastOnRampTimestamp: lastGarantiOnRampTimestamp,
+    refetchLastOnRampTimestamp: refetchGarantiLastOnRampTimestamp
+  } = useGarantiOnRamperIntents();
+
   /*
    * State
    */
@@ -118,6 +154,10 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_HDFC);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_GARANTI);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
@@ -132,6 +172,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     esl && console.log('isRegisteredOnVenmo: ', isRegisteredOnVenmo);
     esl && console.log('isRegisteredOnHdfc: ', isRegisteredOnHdfc);
+    esl && console.log('isRegisteredOnGaranti: ', isRegisteredOnGaranti);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -143,16 +184,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setIsRegistered(isRegisteredOnHdfc);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setIsRegistered(isRegisteredOnGaranti);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, isRegisteredOnVenmo, isRegisteredOnHdfc]);
+  }, [paymentPlatform, isRegisteredOnVenmo, isRegisteredOnHdfc, isRegisteredOnGaranti]);
 
   useEffect(() => {
     esl && console.log('venmoRegistrationHash: ', venmoRegistrationHash);
     esl && console.log('hdfcRegistrationHash: ', hdfcRegistrationHash);
+    esl && console.log('garantiRegistrationHash: ', garantiRegistrationHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -164,12 +210,16 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRegistrationHash(hdfcRegistrationHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRegistrationHash(garantiRegistrationHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, hdfcRegistrationHash, venmoRegistrationHash]);
+  }, [paymentPlatform, hdfcRegistrationHash, venmoRegistrationHash, garantiRegistrationHash]);
 
   /*
    * Liquidity
@@ -178,6 +228,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     esl && console.log('refetchVenmoDeposits: ', refetchVenmoDeposits);
     esl && console.log('refetchHdfcDeposits: ', refetchHdfcDeposits);
+    esl && console.log('refetchGarantiDeposits: ', refetchGarantiDeposits);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -188,16 +239,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchDeposits(() => refetchHdfcDeposits);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRefetchDeposits(() => refetchGarantiDeposits);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits]);
+  }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits, refetchGarantiDeposits]);
 
   useEffect(() => {
     esl && console.log('getBestVenmoDepositForAmount: ', getBestVenmoDepositForAmount);
     esl && console.log('getBestHdfcDepositForAmount: ', getBestHdfcDepositForAmount);
+    esl && console.log('getBestGarantiDepositForAmount: ', getBestGarantiDepositForAmount);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -208,16 +264,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setGetBestDepositForAmount(() => getBestHdfcDepositForAmount as any);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setGetBestDepositForAmount(() => getBestGarantiDepositForAmount as any);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, getBestVenmoDepositForAmount, getBestHdfcDepositForAmount]);
+  }, [paymentPlatform, getBestVenmoDepositForAmount, getBestHdfcDepositForAmount, getBestGarantiDepositForAmount]);
 
   useEffect(() => {
     esl && console.log('getVenmoDepositForMaxAvailableTransferSize: ', getVenmoDepositForMaxAvailableTransferSize);
     esl && console.log('getHdfcDepositForMaxAvailableTransferSize: ', getHdfcDepositForMaxAvailableTransferSize);
+    esl && console.log('getGarantiDepositForMaxAvailableTransferSize: ', getGarantiDepositForMaxAvailableTransferSize);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -228,16 +289,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setGetDepositForMaxAvailableTransferSize(() => getHdfcDepositForMaxAvailableTransferSize as any);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setGetDepositForMaxAvailableTransferSize(() => getGarantiDepositForMaxAvailableTransferSize as any);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, getVenmoDepositForMaxAvailableTransferSize, getHdfcDepositForMaxAvailableTransferSize]);
+  }, [paymentPlatform, getVenmoDepositForMaxAvailableTransferSize, getHdfcDepositForMaxAvailableTransferSize, getGarantiDepositForMaxAvailableTransferSize]);
 
   useEffect(() => {
     esl && console.log('shouldFetchVenmoDeposits: ', shouldFetchVenmoDeposits);
     esl && console.log('shouldFetchHdfcDeposits: ', shouldFetchHdfcDeposits);
+    esl && console.log('shouldFetchHdfcDeposits: ', shouldFetchGarantiDeposits);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -248,12 +314,16 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchDeposits(shouldFetchHdfcDeposits);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setShouldFetchDeposits(shouldFetchGarantiDeposits);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, shouldFetchVenmoDeposits, shouldFetchHdfcDeposits]);
+  }, [paymentPlatform, shouldFetchVenmoDeposits, shouldFetchHdfcDeposits, shouldFetchGarantiDeposits]);
   
 
   /*
@@ -263,6 +333,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     esl && console.log('currentVenmoIntentHash: ', currentVenmoIntentHash);
     esl && console.log('currentHdfcIntentHash: ', currentHdfcIntentHash);
+    esl && console.log('currentGarantiIntentHash: ', currentGarantiIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -273,16 +344,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setCurrentIntentHash(currentHdfcIntentHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setCurrentIntentHash(currentGarantiIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash]);
+  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash, currentGarantiIntentHash]);
 
   useEffect(() => {
     esl && console.log('refetchVenmoIntentHash: ', refetchVenmoIntentHash);
     esl && console.log('refetchHdfcIntentHash: ', refetchHdfcIntentHash);
+    esl && console.log('refetchGarantiIntentHash: ', refetchGarantiIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -293,16 +369,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchIntentHash(() =>  refetchHdfcIntentHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRefetchIntentHash(() =>  refetchGarantiIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash]);
+  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash, refetchGarantiIntentHash]);
 
   useEffect(() => {
     esl && console.log('shouldFetchVenmoIntentHash: ', shouldFetchVenmoIntentHash);
     esl && console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
+    esl && console.log('shouldFetchGarantiIntentHash: ', shouldFetchGarantiIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -313,16 +394,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchIntentHash(shouldFetchHdfcIntentHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setShouldFetchIntentHash(shouldFetchGarantiIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, shouldFetchVenmoIntentHash, shouldFetchHdfcIntentHash]);
+  }, [paymentPlatform, shouldFetchVenmoIntentHash, shouldFetchHdfcIntentHash, shouldFetchGarantiIntentHash]);
 
   useEffect(() => {
     esl && console.log('lastVenmoOnRampTimestamp: ', lastVenmoOnRampTimestamp);
     esl && console.log('lastHdfcOnRampTimestamp: ', lastHdfcOnRampTimestamp);
+    esl && console.log('lastGarantiOnRampTimestamp: ', lastGarantiOnRampTimestamp);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -333,12 +419,16 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setLastOnRampTimestamp(lastHdfcOnRampTimestamp);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setLastOnRampTimestamp(lastGarantiOnRampTimestamp);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, lastVenmoOnRampTimestamp, lastHdfcOnRampTimestamp]);
+  }, [paymentPlatform, lastVenmoOnRampTimestamp, lastHdfcOnRampTimestamp, lastGarantiOnRampTimestamp]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -350,12 +440,16 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchLastOnRampTimestamp(() => refetchHdfcLastOnRampTimestamp);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRefetchLastOnRampTimestamp(() => refetchGarantiLastOnRampTimestamp);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoLastOnRampTimestamp, refetchHdfcLastOnRampTimestamp]);
+  }, [paymentPlatform, refetchVenmoLastOnRampTimestamp, refetchHdfcLastOnRampTimestamp, refetchGarantiLastOnRampTimestamp]);
 
 
   /*
@@ -365,6 +459,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   useEffect(() => {
     esl && console.log('refetchVenmoDepositCounter: ', refetchVenmoDepositCounter);
     esl && console.log('refetchHdfcDepositCounter: ', refetchHdfcDepositCounter);
+    esl && console.log('refetchGarantiDepositCounter: ', refetchGarantiDepositCounter);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -375,16 +470,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchDepositCounter(() => refetchHdfcDepositCounter);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRefetchDepositCounter(() => refetchGarantiDepositCounter);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoDepositCounter, refetchHdfcDepositCounter]);
+  }, [paymentPlatform, refetchVenmoDepositCounter, refetchHdfcDepositCounter, refetchGarantiDepositCounter]);
 
   useEffect(() => {
     esl && console.log('shouldFetchVenmoRampState: ', shouldFetchVenmoRampState);
     esl && console.log('shouldFetchHdfcRampState: ', shouldFetchHdfcRampState);
+    esl && console.log('shouldFetchGarantiRampState: ', shouldFetchGarantiRampState);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -395,16 +495,21 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchRampState(shouldFetchHdfcRampState);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setShouldFetchRampState(shouldFetchGarantiRampState);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, shouldFetchVenmoRampState, shouldFetchHdfcRampState]);
+  }, [paymentPlatform, shouldFetchVenmoRampState, shouldFetchHdfcRampState, shouldFetchGarantiRampState]);
 
   useEffect(() => {
     esl && console.log('venmoOnRampCooldownPeriod: ', venmoOnRampCooldownPeriod);
     esl && console.log('hdfcOnRampCooldownPeriod: ', hdfcOnRampCooldownPeriod);
+    esl && console.log('garantiOnRampCooldownPeriod: ', garantiOnRampCooldownPeriod);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -414,13 +519,17 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       case PaymentPlatform.HDFC:
         setOnRampCooldownPeriod(hdfcOnRampCooldownPeriod);
         break;
+      
+      case PaymentPlatform.GARANTI:
+        setOnRampCooldownPeriod(garantiOnRampCooldownPeriod);
+        break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoOnRampCooldownPeriod, hdfcOnRampCooldownPeriod]);
+  }, [paymentPlatform, venmoOnRampCooldownPeriod, hdfcOnRampCooldownPeriod, garantiOnRampCooldownPeriod]);
 
   return (
     <SwapQuoteContext.Provider

@@ -45,7 +45,9 @@ export const RegistrationForm: React.FC = () => {
         return <VenmoExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
       case PaymentPlatform.HDFC:
-        // return <HdfcExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
+        return <HdfcExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
+      
+      case PaymentPlatform.GARANTI:
         return <GarantiExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
       default:
@@ -59,7 +61,9 @@ export const RegistrationForm: React.FC = () => {
         return <VenmoNewRegistration handleBackClick={handleBackClick} />;
 
       case PaymentPlatform.HDFC:
-        // return <HdfcNewRegistration handleBackClick={handleBackClick} />;
+        return <HdfcNewRegistration handleBackClick={handleBackClick} />;
+
+      case PaymentPlatform.GARANTI:
         return <GarantiNewRegistration handleBackClick={handleBackClick} />;
 
       default:

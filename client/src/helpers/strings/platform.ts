@@ -44,9 +44,9 @@ export class PlatformStringProvider {
   constructor(platformType: PaymentPlatformType) {
     if (platformType === PaymentPlatform.VENMO) {
       this.strings = venmoCopy;
-    // } else if (platformType === PaymentPlatform.HDFC) {
-    //   this.strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
+      this.strings = hdfcCopy;
+    } else if (platformType === PaymentPlatform.GARANTI) {
       this.strings = garantiCopy;
     } else {
       throw new Error('Invalid platform type');
@@ -63,6 +63,8 @@ export class PlatformStringProvider {
       strings = venmoCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
       strings = hdfcCopy;
+    } else if (platformType === PaymentPlatform.GARANTI) {
+      strings = garantiCopy;
     } else {
       throw new Error('Invalid platform type');
     }

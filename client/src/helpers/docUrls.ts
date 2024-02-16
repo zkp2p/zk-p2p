@@ -15,5 +15,6 @@ TG Links
 export const ZKP2P_TG_LINK = "https://t.me/zk_p2p"
 export const ZKP2P_TG_SUPPORT_CHAT_LINK = "https://t.me/zk_p2p/588"
 export const ZKP2P_TG_INDIA_CHAT_LINK = "https://t.me/zk_p2p/754"
+export const ZKP2P_TG_TURKEY_CHAT_LINK = "https://t.me/zk_p2p/754"
 
 

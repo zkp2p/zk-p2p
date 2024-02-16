@@ -106,8 +106,10 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
             break;
 
           case PaymentPlatform.HDFC:
-            // setCtaButtonTitle("Invalid email: must be from HDFC");
-            // break;
+            setCtaButtonTitle("Invalid email: must be from HDFC");
+            break;
+
+          case PaymentPlatform.GARANTI:
             setCtaButtonTitle("Invalid email: must be from Garanti");
             break;
         }
@@ -120,8 +122,10 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
             break;
 
           case PaymentPlatform.HDFC:
-            // setCtaButtonTitle("Invalid email: must be contain 'You have done a UPI txn'");
-            // break;
+            setCtaButtonTitle("Invalid email: must be contain 'You have done a UPI txn'");
+            break;
+
+          case PaymentPlatform.GARANTI:
             setCtaButtonTitle("Invalid email: must contain 'Para Transferi Bilgilendirmesi'");
             break;
         }

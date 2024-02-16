@@ -55,18 +55,17 @@ export const Registration: React.FC = () => {
         }
         break;
 
-        // case PaymentPlatform.HDFC:
-        //   if (shouldFetchHdfcRegistration) {
-        //     refetchHdfcAccount?.();
-        //   }
-  
-        //   if (shouldFetchHdfcNftId) {
-        //     refetchHdfcNftId?.();
-        //   }
-        //   break;
-
         case PaymentPlatform.HDFC:
-          console.log("Should fetch Garanti Registration: ", shouldFetchGarantiRegistration);
+          if (shouldFetchHdfcRegistration) {
+            refetchHdfcAccount?.();
+          }
+  
+          if (shouldFetchHdfcNftId) {
+            refetchHdfcNftId?.();
+          }
+          break;
+
+        case PaymentPlatform.GARANTI:
           if (shouldFetchGarantiRegistration) {
             refetchGarantiAccount?.();
           }

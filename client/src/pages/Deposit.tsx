@@ -77,20 +77,21 @@ export const Deposit: React.FC = () => {
         }
         break;
       
-      // Change to GARANTI
       case PaymentPlatform.HDFC:
-        // if (shouldFetchHdfcDeposits) {
-        //   refetchHdfcDeposits?.();
-        // }
+        if (shouldFetchHdfcDeposits) {
+          refetchHdfcDeposits?.();
+        }
 
-        // if (shouldFetchHdfcDepositIntents) {
-        //   refetchHdfcDepositIntents?.();
-        // }
+        if (shouldFetchHdfcDepositIntents) {
+          refetchHdfcDepositIntents?.();
+        }
 
-        // if (shouldFetchUsdcBalance && isRegisteredOnHdfc) {
-        //   refetchUsdcBalance?.();
-        // }
-        // break;
+        if (shouldFetchUsdcBalance && isRegisteredOnHdfc) {
+          refetchUsdcBalance?.();
+        }
+        break;
+
+      case PaymentPlatform.GARANTI:
         if (shouldFetchGarantiDeposits) {
           refetchGarantiDeposits?.();
         }

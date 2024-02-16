@@ -132,8 +132,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.HDFC:
+          refetchHdfcDeposits?.();
+          break;
+        
+        case PaymentPlatform.GARANTI:
           refetchGarantiDeposits?.();
-          // refetchHdfcDeposits?.();
           break;
 
         default:
@@ -158,8 +161,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.HDFC:
+          setIsRegistered(isHdfcRegistered);
+          break;
+        
+        case PaymentPlatform.GARANTI:
           setIsRegistered(isGarantiRegistered);
-          // setIsRegistered(isHdfcRegistered);
           break;
 
         default:
@@ -181,8 +187,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.HDFC:
+          depositsToDisplay = hdfcDeposits;
+          break;
+
+        case PaymentPlatform.GARANTI:
           depositsToDisplay = garantiDeposits;
-          // depositsToDisplay = hdfcDeposits;
           break;
 
         default:
@@ -271,6 +280,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         break;
 
       case PaymentPlatform.HDFC:
+        if (hdfcDeposits) {
+          const selectedDeposit = hdfcDeposits[rowIndex];
+          setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
+
+          setSelectedRowIndexToWithdraw(rowIndex);
+          
+          setWithdrawRampAddress(hdfcRampAddress as any);
+          setWithdrawRampAbi(hdfcRampAbi as any);
+
+          setShouldConfigureWithdrawWrite(true);
+        }
+        break;
+        
+      case PaymentPlatform.GARANTI:
         if (garantiDeposits) {
           const selectedDeposit = garantiDeposits[rowIndex];
           setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
@@ -283,18 +306,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           setShouldConfigureWithdrawWrite(true);
         }
         break;
-        // if (hdfcDeposits) {
-        //   const selectedDeposit = hdfcDeposits[rowIndex];
-        //   setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
-
-        //   setSelectedRowIndexToWithdraw(rowIndex);
-          
-        //   setWithdrawRampAddress(hdfcRampAddress as any);
-        //   setWithdrawRampAbi(hdfcRampAbi as any);
-
-        //   setShouldConfigureWithdrawWrite(true);
-        // }
-        // break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);

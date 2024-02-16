@@ -15,7 +15,7 @@ const strings: PlatformStrings = {
   `,
   NO_EMAILS_ERROR: `
     No emails found.
-    Please ensure you are using an email attached to a HDFC account with a receipt after 01 Sep.
+    Please ensure you are using an email attached to a Garanti account with a receipt after 01 Sep.
   `,
 
   // New Registration
@@ -27,7 +27,7 @@ const strings: PlatformStrings = {
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Provide the transaction alert email you received from HDFC containing "You have done a UPI txn"
+    Provide the transaction alert email you received from Garanti containing "Para Transferi Bilgilendirmesi"
     to complete the order. You can sign in with Google to pull the email or manually upload/paste
     the email.
   `,
@@ -59,7 +59,7 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment on any UPI ID linked to your HDFC bank account. Ensure you have email notifications from HDFC InstaAlerts enabled
+    Click 'Send' and complete the payment using your Garanti bank account. Ensure you have email notifications from Garanti BBVA enabled
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
     Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
@@ -67,13 +67,13 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Send payment from your UPI ID linked to your HDFC bank account. Do not send payment from UPI Lite or other bank accounts
+    Send payment from your Garanti bank account. Do not send payment from any other bank accounts
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    HDFC InstaAlert email notifications are enabled for your account
+    Garanti BBVA email notifications are enabled for your account
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact INR amount including decimals as displayed on the payment screen
+    Send the exact TRL amount including decimals as displayed on the payment screen
   `,
 
 };

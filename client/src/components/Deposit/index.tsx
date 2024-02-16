@@ -139,14 +139,16 @@ export default function Deposit() {
         break;
 
       case PaymentPlatform.HDFC:
+        if (hdfcDepositIntents) {
+          setDepositIntents(hdfcDepositIntents);
+        }
+        break;
+
+      case PaymentPlatform.GARANTI:
         if (garantiDepositIntents) {
           setDepositIntents(garantiDepositIntents);
         }
         break;
-        // if (hdfcDepositIntents) {
-        //   setDepositIntents(hdfcDepositIntents);
-        // }
-        // break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
@@ -186,18 +188,20 @@ export default function Deposit() {
         case PaymentPlatform.HDFC:
           return (
             <NewPositionContainer>
+              <HdfcNewPosition
+                handleBackClick={handleBackClickOnNewDeposit}
+              />
+            </NewPositionContainer>
+          );
+
+        case PaymentPlatform.GARANTI:
+          return (
+            <NewPositionContainer>
               <GarantiNewPosition
                 handleBackClick={handleBackClickOnNewDeposit}
               />
             </NewPositionContainer>
           );
-          // return (
-          //   <NewPositionContainer>
-          //     <HdfcNewPosition
-          //       handleBackClick={handleBackClickOnNewDeposit}
-          //     />
-          //   </NewPositionContainer>
-          // );
       }
     }
   

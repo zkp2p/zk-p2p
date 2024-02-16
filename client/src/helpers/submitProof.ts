@@ -23,7 +23,7 @@ export const reformatMultiProofAndSignalsForChain = (
   bodyHashProof: string,
   bodyHashPublicSignals: string,
 ) => {
-  if (!(proof && bodyHashProof)) return "";
+  if (!(proof && bodyHashProof)) return [{ a: [], b: [], c: [], signals: []}, { a: [], b: [], c: [], signals: []}];
 
   const parsedProof = JSON.parse(proof);
   const parsedBodyHashProof = JSON.parse(bodyHashProof);

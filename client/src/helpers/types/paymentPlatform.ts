@@ -1,13 +1,15 @@
 import americaFlagSvg from '../../assets/images/america-flag.svg';
 import indiaFlagSvg from '../../assets/images/india-flag.svg';
+import turkeyFlagSvg from '../../assets/images/turkey-flag.svg';
 
 
 export const PaymentPlatform = {
   VENMO: "venmo",
-  HDFC: "hdfc"
+  HDFC: "hdfc",
+  GARANTI: "garanti"
 } as const;
 
-export const paymentPlatforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
+export const paymentPlatforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC, PaymentPlatform.GARANTI];
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 
@@ -30,5 +32,11 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformName: 'HDFC',
     platformCurrency: 'INR',
     flagSvg: indiaFlagSvg
+  },
+  [PaymentPlatform.GARANTI]: {
+    platformId: PaymentPlatform.GARANTI,
+    platformName: 'Garanti',
+    platformCurrency: 'TRL',
+    flagSvg: turkeyFlagSvg
   }
 };

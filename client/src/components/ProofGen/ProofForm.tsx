@@ -165,8 +165,15 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
         }
         break;
-      // Change to GARANTI
+
       case PaymentPlatform.HDFC:
+        if (storedProofValue && storedSignalsValue) {
+          console.log("Update Proof Gen Status");
+          setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
+        }
+        break;
+
+      case PaymentPlatform.GARANTI:
         if (storedBodyHashProofValue && storedBodyHashSignalsValue && storedProofValue && storedSignalsValue) {
           console.log("Update Proof Gen Status");
           setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
@@ -227,17 +234,28 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
           case PaymentPlatform.HDFC:
             // sanitizeAndProcessHdfcEmailSubject
-            // try {
-            //   const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
+            try {
+              const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
     
-            //   if (didSanitize) {
-            //     setEmailFull(processedEmail);
-            //     return;
-            //   };
-            // } catch (e) {
-            //   setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
-            //   return;
-            // }
+              if (didSanitize) {
+                setEmailFull(processedEmail);
+                return;
+              };
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
+              return;
+            }
+
+            // validateHdfcDKIMSignature
+            try {
+              await validateHdfcDKIMSignature(emailFull);
+            } catch (e) {
+              setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
+              return;
+            }
+            break;
+
+          case PaymentPlatform.GARANTI:
             try {
               const { processedEmail, didSanitize } = sanitizeAndProcessGarantiEmailSubject(emailFull);
               if (didSanitize) {
@@ -249,14 +267,6 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               return;
             }
 
-            // validateHdfcDKIMSignature
-            // try {
-            //   await validateHdfcDKIMSignature(emailFull);
-            // } catch (e) {
-            //   setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
-            //   return;
-            // }
-            // break;
             try {
               await validateGarantiDKIMSignature(emailFull);
             } catch (e) {

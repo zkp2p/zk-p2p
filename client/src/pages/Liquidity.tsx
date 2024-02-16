@@ -6,6 +6,8 @@ import useVenmoRampState from '@hooks/venmo/useRampState';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useGarantiRampState from '@hooks/garanti/useRampState';
+import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 
 
 export const Liquidity: React.FC = () => {
@@ -31,6 +33,15 @@ export const Liquidity: React.FC = () => {
     shouldFetchDeposits: shouldFetchHdfcDeposits
   } = useHdfcLiquidity();
 
+  const {
+    refetchDepositCounter: refetchGarantiDepositCounter,
+    shouldFetchRampState: shouldFetchGarantiRampState
+  } = useGarantiRampState();
+  const {
+    refetchDeposits: refetchGarantiDeposits,
+    shouldFetchDeposits: shouldFetchGarantiDeposits
+  } = useGarantiLiquidity();
+
   /*
    * Hooks
    */
@@ -50,6 +61,14 @@ export const Liquidity: React.FC = () => {
 
     if (shouldFetchHdfcDeposits) {
       refetchHdfcDeposits?.();
+    }
+
+    if (shouldFetchGarantiRampState) {
+      refetchGarantiDepositCounter?.();
+    }
+
+    if (shouldFetchGarantiDeposits) {
+      refetchGarantiDeposits?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

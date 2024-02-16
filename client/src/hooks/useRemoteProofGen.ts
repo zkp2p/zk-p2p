@@ -55,7 +55,10 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
         apiUrl = REMOTE_PROOF_API_URL;
         break
       case PaymentPlatform.HDFC:
-        // apiUrl = REMOTE_PROOF_UPI_API_URL;
+        apiUrl = REMOTE_PROOF_UPI_API_URL;
+        break;
+      
+      case PaymentPlatform.GARANTI:
         apiUrl = REMOTE_PROOF_GARANTI_API_URL;
         break;
     }

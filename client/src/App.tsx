@@ -52,6 +52,8 @@ import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
 // Garanti Contexts
 import GarantiDepositsProvider  from './contexts/garanti/Deposits/DepositsProvider';
+import GarantiLiquidityProvider from './contexts/garanti/Liquidity/LiquidityProvider';
+import GarantiOnRamperIntentsProvider  from './contexts/garanti/OnRamperIntents/OnRamperIntentsProvider';
 import GarantiRampProvider from './contexts/garanti/Ramp/RampProvider';
 import GarantiRegistrationProvider from './contexts/garanti/Registration/RegistrationProvider';
 
@@ -160,10 +162,12 @@ const providersWithProps: ProvidersType[] = [
   [GarantiDepositsProvider, {}],
   [VenmoPermissionsProvider, {}],
   [VenmoLiquidityProvider, {}],
-  [DenyListProvider, {}],
   [HdfcLiquidityProvider, {}],
+  [GarantiLiquidityProvider, {}],
+  [DenyListProvider, {}],
   [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
+  [GarantiOnRamperIntentsProvider, {}],
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
   [ModalSettingsProvider, {}],
