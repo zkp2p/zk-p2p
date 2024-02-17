@@ -197,26 +197,6 @@ export default function SendForm() {
     sendTransactionAsync: writeSubmitBridgeAsync
   } = useSendTransaction(writeBridgeConfig);
 
-  //
-  // Bridge useContractWrite 4337
-  //
-
-  // const { config: writeBridgeConfig4337 } = usePrepareSendUserOperation({
-  //   to: socketBridgeAddress ?? '',
-  //   value: ZERO,
-  //   data: socketSendTransactionData as `0x${string}` ?? '',
-  //   onError: (error: { message: any }) => {
-  //     console.error(error.message);
-  //   },
-  //   enabled: true
-  // });
-
-  // const {
-  //   data: submitBridgeResult,
-  //   status: signBridgeTransactionStatus,
-  //   sendUserOperationAsync: writeSubmitBridgeAsync
-  // } = useSendUserOperation(writeBridgeConfig4337);
-
   const {
     status: mineBridgeTransactionStatus
   } = useWaitForTransaction({
@@ -224,9 +204,12 @@ export default function SendForm() {
     onSuccess(data: any) {
       console.log('writeSubmitBridgeAsync successful: ', data);
       
-      refetchUsdcApprovalToSocketBridge?.();
+      setCurrentQuote(ZERO_QUOTE);
+      setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
 
       refetchUsdcBalance?.();
+
+      refetchUsdcApprovalToSocketBridge?.();
     },
   });
 
