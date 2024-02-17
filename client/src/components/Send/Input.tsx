@@ -168,6 +168,7 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   background-color: #131A2A;
   font-size: ${({ fontSize }) => fontSize || '28'}px;
 
+
   &:focus {
     box-shadow: none;
     outline: none;
@@ -189,6 +190,7 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   ${({ readOnly }) => 
     readOnly && `
       pointer-events: none;
+      color: #6C757D;
     `
   }
 `;

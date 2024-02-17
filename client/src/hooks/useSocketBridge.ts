@@ -2,14 +2,13 @@ type SocketQuoteRequestParams = {
   toChainId: string,
   toTokenAddress: string,
   fromAmount: string,
-  recipient: string,
   userAddress: string
+  recipient?: string,
 }
 
 const API_KEY = process.env.SOCKET_API_KEY || "";
   
 export default function useSocketBridge() {
-  
   const getSocketQuote = async ({ fromAmount, recipient, toChainId, toTokenAddress, userAddress }: SocketQuoteRequestParams) => {
     const quotesRequest = {
       fromChainId: '8453',                                            // Always will be from Base
@@ -17,11 +16,17 @@ export default function useSocketBridge() {
       fromTokenAddress: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Will always be USDC on Base
       fromAmount,
       toTokenAddress,
-      recipient,
-      userAddress,
+      userAddress,                                                    // 0x18Cc6F90512C6D95ACA0d57F98C727D61873c06a
       singleTxOnly: 'true',                                           // This is to toggle not allowing a swap AFTER bridging to the new chain
       sort: 'output',
       uniqueRoutesPerBridge: 'true'
+    } as any;
+
+    // defaultSwapSlippage - default?
+    // defaultBridgeSlippage - default?
+
+    if (recipient) {
+      quotesRequest.recipient = recipient;
     }
 
     const apiUrl = 'https://api.socket.tech/v2/quote';
@@ -48,7 +53,7 @@ export default function useSocketBridge() {
 
       throw new Error('Failed to fetch quote');
     }
-  }
+  };
 
   const getSocketTransactionData = async (route: any) => {
     const apiUrl = 'https://api.socket.tech/v2/build-tx';
@@ -72,7 +77,7 @@ export default function useSocketBridge() {
 
       throw new Error('Failed to fetch txn data');
     }
-  }
+  };
   
   const getSocketTransactionStatus = async (transactionHash: string, toChainId: string) => {
     const apiUrl = `https://api.socket.tech/v2/bridge-status`;
