@@ -4,10 +4,9 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
-  usePrepareSendTransaction
+  usePrepareSendTransaction,
+  useSendTransaction
 } from 'wagmi';
-
-import { usePrepareSendUserOperation, useSendUserOperation } from "@zerodev/wagmi";
 
 // import debounce from 'lodash/debounce';
 
@@ -182,8 +181,9 @@ export default function SendForm() {
   // Bridge useContractWrite non-4337
   //
 
-  const { config: writeBridgeConfig, error: writeBridgeConfigError } = usePrepareSendTransaction({
+  const { config: writeBridgeConfig } = usePrepareSendTransaction({
     to: socketBridgeAddress,
+    data: socketSendTransactionData,
     value: ZERO,
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -191,13 +191,11 @@ export default function SendForm() {
     enabled: shouldConfigureBridgeWrite
   });
 
-  console.log('writeBridgeConfigError: ', writeBridgeConfigError);
-
   const {
     data: submitBridgeResult,
     status: signBridgeTransactionStatus,
-    writeAsync: writeSubmitBridgeAsync
-  } = useContractWrite(writeBridgeConfig);
+    sendTransactionAsync: writeSubmitBridgeAsync
+  } = useSendTransaction(writeBridgeConfig);
 
   //
   // Bridge useContractWrite 4337
