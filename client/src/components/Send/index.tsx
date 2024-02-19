@@ -573,6 +573,19 @@ export default function SendForm() {
       usdcApprovalToSocketBridge
     ]
   );
+
+  useEffect(() => {
+    if (currentQuote.sendAmountInput) {
+      const simulatedEvent = {
+        target: {
+          value: currentQuote.sendAmountInput,
+          name: 'sendAmountInput'
+        }
+      } as ChangeEvent<HTMLInputElement>;
+  
+      handleSendAmountInputChange(simulatedEvent, 'sendAmountInput');
+    }
+  }, [sendNetwork, receiveToken, currentQuote.sendAmountInput]);
   
   /*
    * Helpers
