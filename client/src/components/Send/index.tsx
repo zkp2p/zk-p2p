@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useState, ChangeEvent } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState, ChangeEvent } from 'react';
 import styled from 'styled-components/macro';
 import {
   useContractWrite,
@@ -7,7 +7,7 @@ import {
   usePrepareSendTransaction,
   useSendTransaction
 } from 'wagmi';
-// import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce';
 
 import { Button } from "@components/common/Button";
 import { CustomConnectButton } from "@components/common/ConnectButton";
@@ -224,7 +224,11 @@ export default function SendForm() {
     resetSendStateOnInputChangeAfterSuccessfulSend();
     
     const value = event.target.value;
-    if (value === "") {
+    if (value === currentQuote.sendAmountInput) {
+      return;
+    } else if (value === "") {
+      cancelDebounce();
+
       setCurrentQuote(ZERO_QUOTE);
     } else if (value === "0") {
       setCurrentQuote({
@@ -242,17 +246,11 @@ export default function SendForm() {
         [field]: value
       });
 
-      const receiveAmountQuote = await fetchReceiveAmountQuote(value);
 
-      console.log('receiveAmountQuote:', receiveAmountQuote);
-
-      if (receiveAmountQuote) {
-        setCurrentQuote({
-          sendAmountInput: value,
-          receiveAmountQuote
-        });
-      }
+      await debouncedFetchSocketQuote(value);
     } else {
+      cancelDebounce();
+      
       setCurrentQuote({
         sendAmountInput: value,
         receiveAmountQuote: {
@@ -327,7 +325,25 @@ export default function SendForm() {
 
   }, [socketSendTransactionData]);
 
-  const fetchSocketQuoteDebounced = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
+  const debouncedFetchSocketQuote = useCallback(
+    debounce(async (sendAmount, recipient?) => {
+      const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
+      
+      if (receiveAmountQuote) {
+        setCurrentQuote({
+          sendAmountInput: sendAmount,
+          receiveAmountQuote
+        });
+      }
+    }, 750  // 750ms
+  ), [] );
+
+  const cancelDebounce = () => {
+    debouncedFetchSocketQuote.cancel();
+  };
+
+  const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
+
     // console.log("sendNetwork: ", sendNetwork);
     // console.log("receiveToken: ", receiveToken);
     // console.log("loggedInEthereumAddress: ", loggedInEthereumAddress);
@@ -585,6 +601,8 @@ export default function SendForm() {
   
       handleSendAmountInputChange(simulatedEvent, 'sendAmountInput');
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendNetwork, receiveToken, currentQuote.sendAmountInput]);
   
   /*
@@ -601,12 +619,12 @@ export default function SendForm() {
         decimals: 6
       };
     } else {
-      return await fetchSocketQuoteDebounced(inputAmount);
+      return await fetchSocketQuote(inputAmount);
     }
   };
 
   const fetchFinalReceiveAmountAndTransactionData = async (inputAmount: string, recipientAddress: string): Promise<string | null> => {
-    const updatedQuote = await fetchSocketQuoteDebounced(inputAmount, recipientAddress);
+    const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
 
     // todo: perform check if updated quote price range moved too much
     console.log('updatedQuote:', updatedQuote);

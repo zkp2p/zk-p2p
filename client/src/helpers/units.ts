@@ -134,6 +134,6 @@ export function toTokenString(value: bigint, decimals: number): string {
   if (decimals === 18) {
     return toEthStringLong(value);
   } else {
-    return toUsdString(value);
+    return toUsdcString(value);
   }
 };
