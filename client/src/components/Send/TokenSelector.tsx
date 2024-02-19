@@ -151,6 +151,11 @@ const LogoAndTokenLabel = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 4px 8px 4px 4px;
   gap: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #141A2A;
+  }
 `;
 
 const NetworkSvg = styled.img`

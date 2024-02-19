@@ -155,6 +155,11 @@ const NetworkContainer = styled.div`
   align-items: center;
   background: #0E111C;
   padding: 1.05rem 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #141A2A;
+  }
 `;
 
 const NetworkLogoAndNameContainer = styled.div`
