@@ -110,3 +110,30 @@ export function toEthString(value: bigint): string {
 
   return ethValue.toFixed(3);
 };
+
+function toEthStringLong(value: bigint): string {
+  if (typeof value !== 'bigint') {
+    return '0';
+  }
+
+  const valueStr = value.toString();
+  const len = valueStr.length;
+  const decimals = 18;
+  const precision = 9;
+
+  const paddedValue = valueStr.padStart(decimals + 1, '0');
+  const integerPart = paddedValue.substring(0, len - decimals) || '0';
+  const fractionalPart = paddedValue.substring(len - decimals).padEnd(decimals, '0');
+
+  const ethValue = `${integerPart}.${fractionalPart.substring(0, precision)}`;
+
+  return parseFloat(ethValue).toFixed(precision);
+};
+
+export function toTokenString(value: bigint, decimals: number): string {
+  if (decimals === 18) {
+    return toEthStringLong(value);
+  } else {
+    return toUsdcString(value);
+  }
+};

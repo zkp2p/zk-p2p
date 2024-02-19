@@ -25,8 +25,9 @@ import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 import AccountProvider from "./contexts/common/Account/AccountProvider";
 import BalancesProvider from "./contexts/common/Balances/BalancesProvider";
 import GoogleAuthProvider from './contexts/common/GoogleAuth/GoogleAuthProvider';
-import PlatformSettings from './contexts/common/PlatformSettings/PlatformSettingsProvider';
+import PlatformSettingsProvider from './contexts/common/PlatformSettings/PlatformSettingsProvider';
 import ProofGenSettingsProvider from "./contexts/common/ProofGenSettings/ProofGenSettingsProvider";
+import SendSettingsProvider from './contexts/common/SendSettings/SendSettingsProvider';
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
@@ -148,7 +149,8 @@ export const buildProvidersTree = (
 const providersWithProps: ProvidersType[] = [
   [AccountProvider, {}],
   [SmartContractsProvider, {}],
-  [PlatformSettings, {}],
+  [PlatformSettingsProvider, {}],
+  [SendSettingsProvider, {}],
   [BalancesProvider, {}],
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],

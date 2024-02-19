@@ -61,6 +61,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
   const [garantiNftAddress, setGarantiNftAddress] = useState<string | null>(null);
 
+  // Socket
+  const [socketBridgeAddress, setSocketBridgeAddress] = useState<string | null>(null);
+
   /*
    * Hooks
    */
@@ -143,6 +146,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
     setGarantiNftAddress(null);
+    
+    // Socket
+    setSocketBridgeAddress(null);
 
     esl && console.log('Set venmoRampAddress: null');
   };
@@ -175,7 +181,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setHdfcNftAddress(contractsForNetwork.hdfcNft);
     setGarantiNftAddress(contractsForNetwork.garanti);
 
-    esl && console.log('Set venmoRampAddress to: ', contractsForNetwork.ramp);
+    // Socket
+    setSocketBridgeAddress(contractsForNetwork.socketBridge);
   };
 
   return (
@@ -214,6 +221,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         venmoNftAddress,
         hdfcNftAddress,
         garantiNftAddress,
+
+        // Socket
+        socketBridgeAddress
       }}
     >
       {children}

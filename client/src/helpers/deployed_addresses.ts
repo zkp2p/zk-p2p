@@ -17,6 +17,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0x03eB0ba3f7A4451C41278Af74E8384079Ae40170',
     'hdfcRegistrationProcessor': '0xD2B4CcA64Fc4B7588D6546780fEdb4c71A4b75D6',
     'hdfcNft': '0x94874b3a294becc3dea2c320c300d2d2a4b25451',
+    'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5'
   },
   'base_staging': {
     'legacyRamp': '0xa08d9952196ABECB2BaCD14188093314053f6335',
@@ -30,6 +31,7 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0x3bCC71916d9d2BB5F52Fdb386814bd84C9312A04',
     'hdfcRegistrationProcessor': '0xC8d7C6a5a8B2158012FB679DB1c3d7fbC1cC2980',
     'hdfcNft': '0x6b64BC61cd03cdD7Ac3aF6Ad6A02977265d21ecB',
+    'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5'
   },
   'sepolia_staging': {
     'legacyRamp': '0x75422735DD94dfD04b7ef5D7044Aba0ce4E3a7A6',
@@ -47,6 +49,7 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0x0EB495994Ee21bfE6D44707A1b67a60F86e254f0',
     'garantiRegistrationProcessor': '0x2c46E12F48dA4b5A91d5F529C2026850F74eB8D1',
     'garantiNft': '',
+    'socketBridge': ''
   },
   'localhardhat': {
     'legacyRamp': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
@@ -64,6 +67,7 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xf5059a5D33d5853360D16C683c16e67980206f36',
     'garantiRegistrationProcessor': '0x851356ae760d987E095750cCeb3bC6014560891C',
     'garantiNft': '',
+    'socketBridge': ''
   },
 };
 

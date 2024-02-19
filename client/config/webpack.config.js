@@ -665,6 +665,7 @@ module.exports = function (webpackEnv) {
         'process.env.PRIVY_APP_ID': JSON.stringify(process.env.PRIVY_APP_ID),
         'process.env.ZERODEV_APP_ID': JSON.stringify(process.env.ZERODEV_APP_ID),
         'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
+        'process.env.SOCKET_API_KEY': JSON.stringify(process.env.SOCKET_API_KEY),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

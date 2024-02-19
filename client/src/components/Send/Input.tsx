@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
-import QuestionHelper from '@components/common/QuestionHelper';
+import { TokenSelector } from '@components/Send/TokenSelector';
 
 
 interface InputProps {
@@ -17,7 +17,7 @@ interface InputProps {
   inputLabel?: string;
   readOnly?: boolean;
   accessoryLabel?: string;
-  helperText?: string;
+  hasSelector?: boolean;
   enableMax?: boolean
   maxButtonOnClick?: () => void;
   fontSize?: number;
@@ -36,7 +36,7 @@ export const Input: React.FC<InputProps> = ({
   type = "text",
   readOnly = false,
   accessoryLabel="",
-  helperText="",
+  hasSelector=false,
   enableMax=false,
   maxButtonOnClick=() => {},
   fontSize = 28
@@ -58,14 +58,6 @@ export const Input: React.FC<InputProps> = ({
           <Label htmlFor={name}>
               {label}
           </Label>
-
-          { 
-            helperText && (
-              <QuestionHelper
-                text={helperText}
-              />
-            )
-          }
         </LabelAndTooltipContainer>
 
         <InputWrapper>
@@ -87,25 +79,31 @@ export const Input: React.FC<InputProps> = ({
         </InputWrapper>
       </LabelAndInputContainer>
 
-      <AccessoryAndInputLabelWrapper>
-        <AccessoryLabelAndMax>
-          <AccessoryLabel>
-            {accessoryLabel}
-          </AccessoryLabel>
+      {hasSelector ? (
+        <SelectorAccessory>
+          <TokenSelector/>
+        </SelectorAccessory>
+      ) : (
+        <AccessoryAndInputLabelWrapper>
+          <AccessoryLabelAndMax>
+            <AccessoryLabel>
+              {accessoryLabel}
+            </AccessoryLabel>
 
-          {enableMax && accessoryLabel && (
-            <MaxButton onClick={maxButtonOnClick}>
-              Max
-            </MaxButton>
-          )}
-        </AccessoryLabelAndMax>
+            {enableMax && accessoryLabel && (
+              <MaxButton onClick={maxButtonOnClick}>
+                Max
+              </MaxButton>
+            )}
+          </AccessoryLabelAndMax>
 
-        {inputLabel ? (
-          <InputLabel>
-            <span>{inputLabel}</span>
-          </InputLabel>
-        ) : null}
-      </AccessoryAndInputLabelWrapper>
+          {inputLabel ? (
+            <InputLabel>
+              <span>{inputLabel}</span>
+            </InputLabel>
+          ) : null}
+        </AccessoryAndInputLabelWrapper>
+      )}
     </Container>
   );
 };
@@ -170,6 +168,7 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   background-color: #131A2A;
   font-size: ${({ fontSize }) => fontSize || '28'}px;
 
+
   &:focus {
     box-shadow: none;
     outline: none;
@@ -191,8 +190,17 @@ const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   ${({ readOnly }) => 
     readOnly && `
       pointer-events: none;
+      color: #6C757D;
     `
   }
+`;
+
+const SelectorAccessory = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #CED4DA;
+  padding-top: 8px;
 `;
 
 const AccessoryAndInputLabelWrapper = styled.div`

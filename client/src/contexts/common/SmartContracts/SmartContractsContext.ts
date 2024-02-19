@@ -37,6 +37,9 @@ interface SmartContractsValues {
   venmoNftAddress: string | null;
   hdfcNftAddress: string | null;
   garantiNftAddress: string | null;
+
+  // Socket
+  socketBridgeAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -73,6 +76,9 @@ const defaultValues: SmartContractsValues = {
   venmoNftAddress: null,
   hdfcNftAddress: null,
   garantiNftAddress: null,
+
+  // Socket
+  socketBridgeAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

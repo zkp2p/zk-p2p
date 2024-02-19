@@ -1,10 +1,6 @@
 import { createContext } from 'react';
 
-import {
-  PaymentPlatformType,
-  PaymentPlatform,
-  paymentPlatforms,
-} from '@helpers/types';
+import { PaymentPlatformType, PaymentPlatform, paymentPlatforms } from '@helpers/types';
 
 
 interface PlatformSettingsValues {

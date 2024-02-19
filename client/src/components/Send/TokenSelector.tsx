@@ -1,22 +1,24 @@
 import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
-import { X } from 'react-feather';
+import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
 import { Overlay } from '@components/modals/Overlay';
-import { NetworkRow } from '@components/Send/NetworkRow';
-import { networksInfo, SendNetworkType } from '@helpers/types';
-import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
+import { TokenRow } from '@components/Send/TokenRow';
+import {
+  baseUSDCTokenData,
+  receiveTokenData,
+  networkSupportedTokens,
+  ReceiveTokenType,
+  ReceiveTokenData,
+} from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
-import useAccount from '@hooks/useAccount';
-import useSendSettings from '@hooks/useSendSettings';
-
-import baseSvg from '../../assets/images/base.svg';
-import sepoliaSvg from '../../assets/images/sepolia.svg';
+import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
+import useSendSettings from "@hooks/useSendSettings";
 
 
-export const NetworkSelector: React.FC = () => {
+export const TokenSelector: React.FC = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -26,8 +28,7 @@ export const NetworkSelector: React.FC = () => {
    * Contexts
    */
 
-  const { network } = useAccount();
-  const { sendNetwork, setSendNetwork, sendNetworks } = useSendSettings();
+  const { sendNetwork, SendNetwork, receiveToken, setReceiveToken } = useSendSettings();
 
   /*
    * Handlers
@@ -37,9 +38,9 @@ export const NetworkSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (network: SendNetworkType) => {
-    if (setSendNetwork) {
-      setSendNetwork(network);
+  const handleSelectToken = (receiveToken: ReceiveTokenType) => {
+    if (setReceiveToken) {
+      setReceiveToken(receiveToken);
 
       toggleOpen();
     }
@@ -49,27 +50,17 @@ export const NetworkSelector: React.FC = () => {
    * Helpers
    */
 
-  const networkSvg = (): string => {
-    if (network === 'sepolia') {
-      return sepoliaSvg;
-    } else {
-      if (sendNetwork) {
-        return networksInfo[sendNetwork].networkSvg;
-      } else {
-        return baseSvg;
-      }
-    }
-  };
+  const selectedReceiveToken = (): ReceiveTokenData => {
+    if (receiveTokenData && receiveToken && sendNetwork) {
+      const selectedReceiveTokenData = receiveTokenData[sendNetwork][receiveToken];
 
-  const networkName = (): string => {
-    if (network === 'sepolia') {
-      return 'Sepolia';
-    } else {
-      if (sendNetwork) {
-        return networksInfo[sendNetwork].networkName;
+      if (!selectedReceiveTokenData) {
+        return baseUSDCTokenData;
       } else {
-        return 'Loading';
+        return selectedReceiveTokenData;
       }
+    } else {
+      return baseUSDCTokenData;
     }
   };
 
@@ -79,20 +70,14 @@ export const NetworkSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <NetworkContainer onClick={toggleOpen}>
-        <NetworkLogoAndNameContainer>
-          <NetworkSvg src={networkSvg()} />
+      <LogoAndTokenLabel onClick={toggleOpen}>
+        <NetworkSvg src={selectedReceiveToken().logoURI} />
 
-          <NetworkNameContainer>
-            <NetworkHeader>
-              {'To'}
-            </NetworkHeader>
-            <NetworkNameLabel>
-              {networkName()}
-            </NetworkNameLabel>
-          </NetworkNameContainer>
-        </NetworkLogoAndNameContainer>
-      </NetworkContainer>
+        <TokenLabel>
+          {selectedReceiveToken().symbol}
+        </TokenLabel>
+        <StyledChevronDown/>
+      </LogoAndTokenLabel>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -101,7 +86,7 @@ export const NetworkSelector: React.FC = () => {
           <ModalContainer>
             <TableHeader>
               <ThemedText.SubHeader style={{ textAlign: 'left' }}>
-                Select a network
+                Select a token
               </ThemedText.SubHeader>
 
               <button
@@ -115,19 +100,29 @@ export const NetworkSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {sendNetworks.map((network, index) => (
-                <NetworkRow
-                  key={index}
-                  platformName={networksInfo[network].networkName}
-                  flagSvg={networksInfo[network].networkSvg}
-                  isSelected={sendNetwork === network}
-                  onRowClick={() => handleSelectPlatform(network)}
-                />
-              ))}
+              {networkSupportedTokens[sendNetwork ?? SendNetwork.ETHEREUM].map((tokenType, index) => {
+                const tokenData = receiveTokenData[sendNetwork ?? SendNetwork.ETHEREUM][tokenType];
+
+                const receiveTokenName = tokenData?.name ?? 'USD Coin';
+                const receiveTokenSymbol = tokenData?.symbol ?? 'USDC';
+                const tokenSvg = tokenData?.logoURI ?? '';
+                const isSelected = receiveToken === tokenType;
+
+                return (
+                  <TokenRow
+                    key={index}
+                    receiveTokenName={receiveTokenName}
+                    receiveTokenSymbol={receiveTokenSymbol}
+                    tokenSvg={tokenSvg}
+                    isSelected={isSelected}
+                    onRowClick={() => handleSelectToken(tokenType)}
+                  />
+                );
+              })}
             </Table>
 
             <TableFooter>
-              Let us know which networks you are interested in seeing ZKP2P add support
+              Let us know which platforms you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
@@ -145,16 +140,17 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const NetworkContainer = styled.div`
+const LogoAndTokenLabel = styled.div`
+  width: 98px;
   display: flex;
   flex-direction: row;
-  width: 188px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  justify-content: space-between;
   align-items: center;
-  background: #0E111C;
-  padding: 1.05rem 1rem;
+  justify-content: space-between;
+  border-radius: 24px;
+  background: #0D111C;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 8px 4px 4px;
+  gap: 6px;
   cursor: pointer;
 
   &:hover {
@@ -162,36 +158,25 @@ const NetworkContainer = styled.div`
   }
 `;
 
-const NetworkLogoAndNameContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  justify-content: flex-start;
-`;
-
-const NetworkNameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  justify-content: center;
-  text-align: left;
-`;
-
-const NetworkHeader = styled.div`
-  font-size: 14px;
-  color: #CED4DA;
-`;
-
-const NetworkNameLabel = styled.div`
-  font-size: 16px;
-  color: #FFF;
-`;
-
 const NetworkSvg = styled.img`
   border-radius: 18px;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
+`;
+
+const TokenLabel = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFF;
+  padding-top: 2px;
+`;
+
+const StyledChevronDown = styled(ChevronDown)`
+  width: 20px;
+  height: 20px;
+  color: #FFF;
 `;
 
 const ModalAndOverlayContainer = styled.div`
