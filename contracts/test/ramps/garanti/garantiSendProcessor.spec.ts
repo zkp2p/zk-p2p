@@ -143,7 +143,7 @@ describe("GarantiSendProcessor", () => {
       });
     });
 
-    describe("when the intermediate hash inputs or body hash outputs do not match registration proof", async () => {
+    describe("when the intermediate hash inputs or body hash outputs do not match send proof", async () => {
       beforeEach(async () => {
         subjectBodyHashProof = createTypedGarantiBodyHashProof(
           ["0x0e66547750bf9cb8b1bac8aaff2a03abef9cf45c41dd854f23298122070e975c", "0x2a2b72d169e4e4d68a8b88992722e28e35ba9e4472c03f09c92e36dde7e3e22d"],
@@ -154,7 +154,7 @@ describe("GarantiSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Send circuit i/o values don't match");
+        await expect(subject()).to.be.revertedWith("Invalid intermediate or output hash");
       });
     });
 
