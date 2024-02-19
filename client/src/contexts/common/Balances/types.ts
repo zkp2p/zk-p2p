@@ -9,4 +9,6 @@ export interface ContextValues {
   refetchUsdcApprovalToRamp: (() => void) | null
   usdcApprovalToHdfcRamp: bigint | null
   refetchUsdcApprovalToHdfcRamp: (() => void) | null
+  usdcApprovalToGarantiRamp: bigint | null
+  refetchUsdcApprovalToGarantiRamp: (() => void) | null
 }

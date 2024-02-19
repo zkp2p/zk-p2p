@@ -8,6 +8,8 @@ import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useVenmoRampState from '@hooks/venmo/useRampState';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useGarantiRampState from '@hooks/garanti/useRampState';
+import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 
 
 export default function Deposit() {
@@ -32,6 +34,15 @@ export default function Deposit() {
     refetchDeposits: refetchHdfcDeposits,
     shouldFetchDeposits: shouldFetchHdfcDeposits
   } = useHdfcLiquidity();
+
+  const {
+    refetchDepositCounter: refetchGarantiDepositCounter,
+    shouldFetchRampState: shouldFetchGarantiRampState
+  } = useGarantiRampState();
+  const {
+    refetchDeposits: refetchGarantiDeposits,
+    shouldFetchDeposits: shouldFetchGarantiDeposits
+  } = useGarantiLiquidity();
 
   /*
    * Hooks
@@ -76,6 +87,26 @@ export default function Deposit() {
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchHdfcRampState, refetchHdfcDepositCounter]);
+
+  useEffect(() => {
+    if (shouldFetchGarantiDeposits) {
+      const intervalId = setInterval(() => {
+        refetchGarantiDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchGarantiDeposits, refetchGarantiDeposits]);
+
+  useEffect(() => {
+    if (shouldFetchGarantiRampState) {
+      const intervalId = setInterval(() => {
+        refetchGarantiDepositCounter?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchGarantiRampState, refetchGarantiDepositCounter]);
 
   /*
    * Component

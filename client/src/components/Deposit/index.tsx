@@ -4,12 +4,14 @@ import styled from 'styled-components/macro';
 import { AutoColumn } from '@components/layouts/Column';
 import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
 import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
+import { NewPosition as GarantiNewPosition } from '@components/Deposit/garanti/NewPosition';
 import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useGarantiDeposits from '@hooks/garanti/useDeposits';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -33,6 +35,14 @@ export default function Deposit() {
     shouldFetchDepositIntents: shouldFetchHdfcDepositIntents,
     refetchDepositIntents: refetchHdfcDepositIntents,
   } = useHdfcDeposits();
+
+  const {
+    refetchDeposits: refetchGarantiDeposits,
+    shouldFetchDeposits: shouldFetchGarantiDeposits,
+    depositIntents: garantiDepositIntents,
+    shouldFetchDepositIntents: shouldFetchGarantiDepositIntents,
+    refetchDepositIntents: refetchGarantiDepositIntents,
+  } = useGarantiDeposits();
 
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -73,6 +83,18 @@ export default function Deposit() {
   }, [shouldFetchHdfcDeposits]);
 
   useEffect(() => {
+    if (shouldFetchGarantiDeposits) {
+      const intervalId = setInterval(() => {
+        refetchGarantiDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchGarantiDeposits]);
+
+  useEffect(() => {
     if (shouldFetchVenmoDepositIntents) {
       const intervalId = setInterval(() => {
         refetchVenmoDepositIntents?.();
@@ -97,6 +119,18 @@ export default function Deposit() {
   }, [shouldFetchHdfcDepositIntents]);
 
   useEffect(() => {
+    if (shouldFetchGarantiDepositIntents) {
+      const intervalId = setInterval(() => {
+        refetchGarantiDepositIntents?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchGarantiDepositIntents]);
+
+  useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         if (venmoDepositIntents) {
@@ -110,12 +144,18 @@ export default function Deposit() {
         }
         break;
 
+      case PaymentPlatform.GARANTI:
+        if (garantiDepositIntents) {
+          setDepositIntents(garantiDepositIntents);
+        }
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoDepositIntents, hdfcDepositIntents]);
+  }, [paymentPlatform, venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents]);
 
   /*
    * Handlers
@@ -149,6 +189,15 @@ export default function Deposit() {
           return (
             <NewPositionContainer>
               <HdfcNewPosition
+                handleBackClick={handleBackClickOnNewDeposit}
+              />
+            </NewPositionContainer>
+          );
+
+        case PaymentPlatform.GARANTI:
+          return (
+            <NewPositionContainer>
+              <GarantiNewPosition
                 handleBackClick={handleBackClickOnNewDeposit}
               />
             </NewPositionContainer>

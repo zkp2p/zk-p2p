@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { RegistrationForm } from "@components/Registration"
 import useRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
+import useGarantiRegistration from '@hooks/garanti/useRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -27,6 +28,13 @@ export const Registration: React.FC = () => {
   } = useHdfcRegistration();
 
   const {
+    refetchRampAccount: refetchGarantiAccount,
+    shouldFetchRegistration: shouldFetchGarantiRegistration,
+    refetchGarantiNftId,
+    shouldFetchGarantiNftId
+  } = useGarantiRegistration();
+
+  const {
     PaymentPlatform,
     paymentPlatform
   } = usePlatformSettings();
@@ -47,15 +55,25 @@ export const Registration: React.FC = () => {
         }
         break;
 
-      case PaymentPlatform.HDFC:
-        if (shouldFetchHdfcRegistration) {
-          refetchHdfcAccount?.();
-        }
+        case PaymentPlatform.HDFC:
+          if (shouldFetchHdfcRegistration) {
+            refetchHdfcAccount?.();
+          }
+  
+          if (shouldFetchHdfcNftId) {
+            refetchHdfcNftId?.();
+          }
+          break;
 
-        if (shouldFetchHdfcNftId) {
-          refetchHdfcNftId?.();
-        }
-        break;
+        case PaymentPlatform.GARANTI:
+          if (shouldFetchGarantiRegistration) {
+            refetchGarantiAccount?.();
+          }
+  
+          if (shouldFetchGarantiNftId) {
+            refetchGarantiNftId?.();
+          }
+          break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);

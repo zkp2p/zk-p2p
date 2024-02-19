@@ -385,13 +385,13 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
           <ProofAndSignalsContainer>
             <LabeledTextArea
               label="Proof Output"
-              value={proof}
+              value={proof[0]}
               disabled={true}
               height={"12vh"} />
 
             <LabeledTextArea
               label="Public Signals"
-              value={publicSignals}
+              value={publicSignals[0]}
               disabled={true}
               height={"12vh"}
               secret />

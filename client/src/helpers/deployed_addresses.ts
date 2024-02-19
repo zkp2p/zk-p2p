@@ -56,6 +56,10 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0x68B1D87F95878fE05B998F19b66F4baba5De1aed',
     'hdfcRegistrationProcessor': '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE',
     'hdfcNft': '',
+    'garantiRamp': '0x9E545E3C0baAB3E08CdfD552C960A1050f373042',
+    'garantiSendProcessor': '0xf5059a5D33d5853360D16C683c16e67980206f36',
+    'garantiRegistrationProcessor': '0x851356ae760d987E095750cCeb3bC6014560891C',
+    'garantiNft': '',
   },
 };
 

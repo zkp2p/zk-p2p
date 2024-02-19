@@ -19,6 +19,10 @@ import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 
+// Garanti
+import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
+import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
+
 
 interface OnRamperIntentTableProps {
   onIntentRowClick?: () => void;
@@ -40,10 +44,10 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     currentIntent: currentVenmoIntent,
     refetchIntentHash: refetchVenmoIntentHash
   } = useVenmoOnRamperIntents();
- const {
-  calculateUsdFromRequestedUSDC,
-  depositStore: venmoDepositStore
-} = useVenmoLiquidity();
+  const {
+    calculateUsdFromRequestedUSDC,
+    depositStore: venmoDepositStore
+  } = useVenmoLiquidity();
 
  const {
     currentIntentHash: currentHdfcIntentHash,
@@ -51,8 +55,17 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     refetchIntentHash: refetchHdfcIntentHash
   } = useHdfcOnRamperIntents();
  const {
-  depositStore: hdfcDepositStore
-} = useHdfcLiquidity();
+    depositStore: hdfcDepositStore
+  } = useHdfcLiquidity();
+
+  const {
+    currentIntentHash: currentGarantiIntentHash,
+    currentIntent: currentGarantiIntent,
+    refetchIntentHash: refetchGarantiIntentHash
+  } = useGarantiOnRamperIntents();
+  const {
+    depositStore: garantiDepositStore
+  } = useGarantiLiquidity();
 
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
  
@@ -60,8 +73,10 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   venmoRampAddress,
   venmoRampAbi,
   hdfcRampAddress,
-  hdfcRampAbi
-} = useSmartContracts();
+  hdfcRampAbi,
+  garantiRampAddress,
+  garantiRampAbi
+  } = useSmartContracts();
 
   /*
    * State
@@ -136,13 +151,18 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRampAddress(hdfcRampAddress);
         setRampAbi(hdfcRampAbi as any);
         break;
+      
+      case PaymentPlatform.GARANTI:
+        setRampAddress(garantiRampAddress);
+        setRampAbi(garantiRampAbi as any);
+        break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress]);
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -154,12 +174,16 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setCurrentIntentHash(currentHdfcIntentHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setCurrentIntentHash(currentGarantiIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash]);
+  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash, currentGarantiIntentHash]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -171,12 +195,16 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setDepositStore(hdfcDepositStore);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setDepositStore(garantiDepositStore);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoDepositStore, hdfcDepositStore]);
+  }, [paymentPlatform, venmoDepositStore, hdfcDepositStore, garantiDepositStore]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -187,13 +215,17 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
       case PaymentPlatform.HDFC:
         setCurrentIntent(currentHdfcIntent);
         break;
+      
+      case PaymentPlatform.GARANTI:
+        setCurrentIntent(currentGarantiIntent);
+        break;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, currentVenmoIntent, currentHdfcIntent]);
+  }, [paymentPlatform, currentVenmoIntent, currentHdfcIntent, currentGarantiIntent]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -205,12 +237,16 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRefetchIntentHash(() => refetchHdfcIntentHash);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRefetchIntentHash(() => refetchGarantiIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash]);
+  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash, refetchGarantiIntentHash]);
  
   useEffect(() => {
     if (currentIntent && depositStore) {
@@ -230,10 +266,9 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const venmoIdString = currentIntent.depositorVenmoId.toString();
         const depositorAddress = storedDeposit.deposit.depositor;
         const recipientAddress = currentIntent.intent.to;
-        const isVenmo = paymentPlatform === PaymentPlatform.VENMO;
 
         const sanitizedIntent: IntentRowData = {
-          isVenmo,
+          paymentPlatform,
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
@@ -326,7 +361,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         <Table>
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
-              isVenmo={intentsRow.isVenmo}
+              paymentPlatform={intentsRow.paymentPlatform}
               key={rowIndex}
               amountUSDCToReceive={intentsRow.amountUSDCToReceive}
               amountUSDToSend={intentsRow.amountUSDToSend}

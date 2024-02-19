@@ -4,8 +4,10 @@ import styled from "styled-components";
 import DepositTable from "@components/Deposit";
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useGarantiDeposits from '@hooks/garanti/useDeposits';
 import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
+import useGarantiRegistration from '@hooks/garanti/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
@@ -36,8 +38,19 @@ export const Deposit: React.FC = () => {
   } = useHdfcDeposits();
 
   const {
+    refetchDeposits: refetchGarantiDeposits,
+    shouldFetchDeposits: shouldFetchGarantiDeposits,
+    refetchDepositIntents: refetchGarantiDepositIntents,
+    shouldFetchDepositIntents: shouldFetchGarantiDepositIntents,
+  } = useGarantiDeposits();
+
+  const {
     isRegistered: isRegisteredOnHdfc
   } = useHdfcRegistration();
+
+  const {
+    isRegistered: isRegisteredOnGaranti
+  } = useGarantiRegistration();
 
   const {
     PaymentPlatform,
@@ -63,7 +76,7 @@ export const Deposit: React.FC = () => {
           refetchUsdcBalance?.();
         }
         break;
-
+      
       case PaymentPlatform.HDFC:
         if (shouldFetchHdfcDeposits) {
           refetchHdfcDeposits?.();
@@ -74,6 +87,20 @@ export const Deposit: React.FC = () => {
         }
 
         if (shouldFetchUsdcBalance && isRegisteredOnHdfc) {
+          refetchUsdcBalance?.();
+        }
+        break;
+
+      case PaymentPlatform.GARANTI:
+        if (shouldFetchGarantiDeposits) {
+          refetchGarantiDeposits?.();
+        }
+
+        if (shouldFetchGarantiDepositIntents) {
+          refetchGarantiDepositIntents?.();
+        }
+
+        if (shouldFetchUsdcBalance && isRegisteredOnGaranti) {
           refetchUsdcBalance?.();
         }
         break;

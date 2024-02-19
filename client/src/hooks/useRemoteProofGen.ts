@@ -14,6 +14,11 @@ if (!REMOTE_PROOF_UPI_API_URL) {
     throw new Error("REMOTE_PROOF_UPI_API_URL environment variable is not defined.");
 }
 
+const REMOTE_PROOF_GARANTI_API_URL = process.env.REMOTE_PROOF_GARANTI_API_URL;
+if (!REMOTE_PROOF_GARANTI_API_URL) {
+    throw new Error("REMOTE_PROOF_UPI_API_URL environment variable is not defined.");
+}
+
 type ProofGenParams = {
   paymentType: PaymentPlatformType;
   circuitType: string;
@@ -42,9 +47,21 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
 
   const fetchData = async () => {
     setLoading(true);
-
     const nonce = generateNonce();
-    const apiUrl = paymentType === PaymentPlatform.VENMO ? REMOTE_PROOF_API_URL : REMOTE_PROOF_UPI_API_URL;
+
+    let apiUrl;
+    switch (paymentType) {
+      case PaymentPlatform.VENMO:
+        apiUrl = REMOTE_PROOF_API_URL;
+        break
+      case PaymentPlatform.HDFC:
+        apiUrl = REMOTE_PROOF_UPI_API_URL;
+        break;
+      
+      case PaymentPlatform.GARANTI:
+        apiUrl = REMOTE_PROOF_GARANTI_API_URL;
+        break;
+    }
     if (!apiUrl) {
       throw new Error("Invalid proving url.");
     }
@@ -56,7 +73,7 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "payment_type": paymentType,
+          "payment_type": "garanti",
           "email_type": circuitType, // legacy_parameter
           "circuit_type": circuitType,
           "email": emailBody,

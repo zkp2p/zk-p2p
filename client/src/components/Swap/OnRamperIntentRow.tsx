@@ -10,10 +10,11 @@ import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
+import { PaymentPlatformType } from "@helpers/types";
 
 
 interface IntentRowProps {
-  isVenmo: boolean;
+  paymentPlatform: PaymentPlatformType | undefined;
   amountUSDCToReceive: string;
   amountUSDToSend: string;
   expirationTimestamp: string;
@@ -28,7 +29,7 @@ interface IntentRowProps {
 export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
-  isVenmo,
+  paymentPlatform,
   amountUSDCToReceive,
   amountUSDToSend,
   expirationTimestamp,
@@ -47,7 +48,6 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const { blockscanUrl } = useSmartContracts();
   const {
-    paymentPlatform,
     PaymentPlatform,
     reviewedRequirementsForPlatform,
     markPlatformRequirementsAsReviewed
@@ -65,16 +65,46 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    * Helpers
    */
 
-  const currencySymbol = isVenmo ? '$' : '₹';
-  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
-
   const requestedAmountLabel = `${amountUSDCToReceive} USDC`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
-  
-  const venmoLink = `https://venmo.com/code?user_id=${depositorVenmoId}`;
-  const hdfcLink = `upi://pay?pa=${depositorVenmoId.replace(/\0/g, '')}&am=${amountUSDToSend}&cu=INR`;
-  const qrLink = isVenmo ? venmoLink : hdfcLink;
+
+  function getPlatformVariables(paymentPlatform: PaymentPlatformType | undefined) {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return {
+          qrLink: `https://venmo.com/code?user_id=${depositorVenmoId}`,
+          currencySymbol: '$',
+          paymentPlatformName: 'Venmo',
+        };
+      case PaymentPlatform.HDFC:
+        return {
+          qrLink: `upi://pay?pa=${depositorVenmoId.replace(/\0/g, '')}&am=${amountUSDToSend}&cu=INR`,
+          currencySymbol: '₹',
+          paymentPlatformName: 'HDFC',
+        };
+
+      case PaymentPlatform.GARANTI:
+        return {
+          qrLink: ``,
+          currencySymbol: '₺',
+          paymentPlatformName: 'Garanti',
+        };
+
+      default:
+        return {
+          qrLink: `https://venmo.com/code?user_id=${depositorVenmoId}`,
+          currencySymbol: '$',
+          paymentPlatformName: 'Venmo',
+        };
+    }
+  }
+
+  const {
+    paymentPlatformName,
+    currencySymbol,
+    qrLink
+  } = getPlatformVariables(paymentPlatform);
 
   /*
    * Handlers
@@ -135,7 +165,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       {
         shouldShowSwapModal && (
           <SwapModal
-            isVenmo={isVenmo}
+            isVenmo={paymentPlatform === PaymentPlatform.VENMO}
             venmoId={depositorVenmoId}
             link={qrLink}
             amount={amountUSDToSend}

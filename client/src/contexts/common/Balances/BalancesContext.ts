@@ -13,6 +13,8 @@ const defaultValues: ContextValues = {
   refetchUsdcApprovalToRamp: null,
   usdcApprovalToHdfcRamp: null,
   refetchUsdcApprovalToHdfcRamp: null,
+  usdcApprovalToGarantiRamp: null,
+  refetchUsdcApprovalToGarantiRamp: null,
 };
 
 const BalancesContext = createContext<ContextValues>(defaultValues)

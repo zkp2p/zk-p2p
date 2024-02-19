@@ -12,6 +12,7 @@ import { ThemedText } from '@theme/text';
 
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
+import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 import useAccount from '@hooks/useAccount';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
@@ -43,6 +44,10 @@ export const DepositsTable: React.FC = () => {
   } = useHdfcLiquidity();
 
   const {
+    depositStore: garantiDepositStore,
+  } = useGarantiLiquidity();
+
+  const {
     isLoggedIn
   } = useAccount();
 
@@ -70,6 +75,9 @@ export const DepositsTable: React.FC = () => {
         break;
       case PaymentPlatform.HDFC:
         depositStoreToDisplay = hdfcDepositStore ?? [];
+        break;
+      case PaymentPlatform.GARANTI:
+        depositStoreToDisplay = garantiDepositStore ?? [];
         break;
       default:
         break;
@@ -100,7 +108,7 @@ export const DepositsTable: React.FC = () => {
 
       setPositionsRowData(sanitizedDeposits);
     }
-  }, [venmoDepositStore, hdfcDepositStore, paymentPlatform]);
+  }, [venmoDepositStore, hdfcDepositStore, garantiDepositStore, paymentPlatform]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -168,7 +176,7 @@ export const DepositsTable: React.FC = () => {
               {paginatedData.map((positionRow, rowIndex) => (
                 <PositionRowStyled key={rowIndex}>
                   <DepositsRow
-                    isVenmo={positionRow.platformType === PaymentPlatform.VENMO}
+                    paymentPlatform={positionRow.platformType}
                     availableDepositAmount={positionRow.availableDepositAmount}
                     conversionRate={positionRow.conversionRate}
                     conversionCurrency={positionRow.conversionCurrency}
