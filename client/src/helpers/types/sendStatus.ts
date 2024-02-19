@@ -13,3 +13,12 @@ export const SendTransactionStatus = {
 };
 
 export type SendTransactionStatusType = typeof SendTransactionStatus[keyof typeof SendTransactionStatus];
+
+
+export const FetchQuoteStatus = {
+  DEFAULT: 'default',
+  LOADING: 'loading',
+  LOADED: 'loaded',
+};
+
+export type FetchQuoteStatusType = typeof FetchQuoteStatus[keyof typeof FetchQuoteStatus];

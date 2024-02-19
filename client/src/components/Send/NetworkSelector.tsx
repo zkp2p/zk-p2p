@@ -153,7 +153,7 @@ const NetworkContainer = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   justify-content: space-between;
   align-items: center;
-  background: #141A2A;
+  background: #0E111C;
   padding: 1.05rem 1rem;
 `;
 

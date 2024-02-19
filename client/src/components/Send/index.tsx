@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useMemo, useState, useCallback, ChangeEvent } from 'react';
+import React, { Suspense, useEffect, useMemo, useState, ChangeEvent } from 'react';
 import styled from 'styled-components/macro';
 import {
   useContractWrite,
@@ -7,13 +7,13 @@ import {
   usePrepareSendTransaction,
   useSendTransaction
 } from 'wagmi';
-
 // import debounce from 'lodash/debounce';
 
 import { Button } from "@components/common/Button";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { AutoColumn } from '@components/layouts/Column';
 import { NetworkSelector } from '@components/Send/NetworkSelector';
+import { QuoteDrawer } from '@components/Send/QuoteDrawer';
 import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text';
 import { ZERO } from '@helpers/constants';
@@ -22,6 +22,7 @@ import {
   LoginStatus,
   SendNetwork,
   SendTransactionStatus,
+  FetchQuoteStatus,
   ReceiveToken,
   receiveTokenData,
   networksInfo,
@@ -90,6 +91,8 @@ export default function SendForm() {
 
   const [sendState, setSendState] = useState(SendTransactionStatus.DEFAULT);
   const [currentQuote, setCurrentQuote] = useState<SendQuote>(ZERO_QUOTE);
+
+  const [quoteFetchingStatus, setQuoteFetchingStatus] = useState<string>(FetchQuoteStatus.DEFAULT);
 
   const [recipientAddressInput, setRecipientAddressInput] = useState<RecipientAddress>(EMPTY_RECIPIENT_ADDRESS);
 
@@ -316,15 +319,9 @@ export default function SendForm() {
    */
 
   useEffect(() => {
-    console.log('socketSendTransactionData:', socketSendTransactionData);
-
     if (socketSendTransactionData) {
-      console.log('socketSendTransactionData_1');
-
       setShouldConfigureBridgeWrite(true);
     } else {
-      console.log('socketSendTransactionData_2');
-
       setShouldConfigureBridgeWrite(false);
     }
 
@@ -346,6 +343,8 @@ export default function SendForm() {
       selectedReceiveTokenData = baseUSDCTokenData;
     };
 
+    setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
+
     const quote = await getSocketQuote({
       fromAmount: toBigInt(sendAmount).toString(),
       userAddress: loggedInEthereumAddress,
@@ -355,6 +354,8 @@ export default function SendForm() {
     });
 
     if (!quote.success && quote.route.length === 0) {
+      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
       return null;
     };
 
@@ -363,6 +364,8 @@ export default function SendForm() {
     const toAmount = BigInt(bestRoute.toAmount);
     const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
     const serviceTimeSeconds = bestRoute.serviceTime as number;
+
+    setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
 
     return {
       fromAmount: fromAmount,
@@ -380,7 +383,7 @@ export default function SendForm() {
       
       // Send Amount Input
       if (!sendAmountInput) { 
-        console.log('MISSING_AMOUNTS');
+        // console.log('MISSING_AMOUNTS');
 
         setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
@@ -391,7 +394,7 @@ export default function SendForm() {
           const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
           if (isSendAmountGreaterThanBalance) {
-            console.log('INSUFFICIENT_BALANCE');
+            // console.log('INSUFFICIENT_BALANCE');
 
             setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
           } else {
@@ -400,7 +403,7 @@ export default function SendForm() {
             const isReceiveAmountZero = receiveAmount?.fromAmount === ZERO;
 
             if (isReceiveAmountZero) {
-              console.log('INVALID_ROUTES');
+              // console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
@@ -411,11 +414,11 @@ export default function SendForm() {
               // Native Base USDC Transfer
               if (isNativeTransferTransaction) {
                 if (!recipientAddressInput.input) {
-                  console.log('DEFAULT');
+                  // console.log('DEFAULT');
 
                   setSendState(SendTransactionStatus.DEFAULT);
                 } else if (!isValidRecipientAddress) {
-                  console.log('INVALID_RECIPIENT_ADDRESS');
+                  // console.log('INVALID_RECIPIENT_ADDRESS');
 
                   setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                 } else {
@@ -423,15 +426,15 @@ export default function SendForm() {
                   const miningSendTransaction = mineTransferTransactionStatus === 'loading';
     
                   if (signingSendTransaction) {
-                    console.log('TRANSACTION_SIGNING');
+                    // console.log('TRANSACTION_SIGNING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                   } else if (miningSendTransaction) {
-                    console.log('TRANSACTION_MINING');
+                    // console.log('TRANSACTION_MINING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_MINING);
                   } else {
-                    console.log('VALID_FOR_NATIVE_TRANSFER');
+                    // console.log('VALID_FOR_NATIVE_TRANSFER');
 
                     setSendState(SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER);
                   }
@@ -451,26 +454,26 @@ export default function SendForm() {
                   // Approval Required
                   if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
                     if (signingApproveTransaction) {
-                      console.log('TRANSACTION_SIGNING');
+                      // console.log('TRANSACTION_SIGNING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                     } else if (miningApproveTransaction) {
-                      console.log('TRANSACTION_MINING');
+                      // console.log('TRANSACTION_MINING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_MINING);
                     } else {
-                      console.log('APPROVAL_REQUIRED');
+                      // console.log('APPROVAL_REQUIRED');
 
                       setSendState(SendTransactionStatus.APPROVAL_REQUIRED);
                     }
                   } else {
                     // Approval Not Required, Recipient Address Fork (see below)
                     if (!recipientAddressInput.input) {
-                      console.log('DEFAULT');
+                      // console.log('DEFAULT');
 
                       setSendState(SendTransactionStatus.DEFAULT);
                     } else if (!isValidRecipientAddress) {
-                      console.log('INVALID_RECIPIENT_ADDRESS');
+                      // console.log('INVALID_RECIPIENT_ADDRESS');
 
                       setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                     } else {
@@ -478,27 +481,27 @@ export default function SendForm() {
                       const miningBridgeTransaction = mineBridgeTransactionStatus === 'loading';
         
                       if (signingBridgeTransaction) {
-                        console.log('TRANSACTION_SIGNING');
+                        // console.log('TRANSACTION_SIGNING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                       } else if (miningBridgeTransaction) {
-                        console.log('TRANSACTION_MINING');
+                        // console.log('TRANSACTION_MINING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_MINING);
                       } else {
                         if (shouldConfigureBridgeWrite) {
-                          console.log('VALID_FOR_BRIDGE');
+                          // console.log('VALID_FOR_BRIDGE');
 
                           setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
                         } else {
                           // todo: bridge transaction has not been configured yet
-                          console.log('INVALID_FOR_BRIDGE')
+                          // console.log('INVALID_FOR_BRIDGE')
                         }
                       }
                     }
                   }
                 } else {
-                  console.log('MISSING_AMOUNTS');
+                  // console.log('MISSING_AMOUNTS');
 
                   setSendState(SendTransactionStatus.MISSING_AMOUNTS);
                 }
@@ -506,7 +509,7 @@ export default function SendForm() {
             }
           }
         } else {
-          console.log('MISSING_AMOUNTS');
+          // console.log('MISSING_AMOUNTS');
 
           setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
@@ -605,7 +608,7 @@ export default function SendForm() {
       return null;
     };
 
-    console.log('socketTransactionData:', socketTransactionData);
+    // console.log('socketTransactionData:', socketTransactionData);
 
     return socketTransactionData.result.txData;
   };
@@ -875,6 +878,14 @@ export default function SendForm() {
               </Link>
             ) : null}
 
+            { quoteFetchingStatus !== FetchQuoteStatus.DEFAULT ? (
+              <QuoteDrawer
+                isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
+                totalGasFeeUsd={currentQuote.receiveAmountQuote?.totalGasFeesInUsd}
+                serviceTimeSeconds={currentQuote.receiveAmountQuote?.serviceTimeSeconds}
+              />
+            ) : null}
+
             <ButtonContainer>
               {!isLoggedIn ? (
                 <CustomConnectButton
@@ -888,15 +899,6 @@ export default function SendForm() {
                   onClick={async () => {
                     ctaOnClick();
                   }}>
-                  {/* onClick={async () => {
-                    try {
-                      setTransactionHash('');
-
-                      await writeSubmitTransferAsync?.();
-                    } catch (error) {
-                      console.log('writeSubmitTransferAsync failed: ', error);
-                    }
-                  }}> */}
                   { ctaText() }
                 </Button>
                )}
@@ -963,7 +965,7 @@ const NetworkLogoAndNameContainer = styled.div`
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
-  background: #0E111C;
+  background: #141A2A;
   padding: 1.05rem 1rem;
 `;
 
@@ -982,7 +984,7 @@ const NetworkHeader = styled.div`
 
 const NetworkNameLabel = styled.div`
   font-size: 16px;
-  color: #FFF;
+  color: #6C757D;
   font-weight: 600;
 `;
 

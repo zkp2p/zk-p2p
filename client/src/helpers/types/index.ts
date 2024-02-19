@@ -6,8 +6,8 @@ export type { TransactionStatusType } from './transactionStatus';
 export { NewDepositTransactionStatus } from './newDepositStatus';
 export type { NewDepositTransactionStatusType } from './newDepositStatus';
 
-export { SendTransactionStatus } from './sendStatus';
-export type { SendTransactionStatusType } from './sendStatus';
+export { SendTransactionStatus, FetchQuoteStatus } from './sendStatus';
+export type { SendTransactionStatusType, FetchQuoteStatusType } from './sendStatus';
 
 export { LoginStatus } from './loginStatus';
 export type { LoginStatusType } from './loginStatus';
