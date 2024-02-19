@@ -168,7 +168,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       </TitleContainer>
 
       <ProofGenerationForm
-        paymentPlatformType={PaymentPlatform.HDFC}
+        paymentPlatformType={PaymentPlatform.GARANTI}
         circuitType={CircuitType.EMAIL_VENMO_REGISTRATION}
         circuitRemoteFilePath={REGISTRATION_KEY_FILE_NAME}
         circuitInputs={"1"} // Arbitrary value, unused for registration

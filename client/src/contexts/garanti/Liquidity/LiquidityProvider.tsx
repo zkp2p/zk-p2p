@@ -145,7 +145,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       
       const depositData = depositWithAvailableLiquidityData.deposit;
       const deposit: Deposit = {
-        platformType: PaymentPlatform.HDFC, // Change to GARANTI
+        platformType: PaymentPlatform.GARANTI,
         depositor: depositData.depositor.toString(),
         venmoId: depositData.garantiIban,
         depositAmount: depositData.depositAmount,

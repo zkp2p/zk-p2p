@@ -214,7 +214,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
       </TitleContainer>
 
       <ProofGenerationForm
-        paymentPlatformType={PaymentPlatform.HDFC}
+        paymentPlatformType={PaymentPlatform.GARANTI}
         circuitType={CircuitType.EMAIL_VENMO_SEND}
         circuitRemoteFilePath={SEND_KEY_FILE_NAME}
         circuitInputs={selectedIntentHash}

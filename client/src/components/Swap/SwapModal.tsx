@@ -77,7 +77,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
           paymentPlatformName: 'Garanti',
-          instructionsText: `Scan and send ₺${amount} <br />to ${venmoId}`,
+          instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number`,
         };
       default:
         return {
@@ -119,17 +119,24 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <div style={{ flex: 0.25 }}/>
         </RowBetween>
-
-        <QRContainer>
-          <QRCode
-            value={link}
-            size={192}/>
-        </QRContainer>
-        <QRLabel>
-          <Link href={troubleScanningQRCodeLink} target="_blank">  
-            Trouble scanning QR?
-          </Link>
-        </QRLabel>
+        {paymentPlatform != PaymentPlatform.GARANTI ? (
+          <div>
+            <QRContainer>
+              <QRCode
+                value={link}
+                size={192}/>
+            </QRContainer>
+            <QRLabel>
+              <Link href={troubleScanningQRCodeLink} target="_blank">  
+                Trouble scanning QR?
+              </Link>
+            </QRLabel>     
+          </div>
+        ) : (
+          <IBANTitle
+            dangerouslySetInnerHTML={{ __html: venmoId }}
+          />
+        )}
 
         <InstructionsContainer>
           <InstructionsTitle
@@ -213,6 +220,13 @@ const InstructionsContainer = styled.div`
   gap: 0.5rem;
   align-items: center;
   padding: 0 1.75rem;
+`;
+
+const IBANTitle = styled.div`
+  line-height: 1.5;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
 `;
 
 const InstructionsTitle = styled.div`

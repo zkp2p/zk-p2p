@@ -315,8 +315,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
     } else {
       if (isProvingTypeFast) {
-        // Change to GARANTI
-        if (paymentPlatformType === PaymentPlatform.HDFC) {
+        if (paymentPlatformType === PaymentPlatform.GARANTI) {
           await Promise.all([
             generateFastProof(remoteGenerateProof),
             generateFastProof(remoteGenerateBodyHashProof),
