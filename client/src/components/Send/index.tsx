@@ -636,6 +636,8 @@ export default function SendForm() {
   const ctaOnClick = async () => {
     switch (sendState) {
       case SendTransactionStatus.APPROVAL_REQUIRED:
+        // console.log('ctaOnClick: APPROVAL_REQUIRED');
+
         try {
           await writeSubmitApproveAsync?.();
         } catch (error) {
@@ -644,6 +646,8 @@ export default function SendForm() {
         break;
 
       case SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER:
+        // console.log('ctaOnClick: VALID_FOR_NATIVE_TRANSFER');
+
         try {
           setTransactionHash('');
 
@@ -654,7 +658,7 @@ export default function SendForm() {
         break;
 
       case SendTransactionStatus.VALID_FOR_BRIDGE:
-        console.log('ctaOnClick: VALID_FOR_BRIDGE');
+        // console.log('ctaOnClick: VALID_FOR_BRIDGE');
 
         try {
           setTransactionHash('');
