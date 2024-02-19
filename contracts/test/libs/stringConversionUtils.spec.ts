@@ -135,6 +135,19 @@ describe("StringConversionUtils", () => {
       expect(output).to.equal(BigNumber.from(12345600));
     });
 
+    describe("when the decimal character is a comma", async () => {
+      beforeEach(async () => {
+        subjectString = "123,456";
+        subjectDecimalCharacter = "0x2C";
+      });
+
+      it("should return the correct value", async () => {
+        const output = await subject();
+  
+        expect(output).to.equal(BigNumber.from(12345600));
+      });
+    });
+
     describe("when the amount of decimals equals the amount of decimals in the string", async () => {
       beforeEach(async () => {
         subjectDesiredDecimals = BigNumber.from(3);

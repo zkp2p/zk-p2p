@@ -4,7 +4,7 @@ import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
 import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
 import { Groth16Verifier } from "../../verifiers/garanti_registration_verifier.sol";
-import { IGarantiBodyHashVerifier } from "./interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiBodySuffixHashVerifier } from "./interfaces/IGarantiBodySuffixHashVerifier.sol";
 import { IGarantiRegistrationProcessor } from "./interfaces/IGarantiRegistrationProcessor.sol";
 import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
@@ -23,14 +23,14 @@ contract GarantiRegistrationProcessor is
     uint256 constant public PACK_SIZE = 7;
 
         /* ============ Public Variables ============ */
-    IGarantiBodyHashVerifier public bodyHashVerifier;
+    IGarantiBodySuffixHashVerifier public bodyHashVerifier;
     
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapterV2 _garantiMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        IGarantiBodyHashVerifier _bodyHashVerifier,
+        IGarantiBodySuffixHashVerifier _bodyHashVerifier,
         string memory _emailFromAddress,
         uint256 _timestampBuffer
     )
@@ -50,7 +50,7 @@ contract GarantiRegistrationProcessor is
 
     function processProof(
         IGarantiRegistrationProcessor.RegistrationProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         public
         override

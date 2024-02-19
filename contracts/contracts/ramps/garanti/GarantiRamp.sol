@@ -8,7 +8,7 @@ import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
 import { IPoseidon3 } from "../../interfaces/IPoseidon3.sol";
 import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
-import { IGarantiBodyHashVerifier } from "./interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiBodySuffixHashVerifier } from "./interfaces/IGarantiBodySuffixHashVerifier.sol";
 import { IGarantiRegistrationProcessor } from "./interfaces/IGarantiRegistrationProcessor.sol";
 import { IGarantiSendProcessor } from "./interfaces/IGarantiSendProcessor.sol";
 
@@ -211,7 +211,7 @@ contract GarantiRamp is Ownable {
      */
     function register(
         IGarantiRegistrationProcessor.RegistrationProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         external
     {
@@ -360,7 +360,7 @@ contract GarantiRamp is Ownable {
      */
     function onRamp(
         IGarantiSendProcessor.SendProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         external
     {
@@ -765,7 +765,7 @@ contract GarantiRamp is Ownable {
      */
     function _verifyOnRampProof(
         IGarantiSendProcessor.SendProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         internal
         returns(Intent memory, Deposit storage, bytes32)
@@ -796,7 +796,7 @@ contract GarantiRamp is Ownable {
      */
     function _verifyRegistrationProof(
         IGarantiRegistrationProcessor.RegistrationProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         internal
         returns(bytes32)
