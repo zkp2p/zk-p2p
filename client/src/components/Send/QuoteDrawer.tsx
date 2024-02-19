@@ -39,7 +39,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
    */
 
   const serviceTimeString = `~${serviceTimeSeconds} seconds`;
-  const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Network fee';
+  const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Fee estimate';
   const gasFeeValue = isLoading ? '' : `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`;
 
   /*
@@ -69,8 +69,23 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
         <HorizontalDivider/>
         <RequirementListContainer>
           <QuoteStep 
-            label={"Estimated Bridge Time"}
+            label={"Bridge fee"}
+            value={gasFeeValue}
+          />
+
+          <QuoteStep 
+            label={"Route"}
+            value={"Hop"}
+          />
+
+          <QuoteStep
+            label={"Estimated bridge time"}
             value={serviceTimeString}
+          />
+
+          <QuoteStep
+            label={"ZKP2P fee"}
+            value={"$0"}
           />
         </RequirementListContainer>
       </InstructionsDropdown>
@@ -96,7 +111,7 @@ const TitleLabelAndDropdownIconContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0px 12px;
+  padding: 12px 0px 10px;
 `;
 
 const GasFeeLabel = styled.div`

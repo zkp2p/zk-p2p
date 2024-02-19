@@ -339,6 +339,8 @@ export default function SendForm() {
   ), [] );
 
   const cancelDebounce = () => {
+    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
     debouncedFetchSocketQuote.cancel();
   };
 

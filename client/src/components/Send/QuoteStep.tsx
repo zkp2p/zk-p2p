@@ -22,7 +22,6 @@ export const QuoteStep: React.FC<QuoteStepProps> = ({
 
 const Container = styled(Row)`
   border-radius: 12px;
-  line-height: 1.35;
   font-size: 14px;
   justify-content: space-between;
 `;
