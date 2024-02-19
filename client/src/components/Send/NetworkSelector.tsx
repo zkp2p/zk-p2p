@@ -181,7 +181,6 @@ const NetworkHeader = styled.div`
 const NetworkNameLabel = styled.div`
   font-size: 16px;
   color: #FFF;
-  font-weight: 600;
 `;
 
 const NetworkSvg = styled.img`

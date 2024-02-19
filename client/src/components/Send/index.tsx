@@ -978,6 +978,7 @@ const NetworkNameContainer = styled.div`
   flex-direction: column;
   gap: 0.4rem;
   justify-content: center;
+  align-items: center;
   text-align: left;
 `;
 
@@ -989,7 +990,6 @@ const NetworkHeader = styled.div`
 const NetworkNameLabel = styled.div`
   font-size: 16px;
   color: #6C757D;
-  font-weight: 600;
 `;
 
 const NetworkSvg = styled.img`
