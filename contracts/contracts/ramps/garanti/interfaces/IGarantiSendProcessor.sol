@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-import { IGarantiBodyHashVerifier } from "./IGarantiBodyHashVerifier.sol";
+import { IGarantiBodySuffixHashVerifier } from "./IGarantiBodySuffixHashVerifier.sol";
 
 interface IGarantiSendProcessor {
 
@@ -15,7 +15,7 @@ interface IGarantiSendProcessor {
 
     function processProof(
         SendProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         external
     returns(uint256, uint256, bytes32, bytes32, bytes32);

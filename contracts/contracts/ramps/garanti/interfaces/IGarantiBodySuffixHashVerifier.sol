@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.18;
 
-interface IGarantiBodyHashVerifier {
+interface IGarantiBodySuffixHashVerifier {
 
-    struct BodyHashProof {
+    struct BodySuffixHashProof {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;

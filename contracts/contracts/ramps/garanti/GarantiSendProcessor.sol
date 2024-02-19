@@ -4,13 +4,11 @@ import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
 import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
 import { Groth16Verifier } from "../../verifiers/garanti_send_verifier.sol";
-import { IGarantiBodyHashVerifier } from "./interfaces/IGarantiBodyHashVerifier.sol";
+import { IGarantiBodySuffixHashVerifier } from "./interfaces/IGarantiBodySuffixHashVerifier.sol";
 import { IGarantiSendProcessor } from "./interfaces/IGarantiSendProcessor.sol";
 import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
-
-import "hardhat/console.sol";
 
 pragma solidity ^0.8.18;
 
@@ -23,14 +21,14 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
     uint256 constant PACK_SIZE = 7;
 
     /* ============ Public Variables ============ */
-    IGarantiBodyHashVerifier public bodyHashVerifier;
+    IGarantiBodySuffixHashVerifier public bodyHashVerifier;
 
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         IKeyHashAdapterV2 _garantiMailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
-        IGarantiBodyHashVerifier _bodyHashVerifier,
+        IGarantiBodySuffixHashVerifier _bodyHashVerifier,
         string memory _emailFromAddress,
         uint256 _timestampBuffer
     )
@@ -49,7 +47,7 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
     /* ============ External Functions ============ */
     function processProof(
         IGarantiSendProcessor.SendProof calldata _proof,
-        IGarantiBodyHashVerifier.BodyHashProof calldata _bodyHashProof
+        IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         public
         override
