@@ -2,6 +2,7 @@ import { PaymentPlatform, PaymentPlatformType } from '@helpers/types';
 
 import venmoCopy from './venmo';
 import hdfcCopy from './hdfc';
+import garantiCopy from './garanti';
 
 
 // Platform strings
@@ -45,6 +46,8 @@ export class PlatformStringProvider {
       this.strings = venmoCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
       this.strings = hdfcCopy;
+    } else if (platformType === PaymentPlatform.GARANTI) {
+      this.strings = garantiCopy;
     } else {
       throw new Error('Invalid platform type');
     }
@@ -60,6 +63,8 @@ export class PlatformStringProvider {
       strings = venmoCopy;
     } else if (platformType === PaymentPlatform.HDFC) {
       strings = hdfcCopy;
+    } else if (platformType === PaymentPlatform.GARANTI) {
+      strings = garantiCopy;
     } else {
       throw new Error('Invalid platform type');
     }

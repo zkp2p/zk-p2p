@@ -9,6 +9,7 @@ import { DepositIntent, PaymentPlatform } from '@helpers/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useGarantiDeposits from '@hooks/garanti/useDeposits';
 import useLiquidity from '@hooks/venmo/useLiquidity';
 
 
@@ -32,6 +33,10 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   const {
     depositIntents: hdfcDepositIntents
   } = useHdfcDeposits();
+
+  const {
+    depositIntents: garantiDepositIntents
+  } = useGarantiDeposits();
 
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
@@ -72,16 +77,18 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
    */
 
   useEffect(() => {
-    if (venmoDepositIntents && hdfcDepositIntents) {
-      const combinedDepositIntents = [...venmoDepositIntents, ...hdfcDepositIntents];
+    if (venmoDepositIntents && hdfcDepositIntents && garantiDepositIntents) {
+      const combinedDepositIntents = [...venmoDepositIntents, ...hdfcDepositIntents, ...garantiDepositIntents];
 
       setDepositIntents(combinedDepositIntents);
     } else if (venmoDepositIntents) {
       setDepositIntents(venmoDepositIntents);
     } else if (hdfcDepositIntents) {
       setDepositIntents(hdfcDepositIntents);
+    } else if (garantiDepositIntents) {
+      setDepositIntents(garantiDepositIntents);
     }
-  }, [venmoDepositIntents, hdfcDepositIntents]);
+  }, [venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents]);
 
   useEffect(() => {
     if (depositIntents) {

@@ -10,6 +10,7 @@ import { Abi } from '@helpers/types';
 import { ThemedText } from '@theme/text'
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useGarantiDeposits from '@hooks/garanti/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -30,7 +31,15 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
    * Contexts
    */
 
-  const { venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi, blockscanUrl } = useSmartContracts();
+  const {
+    venmoRampAddress,
+    venmoRampAbi,
+    hdfcRampAddress,
+    hdfcRampAbi,
+    garantiRampAddress,
+    garantiRampAbi,
+    blockscanUrl 
+} = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -41,6 +50,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
   const {
     refetchDeposits: refetchHdfcDeposits
   } = useHdfcDeposits();
+
+  const {
+    refetchDeposits: refetchGarantiDeposits
+  } = useGarantiDeposits();
 
   /*
    * State
@@ -89,6 +102,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           refetchHdfcDeposits?.();
           break;
 
+        case PaymentPlatform.GARANTI:
+          refetchGarantiDeposits?.();
+          break;
+
         default:
           throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
@@ -122,6 +139,13 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
         if (hdfcRampAddress && hdfcRampAbi) {
           setReleaseRampAddress(hdfcRampAddress);
           setReleaseRampAbi(hdfcRampAbi);
+        }
+        break;
+
+      case PaymentPlatform.GARANTI:
+        if (garantiRampAddress && garantiRampAbi) {
+          setReleaseRampAddress(garantiRampAddress);
+          setReleaseRampAbi(garantiRampAbi);
         }
         break;
 

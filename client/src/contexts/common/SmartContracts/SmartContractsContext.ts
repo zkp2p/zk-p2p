@@ -26,10 +26,17 @@ interface SmartContractsValues {
   hdfcSendProcessorAddress: string | null;
   hdfcSendProcessorAbi: Abi | null;
 
+  // garanti
+  garantiRampAddress: string | null;
+  garantiRampAbi: Abi | null;
+  garantiSendProcessorAddress: string | null;
+  garantiSendProcessorAbi: Abi | null;
+
   // nft
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
   hdfcNftAddress: string | null;
+  garantiNftAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -54,11 +61,18 @@ const defaultValues: SmartContractsValues = {
   hdfcRampAbi: null,
   hdfcSendProcessorAddress: null,
   hdfcSendProcessorAbi: null,
+
+  // garanti
+  garantiRampAddress: null,
+  garantiRampAbi: null,
+  garantiSendProcessorAddress: null,
+  garantiSendProcessorAbi: null,
   
   // nft
   nftAbi: null,
   venmoNftAddress: null,
   hdfcNftAddress: null,
+  garantiNftAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)

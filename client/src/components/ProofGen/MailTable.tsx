@@ -114,6 +114,11 @@ export const MailTable: React.FC<MailTableProps> = ({
             month: 'numeric',
             day: 'numeric'
           });
+        case PaymentPlatform.GARANTI:
+          return date.toLocaleDateString('en-TR', {
+            month: 'numeric',
+            day: 'numeric'
+          });
       }
     }
   };
@@ -125,6 +130,9 @@ export const MailTable: React.FC<MailTableProps> = ({
 
       case PaymentPlatform.HDFC:
         return 'HDFC';
+      
+      case PaymentPlatform.GARANTI:
+        return 'Garanti';
 
       default:
         return '';
@@ -147,6 +155,9 @@ export const MailTable: React.FC<MailTableProps> = ({
         const parsedRecipient = parsedRecipientMatch ? parsedRecipientMatch[1] : "Recipient not found";
 
         return `You have done a UPI txn (${parsedRecipient}: ₹${parsedAmount})`;
+      
+      case PaymentPlatform.GARANTI:
+        return rawEmail.subject;
 
       default:
         return '';
@@ -209,11 +220,27 @@ export const MailTable: React.FC<MailTableProps> = ({
           case PaymentPlatform.HDFC:
             setCtaButtonTitle("Invalid email: must be from HDFC");
             break;
+
+          case PaymentPlatform.GARANTI:
+            setCtaButtonTitle("Invalid email: must be from Garanti");
+            break;
         }
       break;
 
     case EmailInputStatus.INVALID_SUBJECT:
-      setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+      switch (paymentPlatform) {
+        case PaymentPlatform.VENMO:
+          setCtaButtonTitle("Invalid email: must contain 'You Paid'");
+          break;
+
+        case PaymentPlatform.HDFC:
+          setCtaButtonTitle("Invalid email: must be contain 'You have done a UPI txn'");
+          break;
+
+        case PaymentPlatform.GARANTI:
+          setCtaButtonTitle("Invalid email: must contain 'Para Transferi Bilgilendirmesi'");
+          break;
+      }
       break;
 
     case EmailInputStatus.INVALID_DOMAIN_KEY:

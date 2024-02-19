@@ -3,8 +3,10 @@ import styled from 'styled-components/macro'
 
 import { ExistingRegistration as VenmoExistingRegistration } from "@components/Registration/venmo/ExistingRegistration";
 import { ExistingRegistration as HdfcExistingRegistration } from '@components/Registration/hdfc/ExistingRegistration';
+import { ExistingRegistration as GarantiExistingRegistration } from '@components/Registration/garanti/ExistingRegistration';
 import { NewRegistration as VenmoNewRegistration } from "@components/Registration/venmo/NewRegistration";
 import { NewRegistration as HdfcNewRegistration } from '@components/Registration/hdfc/NewRegistration';
+import { NewRegistration as GarantiNewRegistration } from '@components/Registration/garanti/NewRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
  
@@ -44,6 +46,9 @@ export const RegistrationForm: React.FC = () => {
 
       case PaymentPlatform.HDFC:
         return <HdfcExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
+      
+      case PaymentPlatform.GARANTI:
+        return <GarantiExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
@@ -57,6 +62,9 @@ export const RegistrationForm: React.FC = () => {
 
       case PaymentPlatform.HDFC:
         return <HdfcNewRegistration handleBackClick={handleBackClick} />;
+
+      case PaymentPlatform.GARANTI:
+        return <GarantiNewRegistration handleBackClick={handleBackClick} />;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);

@@ -10,7 +10,8 @@ import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
-import { ZKP2P_TG_INDIA_CHAT_LINK } from "@helpers/docUrls";
+import usePlatformSettings from "@hooks/usePlatformSettings";
+import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK } from "@helpers/docUrls";
 
 
 interface SwapModalProps {
@@ -32,6 +33,15 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   onCompleteClick,
   paymentPlatform
 }) => {
+
+  /*
+   * Context
+   */
+
+  const {
+    PaymentPlatform,
+  } = usePlatformSettings();
+
   /*
    * Handlers
    */
@@ -48,10 +58,41 @@ export const SwapModal: React.FC<SwapModalProps> = ({
    * Helpers
    */
 
-  const currencySymbol = isVenmo ? '$' : '₹';
-  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
-  const troubleScanningQRCodeLink = isVenmo ? link : ZKP2P_TG_INDIA_CHAT_LINK;
-  const instructionsText = `Scan and send ${currencySymbol}${amount}` + (!isVenmo ? `<br />to ${venmoId}` : '');
+  function getPlatformVariables(paymentPlatform: PaymentPlatformType | undefined) {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return {
+          troubleScanningQRCodeLink: link,
+          paymentPlatformName: 'Venmo',
+          instructionsText: `Scan and send $${amount}`,
+        };
+      case PaymentPlatform.HDFC:
+        return {
+          troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
+          currencySymbol: '₹',
+          paymentPlatformName: 'HDFC',
+          instructionsText: `Scan and send ₹${amount} <br />to ${venmoId}`,
+        };
+      case PaymentPlatform.GARANTI:
+        return {
+          troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
+          paymentPlatformName: 'Garanti',
+          instructionsText: `Scan and send ₺${amount} <br />to ${venmoId}`,
+        };
+      default:
+        return {
+          troubleScanningQRCodeLink: link,
+          paymentPlatformName: 'Venmo',
+          instructionsText: `Scan and send $${amount}`,
+        };
+    }
+  }
+
+  const {
+    paymentPlatformName,
+    troubleScanningQRCodeLink,
+    instructionsText
+  } = getPlatformVariables(paymentPlatform);
 
   /*
    * Component

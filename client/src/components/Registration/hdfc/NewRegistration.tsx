@@ -33,12 +33,14 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
+  const [bodyHashProof, setBodyHashProof] = useState<string>('');
   const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
   // );
 
   const [publicSignals, setPublicSignals] = useState<string>('');
+  const [bodyHashPublicSignals, setBodyHashPublicSignals] = useState<string>('');
   // const [publicSignals, setPublicSignals] = useState<string>(
   //   JSON.stringify()
   // );
@@ -63,8 +65,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     abi: hdfcRampAbi,
     functionName: 'register',
     args: [
-      ...reformatProofForChain(proof),
-      publicSignals ? JSON.parse(publicSignals) : null,
+      ...reformatProofForChain(proof[0]),
+      publicSignals ? JSON.parse(publicSignals[0]) : null,
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -168,6 +170,10 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
         publicSignals={publicSignals}
         setProof={setProof}
         setPublicSignals={setPublicSignals}
+        bodyHashProof={bodyHashProof}
+        bodyHashPublicSignals={bodyHashPublicSignals}
+        setBodyHashProof={setBodyHashProof}
+        setBodyHashPublicSignals={setBodyHashPublicSignals}
         submitTransactionStatus={submitRegistrationStatus}
         isSubmitMining={isSubmitRegistrationMining}
         isSubmitSuccessful={isSubmitRegistrationSuccessful}

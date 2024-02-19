@@ -1,4 +1,10 @@
 export {
+  GarantiRamp,
+  GarantiRegistrationProcessor,
+  GarantiRegistrationProcessorMock,
+  GarantiSendProcessor,
+  GarantiSendProcessorMock,
+  Groth16Verifier as GarantiBodyHashVerifier,
   HDFCRamp,
   HDFCRegistrationProcessorMock,
   HDFCRegistrationProcessor,

@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import crypto from 'crypto';
 
-
-const HDFC_DENY_LIST_URL = process.env.HDFC_DENY_LIST_URL;
-if (!HDFC_DENY_LIST_URL) {
-  throw new Error("HDFC_DENY_LIST_URL environment variable is not defined.");
-}
-
 type FetchDenyListResponse = {
-  hdfcDenyList: string[];
+  denyList: string[];
 };
 
 type FetchDenyListError = {
@@ -23,16 +17,13 @@ export default function useGithubClient() {
     return crypto.randomBytes(16).toString('hex');
   }
 
-  const fetchData = async (): Promise<FetchDenyListResponse | null> => {
+  const fetchData = async (url: string): Promise<FetchDenyListResponse | null> => {
     setLoading(true);
     setError(null);
 
     const nonce = generateNonce();
-    if (!HDFC_DENY_LIST_URL) {
-      throw new Error("Invalid deny list url.");
-    }
 
-    const urlWithParams = new URL(HDFC_DENY_LIST_URL);
+    const urlWithParams = new URL(url);
     urlWithParams.searchParams.append("nonce", nonce);
 
     try {
@@ -43,10 +34,10 @@ export default function useGithubClient() {
       if (response.ok) {
         const result = await response.json();
 
-        const hdfcDenyList = result['depositors'];
+        const denyList = result['depositors'];
 
         setLoading(false);
-        return { hdfcDenyList };
+        return { denyList };
       } else {
         setError({ code: response.status });
 

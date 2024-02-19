@@ -65,7 +65,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
     venmoRampAddress,
     venmoRampAbi,
     hdfcRampAddress,
-    hdfcRampAbi
+    hdfcRampAbi,
+    garantiRampAddress,
+    garantiRampAbi
   } = useSmartContracts();
   const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
   
@@ -209,12 +211,17 @@ const SwapForm: React.FC<SwapFormProps> = ({
         setRampAbi(hdfcRampAbi as any);
         break;
 
+      case PaymentPlatform.GARANTI:
+        setRampAddress(garantiRampAddress);
+        setRampAbi(garantiRampAbi as any);
+        break;
+
       default:
         break;
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress]);
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress]);
 
   useEffect(() => {
     if (shouldFetchIntentHash) {

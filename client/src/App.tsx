@@ -50,6 +50,13 @@ import HdfcOnRamperIntentsProvider  from './contexts/hdfc/OnRamperIntents/OnRamp
 import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
 import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
+// Garanti Contexts
+import GarantiDepositsProvider  from './contexts/garanti/Deposits/DepositsProvider';
+import GarantiLiquidityProvider from './contexts/garanti/Liquidity/LiquidityProvider';
+import GarantiOnRamperIntentsProvider  from './contexts/garanti/OnRamperIntents/OnRamperIntentsProvider';
+import GarantiRampProvider from './contexts/garanti/Ramp/RampProvider';
+import GarantiRegistrationProvider from './contexts/garanti/Registration/RegistrationProvider';
+
 import "./App.css";
 import "./styles.css";
 import useMediaQuery from '@hooks/useMediaQuery';
@@ -145,17 +152,22 @@ const providersWithProps: ProvidersType[] = [
   [BalancesProvider, {}],
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
+  [GarantiRampProvider, {}],
   [VenmoRegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
+  [GarantiRegistrationProvider, {}],
   [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
+  [GarantiDepositsProvider, {}],
   [VenmoPermissionsProvider, {}],
   [VenmoLiquidityProvider, {}],
-  [DenyListProvider, {}],
   [HdfcLiquidityProvider, {}],
+  [GarantiLiquidityProvider, {}],
+  [DenyListProvider, {}],
   [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
+  [GarantiOnRamperIntentsProvider, {}],
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
   [ModalSettingsProvider, {}],

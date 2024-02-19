@@ -18,7 +18,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, hdfcRampAddress, usdcAddress } = useSmartContracts();
+  const { venmoRampAddress, hdfcRampAddress, garantiRampAddress, usdcAddress } = useSmartContracts();
 
   /*
    * State
@@ -28,6 +28,7 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [usdcBalance, setUsdcBalance] = useState<bigint | null>(null);
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
   const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
+  const [usdcApprovalToGarantiRamp, setUsdcApprovalToGarantiRamp] = useState<bigint | null>(null);
 
   const [shouldFetchEthBalance, setShouldFetchEthBalance] = useState<boolean>(false);
   const [shouldFetchUsdcBalance, setShouldFetchUsdcBalance] = useState<boolean>(false);
@@ -78,6 +79,20 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     args: [
       loggedInEthereumAddress ?? ZERO_ADDRESS,
       hdfcRampAddress
+    ],
+    enabled: shouldFetchUsdcApprovalToRamp,
+  });
+
+  const {
+    data: usdcApprovalToGarantiRampRaw,
+    refetch: refetchUsdcApprovalToGarantiRamp,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+      garantiRampAddress
     ],
     enabled: shouldFetchUsdcApprovalToRamp,
   });
@@ -194,6 +209,21 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     }
   }, [usdcApprovalToHdfcRampRaw]);
 
+  useEffect(() => {
+    esl && console.log('usdcApprovalToGarantiRampRaw_1');
+    esl && console.log('checking usdcApprovalToGarantiRampRaw: ', usdcApprovalToGarantiRampRaw);
+  
+    if (usdcApprovalToGarantiRampRaw || usdcApprovalToGarantiRampRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToGarantiRampRaw_2');
+
+      setUsdcApprovalToGarantiRamp(usdcApprovalToGarantiRampRaw);
+    } else {
+      esl && console.log('usdcApprovalToGarantiRampRaw_3');
+      
+      setUsdcApprovalToGarantiRamp(null);
+    }
+  }, [usdcApprovalToGarantiRampRaw]);
+
   return (
     <BalancesContext.Provider
       value={{
@@ -207,6 +237,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToRamp,
         usdcApprovalToHdfcRamp,
         refetchUsdcApprovalToHdfcRamp,
+        usdcApprovalToGarantiRamp,
+        refetchUsdcApprovalToGarantiRamp,
       }}
     >
       {children}

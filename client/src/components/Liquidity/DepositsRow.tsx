@@ -6,10 +6,11 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
+import { PaymentPlatformType } from "@helpers/types";
 
 
 interface DepositsRowProps {
-  isVenmo: boolean;
+  paymentPlatform: PaymentPlatformType;
   availableDepositAmount: string;
   conversionRate: string;
   conversionCurrency: string;
@@ -18,7 +19,7 @@ interface DepositsRowProps {
 }
 
 export const DepositsRow: React.FC<DepositsRowProps> = ({
-  isVenmo,
+  paymentPlatform,
   availableDepositAmount,
   conversionRate,
   conversionCurrency,
@@ -38,7 +39,6 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
    */
 
   const depositRemainingLabel = `${availableDepositAmount}`;
-  const platformLabel = isVenmo ? 'Venmo' : 'HDFC';
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
 
   /*
@@ -57,7 +57,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       </IconAndTokenNameContainer>
 
       <TitleAndValueContainer>
-        <Value>{platformLabel}</Value>
+        <Value>{paymentPlatform}</Value>
       </TitleAndValueContainer>
 
       <TitleAndValueContainer>

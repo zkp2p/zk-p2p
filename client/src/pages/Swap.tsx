@@ -4,12 +4,15 @@ import styled from "styled-components";
 import SwapForm from "@components/Swap";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
+import { OnRamp as GarantiOnRamp } from '@components/Swap/garanti/OnRamp';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
 import useRampState from '@hooks/venmo/useRampState';
+import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
+import useGarantiRampState from '@hooks/garanti/useRampState';
 
 
 
@@ -43,6 +46,18 @@ export const Swap: React.FC = () => {
     refetchDepositCounter: refetchHdfcDepositCounter,
     shouldFetchRampState: shouldFetchHdfcRampState,
   } = useHdfcRampState();
+
+  const {
+    currentIntentHash: currentGarantiIntentHash,
+    refetchIntentHash: refetchGarantiIntentHash,
+    shouldFetchIntentHash: shouldFetchGarantiIntentHash,
+    refetchLastOnRampTimestamp: refetchLastGarantiOnRampTimestamp
+  } = useGarantiOnRamperIntents();
+
+  const {
+    refetchDepositCounter: refetchGarantiDepositCounter,
+    shouldFetchRampState: shouldFetchGarantiRampState,
+  } = useGarantiRampState();
 
   const {
     PaymentPlatform,
@@ -82,6 +97,15 @@ export const Swap: React.FC = () => {
       refetchHdfcDepositCounter?.();
     }
 
+    if (shouldFetchGarantiIntentHash) {
+      refetchGarantiIntentHash?.();
+      refetchLastGarantiOnRampTimestamp?.();
+    }
+
+    if (shouldFetchGarantiRampState) {
+      refetchGarantiDepositCounter?.();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -101,6 +125,10 @@ export const Swap: React.FC = () => {
       
       case PaymentPlatform.HDFC:
         setSelectedIntentHash(currentHdfcIntentHash);
+        break;
+
+      case PaymentPlatform.GARANTI:
+        setSelectedIntentHash(currentGarantiIntentHash);
         break;
     }
   };
@@ -122,6 +150,14 @@ export const Swap: React.FC = () => {
       case PaymentPlatform.HDFC:
         return (
           <HdfcOnRamp
+            handleBackClick={handleBackClick}
+            selectedIntentHash={selectedIntentHash as any}
+          />
+        );
+
+      case PaymentPlatform.GARANTI:
+        return (
+          <GarantiOnRamp
             handleBackClick={handleBackClick}
             selectedIntentHash={selectedIntentHash as any}
           />

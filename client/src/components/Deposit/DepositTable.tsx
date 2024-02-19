@@ -16,9 +16,11 @@ import { ThemedText } from '@theme/text';
 import useAccount from '@hooks/useAccount';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
+import useGarantiDeposits from '@hooks/garanti/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
+import useGarantiRegistration from '@hooks/garanti/useRegistration';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
@@ -46,7 +48,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    */
 
   const { isLoggedIn } = useAccount();
-  const { venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi, garantiRampAddress, garantiRampAbi } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -59,6 +61,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   } = useHdfcRegistration();
 
   const {
+    isRegistered: isGarantiRegistered
+  } = useGarantiRegistration();
+
+  const {
     deposits: venmoDeposits,
     refetchDeposits: refetchVenmoDeposits
   } = useDeposits();
@@ -67,6 +73,11 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     deposits: hdfcDeposits,
     refetchDeposits: refetchHdfcDeposits
   } = useHdfcDeposits();
+
+  const {
+  deposits: garantiDeposits,
+  refetchDeposits: refetchGarantiDeposits
+} = useGarantiDeposits();
 
   /*
    * State
@@ -123,6 +134,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         case PaymentPlatform.HDFC:
           refetchHdfcDeposits?.();
           break;
+        
+        case PaymentPlatform.GARANTI:
+          refetchGarantiDeposits?.();
+          break;
 
         default:
           throw new Error(`Unknown payment platform: ${paymentPlatform}`);
@@ -148,6 +163,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         case PaymentPlatform.HDFC:
           setIsRegistered(isHdfcRegistered);
           break;
+        
+        case PaymentPlatform.GARANTI:
+          setIsRegistered(isGarantiRegistered);
+          break;
 
         default:
           throw new Error(`Unknown payment platform: ${paymentPlatform}`);
@@ -157,7 +176,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, isVenmoRegistered, isHdfcRegistered]);
+  }, [paymentPlatform, isVenmoRegistered, isHdfcRegistered, isGarantiRegistered]);
 
   useEffect(() => {
     let depositsToDisplay: DepositWithAvailableLiquidity[] | null = [];
@@ -169,6 +188,10 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
         case PaymentPlatform.HDFC:
           depositsToDisplay = hdfcDeposits;
+          break;
+
+        case PaymentPlatform.GARANTI:
+          depositsToDisplay = garantiDeposits;
           break;
 
         default:
@@ -204,7 +227,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venmoDeposits, hdfcDeposits, paymentPlatform]);
+  }, [venmoDeposits, hdfcDeposits, garantiDeposits, paymentPlatform]);
 
   useEffect(() => {
     const executeWithdrawDeposit = async () => {
@@ -265,6 +288,20 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           
           setWithdrawRampAddress(hdfcRampAddress as any);
           setWithdrawRampAbi(hdfcRampAbi as any);
+
+          setShouldConfigureWithdrawWrite(true);
+        }
+        break;
+        
+      case PaymentPlatform.GARANTI:
+        if (garantiDeposits) {
+          const selectedDeposit = garantiDeposits[rowIndex];
+          setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
+
+          setSelectedRowIndexToWithdraw(rowIndex);
+          
+          setWithdrawRampAddress(garantiRampAddress as any);
+          setWithdrawRampAbi(garantiRampAbi as any);
 
           setShouldConfigureWithdrawWrite(true);
         }

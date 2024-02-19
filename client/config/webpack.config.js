@@ -654,14 +654,17 @@ module.exports = function (webpackEnv) {
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
         'process.env.REMOTE_PROOF_API_URL': JSON.stringify(process.env.REMOTE_PROOF_API_URL),
         'process.env.REMOTE_PROOF_UPI_API_URL': JSON.stringify(process.env.REMOTE_PROOF_UPI_API_URL),
+        'process.env.REMOTE_PROOF_GARANTI_API_URL': JSON.stringify(process.env.REMOTE_PROOF_GARANTI_API_URL),
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
         'process.env.HDFC_DENY_LIST_URL': JSON.stringify(process.env.HDFC_DENY_LIST_URL),
         'process.env.VENMO_DOMAIN_KEYS': JSON.stringify(process.env.VENMO_DOMAIN_KEYS),
         'process.env.HDFC_DOMAIN_KEYS': JSON.stringify(process.env.HDFC_DOMAIN_KEYS),
+        'process.env.GARANTI_DOMAIN_KEYS': JSON.stringify(process.env.GARANTI_DOMAIN_KEYS),
         'process.env.PRIVY_APP_ID': JSON.stringify(process.env.PRIVY_APP_ID),
         'process.env.ZERODEV_APP_ID': JSON.stringify(process.env.ZERODEV_APP_ID),
+        'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh
