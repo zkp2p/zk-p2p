@@ -347,22 +347,15 @@ export default function SendForm() {
    */
 
   useEffect(() => {
-    console.log('useEffect - amountToApprove', amountToApprove);
-    console.log('useEffect - socketSendTransactionData', socketSendTransactionData);
-
     if (socketSendTransactionData) {
-      console.log('useEffect - 1');
       if (amountToApprove > ZERO) {
-        console.log('useEffect - 2');
         setShouldConfigureBatchBridgeWrite(true);
       } else {
-        console.log('useEffect - 3');
         setShouldConfigureBridgeWrite(true);
 
         setShouldConfigureBatchBridgeWrite(false);
       }
     } else {
-      console.log('useEffect - 4');
       setShouldConfigureBridgeWrite(false);
 
       setShouldConfigureBatchBridgeWrite(false);
@@ -455,7 +448,7 @@ export default function SendForm() {
       
       // Send Amount Input
       if (!sendAmountInput) { 
-        console.log('MISSING_AMOUNTS');
+        // console.log('MISSING_AMOUNTS');
 
         setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
@@ -466,7 +459,7 @@ export default function SendForm() {
           const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
           if (isSendAmountGreaterThanBalance) {
-            console.log('INSUFFICIENT_BALANCE');
+            // console.log('INSUFFICIENT_BALANCE');
 
             setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
           } else {
@@ -476,11 +469,11 @@ export default function SendForm() {
             const isReceiveAmountNull = !receiveAmount?.toAmount;
 
             if (isQuoteLoading) {
-              console.log('FETCHING_QUOTE');
+              // console.log('FETCHING_QUOTE');
 
               setSendState(SendTransactionStatus.FETCHING_QUOTE);
             } else if (isReceiveAmountNull && !isQuoteLoading) {
-              console.log('INVALID_ROUTES');
+              // console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
@@ -491,11 +484,11 @@ export default function SendForm() {
               // Native Base USDC Transfer
               if (isNativeTransferTransaction) {
                 if (!recipientAddressInput.input) {
-                  console.log('DEFAULT');
+                  // console.log('DEFAULT');
 
                   setSendState(SendTransactionStatus.DEFAULT);
                 } else if (!isValidRecipientAddress) {
-                  console.log('INVALID_RECIPIENT_ADDRESS');
+                  // console.log('INVALID_RECIPIENT_ADDRESS');
 
                   setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                 } else {
@@ -503,15 +496,15 @@ export default function SendForm() {
                   const miningSendTransaction = mineTransferTransactionStatus === 'loading';
     
                   if (signingSendTransaction) {
-                    console.log('TRANSACTION_SIGNING');
+                    // console.log('TRANSACTION_SIGNING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                   } else if (miningSendTransaction) {
-                    console.log('TRANSACTION_MINING');
+                    // console.log('TRANSACTION_MINING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_MINING);
                   } else {
-                    console.log('VALID_FOR_NATIVE_TRANSFER');
+                    // console.log('VALID_FOR_NATIVE_TRANSFER');
 
                     setSendState(SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER);
                   }
@@ -532,26 +525,26 @@ export default function SendForm() {
                   // Approval Required
                   if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction && loginStatusRequiresApproval) {
                     if (signingApproveTransaction) {
-                      console.log('TRANSACTION_SIGNING');
+                      // console.log('TRANSACTION_SIGNING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                     } else if (miningApproveTransaction) {
-                      console.log('TRANSACTION_MINING');
+                      // console.log('TRANSACTION_MINING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_MINING);
                     } else {
-                      console.log('APPROVAL_REQUIRED');
+                      // console.log('APPROVAL_REQUIRED');
 
                       setSendState(SendTransactionStatus.APPROVAL_REQUIRED);
                     }
                   } else {
                     // Approval Not Required, Recipient Address Fork (see below)
                     if (!recipientAddressInput.input) {
-                      console.log('DEFAULT');
+                      // console.log('DEFAULT');
 
                       setSendState(SendTransactionStatus.DEFAULT);
                     } else if (!isValidRecipientAddress) {
-                      console.log('INVALID_RECIPIENT_ADDRESS');
+                      // console.log('INVALID_RECIPIENT_ADDRESS');
 
                       setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                     } else {
@@ -561,32 +554,32 @@ export default function SendForm() {
                       const miningBridgeTransaction = mineBridgeTransactionStatus === 'loading';
         
                       if (signingBridgeTransaction || signingBatchWriteApproveAndBridgeStatusLoading) {
-                        console.log('TRANSACTION_SIGNING');
+                        // console.log('TRANSACTION_SIGNING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                       } else if (miningBridgeTransaction || mineBatchApproveAndBridgeStatusLoading) {
-                        console.log('TRANSACTION_MINING');
+                        // console.log('TRANSACTION_MINING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_MINING);
                       } else {
                         if (shouldConfigureBridgeWrite || shouldConfigureBatchBridgeWrite) {
                           if (isSendAmountGreaterThanApprovedBalance) {
-                            console.log('VALID_FOR_BATCH_TRANSFER_BRIDGE');
+                            // console.log('VALID_FOR_BATCH_TRANSFER_BRIDGE');
   
                             setSendState(SendTransactionStatus.VALID_FOR_BATCH_TRANSFER_BRIDGE);
                           } else {
-                            console.log('VALID_FOR_BRIDGE');
+                            // console.log('VALID_FOR_BRIDGE');
   
                             setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
                           }
                         } else {
-                          console.log('INVALID_FOR_BRIDGE')
+                          // console.log('INVALID_FOR_BRIDGE')
                         }
                       }
                     }
                   }
                 } else {
-                  console.log('MISSING_AMOUNTS');
+                  // console.log('MISSING_AMOUNTS');
 
                   setSendState(SendTransactionStatus.MISSING_AMOUNTS);
                 }
@@ -594,7 +587,7 @@ export default function SendForm() {
             }
           }
         } else {
-          console.log('MISSING_AMOUNTS');
+          // console.log('MISSING_AMOUNTS');
 
           setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
