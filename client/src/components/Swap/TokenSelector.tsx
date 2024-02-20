@@ -33,9 +33,11 @@ export const TokenSelector: React.FC = () => {
     <Wrapper ref={ref}>
       <TokenNameAndChevronContainer onClick={toggleOpen}>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        
         <TokenLabel>
           USDC
         </TokenLabel>
+
         <StyledChevronDown/>
       </TokenNameAndChevronContainer>
 

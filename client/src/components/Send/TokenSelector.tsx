@@ -89,6 +89,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
         <TokenLabel>
           {selectedReceiveToken().symbol}
         </TokenLabel>
+        
         <StyledChevronDown/>
       </LogoAndTokenLabel>
 

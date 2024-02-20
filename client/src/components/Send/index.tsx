@@ -241,7 +241,7 @@ export default function SendForm() {
         [field]: "0."
       });
     } else if (isValidSendAmountInput(value)) {
-      updateQuoteOnInputChange(value);
+      updateQuoteOnInputChange(value, recipientAddressInput.rawAddress);
     } else {
       cancelDebounce();
 
@@ -389,7 +389,7 @@ export default function SendForm() {
       
       // Send Amount Input
       if (!sendAmountInput) { 
-        console.log('MISSING_AMOUNTS');
+        // console.log('MISSING_AMOUNTS');
 
         setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
@@ -400,7 +400,7 @@ export default function SendForm() {
           const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
           if (isSendAmountGreaterThanBalance) {
-            console.log('INSUFFICIENT_BALANCE');
+            // console.log('INSUFFICIENT_BALANCE');
 
             setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
           } else {
@@ -410,11 +410,11 @@ export default function SendForm() {
             const isReceiveAmountNull = !receiveAmount?.toAmount;
 
             if (isQuoteLoading) {
-              console.log('FETCHING_QUOTE');
+              // console.log('FETCHING_QUOTE');
 
               setSendState(SendTransactionStatus.FETCHING_QUOTE);
             } else if (isReceiveAmountNull && !isQuoteLoading) {
-              console.log('INVALID_ROUTES');
+              // console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
@@ -425,11 +425,11 @@ export default function SendForm() {
               // Native Base USDC Transfer
               if (isNativeTransferTransaction) {
                 if (!recipientAddressInput.input) {
-                  console.log('DEFAULT');
+                  // console.log('DEFAULT');
 
                   setSendState(SendTransactionStatus.DEFAULT);
                 } else if (!isValidRecipientAddress) {
-                  console.log('INVALID_RECIPIENT_ADDRESS');
+                  // console.log('INVALID_RECIPIENT_ADDRESS');
 
                   setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                 } else {
@@ -437,15 +437,15 @@ export default function SendForm() {
                   const miningSendTransaction = mineTransferTransactionStatus === 'loading';
     
                   if (signingSendTransaction) {
-                    console.log('TRANSACTION_SIGNING');
+                    // console.log('TRANSACTION_SIGNING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                   } else if (miningSendTransaction) {
-                    console.log('TRANSACTION_MINING');
+                    // console.log('TRANSACTION_MINING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_MINING);
                   } else {
-                    console.log('VALID_FOR_NATIVE_TRANSFER');
+                    // console.log('VALID_FOR_NATIVE_TRANSFER');
 
                     setSendState(SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER);
                   }
@@ -465,26 +465,26 @@ export default function SendForm() {
                   // Approval Required
                   if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
                     if (signingApproveTransaction) {
-                      console.log('TRANSACTION_SIGNING');
+                      // console.log('TRANSACTION_SIGNING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                     } else if (miningApproveTransaction) {
-                      console.log('TRANSACTION_MINING');
+                      // console.log('TRANSACTION_MINING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_MINING);
                     } else {
-                      console.log('APPROVAL_REQUIRED');
+                      // console.log('APPROVAL_REQUIRED');
 
                       setSendState(SendTransactionStatus.APPROVAL_REQUIRED);
                     }
                   } else {
                     // Approval Not Required, Recipient Address Fork (see below)
                     if (!recipientAddressInput.input) {
-                      console.log('DEFAULT');
+                      // console.log('DEFAULT');
 
                       setSendState(SendTransactionStatus.DEFAULT);
                     } else if (!isValidRecipientAddress) {
-                      console.log('INVALID_RECIPIENT_ADDRESS');
+                      // console.log('INVALID_RECIPIENT_ADDRESS');
 
                       setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                     } else {
@@ -492,26 +492,26 @@ export default function SendForm() {
                       const miningBridgeTransaction = mineBridgeTransactionStatus === 'loading';
         
                       if (signingBridgeTransaction) {
-                        console.log('TRANSACTION_SIGNING');
+                        // console.log('TRANSACTION_SIGNING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                       } else if (miningBridgeTransaction) {
-                        console.log('TRANSACTION_MINING');
+                        // console.log('TRANSACTION_MINING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_MINING);
                       } else {
                         if (shouldConfigureBridgeWrite) {
-                          console.log('VALID_FOR_BRIDGE');
+                          // console.log('VALID_FOR_BRIDGE');
 
                           setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
                         } else {
-                          console.log('INVALID_FOR_BRIDGE')
+                          // console.log('INVALID_FOR_BRIDGE')
                         }
                       }
                     }
                   }
                 } else {
-                  console.log('MISSING_AMOUNTS');
+                  // console.log('MISSING_AMOUNTS');
 
                   setSendState(SendTransactionStatus.MISSING_AMOUNTS);
                 }
