@@ -17,7 +17,7 @@ import { QuoteDrawer } from '@components/Send/QuoteDrawer';
 import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { ZERO } from '@helpers/constants';
+import { ZERO, SOCKET_QUOTE_DEFAULT_ADDRESS, QUOTE_FETCHING_DEBOUNCE_MS } from '@helpers/constants';
 import { toBigInt, toUsdcString, toTokenString } from '@helpers/units';
 import {
   LoginStatus,
@@ -39,8 +39,6 @@ import useSendSettings from '@hooks/useSendSettings';
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
 
-
-const QUOTE_FETCHING_DEBOUNCE_MS = 750;
 
 type RecipientAddress = {
   input: string;
@@ -335,7 +333,7 @@ export default function SendForm() {
   };
 
   const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
-    if (!loggedInEthereumAddress || !receiveNetwork || !receiveToken || !receiveTokenData) {
+    if (!receiveNetwork || !receiveToken || !receiveTokenData) {
       return null;
     };
 
@@ -346,7 +344,7 @@ export default function SendForm() {
 
     const getSocketQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
-      userAddress: loggedInEthereumAddress,
+      userAddress: loggedInEthereumAddress || SOCKET_QUOTE_DEFAULT_ADDRESS,
       toChainId: networksInfo[receiveNetwork].networkChainId,
       toTokenAddress: selectedReceiveTokenData.address,
       recipient
