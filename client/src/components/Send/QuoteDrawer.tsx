@@ -53,14 +53,14 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
     let formattedTime = "";
   
     if (minutes > 0) {
-      formattedTime += `${minutes} min`;
+      formattedTime += `${minutes}min`;
     }
   
     if (remainingSeconds > 0) {
       if (formattedTime.length > 0) {
         formattedTime += " ";
       }
-      formattedTime += `${remainingSeconds} sec`;
+      formattedTime += `${remainingSeconds}sec`;
     }
   
     return formattedTime;
@@ -135,7 +135,7 @@ const TitleLabelAndDropdownIconContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0px 10px;
+  padding: 12px 0px 8px;
 `;
 
 const GasFeeLabel = styled.div`
