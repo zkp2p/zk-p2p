@@ -94,7 +94,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
           />
 
           <QuoteStep
-            label={"Estimated bridge time"}
+            label={"Arrival time"}
             value={serviceTimeString}
           />
 
