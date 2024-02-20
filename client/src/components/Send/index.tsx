@@ -271,7 +271,9 @@ export default function SendForm() {
     
     const value = event.target.value;
     if (value === "") {
-      cancelDebounce();
+      cancelDebounceFetchIndicativeQuote();
+
+      cancelDebounceFetchFormQuote();
 
       setCurrentQuote(ZERO_QUOTE);
     } else if (value === "0") {
@@ -287,7 +289,9 @@ export default function SendForm() {
     } else if (isValidSendAmountInput(value)) {
       updateQuoteOnInputChange(value, recipientAddressInput.rawAddress);
     } else {
-      cancelDebounce();
+      cancelDebounceFetchIndicativeQuote();
+
+      cancelDebounceFetchFormQuote();
 
       setCurrentQuote({
         sendAmountInput: value,
@@ -345,102 +349,6 @@ export default function SendForm() {
   /*
    * Hooks
    */
-
-  useEffect(() => {
-    if (socketSendTransactionData) {
-      if (amountToApprove > ZERO) {
-        setShouldConfigureBatchBridgeWrite(true);
-      } else {
-        setShouldConfigureBridgeWrite(true);
-
-        setShouldConfigureBatchBridgeWrite(false);
-      }
-    } else {
-      setShouldConfigureBridgeWrite(false);
-
-      setShouldConfigureBatchBridgeWrite(false);
-    };
-
-  }, [socketSendTransactionData, amountToApprove]);
-
-  const debouncedFetchIndicativeQuote = useCallback(
-    debounce(async (sendAmount, recipient?) => {
-      const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
-      
-      console.log('receiveAmountQuote:', receiveAmountQuote);
-
-      if (receiveAmountQuote) {
-        setCurrentQuote({
-          sendAmountInput: sendAmount,
-          receiveAmountQuote
-        });
-      }
-    }, QUOTE_FETCHING_DEBOUNCE_MS
-  ), [receiveNetwork, receiveToken] );
-
-  const cancelDebounce = () => {
-    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
-
-    debouncedFetchIndicativeQuote.cancel();
-  };
-
-  const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
-    if (!receiveNetwork || !receiveToken || !receiveTokenData) {
-      return null;
-    };
-
-    let selectedReceiveTokenData = receiveTokenData[receiveNetwork][receiveToken];
-    if (!selectedReceiveTokenData) {
-      selectedReceiveTokenData = baseUSDCTokenData;
-    };
-
-    const getSocketQuoteParams = {
-      fromAmount: toBigInt(sendAmount).toString(),
-      userAddress: loggedInEthereumAddress || SOCKET_QUOTE_DEFAULT_ADDRESS,
-      toChainId: networksInfo[receiveNetwork].networkChainId,
-      toTokenAddress: selectedReceiveTokenData.address,
-      recipient
-    };
-
-    console.log('getSocketQuote called: ', getSocketQuoteParams);
-
-    const quote = await getSocketQuote(getSocketQuoteParams);
-    if (!quote.success || quote.result?.routes?.length === 0) {
-      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
-
-      return null;
-    };
-
-    console.log('fetchSocketQuote quote:', quote);
-
-    const bestRoute = quote.result.routes[0];
-    const fromAmount = BigInt(bestRoute.fromAmount);
-    const toAmount = BigInt(bestRoute.toAmount);
-    const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
-    const serviceTimeSeconds = bestRoute.serviceTime as number;
-
-    const usedBridgeNames = bestRoute.usedBridgeNames;
-    const usedDexName = bestRoute.usedDexName;
-    const bridgeName = usedBridgeNames ? usedBridgeNames[0] : usedDexName;
-
-    const userTxns = bestRoute.userTxs;
-    const totalGasFees = userTxns.reduce((cumulativeFees: bigint, txn: any) => {
-      return cumulativeFees + BigInt(txn.gasFees.gasAmount)
-    }, ZERO);
-
-    setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
-
-    return {
-      fromAmount: fromAmount,
-      toAmount: toAmount,
-      totalGasFeesInUsd: totalGasFeesInUsd,
-      serviceTimeSeconds,
-      decimals: selectedReceiveTokenData.decimals,
-      bridgeName: bridgeName,
-      routeData: bestRoute,
-      totalGasFeesWei: totalGasFees
-    } as SocketReceiveQuote;
-  };
 
   useEffect(() => {
     const updateSendState = async () => {
@@ -618,9 +526,45 @@ export default function SendForm() {
     ]
   );
 
-  useEffect(() => {
-    // todo: for 4337 wallets, skip approval check because we are batching approve + bridge + revoke approval
+  const debouncedFetchIndicativeQuote = useCallback(
+    debounce(async (sendAmount, recipient?) => {
+      const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
+      
+      console.log('fetchedIndicativeQuote:', receiveAmountQuote);
 
+      if (receiveAmountQuote) {
+        setCurrentQuote({
+          sendAmountInput: sendAmount,
+          receiveAmountQuote
+        });
+      }
+    }, QUOTE_FETCHING_DEBOUNCE_MS
+  ), [receiveNetwork, receiveToken]);
+
+  const debouncedFetchFirmQuote = useCallback(
+    debounce(async (sendAmount, recipient) => {
+      await fetchFirmQuoteAndTxnData(sendAmount, recipient);
+    }, QUOTE_FETCHING_DEBOUNCE_MS
+  ), [receiveNetwork, receiveToken]);
+
+  useEffect(() => {
+    if (socketSendTransactionData) {
+      if (amountToApprove > ZERO) {
+        setShouldConfigureBatchBridgeWrite(true);
+      } else {
+        setShouldConfigureBridgeWrite(true);
+
+        setShouldConfigureBatchBridgeWrite(false);
+      }
+    } else {
+      setShouldConfigureBridgeWrite(false);
+
+      setShouldConfigureBatchBridgeWrite(false);
+    };
+
+  }, [socketSendTransactionData, amountToApprove]);
+
+  useEffect(() => {
     const isApprovalRequired = sendState === SendTransactionStatus.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
@@ -640,16 +584,12 @@ export default function SendForm() {
   }, [submitBridgeResult])
 
   useEffect(() => {
-    // todo: skip approval if 4337 wallet
-
     const usdcApprovalToSocketBridgeLoaded = usdcApprovalToSocketBridge !== null && usdcApprovalToSocketBridge !== undefined;
     const sendAmountInput = currentQuote.sendAmountInput;
 
     if (!sendAmountInput || !usdcApprovalToSocketBridgeLoaded) {
       setAmountToApprove(ZERO);
     } else {
-      // todo: Check if USDC on Base transfer vs. bridge transaction to skip approval
-
       const sendAmountBI = toBigInt(sendAmountInput.toString());
       const approvalDifference = sendAmountBI - usdcApprovalToSocketBridge;
 
@@ -704,7 +644,7 @@ export default function SendForm() {
     } else if (isValidRecipientAddressPresent) {                    // Recipient Address exists, fetch txn data
       setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
 
-      fetchFirmQuoteAndTxnData(sendInputValue, recipientAddress);
+      debouncedFetchFirmQuote(sendInputValue, recipientAddress);
     } else {                                                        // Fetch indicative quote
       setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
       
@@ -712,18 +652,95 @@ export default function SendForm() {
     }
   };
 
+  /*
+   * Indicative Quote
+   */
+
+  const cancelDebounceFetchIndicativeQuote = () => {
+    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
+    debouncedFetchIndicativeQuote.cancel();
+  };
+
+  const cancelDebounceFetchFormQuote = () => {
+    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
+    debouncedFetchFirmQuote.cancel();
+  };
+
+  const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
+    if (!receiveNetwork || !receiveToken || !receiveTokenData) {
+      return null;
+    };
+
+    let selectedReceiveTokenData = receiveTokenData[receiveNetwork][receiveToken];
+    if (!selectedReceiveTokenData) {
+      selectedReceiveTokenData = baseUSDCTokenData;
+    };
+
+    const getSocketQuoteParams = {
+      fromAmount: toBigInt(sendAmount).toString(),
+      userAddress: loggedInEthereumAddress || SOCKET_QUOTE_DEFAULT_ADDRESS,
+      toChainId: networksInfo[receiveNetwork].networkChainId,
+      toTokenAddress: selectedReceiveTokenData.address,
+      recipient
+    };
+
+    console.log('getSocketQuote params: ', getSocketQuoteParams);
+
+    const quote = await getSocketQuote(getSocketQuoteParams);
+    if (!quote.success || quote.result?.routes?.length === 0) {
+      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
+      return null;
+    };
+
+    console.log('getSocketQuote response:', quote);
+
+    const bestRoute = quote.result.routes[0];
+    const fromAmount = BigInt(bestRoute.fromAmount);
+    const toAmount = BigInt(bestRoute.toAmount);
+    const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
+    const serviceTimeSeconds = bestRoute.serviceTime as number;
+
+    const usedBridgeNames = bestRoute.usedBridgeNames;
+    const usedDexName = bestRoute.usedDexName;
+    const bridgeName = usedBridgeNames ? usedBridgeNames[0] : usedDexName;
+
+    const userTxns = bestRoute.userTxs;
+    const totalGasFees = userTxns.reduce((cumulativeFees: bigint, txn: any) => {
+      return cumulativeFees + BigInt(txn.gasFees.gasAmount)
+    }, ZERO);
+
+    setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
+
+    return {
+      fromAmount: fromAmount,
+      toAmount: toAmount,
+      totalGasFeesInUsd: totalGasFeesInUsd,
+      serviceTimeSeconds,
+      decimals: selectedReceiveTokenData.decimals,
+      bridgeName: bridgeName,
+      routeData: bestRoute,
+      totalGasFeesWei: totalGasFees
+    } as SocketReceiveQuote;
+  };
+
+  /*
+   * Firm Quote
+   */
+
   const fetchFirmQuoteAndTxnData = async (inputAmount: string, recipientAddress: string) => {
     const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
 
+    console.log('fetchedFirmQuote:', updatedQuote);
+    
     // todo: perform check if updated quote price range moved too much
-    console.log('updatedQuote:', updatedQuote);
     if (!updatedQuote) {
       return;
     };
 
     const socketTransactionData = await getSocketTransactionData(updatedQuote.routeData);
-
-    console.log('updateQuote - socketTransactionData:', socketTransactionData);
     if (!socketTransactionData) {
       return;
     };
@@ -749,6 +766,10 @@ export default function SendForm() {
       setSendState(SendTransactionStatus.DEFAULT);
     };
   };
+
+  /*
+   * Other Helpers
+   */
 
   function isValidSendAmountInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);

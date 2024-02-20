@@ -181,7 +181,7 @@ const TitleLabelAndDropdownIconContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0px 8px;
+  padding: 12px 0px 10px;
 `;
 
 const GasFeeLabel = styled.div`
