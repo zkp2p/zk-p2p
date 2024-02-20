@@ -87,7 +87,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           instructionsText: `Scan and send $${amount}`,
         };
     }
-  }
+  };
 
   const {
     paymentPlatformName,
@@ -120,7 +120,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <div style={{ flex: 0.25 }}/>
         </RowBetween>
-        {paymentPlatform != PaymentPlatform.GARANTI ? (
+
+        {paymentPlatform !== PaymentPlatform.GARANTI ? (
           <div>
             <QRContainer>
               <QRCode
@@ -210,7 +211,7 @@ const ModalContainer = styled.div<{$isVenmo?: boolean}>`
 
 const QRContainer = styled.div`
   padding: 1.25rem 1.25rem 1rem 1.25rem;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   background: #131A2A;
 `;

@@ -165,11 +165,11 @@ const NetworkContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid ${colors.defaultBorderColor};
   justify-content: space-between;
   align-items: center;
   background: ${colors.selectorColor};
-  padding: 1.05rem 1rem;
+  padding: 1.1rem 1rem;
   cursor: pointer;
 
   &:hover {
@@ -200,7 +200,7 @@ const NetworkHeader = styled.div`
 `;
 
 const NetworkNameLabel = styled.div`
-  font-size: 16px;
+  font-size: 15px;
   color: #FFF;
 `;
 
@@ -250,7 +250,7 @@ const TableHeader = styled.div`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
 `;
 
 const StyledX = styled(X)`

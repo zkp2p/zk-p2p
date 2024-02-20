@@ -246,7 +246,7 @@ const TitleRow = styled(RowBetween)`
 const Content = styled.main`
   display: flex;
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
@@ -327,7 +327,7 @@ const MintNftContainer = styled.div`
   justify-content: center;
   margin: auto;
   border-radius: 16px;
-  border: 3px dotted #98a1c03d;
+  border: 3px dotted ${colors.defaultBorderColor};
   width: 244px;
   height: 414px;
   padding: 0px 20px;

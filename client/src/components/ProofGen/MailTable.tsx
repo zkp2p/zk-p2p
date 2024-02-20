@@ -389,7 +389,7 @@ const Container = styled.div`
   justify-content: center;
 
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   overflow: hidden;
 `;
@@ -433,7 +433,7 @@ const TitleContainer = styled.div`
 `;
 
 const TitleAndTableContainer = styled.div`
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 8px;
   background-color: #090D14;
 `;
@@ -443,7 +443,7 @@ const TitleAndOAuthContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
   padding: 1rem 1.5rem;
 `;
 

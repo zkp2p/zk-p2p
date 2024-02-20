@@ -30,6 +30,8 @@ export const colors = {
 
   buttonRed: '#DF2E2D',
 
+  defaultBorderColor: '#98A1C03d',
+
   selectorColor: '#0D111C',
   selectorHover: '#1B1E29',
   selectorHoverBorder: 'rgba(255, 255, 255, 0.1)',

@@ -187,7 +187,7 @@ const TokenLabel = styled.div`
   font-size: 16px;
   font-weight: 600;
   color: #FFF;
-  padding-top: 3px;
+  padding-top: 2px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
@@ -236,7 +236,7 @@ const TableHeader = styled.div`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
 `;
 
 const StyledX = styled(X)`

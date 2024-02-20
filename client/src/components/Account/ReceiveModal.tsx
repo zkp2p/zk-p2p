@@ -173,7 +173,7 @@ const StyledX = styled(X)`
 
 const QRContainer = styled.div`
   padding: 1.25rem 1.25rem 1rem 1.25rem;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   background: #131A2A;
 `;
@@ -209,7 +209,7 @@ const NetworkSvg = styled.img`
 const InstructionsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   align-items: center;
   gap: 1.5rem;

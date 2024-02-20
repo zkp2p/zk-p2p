@@ -2,6 +2,8 @@ import React from "react";
 import styled from 'styled-components';
 import { ArrowRight } from 'react-feather';
 
+import { colors } from '@theme/colors';
+
 
 interface LoginTypeButtonProps {
   label: string;
@@ -50,7 +52,7 @@ const Container = styled.button`
   gap: 1.5rem;
   padding: 12px 16px 12px 20px;
   border-radius: 16px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background-color: #131A2A;
 
   &:hover {

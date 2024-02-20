@@ -232,7 +232,7 @@ const TitleRow = styled(RowBetween)`
 
 const Content = styled.main`
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
@@ -270,7 +270,7 @@ const TableHeaderRow = styled.div`
   gap: 8px;
   text-align: left;
   padding: 1.3rem 1.75rem 1rem 1.75rem;
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;
 
 const Table = styled.div`
@@ -283,7 +283,7 @@ const Table = styled.div`
   color: #616161;
 
   & > * {
-    border-bottom: 1px solid #98a1c03d;
+    border-bottom: 1px solid ${colors.defaultBorderColor};
   }
 
   & > *:last-child {

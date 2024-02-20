@@ -194,7 +194,7 @@ const Logo = styled.div<{ size?: number }>`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
   margin: 1rem 0;
 `;
 

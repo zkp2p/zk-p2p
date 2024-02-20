@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
+import { colors } from '@theme/colors';
+
 
 interface InputProps {
   label: string;
@@ -52,7 +54,7 @@ const Container = styled.div`
   flex-direction: column;
   padding: 12px 16px;
   border-radius: 8px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background-color: #131A2A;
   gap: 8px;
 

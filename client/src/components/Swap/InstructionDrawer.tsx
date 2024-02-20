@@ -103,7 +103,7 @@ const Wrapper = styled.div`
   align-items: center;
   padding: 0px 20px;
   border-radius: 16px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background-color: ${colors.container};
   overflow: hidden;
 `;
@@ -139,7 +139,7 @@ const StyledChevronDown = styled(ChevronDown)<StyledChevronDownProps>`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
 `;
 
 interface InstructionsDropdownProps {

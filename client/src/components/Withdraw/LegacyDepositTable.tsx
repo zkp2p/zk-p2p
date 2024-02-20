@@ -252,7 +252,7 @@ const TitleRow = styled(RowBetween)`
 const Content = styled.main`
   display: flex;
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
@@ -298,7 +298,7 @@ const DepositsCountTitle = styled.div`
   padding-top: 2rem;
   padding-bottom: 1.75rem;
   padding-left: 1.5rem;
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;
 
 const Table = styled.div`
@@ -311,7 +311,7 @@ const Table = styled.div`
   color: #616161;
 
   & > * {
-    border-bottom: 1px solid #98a1c03d;
+    border-bottom: 1px solid ${colors.defaultBorderColor};
   }
 
   & > *:last-child {

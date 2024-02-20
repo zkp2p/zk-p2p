@@ -202,7 +202,7 @@ const Container = styled.div`
 
   border-radius: 16px;
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   overflow: hidden;
 `;
@@ -217,7 +217,7 @@ const IntentCountTitle = styled.div`
   padding-top: 1.25rem;
   padding-bottom: 1rem;
   padding-left: 1.5rem;
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;
 
 const Table = styled.div`
@@ -230,7 +230,7 @@ const Table = styled.div`
   color: #616161;
 
   & > * {
-    border-bottom: 1px solid #98a1c03d;
+    border-bottom: 1px solid ${colors.defaultBorderColor};
   }
 
   & > *:last-child {

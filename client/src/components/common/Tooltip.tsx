@@ -35,7 +35,7 @@ const TooltipContainer = styled.div<{ size: TooltipSize }>`
 
   background-color: ${colors.container};
   border-radius: 12px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
 `
   
   // box-shadow: 0 4px 8px 0 ${({ theme }) => transparentize(0.9, theme.shadow1)};

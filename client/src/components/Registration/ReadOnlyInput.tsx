@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components';
 
 import QuestionHelper from '@components/common/QuestionHelper';
+import { colors } from '@theme/colors';
 
 
 interface ReadOnlyInputProps {
@@ -71,7 +72,7 @@ const Container = styled.div`
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background-color: #131A2A;
 
   &:focus-within {

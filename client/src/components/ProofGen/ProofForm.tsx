@@ -34,6 +34,7 @@ import useLocalStorage from '@hooks/useLocalStorage';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
+import { colors } from '@theme/colors';
 
 
 interface ProofGenerationFormProps {
@@ -550,6 +551,6 @@ const Container = styled(Col)`
 
 const VerticalDivider = styled.div`
   height: 24px;
-  border-left: 1px solid #98a1c03d;
+  border-left: 1px solid ${colors.defaultBorderColor};
   margin: 0 auto;
 `;

@@ -178,7 +178,7 @@ const TableHeader = styled.div`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
 `;
 
 const StyledX = styled(X)`

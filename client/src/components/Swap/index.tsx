@@ -580,7 +580,7 @@ const SwapFormContainer = styled(AutoColumn)`
   padding: 1rem;
   gap: 1rem;
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
 `;
 
@@ -613,7 +613,7 @@ const CTAButton = styled(Button)`
 
 const VerticalDivider = styled.div`
   height: 24px;
-  border-left: 1px solid #98a1c03d;
+  border-left: 1px solid ${colors.defaultBorderColor};
   margin: 0 auto;
 `;
 

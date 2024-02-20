@@ -2,6 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
 import { TokenSelector } from '@components/Send/TokenSelector';
+import { colors } from '@theme/colors';
 
 
 interface InputProps {
@@ -118,7 +119,7 @@ const Container = styled.div`
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background-color: #131A2A;
 
   &:focus-within {

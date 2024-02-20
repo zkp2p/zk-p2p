@@ -20,7 +20,7 @@ const StyledCard = styled.div<{ cursor: string }>`
 	padding: 32px;
 	height: 228px;
 	border-radius: 24px;
-	border: 1px solid #98a1c03d;
+	border: 1px solid ${colors.defaultBorderColor};
   cursor: ${({ cursor }) => cursor}};
 `
 

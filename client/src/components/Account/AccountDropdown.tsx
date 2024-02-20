@@ -15,6 +15,7 @@ import useModal from '@hooks/useModal';
 import { formatAddress } from '@helpers/addressFormat';
 import { CALLER_ACCOUNT } from '@helpers/constants';
 import { toUsdcString, toEthString } from "@helpers/units";
+import { colors } from '@theme/colors';
 import { LoginStatus } from '@helpers/types';
 import { MODALS } from '@helpers/types';
 import { alchemyMainnetEthersProvider } from "index";
@@ -246,7 +247,7 @@ const AccountAndUserIconContainer = styled.div`
   white-space: nowrap;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;
 
 const AccountTypeLabel = styled.div`
@@ -312,7 +313,7 @@ const BalancesAndLogoContainer = styled.div`
   gap: 20px;
 
   font-family: 'Graphik';
-  border-bottom: 1px solid #98a1c03d;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;
 
 const UsdcSvg = styled.img`

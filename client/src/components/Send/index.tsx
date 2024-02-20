@@ -1018,7 +1018,7 @@ const SendFormContainer = styled(AutoColumn)`
   padding: 1rem;
   gap: 1rem;
   background-color: ${colors.container};
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
 `;
 
 const TitleContainer = styled.div`
@@ -1056,12 +1056,12 @@ const NetworkLogoAndNameContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid ${colors.defaultBorderColor};
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
   background: #141A2A;
-  padding: 1.05rem 1rem;
+  padding: 1.1rem 1rem;
 `;
 
 const NetworkNameContainer = styled.div`
@@ -1079,7 +1079,7 @@ const NetworkHeader = styled.div`
 `;
 
 const NetworkNameLabel = styled.div`
-  font-size: 16px;
+  font-size: 15px;
   color: #6C757D;
 `;
 

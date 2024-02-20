@@ -4,6 +4,7 @@ import { ChevronDown } from 'react-feather';
 
 import { QuoteStep } from "@components/Send/QuoteStep";
 import { toEthStringLong } from "@helpers/units";
+import { colors } from '@theme/colors';
 
 
 const PROTOCOL_MAP: { [key: string]: string } = {
@@ -170,7 +171,7 @@ const Wrapper = styled.div`
   align-items: center;
   padding: 0px 20px;
   border-radius: 16px;
-  border: 1px solid #98a1c03d;
+  border: 1px solid ${colors.defaultBorderColor};
   background: #141A2A;
 `;
 
@@ -215,7 +216,7 @@ const StyledChevronDown = styled(ChevronDown)<StyledChevronDownProps>`
 
 const HorizontalDivider = styled.div`
   width: 100%;
-  border-top: 1px solid #98a1c03d;
+  border-top: 1px solid ${colors.defaultBorderColor};
 `;
 
 interface QuoteStepDropdownProps {
