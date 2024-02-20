@@ -1,5 +1,6 @@
 export const SendTransactionStatus = {
   DEFAULT: 'default',
+  FETCHING_QUOTE: 'fetching_quote',
   APPROVAL_REQUIRED: 'approval_required',
   INVALID_ROUTES: 'invalid_routes',
   INVALID_RECIPIENT_ADDRESS: 'invalid_recipient_address',

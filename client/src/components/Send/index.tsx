@@ -434,10 +434,15 @@ export default function SendForm() {
           } else {
             // Receive Quote
             const receiveAmount = currentQuote.receiveAmountQuote;
-            const isReceiveAmountZero = receiveAmount?.fromAmount === ZERO;
+            const isQuoteLoading = quoteFetchingStatus === FetchQuoteStatus.LOADING;
+            const isReceiveAmountNull = !receiveAmount?.fromAmount;
 
-            if (isReceiveAmountZero) {
-              // console.log('INVALID_ROUTES');
+            if (isQuoteLoading) {
+              console.log('FETCHING_QUOTE');
+
+              setSendState(SendTransactionStatus.FETCHING_QUOTE);
+            } else if (isReceiveAmountNull) {
+              console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
@@ -543,7 +548,7 @@ export default function SendForm() {
             }
           }
         } else {
-          // console.log('MISSING_AMOUNTS');
+          console.log('MISSING_AMOUNTS');
 
           setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
@@ -554,6 +559,7 @@ export default function SendForm() {
   }, [
       recipientAddressInput.input,
       currentQuote,
+      quoteFetchingStatus,
       receiveToken,
       receiveNetwork,
       usdcBalance,
@@ -641,7 +647,7 @@ export default function SendForm() {
       } as SocketReceiveQuote;
     } else {
       setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-      
+
       await debouncedFetchSocketQuote(inputAmount);
 
       return null;
@@ -752,6 +758,7 @@ export default function SendForm() {
       case SendTransactionStatus.MISSING_AMOUNTS:
       case SendTransactionStatus.TRANSACTION_SIGNING:
       case SendTransactionStatus.TRANSACTION_MINING:
+      case SendTransactionStatus.FETCHING_QUOTE:
         return true;
 
       case SendTransactionStatus.APPROVAL_REQUIRED:
@@ -776,6 +783,9 @@ export default function SendForm() {
 
   const ctaText = (): string => {
     switch (sendState) {
+      case SendTransactionStatus.FETCHING_QUOTE:
+        return 'Fetching quote';
+      
       case SendTransactionStatus.INVALID_RECIPIENT_ADDRESS:
         return 'Invalid recipient address';
 
@@ -783,7 +793,7 @@ export default function SendForm() {
         return 'Input send amount';
 
       case SendTransactionStatus.INVALID_ROUTES:
-        return 'Invalid routes';
+        return 'Insufficient amount for bridge';
       
       case SendTransactionStatus.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
@@ -957,7 +967,7 @@ export default function SendForm() {
               </Link>
             ) : null}
 
-            { quoteFetchingStatus !== FetchQuoteStatus.DEFAULT ? (
+            { quoteFetchingStatus === FetchQuoteStatus.LOADED ? (
               <QuoteDrawer
                 isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
                 totalGasFeeUsd={currentQuote.receiveAmountQuote?.totalGasFeesInUsd}
