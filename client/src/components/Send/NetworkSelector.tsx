@@ -7,7 +7,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Send/NetworkRow';
-import { networksInfo, SendNetworkType } from '@helpers/types';
+import { networksInfo, ReceiveNetworkType } from '@helpers/types';
 import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
@@ -28,7 +28,7 @@ export const NetworkSelector: React.FC = () => {
    */
 
   const { network } = useAccount();
-  const { sendNetwork, setSendNetwork, sendNetworks } = useSendSettings();
+  const { receiveNetwork, setReceiveNetwork, receiveNetworks } = useSendSettings();
 
   /*
    * Handlers
@@ -38,9 +38,9 @@ export const NetworkSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (network: SendNetworkType) => {
-    if (setSendNetwork) {
-      setSendNetwork(network);
+  const handleSelectPlatform = (network: ReceiveNetworkType) => {
+    if (setReceiveNetwork) {
+      setReceiveNetwork(network);
 
       toggleOpen();
     }
@@ -54,8 +54,8 @@ export const NetworkSelector: React.FC = () => {
     if (network === 'sepolia') {
       return sepoliaSvg;
     } else {
-      if (sendNetwork) {
-        return networksInfo[sendNetwork].networkSvg;
+      if (receiveNetwork) {
+        return networksInfo[receiveNetwork].networkSvg;
       } else {
         return baseSvg;
       }
@@ -66,8 +66,8 @@ export const NetworkSelector: React.FC = () => {
     if (network === 'sepolia') {
       return 'Sepolia';
     } else {
-      if (sendNetwork) {
-        return networksInfo[sendNetwork].networkName;
+      if (receiveNetwork) {
+        return networksInfo[receiveNetwork].networkName;
       } else {
         return 'Loading';
       }
@@ -116,12 +116,12 @@ export const NetworkSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {sendNetworks.map((network, index) => (
+              {receiveNetworks.map((network, index) => (
                 <NetworkRow
                   key={index}
                   platformName={networksInfo[network].networkName}
                   flagSvg={networksInfo[network].networkSvg}
-                  isSelected={sendNetwork === network}
+                  isSelected={receiveNetwork === network}
                   onRowClick={() => handleSelectPlatform(network)}
                 />
               ))}

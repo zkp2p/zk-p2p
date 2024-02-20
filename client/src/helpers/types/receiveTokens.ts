@@ -1,4 +1,4 @@
-import { SendNetworkType, SendNetwork } from "./";
+import { ReceiveNetworkType, ReceiveNetwork } from "./";
 
 
 export const ReceiveToken = {
@@ -15,36 +15,36 @@ export const receiveTokens = [
 
 export type ReceiveTokenType = keyof typeof ReceiveToken;
 
-export const networkSupportedTokens: Record<SendNetworkType, ReceiveTokenType[]> = {
-  [SendNetwork.ARBITRUM]: [
+export const networkSupportedTokens: Record<ReceiveNetworkType, ReceiveTokenType[]> = {
+  [ReceiveNetwork.ARBITRUM]: [
     ReceiveToken.USDC,
     ReceiveToken.ETH
   ],
-  [SendNetwork.AVALANCHE]: [
+  [ReceiveNetwork.AVALANCHE]: [
     ReceiveToken.USDC,
     ReceiveToken.USDT
   ],
-  [SendNetwork.BASE]: [
+  [ReceiveNetwork.BASE]: [
     ReceiveToken.USDC,
     ReceiveToken.ETH
   ],
-  [SendNetwork.BINANCE]: [
+  [ReceiveNetwork.BINANCE]: [
     ReceiveToken.USDT
   ],
-  [SendNetwork.ETHEREUM]: [
+  [ReceiveNetwork.ETHEREUM]: [
     ReceiveToken.USDC,
     ReceiveToken.USDT,
     ReceiveToken.ETH
   ],
-  [SendNetwork.OPTIMISM]: [
+  [ReceiveNetwork.OPTIMISM]: [
     ReceiveToken.USDC,
     ReceiveToken.ETH
   ],
-  [SendNetwork.POLYGON]: [
+  [ReceiveNetwork.POLYGON]: [
     ReceiveToken.USDC,
     ReceiveToken.USDT
   ],
-  [SendNetwork.ZKSYNC]: [
+  [ReceiveNetwork.ZKSYNC]: [
     ReceiveToken.USDC,
     ReceiveToken.ETH
   ],
@@ -59,7 +59,7 @@ export type ReceiveTokenData = {
 };
 
 export type ReceiveTokensMap = {
-  [key in SendNetworkType]: { [key in ReceiveTokenType]?: ReceiveTokenData };
+  [key in ReceiveNetworkType]: { [key in ReceiveTokenType]?: ReceiveTokenData };
 };
 
 export const baseUSDCTokenData: ReceiveTokenData = {
@@ -72,7 +72,7 @@ export const baseUSDCTokenData: ReceiveTokenData = {
 
 export const receiveTokenData: ReceiveTokensMap = {
   // Ethereum mainnet
-  [SendNetwork.ETHEREUM]: {
+  [ReceiveNetwork.ETHEREUM]: {
     USDC: {
       "name": "USD Coin",
       "symbol": "USDC",
@@ -97,7 +97,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Base
-  [SendNetwork.BASE]: {
+  [ReceiveNetwork.BASE]: {
     USDC: baseUSDCTokenData,
     ETH: {
       "name": "Ethereum",
@@ -109,7 +109,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Polygon
-  [SendNetwork.POLYGON]: {
+  [ReceiveNetwork.POLYGON]: {
     USDC: {
       "name": "Bridged USD Coin",
       "symbol": "USDC", // "USDC.e"
@@ -127,7 +127,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Arbitrum
-  [SendNetwork.ARBITRUM]: {
+  [ReceiveNetwork.ARBITRUM]: {
     USDC: {
       "name": "USD Coin",
       "symbol": "USDC",
@@ -145,7 +145,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Optimism
-  [SendNetwork.OPTIMISM]: {
+  [ReceiveNetwork.OPTIMISM]: {
     USDC: {
       "name": "Bridged USD Coin",
       "symbol": "USDC", // "USDC.e"
@@ -163,7 +163,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Binance Smart Chains
-  [SendNetwork.BINANCE]: {
+  [ReceiveNetwork.BINANCE]: {
     USDT: {
       "name": "Tether",
       "symbol": "USDT",
@@ -174,7 +174,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // ZKSync
-  [SendNetwork.ZKSYNC]: {
+  [ReceiveNetwork.ZKSYNC]: {
     USDC: {
       "name": "USD Coin",
       "symbol": "USDC",
@@ -192,7 +192,7 @@ export const receiveTokenData: ReceiveTokensMap = {
   },
 
   // Avalanche
-  [SendNetwork.AVALANCHE]: {
+  [ReceiveNetwork.AVALANCHE]: {
     USDC: {
       "name": "USD Coin",
       "symbol": "USDC",

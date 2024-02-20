@@ -1,9 +1,9 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import {
-  SendNetworkType,
-  SendNetwork,
-  sendNetworks,
+  ReceiveNetworkType,
+  ReceiveNetwork,
+  receiveNetworks,
   ReceiveTokenType,
   ReceiveToken,
   networkSupportedTokens
@@ -21,7 +21,7 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [sendNetwork, setSendNetwork] = useState<SendNetworkType>(SendNetwork.BASE);
+  const [receiveNetwork, setReceiveNetwork] = useState<ReceiveNetworkType>(ReceiveNetwork.BASE);
 
 
   const [receiveToken, setReceiveToken] = useState<ReceiveTokenType>(ReceiveToken.USDC);
@@ -31,21 +31,21 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    const storedSelectedSendNetwork = localStorage.getItem('storedSelectedSendNetwork');
+    const storedSelectedReceiveNetwork = localStorage.getItem('storedSelectedReceiveNetwork');
     
-    if (storedSelectedSendNetwork) {
-      setSendNetwork(JSON.parse(storedSelectedSendNetwork));
+    if (storedSelectedReceiveNetwork) {
+      setReceiveNetwork(JSON.parse(storedSelectedReceiveNetwork));
     }
   }, []);
 
   useEffect(() => {
-    if (sendNetwork) {
-      localStorage.setItem('storedSelectedSendNetwork', JSON.stringify(sendNetwork));
+    if (receiveNetwork) {
+      localStorage.setItem('storedSelectedReceiveNetwork', JSON.stringify(receiveNetwork));
 
-      const newReceiveToken = networkSupportedTokens[sendNetwork][0];
+      const newReceiveToken = networkSupportedTokens[receiveNetwork][0];
       setReceiveToken(newReceiveToken);
     }
-  }, [sendNetwork]);
+  }, [receiveNetwork]);
 
   useEffect(() => {
     const storedSelectedReceiveToken = localStorage.getItem('storedSelectedReceiveToken');
@@ -64,10 +64,10 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
   return (
     <SendSettingsContext.Provider
       value={{
-        sendNetwork,
-        setSendNetwork,
-        SendNetwork,
-        sendNetworks,
+        receiveNetwork,
+        setReceiveNetwork,
+        ReceiveNetwork,
+        receiveNetworks,
         receiveToken,
         setReceiveToken
       }}

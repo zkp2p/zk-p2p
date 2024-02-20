@@ -17,8 +17,8 @@ export type { RawEmailResponse } from './googleMailApi';
 export { PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
 export type { PaymentPlatformType  } from './paymentPlatform';
 
-export { SendNetwork, sendNetworks, networksInfo } from './sendNetworks';
-export type { SendNetworkType } from './sendNetworks';
+export { ReceiveNetwork, receiveNetworks, networksInfo } from './receiveNetworks';
+export type { ReceiveNetworkType } from './receiveNetworks';
 
 export { ReceiveToken, receiveTokens, receiveTokenData, networkSupportedTokens, baseUSDCTokenData } from './receiveTokens';
 export type { ReceiveTokenData, ReceiveTokenType } from './receiveTokens';

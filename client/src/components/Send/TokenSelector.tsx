@@ -29,7 +29,7 @@ export const TokenSelector: React.FC = () => {
    * Contexts
    */
 
-  const { sendNetwork, SendNetwork, receiveToken, setReceiveToken } = useSendSettings();
+  const { receiveNetwork, ReceiveNetwork, receiveToken, setReceiveToken } = useSendSettings();
 
   /*
    * Handlers
@@ -52,8 +52,8 @@ export const TokenSelector: React.FC = () => {
    */
 
   const selectedReceiveToken = (): ReceiveTokenData => {
-    if (receiveTokenData && receiveToken && sendNetwork) {
-      const selectedReceiveTokenData = receiveTokenData[sendNetwork][receiveToken];
+    if (receiveTokenData && receiveToken && receiveNetwork) {
+      const selectedReceiveTokenData = receiveTokenData[receiveNetwork][receiveToken];
 
       if (!selectedReceiveTokenData) {
         return baseUSDCTokenData;
@@ -101,8 +101,8 @@ export const TokenSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {networkSupportedTokens[sendNetwork ?? SendNetwork.ETHEREUM].map((tokenType, index) => {
-                const tokenData = receiveTokenData[sendNetwork ?? SendNetwork.ETHEREUM][tokenType];
+              {networkSupportedTokens[receiveNetwork ?? ReceiveNetwork.ETHEREUM].map((tokenType, index) => {
+                const tokenData = receiveTokenData[receiveNetwork ?? ReceiveNetwork.ETHEREUM][tokenType];
 
                 const receiveTokenName = tokenData?.name ?? 'USD Coin';
                 const receiveTokenSymbol = tokenData?.symbol ?? 'USDC';

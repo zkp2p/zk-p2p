@@ -20,7 +20,7 @@ import { ZERO } from '@helpers/constants';
 import { toBigInt, toUsdcString, toTokenString } from '@helpers/units';
 import {
   LoginStatus,
-  SendNetwork,
+  ReceiveNetwork,
   SendTransactionStatus,
   FetchQuoteStatus,
   ReceiveToken,
@@ -81,7 +81,7 @@ export default function SendForm() {
   const { usdcBalance, refetchUsdcBalance, usdcApprovalToSocketBridge, refetchUsdcApprovalToSocketBridge } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi, socketBridgeAddress } = useSmartContracts();
   const { getSocketQuote, getSocketTransactionData } = useSocketBridge();
-  const { sendNetwork, receiveToken } = useSendSettings();
+  const { receiveNetwork, receiveToken } = useSendSettings();
 
   /*
    * State
@@ -345,7 +345,7 @@ export default function SendForm() {
         });
       }
     }, 750 // 750ms
-  ), [sendNetwork, receiveToken] );
+  ), [receiveNetwork, receiveToken] );
 
   const cancelDebounce = () => {
     setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
@@ -356,17 +356,17 @@ export default function SendForm() {
   const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
     // console.log('fetchSocketQuote called');
 
-    // console.log("sendNetwork: ", sendNetwork);
+    // console.log("receiveNetwork: ", receiveNetwork);
     // console.log("receiveToken: ", receiveToken);
     // console.log("loggedInEthereumAddress: ", loggedInEthereumAddress);
     // console.log("receiveToken: ", receiveToken);
     // console.log("receiveTokenData: ", receiveTokenData);
 
-    if (!loggedInEthereumAddress || !sendNetwork || !receiveToken || !receiveTokenData) {
+    if (!loggedInEthereumAddress || !receiveNetwork || !receiveToken || !receiveTokenData) {
       return null;
     };
 
-    let selectedReceiveTokenData = receiveTokenData[sendNetwork][receiveToken];
+    let selectedReceiveTokenData = receiveTokenData[receiveNetwork][receiveToken];
     if (!selectedReceiveTokenData) {
       selectedReceiveTokenData = baseUSDCTokenData;
     };
@@ -376,7 +376,7 @@ export default function SendForm() {
     const getSocketQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
       userAddress: loggedInEthereumAddress,
-      toChainId: networksInfo[sendNetwork].networkChainId,
+      toChainId: networksInfo[receiveNetwork].networkChainId,
       toTokenAddress: selectedReceiveTokenData.address,
       recipient
     };
@@ -440,7 +440,7 @@ export default function SendForm() {
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
-              const isNetworkNative = sendNetwork === SendNetwork.BASE;
+              const isNetworkNative = receiveNetwork === ReceiveNetwork.BASE;
               const isTokenUsdc = receiveToken === ReceiveToken.USDC;
               const isNativeTransferTransaction = isNetworkNative && isTokenUsdc;
               
@@ -554,7 +554,7 @@ export default function SendForm() {
       recipientAddressInput.input,
       currentQuote,
       receiveToken,
-      sendNetwork,
+      receiveNetwork,
       usdcBalance,
       isValidRecipientAddress,
       signApproveTransactionStatus,
@@ -623,17 +623,17 @@ export default function SendForm() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sendNetwork, receiveToken, currentQuote.sendAmountInput]);
+  }, [receiveNetwork, receiveToken, currentQuote.sendAmountInput]);
   
   /*
    * Helpers
    */
 
   const fetchReceiveAmountQuote = async (inputAmount: string): Promise<SocketReceiveQuote | null> => {
-    const isSendNetworkBase = sendNetwork === SendNetwork.BASE;
+    const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
     const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
 
-    if (isSendNetworkBase && isReceiveTokenUsdc) {
+    if (isReceiveNetworkBase && isReceiveTokenUsdc) {
       return {
         toAmount: toBigInt(inputAmount),
         decimals: 6
@@ -646,10 +646,10 @@ export default function SendForm() {
   };
 
   const updateQuoteAndReturnTxnData = async (inputAmount: string, recipientAddress: string): Promise<string | null> => {
-    const isSendNetworkBase = sendNetwork === SendNetwork.BASE;
+    const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
     const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
 
-    if (isSendNetworkBase && isReceiveTokenUsdc) {
+    if (isReceiveNetworkBase && isReceiveTokenUsdc) {
       return null;
     } else {
       return await fetchFinalReceiveAmountAndTransactionData(inputAmount, recipientAddress);
@@ -796,7 +796,8 @@ export default function SendForm() {
         return 'Send';
 
       case SendTransactionStatus.VALID_FOR_BRIDGE:
-        return 'Bridge';
+        const bridgeText = receiveNetwork === ReceiveNetwork.BASE ? 'Send' : 'Bridge';
+        return bridgeText;
 
       case SendTransactionStatus.TRANSACTION_SUCCEEDED:
         return 'Send';

@@ -8,7 +8,7 @@ import polygonSvg from '../../assets/images/polygon.svg';
 import zksyncSvg from '../../assets/images/zksync-era.svg';
 
 
-export const SendNetwork = {
+export const ReceiveNetwork = {
   ARBITRUM: "arbitrum",
   AVALANCHE: "avalanche",
   BASE: "base",
@@ -19,71 +19,71 @@ export const SendNetwork = {
   ZKSYNC: "zksync",
 } as const;
 
-export const sendNetworks = [
-  SendNetwork.ZKSYNC,
-  SendNetwork.BASE,
-  SendNetwork.POLYGON,
-  SendNetwork.AVALANCHE,
-  SendNetwork.BINANCE,
-  SendNetwork.ARBITRUM,
-  SendNetwork.OPTIMISM,
-  SendNetwork.ETHEREUM,
+export const receiveNetworks = [
+  ReceiveNetwork.ZKSYNC,
+  ReceiveNetwork.BASE,
+  ReceiveNetwork.POLYGON,
+  ReceiveNetwork.AVALANCHE,
+  ReceiveNetwork.BINANCE,
+  ReceiveNetwork.ARBITRUM,
+  ReceiveNetwork.OPTIMISM,
+  ReceiveNetwork.ETHEREUM,
 ];
 
-export type SendNetworkType = typeof SendNetwork[keyof typeof SendNetwork];
+export type ReceiveNetworkType = typeof ReceiveNetwork[keyof typeof ReceiveNetwork];
 
 interface NetworksData {
-  networkId: SendNetworkType;
+  networkId: ReceiveNetworkType;
   networkName: string;
   networkSvg: string;
   networkChainId: string;
 }
 
-export const networksInfo: Record<SendNetworkType, NetworksData> = {
-  [SendNetwork.ARBITRUM]: {
-    networkId: SendNetwork.ARBITRUM,
+export const networksInfo: Record<ReceiveNetworkType, NetworksData> = {
+  [ReceiveNetwork.ARBITRUM]: {
+    networkId: ReceiveNetwork.ARBITRUM,
     networkName: 'Arbitrum',
     networkSvg: arbitrumSvg,
     networkChainId: '42161'
   },
-  [SendNetwork.AVALANCHE]: {
-    networkId: SendNetwork.AVALANCHE,
+  [ReceiveNetwork.AVALANCHE]: {
+    networkId: ReceiveNetwork.AVALANCHE,
     networkName: 'Avalanche',
     networkSvg: avalancheSvg,
     networkChainId: '43114'
   },
-  [SendNetwork.BASE]: {
-    networkId: SendNetwork.BASE,
+  [ReceiveNetwork.BASE]: {
+    networkId: ReceiveNetwork.BASE,
     networkName: 'Base',
     networkSvg: baseSvg,
     networkChainId: '8453'
   },
-  [SendNetwork.BINANCE]: {
-    networkId: SendNetwork.BINANCE,
+  [ReceiveNetwork.BINANCE]: {
+    networkId: ReceiveNetwork.BINANCE,
     networkName: 'Binance',
     networkSvg: binanceSvg,
     networkChainId: '56'
   },
-  [SendNetwork.ETHEREUM]: {
-    networkId: SendNetwork.ETHEREUM,
+  [ReceiveNetwork.ETHEREUM]: {
+    networkId: ReceiveNetwork.ETHEREUM,
     networkName: 'Ethereum Mainnet',
     networkSvg: ethereumSvg,
     networkChainId: '1'
   },
-  [SendNetwork.OPTIMISM]: {
-    networkId: SendNetwork.OPTIMISM,
+  [ReceiveNetwork.OPTIMISM]: {
+    networkId: ReceiveNetwork.OPTIMISM,
     networkName: 'Optimism',
     networkSvg: optimismSvg,
     networkChainId: '10'
   },
-  [SendNetwork.POLYGON]: {
-    networkId: SendNetwork.POLYGON,
+  [ReceiveNetwork.POLYGON]: {
+    networkId: ReceiveNetwork.POLYGON,
     networkName: 'Polygon',
     networkSvg: polygonSvg,
     networkChainId: '137'
   },
-  [SendNetwork.ZKSYNC]: {
-    networkId: SendNetwork.ZKSYNC,
+  [ReceiveNetwork.ZKSYNC]: {
+    networkId: ReceiveNetwork.ZKSYNC,
     networkName: 'zkSync',
     networkSvg: zksyncSvg,
     networkChainId: '324'
