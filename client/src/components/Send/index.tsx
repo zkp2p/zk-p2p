@@ -581,6 +581,11 @@ export default function SendForm() {
     }
   }, [submitTransferResult])
 
+  useEffect(() => {
+    if (submitBridgeResult?.hash) {
+      setTransactionHash(submitBridgeResult.hash);
+    }
+  }, [submitBridgeResult])
 
   useEffect(() => {
     // todo: skip approval if 4337 wallet
@@ -627,7 +632,7 @@ export default function SendForm() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiveNetwork, receiveToken]); // currentQuote.sendAmountInput, recipientAddressInput.rawAddress 
+  }, [receiveNetwork, receiveToken, usdcApprovalToSocketBridge]); // currentQuote.sendAmountInput, recipientAddressInput.rawAddress 
   
   /*
    * Helpers
