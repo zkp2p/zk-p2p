@@ -162,6 +162,7 @@ const NetworkContainer = styled.div`
 
   &:hover {
     background-color: ${colors.selectorHover};
+    border: 1px solid ${colors.selectorHoverBorder};
   }
 `;
 
