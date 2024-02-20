@@ -19,7 +19,13 @@ import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import useSendSettings from "@hooks/useSendSettings";
 
 
-export const TokenSelector: React.FC = () => {
+interface TokenSelectorProps {
+  disabled?: boolean;
+}
+
+export const TokenSelector: React.FC<TokenSelectorProps> = ({
+  disabled
+}) => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -37,6 +43,12 @@ export const TokenSelector: React.FC = () => {
 
   const handleOverlayClick = () => {
     toggleOpen();
+  };
+
+  const handleLogoAndTokenLabelClick = () => {
+    if (!disabled) {
+      toggleOpen();
+    }
   };
 
   const handleSelectToken = (receiveToken: ReceiveTokenType) => {
@@ -71,7 +83,7 @@ export const TokenSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <LogoAndTokenLabel onClick={toggleOpen}>
+      <LogoAndTokenLabel onClick={handleLogoAndTokenLabelClick}>
         <NetworkSvg src={selectedReceiveToken().logoURI} />
 
         <TokenLabel>
@@ -158,6 +170,7 @@ const LogoAndTokenLabel = styled.div`
 
   &:hover {
     background-color: ${colors.selectorHover};
+    border: 1px solid ${colors.selectorHoverBorder};
   }
 `;
 

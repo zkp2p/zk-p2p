@@ -40,6 +40,8 @@ import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
+const QUOTE_FETCHING_DEBOUNCE_MS = 750;
+
 type RecipientAddress = {
   input: string;
   ensName: string;
@@ -69,6 +71,7 @@ export type SocketReceiveQuote = {
   toAmount: bigint;
   totalGasFeesInUsd?: string;
   serviceTimeSeconds?: number;
+  bridgeName?: string;
   decimals?: number;
   routeData?: any;
 };
@@ -289,21 +292,15 @@ export default function SendForm() {
         rawAddress = resolvedAddress;
         displayAddress = resolvedAddress;
 
-        const bridgeTransactionData = await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, resolvedAddress);
-        if (bridgeTransactionData) {
-          setSocketSendTransactionData(bridgeTransactionData);
-        }
+        await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, resolvedAddress);
         
         isValidAddress = true;
       }
-    } else if (value.length === 42 && value.startsWith('0x')) {
+    } else if (value.startsWith('0x') && value.length === 42) {
       rawAddress = value;
       displayAddress = value;
 
-      const bridgeTransactionData = await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, value);
-      if (bridgeTransactionData) {
-        setSocketSendTransactionData(bridgeTransactionData);
-      }
+      await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, value);
 
       isValidAddress = true;
     };
@@ -333,11 +330,11 @@ export default function SendForm() {
 
   const debouncedFetchSocketQuote = useCallback(
     debounce(async (sendAmount, recipient?) => {
-      // console.log('debouncedFetchSocketQuote called');
+      console.log('debouncedFetchSocketQuote called');
 
       const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
       
-      // console.log('receiveAmountQuote:', receiveAmountQuote);
+      console.log('receiveAmountQuote:', receiveAmountQuote);
 
       if (receiveAmountQuote) {
         setCurrentQuote({
@@ -345,7 +342,7 @@ export default function SendForm() {
           receiveAmountQuote
         });
       }
-    }, 750 // 750ms
+    }, QUOTE_FETCHING_DEBOUNCE_MS
   ), [receiveNetwork, receiveToken] );
 
   const cancelDebounce = () => {
@@ -355,14 +352,6 @@ export default function SendForm() {
   };
 
   const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
-    // console.log('fetchSocketQuote called');
-
-    // console.log("receiveNetwork: ", receiveNetwork);
-    // console.log("receiveToken: ", receiveToken);
-    // console.log("loggedInEthereumAddress: ", loggedInEthereumAddress);
-    // console.log("receiveToken: ", receiveToken);
-    // console.log("receiveTokenData: ", receiveTokenData);
-
     if (!loggedInEthereumAddress || !receiveNetwork || !receiveToken || !receiveTokenData) {
       return null;
     };
@@ -372,8 +361,6 @@ export default function SendForm() {
       selectedReceiveTokenData = baseUSDCTokenData;
     };
 
-    setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-
     const getSocketQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
       userAddress: loggedInEthereumAddress,
@@ -382,7 +369,7 @@ export default function SendForm() {
       recipient
     };
 
-    // console.log('getSocketQuote called: ', getSocketQuoteParams);
+    console.log('getSocketQuote called: ', getSocketQuoteParams);
 
     const quote = await getSocketQuote(getSocketQuoteParams);
     if (!quote.success || quote.result?.routes?.length === 0) {
@@ -391,13 +378,16 @@ export default function SendForm() {
       return null;
     };
 
-    // console.log('fetchSocketQuote quote:', quote);
+    console.log('fetchSocketQuote quote:', quote);
 
     const bestRoute = quote.result.routes[0];
     const fromAmount = BigInt(bestRoute.fromAmount);
     const toAmount = BigInt(bestRoute.toAmount);
     const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
     const serviceTimeSeconds = bestRoute.serviceTime as number;
+    const usedBridgeNames = bestRoute.usedBridgeNames;
+    const usedDexName = bestRoute.usedDexName;
+    const bridgeName = usedBridgeNames ? usedBridgeNames[0] : usedDexName;
 
     setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
 
@@ -407,6 +397,7 @@ export default function SendForm() {
       totalGasFeesInUsd: totalGasFeesInUsd,
       serviceTimeSeconds,
       decimals: selectedReceiveTokenData.decimals,
+      bridgeName: bridgeName,
       routeData: bestRoute
     } as SocketReceiveQuote;
   };
@@ -434,10 +425,15 @@ export default function SendForm() {
           } else {
             // Receive Quote
             const receiveAmount = currentQuote.receiveAmountQuote;
-            const isReceiveAmountZero = receiveAmount?.fromAmount === ZERO;
+            const isQuoteLoading = quoteFetchingStatus === FetchQuoteStatus.LOADING;
+            const isReceiveAmountNull = !receiveAmount?.fromAmount;
 
-            if (isReceiveAmountZero) {
-              // console.log('INVALID_ROUTES');
+            if (isQuoteLoading) {
+              console.log('FETCHING_QUOTE');
+
+              setSendState(SendTransactionStatus.FETCHING_QUOTE);
+            } else if (isReceiveAmountNull) {
+              console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
             } else {
@@ -543,7 +539,7 @@ export default function SendForm() {
             }
           }
         } else {
-          // console.log('MISSING_AMOUNTS');
+          console.log('MISSING_AMOUNTS');
 
           setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
@@ -554,6 +550,7 @@ export default function SendForm() {
   }, [
       recipientAddressInput.input,
       currentQuote,
+      quoteFetchingStatus,
       receiveToken,
       receiveNetwork,
       usdcBalance,
@@ -584,6 +581,11 @@ export default function SendForm() {
     }
   }, [submitTransferResult])
 
+  useEffect(() => {
+    if (submitBridgeResult?.hash) {
+      setTransactionHash(submitBridgeResult.hash);
+    }
+  }, [submitBridgeResult])
 
   useEffect(() => {
     // todo: skip approval if 4337 wallet
@@ -609,22 +611,28 @@ export default function SendForm() {
   );
 
   useEffect(() => {
-    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+    const isSendAmountPresent = currentQuote.sendAmountInput;
+    const isValidRecipientAddressPresent = recipientAddressInput.rawAddress;
 
-    if (currentQuote.sendAmountInput) {
+    if (isSendAmountPresent) {
+      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
 
-      const simulatedEvent = {
-        target: {
-          value: currentQuote.sendAmountInput,
-          name: 'sendAmountInput'
-        }
-      } as ChangeEvent<HTMLInputElement>;
-  
-      handleSendAmountInputChange(simulatedEvent, 'sendAmountInput');
-    }
+      if (isValidRecipientAddressPresent) {
+        updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
+      } else {
+        const simulatedEvent = {
+          target: {
+            value: currentQuote.sendAmountInput,
+            name: 'sendAmountInput'
+          }
+        } as ChangeEvent<HTMLInputElement>;
+    
+        handleSendAmountInputChange(simulatedEvent, 'sendAmountInput');  
+      }
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiveNetwork, receiveToken, currentQuote.sendAmountInput]);
+  }, [receiveNetwork, receiveToken, usdcApprovalToSocketBridge]); // currentQuote.sendAmountInput, recipientAddressInput.rawAddress 
   
   /*
    * Helpers
@@ -640,42 +648,45 @@ export default function SendForm() {
         decimals: 6
       } as SocketReceiveQuote;
     } else {
+      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
+
       await debouncedFetchSocketQuote(inputAmount);
 
       return null;
     }
   };
 
-  const updateQuoteAndReturnTxnData = async (inputAmount: string, recipientAddress: string): Promise<string | null> => {
+  const updateQuoteAndReturnTxnData = async (inputAmount: string, recipientAddress: string) => {
     const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
     const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
 
     if (isReceiveNetworkBase && isReceiveTokenUsdc) {
-      return null;
-    } else {
-      return await fetchFinalReceiveAmountAndTransactionData(inputAmount, recipientAddress);
-    };
-  };
+      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
-  const fetchFinalReceiveAmountAndTransactionData = async (inputAmount: string, recipientAddress: string): Promise<string | null> => {
+      return;
+    };
+
     const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
 
     // todo: perform check if updated quote price range moved too much
-    // console.log('updatedQuote:', updatedQuote);
-
+    console.log('updatedQuote:', updatedQuote);
     if (!updatedQuote) {
-      return null;
+      return;
     };
 
     const socketTransactionData = await getSocketTransactionData(updatedQuote.routeData);
 
+    console.log('updateQuote - socketTransactionData:', socketTransactionData);
     if (!socketTransactionData) {
-      return null;
+      return;
     };
 
-    // console.log('socketTransactionData:', socketTransactionData);
+    setCurrentQuote({
+      sendAmountInput: inputAmount,
+      receiveAmountQuote: updatedQuote
+    });
 
-    return socketTransactionData.result.txData;
+    setSocketSendTransactionData(socketTransactionData.result.txData);
   };
 
   function resetSendStateOnInputChangeAfterSuccessfulSend() {
@@ -701,8 +712,6 @@ export default function SendForm() {
   const ctaOnClick = async () => {
     switch (sendState) {
       case SendTransactionStatus.APPROVAL_REQUIRED:
-        // console.log('ctaOnClick: APPROVAL_REQUIRED');
-
         try {
           await writeSubmitApproveAsync?.();
         } catch (error) {
@@ -711,8 +720,6 @@ export default function SendForm() {
         break;
 
       case SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER:
-        // console.log('ctaOnClick: VALID_FOR_NATIVE_TRANSFER');
-
         try {
           setTransactionHash('');
 
@@ -723,8 +730,6 @@ export default function SendForm() {
         break;
 
       case SendTransactionStatus.VALID_FOR_BRIDGE:
-        // console.log('ctaOnClick: VALID_FOR_BRIDGE');
-
         try {
           setTransactionHash('');
 
@@ -750,6 +755,7 @@ export default function SendForm() {
       case SendTransactionStatus.MISSING_AMOUNTS:
       case SendTransactionStatus.TRANSACTION_SIGNING:
       case SendTransactionStatus.TRANSACTION_MINING:
+      case SendTransactionStatus.FETCHING_QUOTE:
         return true;
 
       case SendTransactionStatus.APPROVAL_REQUIRED:
@@ -774,6 +780,9 @@ export default function SendForm() {
 
   const ctaText = (): string => {
     switch (sendState) {
+      case SendTransactionStatus.FETCHING_QUOTE:
+        return 'Fetching quote';
+      
       case SendTransactionStatus.INVALID_RECIPIENT_ADDRESS:
         return 'Invalid recipient address';
 
@@ -781,7 +790,7 @@ export default function SendForm() {
         return 'Input send amount';
 
       case SendTransactionStatus.INVALID_ROUTES:
-        return 'Invalid routes';
+        return 'Insufficient amount for bridge';
       
       case SendTransactionStatus.INSUFFICIENT_BALANCE:
         const humanReadableUsdcBalance = usdcBalance ? toUsdcString(usdcBalance) : '0';
@@ -811,6 +820,10 @@ export default function SendForm() {
       default:
         return 'Input recipient address';
     }
+  };
+
+  const selectorsDisabled = (): boolean => {
+    return sendState === SendTransactionStatus.TRANSACTION_SIGNING || sendState === SendTransactionStatus.TRANSACTION_MINING;
   };
 
   const recipientInputText = (): string => {
@@ -884,7 +897,9 @@ export default function SendForm() {
                   </NetworkNameContainer>
                 </NetworkLogoAndNameContainer>
 
-                <NetworkSelector />
+                <NetworkSelector
+                  disabled={selectorsDisabled()}
+                />
               </NetworkTransitionContainer>
             </NetworkContainer>
 
@@ -917,6 +932,7 @@ export default function SendForm() {
               name={`ReceiveAmount`}
               value={receiveAmountInputValue()}
               hasSelector={true}
+              selectorDisabled={selectorsDisabled()}
               onChange={() => {}} // no-op
               readOnly={true}
               type="number"
@@ -948,11 +964,12 @@ export default function SendForm() {
               </Link>
             ) : null}
 
-            { quoteFetchingStatus !== FetchQuoteStatus.DEFAULT ? (
+            { quoteFetchingStatus === FetchQuoteStatus.LOADED ? (
               <QuoteDrawer
                 isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
                 totalGasFeeUsd={currentQuote.receiveAmountQuote?.totalGasFeesInUsd}
                 serviceTimeSeconds={currentQuote.receiveAmountQuote?.serviceTimeSeconds}
+                bridgeName={currentQuote.receiveAmountQuote?.bridgeName}
               />
             ) : null}
 

@@ -18,6 +18,7 @@ interface InputProps {
   readOnly?: boolean;
   accessoryLabel?: string;
   hasSelector?: boolean;
+  selectorDisabled?: boolean;
   enableMax?: boolean
   maxButtonOnClick?: () => void;
   fontSize?: number;
@@ -37,6 +38,7 @@ export const Input: React.FC<InputProps> = ({
   readOnly = false,
   accessoryLabel="",
   hasSelector=false,
+  selectorDisabled=false,
   enableMax=false,
   maxButtonOnClick=() => {},
   fontSize = 28
@@ -81,7 +83,9 @@ export const Input: React.FC<InputProps> = ({
 
       {hasSelector ? (
         <SelectorAccessory>
-          <TokenSelector/>
+          <TokenSelector
+            disabled={selectorDisabled}
+          />
         </SelectorAccessory>
       ) : (
         <AccessoryAndInputLabelWrapper>

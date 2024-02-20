@@ -9,12 +9,14 @@ interface QuoteDrawerProps {
   isLoading: boolean;
   totalGasFeeUsd?: string;
   serviceTimeSeconds?: number;
+  bridgeName?: string;
 }
 
 export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
   isLoading,
   totalGasFeeUsd,
-  serviceTimeSeconds
+  serviceTimeSeconds,
+  bridgeName,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -38,9 +40,31 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
    * Helpers
    */
 
-  const serviceTimeString = `~${serviceTimeSeconds} seconds`;
+  const serviceTimeString = serviceTimeSeconds ? formattedServiceTime(90) : `0s`;
+
   const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Fee estimate';
   const gasFeeValue = isLoading ? '' : `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`;
+
+  const bridgeNameString = bridgeName ? bridgeName.charAt(0).toUpperCase() + bridgeName.slice(1) : 'Unknown';
+
+  function formattedServiceTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    let formattedTime = "";
+  
+    if (minutes > 0) {
+      formattedTime += `${minutes}min`;
+    }
+  
+    if (remainingSeconds > 0) {
+      if (formattedTime.length > 0) {
+        formattedTime += " ";
+      }
+      formattedTime += `${remainingSeconds}sec`;
+    }
+  
+    return formattedTime;
+  }
 
   /*
    * Component
@@ -73,14 +97,14 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
             value={gasFeeValue}
           />
 
-          <QuoteStep 
-            label={"Route"}
-            value={"Hop"}
+          <QuoteStep
+            label={"Arrival time"}
+            value={serviceTimeString}
           />
 
-          <QuoteStep
-            label={"Estimated bridge time"}
-            value={serviceTimeString}
+          <QuoteStep 
+            label={"Route"}
+            value={bridgeNameString}
           />
 
           <QuoteStep
@@ -111,7 +135,7 @@ const TitleLabelAndDropdownIconContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0px 10px;
+  padding: 12px 0px 8px;
 `;
 
 const GasFeeLabel = styled.div`
