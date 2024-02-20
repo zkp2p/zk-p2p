@@ -40,6 +40,8 @@ import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
+const QUOTE_FETCHING_DEBOUNCE_MS = 750;
+
 type RecipientAddress = {
   input: string;
   ensName: string;
@@ -345,7 +347,7 @@ export default function SendForm() {
           receiveAmountQuote
         });
       }
-    }, 750 // 750ms
+    }, QUOTE_FETCHING_DEBOUNCE_MS
   ), [receiveNetwork, receiveToken] );
 
   const cancelDebounce = () => {

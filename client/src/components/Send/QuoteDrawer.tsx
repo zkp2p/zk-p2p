@@ -38,9 +38,29 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
    * Helpers
    */
 
-  const serviceTimeString = `~${serviceTimeSeconds} seconds`;
+  const serviceTimeString = serviceTimeSeconds ? formattedServiceTime(90) : `0s`;
+
   const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Fee estimate';
   const gasFeeValue = isLoading ? '' : `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`;
+
+  function formattedServiceTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    let formattedTime = "";
+  
+    if (minutes > 0) {
+      formattedTime += `${minutes} min`;
+    }
+  
+    if (remainingSeconds > 0) {
+      if (formattedTime.length > 0) {
+        formattedTime += " ";
+      }
+      formattedTime += `${remainingSeconds} sec`;
+    }
+  
+    return formattedTime;
+  }
 
   /*
    * Component
@@ -73,14 +93,14 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
             value={gasFeeValue}
           />
 
-          <QuoteStep 
-            label={"Route"}
-            value={"Hop"}
-          />
-
           <QuoteStep
             label={"Estimated bridge time"}
             value={serviceTimeString}
+          />
+
+          <QuoteStep 
+            label={"Route"}
+            value={"Hop"}
           />
 
           <QuoteStep
