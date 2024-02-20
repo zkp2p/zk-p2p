@@ -31,5 +31,5 @@ export const colors = {
   buttonRed: '#DF2E2D',
 
   selectorColor: '#0D111C',
-  selectorHover: '#363942',
+  selectorHover: '#151822',
 }

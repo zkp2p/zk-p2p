@@ -20,14 +20,14 @@ export const SendNetwork = {
 } as const;
 
 export const sendNetworks = [
-  SendNetwork.ARBITRUM,
-  SendNetwork.AVALANCHE,
+  SendNetwork.ZKSYNC,
   SendNetwork.BASE,
-  SendNetwork.BINANCE,
-  SendNetwork.ETHEREUM,
-  SendNetwork.OPTIMISM,
   SendNetwork.POLYGON,
-  SendNetwork.ZKSYNC
+  SendNetwork.AVALANCHE,
+  SendNetwork.BINANCE,
+  SendNetwork.ARBITRUM,
+  SendNetwork.OPTIMISM,
+  SendNetwork.ETHEREUM,
 ];
 
 export type SendNetworkType = typeof SendNetwork[keyof typeof SendNetwork];

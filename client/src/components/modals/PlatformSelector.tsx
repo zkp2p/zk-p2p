@@ -87,6 +87,8 @@ export const PlatformSelector: React.FC = () => {
               ))}
             </Table>
 
+            <HorizontalDivider/>
+
             <TableFooter>
               Let us know which platforms you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">

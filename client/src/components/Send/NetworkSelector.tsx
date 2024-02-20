@@ -127,6 +127,8 @@ export const NetworkSelector: React.FC = () => {
               ))}
             </Table>
 
+            <HorizontalDivider/>
+
             <TableFooter>
               Let us know which networks you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
@@ -245,6 +247,10 @@ const StyledX = styled(X)`
 const Table = styled.div`
   width: 100%;
   color: #616161;
+  height: 273px;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
 `;
 
 const TableFooter = styled.div`
