@@ -6,7 +6,7 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
-import { PaymentPlatformType } from "@helpers/types";
+import { PaymentPlatformType, paymentPlatformInfo } from "@helpers/types";
 
 
 interface DepositsRowProps {
@@ -57,7 +57,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       </IconAndTokenNameContainer>
 
       <TitleAndValueContainer>
-        <Value>{paymentPlatform}</Value>
+        <Value>{paymentPlatformInfo[paymentPlatform].platformName}</Value>
       </TitleAndValueContainer>
 
       <TitleAndValueContainer>
