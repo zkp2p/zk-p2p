@@ -111,7 +111,7 @@ export function toEthString(value: bigint): string {
   return ethValue.toFixed(3);
 };
 
-function toEthStringLong(value: bigint): string {
+export function toEthStringLong(value: bigint): string {
   if (typeof value !== 'bigint') {
     return '0';
   }

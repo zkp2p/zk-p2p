@@ -71,6 +71,7 @@ export type SocketReceiveQuote = {
   serviceTimeSeconds?: number;
   bridgeName?: string;
   decimals?: number;
+  totalGasFeesWei?: bigint;
   routeData?: any;
 };
 
@@ -366,9 +367,15 @@ export default function SendForm() {
     const toAmount = BigInt(bestRoute.toAmount);
     const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
     const serviceTimeSeconds = bestRoute.serviceTime as number;
+
     const usedBridgeNames = bestRoute.usedBridgeNames;
     const usedDexName = bestRoute.usedDexName;
     const bridgeName = usedBridgeNames ? usedBridgeNames[0] : usedDexName;
+
+    const userTxns = bestRoute.userTxs;
+    const totalGasFees = userTxns.reduce((cumulativeFees: bigint, txn: any) => {
+      return cumulativeFees + BigInt(txn.gasFees.gasAmount)
+    }, ZERO);
 
     setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
 
@@ -379,7 +386,8 @@ export default function SendForm() {
       serviceTimeSeconds,
       decimals: selectedReceiveTokenData.decimals,
       bridgeName: bridgeName,
-      routeData: bestRoute
+      routeData: bestRoute,
+      totalGasFeesWei: totalGasFees
     } as SocketReceiveQuote;
   };
 
@@ -944,7 +952,9 @@ export default function SendForm() {
             { quoteFetchingStatus === FetchQuoteStatus.LOADED ? (
               <QuoteDrawer
                 isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
+                isManagedWallet={loginStatus === LoginStatus.AUTHENTICATED}
                 totalGasFeeUsd={currentQuote.receiveAmountQuote?.totalGasFeesInUsd}
+                totalGasFeeWei={currentQuote.receiveAmountQuote?.totalGasFeesWei}
                 serviceTimeSeconds={currentQuote.receiveAmountQuote?.serviceTimeSeconds}
                 bridgeName={currentQuote.receiveAmountQuote?.bridgeName}
               />

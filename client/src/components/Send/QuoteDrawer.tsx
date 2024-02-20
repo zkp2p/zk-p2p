@@ -3,18 +3,30 @@ import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
 
 import { QuoteStep } from "@components/Send/QuoteStep";
+import { toEthStringLong } from "@helpers/units";
 
+
+const PROTOCOL_MAP: { [key: string]: string } = {
+  'across': 'Across',
+  'hop': 'Hop',
+  'zerox': '0x',
+  'cctp': 'CCTP'
+};
 
 interface QuoteDrawerProps {
   isLoading: boolean;
+  isManagedWallet: boolean;
   totalGasFeeUsd?: string;
+  totalGasFeeWei?: bigint;
   serviceTimeSeconds?: number;
   bridgeName?: string;
 }
 
 export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
   isLoading,
+  isManagedWallet,
   totalGasFeeUsd,
+  totalGasFeeWei,
   serviceTimeSeconds,
   bridgeName,
 }) => {
@@ -40,31 +52,63 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
    * Helpers
    */
 
-  const serviceTimeString = serviceTimeSeconds ? formattedServiceTime(90) : `0s`;
+  const feeWeiString = () => {
+    if (isLoading) {
+      return '';
+    };
 
-  const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Fee estimate';
-  const gasFeeValue = isLoading ? '' : `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`;
+    if (!totalGasFeeWei) {
+      return 'Loading...';
+    }
 
-  const bridgeNameString = bridgeName ? bridgeName.charAt(0).toUpperCase() + bridgeName.slice(1) : 'Unknown';
+    return `${toEthStringLong(totalGasFeeWei)} ETH`
+  };
+  
+  const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Network fee';
+  
+  const gasFeeValue = () => {
+    if (isLoading) {
+      return '';
+    };
+    
+    if (isManagedWallet) {
+      return '$0';
+    };
 
+    return `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`
+  };
+  
+  const bridgeNameString = () => {
+    if (!bridgeName) {
+      return 'Unknown';
+    };
+
+    const cachedBridgeName = PROTOCOL_MAP[bridgeName];
+    if (cachedBridgeName) {
+      return cachedBridgeName;
+    } else {
+      return bridgeName.charAt(0).toUpperCase() + bridgeName.slice(1);
+    }
+  };
+  
+  const serviceTimeString = serviceTimeSeconds ? formattedServiceTime(serviceTimeSeconds) : `0 sec`;
   function formattedServiceTime(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     let formattedTime = "";
   
     if (minutes > 0) {
-      formattedTime += `${minutes}min`;
-    }
-  
-    if (remainingSeconds > 0) {
-      if (formattedTime.length > 0) {
-        formattedTime += " ";
+      if (remainingSeconds > 0) {
+        formattedTime += `${minutes}m ${remainingSeconds}s`;
+      } else {
+        formattedTime += `${minutes} min`;
       }
-      formattedTime += `${remainingSeconds}sec`;
-    }
+    } else if (remainingSeconds > 0) {
+      formattedTime += `${remainingSeconds} sec`;
+    };
   
     return formattedTime;
-  }
+  };
 
   /*
    * Component
@@ -79,7 +123,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
 
         <GasFeeValueAndChevronContainer>
           <GasFeeValue>
-            {gasFeeValue}
+            {gasFeeValue()}
           </GasFeeValue>  
 
           <StyledChevronDown
@@ -92,10 +136,12 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
       <InstructionsDropdown $isOpen={isOpen}>
         <HorizontalDivider/>
         <RequirementListContainer>
-          <QuoteStep 
-            label={"Bridge fee"}
-            value={gasFeeValue}
-          />
+          {!isManagedWallet ? (
+            <QuoteStep
+              label={"Fee amount"}
+              value={feeWeiString()}
+            />
+          ) : null}
 
           <QuoteStep
             label={"Arrival time"}
@@ -104,7 +150,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
 
           <QuoteStep 
             label={"Route"}
-            value={bridgeNameString}
+            value={bridgeNameString()}
           />
 
           <QuoteStep
