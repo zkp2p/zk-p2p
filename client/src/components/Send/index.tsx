@@ -225,7 +225,7 @@ export default function SendForm() {
    */
 
   const handleSendAmountInputChange = async (event: ChangeEvent<HTMLInputElement>, field: keyof SendQuote) => {
-    resetSendStateOnInputChangeAfterSuccessfulSend();
+    resetStateOnInputChanges();
     
     const value = event.target.value;
     if (value === "") {
@@ -243,20 +243,7 @@ export default function SendForm() {
         [field]: "0."
       });
     } else if (isValidSendAmountInput(value)) {
-      setCurrentQuote({
-        ...ZERO_QUOTE,
-        [field]: value
-      });
-
-      console.log('event: ', event);
-
-      const baseUsdcToBaseUsdcQuote = await fetchReceiveAmountQuote(value);
-      if (baseUsdcToBaseUsdcQuote) {
-        setCurrentQuote({
-          sendAmountInput: value,
-          receiveAmountQuote: baseUsdcToBaseUsdcQuote
-        });
-      };
+      updateQuoteOnInputChange(value);
     } else {
       cancelDebounce();
 
@@ -271,7 +258,7 @@ export default function SendForm() {
   };
 
   const handleRecipientInputChange = async (value: string) => {
-    resetSendStateOnInputChangeAfterSuccessfulSend();
+    resetStateOnInputChanges();
 
     let rawAddress = '';
     let ensName = '';
@@ -292,16 +279,14 @@ export default function SendForm() {
         rawAddress = resolvedAddress;
         displayAddress = resolvedAddress;
 
-        await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, resolvedAddress);
-        
+        updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
         isValidAddress = true;
       }
     } else if (value.startsWith('0x') && value.length === 42) {
       rawAddress = value;
       displayAddress = value;
 
-      await updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, value);
-
+      updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
       isValidAddress = true;
     };
 
@@ -328,10 +313,8 @@ export default function SendForm() {
 
   }, [socketSendTransactionData]);
 
-  const debouncedFetchSocketQuote = useCallback(
+  const debouncedFetchIndicativeQuote = useCallback(
     debounce(async (sendAmount, recipient?) => {
-      console.log('debouncedFetchSocketQuote called');
-
       const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
       
       console.log('receiveAmountQuote:', receiveAmountQuote);
@@ -348,7 +331,7 @@ export default function SendForm() {
   const cancelDebounce = () => {
     setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
-    debouncedFetchSocketQuote.cancel();
+    debouncedFetchIndicativeQuote.cancel();
   };
 
   const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
@@ -408,7 +391,7 @@ export default function SendForm() {
       
       // Send Amount Input
       if (!sendAmountInput) { 
-        // console.log('MISSING_AMOUNTS');
+        console.log('MISSING_AMOUNTS');
 
         setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
@@ -419,7 +402,7 @@ export default function SendForm() {
           const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
           if (isSendAmountGreaterThanBalance) {
-            // console.log('INSUFFICIENT_BALANCE');
+            console.log('INSUFFICIENT_BALANCE');
 
             setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
           } else {
@@ -432,7 +415,7 @@ export default function SendForm() {
               console.log('FETCHING_QUOTE');
 
               setSendState(SendTransactionStatus.FETCHING_QUOTE);
-            } else if (isReceiveAmountNull) {
+            } else if (isReceiveAmountNull && !isQuoteLoading) {
               console.log('INVALID_ROUTES');
 
               setSendState(SendTransactionStatus.INVALID_ROUTES);
@@ -444,11 +427,11 @@ export default function SendForm() {
               // Native Base USDC Transfer
               if (isNativeTransferTransaction) {
                 if (!recipientAddressInput.input) {
-                  // console.log('DEFAULT');
+                  console.log('DEFAULT');
 
                   setSendState(SendTransactionStatus.DEFAULT);
                 } else if (!isValidRecipientAddress) {
-                  // console.log('INVALID_RECIPIENT_ADDRESS');
+                  console.log('INVALID_RECIPIENT_ADDRESS');
 
                   setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                 } else {
@@ -456,15 +439,15 @@ export default function SendForm() {
                   const miningSendTransaction = mineTransferTransactionStatus === 'loading';
     
                   if (signingSendTransaction) {
-                    // console.log('TRANSACTION_SIGNING');
+                    console.log('TRANSACTION_SIGNING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                   } else if (miningSendTransaction) {
-                    // console.log('TRANSACTION_MINING');
+                    console.log('TRANSACTION_MINING');
 
                     setSendState(SendTransactionStatus.TRANSACTION_MINING);
                   } else {
-                    // console.log('VALID_FOR_NATIVE_TRANSFER');
+                    console.log('VALID_FOR_NATIVE_TRANSFER');
 
                     setSendState(SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER);
                   }
@@ -484,26 +467,26 @@ export default function SendForm() {
                   // Approval Required
                   if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
                     if (signingApproveTransaction) {
-                      // console.log('TRANSACTION_SIGNING');
+                      console.log('TRANSACTION_SIGNING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                     } else if (miningApproveTransaction) {
-                      // console.log('TRANSACTION_MINING');
+                      console.log('TRANSACTION_MINING');
 
                       setSendState(SendTransactionStatus.TRANSACTION_MINING);
                     } else {
-                      // console.log('APPROVAL_REQUIRED');
+                      console.log('APPROVAL_REQUIRED');
 
                       setSendState(SendTransactionStatus.APPROVAL_REQUIRED);
                     }
                   } else {
                     // Approval Not Required, Recipient Address Fork (see below)
                     if (!recipientAddressInput.input) {
-                      // console.log('DEFAULT');
+                      console.log('DEFAULT');
 
                       setSendState(SendTransactionStatus.DEFAULT);
                     } else if (!isValidRecipientAddress) {
-                      // console.log('INVALID_RECIPIENT_ADDRESS');
+                      console.log('INVALID_RECIPIENT_ADDRESS');
 
                       setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                     } else {
@@ -511,27 +494,26 @@ export default function SendForm() {
                       const miningBridgeTransaction = mineBridgeTransactionStatus === 'loading';
         
                       if (signingBridgeTransaction) {
-                        // console.log('TRANSACTION_SIGNING');
+                        console.log('TRANSACTION_SIGNING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
                       } else if (miningBridgeTransaction) {
-                        // console.log('TRANSACTION_MINING');
+                        console.log('TRANSACTION_MINING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_MINING);
                       } else {
                         if (shouldConfigureBridgeWrite) {
-                          // console.log('VALID_FOR_BRIDGE');
+                          console.log('VALID_FOR_BRIDGE');
 
                           setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
                         } else {
-                          // todo: bridge transaction has not been configured yet
-                          // console.log('INVALID_FOR_BRIDGE')
+                          console.log('INVALID_FOR_BRIDGE')
                         }
                       }
                     }
                   }
                 } else {
-                  // console.log('MISSING_AMOUNTS');
+                  console.log('MISSING_AMOUNTS');
 
                   setSendState(SendTransactionStatus.MISSING_AMOUNTS);
                 }
@@ -539,7 +521,7 @@ export default function SendForm() {
             }
           }
         } else {
-          console.log('MISSING_AMOUNTS');
+          // console.log('MISSING_AMOUNTS');
 
           setSendState(SendTransactionStatus.MISSING_AMOUNTS);
         }
@@ -611,61 +593,56 @@ export default function SendForm() {
   );
 
   useEffect(() => {
-    const isSendAmountPresent = currentQuote.sendAmountInput;
-    const isValidRecipientAddressPresent = recipientAddressInput.rawAddress;
-
-    if (isSendAmountPresent) {
-      if (isValidRecipientAddressPresent) {
-        updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
-      } else {
-        const simulatedEvent = {
-          target: {
-            value: currentQuote.sendAmountInput,
-            name: 'sendAmountInput'
-          }
-        } as ChangeEvent<HTMLInputElement>;
-    
-        handleSendAmountInputChange(simulatedEvent, 'sendAmountInput');  
-      }
-    };
+    updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiveNetwork, receiveToken, usdcApprovalToSocketBridge]); // currentQuote.sendAmountInput, recipientAddressInput.rawAddress 
+  }, [receiveNetwork, receiveToken, usdcApprovalToSocketBridge]);
   
   /*
    * Helpers
    */
 
-  const fetchReceiveAmountQuote = async (inputAmount: string): Promise<SocketReceiveQuote | null> => {
+  const updateQuoteOnInputChange = async (inputAmount?: string, recipientAddress?: string) => {
+    setSocketSendTransactionData('');
+
+    const sendInputValue = inputAmount;
+    if (!sendInputValue) {
+      return;
+    };
+
+    setCurrentQuote({
+      ...ZERO_QUOTE,
+      sendAmountInput: inputAmount
+    });
+
     const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
     const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
+    const isValidRecipientAddressPresent = recipientAddress;
 
-    if (isReceiveNetworkBase && isReceiveTokenUsdc) {
-      return {
-        toAmount: toBigInt(inputAmount),
+    if (isReceiveNetworkBase && isReceiveTokenUsdc) {               // Base USDC to Base USDC
+      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
+      const baseUsdcToBaseUsdcQuote = {
+        toAmount: toBigInt(sendInputValue),
         decimals: 6
       } as SocketReceiveQuote;
-    } else {
+
+      setCurrentQuote({
+        sendAmountInput: sendInputValue,
+        receiveAmountQuote: baseUsdcToBaseUsdcQuote
+      });
+    } else if (isValidRecipientAddressPresent) {                    // Recipient Address exists, fetch txn data
+      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
+
+      fetchFirmQuoteAndTxnData(sendInputValue, recipientAddress);
+    } else {                                                        // Fetch indicative quote
       setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
       
-      await debouncedFetchSocketQuote(inputAmount);
-
-      return null;
+      debouncedFetchIndicativeQuote(sendInputValue);
     }
   };
 
-  const updateQuoteAndReturnTxnData = async (inputAmount: string, recipientAddress: string) => {
-    const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
-    const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
-
-    if (isReceiveNetworkBase && isReceiveTokenUsdc) {
-      setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
-
-      return;
-    } else {
-      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-    };
-
+  const fetchFirmQuoteAndTxnData = async (inputAmount: string, recipientAddress: string) => {
     const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
 
     // todo: perform check if updated quote price range moved too much
@@ -689,10 +666,18 @@ export default function SendForm() {
     setSocketSendTransactionData(socketTransactionData.result.txData);
   };
 
-  function resetSendStateOnInputChangeAfterSuccessfulSend() {
+  function resetStateOnInputChanges() {
+    if (transactionHash) {
+      setTransactionHash('');
+    };
+
+    if (socketSendTransactionData) {
+      setSocketSendTransactionData('');
+    };
+
     if (sendState === SendTransactionStatus.TRANSACTION_SUCCEEDED) {
       setSendState(SendTransactionStatus.DEFAULT);
-    }
+    };
   };
 
   function isValidSendAmountInput(value: string) {
@@ -721,8 +706,6 @@ export default function SendForm() {
 
       case SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER:
         try {
-          setTransactionHash('');
-
           await writeSubmitTransferAsync?.();
         } catch (error) {
           console.log('writeSubmitTransferAsync failed: ', error);
@@ -731,10 +714,6 @@ export default function SendForm() {
 
       case SendTransactionStatus.VALID_FOR_BRIDGE:
         try {
-          setTransactionHash('');
-
-          console.log('writeSubmitBridgeAsync:', writeSubmitBridgeAsync);
-
           await writeSubmitBridgeAsync?.();
         } catch (error) {
           console.log('writeSubmitBridgeAsync failed: ', error);
