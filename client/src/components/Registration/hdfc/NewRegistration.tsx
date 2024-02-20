@@ -66,8 +66,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     abi: hdfcRampAbi,
     functionName: 'register',
     args: [
-      ...reformatProofForChain(proof[0]),
-      publicSignals ? JSON.parse(publicSignals[0]) : null,
+      ...reformatProofForChain(proof),
+      publicSignals ? JSON.parse(publicSignals) : null,
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);

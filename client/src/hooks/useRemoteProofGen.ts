@@ -73,7 +73,7 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          "payment_type": "garanti",
+          "payment_type": paymentType,
           "email_type": circuitType, // legacy_parameter
           "circuit_type": circuitType,
           "email": emailBody,
