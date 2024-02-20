@@ -374,8 +374,6 @@ export default function SendForm() {
       selectedReceiveTokenData = baseUSDCTokenData;
     };
 
-    setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-
     const getSocketQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
       userAddress: loggedInEthereumAddress,
@@ -642,6 +640,8 @@ export default function SendForm() {
         decimals: 6
       } as SocketReceiveQuote;
     } else {
+      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
+      
       await debouncedFetchSocketQuote(inputAmount);
 
       return null;
