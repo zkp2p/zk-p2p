@@ -426,7 +426,7 @@ export default function SendForm() {
             // Receive Quote
             const receiveAmount = currentQuote.receiveAmountQuote;
             const isQuoteLoading = quoteFetchingStatus === FetchQuoteStatus.LOADING;
-            const isReceiveAmountNull = !receiveAmount?.fromAmount;
+            const isReceiveAmountNull = !receiveAmount?.toAmount;
 
             if (isQuoteLoading) {
               console.log('FETCHING_QUOTE');
@@ -615,8 +615,6 @@ export default function SendForm() {
     const isValidRecipientAddressPresent = recipientAddressInput.rawAddress;
 
     if (isSendAmountPresent) {
-      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-
       if (isValidRecipientAddressPresent) {
         updateQuoteAndReturnTxnData(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
       } else {
@@ -649,7 +647,7 @@ export default function SendForm() {
       } as SocketReceiveQuote;
     } else {
       setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
-
+      
       await debouncedFetchSocketQuote(inputAmount);
 
       return null;
@@ -664,6 +662,8 @@ export default function SendForm() {
       setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
       return;
+    } else {
+      setQuoteFetchingStatus(FetchQuoteStatus.LOADING);
     };
 
     const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
