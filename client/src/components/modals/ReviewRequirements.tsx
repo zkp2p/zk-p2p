@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { ArrowLeft, AlertTriangle } from 'react-feather';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { platformStrings } from '@helpers/strings';
 import { Button } from "@components/common/Button";
@@ -128,7 +129,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
   z-index: 20;

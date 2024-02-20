@@ -16,6 +16,7 @@ import { NetworkSelector } from '@components/Send/NetworkSelector';
 import { QuoteDrawer } from '@components/Send/QuoteDrawer';
 import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { ZERO } from '@helpers/constants';
 import { toBigInt, toUsdcString, toTokenString } from '@helpers/units';
 import {
@@ -991,7 +992,7 @@ const SendFormContainer = styled(AutoColumn)`
   border-radius: 16px;
   padding: 1rem;
   gap: 1rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
 `;
 

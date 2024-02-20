@@ -6,6 +6,7 @@ import { useLogin, useConnectWallet } from '@privy-io/react-auth';
 import { LoginTypeButton } from "@components/Account/LoginTypeButton";
 import { Overlay } from '@components/modals/Overlay';
 import { ThemedText } from '@theme/text'
+import { colors } from '@theme/colors';
 import { commonStrings } from '@helpers/strings';
 import QuestionHelper from '@components/common/QuestionHelper';
 
@@ -136,7 +137,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0E111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
   z-index: 40;

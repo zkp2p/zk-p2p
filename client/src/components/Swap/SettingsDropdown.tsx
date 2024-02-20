@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { Input } from "@components/common/Input";
+import { colors } from '@theme/colors';
 
 
 interface SettingsDropdownProps {
@@ -87,7 +88,7 @@ const Dropdown = styled.div`
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0E111C;
+  background-color: ${colors.container};
   position: absolute;
   top: calc(100% + 20px);
   right: -12px;

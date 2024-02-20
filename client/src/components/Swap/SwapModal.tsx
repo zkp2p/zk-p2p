@@ -10,6 +10,7 @@ import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
 import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK } from "@helpers/docUrls";
 
@@ -192,7 +193,7 @@ const ModalContainer = styled.div<{$isVenmo?: boolean}>`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 2rem 1rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   color: #FFF;
   align-items: center;

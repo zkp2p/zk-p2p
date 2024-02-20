@@ -215,7 +215,7 @@ const ModalContainer = styled.div`
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #0D111C;
+  background-color: ${colors.container};
   color: #FFF;
   align-items: center;
   z-index: 20;
@@ -247,7 +247,7 @@ const StyledX = styled(X)`
 const Table = styled.div`
   width: 100%;
   color: #616161;
-  height: 273px;
+  height: 232px;
 
   overflow-y: auto;
   scrollbar-width: thin;

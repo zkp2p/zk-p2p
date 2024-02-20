@@ -14,6 +14,7 @@ import { VerificationStepRow, VerificationState, VerificationStepType } from "@c
 import { commonStrings } from "@helpers/strings";
 import { LoginStatus, ProofGenerationStatus } from  "@helpers/types";
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
@@ -442,7 +443,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
   z-index: 20;

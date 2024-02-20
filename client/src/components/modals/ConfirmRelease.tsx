@@ -8,6 +8,7 @@ import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { Abi } from '@helpers/types';
 import { ThemedText } from '@theme/text'
+import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
@@ -255,7 +256,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
   z-index: 20;

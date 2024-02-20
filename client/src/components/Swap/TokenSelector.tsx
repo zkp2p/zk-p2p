@@ -130,7 +130,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 20px;
-  background: #0D111C;
+  background-color: ${colors.container};
   color: #FFF;
   align-items: center;
   z-index: 20;

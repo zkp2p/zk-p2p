@@ -7,6 +7,7 @@ import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
 import { platformStrings } from "@helpers/strings";
 import { PaymentPlatformType } from '@helpers/types';
+import { colors } from '@theme/colors';
 
 
 interface InstructionDrawerProps {
@@ -103,7 +104,7 @@ const Wrapper = styled.div`
   padding: 0px 20px;
   border-radius: 16px;
   border: 1px solid #98a1c03d;
-  background: #0D111C;
+  background-color: ${colors.container};
   overflow: hidden;
 `;
 
@@ -149,7 +150,7 @@ const InstructionsDropdown = styled.div<InstructionsDropdownProps>`
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: #0D111C;
+  background-color: ${colors.container};
   color: #FFF;
   align-items: center;
   gap: 16px;
