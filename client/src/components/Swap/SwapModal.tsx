@@ -258,6 +258,6 @@ const ButtonContainer = styled.div`
 const QRLabel = styled.div`
   font-size: 14px;
   text-align: center;
-  margin-top: -1rem;
+  margin-top: 0.5rem;
   line-height: 1.5;
 `;
