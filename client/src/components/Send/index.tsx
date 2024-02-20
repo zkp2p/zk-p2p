@@ -815,6 +815,10 @@ export default function SendForm() {
     }
   };
 
+  const selectorsDisabled = (): boolean => {
+    return sendState === SendTransactionStatus.TRANSACTION_SIGNING || sendState === SendTransactionStatus.TRANSACTION_MINING;
+  };
+
   const recipientInputText = (): string => {
     if (isRecipientInputFocused) {
       return recipientAddressInput.input;
@@ -886,7 +890,9 @@ export default function SendForm() {
                   </NetworkNameContainer>
                 </NetworkLogoAndNameContainer>
 
-                <NetworkSelector />
+                <NetworkSelector
+                  disabled={selectorsDisabled()}
+                />
               </NetworkTransitionContainer>
             </NetworkContainer>
 
@@ -919,6 +925,7 @@ export default function SendForm() {
               name={`ReceiveAmount`}
               value={receiveAmountInputValue()}
               hasSelector={true}
+              selectorDisabled={selectorsDisabled()}
               onChange={() => {}} // no-op
               readOnly={true}
               type="number"

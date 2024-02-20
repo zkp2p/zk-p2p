@@ -17,7 +17,13 @@ import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
 
 
-export const NetworkSelector: React.FC = () => {
+interface NetworkSelectorProps {
+  disabled?: boolean;
+}
+
+export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
+  disabled
+}) => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -36,6 +42,12 @@ export const NetworkSelector: React.FC = () => {
 
   const handleOverlayClick = () => {
     toggleOpen();
+  };
+
+  const handleNetworkContainerClick = () => {
+    if (!disabled) {
+      toggleOpen();
+    }
   };
 
   const handleSelectPlatform = (network: ReceiveNetworkType) => {
@@ -80,7 +92,7 @@ export const NetworkSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <NetworkContainer onClick={toggleOpen}>
+      <NetworkContainer onClick={handleNetworkContainerClick}>
         <NetworkLogoAndNameContainer>
           <NetworkSvg src={networkSvg()} />
 
