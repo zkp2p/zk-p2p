@@ -71,6 +71,7 @@ export type SocketReceiveQuote = {
   toAmount: bigint;
   totalGasFeesInUsd?: string;
   serviceTimeSeconds?: number;
+  bridgeName?: string;
   decimals?: number;
   routeData?: any;
 };
@@ -407,6 +408,7 @@ export default function SendForm() {
       totalGasFeesInUsd: totalGasFeesInUsd,
       serviceTimeSeconds,
       decimals: selectedReceiveTokenData.decimals,
+      bridgeName: bestRoute.usedBridgeNames[0],
       routeData: bestRoute
     } as SocketReceiveQuote;
   };
@@ -972,6 +974,7 @@ export default function SendForm() {
                 isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
                 totalGasFeeUsd={currentQuote.receiveAmountQuote?.totalGasFeesInUsd}
                 serviceTimeSeconds={currentQuote.receiveAmountQuote?.serviceTimeSeconds}
+                bridgeName={currentQuote.receiveAmountQuote?.bridgeName}
               />
             ) : null}
 

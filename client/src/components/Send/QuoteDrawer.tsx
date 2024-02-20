@@ -9,12 +9,14 @@ interface QuoteDrawerProps {
   isLoading: boolean;
   totalGasFeeUsd?: string;
   serviceTimeSeconds?: number;
+  bridgeName?: string;
 }
 
 export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
   isLoading,
   totalGasFeeUsd,
-  serviceTimeSeconds
+  serviceTimeSeconds,
+  bridgeName,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -42,6 +44,8 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
 
   const gasFeeLabel = isLoading ? 'Fetching quote...' : 'Fee estimate';
   const gasFeeValue = isLoading ? '' : `$${parseFloat(totalGasFeeUsd || '0').toFixed(2)}`;
+
+  const bridgeNameString = bridgeName ? bridgeName.charAt(0).toUpperCase() + bridgeName.slice(1) : 'Unknown';
 
   function formattedServiceTime(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
@@ -100,7 +104,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
 
           <QuoteStep 
             label={"Route"}
-            value={"Hop"}
+            value={bridgeNameString}
           />
 
           <QuoteStep
