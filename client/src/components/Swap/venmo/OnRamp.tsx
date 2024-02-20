@@ -14,6 +14,7 @@ import { venmoStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
 import { PaymentPlatform } from '@helpers/types';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -238,7 +239,7 @@ const Container = styled.div`
 
 const TitleContainer = styled.div`
   padding: 1.5rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;

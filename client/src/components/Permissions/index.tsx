@@ -4,6 +4,7 @@ import styled from 'styled-components/macro';
 import { AutoColumn } from '@components/layouts/Column';
 import { NewPermission } from '@components/Permissions/NewPermission';
 import { PermissionTable } from '@components/Permissions/PermissionTable';
+import { colors } from '@theme/colors';
 
 
 export default function PermissionsForm() {
@@ -68,7 +69,7 @@ const Content = styled.main`
 const NewPositionContainer = styled.div`
   display: grid;
   padding: 1.5rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;

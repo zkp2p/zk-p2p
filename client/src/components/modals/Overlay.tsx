@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
+import { colors } from '@theme/colors';
+
 
 interface OverlayProps {
   onClick?: () => void
@@ -38,7 +40,7 @@ const OverlayContainer = styled.div`
   height: 100vh;
   position: fixed;
   display: block;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   opacity: 0.75;
   overflow: hidden;
   z-index: 10;

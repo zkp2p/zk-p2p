@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { IntentRow, IntentRowData } from "@components/Swap/OnRamperIntentRow";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { toUsdcString, toUsdString } from '@helpers/units';
@@ -389,7 +390,7 @@ const Container = styled.div`
   gap: 1rem;
   
   border-radius: 16px;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   overflow: hidden;

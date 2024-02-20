@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import { Button } from '@components/common/Button';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 
 
 export const MobileLandingPage: React.FC = () => {
@@ -61,7 +62,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 2rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   align-items: center;
   gap: 1.5rem;
   justify-content: center;

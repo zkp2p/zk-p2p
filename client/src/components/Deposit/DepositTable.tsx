@@ -13,6 +13,7 @@ import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { Abi } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
@@ -439,7 +440,7 @@ const TitleRow = styled(RowBetween)`
 
 const Content = styled.main`
   display: flex;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   flex-direction: column;

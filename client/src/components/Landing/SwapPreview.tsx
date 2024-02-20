@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Input } from "@components/Swap/Input";
 import { AutoColumn } from '@components/layouts/Column';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 
 
 export type SwapQuote = {
@@ -79,7 +80,7 @@ const SwapModalContainer = styled(AutoColumn)`
   border: 1px solid #DEE2E6;
   padding: 1rem;
   gap: 1rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
 

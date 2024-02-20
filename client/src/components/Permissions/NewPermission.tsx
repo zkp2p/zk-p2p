@@ -6,6 +6,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { NumberedStep } from "@components/common/NumberedStep";
 import { SingleLineInput } from "@components/common/SingleLineInput";
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -153,7 +154,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
 `;
 
 const ButtonContainer = styled.div`

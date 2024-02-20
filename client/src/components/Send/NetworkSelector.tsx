@@ -4,6 +4,7 @@ import { X } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Send/NetworkRow';
 import { networksInfo, SendNetworkType } from '@helpers/types';
@@ -153,12 +154,12 @@ const NetworkContainer = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   justify-content: space-between;
   align-items: center;
-  background: #0E111C;
+  background: ${colors.selectorColor};
   padding: 1.05rem 1rem;
   cursor: pointer;
 
   &:hover {
-    background-color: #141A2A;
+    background-color: ${colors.selectorHover};
   }
 `;
 

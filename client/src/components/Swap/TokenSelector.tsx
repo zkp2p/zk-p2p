@@ -8,6 +8,8 @@ import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
+import { colors } from '@theme/colors';
+
 
 export const TokenSelector: React.FC = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
@@ -29,13 +31,13 @@ export const TokenSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <LogoAndTokenLabel onClick={toggleOpen}>
+      <TokenNameAndChevronContainer onClick={toggleOpen}>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <TokenLabel>
           USDC
         </TokenLabel>
         <StyledChevronDown/>
-      </LogoAndTokenLabel>
+      </TokenNameAndChevronContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -74,15 +76,20 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const LogoAndTokenLabel = styled.div`
+const TokenNameAndChevronContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   border-radius: 24px;
-  background: #0D111C;
+  background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 4px 6px 4px 4px;
   gap: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${colors.selectorHover};
+  }
 `;
 
 const TokenLabel = styled.div`

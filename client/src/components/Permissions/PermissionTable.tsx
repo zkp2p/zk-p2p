@@ -6,6 +6,7 @@ import styled, { css } from 'styled-components/macro';
 import { Button } from '@components/common/Button';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { PermissionRow } from "@components/Permissions/PermissionRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import useAccount from '@hooks/useAccount';
@@ -163,7 +164,7 @@ const TitleRow = styled(RowBetween)`
 
 const Content = styled.main`
   display: flex;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   flex-direction: column;

@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 
 import noop from '@helpers/noop';
 import Popover, { PopoverProps } from '@components/common/Popover';
+import { colors } from '@theme/colors';
 
 
 export enum TooltipSize {
@@ -32,7 +33,7 @@ const TooltipContainer = styled.div<{ size: TooltipSize }>`
   line-height: 16px;
   word-break: break-word;
 
-  background: #0D111C;
+  background-color: ${colors.container};
   border-radius: 12px;
   border: 1px solid #98a1c03d;
 `

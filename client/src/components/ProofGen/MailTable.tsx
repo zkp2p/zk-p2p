@@ -4,6 +4,7 @@ import { Inbox, Mail } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { TextButton } from '@components/common/TextButton';
@@ -387,7 +388,7 @@ const Container = styled.div`
   align-self: flex-start;
   justify-content: center;
 
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   overflow: hidden;

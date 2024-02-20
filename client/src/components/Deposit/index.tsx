@@ -9,6 +9,7 @@ import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
+import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
@@ -247,7 +248,7 @@ const Content = styled.main`
 const NewPositionContainer = styled.div`
   display: grid;
   padding: 1.5rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;

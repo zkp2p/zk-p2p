@@ -7,6 +7,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedVenmoId, isProvidedIdEqualToRegistration } from '@helpers/poseidonHash';
@@ -501,7 +502,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
 `;
 
 const InputsContainer = styled.div`

@@ -4,6 +4,7 @@ import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { PlatformRow } from '@components/modals/PlatformRow';
 import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
@@ -46,12 +47,12 @@ export const PlatformSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <LogoAndTokenLabel onClick={toggleOpen}>
+      <PlatformNameAndChevronContainer onClick={toggleOpen}>
         <PlatformLabel>
           {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
         </PlatformLabel>
         <StyledChevronDown/>
-      </LogoAndTokenLabel>
+      </PlatformNameAndChevronContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -105,15 +106,20 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const LogoAndTokenLabel = styled.div`
+const PlatformNameAndChevronContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   border-radius: 24px;
-  background: #0D111C;
+  background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 6px 8px 6px 14px;
   gap: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${colors.selectorHover};
+  }
 `;
 
 const PlatformLabel = styled.div`

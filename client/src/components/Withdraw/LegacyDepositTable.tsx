@@ -5,6 +5,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { DepositWithAvailableLiquidity } from '@helpers/types';
 import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
@@ -250,7 +251,7 @@ const TitleRow = styled(RowBetween)`
 
 const Content = styled.main`
   display: flex;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   flex-direction: column;

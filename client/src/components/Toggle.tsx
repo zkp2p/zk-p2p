@@ -1,6 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
+import { colors } from '@theme/colors';
+
 
 interface ToggleProps {
   isSwapTab: boolean;
@@ -37,7 +39,7 @@ const ToggleContainer = styled.div`
   width: 229px;
   height: 40px;
   border-radius: 40px;
-  background: #0D111C;
+  background-color: ${colors.container};
 `;
 
 const ToggleButton = styled.span<ToggleButtonProps>`

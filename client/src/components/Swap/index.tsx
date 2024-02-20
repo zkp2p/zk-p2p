@@ -9,6 +9,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { Button } from '@components/common/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { IndicativeQuote } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { SettingsDropdown } from './SettingsDropdown';
@@ -578,7 +579,7 @@ const SwapFormContainer = styled(AutoColumn)`
   border-radius: 16px;
   padding: 1rem;
   gap: 1rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
 `;

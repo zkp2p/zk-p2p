@@ -12,7 +12,8 @@ import { ReadOnlyInput } from "@components/Registration/ReadOnlyInput";
 import QuestionHelper from '@components/common/QuestionHelper';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
-import { ThemedText } from '../../../theme/text';
+import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { hdfcStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/hdfc/useRegistration';
@@ -233,7 +234,7 @@ const TitleRow = styled(RowBetween)`
 
 const Content = styled.main`
   display: flex;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   flex-direction: column;
@@ -273,7 +274,7 @@ const Body = styled.div`
   flex-direction: column;
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border-radius: 16px;
 `;
 

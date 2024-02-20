@@ -5,6 +5,7 @@ import { IntentRow, IntentRowData } from "@components/Deposit/OffRamperIntentRow
 import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { ThemedText } from '@theme/text'
+import { colors } from '@theme/colors';
 import { DepositIntent, PaymentPlatform } from '@helpers/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
@@ -200,7 +201,7 @@ const Container = styled.div`
   gap: 1rem;
 
   border-radius: 16px;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border: 1px solid #98a1c03d;
   border-radius: 16px;
   overflow: hidden;

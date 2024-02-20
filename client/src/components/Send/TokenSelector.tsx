@@ -4,6 +4,7 @@ import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { TokenRow } from '@components/Send/TokenRow';
 import {
@@ -147,14 +148,14 @@ const LogoAndTokenLabel = styled.div`
   align-items: center;
   justify-content: space-between;
   border-radius: 24px;
-  background: #0D111C;
+  background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 4px 8px 4px 4px;
   gap: 6px;
   cursor: pointer;
 
   &:hover {
-    background-color: #141A2A;
+    background-color: ${colors.selectorHover};
   }
 `;
 
@@ -170,7 +171,7 @@ const TokenLabel = styled.div`
   font-size: 16px;
   font-weight: 600;
   color: #FFF;
-  padding-top: 2px;
+  padding-top: 3px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`

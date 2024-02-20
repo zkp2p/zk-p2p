@@ -1,12 +1,13 @@
-import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { colors } from 'theme/colors';
+
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
+import { colors } from '@theme/colors';
 
 
 const StyledCard = styled.div<{ cursor: string }>`
 	display: flex;
-	background-color: #0D111C;
+	background-color: ${colors.container};
 	background-size: auto 100%;
 	background-position: right;
 	background-repeat: no-repeat;
@@ -33,7 +34,7 @@ const CardTitle = styled.div`
   font-size: 28px;
   line-height: 36px;
   font-weight: 535;
-  color: ${colors.brandRed};
+  color: ${colors.buttonRed};
 `
 
 const CardDescription = styled.div`
@@ -47,7 +48,7 @@ const CardDescription = styled.div`
 `
 
 const CardCTA = styled.div`
-  color: ${colors.brandRed};
+  color: ${colors.buttonRed};
   font-weight: 535;
   font-size: 20px;
   line-height: 28px;

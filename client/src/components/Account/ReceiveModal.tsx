@@ -8,6 +8,7 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { Overlay } from '@components/modals/Overlay';
 import { CopyButton } from '@components/common/CopyButton';
 import { ThemedText } from '@theme/text'
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
@@ -145,7 +146,7 @@ const ModalContainer = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  background: #0D111C;
+  background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
   z-index: 20;

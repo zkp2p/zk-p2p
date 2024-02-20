@@ -21,6 +21,7 @@ import {
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { useFileBrowser } from '@hooks/useFileBrowser';
 import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 
 
 interface UploadEmailProps {
@@ -260,7 +261,7 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
 const Container = styled(Col)`
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #0D111C;
+  background-color: ${colors.container};
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;
