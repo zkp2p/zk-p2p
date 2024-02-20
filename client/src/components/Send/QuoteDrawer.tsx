@@ -133,7 +133,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
         </GasFeeValueAndChevronContainer>
       </TitleLabelAndDropdownIconContainer>
 
-      <InstructionsDropdown $isOpen={isOpen}>
+      <QuoteStepDropdown $isOpen={isOpen}>
         <HorizontalDivider/>
         <RequirementListContainer>
           {!isManagedWallet ? (
@@ -158,7 +158,7 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
             value={"$0"}
           />
         </RequirementListContainer>
-      </InstructionsDropdown>
+      </QuoteStepDropdown>
     </Wrapper>
   );
 };
@@ -181,7 +181,7 @@ const TitleLabelAndDropdownIconContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0px 8px;
+  padding: 14px 0px 8px;
 `;
 
 const GasFeeLabel = styled.div`
@@ -218,11 +218,11 @@ const HorizontalDivider = styled.div`
   border-top: 1px solid #98a1c03d;
 `;
 
-interface InstructionsDropdownProps {
+interface QuoteStepDropdownProps {
   $isOpen?: boolean;
 }
 
-const InstructionsDropdown = styled.div<InstructionsDropdownProps>`
+const QuoteStepDropdown = styled.div<QuoteStepDropdownProps>`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -241,5 +241,5 @@ const RequirementListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: 14px;
+  padding-bottom: 16px;
 `;
