@@ -10,6 +10,7 @@ export const SendTransactionStatus = {
   TRANSACTION_MINING: 'transaction_mining',
   VALID_FOR_NATIVE_TRANSFER: 'valid_for_native_transfer',
   VALID_FOR_BRIDGE: 'valid_for_bridge',
+  VALID_FOR_BATCH_TRANSFER_BRIDGE: 'valid_for_batch_transfer_bridge',
   TRANSACTION_SUCCEEDED: 'transaction_succeeded'
 };
 
