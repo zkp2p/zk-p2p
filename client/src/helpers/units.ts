@@ -117,17 +117,19 @@ export function toEthStringLong(value: bigint): string {
   }
 
   const valueStr = value.toString();
-  const len = valueStr.length;
   const decimals = 18;
   const precision = 9;
 
   const paddedValue = valueStr.padStart(decimals + 1, '0');
-  const integerPart = paddedValue.substring(0, len - decimals) || '0';
-  const fractionalPart = paddedValue.substring(len - decimals).padEnd(decimals, '0');
+  const splitPosition = paddedValue.length - decimals;
 
+  const integerPart = paddedValue.substring(0, splitPosition) || '0';
+  const fractionalPart = paddedValue.substring(splitPosition).padEnd(decimals, '0');
   const ethValue = `${integerPart}.${fractionalPart.substring(0, precision)}`;
 
-  return parseFloat(ethValue).toFixed(precision);
+  const formattedEthValue = parseFloat(ethValue).toFixed(precision).replace(/\.?0+$/, '');
+
+  return formattedEthValue;
 };
 
 export function toTokenString(value: bigint, decimals: number): string {

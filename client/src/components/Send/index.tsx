@@ -8,6 +8,7 @@ import {
   useSendTransaction
 } from 'wagmi';
 import debounce from 'lodash/debounce';
+import { usePrepareContractBatchWrite, useContractBatchWrite  } from "@zerodev/wagmi";
 
 import { Button } from "@components/common/Button";
 import { CustomConnectButton } from "@components/common/ConnectButton";
@@ -106,13 +107,50 @@ export default function SendForm() {
 
   const [socketSendTransactionData, setSocketSendTransactionData] = useState<string>('');
 
-  const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
   const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
+  const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
   const [shouldConfigureBridgeWrite, setShouldConfigureBridgeWrite] = useState<boolean>(false);
+  const [shouldConfigureBatchBridgeWrite, setShouldConfigureBatchBridgeWrite] = useState<boolean>(false);
 
   /*
    * Contract Writes
    */
+
+  const { config: batchWriteApproveAndBridgeConfig } = usePrepareContractBatchWrite({
+    calls: [
+      {
+        address: usdcAddress as `0x${string}`,
+        abi: usdcAbi,
+        functionName: "approve",
+        args: [
+          socketBridgeAddress,
+          amountToApprove
+        ]
+      },
+      {
+        to: socketBridgeAddress as `0x${string}`,
+        data: socketSendTransactionData as `0x${string}`,
+      }
+    ],
+    enabled: shouldConfigureBatchBridgeWrite
+  });
+
+  const {
+    data: batchWriteApproveAndBridgeResult,
+    status: batchWriteApproveAndBridgeStatus,
+    sendUserOperationAsync: batchWriteApproveAndBridgeAsync,
+  } = useContractBatchWrite(batchWriteApproveAndBridgeConfig);
+
+  const {
+    status: mineBatchApproveAndBridgeStatus,
+  } = useWaitForTransaction({
+    hash: batchWriteApproveAndBridgeResult ? batchWriteApproveAndBridgeResult.hash : undefined,
+    onSuccess(data: any) {
+      console.log('batchWriteApproveAndBridgeAsync successful: ', data);
+
+      resetStateOnSuccessfulTransaction();
+    },
+  });
 
   //
   // transfer(address spender, uint256 value)
@@ -141,12 +179,7 @@ export default function SendForm() {
     onSuccess(data: any) {
       console.log('writeSubmitTransferAsync successful: ', data);
 
-      setCurrentQuote(ZERO_QUOTE);
-      setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
-
-      refetchUsdcBalance?.();
-
-      refetchUsdcApprovalToSocketBridge?.();
+      resetStateOnSuccessfulTransaction();
     },
   });
 
@@ -210,12 +243,7 @@ export default function SendForm() {
     onSuccess(data: any) {
       console.log('writeSubmitBridgeAsync successful: ', data);
       
-      setCurrentQuote(ZERO_QUOTE);
-      setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
-
-      refetchUsdcBalance?.();
-
-      refetchUsdcApprovalToSocketBridge?.();
+      resetStateOnSuccessfulTransaction();
     },
   });
 
@@ -381,13 +409,14 @@ export default function SendForm() {
                 if (usdcApprovalToSocketBridgeLoaded) {
                   const sendAmountBi = toBigInt(currentQuote.sendAmountInput);
                   const isSendAmountGreaterThanApprovedBalance = sendAmountBi > usdcApprovalToSocketBridge;
+                  const loginStatusRequiresApproval = loginStatus === LoginStatus.EOA;
 
                   const signingApproveTransaction = signApproveTransactionStatus === 'loading';
                   const miningApproveTransaction = mineApproveTransactionStatus === 'loading';
                   const successfulApproveTransaction = mineApproveTransactionStatus === 'success';
 
                   // Approval Required
-                  if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
+                  if (isSendAmountGreaterThanApprovedBalance && !successfulApproveTransaction && loginStatusRequiresApproval) {
                     if (signingApproveTransaction) {
                       // console.log('TRANSACTION_SIGNING');
 
@@ -412,22 +441,30 @@ export default function SendForm() {
 
                       setSendState(SendTransactionStatus.INVALID_RECIPIENT_ADDRESS);
                     } else {
+                      const signingBatchWriteApproveAndBridge = batchWriteApproveAndBridgeStatus === 'loading';
+                      const miningBatchApproveAndBridge = mineBatchApproveAndBridgeStatus === 'loading';
                       const signingBridgeTransaction = signBridgeTransactionStatus === 'loading';
                       const miningBridgeTransaction = mineBridgeTransactionStatus === 'loading';
         
-                      if (signingBridgeTransaction) {
+                      if (signingBridgeTransaction || signingBatchWriteApproveAndBridge) {
                         // console.log('TRANSACTION_SIGNING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_SIGNING);
-                      } else if (miningBridgeTransaction) {
+                      } else if (miningBridgeTransaction || miningBatchApproveAndBridge) {
                         // console.log('TRANSACTION_MINING');
 
                         setSendState(SendTransactionStatus.TRANSACTION_MINING);
                       } else {
-                        if (shouldConfigureBridgeWrite) {
-                          // console.log('VALID_FOR_BRIDGE');
+                        if (shouldConfigureBridgeWrite || shouldConfigureBatchBridgeWrite) {
+                          if (isSendAmountGreaterThanApprovedBalance) {
+                            // console.log('VALID_FOR_BATCH_TRANSFER_BRIDGE');
 
-                          setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
+                            setSendState(SendTransactionStatus.VALID_FOR_BATCH_TRANSFER_BRIDGE);
+                          } else {
+                            // console.log('VALID_FOR_BRIDGE');
+
+                            setSendState(SendTransactionStatus.VALID_FOR_BRIDGE);
+                          }
                         } else {
                           // console.log('INVALID_FOR_BRIDGE')
                         }
@@ -466,18 +503,36 @@ export default function SendForm() {
       usdcApprovalToSocketBridge,
       signBridgeTransactionStatus,
       mineBridgeTransactionStatus,
-      shouldConfigureBridgeWrite
+      shouldConfigureBridgeWrite,
+      loginStatus,
+      batchWriteApproveAndBridgeStatus,
+      mineBatchApproveAndBridgeStatus,
+      shouldConfigureBatchBridgeWrite
     ]
   );
 
   useEffect(() => {
     if (socketSendTransactionData) {
-      setShouldConfigureBridgeWrite(true);
+      if (amountToApprove > ZERO) {
+        setShouldConfigureBatchBridgeWrite(true);
+      } else {
+        setShouldConfigureBridgeWrite(true);
+
+        setShouldConfigureBatchBridgeWrite(false);
+      }
     } else {
       setShouldConfigureBridgeWrite(false);
-    }
 
-  }, [socketSendTransactionData]);
+      setShouldConfigureBatchBridgeWrite(false);
+    };
+
+  }, [socketSendTransactionData, amountToApprove]);
+
+  useEffect(() => {
+    if (loginStatus === LoginStatus.LOGGED_OUT) {
+      resetStateOnSuccessfulTransaction();
+    }
+  }, [loginStatus]);
 
   useEffect(() => {
     const isApprovalRequired = sendState === SendTransactionStatus.APPROVAL_REQUIRED;
@@ -497,6 +552,12 @@ export default function SendForm() {
       setTransactionHash(submitBridgeResult.hash);
     }
   }, [submitBridgeResult])
+
+  useEffect(() => {
+    if (batchWriteApproveAndBridgeResult?.hash) {
+      setTransactionHash(batchWriteApproveAndBridgeResult.hash);
+    }
+  }, [batchWriteApproveAndBridgeResult])
 
   useEffect(() => {
     const usdcApprovalToSocketBridgeLoaded = usdcApprovalToSocketBridge !== null && usdcApprovalToSocketBridge !== undefined;
@@ -535,10 +596,16 @@ export default function SendForm() {
       return;
     };
 
+    // Each of these triggers different intermediate UI renders
     setCurrentQuote({
       ...ZERO_QUOTE,
       sendAmountInput: inputAmount
     });
+
+    // setCurrentQuote(prevQuote => ({
+    //   ...prevQuote,
+    //   sendAmountInput: inputAmount
+    // }));
 
     const isReceiveNetworkBase = receiveNetwork === ReceiveNetwork.BASE;
     const isReceiveTokenUsdc = receiveToken === ReceiveToken.USDC;
@@ -578,6 +645,8 @@ export default function SendForm() {
           sendAmountInput: sendAmount,
           receiveAmountQuote
         });
+
+        setQuoteFetchingStatus(FetchQuoteStatus.LOADED)
       }
     }, QUOTE_FETCHING_DEBOUNCE_MS
   ), [receiveNetwork, receiveToken] );
@@ -642,8 +711,6 @@ export default function SendForm() {
       return cumulativeFees + BigInt(txn.gasFees.gasAmount)
     }, ZERO);
 
-    setQuoteFetchingStatus(FetchQuoteStatus.LOADED);
-
     return {
       fromAmount: fromAmount,
       toAmount: toAmount,
@@ -686,6 +753,8 @@ export default function SendForm() {
       receiveAmountQuote: updatedQuote
     });
 
+    setQuoteFetchingStatus(FetchQuoteStatus.LOADED)
+
     setSocketSendTransactionData(socketTransactionData.result.txData);
   };
 
@@ -701,6 +770,17 @@ export default function SendForm() {
     if (sendState === SendTransactionStatus.TRANSACTION_SUCCEEDED) {
       setSendState(SendTransactionStatus.DEFAULT);
     };
+  };
+
+  function resetStateOnSuccessfulTransaction() {
+    setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
+
+    setCurrentQuote(ZERO_QUOTE);
+    setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
+
+    refetchUsdcBalance?.();
+
+    refetchUsdcApprovalToSocketBridge?.();
   };
 
   /*
@@ -739,6 +819,14 @@ export default function SendForm() {
         }
         break;
 
+      case SendTransactionStatus.VALID_FOR_BATCH_TRANSFER_BRIDGE:
+        try {
+          await batchWriteApproveAndBridgeAsync?.();
+        } catch (error) {
+          console.log('batchWriteApproveAndBridgeAsync failed: ', error);
+        }
+        break;
+
       case SendTransactionStatus.VALID_FOR_BRIDGE:
         try {
           await writeSubmitBridgeAsync?.();
@@ -750,7 +838,7 @@ export default function SendForm() {
       default:
         break;
     }
-  }
+  };
 
   const ctaDisabled = (): boolean => {
     switch (sendState) {
@@ -767,6 +855,7 @@ export default function SendForm() {
       case SendTransactionStatus.APPROVAL_REQUIRED:
       case SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER:
       case SendTransactionStatus.VALID_FOR_BRIDGE:
+      case SendTransactionStatus.VALID_FOR_BATCH_TRANSFER_BRIDGE:
       case SendTransactionStatus.TRANSACTION_SUCCEEDED:
       default:
         return false;
@@ -811,6 +900,7 @@ export default function SendForm() {
       case SendTransactionStatus.VALID_FOR_NATIVE_TRANSFER:
         return 'Send';
 
+      case SendTransactionStatus.VALID_FOR_BATCH_TRANSFER_BRIDGE:
       case SendTransactionStatus.VALID_FOR_BRIDGE:
         const bridgeText = receiveNetwork === ReceiveNetwork.BASE ? 'Send' : 'Bridge';
         return bridgeText;
@@ -871,7 +961,7 @@ export default function SendForm() {
     }
 
     return "0";
-  }
+  };
 
   /*
    * Component
