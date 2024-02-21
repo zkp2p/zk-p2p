@@ -209,6 +209,37 @@ describe("Garanti send WASM tester", function () {
         });
     });
 
+    it("should return the correct packed payee name", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_garanti_send.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed payee name
+        const packed_payee_name = witness.slice(13, 19);
+
+        // Get expected packed payee name
+        const regex_start = Number(input["garanti_payee_name_idx"]);
+        const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("60"); // Look for `<` to end the payee name which is 60 in ascii
+        const payee_name_array = regex_start_sub_array.slice(0, regex_end);
+
+        // Chunk bytes into 7 and pack
+        let chunkedArrays = chunkArray(payee_name_array, 7, 42);
+
+        chunkedArrays.map((arr, i) => {
+            // Pack each chunk
+            let expectedValue = bytesToPacked(arr);
+
+            // Check packed payee name is the same
+            assert.equal(expectedValue, packed_payee_name[i], true);
+        });
+
+    });
+
     it("should return the correct packed payee account number", async () => {
         const input_path = path.join(__dirname, "../inputs/input_garanti_send.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
@@ -218,25 +249,24 @@ describe("Garanti send WASM tester", function () {
             true
         );
 
-        // Get returned packed amount
-        // Indexes 5 to 7 represent the packed amount (8 \ 7)
-        const packed_amount = witness.slice(13, 18);
+        // Get returned packed acc num
+        const packed_payee_acc_num = witness.slice(19, 24);
 
-        // Get expected packed amount
+        // Get expected packed payee_acc_num
         const regex_start = Number(input["garanti_payee_acc_num_idx"]);
         const regex_start_sub_array = input["in_body_padded"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("60"); // Look for `<` to end the amount which is 60 in ascii
-        const amount_array = regex_start_sub_array.slice(0, regex_end);
+        const regex_end = regex_start_sub_array.indexOf("60"); // Look for `<` to end the payee_acc_num which is 60 in ascii
+        const payee_acc_num_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 7 and pack
-        let chunkedArrays = chunkArray(amount_array, 7, 32);
+        let chunkedArrays = chunkArray(payee_acc_num_array, 7, 32);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
             let expectedValue = bytesToPacked(arr);
 
-            // Check packed amount is the same
-            assert.equal(expectedValue, packed_amount[i], true);
+            // Check packed payee_acc_num is the same
+            assert.equal(expectedValue, packed_payee_acc_num[i], true);
         });
 
     });
@@ -251,8 +281,7 @@ describe("Garanti send WASM tester", function () {
         );
 
         // Get returned packed amount
-        // Indexes 14 to 16 represent the packed amount (8 \ 7)
-        const packed_amount = witness.slice(18, 20);
+        const packed_amount = witness.slice(24, 26);
 
         // Get expected packed amount
         const regex_start = Number(input["garanti_amount_idx"]);
@@ -282,7 +311,7 @@ describe("Garanti send WASM tester", function () {
         );
 
         // Get returned hashed onramper id
-        const hashed_onramper_id = witness[20];
+        const hashed_onramper_id = witness[26];
 
         // Get expected packed to email
         const regex_start_to_email = Number(input["email_to_idx"]);
@@ -319,7 +348,7 @@ describe("Garanti send WASM tester", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[21];
+        const nullifier = witness[27];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["in_padded"], input["in_len_padded_bytes"]);
@@ -339,7 +368,7 @@ describe("Garanti send WASM tester", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[22];
+        const intent_hash = witness[28];
 
         // Get expected modulus
         const expected_intent_hash = input["intent_hash"];

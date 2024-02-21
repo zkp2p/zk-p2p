@@ -66,7 +66,6 @@ describe("Garanti payment details", function () {
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 
-
     it("Should reveal first regex correctly", async () => {
         const input = {
             "msg": textUtf8ToAsciiArray(
@@ -80,9 +79,9 @@ describe("Garanti payment details", function () {
             input,
             true
         );
-        const expected = Array(textUtf8ToAsciiArray("Alıcı Bilgileri: <br>\r\n\t\t\t\t\t<strong>ğİşü Şıçşö<br>").length).fill("0")
-            .concat(textUtf8ToAsciiArray("TR11 0000 1111 3333 2222 1111 99"))
-            .concat(Array(textUtf8ToAsciiArray("</strong></p>\r\n                  <p>Tutar: <strong>800,00 TL</strong><br>\r\n\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n").length).fill("0"))
+        const expected = Array(textUtf8ToAsciiArray("Alıcı Bilgileri: <br>\r\n\t\t\t\t\t<strong>").length).fill("0")
+            .concat(textUtf8ToAsciiArray("ğİşü Şıçşö"))
+            .concat(Array(textUtf8ToAsciiArray("<br>TR11 0000 1111 3333 2222 1111 99</strong></p>\r\n                  <p>Tutar: <strong>800,00 TL</strong><br>\r\n\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n").length).fill("0"))
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -101,10 +100,31 @@ describe("Garanti payment details", function () {
             input,
             true
         );
+        const expected = Array(textUtf8ToAsciiArray("Alıcı Bilgileri: <br>\r\n\t\t\t\t\t<strong>ğİşü Şıçşö<br>").length).fill("0")
+            .concat(textUtf8ToAsciiArray("TR11 0000 1111 3333 2222 1111 99"))
+            .concat(Array(textUtf8ToAsciiArray("</strong></p>\r\n                  <p>Tutar: <strong>800,00 TL</strong><br>\r\n\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n").length).fill("0"))
+        const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
+
+        assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
+    });
+
+    it("Should reveal third regex correctly", async () => {
+        const input = {
+            "msg": textUtf8ToAsciiArray(
+                "Alıcı Bilgileri: <br>\r\n" +
+                "\t\t\t\t\t<strong>ğİşü Şıçşö<br>TR11 0000 1111 3333 2222 1111 99</strong></p>\r\n" +
+                "                  <p>Tutar: <strong>800,00 TL</strong><br>\r\n" +
+                "\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n"
+            )
+        };
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
         const expected = Array(textUtf8ToAsciiArray("Alıcı Bilgileri: <br>\r\n\t\t\t\t\t<strong>ğİşü Şıçşö<br>TR11 0000 1111 3333 2222 1111 99</strong></p>\r\n                  <p>Tutar: <strong>").length).fill("0")
             .concat(textUtf8ToAsciiArray("800,00"))
             .concat(Array(textUtf8ToAsciiArray(" TL</strong><br>\r\n\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n").length).fill("0"))
-        const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
+        const result = witness.slice(input.msg.length * 2 + 2, input.msg.length * 3 + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
     });
@@ -113,7 +133,7 @@ describe("Garanti payment details", function () {
         const input = {
             "msg": textUtf8ToAsciiArray(
                 "Alıcı Bilgileri: <br>\r\n" +
-                "\t\t\t\t\t<strong>ğİşü <Şıçaö<br>TL11 0000 1111 3333 2222 1111 99</strong></p>\r\n" +  // different country code for IBAN
+                "\t\t\t\t\t<strong>ğİşü <Şıçaö<br>TR11 0000 1111 3333 2222 1111 99</strong></p>\r\n" +
                 "                  <p>Tutar: <strong>800,00 TL</strong><br>\r\n" +
                 "\t\t\t\t\tİşlem Tarihi:<strong> 21.12.2023 14:21</strong><br>\r\n"
             )
