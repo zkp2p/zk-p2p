@@ -55,7 +55,7 @@ export const Input: React.FC<InputProps> = ({
       : fontSize;
 
   return (
-    <Container>
+    <Container readOnly={readOnly}>
       <LabelAndInputContainer>
         <LabelAndTooltipContainer>
           <Label htmlFor={name}>
@@ -113,18 +113,29 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-const Container = styled.div`
+
+interface ContainerProps {
+  readOnly?: boolean;
+};
+
+const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
-  background-color: #131A2A;
+  background-color: ${colors.defaultInputColor};
 
   &:focus-within {
     border-color: #CED4DA;
     border-width: 1px;
+  }
+
+  ${({ readOnly }) => 
+    readOnly && `
+      border: 1px solid ${colors.readOnlyBorderColor};
+    `
   }
 `;
 

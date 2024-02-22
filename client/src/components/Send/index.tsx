@@ -1146,11 +1146,11 @@ const NetworkLogoAndNameContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid ${colors.defaultBorderColor};
+  border: 1px solid ${colors.defaultInputColor};
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
-  background: #141A2A;
+  background: ${colors.defaultInputColor};
   padding: 1.1rem 1rem;
 `;
 

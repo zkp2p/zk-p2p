@@ -44,7 +44,7 @@ export const Input: React.FC<InputProps> = ({
   const hasAccessoryLabel = accessoryLabel !== "" || accessoryButtonLabel !== "";
 
   return (
-    <Container>
+    <Container readOnly={readOnly}>
       <LabelInputAndAccessoryContainer hasAccessoryLabel={hasAccessoryLabel}>
         <LabelAndInputContainer>
           <Label htmlFor={name}>
@@ -88,18 +88,28 @@ export const Input: React.FC<InputProps> = ({
   );
 };
 
-const Container = styled.div`
+interface ContainerProps {
+  readOnly?: boolean;
+};
+
+const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
-  background-color: #131A2A;
+  background-color: ${colors.defaultInputColor};
   gap: 8px;
 
   &:focus-within {
     border-color: #CED4DA;
     border-width: 1px;
+  }
+
+  ${({ readOnly }) => 
+    readOnly && `
+      border: 1px solid ${colors.readOnlyBorderColor};
+    `
   }
 `;
 
