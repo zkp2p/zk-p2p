@@ -84,7 +84,7 @@ export default function SendForm() {
   const { isLoggedIn, network, loginStatus, loggedInEthereumAddress } = useAccount();
   const { usdcBalance, refetchUsdcBalance, usdcApprovalToSocketBridge, refetchUsdcApprovalToSocketBridge } = useBalances();
   const { blockscanUrl, usdcAddress, usdcAbi, socketBridgeAddress } = useSmartContracts();
-  const { getSocketQuote, getSocketTransactionData } = useSocketBridge();
+  const { getSocketQuote, getSocketTransactionData, getSocketTransactionStatus } = useSocketBridge();
   const { receiveNetwork, receiveToken } = useSendSettings();
 
   /*
@@ -92,6 +92,7 @@ export default function SendForm() {
    */
 
   const [transactionHash, setTransactionHash] = useState<string>('');
+  const [receiveBridgeTransactionLink, setReceiveBridgeTransactionLink] = useState<string>('');
 
   const [sendState, setSendState] = useState(SendTransactionStatus.DEFAULT);
   const [currentQuote, setCurrentQuote] = useState<SendQuote>(ZERO_QUOTE);
@@ -531,7 +532,17 @@ export default function SendForm() {
   useEffect(() => {
     if (loginStatus === LoginStatus.LOGGED_OUT) {
       resetStateOnSuccessfulTransaction();
-    }
+
+      if (transactionHash) {
+        setTransactionHash('');
+      };
+
+      if (receiveBridgeTransactionLink) {
+        setReceiveBridgeTransactionLink('');
+      };
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loginStatus]);
 
   useEffect(() => {
@@ -544,19 +555,73 @@ export default function SendForm() {
   useEffect(() => {
     if (submitTransferResult?.hash) {
       setTransactionHash(submitTransferResult.hash);
-    }
+    };
   }, [submitTransferResult])
 
   useEffect(() => {
     if (submitBridgeResult?.hash) {
       setTransactionHash(submitBridgeResult.hash);
+    };
+
+    let intervalId: any;
+    const fetchSocketTransactionStatus = async () => {
+      if (receiveNetwork && submitBridgeResult) {
+        const transferOutTxnHash = submitBridgeResult.hash;
+        const networkChainId = networksInfo[receiveNetwork].networkChainId;
+        const response = await getSocketTransactionStatus(transferOutTxnHash, networkChainId)
+
+        if (response.result?.destinationTransactionHash) {
+          const destinationTransactionHash = response.result.destinationTransactionHash;
+          const link = `${networksInfo[receiveNetwork].blockExplorer}/tx/${destinationTransactionHash}`;
+          setReceiveBridgeTransactionLink(link);
+
+          clearInterval(intervalId);
+        };
+      };
+    };
+
+    if (submitBridgeResult?.hash) {
+      intervalId = setInterval(fetchSocketTransactionStatus, 5000);
     }
+  
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [submitBridgeResult])
 
   useEffect(() => {
     if (batchWriteApproveAndBridgeResult?.hash) {
       setTransactionHash(batchWriteApproveAndBridgeResult.hash);
+    };
+
+    let intervalId: any;
+    const fetchSocketTransactionStatus = async () => {
+      if (receiveNetwork && batchWriteApproveAndBridgeResult) {
+        const transferOutTxnHash = batchWriteApproveAndBridgeResult.hash;
+        const networkChainId = networksInfo[receiveNetwork].networkChainId;
+        const response = await getSocketTransactionStatus(transferOutTxnHash, networkChainId)
+
+        if (response.result?.destinationTransactionHash) {
+          const destinationTransactionHash = response.result.destinationTransactionHash;
+          const link = `${networksInfo[receiveNetwork].blockExplorer}/tx/${destinationTransactionHash}`;
+          setReceiveBridgeTransactionLink(link);
+
+          clearInterval(intervalId);
+        };
+      };
+    };
+
+    if (batchWriteApproveAndBridgeResult?.hash) {
+      intervalId = setInterval(fetchSocketTransactionStatus, 5000);
     }
+  
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [batchWriteApproveAndBridgeResult])
 
   useEffect(() => {
@@ -575,8 +640,7 @@ export default function SendForm() {
         setAmountToApprove(ZERO);
       }
     }
-  }, [currentQuote.sendAmountInput, usdcApprovalToSocketBridge]
-  );
+  }, [currentQuote.sendAmountInput, usdcApprovalToSocketBridge]);
 
   useEffect(() => {
     updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
@@ -763,6 +827,10 @@ export default function SendForm() {
       setTransactionHash('');
     };
 
+    if (receiveBridgeTransactionLink) {
+      setReceiveBridgeTransactionLink('');
+    };
+
     if (socketSendTransactionData) {
       setSocketSendTransactionData('');
     };
@@ -773,6 +841,8 @@ export default function SendForm() {
   };
 
   function resetStateOnSuccessfulTransaction() {
+    setSocketSendTransactionData('');
+
     setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
     setCurrentQuote(ZERO_QUOTE);
@@ -963,6 +1033,12 @@ export default function SendForm() {
     return "0";
   };
 
+  const shouldDisplayReceiveLink = (): boolean => {
+    const isBaseToBaseUSDCTransfer = receiveNetwork === ReceiveNetwork.BASE && receiveToken === ReceiveToken.USDC;
+
+    return !isBaseToBaseUSDCTransfer;
+  };
+
   /*
    * Component
    */
@@ -1049,17 +1125,6 @@ export default function SendForm() {
               fontSize={24}
             />
 
-            { transactionHash?.length ? (
-              <Link
-                href={`${blockscanUrl}/tx/${transactionHash}`}
-                target="_blank"
-                rel="noopener noreferrer">
-                  <ThemedText.LabelSmall textAlign="center">
-                    View on Explorer ↗
-                  </ThemedText.LabelSmall>
-              </Link>
-            ) : null}
-
             { quoteFetchingStatus === FetchQuoteStatus.LOADED ? (
               <QuoteDrawer
                 isLoading={quoteFetchingStatus === FetchQuoteStatus.LOADING}
@@ -1088,6 +1153,32 @@ export default function SendForm() {
                 </Button>
                )}
             </ButtonContainer>
+
+            {transactionHash?.length ? (
+              <LinkContainer>
+                <Link
+                  disabled={!transactionHash}
+                  href={`${blockscanUrl}/tx/${transactionHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                    <ThemedText.LabelSmall textAlign="center">
+                      {shouldDisplayReceiveLink() ? 'Send Receipt ↗' : 'View on Explorer ↗'}
+                    </ThemedText.LabelSmall>
+                </Link>
+
+                {shouldDisplayReceiveLink() ? (
+                  <Link
+                    disabled={!receiveBridgeTransactionLink}
+                    href={`${receiveBridgeTransactionLink}`}
+                    target="_blank"
+                    rel="noopener noreferrer">
+                      <ThemedText.LabelSmall textAlign="center">
+                        Receive Receipt ↗
+                      </ThemedText.LabelSmall>
+                  </Link>
+                ) : null}
+              </LinkContainer>
+            ) : null}
           </MainContentWrapper>
         </SendFormContainer>
       </Wrapper>
@@ -1146,11 +1237,11 @@ const NetworkLogoAndNameContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid ${colors.defaultBorderColor};
+  border: 1px solid ${colors.readOnlyBorderColor};
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
-  background: #141A2A;
+  background: ${colors.defaultInputColor};
   padding: 1.1rem 1rem;
 `;
 
@@ -1178,17 +1269,36 @@ const NetworkSvg = styled.img`
   height: 32px;
 `;
 
-const Link = styled.a`
+const LinkContainer = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0 2.25rem;
+`;
+
+interface LinkProps {
+  disabled?: boolean;
+}
+
+const Link = styled.a<LinkProps>`
   white-space: pre;
   display: inline-block;
   color: #1F95E2;
   text-decoration: none;
-  padding: 1rem;
+  padding: 0.75rem 1rem 0.5rem 1rem;
   justify-content: center;
+  align-items: center;
+  flex: 1;
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: ${({ disabled }) => disabled ? 'none' : 'underline'};
   }
+
+  ${({ disabled }) => 
+    disabled && `
+      color: gray;
+      pointer-events: none;
+      cursor: default;
+  `}
 `;
 
 const ButtonContainer = styled.div`

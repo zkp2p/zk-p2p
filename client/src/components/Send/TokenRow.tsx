@@ -39,7 +39,7 @@ const Container = styled.div<{ selected: boolean }>`
   display: flex;
   flex-direction: row;
   height: 100%;
-  padding: 12px 24px 12px 20px;
+  padding: 16px 24px 16px 20px;
 
   ${({ selected }) => selected && `
     background-color: #191D28;
