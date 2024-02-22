@@ -19,6 +19,7 @@ interface IntentRowProps {
   amountUSDToSend: string;
   expirationTimestamp: string;
   depositorVenmoId: string;
+  depositorName?: string;
   depositorAddress: string;
   recipientAddress: string;
   handleCompleteOrderClick: () => void;
@@ -35,6 +36,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   expirationTimestamp,
   depositorVenmoId,
   depositorAddress,
+  depositorName,
   recipientAddress,
   handleCompleteOrderClick,
   shouldAutoSelectIntent,
@@ -167,6 +169,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           <SwapModal
             isVenmo={paymentPlatform === PaymentPlatform.VENMO}
             venmoId={depositorVenmoId}
+            depositorName={depositorName}
             link={qrLink}
             amount={amountUSDToSend}
             onBackClick={handleModalBackClicked}

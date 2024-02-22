@@ -10,7 +10,7 @@ interface IGarantiSendProcessor {
         uint256[2] a;
         uint256[2][2] b;
         uint256[2] c;
-        uint256[22] signals;
+        uint256[28] signals;
     }
 
     function processProof(
@@ -18,5 +18,5 @@ interface IGarantiSendProcessor {
         IGarantiBodySuffixHashVerifier.BodySuffixHashProof calldata _bodyHashProof
     )
         external
-    returns(uint256, uint256, bytes32, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32, bytes32, bytes32);
 }

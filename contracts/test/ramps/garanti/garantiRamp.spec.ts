@@ -276,19 +276,26 @@ describe("GarantiRamp", () => {
 
     describe("#offRamp", async () => {
       let subjectGarantiIban: string;
+      let subjectGarantiName: string;
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectCaller: Account;
 
       beforeEach(async () => {
         subjectGarantiIban = "TR01 2345 6789 0123 4567 8901 23";
+        subjectGarantiName = "John Doe";
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(101);
         subjectCaller = offRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, subjectReceiveAmount);
+        return ramp.connect(subjectCaller.wallet).offRamp(
+          subjectGarantiIban,
+          subjectGarantiName,
+          subjectDepositAmount,
+          subjectReceiveAmount
+        );
       }
 
       it("should transfer the usdc to the Ramp contract", async () => {
@@ -309,6 +316,7 @@ describe("GarantiRamp", () => {
 
         expect(deposit.depositor).to.eq(subjectCaller.address);
         expect(JSON.stringify(deposit.garantiIban)).to.eq(JSON.stringify(subjectGarantiIban));
+        expect(JSON.stringify(deposit.garantiName)).to.eq(JSON.stringify(subjectGarantiName));
         expect(deposit.depositAmount).to.eq(subjectDepositAmount);
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
@@ -356,11 +364,11 @@ describe("GarantiRamp", () => {
 
       describe("when the depositor has reached their max amount of deposits", async () => {
         beforeEach(async () => {
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(102));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(103));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(104));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(105));
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectDepositAmount, usdc(106));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectGarantiName, subjectDepositAmount, usdc(102));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectGarantiName, subjectDepositAmount, usdc(103));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectGarantiName, subjectDepositAmount, usdc(104));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectGarantiName, subjectDepositAmount, usdc(105));
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectGarantiIban, subjectGarantiName, subjectDepositAmount, usdc(106));
         });
 
         it("should revert", async () => {
@@ -398,6 +406,7 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
@@ -660,12 +669,13 @@ describe("GarantiRamp", () => {
           const _b: [[BigNumber, BigNumber], [BigNumber, BigNumber]] = [[ZERO, ZERO], [ZERO, ZERO]];
           const _c: [BigNumber, BigNumber] = [ZERO, ZERO];
 
-          const signals = new Array<BigNumber>(22).fill(ZERO);
+          const signals = new Array<BigNumber>(28).fill(ZERO);
           signals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
           signals[1] = currentTimestamp;
-          signals[2] = BigNumber.from(await calculateIbanHash("TR01 2345 6789 0123 4567 8901 23"));
-          signals[3] = BigNumber.from(await calculateGarantiIdHash("janedoe@gmail.com987654321"));
-          signals[4] = BigNumber.from(intentHash);
+          signals[2] = BigNumber.from(await calculateIbanHash("John Doe"));
+          signals[3] = BigNumber.from(await calculateIbanHash("TR01 2345 6789 0123 4567 8901 23"));
+          signals[4] = BigNumber.from(await calculateGarantiIdHash("janedoe@gmail.com987654321"));
+          signals[5] = BigNumber.from(intentHash);
 
           const proof = {
             a: _a,
@@ -724,6 +734,7 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
@@ -869,6 +880,7 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
@@ -881,12 +893,13 @@ describe("GarantiRamp", () => {
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         intentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
 
-        const sendSignals = new Array<BigNumber>(22).fill(ZERO);
+        const sendSignals = new Array<BigNumber>(28).fill(ZERO);
         sendSignals[0] = usdc(50).mul(usdc(101)).div(usdc(100));
         sendSignals[1] = currentTimestamp;
-        sendSignals[2] = BigNumber.from(await calculateIbanHash("TR01 2345 6789 0123 4567 8901 23"));
-        sendSignals[3] = BigNumber.from(await calculateGarantiIdHash("janedoe@gmail.com987654321"));
-        sendSignals[4] = BigNumber.from(intentHash);
+        sendSignals[2] = BigNumber.from(await calculateIbanHash("John Doe"));
+        sendSignals[3] = BigNumber.from(await calculateIbanHash("TR01 2345 6789 0123 4567 8901 23"));
+        sendSignals[4] = BigNumber.from(await calculateGarantiIdHash("janedoe@gmail.com987654321"));
+        sendSignals[5] = BigNumber.from(intentHash);
         
         subjectProof = {
           a: [ZERO, ZERO],
@@ -1003,7 +1016,7 @@ describe("GarantiRamp", () => {
           intentHash = calculateIntentHash(await calculateGarantiIdHash("janedoe@gmail.com987654321"), depositId, currentTimestamp);
 
           subjectProof.signals[1] = currentTimestamp;
-          subjectProof.signals[4] = BigNumber.from(intentHash);
+          subjectProof.signals[5] = BigNumber.from(intentHash);
         });
 
         it("should prune the deposit", async () => {
@@ -1053,9 +1066,19 @@ describe("GarantiRamp", () => {
         });
       });
 
+      describe("when the offRamperNameHash doesn't match the intent", async () => {
+        beforeEach(async () => {
+          subjectProof.signals[3] = BigNumber.from(await calculateIbanHash("Jane Doe"));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Offramper id does not match");
+        });
+      });
+
       describe("when the offRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectProof.signals[2] = BigNumber.from(await calculateGarantiIdHash("janedoe@gmail.com987654321"));
+          subjectProof.signals[3] = BigNumber.from(await calculateIbanHash("TR00 2345 6789 0123 4567 8901 23"));
         });
 
         it("should revert", async () => {
@@ -1065,7 +1088,7 @@ describe("GarantiRamp", () => {
 
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectProof.signals[3] = BigNumber.from(await calculateGarantiIdHash("satoshi@gmail.com123571113"));
+          subjectProof.signals[4] = BigNumber.from(await calculateGarantiIdHash("satoshi@gmail.com123571113"));
         });
 
         it("should revert", async () => {
@@ -1083,6 +1106,7 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
@@ -1247,12 +1271,14 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(50),
           usdc(51)
         );
@@ -1927,12 +1953,14 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(102)
         );
@@ -1993,12 +2021,14 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(102)
         );
@@ -2057,6 +2087,7 @@ describe("GarantiRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "TR01 2345 6789 0123 4567 8901 23",
+          "John Doe",
           usdc(100),
           usdc(101)
         );

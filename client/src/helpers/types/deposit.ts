@@ -14,6 +14,7 @@ export interface Deposit {
   platformType: PaymentPlatformType;
   depositor: string;
   venmoId: string;
+  offRamperName?: string;
   depositAmount: bigint;
   remainingDepositAmount: bigint;
   outstandingIntentAmount: bigint;

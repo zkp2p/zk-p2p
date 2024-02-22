@@ -478,6 +478,11 @@ export const abi = [
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "garantiName",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
@@ -533,6 +538,11 @@ export const abi = [
               {
                 "internalType": "string",
                 "name": "garantiIban",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "garantiName",
                 "type": "string"
               },
               {
@@ -652,6 +662,11 @@ export const abi = [
             "type": "string"
           },
           {
+            "internalType": "string",
+            "name": "garantiName",
+            "type": "string"
+          },
+          {
             "internalType": "uint256",
             "name": "depositAmount",
             "type": "uint256"
@@ -717,6 +732,11 @@ export const abi = [
               {
                 "internalType": "string",
                 "name": "garantiIban",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "garantiName",
                 "type": "string"
               },
               {
@@ -1024,6 +1044,11 @@ export const abi = [
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "_garantiName",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "_depositAmount",
         "type": "uint256"
@@ -1091,7 +1116,7 @@ export const abi = [
             "type": "uint256[4]"
           }
         ],
-        "internalType": "struct IGarantiBodyHashVerifier.BodyHashProof",
+        "internalType": "struct IGarantiBodySuffixHashVerifier.BodySuffixHashProof",
         "name": "_bodyHashProof",
         "type": "tuple"
       }
@@ -1179,7 +1204,7 @@ export const abi = [
             "type": "uint256[4]"
           }
         ],
-        "internalType": "struct IGarantiBodyHashVerifier.BodyHashProof",
+        "internalType": "struct IGarantiBodySuffixHashVerifier.BodySuffixHashProof",
         "name": "_bodyHashProof",
         "type": "tuple"
       }

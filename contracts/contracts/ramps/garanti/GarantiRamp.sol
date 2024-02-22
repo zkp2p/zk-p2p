@@ -80,6 +80,7 @@ contract GarantiRamp is Ownable {
     struct Deposit {
         address depositor;
         string garantiIban;                 // IBAN number of the depositor with spacing as such: "TR## #### #### #### #### #### ##"
+        string garantiName;                 // Name given for Garanti IBAN account, necessary for on-rampers to complete on-ramp
         uint256 depositAmount;              // Amount of USDC deposited
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
         uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
@@ -229,11 +230,13 @@ contract GarantiRamp is Ownable {
      * of USDC.
      *
      * @param _garantiIban      IBAN number of the depositor with spacing as such: "TR## #### #### #### #### #### ##"
+     * @param _garantiName      Name given for Garanti IBAN account, necessary for on-rampers to complete on-ramp
      * @param _depositAmount    The amount of USDC to off-ramp
      * @param _receiveAmount    The amount of USD to receive
      */
     function offRamp(
         string memory _garantiIban,
+        string memory _garantiName,
         uint256 _depositAmount,
         uint256 _receiveAmount
     )
@@ -254,6 +257,7 @@ contract GarantiRamp is Ownable {
         deposits[depositId] = Deposit({
             depositor: msg.sender,
             garantiIban: _garantiIban,
+            garantiName: _garantiName,
             depositAmount: _depositAmount,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
@@ -773,6 +777,7 @@ contract GarantiRamp is Ownable {
         (
             uint256 amount,
             uint256 timestamp,
+            bytes32 offRamperNameHash,
             bytes32 offRamperIdHash,
             bytes32 onRamperIdHash,
             bytes32 intentHash
@@ -783,6 +788,7 @@ contract GarantiRamp is Ownable {
 
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
+        require(keccak256(abi.encodePacked(deposit.garantiName)) == offRamperNameHash, "Offramper id does not match");
         require(keccak256(abi.encodePacked(deposit.garantiIban)) == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");

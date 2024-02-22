@@ -192,7 +192,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 
                 {
                   isRegistered && <ReadOnlyInput
-                    label="HDFC Identifier"
+                    label="Garanti Identifier"
                     name={`garantiProfile`}
                     value={registrationHash ? registrationHash : ""}
                   />
