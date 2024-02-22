@@ -23,9 +23,9 @@ export const receiveNetworks = [
   ReceiveNetwork.ZKSYNC,
   ReceiveNetwork.BASE,
   ReceiveNetwork.POLYGON,
+  ReceiveNetwork.ARBITRUM,
   ReceiveNetwork.AVALANCHE,
   ReceiveNetwork.BINANCE,
-  ReceiveNetwork.ARBITRUM,
   ReceiveNetwork.OPTIMISM,
   ReceiveNetwork.ETHEREUM,
 ];

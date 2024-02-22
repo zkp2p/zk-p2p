@@ -260,7 +260,7 @@ const StyledX = styled(X)`
 const Table = styled.div`
   width: 100%;
   color: #616161;
-  height: 232px;
+  height: 284px;
 
   overflow-y: auto;
   scrollbar-width: thin;
