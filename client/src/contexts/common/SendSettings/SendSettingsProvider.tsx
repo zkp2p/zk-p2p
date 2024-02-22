@@ -21,7 +21,7 @@ const SendSettingsProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const [receiveNetwork, setReceiveNetwork] = useState<ReceiveNetworkType>(ReceiveNetwork.BASE);
+  const [receiveNetwork, setReceiveNetwork] = useState<ReceiveNetworkType>(ReceiveNetwork.ZKSYNC);
 
 
   const [receiveToken, setReceiveToken] = useState<ReceiveTokenType>(ReceiveToken.USDC);
