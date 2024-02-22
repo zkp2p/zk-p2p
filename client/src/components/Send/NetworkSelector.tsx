@@ -1,6 +1,6 @@
 import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
-import { X } from 'react-feather';
+import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
 import { ThemedText } from '@theme/text';
@@ -105,6 +105,8 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
             </NetworkNameLabel>
           </NetworkNameContainer>
         </NetworkLogoAndNameContainer>
+
+        <StyledChevronDown/>
       </NetworkContainer>
 
       {isOpen && (
@@ -208,6 +210,12 @@ const NetworkSvg = styled.img`
   border-radius: 18px;
   width: 32px;
   height: 32px;
+`;
+
+const StyledChevronDown = styled(ChevronDown)`
+  width: 20px;
+  height: 20px;
+  color: #FFF;
 `;
 
 const ModalAndOverlayContainer = styled.div`

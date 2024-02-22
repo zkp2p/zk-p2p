@@ -66,7 +66,7 @@ export const networksInfo: Record<ReceiveNetworkType, NetworksData> = {
   },
   [ReceiveNetwork.ETHEREUM]: {
     networkId: ReceiveNetwork.ETHEREUM,
-    networkName: 'Ethereum Mainnet',
+    networkName: 'Ethereum',
     networkSvg: ethereumSvg,
     networkChainId: '1'
   },
