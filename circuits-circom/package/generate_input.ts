@@ -77,6 +77,7 @@ export interface ICircuitInputs {
   paylah_payee_mobile_num_idx?: string;
   paylah_payment_id_idx?: string;
   garanti_payer_mobile_num_idx?: string;
+  garanti_payee_name_idx?: string;
   garanti_payee_acc_num_idx?: string;
   garanti_amount_idx?: string;
   email_date_idx?: string;
@@ -532,6 +533,10 @@ export async function getCircuitInputs(
     const garanti_payer_mobile_num_selector = Buffer.from("</strong></p>");
     const garanti_payer_mobile_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payer_mobile_num_selector, Number(garanti_payer_name_idx)) - 7).toString();
 
+    // Index of payee name is the <strong> tag after 5 tabs and new line
+    const garanti_payee_name_selector = Buffer.from("\r\n\t\t\t\t\t<strong>");
+    const garanti_payee_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payee_name_selector) + garanti_payee_name_selector.length).toString();
+
     const garanti_payee_acc_num_selector = Buffer.from("TR");
     const garanti_payee_acc_num_idx = Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector).toString();
 
@@ -547,6 +552,7 @@ export async function getCircuitInputs(
       'email_from_idx': email_from_idx,
       'email_to_idx': email_to_idx,
       'email_timestamp_idx': email_timestamp_idx,
+      'garanti_payee_name_idx': garanti_payee_name_idx,
       'garanti_payer_mobile_num_idx': garanti_payer_mobile_num_idx,
       'garanti_payee_acc_num_idx': garanti_payee_acc_num_idx,
       'garanti_amount_idx': garanti_amount_idx
@@ -566,6 +572,7 @@ export async function getCircuitInputs(
       email_to_idx,
       email_timestamp_idx,
       garanti_payer_mobile_num_idx,
+      garanti_payee_name_idx,
       garanti_payee_acc_num_idx,
       garanti_amount_idx,
       // IDs

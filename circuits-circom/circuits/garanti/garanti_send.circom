@@ -95,6 +95,10 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_payer_mobile_num_packed_bytes = count_packed(max_payer_mobile_num_len, pack_size);
     assert(max_payer_mobile_num_packed_bytes < max_body_bytes);
 
+    var max_payee_name_len = 42; // International SWIFT standard for beneficiary name is 35 characters. We add some padding for special chars.
+    var max_payee_name_packed_bytes = count_packed(max_payee_name_len, pack_size);
+    assert(max_payee_name_packed_bytes < max_body_bytes);
+
     var max_payee_acc_num_len = 32; // Length of "TRXX XXXX XXXX XXXX XXXX XXXX XX"
     var max_payee_acc_num_packed_bytes = count_packed(max_payee_acc_num_len, pack_size);
     assert(max_payee_acc_num_packed_bytes < max_body_bytes);
@@ -130,9 +134,10 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
 
     // Garanti payment details regex
     signal (
-        garanti_payment_details_regex_out, 
-        payee_acc_num_regex_reveal[max_body_bytes],        
-        amount_regex_reveal[max_body_bytes] 
+        garanti_payment_details_regex_out,
+        payee_name_regex_reveal[max_body_bytes],
+        payee_acc_num_regex_reveal[max_body_bytes],
+        amount_regex_reveal[max_body_bytes]
     ) <== GarantiPaymentDetailsRegex(max_body_bytes)(in_body_padded);
     garanti_payment_details_regex_out === 1;
 
@@ -170,6 +175,13 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
         pack_size
     )(payer_mobile_num_regex_reveal, garanti_payer_mobile_num_idx);
 
+    // Output packed payee name
+    signal input garanti_payee_name_idx;
+    signal output reveal_payee_name_packed[max_payee_name_packed_bytes] <== ShiftAndPackMaskedStr(
+        max_body_bytes, 
+        max_payee_name_len, 
+        pack_size
+    )(payee_name_regex_reveal, garanti_payee_name_idx);
     // Output packed payment account number
     signal input garanti_payee_acc_num_idx;
     signal output reveal_payee_acc_num_packed[max_payee_acc_num_packed_bytes] <== ShiftAndPackMaskedStr(
@@ -213,7 +225,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 4841686
+    // TOTAL CONSTRAINTS: 5048064
 }
 
 
