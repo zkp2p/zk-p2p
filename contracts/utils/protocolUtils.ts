@@ -216,7 +216,7 @@ export const unpackPackedGarantiId = (packedGarantiId: BigNumber[]): string => {
   if (firstNonZeroIndex !== -1) {
     garantiIdArray = garantiIdArray.slice(firstNonZeroIndex).reverse();
   }
-  console.log(garantiIdArray);
+
   return String.fromCharCode(...garantiIdArray);
 };
 

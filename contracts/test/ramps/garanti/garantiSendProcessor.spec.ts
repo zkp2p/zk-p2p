@@ -97,7 +97,7 @@ describe.only("GarantiSendProcessor", () => {
       return await sendProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof, subjectBodyHashProof);
     }
 
-    it.only("should process the proof", async () => {
+    it("should process the proof", async () => {
       const {
         amount,
         timestamp,
@@ -108,11 +108,11 @@ describe.only("GarantiSendProcessor", () => {
       } = await subjectCallStatic();
 
       const unpackedGarantiId = unpackPackedGarantiId(rawSignals.slice(18,23).map(x => BigNumber.from(x)));
-      const unpackedGarantiName = unpackPackedGarantiId(rawSignals.slice(12,18).map(x => BigNumber.from(x)));
-      console.log(unpackedGarantiName);
+
       expect(amount).to.eq(usdc(800));
       expect(timestamp).to.eq(BigNumber.from(1703416861).add(30));  // 30s is default timestamp buffer;
-      expect(offRamperNameHash).to.eq(calculateIbanHash(unpackedGarantiName));
+      // Hardcoding value to protect privacy, confirmed that hashed value matches the extracted value from the email
+      expect(offRamperNameHash).to.eq("0x17ccd70563e6df81e60fb5c2ad2abbd627a233807100095259849b5b0d05a37c");
       expect(offRamperIdHash).to.eq(calculateIbanHash(unpackedGarantiId));
       expect(onRamperIdHash).to.eq(rawSignals[25]);
       expect(intentHash).to.eq(rawSignals[27]);
