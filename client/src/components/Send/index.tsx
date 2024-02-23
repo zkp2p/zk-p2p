@@ -240,7 +240,7 @@ export default function SendForm() {
     data: submitBridgeResult,
     status: signBridgeTransactionStatus,
     sendTransactionAsync: writeSubmitBridgeAsync
-  } = useSendTransaction(writeBridgeConfig);
+  } = useSendTransaction({...writeBridgeConfig, gas: 650_000});
 
   const {
     status: mineBridgeTransactionStatus
@@ -814,10 +814,10 @@ export default function SendForm() {
     const toAmount = BigInt(quote.estimate.toAmount);
     const totalGasFeesInUsd = quote.estimate.gasCosts[0].amountUSD;
     const serviceTimeSeconds = Math.floor(quote.estimate.executionDuration as number);
-
     const bridgeName = quote.toolDetails.name;
 
-    const totalGasFees = BigInt(quote.estimate.gasCosts[0].estimate) * BigInt(quote.estimate.gasCosts[0].amount);
+    const gasCosts = quote.estimate.gasCosts[0];
+    const totalGasFees = BigInt(gasCosts.price) * BigInt(gasCosts.estimate);
     
     return {
       fromAmount: fromAmount,

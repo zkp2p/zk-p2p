@@ -72,7 +72,7 @@ const Container = styled.div`
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid ${colors.readOnlyInputColor};
+  border: 1px solid ${colors.readOnlyBorderColor};
     background-color: ${colors.readOnlyInputColor};
 
   &:focus-within {
