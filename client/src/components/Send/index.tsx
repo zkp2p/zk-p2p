@@ -49,6 +49,7 @@ type RecipientAddress = {
   ensName: string;
   rawAddress: string;
   displayAddress: string;
+  addressType: string;
 };
 
 const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
@@ -56,6 +57,7 @@ const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
   ensName: '',
   rawAddress: '',
   displayAddress: '',
+  addressType: ''
 };
 
 export type SendQuote = {
@@ -300,14 +302,17 @@ export default function SendForm() {
     let displayAddress = '';
     let isValidAddress = false;
 
+    const isNetworkSolana = receiveNetwork === ReceiveNetwork.SOLANA;
+
     setRecipientAddressInput({
       input: value,
       ensName,
       rawAddress,
       displayAddress,
+      addressType: isNetworkSolana ? 'sol' : 'eth'
     });
   
-    if (receiveNetwork === ReceiveNetwork.SOLANA) {
+    if (isNetworkSolana) {
       if (value.endsWith('.sol')) {
         const { pubkey: recordKey } = getDomainKeySync(value);
         const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
@@ -621,6 +626,8 @@ export default function SendForm() {
         clearInterval(intervalId);
       }
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitBridgeResult])
 
   useEffect(() => {
@@ -653,6 +660,8 @@ export default function SendForm() {
         clearInterval(intervalId);
       }
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batchWriteApproveAndBridgeResult])
 
   useEffect(() => {
@@ -674,7 +683,16 @@ export default function SendForm() {
   }, [currentQuote.sendAmountInput, usdcApprovalToLifiBridge]);
 
   useEffect(() => {
-    updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressInput.rawAddress);
+    let recipientAddressForUpdatedQuote = recipientAddressInput.rawAddress;
+    
+    const receiveNetworkAddressTypeForRecipient = receiveNetwork === ReceiveNetwork.SOLANA ? 'sol' : 'eth';
+    if (receiveNetworkAddressTypeForRecipient !== recipientAddressInput.addressType) {
+      recipientAddressForUpdatedQuote = '';
+
+      setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
+    };
+
+    updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressForUpdatedQuote);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receiveNetwork, receiveToken, usdcApprovalToLifiBridge]);

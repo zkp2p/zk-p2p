@@ -119,12 +119,12 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
     <Wrapper ref={ref}>
       <TitleLabelAndDropdownIconContainer>
         <GasFeeLabel>
-          {gasFeeLabel}
+          {"Arrival time"}
         </GasFeeLabel>
 
         <GasFeeValueAndChevronContainer>
           <GasFeeValue>
-            {gasFeeValue()}
+            {serviceTimeString}
           </GasFeeValue>  
 
           <StyledChevronDown
@@ -145,8 +145,8 @@ export const QuoteDrawer: React.FC<QuoteDrawerProps> = ({
           ) : null}
 
           <QuoteStep
-            label={"Arrival time"}
-            value={serviceTimeString}
+            label={gasFeeLabel}
+            value={gasFeeValue()}
           />
 
           <QuoteStep 
