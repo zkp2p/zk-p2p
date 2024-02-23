@@ -19,6 +19,7 @@ interface SwapModalProps {
   isVenmo: boolean;
   venmoId: string;
   link: string;
+  depositorName?: string;
   amount: string;
   onBackClick: () => void
   onCompleteClick: () => void
@@ -28,6 +29,7 @@ interface SwapModalProps {
 export const SwapModal: React.FC<SwapModalProps> = ({
   isVenmo,
   venmoId,
+  depositorName,
   link,
   amount,
   onBackClick,
@@ -78,7 +80,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
           paymentPlatformName: 'Garanti',
-          instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number`,
+          instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name.`,
         };
       default:
         return {
@@ -135,10 +137,17 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             </QRLabel>     
           </div>
         ) : (
-          <IBANTitle
-            dangerouslySetInnerHTML={{ __html: venmoId }}
-          />
+          <GarantiInformationContainer>
+            <IBANTitle
+              dangerouslySetInnerHTML={{ __html: `${venmoId}`}}
+            />
+            <IBANTitle
+              dangerouslySetInnerHTML={{ __html: `${depositorName ? depositorName : ''}`}}
+            />
+          </GarantiInformationContainer>
         )}
+
+        <HorizontalDivider/>
 
         <InstructionsContainer>
           <InstructionsTitle
@@ -261,4 +270,16 @@ const QRLabel = styled.div`
   text-align: center;
   margin-top: -1rem;
   line-height: 1.5;
+`;
+
+const GarantiInformationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1.5rem;
+`;
+
+const HorizontalDivider = styled.div`
+  width: 100%;
+  border-bottom: 1px solid ${colors.defaultBorderColor};
 `;

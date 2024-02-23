@@ -50,6 +50,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const [depositState, setDepositState] = useState(NewDepositTransactionStatus.DEFAULT);
   const [garantiIbanInput, setGarantiIdInput] = useState<string>('');
+  const [garantiNameInput, setGarantiNameInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
 
@@ -72,6 +73,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       garantiIbanInput,
+      garantiNameInput,
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
     ],
@@ -444,6 +446,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
 
           <Input
+            label="Garanti Name"
+            name={`garantiName`}
+            value={garantiNameInput}
+            onChange={(e) => {
+              setGarantiNameInput(e.currentTarget.value)
+              latestIbanInputRef.current = e.currentTarget.value
+            }}
+            type="text"
+            placeholder="John Doe"
+            helperText={garantiStrings.get('NEW_DEPOSIT_NAME_TOOLTIP')}
+          />
+
+          <Input
             label="Deposit Amount"
             name={`depositAmount`}
             value={depositAmountInput}
@@ -468,7 +483,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
             type="number"
             inputLabel="TRL"
-            placeholder="82800"
+            placeholder="31006"
             helperText={garantiStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 

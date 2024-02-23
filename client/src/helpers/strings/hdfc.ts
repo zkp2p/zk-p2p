@@ -43,6 +43,7 @@ const strings: PlatformStrings = {
     This connects your UPI account to your wallet address on chain.
     This must match the HDFC account you used to register.
   `,
+  NEW_DEPOSIT_NAME_TOOLTIP:"",
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you HDFC payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.

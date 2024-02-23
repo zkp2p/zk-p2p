@@ -273,6 +273,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
           amountUSDCToReceive,
           amountUSDToSend,
           expirationTimestamp,
+          depositorName: storedDeposit.deposit.offRamperName,
           depositorVenmoId: venmoIdString,
           depositorAddress,
           recipientAddress,
@@ -369,6 +370,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
               expirationTimestamp={intentsRow.expirationTimestamp}
               depositorVenmoId={intentsRow.depositorVenmoId}
               depositorAddress={intentsRow.depositorAddress}
+              depositorName={intentsRow.depositorName}
               recipientAddress={intentsRow.recipientAddress}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
               shouldAutoSelectIntent={intentsRow.shouldAutoSelectIntent}

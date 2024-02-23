@@ -55,6 +55,7 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
         returns(
             uint256 amount,
             uint256 timestamp,
+            bytes32 offRamperNameHash,
             bytes32 offRamperIdHash,
             bytes32 onRamperIdHash,
             bytes32 intentHash
@@ -76,7 +77,7 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
 
         // Signals [17:19] is the packed amount, since this is a USDC amount we want to make sure the returned number is
         // properly padded to 6 decimals. If the parsed has more than 6 figures to the right of the decimal it will revert
-        amount = _parseSignalArray(_proof.signals, 17, 19).stringToUint(0x2C, 6);
+        amount = _parseSignalArray(_proof.signals, 23, 25).stringToUint(0x2C, 6);
 
         // Signals [10:12] are the packed timestamp, the timestamp is returned as a string in the format, that we need to
         // parse and convert to a unix timestamp
@@ -84,21 +85,24 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
         timestamp = _parseSignalArray(_proof.signals, 10, 12).stringToUint(0) + timestampBuffer;
 
         // Signals [19] is the packed onRamperIdHash
-        onRamperIdHash = bytes32(_proof.signals[19]);
+        onRamperIdHash = bytes32(_proof.signals[25]);
+
+        // Signals [12:17] is the packed name of the Garanti account owner which must be hashed to get the offRamperNameHash
+        offRamperNameHash = keccak256(abi.encodePacked(_parseSignalArray(_proof.signals, 12, 18)));
 
         // Signals [12:17] is the packed IBAN number which must be hashed to get the offRamperIdHash
-        offRamperIdHash = keccak256(abi.encodePacked(_parseSignalArray(_proof.signals, 12, 17)));
+        offRamperIdHash = keccak256(abi.encodePacked(_parseSignalArray(_proof.signals, 18, 23)));
 
         // Check if email has been used previously, if not nullify it so it can't be used again
-        _validateAndAddNullifier(bytes32(_proof.signals[20]));
+        _validateAndAddNullifier(bytes32(_proof.signals[26]));
 
         // Signals [14] is intentHash
-        intentHash = bytes32(_proof.signals[21]);
+        intentHash = bytes32(_proof.signals[27]);
     }
     
     /* ============ Internal Functions ============ */
 
-    function _parseSignalArray(uint256[22] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
+    function _parseSignalArray(uint256[28] calldata _signals, uint8 _from, uint8 _to) internal pure returns (string memory) {
         uint256[] memory signalArray = new uint256[](_to - _from);
         for (uint256 i = _from; i < _to; i++) {
             signalArray[i - _from] = _signals[i];
@@ -107,7 +111,7 @@ contract GarantiSendProcessor is Groth16Verifier, IGarantiSendProcessor, BasePro
         return signalArray.convertPackedBytesToString(signalArray.length * PACK_SIZE, PACK_SIZE);
     }
 
-    function _validateIntermediateHash(uint256[22] calldata _sendSignals, uint256[4] calldata _bodyHashSignals) internal pure {
+    function _validateIntermediateHash(uint256[28] calldata _sendSignals, uint256[4] calldata _bodyHashSignals) internal pure {
         bytes32 intermediateHash = keccak256(abi.encode(_sendSignals[1], _sendSignals[2], _sendSignals[3], _sendSignals[4]));
         bytes32 inputHash = keccak256(abi.encode(_bodyHashSignals[0], _bodyHashSignals[1], _bodyHashSignals[2], _bodyHashSignals[3]));
         require(intermediateHash == inputHash, "Invalid intermediate or output hash");

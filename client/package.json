@@ -28,7 +28,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@zerodev/privy": "^1.4.4",
     "@zerodev/wagmi": "4.6.5",
-    "@zkp2p/circuits-circom-helpers": "^0.2.0",
+    "@zkp2p/circuits-circom-helpers": "^0.2.3-rc2",
     "addressparser": "^1.0.1",
     "atob": "^2.1.2",
     "babel-eslint": "^10.1.0",

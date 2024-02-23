@@ -43,6 +43,9 @@ const strings: PlatformStrings = {
     This connects your Garanti IBAN to your wallet address on chain.
     This must match the IBAN associated with your Garanti account.
   `,
+  NEW_DEPOSIT_NAME_TOOLTIP:`
+    This must be the name associated with your Garanti account. If it does not match
+    payments will not go through and you will not be able to off-ramp`,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you Garanti payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.

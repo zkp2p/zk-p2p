@@ -148,6 +148,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         platformType: PaymentPlatform.GARANTI,
         depositor: depositData.depositor.toString(),
         venmoId: depositData.garantiIban,
+        offRamperName: depositData.garantiName,
         depositAmount: depositData.depositAmount,
         remainingDepositAmount: depositData.remainingDeposits,
         outstandingIntentAmount: depositData.outstandingIntentAmount,
