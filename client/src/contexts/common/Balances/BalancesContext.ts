@@ -15,6 +15,8 @@ interface BalancesValues {
   refetchUsdcApprovalToGarantiRamp: (() => void) | null
   usdcApprovalToSocketBridge: bigint | null
   refetchUsdcApprovalToSocketBridge: (() => void) | null
+  usdcApprovalToLifiBridge: bigint | null
+  refetchUsdcApprovalToLifiBridge: (() => void) | null
 }
 
 const defaultValues: BalancesValues = {
@@ -32,6 +34,8 @@ const defaultValues: BalancesValues = {
   refetchUsdcApprovalToGarantiRamp: null,
   usdcApprovalToSocketBridge: null,
   refetchUsdcApprovalToSocketBridge: null,
+  usdcApprovalToLifiBridge: null,
+  refetchUsdcApprovalToLifiBridge: null,
 };
 
 const BalancesContext = createContext<BalancesValues>(defaultValues)

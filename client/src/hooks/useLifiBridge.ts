@@ -1,31 +1,33 @@
 type LifiRouteRequestParams = {
   toChain: string,
-  fromToken: string,
   toToken: string,
   fromAmount: string,
   fromAddress: string,
-  toAddress: string,
+  toAddress?: string,
 }
 
 export default function useLifiBridge() {
 
-  const getLifiQuotes = async ({ fromAmount, fromToken, fromAddress, toChain, toToken, toAddress }: LifiRouteRequestParams) => {
-    const routesRequest = {
+  const getLifiQuote = async ({ fromAmount, fromAddress, toChain, toToken, toAddress }: LifiRouteRequestParams) => {
+    const quotesRequest = {
       fromChain: '8453', // Always will be from Base
       toChain,
-      fromToken, // Fetch USDC from smart contract hook
+      fromToken: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Will always be USDC on Base
       fromAmount,
       toToken,
       fromAddress,
-      toAddress,
       allowDestinationCall: 'false', // This is to toggle allowing a swap AFTER bridging to the new chain
       slippage: '0.005', // 0.5% slippage
       integrator: 'ZKP2P',
       fee: '0', // 0 fees
+    } as any;
+
+    if (toAddress) {
+      quotesRequest.toAddress = toAddress;
     }
 
     const apiUrl = 'https://li.quest/v1/quote';
-    const queryParams = new URLSearchParams(routesRequest).toString();
+    const queryParams = new URLSearchParams(quotesRequest).toString();
     const urlWithParams = `${apiUrl}?${queryParams}`;
 
     const response = await fetch(urlWithParams, {
@@ -39,7 +41,8 @@ export default function useLifiBridge() {
     } else {
       console.error('Failed to fetch quote:', response);
 
-      throw new Error('Failed to fetch quote');
+      // Lifi throws error if there is no valid route
+      return null;
     }
   }
 
@@ -89,5 +92,5 @@ export default function useLifiBridge() {
     }
   }
 
-  return { getLifiQuotes, getLifiTransactionHistory, getLifiTransactionStatus };
+  return { getLifiQuote, getLifiTransactionHistory, getLifiTransactionStatus };
 };
