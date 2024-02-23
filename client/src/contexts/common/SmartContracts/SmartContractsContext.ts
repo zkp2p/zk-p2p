@@ -40,6 +40,9 @@ interface SmartContractsValues {
 
   // Socket
   socketBridgeAddress: string | null;
+  
+  // Lifi
+  lifiBridgeAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -79,6 +82,9 @@ const defaultValues: SmartContractsValues = {
 
   // Socket
   socketBridgeAddress: null,
+  
+  // Lifi
+  lifiBridgeAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)
