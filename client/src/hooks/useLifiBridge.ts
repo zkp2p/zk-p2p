@@ -10,16 +10,16 @@ export default function useLifiBridge() {
 
   const getLifiQuote = async ({ fromAmount, fromAddress, toChain, toToken, toAddress }: LifiRouteRequestParams) => {
     const quotesRequest = {
-      fromChain: '8453', // Always will be from Base
+      fromChain: '8453',                                       // Always will be from Base
       toChain,
       fromToken: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // Will always be USDC on Base
       fromAmount,
       toToken,
       fromAddress,
-      allowDestinationCall: 'false', // This is to toggle allowing a swap AFTER bridging to the new chain
-      slippage: '0.005', // 0.5% slippage
+      allowDestinationCall: 'false',                           // This is to toggle allowing a swap AFTER bridging to the new chain
+      slippage: '0.005',                                       // 0.5% slippage
       integrator: 'ZKP2P',
-      fee: '0', // 0 fees
+      fee: '0',                                                // 0 fees
     } as any;
 
     if (toAddress) {

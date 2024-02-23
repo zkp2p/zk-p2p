@@ -51,7 +51,7 @@ export const Input: React.FC<InputProps> = ({
    */
 
   const dynamicFontSize = value && value.length > 0 
-      ? Math.max(fontSize - Math.floor(value.length / 18) * 4, 12)
+      ? Math.max(fontSize - Math.floor(value.length / 18) * 4.5, 12)
       : fontSize;
 
   return (

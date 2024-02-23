@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import merge from 'lodash.merge';
 import { ethers } from 'ethers';
+import { Connection } from "@solana/web3.js";
 import { PrivyProvider } from '@privy-io/react-auth';
 import { ZeroDevPrivyWagmiProvider } from '@zerodev/wagmi/privy';
 import {
@@ -51,7 +52,10 @@ const configureChainsConfig = configureChains(
 );
 
 export const alchemyMainnetEthersProvider =
-  new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY)
+  new ethers.providers.AlchemyProvider('mainnet', process.env.ALCHEMY_API_KEY);
+
+const alchemySolanaEndpoint = `https://solana-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOLANA_API_KEY}`;
+export const alchemySolanaConnection = new Connection(alchemySolanaEndpoint, 'confirmed');
 
 const { connectors } = getDefaultWallets({
   appName: 'ZK P2P On-Ramp',

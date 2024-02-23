@@ -53,7 +53,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
   const onAccountLoginClick = () => {
     if (authenticatedLogin) {
       authenticatedLogin();
-    }
+    };
   };
 
   const onWrongNetworkLogout = () => {

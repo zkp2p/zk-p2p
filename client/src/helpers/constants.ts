@@ -21,6 +21,7 @@ export const PENNY_IN_USDC_UNITS = BigInt(10_000); // 6
 export const EMPTY_STRING = '';
 
 export const SOCKET_QUOTE_DEFAULT_ADDRESS = '0x18Cc6F90512C6D95ACA0d57F98C727D61873c06a';
+export const SOCKET_DEFAULT_SOL_ADDRESS = '8pHKRNF3u8tndkUJ4euAddNWM9EAMWbUiK5GVmtaGY5U';
 export const QUOTE_FETCHING_DEBOUNCE_MS = 750;
 
 // the numeric form of the payload1 passed into the primitive
