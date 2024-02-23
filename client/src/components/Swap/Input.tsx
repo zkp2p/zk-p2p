@@ -108,7 +108,8 @@ const Container = styled.div<ContainerProps>`
 
   ${({ readOnly }) => 
     readOnly && `
-      border: 1px solid ${colors.readOnlyBorderColor};
+      border: 1px solid ${colors.readOnlyInputColor};
+      background-color: ${colors.readOnlyInputColor};
     `
   }
 `;

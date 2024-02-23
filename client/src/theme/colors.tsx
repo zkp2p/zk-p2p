@@ -34,6 +34,7 @@ export const colors = {
   readOnlyBorderColor: '#98A1C03D',
 
   defaultInputColor: '#131A2A',
+  readOnlyInputColor: '#101A2A',
 
   selectorColor: '#0D111C',
   selectorHover: '#1B1E29',

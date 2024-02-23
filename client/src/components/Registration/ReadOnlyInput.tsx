@@ -33,36 +33,36 @@ export const ReadOnlyInput: React.FC<ReadOnlyInputProps> = ({
   ReadOnlyInput.displayName = "Input";
 
   return (
-      <Container>
-        <LabelAndInputContainer>
-          <LabelAndTooltipContainer>
-            <Label htmlFor={name}>
-              {label}
-            </Label>
+    <Container>
+      <LabelAndInputContainer>
+        <LabelAndTooltipContainer>
+          <Label htmlFor={name}>
+            {label}
+          </Label>
 
-            { helperText && (
-                <QuestionHelper
-                  text={helperText}
-                />
-              )
-            }
-          </LabelAndTooltipContainer>
+          { helperText && (
+              <QuestionHelper
+                text={helperText}
+              />
+            )
+          }
+        </LabelAndTooltipContainer>
 
-          <InputWrapper>
-            <StyledInput
-              type={type}
-              name={name}
-              id={name}
-              placeholder={placeholder}
-              value={value}
-              onChange={() => {}}
-              onFocus={onFocus}
-              onKeyDown={onKeyDown}
-              readOnly={true}
-            />
-          </InputWrapper>
-        </LabelAndInputContainer>
-      </Container>
+        <InputWrapper>
+          <StyledInput
+            type={type}
+            name={name}
+            id={name}
+            placeholder={placeholder}
+            value={value}
+            onChange={() => {}}
+            onFocus={onFocus}
+            onKeyDown={onKeyDown}
+            readOnly={true}
+          />
+        </InputWrapper>
+      </LabelAndInputContainer>
+    </Container>
   );
 };
 
@@ -72,8 +72,8 @@ const Container = styled.div`
   justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid ${colors.defaultBorderColor};
-  background-color: #131A2A;
+  border: 1px solid ${colors.readOnlyInputColor};
+    background-color: ${colors.readOnlyInputColor};
 
   &:focus-within {
     border-color: #CED4DA;

@@ -1147,6 +1147,18 @@ export default function SendForm() {
             />
 
             <Input
+              label="To"
+              name={`to`}
+              value={recipientInputText()}
+              onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
+              onFocus={() => setIsRecipientInputFocused(true)}
+              onBlur={() => setIsRecipientInputFocused(false)}
+              type="string"
+              placeholder={recipientPlaceholderLabel}
+              fontSize={24}
+            />
+
+            <Input
               label="Receive"
               name={`ReceiveAmount`}
               value={receiveAmountInputValue()}
@@ -1158,18 +1170,6 @@ export default function SendForm() {
               inputLabel="USDC"
               placeholder="0"
               accessoryLabel={usdcBalanceLabel}
-            />
-
-            <Input
-              label="To"
-              name={`to`}
-              value={recipientInputText()}
-              onChange={(e) => {handleRecipientInputChange(e.currentTarget.value)}}
-              onFocus={() => setIsRecipientInputFocused(true)}
-              onBlur={() => setIsRecipientInputFocused(false)}
-              type="string"
-              placeholder={recipientPlaceholderLabel}
-              fontSize={24}
             />
 
             { quoteFetchingStatus === FetchQuoteStatus.LOADED ? (
@@ -1284,11 +1284,11 @@ const NetworkLogoAndNameContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid ${colors.readOnlyBorderColor};
+  border: 1px solid ${colors.readOnlyInputColor};
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
-  background: ${colors.defaultInputColor};
+  background: ${colors.readOnlyInputColor};
   padding: 1.1rem 1rem;
 `;
 
