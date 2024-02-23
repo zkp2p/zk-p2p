@@ -19,7 +19,7 @@ import { Tos } from "./pages/Tos";
 import Modals from "./pages/Modals";
 import { TopNav } from "@components/layouts/TopNav";
 import { MobileLandingPage } from "@components/MobileLandingPage";
-import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
+// import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
 // Common Contexts
 import AccountProvider from "./contexts/common/Account/AccountProvider";
@@ -95,7 +95,7 @@ const App = () => {
       <Router>
         <Providers>
           <div className="app-container">
-            <EnvironmentBanner />
+            {/* <EnvironmentBanner /> */}
             <TopNav />
             <Modals />
             <div className="app-content">
