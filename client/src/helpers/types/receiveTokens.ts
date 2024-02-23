@@ -36,6 +36,9 @@ export const networkSupportedTokens: Record<ReceiveNetworkType, ReceiveTokenType
     ReceiveToken.USDT,
     ReceiveToken.ETH
   ],
+  [ReceiveNetwork.SOLANA]: [
+    ReceiveToken.USDC,
+  ],
   [ReceiveNetwork.OPTIMISM]: [
     ReceiveToken.USDC,
     ReceiveToken.ETH
@@ -105,6 +108,17 @@ export const receiveTokenData: ReceiveTokensMap = {
       "decimals": 18,
       "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png",
+    }
+  },
+
+  // Solana
+  [ReceiveNetwork.SOLANA]: {
+    USDC: {
+      "name": "USD Coin",
+      "symbol": "USDC",
+      "decimals": 6,
+      "address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
     }
   },
 

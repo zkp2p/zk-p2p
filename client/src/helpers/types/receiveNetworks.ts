@@ -5,7 +5,9 @@ import binanceSvg from '../../assets/images/bsc.svg';
 import ethereumSvg from '../../assets/images/eth.svg';
 import optimismSvg from '../../assets/images/optimism.svg';
 import polygonSvg from '../../assets/images/polygon.svg';
+import solanaSvg from '../../assets/images/solana.svg';
 import zksyncSvg from '../../assets/images/zksync-era.svg';
+
 
 
 export const ReceiveNetwork = {
@@ -16,12 +18,14 @@ export const ReceiveNetwork = {
   ETHEREUM: "ethereum",
   OPTIMISM: "optimism",
   POLYGON: "polygon",
+  SOLANA: "solana",
   ZKSYNC: "zksync",
 } as const;
 
 export const receiveNetworks = [
   ReceiveNetwork.ZKSYNC,
   ReceiveNetwork.BASE,
+  ReceiveNetwork.SOLANA,
   ReceiveNetwork.POLYGON,
   ReceiveNetwork.ARBITRUM,
   ReceiveNetwork.AVALANCHE,
@@ -82,6 +86,13 @@ export const networksInfo: Record<ReceiveNetworkType, NetworksData> = {
     networkSvg: optimismSvg,
     networkChainId: '10',
     blockExplorer: 'https://optimistic.etherscan.io'
+  },
+  [ReceiveNetwork.SOLANA]: {
+    networkId: ReceiveNetwork.SOLANA,
+    networkName: 'Solana',
+    networkSvg: solanaSvg,
+    networkChainId: '1151111081099710',
+    blockExplorer: 'https://solscan.io'
   },
   [ReceiveNetwork.POLYGON]: {
     networkId: ReceiveNetwork.POLYGON,
