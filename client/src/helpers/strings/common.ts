@@ -64,7 +64,7 @@ const strings: CommonStrings = {
     You are currently viewing the staging application
   `,
   PRODUCTION_ENV_BANNER: `
-    ZKP2P's Alpha Launch —
+    ZKP2P Alpha Launch —
   `,
 
   // Registration NFT Tooltip
