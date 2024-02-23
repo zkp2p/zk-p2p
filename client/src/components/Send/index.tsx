@@ -1,5 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useState, ChangeEvent } from 'react';
 import styled from 'styled-components/macro';
+import { PublicKey } from "@solana/web3.js";
+import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
 import {
   useContractWrite,
   usePrepareContractWrite,
@@ -18,7 +20,7 @@ import { QuoteDrawer } from '@components/Send/QuoteDrawer';
 import { Input } from '@components/Send/Input';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { ZERO, SOCKET_QUOTE_DEFAULT_ADDRESS, QUOTE_FETCHING_DEBOUNCE_MS } from '@helpers/constants';
+import { ZERO, SOCKET_QUOTE_DEFAULT_ADDRESS, SOCKET_DEFAULT_SOL_ADDRESS, QUOTE_FETCHING_DEBOUNCE_MS } from '@helpers/constants';
 import { toBigInt, toUsdcString, toTokenString } from '@helpers/units';
 import {
   LoginStatus,
@@ -31,6 +33,7 @@ import {
   baseUSDCTokenData
 } from '@helpers/types';
 import { resolveEnsName } from '@helpers/ens';
+import { alchemySolanaConnection } from "index";
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -304,23 +307,53 @@ export default function SendForm() {
       displayAddress,
     });
   
-    if (value.endsWith('.eth') || value.endsWith('.xyz')) {
-      ensName = value;
-      const resolvedAddress = await resolveEnsName(value);
-      if (resolvedAddress) {
-        rawAddress = resolvedAddress;
-        displayAddress = resolvedAddress;
+    if (receiveNetwork === ReceiveNetwork.SOLANA) {
+      if (value.endsWith('.sol')) {
+        const { pubkey: recordKey } = getDomainKeySync(value);
+        const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
+        const { owner } = registry;
 
-        updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
-        isValidAddress = true;
+        if (owner) {
+          rawAddress = owner.toString();
+          displayAddress = value;
+    
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, owner.toString());
+          isValidAddress = true;
+        }
+      } else if (value.length >= 32 && value.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(value)) {
+        try {
+          const publicKey = new PublicKey(value);
+          const validSolanaAddress = await PublicKey.isOnCurve(publicKey);
+          if (validSolanaAddress) {
+            rawAddress = value;
+            displayAddress = value;
+      
+            updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
+            isValidAddress = true;
+          }
+        } catch {
+          console.log('Invalid Solana address provided');
+        }
       }
-    } else if (value.startsWith('0x') && value.length === 42) {
-      rawAddress = value;
-      displayAddress = value;
-
-      updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
-      isValidAddress = true;
-    };
+    } else {
+      if (value.endsWith('.eth') || value.endsWith('.xyz')) {
+        ensName = value;
+        const resolvedAddress = await resolveEnsName(value);
+        if (resolvedAddress) {
+          rawAddress = resolvedAddress;
+          displayAddress = resolvedAddress;
+  
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
+          isValidAddress = true;
+        }
+      } else if (value.startsWith('0x') && value.length === 42) {
+        rawAddress = value;
+        displayAddress = value;
+  
+        updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
+        isValidAddress = true;
+      };
+    }
 
     setRecipientAddressInput(prevState => ({
       ...prevState,
@@ -346,30 +379,30 @@ export default function SendForm() {
 
         setSendState(SendTransactionStatus.MISSING_AMOUNTS);
       } else {
-        const usdcBalanceLoaded = usdcBalance !== null;
+        // Receive Quote
+        const receiveAmount = currentQuote.receiveAmountQuote;
+        const isQuoteLoading = quoteFetchingStatus === FetchQuoteStatus.LOADING;
+        const isReceiveAmountNull = !receiveAmount?.toAmount;
 
-        if (sendAmountInput && usdcBalanceLoaded) {
-          const sendAmountBI = toBigInt(sendAmountInput);
-          const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
+        if (isQuoteLoading) {
+          // console.log('FETCHING_QUOTE');
 
-          if (isSendAmountGreaterThanBalance) {
-            // console.log('INSUFFICIENT_BALANCE');
+          setSendState(SendTransactionStatus.FETCHING_QUOTE);
+        } else if (isReceiveAmountNull && !isQuoteLoading) {
+          // console.log('INVALID_ROUTES');
 
-            setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
-          } else {
-            // Receive Quote
-            const receiveAmount = currentQuote.receiveAmountQuote;
-            const isQuoteLoading = quoteFetchingStatus === FetchQuoteStatus.LOADING;
-            const isReceiveAmountNull = !receiveAmount?.toAmount;
+          setSendState(SendTransactionStatus.INVALID_ROUTES);
+        } else {
+          const usdcBalanceLoaded = usdcBalance !== null;
+          
+          if (usdcBalanceLoaded) {
+            const sendAmountBI = toBigInt(sendAmountInput);
+            const isSendAmountGreaterThanBalance = sendAmountBI > usdcBalance;
 
-            if (isQuoteLoading) {
-              // console.log('FETCHING_QUOTE');
+            if (isSendAmountGreaterThanBalance) {
+              // console.log('INSUFFICIENT_BALANCE');
 
-              setSendState(SendTransactionStatus.FETCHING_QUOTE);
-            } else if (isReceiveAmountNull && !isQuoteLoading) {
-              // console.log('INVALID_ROUTES');
-
-              setSendState(SendTransactionStatus.INVALID_ROUTES);
+              setSendState(SendTransactionStatus.INSUFFICIENT_BALANCE);
             } else {
               const isNetworkNative = receiveNetwork === ReceiveNetwork.BASE;
               const isTokenUsdc = receiveToken === ReceiveToken.USDC;
@@ -479,11 +512,11 @@ export default function SendForm() {
                 }
               }
             }
-          }
-        } else {
-          // console.log('MISSING_AMOUNTS');
+          } else {
+            // console.log('MISSING_AMOUNTS: USDC Balance');
 
-          setSendState(SendTransactionStatus.MISSING_AMOUNTS);
+            setSendState(SendTransactionStatus.MISSING_AMOUNTS);    
+          }
         }
       }
     }
@@ -739,12 +772,13 @@ export default function SendForm() {
       selectedReceiveTokenData = baseUSDCTokenData;
     };
 
+    const defaultAddressForQuote = receiveNetwork === ReceiveNetwork.SOLANA ? SOCKET_DEFAULT_SOL_ADDRESS : SOCKET_QUOTE_DEFAULT_ADDRESS;
     const getLifiQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
-      fromAddress: loggedInEthereumAddress || SOCKET_QUOTE_DEFAULT_ADDRESS,
+      fromAddress: loggedInEthereumAddress ?? defaultAddressForQuote,
       toChain: networksInfo[receiveNetwork].networkChainId,
       toToken: selectedReceiveTokenData.address,
-      toAddress
+      toAddress: toAddress ?? defaultAddressForQuote
     };
 
     console.log('getLifiQuote params: ', getLifiQuoteParams);
@@ -843,6 +877,14 @@ export default function SendForm() {
   /*
    * Other Helpers
    */
+
+  const recipientPlaceholderLabel = useMemo(() => {
+    if (receiveNetwork === ReceiveNetwork.SOLANA) {
+      return "Wallet address or SNS name";
+    } else {
+      return "Wallet address or ENS name";
+    }
+  }, [receiveNetwork]);
 
   function isValidSendAmountInput(value: string) {
     const isValid = /^-?\d*(\.\d{0,6})?$/.test(value);
@@ -1108,7 +1150,7 @@ export default function SendForm() {
               onFocus={() => setIsRecipientInputFocused(true)}
               onBlur={() => setIsRecipientInputFocused(false)}
               type="string"
-              placeholder="Wallet address or ENS name"
+              placeholder={recipientPlaceholderLabel}
               fontSize={24}
             />
 
