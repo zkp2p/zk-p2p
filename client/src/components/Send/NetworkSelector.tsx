@@ -202,7 +202,7 @@ const NetworkHeader = styled.div`
 `;
 
 const NetworkNameLabel = styled.div`
-  font-size: 15px;
+  font-size: 16px;
   color: #FFF;
 `;
 

@@ -1284,11 +1284,11 @@ const NetworkLogoAndNameContainer = styled.div`
   flex-direction: row;
   width: 188px;
   border-radius: 16px;
-  border: 1px solid ${colors.readOnlyInputColor};
+  border: 1px solid ${colors.defaultBorderColor};
   gap: 1rem;
   align-items: center;
   justify-content: flex-start;
-  background: ${colors.readOnlyInputColor};
+  background: ${colors.selectorColor};
   padding: 1.1rem 1rem;
 `;
 
@@ -1307,7 +1307,7 @@ const NetworkHeader = styled.div`
 `;
 
 const NetworkNameLabel = styled.div`
-  font-size: 15px;
+  font-size: 16px;
   color: #6C757D;
 `;
 
