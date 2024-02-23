@@ -147,8 +147,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           </GarantiInformationContainer>
         )}
 
-        <HorizontalDivider/>
-
         <InstructionsContainer>
           <InstructionsTitle
             dangerouslySetInnerHTML={{ __html: instructionsText }}
@@ -268,7 +266,7 @@ const ButtonContainer = styled.div`
 const QRLabel = styled.div`
   font-size: 14px;
   text-align: center;
-  margin-top: -1rem;
+  padding-top: 10px;
   line-height: 1.5;
 `;
 
@@ -279,7 +277,7 @@ const GarantiInformationContainer = styled.div`
   gap: 1.5rem;
 `;
 
-const HorizontalDivider = styled.div`
-  width: 100%;
-  border-bottom: 1px solid ${colors.defaultBorderColor};
-`;
+// const HorizontalDivider = styled.div`
+//   width: 100%;
+//   border-bottom: 1px solid ${colors.defaultBorderColor};
+// `;
