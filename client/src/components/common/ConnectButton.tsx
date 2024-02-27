@@ -2,6 +2,7 @@ import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ENSName } from 'react-ens-name';
+import { usePrivy } from '@privy-io/react-auth';
 
 import { EthereumAvatar } from "@components/Account/Avatar";
 import { Button } from '@components/common/Button';
@@ -37,6 +38,8 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
     authenticatedLogout
   } = useAccount();
 
+  const { authenticated } = usePrivy();
+
   /*
    * State
    */
@@ -51,9 +54,15 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const onAccountLoginClick = () => {
-    if (authenticatedLogin) {
-      authenticatedLogin();
-    };
+    if (authenticated) {
+      if (authenticatedLogout) {
+        authenticatedLogout();
+      };
+    } else {
+      if (authenticatedLogin) {
+        authenticatedLogin();
+      };
+    }
   };
 
   const onWrongNetworkLogout = () => {

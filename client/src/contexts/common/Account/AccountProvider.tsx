@@ -83,8 +83,6 @@ const AccountProvider = ({ children }: ProvidersProps) => {
     } else {
       esl && console.log('loginStatus_5');
 
-      authenticatedLogout();
-
       setLoginStatus(LoginStatus.LOGGED_OUT);
     }
   }, [authenticated, user]);
