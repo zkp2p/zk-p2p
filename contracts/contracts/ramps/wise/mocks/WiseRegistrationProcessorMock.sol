@@ -1,10 +1,13 @@
 //SPDX-License-Identifier: MIT
 
-import { IRegistrationProcessor } from "../interfaces/IRegistrationProcessor.sol";
+import { IWiseRegistrationProcessor } from "../interfaces/IWiseRegistrationProcessor.sol";
+import { StringConversionUtils } from "../../../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 
-contract HDFCRegistrationProcessorMock is IRegistrationProcessor {
+contract HDFCRegistrationProcessorMock is IWiseRegistrationProcessor {
+
+    using StringConversionUtils for string;
 
     /* ============ Constructor ============ */
     constructor() {}
@@ -18,6 +21,6 @@ contract HDFCRegistrationProcessorMock is IRegistrationProcessor {
         override
         returns(bytes32 userIdHash)
     {
-        return(bytes32(_proof.signals[1]));
+        return(bytes32(_proof.public_values.accountId.stringToUint(0)));
     }
 }

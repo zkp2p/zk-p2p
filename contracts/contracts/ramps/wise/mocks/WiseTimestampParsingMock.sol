@@ -1,18 +1,18 @@
 //SPDX-License-Identifier: MIT
 
-import { HDFCTimestampParsing } from "../lib/HDFCTimestampParsing.sol";
+import { WiseTimestampParsing } from "../lib/WiseTimestampParsing.sol";
 
 pragma solidity ^0.8.18;
 
-contract HDFCTimestampParsingMock {
+contract WiseTimestampParsingMock {
 
     /**
      * @notice Iterates through every character in the date string and splits the string at each space or colon. Function will revert
      * if there are not 8 substrings formed from the split. The substrings are then converted to uints and passed to the DateTime lib
-     * to get the unix timestamp. This function is specific to the date format used by HDFC, not suitable for use with other date formats.
+     * to get the unix timestamp. This function is specific to the date format used by Wise, not suitable for use with other date formats.
      */
     function dateStringToTimestamp(string memory _dateString) external pure returns (uint256) {
-        return HDFCTimestampParsing._dateStringToTimestamp(_dateString);
+        return WiseTimestampParsing._dateStringToTimestamp(_dateString);
     }
 
     /**
@@ -25,10 +25,10 @@ contract HDFCTimestampParsingMock {
      * @param _timeOffsetString     The timezone offset string indicating the magnitude and direction of the timezone offset
      */
     function _calculateTimestampWithOffset(uint256 unOffsetTimestamp, string memory _timeOffsetString) external pure returns (uint256) {
-        return HDFCTimestampParsing._calculateTimestampWithOffset(unOffsetTimestamp, _timeOffsetString);
+        return WiseTimestampParsing._calculateTimestampWithOffset(unOffsetTimestamp, _timeOffsetString);
     }
 
     function _parseMonth(string memory _month) external pure returns (uint256) {
-        return HDFCTimestampParsing._parseMonth(_month);
+        return WiseTimestampParsing._parseMonth(_month);
     }
 }

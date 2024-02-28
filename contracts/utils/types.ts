@@ -63,3 +63,10 @@ export interface WiseSendProof {
   public_values: WiseSendData;
   proof: string;
 }
+
+export interface TLSParams {
+  notary: Address
+  endpoint: string;
+  endpointType: string;
+  host: string;
+}
