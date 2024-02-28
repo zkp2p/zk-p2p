@@ -17,6 +17,7 @@ export {
   Ramp,
   VenmoRampV2,
   StringConversionUtilsMock,
+  TLSBaseProcessor,
   USDCMock,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorV2,
@@ -24,4 +25,7 @@ export {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
+  WiseRamp,
+  WiseRegistrationProcessor,
+  WiseSendProcessor
 } from "../typechain";

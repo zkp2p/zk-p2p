@@ -14,3 +14,10 @@ export enum PaymentProviders {
   HDFC = "hdfc",
   Garanti = "garanti",
 }
+
+export interface TLSParams {
+  notary: Address
+  endpoint: string;
+  endpointType: string;
+  host: string;
+}

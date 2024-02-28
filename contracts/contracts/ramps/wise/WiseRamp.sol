@@ -6,10 +6,9 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Bytes32ArrayUtils } from "../../external/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
-import { IPoseidon3 } from "../../interfaces/IPoseidon3.sol";
-import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
-import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
-import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
+import { ITLSData } from "./interfaces/ITLSData.sol";
+import { IWiseRegistrationProcessor } from "./interfaces/IWiseRegistrationProcessor.sol";
+import { IWiseSendProcessor } from "./interfaces/IWiseSendProcessor.sol";
 
 pragma solidity ^0.8.18;
 
@@ -79,7 +78,8 @@ contract WiseRamp is Ownable {
 
     struct Deposit {
         address depositor;
-        uint256[8] upiId;
+        string wiseTag;
+        ITLSData.TLSParams tlsParams;       // TLS information including notary and endpoint / host being notarized
         uint256 depositAmount;              // Amount of USDC deposited
         bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -116,7 +116,7 @@ contract WiseRamp is Ownable {
 
     // A Global Account is defined as an account represented by one idHash. This is used to enforce limitations on actions across
     // all Ethereum addresses that are associated with that idHash. In this case we use it to enforce a cooldown period between on ramps,
-    // restrict each HDFC account to one outstanding intent at a time, and to enforce deny lists.
+    // restrict each Wise account to one outstanding intent at a time, and to enforce deny lists.
     struct GlobalAccountInfo {
         bytes32 currentIntentHash;          // Hash of the current open intent (if exists)
         uint256 lastOnrampTimestamp;        // Timestamp of the last on-ramp transaction used to check if cooldown period elapsed
@@ -137,10 +137,8 @@ contract WiseRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
-    IPoseidon3 public immutable poseidon3;                           // Poseidon hashing contract
-    IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
-    IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
-    IHDFCSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
+    IWiseRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
+    IWiseSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
     bool public isInitialized;                                      // Indicates if contract has been initialized
 
@@ -162,8 +160,6 @@ contract WiseRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
-        IPoseidon3 _poseidon3,
-        IPoseidon6 _poseidon6,
         uint256 _minDepositAmount,
         uint256 _maxOnRampAmount,
         uint256 _intentExpirationPeriod,
@@ -174,8 +170,6 @@ contract WiseRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
-        poseidon3 = _poseidon3;
-        poseidon6 = _poseidon6;
         minDepositAmount = _minDepositAmount;
         maxOnRampAmount = _maxOnRampAmount;
         intentExpirationPeriod = _intentExpirationPeriod;
@@ -195,8 +189,8 @@ contract WiseRamp is Ownable {
      * @param _sendProcessor            Send processor address
      */
     function initialize(
-        IRegistrationProcessor _registrationProcessor,
-        IHDFCSendProcessor _sendProcessor
+        IWiseRegistrationProcessor _registrationProcessor,
+        IWiseSendProcessor _sendProcessor
     )
         external
         onlyOwner
@@ -211,23 +205,17 @@ contract WiseRamp is Ownable {
 
     /**
      * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction. One HDFC account can be registered to multiple Ethereum addresses.
+     * sender of the transaction. One Wise account can be registered to multiple Ethereum addresses.
      *
-     * @param _a        Parameter of zk proof
-     * @param _b        Parameter of zk proof
-     * @param _c        Parameter of zk proof
-     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, userIdHash
+     * @param _proof    Registration proof consisting of unredacted data being notarized and a signature
      */
     function register(
-        uint[2] memory _a,
-        uint[2][2] memory _b,
-        uint[2] memory _c,
-        uint[5] memory _signals
+        IWiseRegistrationProcessor.RegistrationProof calldata _proof
     )
         external
     {
         require(accounts[msg.sender].idHash == bytes32(0), "Account already associated with idHash");
-        bytes32 idHash = _verifyRegistrationProof(_a, _b, _c, _signals);
+        bytes32 idHash = _verifyRegistrationProof(_proof);
 
         accounts[msg.sender].idHash = idHash;
 
@@ -239,16 +227,18 @@ contract WiseRamp is Ownable {
      * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount
      * of USDC.
      *
-     * @param _upiId                The packed upi ID of the depositor
+     * @param _wiseTag              Depositor's Wise tag to receive payments
      * @param _receiveCurrencyId    Id of the currency to be received off-chain
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
+     * @param _tlsParams            TLS information including notary and endpoint / host being notarized
      */
     function offRamp(
-        uint256[8] memory _upiId,
+        string calldata _wiseTag,
         bytes32 _receiveCurrencyId,
         uint256 _depositAmount,
-        uint256 _receiveAmount
+        uint256 _receiveAmount,
+        ITLSData.TLSParams calldata _tlsParams
     )
         external
         onlyRegisteredUser
@@ -265,18 +255,19 @@ contract WiseRamp is Ownable {
 
         deposits[depositId] = Deposit({
             depositor: msg.sender,
-            upiId: _upiId,
+            wiseTag: _wiseTag,
             receiveCurrencyId: _receiveCurrencyId,
             depositAmount: _depositAmount,
             remainingDeposits: _depositAmount,
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
-            intentHashes: new bytes32[](0)
+            intentHashes: new bytes32[](0),
+            tlsParams: _tlsParams
         });
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
 
-        emit DepositReceived(depositId, account.idHash, _depositAmount, conversionRate);
+        emit DepositReceived(depositId, account.idHash, _receiveCurrencyId, _depositAmount, conversionRate);
     }
 
     /**
@@ -368,33 +359,29 @@ contract WiseRamp is Ownable {
      * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
      * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
-     * @param _a        Parameter of zk proof
-     * @param _b        Parameter of zk proof
-     * @param _c        Parameter of zk proof
-     * @param _signals  Encoded public signals of the zk proof, contains mailserverHash, fromEmail, timestamp, onRamperIdHash,
-     *                  nullifier, intentHash
+     * @param _intentHash       Hash of the intent being fulfilled
+     * @param _sendData         Struct containing unredacted data from API call to Wise
+     * @param _notarySignature  Signature by notary of the unredacted data
      */
     function onRamp(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[15] memory _signals
+        bytes32 _intentHash,
+        IWiseSendProcessor.SendData calldata _sendData,
+        bytes calldata _notarySignature
     )
         external
     {
         (
             Intent memory intent,
-            Deposit storage deposit,
-            bytes32 intentHash
-        ) = _verifyOnRampProof(_a, _b, _c, _signals);
+            Deposit storage deposit
+        ) = _verifyOnRampProof(_sendData, _notarySignature, _intentHash);
 
-        _pruneIntent(deposit, intentHash);
+        _pruneIntent(deposit, _intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
         globalAccount[accounts[intent.onRamper].idHash].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        _transferFunds(intentHash, intent);
+        _transferFunds(_intentHash, intent);
     }
 
     /**
@@ -496,7 +483,7 @@ contract WiseRamp is Ownable {
      *
      * @param _sendProcessor   New send proccesor address
      */
-    function setSendProcessor(IHDFCSendProcessor _sendProcessor) external onlyOwner {
+    function setSendProcessor(IWiseSendProcessor _sendProcessor) external onlyOwner {
         sendProcessor = _sendProcessor;
         emit NewSendProcessorSet(address(_sendProcessor));
     }
@@ -506,7 +493,7 @@ contract WiseRamp is Ownable {
      *
      * @param _registrationProcessor   New registration proccesor address
      */
-    function setRegistrationProcessor(IRegistrationProcessor _registrationProcessor) external onlyOwner {
+    function setRegistrationProcessor(IWiseRegistrationProcessor _registrationProcessor) external onlyOwner {
         registrationProcessor = _registrationProcessor;
         emit NewRegistrationProcessorSet(address(_registrationProcessor));
     }
@@ -764,14 +751,16 @@ contract WiseRamp is Ownable {
      * was paid off-chain inclusive of the conversionRate.
      */
     function _verifyOnRampProof(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[15] memory _signals
+        IWiseSendProcessor.SendData calldata _data,
+        bytes calldata _notarySignature,
+        bytes32 _intentHash
     )
         internal
-        returns(Intent memory, Deposit storage, bytes32)
+        returns(Intent memory, Deposit storage)
     {
+        Intent memory intent = intents[_intentHash];
+        Deposit storage deposit = deposits[intent.deposit];
+
         (
             uint256 amount,
             uint256 timestamp,
@@ -779,65 +768,35 @@ contract WiseRamp is Ownable {
             bytes32 onRamperIdHash,
             bytes32 intentHash
         ) = sendProcessor.processProof(
-            IHDFCSendProcessor.SendProof({
-                a: _a,
-                b: _b,
-                c: _c,
-                signals: _signals
+            IWiseSendProcessor.SendProof({
+                public_values: _data,
+                expectedTLSParams: deposit.tlsParams,
+                proof: _notarySignature
             })
         );
 
-        Intent memory intent = intents[intentHash];
-        Deposit storage deposit = deposits[intent.deposit];
-
+        require(intentHash == _intentHash, "Intent hash does not match");
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(bytes32(_getUpiIdHash(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
+        require(accounts[deposit.depositor].idHash == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
-        return (intent, deposit, intentHash);
+        return (intent, deposit);
     }
 
     /**
-     * @notice Validate the user has an HDFC account, we do not nullify this email since it can be reused to register under
+     * @notice Validate the user has an Wise account, we do not nullify this email since it can be reused to register under
      * different addresses.
      */
     function _verifyRegistrationProof(
-        uint256[2] memory _a,
-        uint256[2][2] memory _b,
-        uint256[2] memory _c,
-        uint256[5] memory _signals
+        IWiseRegistrationProcessor.RegistrationProof calldata _proof
     )
         internal
         returns(bytes32)
     {
-        bytes32 idHash = registrationProcessor.processProof(
-            IRegistrationProcessor.RegistrationProof({
-                a: _a,
-                b: _b,
-                c: _c,
-                signals: _signals
-            })
-        );
+        bytes32 idHash = registrationProcessor.processProof(_proof);
 
         return idHash;
-    }
-
-    /**
-     * @notice Returns the poseidon hash of the given raw UPI ID    
-     */
-    function _getUpiIdHash(uint256[8] memory _upiId) internal view returns (bytes32) {
-        uint256[6] memory temp1;
-        uint256[3] memory temp2;
-
-        for (uint256 i = 0; i < 6; ++i) {
-            temp1[i] = _upiId[i];
-        }
-        temp2[0] = poseidon6.poseidon(temp1);
-        temp2[1] = _upiId[6];
-        temp2[2] = _upiId[7];
-
-        return bytes32(poseidon3.poseidon(temp2));
     }
 }

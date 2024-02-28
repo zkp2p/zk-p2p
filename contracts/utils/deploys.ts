@@ -1,6 +1,6 @@
 import { BigNumber, Signer, ethers } from "ethers";
 
-import { Address } from "@utils/types";
+import { Address, TLSParams } from "@utils/types";
 
 const circom = require("circomlibjs");
 
@@ -30,6 +30,9 @@ import {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
+  WiseRamp,
+  WiseRegistrationProcessor,
+  WiseSendProcessor
 } from "./contracts";
 import {
   GarantiRamp__factory,
@@ -57,6 +60,12 @@ import {
   VenmoRegistrationProcessorV2__factory,
   VenmoSendProcessorV2__factory,
 } from "../typechain/factories/contracts/ramps/venmo-v2";
+import {
+  WiseRamp__factory,
+  WiseRegistrationProcessor__factory,
+  WiseSendProcessor__factory,
+  mocks as wiseMocks
+} from "../typechain/factories/contracts/ramps/wise";
 import {
   StringConversionUtilsMock__factory,
   USDCMock__factory,
@@ -310,6 +319,55 @@ export default class DeployHelper {
 
   public async deployGarantiBodyHashVerifier(): Promise<GarantiBodyHashVerifier> {
     return await new GarantiBodyHashVerifier__factory(this._deployerSigner).deploy();
+  }
+
+  // Wise Contracts
+  public async deployWiseRamp(
+    owner: Address,
+    usdcToken: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<WiseRamp> {
+    return await new WiseRamp__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  public async deployWiseRegistrationProcessor(
+    ramp: Address,
+    nullifierRegistry: Address,
+    tlsParams: TLSParams,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<WiseRegistrationProcessor> {
+    return await new WiseRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      nullifierRegistry,
+      timestampBuffer,
+      tlsParams
+    );
+  }
+
+  public async deployWiseSendProcessor(
+    ramp: Address,
+    nullifierRegistry: Address,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<WiseSendProcessor> {
+    return await new WiseSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      nullifierRegistry,
+      timestampBuffer
+    );
   }
 
   public async deployManagedKeyHashAdapter(venmoKeyHash: string): Promise<ManagedKeyHashAdapter> {
