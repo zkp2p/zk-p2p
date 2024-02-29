@@ -25,6 +25,7 @@ import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_VENMO } from '@helper
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/venmo/useRampState';
+import useDenyList from '@hooks/useDenyList';
 
 import LiquidityContext from './LiquidityContext';
 
@@ -43,6 +44,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
+  const { fetchVenmoDepositoryDenyList } = useDenyList();
 
   /*
    * State
@@ -64,6 +66,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const fetchAndPruneDeposits = async (depositCounter: bigint, rampAddress: string) => {
     const existingPrunedIds = fetchStoredPrunedDepositIds(rampAddress);
     const depositIdsToFetch = initializeDepositIdsToFetch(depositCounter, existingPrunedIds);
+    const venmoDenyList = await fetchVenmoDepositoryDenyList();
 
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
@@ -91,8 +94,10 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     if (currentRampAddressRef.current === rampAddress) {
       const newPrunedDepositIds = [...existingPrunedIds, ...depositIdsToPrune];
       updateStoredPrunedIds(rampAddress, newPrunedDepositIds);
-  
-      setDeposits(batchedDeposits);
+
+      const venmoDenyListSet = new Set(venmoDenyList);
+      const filteredDeposits = batchedDeposits.filter(deposit => !venmoDenyListSet.has(deposit.deposit.venmoId.replace(/\0+$/, '')));
+      setDeposits(filteredDeposits);
     }
   };
 
