@@ -1084,9 +1084,9 @@ export const abi = [
             "type": "uint256[2]"
           },
           {
-            "internalType": "uint256[22]",
+            "internalType": "uint256[28]",
             "name": "signals",
-            "type": "uint256[22]"
+            "type": "uint256[28]"
           }
         ],
         "internalType": "struct IGarantiSendProcessor.SendProof",

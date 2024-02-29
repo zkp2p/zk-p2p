@@ -35,7 +35,7 @@ const strings: PlatformStrings = {
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
     Creating a new deposit requires you to submit your Garanti IBAN, the USDC liquidity to deposit, and
-    desired USDC/TRL conversion rate. You will receive TRL payments from users who claim your deposit.
+    desired USDC/TRY conversion rate. You will receive TRY payments from users who claim your deposit.
     Your Garanti IBAN will be made public on-chain.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
@@ -51,7 +51,7 @@ const strings: PlatformStrings = {
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
-    This is the amount of TRL you will receive if your entire deposit is claimed.
+    This is the amount of TRY you will receive if your entire deposit is claimed.
   `,
 
   // Instruction Drawer
@@ -73,10 +73,10 @@ const strings: PlatformStrings = {
     Send payment from your Garanti bank account. Do not send payment from any other bank accounts
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Garanti BBVA email notifications are enabled for your account
+    Garanti BBVA email notifications are enabled for your account and you have set the alert minimum to 1 TRY
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact TRL amount including decimals as displayed on the payment screen
+    Send the exact TRY amount including decimals as displayed on the payment screen
   `,
 
 };

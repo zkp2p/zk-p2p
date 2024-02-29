@@ -14,7 +14,7 @@ import useGoogleAuth from '@hooks/useGoogleAuth';
 import useProofGenSettings from '@hooks/useProofGenSettings';
 import { EmailInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 import { platformStrings } from "@helpers/strings";
-import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER } from '@helpers/constants';
+import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER, GARANTI_EMAIL_FULTER } from '@helpers/constants';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
 
 
@@ -166,7 +166,18 @@ export const MailTable: React.FC<MailTableProps> = ({
   };
 
   async function fetchData() {
-    const filter = paymentPlatform === PaymentPlatform.VENMO ? VENMO_EMAIL_FILTER : HDFC_EMAIL_FULTER;
+    let filter = '';
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        filter = VENMO_EMAIL_FILTER;
+        break;
+      case PaymentPlatform.HDFC:
+        filter = HDFC_EMAIL_FULTER;
+        break;
+      case PaymentPlatform.GARANTI:
+        filter = GARANTI_EMAIL_FULTER;
+        break;
+    }
 
     try {
       const emailListResponse = await fetchEmailList(googleAuthToken.access_token, {

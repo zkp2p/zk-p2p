@@ -39,7 +39,7 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
   [PaymentPlatform.GARANTI]: {
     platformId: PaymentPlatform.GARANTI,
     platformName: 'Garanti',
-    platformCurrency: 'TRL',
+    platformCurrency: 'TRY',
     flagSvg: turkeyFlagSvg
   }
 };

@@ -482,7 +482,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             value={receiveAmountInput}
             onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
             type="number"
-            inputLabel="TRL"
+            inputLabel="TRY"
             placeholder="31006"
             helperText={garantiStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
