@@ -17,7 +17,7 @@ export const abi = [
         "type": "address"
       },
       {
-        "internalType": "contract IGarantiBodyHashVerifier",
+        "internalType": "contract IGarantiBodySuffixHashVerifier",
         "name": "_bodyHashVerifier",
         "type": "address"
       },
@@ -59,7 +59,7 @@ export const abi = [
     "name": "bodyHashVerifier",
     "outputs": [
       {
-        "internalType": "contract IGarantiBodyHashVerifier",
+        "internalType": "contract IGarantiBodySuffixHashVerifier",
         "name": "",
         "type": "address"
       }
@@ -171,9 +171,9 @@ export const abi = [
             "type": "uint256[2]"
           },
           {
-            "internalType": "uint256[22]",
+            "internalType": "uint256[28]",
             "name": "signals",
-            "type": "uint256[22]"
+            "type": "uint256[28]"
           }
         ],
         "internalType": "struct IGarantiSendProcessor.SendProof",
@@ -203,7 +203,7 @@ export const abi = [
             "type": "uint256[4]"
           }
         ],
-        "internalType": "struct IGarantiBodyHashVerifier.BodyHashProof",
+        "internalType": "struct IGarantiBodySuffixHashVerifier.BodySuffixHashProof",
         "name": "_bodyHashProof",
         "type": "tuple"
       }
@@ -219,6 +219,11 @@ export const abi = [
         "internalType": "uint256",
         "name": "timestamp",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "offRamperNameHash",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes32",
@@ -342,9 +347,9 @@ export const abi = [
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[22]",
+        "internalType": "uint256[28]",
         "name": "_pubSignals",
-        "type": "uint256[22]"
+        "type": "uint256[28]"
       }
     ],
     "name": "verifyProof",
