@@ -471,13 +471,14 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     // Calculate SHA end selector.
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
-    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    const foundIndex = await findSelector(bodyRemaining, intermediateShaSelector);
+    let intermediateShaCutoffIndex = foundIndex - foundIndex % 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
 
-    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const bodyIntermediateLen = intermediateShaCutoffIndex;
     const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
     console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
 
@@ -515,13 +516,14 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
     // Calculate SHA end selector.
     const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
-    let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
+    const foundIndex = await findSelector(bodyRemaining, intermediateShaSelector);
+    let intermediateShaCutoffIndex = foundIndex - foundIndex % 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
     intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
     const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
 
-    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const bodyIntermediateLen = intermediateShaCutoffIndex;
     const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
     console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
 
