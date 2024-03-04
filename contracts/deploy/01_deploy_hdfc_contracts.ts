@@ -136,7 +136,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
   const network = hre.network.name;
   if (network != "localhost") {
-    try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
+    try { getDeployedContractAddress(hre.network.name, "HDFCRamp") } catch (e) {return false;}
     return true;
   }
   return false;
