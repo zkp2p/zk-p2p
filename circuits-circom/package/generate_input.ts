@@ -539,8 +539,8 @@ export async function getCircuitInputs(
     const garanti_payee_name_selector = Buffer.from("\r\n\t\t\t\t\t<strong>");
     const garanti_payee_name_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payee_name_selector) + garanti_payee_name_selector.length).toString();
 
-    const garanti_payee_acc_num_selector = Buffer.from("TR");
-    const garanti_payee_acc_num_idx = Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector).toString();
+    const garanti_payee_acc_num_selector = Buffer.from("<br>TR");
+    const garanti_payee_acc_num_idx = (Buffer.from(bodyRemaining).indexOf(garanti_payee_acc_num_selector) + "<br>".length).toString();
 
     const garanti_amount_selector = Buffer.from("<p>Tutar: <strong>");
     const garanti_amount_idx = (Buffer.from(bodyRemaining).indexOf(garanti_amount_selector) + garanti_amount_selector.length).toString();
