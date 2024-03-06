@@ -18,7 +18,7 @@ export const validateDKIMSignature = async (raw_email: string) => {
   for (const key of keys) {
     try {
       const result = await dkimVerify(email, { key: key });
-
+      console.log(result);
       if (!result.results[0]) {
         throw new Error(`No result found on dkim output ${result}`);
       }

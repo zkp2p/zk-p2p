@@ -271,6 +271,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             try {
               await validateGarantiDKIMSignature(emailFull);
             } catch (e) {
+              console.log(e);
               setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
               return;
             }
