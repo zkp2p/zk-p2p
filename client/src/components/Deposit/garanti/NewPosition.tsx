@@ -433,7 +433,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         </InstructionsAndTogglesContainer>
         <InputsContainer>
           <Input
-            label="Garanti IBAN"
+            label="IBAN"
             name={`garantiIban`}
             value={garantiIbanInput}
             onChange={(e) => {
@@ -446,7 +446,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           />
 
           <Input
-            label="Garanti Name"
+            label="IBAN Account Name"
             name={`garantiName`}
             value={garantiNameInput}
             onChange={(e) => {
