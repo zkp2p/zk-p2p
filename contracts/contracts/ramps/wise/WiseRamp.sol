@@ -73,6 +73,7 @@ contract WiseRamp is Ownable {
     // and is allowed to have at most 5 deposits associated with it.
     struct AccountInfo {
         bytes32 idHash;                     // Hash of payment processor id
+        bytes32 offRampId;                  // Multi-currency account ID to receive funds
         uint256[] deposits;                 // Array of open account deposits
     }
 
@@ -756,10 +757,10 @@ contract WiseRamp is Ownable {
         bytes32 _intentHash
     )
         internal
-        returns(Intent memory, Deposit storage)
+        returns(Intent storage intent, Deposit storage deposit)
     {
-        Intent memory intent = intents[_intentHash];
-        Deposit storage deposit = deposits[intent.deposit];
+        intent = intents[_intentHash];
+        deposit = deposits[intent.deposit];
 
         (
             uint256 amount,

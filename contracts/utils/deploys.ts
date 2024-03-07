@@ -32,7 +32,9 @@ import {
   VenmoSendProcessorV2,
   WiseRamp,
   WiseRegistrationProcessor,
-  WiseSendProcessor
+  WiseRegistrationProcessorMock,
+  WiseSendProcessor,
+  WiseSendProcessorMock
 } from "./contracts";
 import {
   GarantiRamp__factory,
@@ -408,6 +410,13 @@ export default class DeployHelper {
 
   public async deployGarantiRegistrationProcessorMock(): Promise<GarantiRegistrationProcessorMock> {
     return await new garantiMocks.GarantiRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
+  public async deployWiseSendProcessorMock(): Promise<WiseSendProcessorMock> {
+    return await new wiseMocks.WiseSendProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployWiseRegistrationProcessorMock(): Promise<WiseRegistrationProcessorMock> {
+    return await new wiseMocks.WiseRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
   public async deployPoseidon3(): Promise<any> {
     const contract = new ethers.ContractFactory(

@@ -41,6 +41,10 @@ export const calculateUpiIdHash = async (upiId: string): Promise<string> => {
   ).toHexString()
 }
 
+export const calculateWiseId = (wiseAccount: string): string => {
+  return ethers.utils.hexZeroPad(BigNumber.from(wiseAccount).toHexString(), 32)
+}
+
 export const calculateGarantiIdHash = async (garantiId: string): Promise<string> => {
   const poseidon = await buildPoseidon();
 

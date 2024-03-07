@@ -27,5 +27,7 @@ export {
   VenmoSendProcessorV2,
   WiseRamp,
   WiseRegistrationProcessor,
-  WiseSendProcessor
+  WiseRegistrationProcessorMock,
+  WiseSendProcessor,
+  WiseSendProcessorMock
 } from "../typechain";

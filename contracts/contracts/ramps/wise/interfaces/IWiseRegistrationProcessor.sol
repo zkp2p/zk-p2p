@@ -7,12 +7,10 @@ import { ITLSData } from "./ITLSData.sol";
 interface IWiseRegistrationProcessor {
 
     struct RegistrationData {
-        string accountId;
-        string activeKey;
-        string eligibleKey;
         string endpoint;
         string endpointType;
         string host;
+        string accountId;
     }
 
     struct RegistrationProof {
@@ -25,4 +23,10 @@ interface IWiseRegistrationProcessor {
     )
         external
     returns (bytes32);
+
+    // function processOffRampProof(
+    //     RegistrationProof calldata _proof
+    // )
+    //     external
+    // returns (bytes32);
 }

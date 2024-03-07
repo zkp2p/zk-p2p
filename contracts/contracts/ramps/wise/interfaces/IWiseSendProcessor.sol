@@ -7,18 +7,17 @@ import { ITLSData } from "./ITLSData.sol";
 interface IWiseSendProcessor {
 
     struct SendData {
+        string endpoint;
+        string endpointType;
+        string host;
         string transferId;
         string senderId;
         string recipientId;
         string timestamp;
         string currencyId;
         string amount;
+        string status;
         string intentHash;
-        string activeKey;
-        string eligibleKey;
-        string endpoint;
-        string endpointType;
-        string host;
     }
 
     struct SendProof {

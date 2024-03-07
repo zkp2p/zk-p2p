@@ -5,7 +5,7 @@ import { StringConversionUtils } from "../../../lib/StringConversionUtils.sol";
 
 pragma solidity ^0.8.18;
 
-contract HDFCRegistrationProcessorMock is IWiseRegistrationProcessor {
+contract WiseRegistrationProcessorMock is IWiseRegistrationProcessor {
 
     using StringConversionUtils for string;
 
