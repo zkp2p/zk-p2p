@@ -70,3 +70,35 @@ export interface TLSParams {
   endpointType: string;
   host: string;
 }
+
+export interface WiseRegistrationData {
+  endpoint: string;
+  endpointType: string;
+  host: string;
+  accountId: string;
+}
+
+export interface WiseRegistrationProof {
+  public_values: WiseRegistrationData;
+  proof: string;
+}
+
+export interface WiseSendData {
+  endpoint: string;
+  endpointType: string;
+  host: string;
+  transferId: string;
+  senderId: string;
+  recipientId: string;
+  timestamp: string;
+  currencyId: string;
+  amount: string;
+  status: string;
+  intentHash: string;
+}
+
+export interface WiseSendProof {
+  public_values: WiseSendData;
+  expectedTLSParams: TLSParams;
+  proof: string;
+}

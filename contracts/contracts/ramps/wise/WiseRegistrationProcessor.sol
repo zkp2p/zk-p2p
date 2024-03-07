@@ -55,9 +55,6 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
             "Invalid signature from notary"
         );
 
-        require(_proof.public_values.activeKey.stringComparison("true"), "Account is not active");
-        require(_proof.public_values.eligibleKey.stringComparison("true"), "Account is not eligible");
-
         ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
             notary: address(0),                     // Not checked in this function
             endpoint: _proof.public_values.endpoint,
