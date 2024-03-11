@@ -18,10 +18,10 @@ contract WiseRamp is Ownable {
     using Uint256ArrayUtils for uint256[];
 
     /* ============ Events ============ */
-    event AccountRegistered(address indexed accountOwner, bytes32 indexed idHash);
+    event AccountRegistered(address indexed accountOwner, bytes32 indexed onRampId, bytes32 indexed offRampId);
     event DepositReceived(
         uint256 indexed depositId,
-        bytes32 indexed idHash,
+        bytes32 indexed offRampId,
         bytes32 indexed currencyId,
         uint256 amount,
         uint256 conversionRate
@@ -29,7 +29,7 @@ contract WiseRamp is Ownable {
     event IntentSignaled(
         bytes32 indexed intentHash,
         uint256 indexed depositId,
-        bytes32 indexed idHash,
+        bytes32 indexed onRampId,
         address to,
         uint256 amount,
         uint256 timestamp
@@ -39,7 +39,6 @@ contract WiseRamp is Ownable {
         bytes32 indexed intentHash,
         uint256 indexed depositId
     );
-    // Do we want to emit the onRamper or the idHash
     event IntentFulfilled(
         bytes32 indexed intentHash,
         uint256 indexed depositId,
@@ -69,10 +68,10 @@ contract WiseRamp is Ownable {
 
     /* ============ Structs ============ */
 
-    // Each Account is tied to a GlobalAccount via its associated idHash. Each account is represented by an Ethereum address
+    // Each Account is tied to a GlobalAccount via its associated onRampId. Each account is represented by an Ethereum address
     // and is allowed to have at most 5 deposits associated with it.
     struct AccountInfo {
-        bytes32 idHash;                     // Hash of payment processor id
+        bytes32 onRampId;                   // Id of on-ramper
         bytes32 offRampId;                  // Multi-currency account ID to receive funds
         uint256[] deposits;                 // Array of open account deposits
     }
@@ -91,7 +90,7 @@ contract WiseRamp is Ownable {
 
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
-        bytes32 depositorIdHash;            // Depositor's idHash 
+        bytes32 depositorId;                // Depositor's offRampId 
         Deposit deposit;                    // Deposit struct
         uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
@@ -107,16 +106,16 @@ contract WiseRamp is Ownable {
     struct IntentWithOnRamperId {
         bytes32 intentHash;                 // Intent hash
         Intent intent;                      // Intent struct
-        bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's idHash
+        bytes32 onRamperId;                 // onRamper's onRamperId
     }
 
     struct DenyList {
-        bytes32[] deniedUsers;              // Array of idHashes that are denied from taking depositors liquidity
-        mapping(bytes32 => bool) isDenied;  // Mapping of idHash to boolean indicating if the user is denied
+        bytes32[] deniedUsers;              // Array of onRampIds that are denied from taking depositors liquidity
+        mapping(bytes32 => bool) isDenied;  // Mapping of onRampId to boolean indicating if the user is denied
     }
 
-    // A Global Account is defined as an account represented by one idHash. This is used to enforce limitations on actions across
-    // all Ethereum addresses that are associated with that idHash. In this case we use it to enforce a cooldown period between on ramps,
+    // A Global Account is defined as an account represented by one onRampId. This is used to enforce limitations on actions across
+    // all Ethereum addresses that are associated with that onRampId. In this case we use it to enforce a cooldown period between on ramps,
     // restrict each Wise account to one outstanding intent at a time, and to enforce deny lists.
     struct GlobalAccountInfo {
         bytes32 currentIntentHash;          // Hash of the current open intent (if exists)
@@ -126,7 +125,7 @@ contract WiseRamp is Ownable {
 
     /* ============ Modifiers ============ */
     modifier onlyRegisteredUser() {
-        require(accounts[msg.sender].idHash != bytes32(0), "Caller must be registered user");
+        require(accounts[msg.sender].onRampId != bytes32(0), "Caller must be registered user");
         _;
     }
 
@@ -138,13 +137,13 @@ contract WiseRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
-    IWiseRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
+    IWiseRegistrationProcessor public registrationProcessor;        // Address of registration processor contract, verifies registration e-mails
     IWiseSendProcessor public sendProcessor;                        // Address of send processor contract, verifies onRamp emails
 
     bool public isInitialized;                                      // Indicates if contract has been initialized
 
-    mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
-    mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)
+    mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of onRamp ID to information used to enforce actions across Ethereum accounts
+    mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (IDs and deposits)
     mapping(uint256 => Deposit) public deposits;                    // Mapping of depositIds to deposit structs
     mapping(bytes32 => Intent) public intents;                      // Mapping of intentHashes to intent structs
 
@@ -215,12 +214,16 @@ contract WiseRamp is Ownable {
     )
         external
     {
-        require(accounts[msg.sender].idHash == bytes32(0), "Account already associated with idHash");
-        bytes32 idHash = _verifyRegistrationProof(_proof);
+        require(accounts[msg.sender].onRampId == bytes32(0), "Account already associated with onRampId");
+        (
+            bytes32 onRampId,
+            bytes32 offRampId
+        ) = _verifyRegistrationProof(_proof);
 
-        accounts[msg.sender].idHash = idHash;
+        accounts[msg.sender].onRampId = onRampId;
+        accounts[msg.sender].offRampId = offRampId;
 
-        emit AccountRegistered(msg.sender, idHash);
+        emit AccountRegistered(msg.sender, onRampId, offRampId);
     }
 
     /**
@@ -268,13 +271,13 @@ contract WiseRamp is Ownable {
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
 
-        emit DepositReceived(depositId, account.idHash, _receiveCurrencyId, _depositAmount, conversionRate);
+        emit DepositReceived(depositId, account.onRampId, _receiveCurrencyId, _depositAmount, conversionRate);
     }
 
     /**
      * @notice Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain
      * in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of
-     * address (tracked using idHash). Caller must not be on the depositor's deny list. If there are prunable intents then
+     * address (tracked using onRampId). Caller must not be on the depositor's deny list. If there are prunable intents then
      * they will be deleted from the deposit to be able to maintain state hygiene.
      *
      * @param _depositId    The ID of the deposit the on-ramper intends to use for 
@@ -282,18 +285,18 @@ contract WiseRamp is Ownable {
      * @param _to           Address to forward funds to (can be same as onRamper)
      */
     function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {
-        bytes32 idHash = accounts[msg.sender].idHash;
+        bytes32 onRamperId = accounts[msg.sender].onRampId;
         Deposit storage deposit = deposits[_depositId];
-        bytes32 depositorIdHash = accounts[deposit.depositor].idHash;
+        bytes32 depositorId = accounts[deposit.depositor].onRampId;
 
         // Caller validity checks
-        require(!globalAccount[depositorIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
+        require(!globalAccount[depositorId].denyList.isDenied[onRamperId], "Onramper on depositor's denylist");
         require(
-            globalAccount[idHash].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
+            globalAccount[onRamperId].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
             "On ramp cool down period not elapsed"
         );
-        require(globalAccount[idHash].currentIntentHash == bytes32(0), "Intent still outstanding");
-        require(depositorIdHash != idHash, "Sender cannot be the depositor");
+        require(globalAccount[onRamperId].currentIntentHash == bytes32(0), "Intent still outstanding");
+        require(depositorId != onRamperId, "Sender cannot be the depositor");
 
         // Intent information checks
         require(deposit.depositor != address(0), "Deposit does not exist");
@@ -301,7 +304,7 @@ contract WiseRamp is Ownable {
         require(_amount <= maxOnRampAmount, "Signaled amount must be less than max on-ramp amount");
         require(_to != address(0), "Cannot send to zero address");
 
-        bytes32 intentHash = _calculateIntentHash(idHash, _depositId);
+        bytes32 intentHash = _calculateIntentHash(onRamperId, _depositId);
 
         if (deposit.remainingDeposits < _amount) {
             (
@@ -324,13 +327,13 @@ contract WiseRamp is Ownable {
             intentTimestamp: block.timestamp
         });
 
-        globalAccount[idHash].currentIntentHash = intentHash;
+        globalAccount[onRamperId].currentIntentHash = intentHash;
 
         deposit.remainingDeposits -= _amount;
         deposit.outstandingIntentAmount += _amount;
         deposit.intentHashes.push(intentHash);
 
-        emit IntentSignaled(intentHash, _depositId, idHash, _to, _amount, block.timestamp);
+        emit IntentSignaled(intentHash, _depositId, onRamperId, _to, _amount, block.timestamp);
     }
 
     /**
@@ -344,7 +347,7 @@ contract WiseRamp is Ownable {
         
         require(intent.intentTimestamp != 0, "Intent does not exist");
         require(
-            accounts[intent.onRamper].idHash == accounts[msg.sender].idHash,
+            accounts[intent.onRamper].onRampId == accounts[msg.sender].onRampId,
             "Sender must be the on-ramper"
         );
 
@@ -379,7 +382,7 @@ contract WiseRamp is Ownable {
         _pruneIntent(deposit, _intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
-        globalAccount[accounts[intent.onRamper].idHash].lastOnrampTimestamp = block.timestamp;
+        globalAccount[accounts[intent.onRamper].onRampId].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         _transferFunds(_intentHash, intent);
@@ -402,7 +405,7 @@ contract WiseRamp is Ownable {
         _pruneIntent(deposit, _intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
-        globalAccount[accounts[intent.onRamper].idHash].lastOnrampTimestamp = block.timestamp;
+        globalAccount[accounts[intent.onRamper].onRampId].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
         _transferFunds(_intentHash, intent);
@@ -445,13 +448,13 @@ contract WiseRamp is Ownable {
     }
 
     /**
-     * @notice Adds an idHash to a depositor's deny list. If an address associated with the banned idHash attempts to
+     * @notice Adds an onRampId to a depositor's deny list. If an address associated with the banned onRampId attempts to
      * signal an intent on the user's deposit they will be denied.
      *
-     * @param _deniedUser   Poseidon hash of the idHash being banned
+     * @param _deniedUser   onRampId being banned
      */
     function addAccountToDenylist(bytes32 _deniedUser) external onlyRegisteredUser {
-        bytes32 denyingUser = accounts[msg.sender].idHash;
+        bytes32 denyingUser = accounts[msg.sender].onRampId;
 
         require(!globalAccount[denyingUser].denyList.isDenied[_deniedUser], "User already on denylist");
 
@@ -462,12 +465,12 @@ contract WiseRamp is Ownable {
     }
 
     /**
-     * @notice Removes a idHash from a depositor's deny list.
+     * @notice Removes an onRampId from a depositor's deny list.
      *
-     * @param _approvedUser   Poseidon hash of the idHash being approved
+     * @param _approvedUser   onRampId being approved
      */
     function removeAccountFromDenylist(bytes32 _approvedUser) external onlyRegisteredUser {
-        bytes32 approvingUser = accounts[msg.sender].idHash;
+        bytes32 approvingUser = accounts[msg.sender].onRampId;
 
         require(globalAccount[approvingUser].denyList.isDenied[_approvedUser], "User not on denylist");
 
@@ -584,19 +587,19 @@ contract WiseRamp is Ownable {
     }
 
     function getIdCurrentIntentHash(address _account) external view returns (bytes32) {
-        return globalAccount[accounts[_account].idHash].currentIntentHash;
+        return globalAccount[accounts[_account].onRampId].currentIntentHash;
     }
 
     function getLastOnRampTimestamp(address _account) external view returns (uint256) {
-        return globalAccount[accounts[_account].idHash].lastOnrampTimestamp;
+        return globalAccount[accounts[_account].onRampId].lastOnrampTimestamp;
     }
 
     function getDeniedUsers(address _account) external view returns (bytes32[] memory) {
-        return globalAccount[accounts[_account].idHash].denyList.deniedUsers;
+        return globalAccount[accounts[_account].onRampId].denyList.deniedUsers;
     }
 
     function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {
-        return globalAccount[accounts[_account].idHash].denyList.isDenied[_deniedUser];
+        return globalAccount[accounts[_account].onRampId].denyList.isDenied[_deniedUser];
     }
 
     function getIntentsWithOnRamperId(bytes32[] calldata _intentHashes) external view returns (IntentWithOnRamperId[] memory) {
@@ -608,7 +611,7 @@ contract WiseRamp is Ownable {
             intentsWithOnRamperId[i] = IntentWithOnRamperId({
                 intentHash: _intentHashes[i],
                 intent: intent,
-                onRamperIdHash: accounts[intent.onRamper].idHash
+                onRamperId: accounts[intent.onRamper].onRampId
             });
         }
 
@@ -626,7 +629,7 @@ contract WiseRamp is Ownable {
 
             accountDeposits[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
-                depositorIdHash: accounts[deposit.depositor].idHash,
+                depositorId: accounts[deposit.depositor].onRampId,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -643,7 +646,7 @@ contract WiseRamp is Ownable {
 
             depositArray[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
-                depositorIdHash: accounts[deposit.depositor].idHash,
+                depositorId: accounts[deposit.depositor].onRampId,
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -658,7 +661,7 @@ contract WiseRamp is Ownable {
      * @notice Calculates the intentHash of new intent
      */
     function _calculateIntentHash(
-        bytes32 _idHash,
+        bytes32 _onRampId,
         uint256 _depositId
     )
         internal
@@ -667,7 +670,7 @@ contract WiseRamp is Ownable {
         returns (bytes32 intentHash)
     {
         // Mod with circom prime field to make sure it fits in a 254-bit field
-        uint256 intermediateHash = uint256(keccak256(abi.encodePacked(_idHash, _depositId, block.timestamp)));
+        uint256 intermediateHash = uint256(keccak256(abi.encodePacked(_onRampId, _depositId, block.timestamp)));
         intentHash = bytes32(intermediateHash % CIRCOM_PRIME_FIELD);
     }
 
@@ -709,7 +712,7 @@ contract WiseRamp is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
 
-        delete globalAccount[accounts[intent.onRamper].idHash].currentIntentHash;
+        delete globalAccount[accounts[intent.onRamper].onRampId].currentIntentHash;
         delete intents[_intentHash];
         _deposit.intentHashes.removeStorage(_intentHash);
 
@@ -748,7 +751,7 @@ contract WiseRamp is Ownable {
 
     /**
      * @notice Validate send payment email and check that it hasn't already been used (done on SendProcessor).
-     * Additionally, we validate that the offRamperIdHash matches the one from the specified intent and that enough
+     * Additionally, we validate that the offRamperId matches the one from the specified intent and that enough
      * was paid off-chain inclusive of the conversionRate.
      */
     function _verifyOnRampProof(
@@ -765,9 +768,10 @@ contract WiseRamp is Ownable {
         (
             uint256 amount,
             uint256 timestamp,
-            bytes32 offRamperIdHash,
-            bytes32 onRamperIdHash,
-            bytes32 intentHash
+            bytes32 offRamperId,
+            bytes32 onRamperId,
+            bytes32 intentHash,
+            bytes32 currencyId
         ) = sendProcessor.processProof(
             IWiseSendProcessor.SendProof({
                 public_values: _data,
@@ -777,10 +781,11 @@ contract WiseRamp is Ownable {
         );
 
         require(intentHash == _intentHash, "Intent hash does not match");
+        require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(accounts[deposit.depositor].idHash == offRamperIdHash, "Offramper id does not match");
-        require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
+        require(accounts[deposit.depositor].offRampId == offRamperId, "Offramper id does not match");
+        require(accounts[intent.onRamper].onRampId == onRamperId, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit);
@@ -794,10 +799,11 @@ contract WiseRamp is Ownable {
         IWiseRegistrationProcessor.RegistrationProof calldata _proof
     )
         internal
-        returns(bytes32)
+        returns(bytes32 onRampId, bytes32 offRampId)
     {
-        bytes32 idHash = registrationProcessor.processProof(_proof);
-
-        return idHash;
+        (
+            onRampId,
+            offRampId
+        ) = registrationProcessor.processProof(_proof);
     }
 }

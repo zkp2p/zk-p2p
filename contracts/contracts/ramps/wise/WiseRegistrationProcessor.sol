@@ -13,7 +13,7 @@ pragma solidity ^0.8.18;
 
 contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcessor {
 
-    using ECDSA for bytes;
+    using ECDSA for bytes32;
     using SignatureChecker for address;
     using StringConversionUtils for string;
     
@@ -47,25 +47,21 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         public
         override
         onlyRamp
-        returns(bytes32 userIdHash)
+        returns(bytes32 onRampId, bytes32 offRampId)
     {
-        bytes32 notaryPayload = abi.encode(_proof.public_values).toEthSignedMessageHash();
-        require(
-            tlsParams.notary.isValidSignatureNow(notaryPayload, _proof.proof),
-            "Invalid signature from notary"
-        );
+        _validateNotarySignature(_proof.public_values, _proof.proof);
 
         ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                     // Not checked in this function
+            notary: address(0),                                 // Notary not checked in validateTLSParams
             endpoint: _proof.public_values.endpoint,
-            endpointType: _proof.public_values.endpointType,
             host: _proof.public_values.host
         });
 
         _validateTLSParams(tlsParams, passedTLSParams);
-        _validateAndAddNullifier(keccak256(abi.encodePacked("registration", _proof.public_values.accountId)));
+        _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.profileId)));
 
-        return bytes32(_proof.public_values.accountId.stringToUint(0));
+        onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
+        offRampId = bytes32(_proof.public_values.mcAccountId.stringToUint(0));
     }
 
     /* ============ External Admin Functions ============ */
@@ -74,5 +70,29 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         tlsParams = _tlsParams;
 
         emit TLSParamsSet(_tlsParams);
+    }
+
+    /* ============ External Getters ============ */
+
+    function getTLSParams() external view returns(ITLSData.TLSParams memory) {
+        return tlsParams;
+    }
+
+    /* ============ Internal Functions ============ */
+
+    function _validateNotarySignature(
+        IWiseRegistrationProcessor.RegistrationData memory _publicValues, 
+        bytes memory _proof
+    )
+        internal
+        view
+    {   
+        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
+        bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
+
+        require(
+            tlsParams.notary.isValidSignatureNow(notaryPayload, _proof),
+            "Invalid signature from notary"
+        );
     }
 }

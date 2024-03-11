@@ -62,10 +62,6 @@ contract TLSBaseProcessor is Ownable {
             "Passed endpoint doesn't match expected"
         );
         require(
-            keccak256(abi.encode(_expectedParams.endpointType)) == keccak256(abi.encode(_passedParams.endpointType)),
-            "Passed endpoint type doesn't match expected"
-        );
-        require(
             keccak256(abi.encode(_expectedParams.host)) == keccak256(abi.encode(_passedParams.host)),
             "Passed host doesn't match expected"
         );

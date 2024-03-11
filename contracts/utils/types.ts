@@ -18,15 +18,14 @@ export enum PaymentProviders {
 export interface TLSParams {
   notary: Address
   endpoint: string;
-  endpointType: string;
   host: string;
 }
 
 export interface WiseRegistrationData {
   endpoint: string;
-  endpointType: string;
   host: string;
-  accountId: string;
+  profileId: string;
+  mcAccountId: string;
 }
 
 export interface WiseRegistrationProof {
@@ -36,7 +35,6 @@ export interface WiseRegistrationProof {
 
 export interface WiseSendData {
   endpoint: string;
-  endpointType: string;
   host: string;
   transferId: string;
   senderId: string;

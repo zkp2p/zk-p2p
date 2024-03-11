@@ -19,14 +19,22 @@ contract WiseSendProcessorMock is IWiseSendProcessor {
         public
         pure
         override
-        returns(uint256 amount, uint256 timestamp, bytes32 offRamperIdHash, bytes32 onRamperIdHash, bytes32 intentHash)
+        returns(
+            uint256 amount,
+            uint256 timestamp,
+            bytes32 offRamperIdHash,
+            bytes32 onRamperIdHash,
+            bytes32 intentHash,
+            bytes32 currencyId
+        )
     {
         return(
             _proof.public_values.amount.stringToUint(6),
             _proof.public_values.timestamp.stringToUint(0),
             bytes32(_proof.public_values.recipientId.stringToUint(0)),
             bytes32(_proof.public_values.senderId.stringToUint(0)),
-            bytes32(_proof.public_values.intentHash.stringToUint(0))
+            bytes32(_proof.public_values.intentHash.stringToUint(0)),
+            keccak256(abi.encodePacked(_proof.public_values.currencyId))
         );
     }
 }

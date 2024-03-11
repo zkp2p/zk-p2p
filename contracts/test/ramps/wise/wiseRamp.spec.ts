@@ -24,7 +24,6 @@ import { ZERO, ZERO_BYTES32, ADDRESS_ZERO, ONE } from "@utils/constants";
 import { calculateIntentHash, calculateWiseId } from "@utils/protocolUtils";
 import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 import { WiseRegistrationData, WiseRegistrationProof } from "@utils/types";
-import { on } from "stream";
 
 const expect = getWaffleExpect();
 
@@ -169,10 +168,10 @@ describe("WiseRamp", () => {
       await ramp.initialize(registrationProcessor.address, sendProcessor.address);
 
       const registerPublicValues = {
-        endpoint: "https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
-        endpointType: "GET",
+        endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
-        accountId: "405394441"
+        profileId: "405394441",
+        mcAccountId: "405798342",
       } as WiseRegistrationData
 
       subjectProof = {
@@ -189,17 +188,17 @@ describe("WiseRamp", () => {
 
     it("should register the caller", async () => {
       await subject();
+      const accountInfo = await ramp.getAccountInfo(subjectCaller.address);
 
-      const offRamperId = (await ramp.getAccountInfo(subjectCaller.address)).idHash;
-      expect(offRamperId).to.eq(
-        calculateWiseId(subjectProof.public_values.accountId)
-      );
+      expect(accountInfo.onRampId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
+      expect(accountInfo.offRampId).to.eq(calculateWiseId(subjectProof.public_values.mcAccountId));
     });
 
     it("should emit an AccountRegistered event", async () => {
       await expect(subject()).to.emit(ramp, "AccountRegistered").withArgs(
         subjectCaller.address,
-        calculateWiseId(subjectProof.public_values.accountId)
+        calculateWiseId(subjectProof.public_values.profileId),
+        calculateWiseId(subjectProof.public_values.mcAccountId)
       );
     });
 
@@ -207,11 +206,11 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await subject();
 
-        subjectProof.public_values.accountId = "455324471";
+        subjectProof.public_values.profileId = "455324471";
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Account already associated with idHash");
+        await expect(subject()).to.be.revertedWith("Account already associated with onRampId");
       });
     });
   });
@@ -226,20 +225,20 @@ describe("WiseRamp", () => {
       await ramp.initialize(registrationProcessor.address, sendProcessor.address);
 
       const standardRegistrationData: WiseRegistrationData = {
-        endpoint: "https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
-        endpointType: "GET",
+        endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
-        accountId: ""
+        profileId: "",
+        mcAccountId: ""
       }
 
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      offRamperProof.public_values.accountId = "012345678";
+      offRamperProof.public_values.profileId = "012345678";
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperProof.public_values.accountId = "123456789";
+      onRamperProof.public_values.profileId = "123456789";
       onRamperTwoProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperTwoProof.public_values.accountId = "567890123";
+      onRamperTwoProof.public_values.profileId = "567890123";
       maliciousOnRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      maliciousOnRamperProof.public_values.accountId = "123456789";
+      maliciousOnRamperProof.public_values.profileId = "123456789";
 
       await ramp.connect(offRamper.wallet).register(offRamperProof);
       await ramp.connect(onRamper.wallet).register(onRamperProof);
@@ -259,13 +258,12 @@ describe("WiseRamp", () => {
 
       beforeEach(async () => {
         subjectWiseTag = "jdoe1234";
-        subjectReceiveCurrencyId = ethers.utils.formatBytes32String("EUR");
+        subjectReceiveCurrencyId = ethers.utils.solidityKeccak256(["string"], ["EUR"]);
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(92);
         subjectTlsParams = {
           notary: notary.address,
-          endpoint: "https://api.transferwise.com/v1/quotes",
-          endpointType: "POST",
+          endpoint: "POST https://api.transferwise.com/v1/quotes",
           host: "api.transferwise.com",
         } as TLSParams;
 
@@ -381,13 +379,12 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
@@ -406,7 +403,7 @@ describe("WiseRamp", () => {
         await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), subjectDepositId, currentTimestamp);
 
         const intent = await ramp.intents(intentHash);
 
@@ -422,7 +419,7 @@ describe("WiseRamp", () => {
 
         await subject();
 
-        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), subjectDepositId, await blockchain.getCurrentTimestamp());
+        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), subjectDepositId, await blockchain.getCurrentTimestamp());
 
         const postDeposit = await ramp.getDeposit(subjectDepositId);
 
@@ -435,7 +432,7 @@ describe("WiseRamp", () => {
         await subject();
 
         const expectedIntentHash = calculateIntentHash(
-          calculateWiseId(onRamperProof.public_values.accountId),
+          calculateWiseId(onRamperProof.public_values.profileId),
           subjectDepositId,
           await blockchain.getCurrentTimestamp()
         );
@@ -449,12 +446,12 @@ describe("WiseRamp", () => {
         const txn = await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), subjectDepositId, currentTimestamp);
 
         expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
           intentHash,
           subjectDepositId,
-          calculateWiseId(onRamperProof.public_values.accountId),
+          calculateWiseId(onRamperProof.public_values.profileId),
           subjectTo,
           subjectAmount,
           currentTimestamp
@@ -473,7 +470,7 @@ describe("WiseRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          oldIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), subjectDepositId, currentTimestamp);
+          oldIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), subjectDepositId, currentTimestamp);
 
           await blockchain.increaseTimeAsync(timeJump);
 
@@ -488,7 +485,7 @@ describe("WiseRamp", () => {
 
           await subject();
 
-          const newIntentHash = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.accountId), subjectDepositId, await blockchain.getCurrentTimestamp());
+          const newIntentHash = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.profileId), subjectDepositId, await blockchain.getCurrentTimestamp());
           const postDeposit = await ramp.getDeposit(subjectDepositId);
 
           expect(postDeposit.outstandingIntentAmount).to.eq(subjectAmount);
@@ -512,7 +509,7 @@ describe("WiseRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.accountId), subjectDepositId, currentTimestamp);
+          const intentHash = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.profileId), subjectDepositId, currentTimestamp);
 
           const intent = await ramp.intents(intentHash);
 
@@ -526,7 +523,7 @@ describe("WiseRamp", () => {
           await subject();
 
           const expectedIntentHash = calculateIntentHash(
-            calculateWiseId(onRamperTwoProof.public_values.accountId),
+            calculateWiseId(onRamperTwoProof.public_values.profileId),
             subjectDepositId,
             await blockchain.getCurrentTimestamp()
           );
@@ -557,7 +554,7 @@ describe("WiseRamp", () => {
 
       describe("when the caller is on the depositor's denylist", async () => {
         beforeEach(async () => {
-          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateWiseId(onRamperProof.public_values.accountId));
+          await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateWiseId(onRamperProof.public_values.profileId));
         });
 
         it("should revert", async () => {
@@ -634,17 +631,17 @@ describe("WiseRamp", () => {
           const depositId = (await ramp.depositCounter()).sub(1);
   
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), depositId, currentTimestamp);
+          const intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
           
           const sendData = {
             endpoint: "https://api.transferwise.com/v1/quotes",
             endpointType: "POST",
             host: "api.transferwise.com",
             transferId: "736281573",
-            senderId: onRamperProof.public_values.accountId,
-            recipientId: offRamperProof.public_values.accountId,
+            senderId: onRamperProof.public_values.profileId,
+            recipientId: offRamperProof.public_values.mcAccountId,
             timestamp: currentTimestamp.toString(),
-            currencyId: ethers.utils.formatBytes32String("EUR"),
+            currencyId: "EUR",
             amount: "46.00",
             status: "outgoing_payment_sent",
             intentHash: BigNumber.from(intentHash).toString()
@@ -701,18 +698,17 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(101),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
-        const idHash = calculateWiseId(onRamperProof.public_values.accountId);
+        const idHash = calculateWiseId(onRamperProof.public_values.profileId);
         depositId = ZERO;
 
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
@@ -841,34 +837,32 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         depositId = (await ramp.depositCounter()).sub(1);
 
-        const idHash = calculateWiseId(onRamperProof.public_values.accountId);
+        const idHash = calculateWiseId(onRamperProof.public_values.profileId);
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
         subjectIntentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
         
         subjectSendData = {
-          endpoint: "https://api.transferwise.com/v1/quotes",
-          endpointType: "POST",
+          endpoint: "POST https://api.transferwise.com/v1/quotes",
           host: "api.transferwise.com",
           transferId: "736281573",
-          senderId: onRamperProof.public_values.accountId,
-          recipientId: offRamperProof.public_values.accountId,
+          senderId: onRamperProof.public_values.profileId,
+          recipientId: offRamperProof.public_values.mcAccountId,
           timestamp: currentTimestamp.toString(),
-          currencyId: ethers.utils.formatBytes32String("EUR"),
+          currencyId: "EUR",
           amount: "46.00",
           status: "outgoing_payment_sent",
           intentHash: BigNumber.from(subjectIntentHash).toString()
@@ -979,7 +973,7 @@ describe("WiseRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), depositId, currentTimestamp);
+          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
 
           subjectSendData.timestamp = currentTimestamp.toString();
           subjectSendData.intentHash = BigNumber.from(subjectIntentHash).toString()
@@ -1044,7 +1038,7 @@ describe("WiseRamp", () => {
 
       describe("when the onRamperIdHash doesn't match the intent", async () => {
         beforeEach(async () => {
-          subjectSendData.senderId = calculateWiseId(onRamperTwoProof.public_values.accountId);
+          subjectSendData.senderId = calculateWiseId(onRamperTwoProof.public_values.profileId);
         });
 
         it("should revert", async () => {
@@ -1062,20 +1056,19 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         depositId = (await ramp.depositCounter()).sub(1);
 
-        const idHash = calculateWiseId(onRamperProof.public_values.accountId);
+        const idHash = calculateWiseId(onRamperProof.public_values.profileId);
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
@@ -1185,7 +1178,7 @@ describe("WiseRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), depositId, currentTimestamp);
+          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
         });
 
         it("should prune the deposit", async () => {
@@ -1207,7 +1200,7 @@ describe("WiseRamp", () => {
 
       describe("when the intent does not exist", async () => {
         beforeEach(async () => {
-          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), depositId, ONE);
+          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, ONE);
         });
 
         it("should revert", async () => {
@@ -1233,26 +1226,24 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(50),
           usdc(45),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
@@ -1438,7 +1429,7 @@ describe("WiseRamp", () => {
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        subjectDeniedUser = calculateWiseId(onRamperProof.public_values.accountId);
+        subjectDeniedUser = calculateWiseId(onRamperProof.public_values.profileId);
         subjectCaller = offRamper;
       });
 
@@ -1460,8 +1451,8 @@ describe("WiseRamp", () => {
         const tx = await subject();
 
         expect(tx).to.emit(ramp, "UserAddedToDenylist").withArgs(
-          calculateWiseId(offRamperProof.public_values.accountId),
-          calculateWiseId(onRamperProof.public_values.accountId)
+          calculateWiseId(offRamperProof.public_values.profileId),
+          calculateWiseId(onRamperProof.public_values.profileId)
         );
       });
 
@@ -1491,9 +1482,9 @@ describe("WiseRamp", () => {
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateWiseId(onRamperProof.public_values.accountId));
+        await ramp.connect(offRamper.wallet).addAccountToDenylist(calculateWiseId(onRamperProof.public_values.profileId));
 
-        subjectApprovedUser = calculateWiseId(onRamperProof.public_values.accountId);
+        subjectApprovedUser = calculateWiseId(onRamperProof.public_values.profileId);
         subjectCaller = offRamper;
       });
 
@@ -1519,8 +1510,8 @@ describe("WiseRamp", () => {
         const tx = await subject();
 
         expect(tx).to.emit(ramp, "UserRemovedFromDenylist").withArgs(
-          calculateWiseId(offRamperProof.public_values.accountId),
-          calculateWiseId(onRamperProof.public_values.accountId)
+          calculateWiseId(offRamperProof.public_values.profileId),
+          calculateWiseId(onRamperProof.public_values.profileId)
         );
       });
 
@@ -1928,14 +1919,13 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         tlsParams =           {
           notary: notary.address,
-          endpoint: "https://api.transferwise.com/v1/quotes",
-          endpointType: "POST",
+          endpoint: "POST https://api.transferwise.com/v1/quotes",
           host: "api.transferwise.com",
         };
 
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           tlsParams
@@ -1943,14 +1933,14 @@ describe("WiseRamp", () => {
 
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
           tlsParams
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), ONE, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), ONE, await blockchain.getCurrentTimestamp());
 
         subjectAccount = offRamper.address;
       });
@@ -1979,8 +1969,8 @@ describe("WiseRamp", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(JSON.stringify(deposits[0].deposit.tlsParams)).to.eq(JSON.stringify(Object.values(tlsParams)));
         expect(JSON.stringify(deposits[1].deposit.tlsParams)).to.eq(JSON.stringify(Object.values(tlsParams)));
-        expect(deposits[0].depositorIdHash).to.eq(calculateWiseId(offRamperProof.public_values.accountId));
-        expect(deposits[1].depositorIdHash).to.eq(calculateWiseId(offRamperProof.public_values.accountId));
+        expect(deposits[0].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
+        expect(deposits[1].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
@@ -2001,7 +1991,7 @@ describe("WiseRamp", () => {
       });
     });
 
-    describe.only("#getDepositFromIds", async () => {
+    describe("#getDepositFromIds", async () => {
       let subjectDepositIds: BigNumber[];
 
       let intentHash: string;
@@ -2009,32 +1999,30 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), ONE, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), ONE, await blockchain.getCurrentTimestamp());
 
 
         subjectDepositIds = [ZERO, ONE];
@@ -2062,8 +2050,8 @@ describe("WiseRamp", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
-        expect(deposits[0].depositorIdHash).to.eq(calculateWiseId(offRamperProof.public_values.accountId));
-        expect(deposits[1].depositorIdHash).to.eq(calculateWiseId(offRamperProof.public_values.accountId));
+        expect(deposits[0].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
+        expect(deposits[1].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
         expect(JSON.stringify(deposits[0].deposit.intentHashes)).to.eq(JSON.stringify([]));
@@ -2090,21 +2078,20 @@ describe("WiseRamp", () => {
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
           "jdoe1234",
-          ethers.utils.formatBytes32String("EUR"),
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
           {
             notary: notary.address,
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
+            endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           }
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
-        const intentHashOne = calculateIntentHash(calculateWiseId(onRamperProof.public_values.accountId), ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashOne = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), ZERO, await blockchain.getCurrentTimestamp());
         await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40), receiver.address);
-        const intentHashTwo = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.accountId), ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashTwo = calculateIntentHash(calculateWiseId(onRamperTwoProof.public_values.profileId), ZERO, await blockchain.getCurrentTimestamp());
 
         subjectIntentHashes = [intentHashOne, intentHashTwo];
       });
@@ -2122,8 +2109,8 @@ describe("WiseRamp", () => {
         expect(intents[1].intent.deposit).to.eq(ZERO);
         expect(intents[0].intent.amount).to.eq(usdc(50));
         expect(intents[1].intent.amount).to.eq(usdc(40));
-        expect(intents[0].onRamperIdHash).to.eq(calculateWiseId(onRamperProof.public_values.accountId));
-        expect(intents[1].onRamperIdHash).to.eq(calculateWiseId(onRamperTwoProof.public_values.accountId));
+        expect(intents[0].onRamperId).to.eq(calculateWiseId(onRamperProof.public_values.profileId));
+        expect(intents[1].onRamperId).to.eq(calculateWiseId(onRamperTwoProof.public_values.profileId));
         expect(intents[0].intentHash).to.eq(subjectIntentHashes[0]);
         expect(intents[1].intentHash).to.eq(subjectIntentHashes[1]);
       });

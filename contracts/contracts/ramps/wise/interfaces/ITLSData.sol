@@ -6,7 +6,6 @@ interface ITLSData {
     struct TLSParams {
         address notary;
         string endpoint;
-        string endpointType;
         string host;
     }
 }

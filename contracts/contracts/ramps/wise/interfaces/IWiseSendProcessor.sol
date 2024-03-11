@@ -8,7 +8,6 @@ interface IWiseSendProcessor {
 
     struct SendData {
         string endpoint;
-        string endpointType;
         string host;
         string transferId;
         string senderId;
@@ -30,5 +29,5 @@ interface IWiseSendProcessor {
         SendProof calldata _proof
     )
         external
-    returns(uint256, uint256, bytes32, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32, bytes32, bytes32);
 }
