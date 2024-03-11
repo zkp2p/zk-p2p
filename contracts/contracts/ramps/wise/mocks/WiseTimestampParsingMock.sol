@@ -14,21 +14,4 @@ contract WiseTimestampParsingMock {
     function dateStringToTimestamp(string memory _dateString) external pure returns (uint256) {
         return WiseTimestampParsing._dateStringToTimestamp(_dateString);
     }
-
-    /**
-     * @notice Adds or subtracts an offset from the calculated unOffset timestamp based on the timezone offset string. The timezone offset
-     * string is of the format "+0530" or "-0530" where the first character is either a "+" or a "-" and the next 4 characters are hhmm. If
-     * the _timeOffsetString is "+0530" then we subtract 5 hours and 30 minutes (19800s) from the unOffset timestamp, to get a GMT timestamp.
-     * We constrain the _timeOffsetString to be 5 characters long to be of the format +/-hhmm.
-     *
-     * @param unOffsetTimestamp     The unix timestamp without any timezone offset applied
-     * @param _timeOffsetString     The timezone offset string indicating the magnitude and direction of the timezone offset
-     */
-    function _calculateTimestampWithOffset(uint256 unOffsetTimestamp, string memory _timeOffsetString) external pure returns (uint256) {
-        return WiseTimestampParsing._calculateTimestampWithOffset(unOffsetTimestamp, _timeOffsetString);
-    }
-
-    function _parseMonth(string memory _month) external pure returns (uint256) {
-        return WiseTimestampParsing._parseMonth(_month);
-    }
 }

@@ -8,9 +8,9 @@ interface IWiseRegistrationProcessor {
 
     struct RegistrationData {
         string endpoint;
-        string endpointType;
         string host;
-        string accountId;
+        string profileId;
+        string mcAccountId;
     }
 
     struct RegistrationProof {
@@ -22,7 +22,7 @@ interface IWiseRegistrationProcessor {
         RegistrationProof calldata _proof
     )
         external
-    returns (bytes32);
+    returns (bytes32, bytes32);
 
     // function processOffRampProof(
     //     RegistrationProof calldata _proof

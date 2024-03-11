@@ -19,8 +19,11 @@ contract WiseRegistrationProcessorMock is IWiseRegistrationProcessor {
         public
         pure
         override
-        returns(bytes32 userIdHash)
+        returns(bytes32 onRampId, bytes32 offRampId)
     {
-        return(bytes32(_proof.public_values.accountId.stringToUint(0)));
+        return(
+            bytes32(_proof.public_values.profileId.stringToUint(0)),
+            bytes32(_proof.public_values.mcAccountId.stringToUint(0))
+        );
     }
 }
