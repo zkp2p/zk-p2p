@@ -74,11 +74,23 @@ export interface WiseRegistrationData {
   endpoint: string;
   host: string;
   profileId: string;
-  mcAccountId: string;
+  wiseTagHash: string;
 }
 
 export interface WiseRegistrationProof {
   public_values: WiseRegistrationData;
+  proof: string;
+}
+
+export interface WiseOffRamperRegistrationData {
+  endpoint: string;
+  host: string;
+  profileId: string;
+  mcAccountId: string;
+}
+
+export interface WiseOffRamperRegistrationProof {
+  public_values: WiseOffRamperRegistrationData;
   proof: string;
 }
 

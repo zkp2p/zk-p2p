@@ -10,7 +10,7 @@ interface IWiseRegistrationProcessor {
         string endpoint;
         string host;
         string profileId;
-        string mcAccountId;
+        string wiseTagHash;
     }
 
     struct RegistrationProof {
@@ -18,15 +18,27 @@ interface IWiseRegistrationProcessor {
         bytes proof;
     }
 
-    function processProof(
+    struct OffRamperRegistrationData {
+        string endpoint;
+        string host;
+        string profileId;
+        string mcAccountId;
+    }
+
+    struct OffRamperRegistrationProof {
+        OffRamperRegistrationData public_values;
+        bytes proof;
+    }
+
+    function processAccountProof(
         RegistrationProof calldata _proof
     )
         external
     returns (bytes32, bytes32);
 
-    // function processOffRampProof(
-    //     RegistrationProof calldata _proof
-    // )
-    //     external
-    // returns (bytes32);
+    function processOffRamperProof(
+        OffRamperRegistrationProof calldata _proof
+    )
+        external
+    returns (bytes32, bytes32);
 }

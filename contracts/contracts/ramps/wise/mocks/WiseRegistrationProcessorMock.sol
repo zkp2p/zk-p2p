@@ -13,8 +13,23 @@ contract WiseRegistrationProcessorMock is IWiseRegistrationProcessor {
     constructor() {}
 
     /* ============ External View Functions ============ */
-    function processProof(
+    function processAccountProof(
         RegistrationProof calldata _proof
+    )
+        public
+        pure
+        override
+        returns(bytes32 onRampId, bytes32 wiseTagHash)
+    {
+        return(
+            bytes32(_proof.public_values.profileId.stringToUint(0)),
+            bytes32(_proof.public_values.wiseTagHash.stringToUint(0))
+        );
+    }
+
+
+    function processOffRamperProof(
+        OffRamperRegistrationProof calldata _proof
     )
         public
         pure
