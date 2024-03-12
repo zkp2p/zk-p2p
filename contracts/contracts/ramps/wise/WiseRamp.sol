@@ -18,7 +18,8 @@ contract WiseRamp is Ownable {
     using Uint256ArrayUtils for uint256[];
 
     /* ============ Events ============ */
-    event AccountRegistered(address indexed accountOwner, bytes32 indexed onRampId, bytes32 indexed offRampId);
+    event AccountRegistered(address indexed accountOwner, bytes32 indexed onRampId, bytes32 indexed wiseTagHash);
+    event OffRamperRegistered(address indexed accountOwner, bytes32 indexed onRampId, bytes32 indexed offRampId);
     event DepositReceived(
         uint256 indexed depositId,
         bytes32 indexed offRampId,
@@ -73,6 +74,7 @@ contract WiseRamp is Ownable {
     struct AccountInfo {
         bytes32 onRampId;                   // Id of on-ramper
         bytes32 offRampId;                  // Multi-currency account ID to receive funds
+        bytes32 wiseTagHash;                // Hash of user's wise tag account stored on register. Used to verify offramper's wise tag
         uint256[] deposits;                 // Array of open account deposits
     }
 
@@ -204,8 +206,8 @@ contract WiseRamp is Ownable {
     }
 
     /**
-     * @notice Registers a new account by pulling the hash of the account id from the proof and assigning the account owner to the
-     * sender of the transaction. One Wise account can be registered to multiple Ethereum addresses.
+     * @notice Registers a new account by pulling the profileId from the proof and assigning the account owner to the
+     * sender of the transaction.
      *
      * @param _proof    Registration proof consisting of unredacted data being notarized and a signature
      */
@@ -217,13 +219,37 @@ contract WiseRamp is Ownable {
         require(accounts[msg.sender].onRampId == bytes32(0), "Account already associated with onRampId");
         (
             bytes32 onRampId,
-            bytes32 offRampId
+            bytes32 wiseTagHash
         ) = _verifyRegistrationProof(_proof);
+
+        accounts[msg.sender].onRampId = onRampId;
+        accounts[msg.sender].wiseTagHash = wiseTagHash;
+
+        emit AccountRegistered(msg.sender, onRampId, wiseTagHash);
+    }
+
+    /**
+     * @notice Registers an account for off-ramping by pulling the multi-currency account id from the proof and assigning
+     * the account owner to the sender of the transaction.
+     *
+     * @param _proof    Registration proof consisting of unredacted data being notarized and a signature
+     */
+    function registerAsOffRamper(
+        IWiseRegistrationProcessor.OffRamperRegistrationProof calldata _proof
+    )
+        external
+        onlyRegisteredUser
+    {
+        require(accounts[msg.sender].offRampId == bytes32(0), "Account already associated with offRampId");
+        (
+            bytes32 onRampId,
+            bytes32 offRampId
+        ) = _verifyOffRamperRegistrationProof(_proof);
 
         accounts[msg.sender].onRampId = onRampId;
         accounts[msg.sender].offRampId = offRampId;
 
-        emit AccountRegistered(msg.sender, onRampId, offRampId);
+        emit OffRamperRegistered(msg.sender, onRampId, offRampId);
     }
 
     /**
@@ -247,6 +273,8 @@ contract WiseRamp is Ownable {
         external
         onlyRegisteredUser
     {
+        require(accounts[msg.sender].offRampId != bytes32(0), "Must be registered as off ramper");
+        require(keccak256(abi.encodePacked(_wiseTag)) == accounts[msg.sender].wiseTagHash, "Wise tag does not match registered wise tag");
         require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -799,11 +827,29 @@ contract WiseRamp is Ownable {
         IWiseRegistrationProcessor.RegistrationProof calldata _proof
     )
         internal
+        returns(bytes32 onRampId, bytes32 wiseTagHash)
+    {
+        (
+            onRampId,
+            wiseTagHash
+        ) = registrationProcessor.processAccountProof(_proof);
+    }
+
+    /**
+     * @notice Validate the user has an Wise account, we do not nullify this email since it can be reused to register under
+     * different addresses.
+     */
+    function _verifyOffRamperRegistrationProof(
+        IWiseRegistrationProcessor.OffRamperRegistrationProof calldata _proof
+    )
+        internal
         returns(bytes32 onRampId, bytes32 offRampId)
     {
         (
             onRampId,
             offRampId
-        ) = registrationProcessor.processProof(_proof);
+        ) = registrationProcessor.processOffRamperProof(_proof);
+
+        require(onRampId == accounts[msg.sender].onRampId, "OnRampId does not match");
     }
 }

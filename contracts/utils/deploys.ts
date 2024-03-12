@@ -35,7 +35,6 @@ import {
   WiseRegistrationProcessorMock,
   WiseSendProcessor,
   WiseSendProcessorMock,
-  WiseTimestampParsingMock
 } from "./contracts";
 import {
   GarantiRamp__factory,
@@ -350,14 +349,16 @@ export default class DeployHelper {
   public async deployWiseRegistrationProcessor(
     ramp: Address,
     nullifierRegistry: Address,
-    tlsParams: TLSParams,
+    accountTLSParams: TLSParams,
+    offRamperTLSParams: TLSParams,
     timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<WiseRegistrationProcessor> {
     return await new WiseRegistrationProcessor__factory(this._deployerSigner).deploy(
       ramp,
       nullifierRegistry,
       timestampBuffer,
-      tlsParams
+      accountTLSParams,
+      offRamperTLSParams
     );
   }
 
@@ -403,11 +404,7 @@ export default class DeployHelper {
 
   public async deployHDFCTimestampParsingMock(): Promise<HDFCTimestampParsingMock> {
     return await new hdfcMocks.HDFCTimestampParsingMock__factory(this._deployerSigner).deploy();
-  }  
-
-  public async deployWiseTimestampParsingMock(): Promise<WiseTimestampParsingMock> {
-    return await new wiseMocks.WiseTimestampParsingMock__factory(this._deployerSigner).deploy();
-  }  
+  }   
 
   public async deployGarantiSendProcessorMock(): Promise<GarantiSendProcessorMock> {
     return await new garantiMocks.GarantiSendProcessorMock__factory(this._deployerSigner).deploy();

@@ -9,6 +9,8 @@ import { IWiseRegistrationProcessor } from "./interfaces/IWiseRegistrationProces
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 import { TLSBaseProcessor } from "../../processors/TLSBaseProcessor.sol";
 
+import "hardhat/console.sol";
+
 pragma solidity ^0.8.18;
 
 contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcessor {
@@ -18,17 +20,20 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
     using StringConversionUtils for string;
     
     /* ============ Events ============ */
-    event TLSParamsSet(ITLSData.TLSParams tlsParams);
+    event AccountTLSParamsSet(ITLSData.TLSParams tlsParams);
+    event OffRamperTLSParamsSet(ITLSData.TLSParams tlsParams);
     
     /* ============ Public Variables ============ */
-    ITLSData.TLSParams public tlsParams;
+    ITLSData.TLSParams public accountTLSParams;
+    ITLSData.TLSParams public offRamperTLSParams;
     
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         INullifierRegistry _nullifierRegistry,
         uint256 _timestampBuffer,
-        ITLSData.TLSParams memory _tlsParams
+        ITLSData.TLSParams memory _accountTLSParams,
+        ITLSData.TLSParams memory _offRamperTLSParams
     )
         TLSBaseProcessor(
             _ramp,
@@ -36,18 +41,19 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
             _timestampBuffer
         )
     {
-        tlsParams = _tlsParams;
+        accountTLSParams = _accountTLSParams;
+        offRamperTLSParams = _offRamperTLSParams;
     }
 
     /* ============ External Functions ============ */
 
-    function processProof(
+    function processAccountProof(
         IWiseRegistrationProcessor.RegistrationProof calldata _proof
     )
         public
         override
         onlyRamp
-        returns(bytes32 onRampId, bytes32 offRampId)
+        returns(bytes32 onRampId, bytes32 wiseTagHash)
     {
         _validateNotarySignature(_proof.public_values, _proof.proof);
 
@@ -57,8 +63,36 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
             host: _proof.public_values.host
         });
 
-        _validateTLSParams(tlsParams, passedTLSParams);
+        _validateTLSParams(accountTLSParams, passedTLSParams);
         _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.profileId)));
+
+        onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
+        wiseTagHash = bytes32(_proof.public_values.wiseTagHash.stringToUint(0));
+    }
+
+    function processOffRamperProof(
+        IWiseRegistrationProcessor.OffRamperRegistrationProof calldata _proof
+    )
+        public
+        override
+        onlyRamp
+        returns(bytes32 onRampId, bytes32 offRampId)
+    {
+        _validateOffRamperNotarySignature(_proof.public_values, _proof.proof);
+
+        ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
+            notary: address(0),                                 // Notary not checked in validateTLSParams
+            endpoint: _proof.public_values.endpoint,
+            host: _proof.public_values.host
+        });
+        ITLSData.TLSParams memory expectedTLSParams = ITLSData.TLSParams({
+            notary: address(0),                                 // Notary not checked in validateTLSParams
+            endpoint: offRamperTLSParams.endpoint.replaceString("*", _proof.public_values.profileId),
+            host: offRamperTLSParams.host
+        });
+
+        _validateTLSParams(expectedTLSParams, passedTLSParams);
+        _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.mcAccountId)));
 
         onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
         offRampId = bytes32(_proof.public_values.mcAccountId.stringToUint(0));
@@ -66,16 +100,26 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
 
     /* ============ External Admin Functions ============ */
 
-    function setTLSParams(ITLSData.TLSParams calldata _tlsParams) external onlyOwner {
-        tlsParams = _tlsParams;
+    function setAccountTLSParams(ITLSData.TLSParams calldata _tlsParams) external onlyOwner {
+        accountTLSParams = _tlsParams;
 
-        emit TLSParamsSet(_tlsParams);
+        emit AccountTLSParamsSet(_tlsParams);
+    }
+
+    function setOffRamperTLSParams(ITLSData.TLSParams calldata _tlsParams) external onlyOwner {
+        offRamperTLSParams = _tlsParams;
+
+        emit OffRamperTLSParamsSet(_tlsParams);
     }
 
     /* ============ External Getters ============ */
 
-    function getTLSParams() external view returns(ITLSData.TLSParams memory) {
-        return tlsParams;
+    function getAccountTLSParams() external view returns(ITLSData.TLSParams memory) {
+        return accountTLSParams;
+    }
+
+    function getOffRamperTLSParams() external view returns(ITLSData.TLSParams memory) {
+        return offRamperTLSParams;
     }
 
     /* ============ Internal Functions ============ */
@@ -87,11 +131,27 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         internal
         view
     {   
+        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
+        bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
+
+        require(
+            accountTLSParams.notary.isValidSignatureNow(notaryPayload, _proof),
+            "Invalid signature from notary"
+        );
+    }
+
+    function _validateOffRamperNotarySignature(
+        IWiseRegistrationProcessor.OffRamperRegistrationData memory _publicValues, 
+        bytes memory _proof
+    )
+        internal
+        view
+    {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
         bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
 
         require(
-            tlsParams.notary.isValidSignatureNow(notaryPayload, _proof),
+            offRamperTLSParams.notary.isValidSignatureNow(notaryPayload, _proof),
             "Invalid signature from notary"
         );
     }

@@ -1,9 +1,12 @@
 import { ethers } from "ethers";
 import { BigNumber } from "ethers";
 import { ZERO } from "./constants";
+import { AbiCoder } from "ethers/lib/utils";
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
 
 const CIRCOM_FIELD = BigNumber.from("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+
+let abiCoder = new AbiCoder();
 
 export const calculateIntentHash = (
   venmoId: string,
@@ -43,6 +46,12 @@ export const calculateUpiIdHash = async (upiId: string): Promise<string> => {
 
 export const calculateWiseId = (wiseAccount: string): string => {
   return ethers.utils.hexZeroPad(BigNumber.from(wiseAccount).toHexString(), 32)
+}
+
+export const calculateWiseTagHash = (wiseTag: string): string => {
+  return BigNumber.from(ethers.utils.keccak256(
+    abiCoder.encode(["string"], [wiseTag])
+  )).toString()
 }
 
 export const calculateGarantiIdHash = async (garantiId: string): Promise<string> => {
