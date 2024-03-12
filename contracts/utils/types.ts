@@ -13,6 +13,7 @@ export enum PaymentProviders {
   Venmo = "venmo",
   HDFC = "hdfc",
   Garanti = "garanti",
+  Wise = "wise",
 }
 
 export interface TLSParams {

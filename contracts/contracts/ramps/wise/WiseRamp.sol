@@ -261,7 +261,8 @@ contract WiseRamp is Ownable {
      * @param _receiveCurrencyId    Id of the currency to be received off-chain
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
-     * @param _tlsParams            TLS information including notary and endpoint / host being notarized
+     * @param _tlsParams            TLS information including notary and endpoint / host being notarized. If the on-rampers profileId
+     *                              must be inserted into the endpoint, replace the profileId with a '*' character
      */
     function offRamp(
         string calldata _wiseTag,
