@@ -9,8 +9,6 @@ import { IWiseRegistrationProcessor } from "./interfaces/IWiseRegistrationProces
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 import { TLSBaseProcessor } from "../../processors/TLSBaseProcessor.sol";
 
-import "hardhat/console.sol";
-
 pragma solidity ^0.8.18;
 
 contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcessor {
