@@ -32,6 +32,14 @@ interface SmartContractsValues {
   garantiSendProcessorAddress: string | null;
   garantiSendProcessorAbi: Abi | null;
 
+  // wise
+  wiseRampAddress: string | null;
+  wiseRampAbi: Abi | null;
+  wiseSendProcessorAddress: string | null;
+  wiseSendProcessorAbi: Abi | null;
+  wiseAccountRegistryAddress: string | null;
+  wiseAccountRegistryAbi: Abi | null;
+
   // nft
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
@@ -73,6 +81,14 @@ const defaultValues: SmartContractsValues = {
   garantiRampAbi: null,
   garantiSendProcessorAddress: null,
   garantiSendProcessorAbi: null,
+
+  // wise
+  wiseRampAddress: null,
+  wiseRampAbi: null,
+  wiseSendProcessorAddress: null,
+  wiseSendProcessorAbi: null,
+  wiseAccountRegistryAddress: null,
+  wiseAccountRegistryAbi: null,
   
   // nft
   nftAbi: null,

@@ -79,6 +79,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           currencySymbol: '$',
           paymentPlatformName: 'Venmo',
         };
+
       case PaymentPlatform.HDFC:
         return {
           qrLink: `upi://pay?pa=${depositorVenmoId.replace(/\0/g, '')}&am=${amountUSDToSend}&cu=INR`,
@@ -91,6 +92,13 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           qrLink: ``,
           currencySymbol: '₺',
           paymentPlatformName: 'Garanti',
+        };
+
+      case PaymentPlatform.WISE:
+        return {
+          qrLink: `https://wise.com/pay/me/${depositorVenmoId}`,
+          currencySymbol: '€',
+          paymentPlatformName: 'Wise',
         };
 
       default:

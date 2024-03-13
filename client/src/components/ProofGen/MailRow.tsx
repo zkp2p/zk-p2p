@@ -1,6 +1,8 @@
 import React from "react";
 import styled from 'styled-components/macro';
 
+import { colors } from '@theme/colors';
+
 
 interface MailRowProps {
   platformText: string;
@@ -48,7 +50,7 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatform
   font-size: 14px;
   color: #FFFFFF;
   border-radius: ${({ isLastRow }) => isLastRow ? "0 0 8px 8px" : "0"};
-  border-bottom: ${({ isLastRow }) => !isLastRow && "1px solid ${colors.defaultBorderColor}"};
+  border-bottom: ${({ isLastRow }) => !isLastRow && `1px solid ${colors.defaultBorderColor}`};
 
   ${({ selected }) => selected && `
     background-color: #191D28;

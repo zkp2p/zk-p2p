@@ -7,7 +7,7 @@ import {
 
 import { esl } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
-import {  fetchProfile } from '@hooks/useGmailClient';
+import { fetchProfile } from '@hooks/useGmailClient';
 
 import GoogleAuthContext from './GoogleAuthContext'
 

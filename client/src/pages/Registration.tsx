@@ -5,6 +5,7 @@ import { RegistrationForm } from "@components/Registration"
 import useRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
+import useWiseRegistration from '@hooks/wise/useRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -33,6 +34,13 @@ export const Registration: React.FC = () => {
     refetchGarantiNftId,
     shouldFetchGarantiNftId
   } = useGarantiRegistration();
+
+  const {
+    refetchRampAccount: refetchWiseAccount,
+    shouldFetchRegistration: shouldFetchWiseRegistration,
+    // refetchVenmoNftId: refetchWiseVenmoNftId,
+    // shouldFetchVenmoNftId: shouldFetchWiseVenmoNftId
+  } = useWiseRegistration();
 
   const {
     PaymentPlatform,
@@ -73,6 +81,16 @@ export const Registration: React.FC = () => {
           if (shouldFetchGarantiNftId) {
             refetchGarantiNftId?.();
           }
+          break;
+
+        case PaymentPlatform.WISE:
+          if (shouldFetchWiseRegistration) {
+            refetchWiseAccount?.();
+          }
+  
+          // if (shouldFetchWiseVenmoNftId) {
+          //   refetchWiseVenmoNftId?.();
+          // }
           break;
 
       default:

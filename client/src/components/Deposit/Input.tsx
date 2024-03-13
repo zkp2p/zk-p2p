@@ -19,6 +19,7 @@ interface InputProps {
   accessoryLabel?: string;
   helperText?: string;
   enableMax?: boolean
+  valueFontSize?: string;
   maxButtonOnClick?: () => void;
 }
 
@@ -35,6 +36,7 @@ export const Input: React.FC<InputProps> = ({
   readOnly = false,
   accessoryLabel="",
   helperText="",
+  valueFontSize="24px",
   enableMax=false,
   maxButtonOnClick=() => {}
 }: InputProps) => {
@@ -68,6 +70,7 @@ export const Input: React.FC<InputProps> = ({
               onFocus={onFocus}
               onKeyDown={onKeyDown}
               readOnly={readOnly}
+              valueFontSize={valueFontSize}
             />
           </InputWrapper>
         </LabelAndInputContainer>
@@ -144,6 +147,7 @@ const InputWrapper = styled.div`
 
 interface StyledInputProps {
   readOnly?: boolean;
+  valueFontSize?: string;
 }
 
 const StyledInput = styled.input<StyledInputProps>`
@@ -153,7 +157,7 @@ const StyledInput = styled.input<StyledInputProps>`
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: 24px;
+  font-size: ${({ valueFontSize }) => valueFontSize ? valueFontSize : '24px'};
 
   &:focus {
     box-shadow: none;

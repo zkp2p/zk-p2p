@@ -10,6 +10,8 @@ import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiRampState from '@hooks/garanti/useRampState';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
+import useWiseRampState from '@hooks/wise/useRampState';
+import useWiseLiquidity from '@hooks/wise/useLiquidity';
 
 
 export default function Deposit() {
@@ -43,6 +45,15 @@ export default function Deposit() {
     refetchDeposits: refetchGarantiDeposits,
     shouldFetchDeposits: shouldFetchGarantiDeposits
   } = useGarantiLiquidity();
+
+  const {
+    refetchDepositCounter: refetchWiseDepositCounter,
+    shouldFetchRampState: shouldFetchWiseRampState
+  } = useWiseRampState();
+  const {
+    refetchDeposits: refetchWiseDeposits,
+    shouldFetchDeposits: shouldFetchWiseDeposits
+  } = useWiseLiquidity();
 
   /*
    * Hooks
@@ -107,6 +118,26 @@ export default function Deposit() {
       return () => clearInterval(intervalId);
     }
   }, [shouldFetchGarantiRampState, refetchGarantiDepositCounter]);
+
+  useEffect(() => {
+    if (shouldFetchWiseDeposits) {
+      const intervalId = setInterval(() => {
+        refetchWiseDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchWiseDeposits, refetchWiseDeposits]);
+
+  useEffect(() => {
+    if (shouldFetchWiseRampState) {
+      const intervalId = setInterval(() => {
+        refetchWiseDepositCounter?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [shouldFetchWiseRampState, refetchWiseDepositCounter]);
 
   /*
    * Component

@@ -11,6 +11,7 @@ interface ButtonProps {
   fontSize?: number;
   disabled?: boolean;
   loading?: boolean;
+  leftAccessorySvg?: string;
   svg?: string;
   onClick?: () => void;
   children?: React.ReactNode;
@@ -23,6 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   fontSize = 16,
   disabled = false,
   loading = false,
+  leftAccessorySvg,
   svg,
   onClick,
   children
@@ -41,7 +43,14 @@ export const Button: React.FC<ButtonProps> = ({
       $svgLoaded={!svg && svgLoaded}
       onClick={onClick}
     >
-      {loading ? <Spinner /> : children}
+      {loading ? (
+        <Spinner />
+      ) : (
+        <ContentContainer>
+          {leftAccessorySvg && <LeftAccessory src={leftAccessorySvg} alt="" />}
+          {children}
+        </ContentContainer>
+      )}
 
       {svg &&
         <SVGOverlay 
@@ -53,6 +62,19 @@ export const Button: React.FC<ButtonProps> = ({
     </BaseButton>
   );
 };
+
+const ContentContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+const LeftAccessory = styled.img`
+  margin-top: -2px;
+  height: 28px;
+  width: 28px;
+`;
 
 interface BaseButtonProps {
   fullWidth?: boolean;

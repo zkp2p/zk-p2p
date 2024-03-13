@@ -5,6 +5,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
 import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
 import { NewPosition as GarantiNewPosition } from '@components/Deposit/garanti/NewPosition';
+import { NewPosition as WiseNewPosition } from '@components/Deposit/wise/NewPosition';
 import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
@@ -13,6 +14,7 @@ import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
+import useWiseDeposits from '@hooks/wise/useDeposits';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -44,6 +46,14 @@ export default function Deposit() {
     shouldFetchDepositIntents: shouldFetchGarantiDepositIntents,
     refetchDepositIntents: refetchGarantiDepositIntents,
   } = useGarantiDeposits();
+
+  const {
+    refetchDeposits: refetchWiseDeposits,
+    shouldFetchDeposits: shouldFetchWiseDeposits,
+    depositIntents: wiseDepositIntents,
+    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
+    refetchDepositIntents: refetchWiseDepositIntents,
+  } = useWiseDeposits();
 
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -96,6 +106,18 @@ export default function Deposit() {
   }, [shouldFetchGarantiDeposits]);
 
   useEffect(() => {
+    if (shouldFetchWiseDeposits) {
+      const intervalId = setInterval(() => {
+        refetchWiseDeposits?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchWiseDeposits]);
+
+  useEffect(() => {
     if (shouldFetchVenmoDepositIntents) {
       const intervalId = setInterval(() => {
         refetchVenmoDepositIntents?.();
@@ -132,6 +154,18 @@ export default function Deposit() {
   }, [shouldFetchGarantiDepositIntents]);
 
   useEffect(() => {
+    if (shouldFetchWiseDepositIntents) {
+      const intervalId = setInterval(() => {
+        refetchWiseDepositIntents?.();
+      }, DEPOSIT_REFETCH_INTERVAL);
+  
+      return () => clearInterval(intervalId);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldFetchWiseDepositIntents]);
+
+  useEffect(() => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         if (venmoDepositIntents) {
@@ -151,12 +185,25 @@ export default function Deposit() {
         }
         break;
 
+      case PaymentPlatform.WISE:
+        if (wiseDepositIntents) {
+          setDepositIntents(wiseDepositIntents);
+        }
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents]);
+  }, [
+      paymentPlatform,
+      venmoDepositIntents,
+      hdfcDepositIntents,
+      garantiDepositIntents,
+      wiseDepositIntents
+    ]
+  );
 
   /*
    * Handlers
@@ -179,29 +226,30 @@ export default function Deposit() {
       switch (paymentPlatform) {
         case PaymentPlatform.VENMO:
           return (
-            <NewPositionContainer>
-              <VenmoNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <VenmoNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
 
         case PaymentPlatform.HDFC:
           return (
-            <NewPositionContainer>
-              <HdfcNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <HdfcNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
 
         case PaymentPlatform.GARANTI:
           return (
-            <NewPositionContainer>
-              <GarantiNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <GarantiNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
+          );
+
+        case PaymentPlatform.WISE:
+          return (
+            <WiseNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
       }
     }
@@ -243,14 +291,6 @@ const DepositAndIntentContainer = styled.div`
 
 const Content = styled.main`
   gap: 1rem;
-`;
-
-const NewPositionContainer = styled.div`
-  display: grid;
-  padding: 1.5rem;
-  background-color: ${colors.container};
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const VerticalDivider = styled.div`

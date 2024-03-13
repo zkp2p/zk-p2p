@@ -159,6 +159,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
 
   useEffect(() => {
     console.log("Status Check", storedBodyHashProofValue, storedBodyHashSignalsValue, storedProofValue, storedSignalsValue);
+
     switch (paymentPlatformType) {
       case PaymentPlatform.VENMO:
         if (storedProofValue && storedSignalsValue) {
@@ -180,6 +181,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           setProofGenStatus(ProofGenerationStatus.TRANSACTION_CONFIGURED);
         }
         break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatformType}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -276,6 +280,9 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               return;
             }
             break;
+
+          default:
+            throw new Error(`Unknown payment platform: ${paymentPlatformType}`);
         }
   
         const hash = crypto.createHash('sha256');
@@ -330,8 +337,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       }
     }
 
-    const successfulRegistration = circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
-    if (successfulRegistration) {
+    const isCircuitTypeRegistration = circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
+    if (isCircuitTypeRegistration) {
       extractAndRecordVenmoId(emailFull);
     }
   };

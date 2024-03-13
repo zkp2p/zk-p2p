@@ -21,6 +21,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0x29666c1dB00852c5378d4299ae24B6CB8081057f',
     'garantiRegistrationProcessor': '0x4893d6b0A9dc0B11f373f673bC2bCfAE74c0a1f9',
     'garantiNft': '0xB4739590a00b47AF7461AbBC013b9047f66Dd678',
+    'wiseRamp': '',
+    'wiseSendProcessor': '',
+    'wiseRegistrationProcessor': '',
+    'wiseNft': '',
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -40,6 +44,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0x1048dd39f95aBE7712291752B63f61BD397c695E',
     'garantiRegistrationProcessor': '0x6E6eAc7e8995fb6d44aE5E559874B8C969010293',
     'garantiNft': '',
+    'wiseRamp': '',
+    'wiseSendProcessor': '0x27a6Ecb917B4BbCb6450f50Fa873510Ac3077171', // copied from Garanti
+    'wiseRegistrationProcessor': '0x50A368DAF428dcA0e980F640C06A79D466E62a2C', // copied from Garanti
+    'wiseNft': '0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D', // copied from Garanti
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -59,6 +67,12 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437',
     'garantiRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D',
     'garantiNft': '0x64940a0906d4386e2089a40153D856EEA070Ad88',
+    'wiseRamp': '0xfb5294d3E7EDE246dcD933b064ADcBd2e2624059',
+    'wiseAccountRegistry': '0x7eDD66B19A22293af86A2d96761FD7146BA3fF6c',
+    'wiseSendProcessor': '0xFb08d7be04cCD00dF074bBa1D28D4B9887a8D5e6',
+    'wiseAccountRegistrationProcessor': '0x8E9ca43089F380A904D2d121fAa021bb4fbb0f4a',
+    'wiseOffRamperRegistrationProcessor': '0xEF14b8a0196002dA629c1eC585371274FA9Da7d8',
+    'wiseNft': '',
     'socketBridge': '',
     'lifiBridge': '',
   },
@@ -78,6 +92,12 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xf5059a5D33d5853360D16C683c16e67980206f36',
     'garantiRegistrationProcessor': '0x851356ae760d987E095750cCeb3bC6014560891C',
     'garantiNft': '',
+    'wiseRamp': '0x0E801D84Fa97b50751Dbf25036d067dCf18858bF',
+    'wiseAccountRegistry': '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf',
+    'wiseSendProcessor': '0x36C02dA8a0983159322a80FFE9F24b1acfF8B570',
+    'wiseAccountRegistrationProcessor': '0x9d4454B023096f34B160D6B654540c56A1F81688',
+    'wiseOffRamperRegistrationProcessor': '0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00',
+    'wiseNft': '',
     'socketBridge': '',
     'lifiBridge': '',
   },

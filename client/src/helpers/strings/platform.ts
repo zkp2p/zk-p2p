@@ -3,6 +3,7 @@ import { PaymentPlatform, PaymentPlatformType } from '@helpers/types';
 import venmoCopy from './venmo';
 import hdfcCopy from './hdfc';
 import garantiCopy from './garanti';
+import wiseCopy from './wise';
 
 
 // Platform strings
@@ -14,6 +15,9 @@ export interface PlatformStrings {
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: string,
   NO_EMAILS_ERROR: string
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: string,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: string,
 
@@ -22,6 +26,7 @@ export interface PlatformStrings {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: string,
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: string,
   NEW_DEPOSIT_ID_TOOLTIP: string,
   NEW_DEPOSIT_NAME_TOOLTIP: string,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: string,
@@ -50,7 +55,9 @@ export class PlatformStringProvider {
       this.strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       this.strings = garantiCopy;
-    } else {
+    } else if (platformType === PaymentPlatform.WISE) {
+      this.strings = wiseCopy;
+    }  else {
       throw new Error('Invalid platform type');
     }
   }
@@ -67,6 +74,8 @@ export class PlatformStringProvider {
       strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       strings = garantiCopy;
+    } else if (platformType === PaymentPlatform.WISE) {
+      strings = wiseCopy;
     } else {
       throw new Error('Invalid platform type');
     }

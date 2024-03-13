@@ -39,6 +39,8 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
     hdfcRampAbi,
     garantiRampAddress,
     garantiRampAbi,
+    wiseRampAddress,
+    wiseRampAbi,
     blockscanUrl 
 } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
@@ -107,6 +109,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           refetchGarantiDeposits?.();
           break;
 
+        case PaymentPlatform.WISE:
+          refetchGarantiDeposits?.();
+          break;
+
         default:
           throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
@@ -150,12 +156,29 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
         }
         break;
 
+      case PaymentPlatform.WISE:
+        if (wiseRampAddress && wiseRampAbi) {
+          setReleaseRampAddress(wiseRampAddress);
+          setReleaseRampAbi(wiseRampAbi);
+        }
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoRampAddress, venmoRampAbi, hdfcRampAddress, hdfcRampAbi]);
+  }, [
+    paymentPlatform,
+    venmoRampAddress,
+    venmoRampAbi,
+    hdfcRampAddress,
+    hdfcRampAbi,
+    garantiRampAddress,
+    garantiRampAbi,
+    wiseRampAddress,
+    wiseRampAbi
+  ]);
 
   useEffect(() => {
     if (submitReleaseResult?.hash) {

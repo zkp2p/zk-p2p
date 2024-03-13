@@ -747,6 +747,7 @@ export default function SendForm() {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchIndicativeQuote = useCallback(
     debounce(async (sendAmount, recipient?) => {
       const receiveAmountQuote = await fetchLifiQuote(sendAmount, recipient);
@@ -764,6 +765,7 @@ export default function SendForm() {
     }, QUOTE_FETCHING_DEBOUNCE_MS
   ), [receiveNetwork, receiveToken] );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchFirmQuote = useCallback(
     debounce(async (sendAmount, recipient) => {
       await fetchFirmQuoteAndTxnData(sendAmount, recipient);

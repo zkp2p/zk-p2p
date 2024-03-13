@@ -17,6 +17,11 @@ const strings: PlatformStrings = {
     Please ensure you are using an email attached to a Venmo account with a receipt after 1/10/24.
   `,
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    no-op
+  `,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from Venmo
@@ -36,12 +41,17 @@ const strings: PlatformStrings = {
     desired USD conversion rate. Your Venmo ID must match the ID you registered with. Instructions
     on how to fetch your Venmo ID can be found here.
   `,
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
+    no-op
+  `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid 18-19 digit Venmo ID where users will send payments.
     This connects your Venmo account to your wallet address on chain.
     This must match the Venmo account you used to register.
   `,
-  NEW_DEPOSIT_NAME_TOOLTIP:"",
+  NEW_DEPOSIT_NAME_TOOLTIP:`
+    no-op
+  `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you Venmo payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.

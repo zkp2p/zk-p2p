@@ -14,6 +14,7 @@ import { colors } from '@theme/colors';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
+import useWiseLiquidity from '@hooks/wise/useLiquidity';
 import useAccount from '@hooks/useAccount';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
@@ -49,6 +50,10 @@ export const DepositsTable: React.FC = () => {
   } = useGarantiLiquidity();
 
   const {
+    depositStore: wiseDepositStore,
+  } = useWiseLiquidity();
+
+  const {
     isLoggedIn
   } = useAccount();
 
@@ -74,12 +79,19 @@ export const DepositsTable: React.FC = () => {
       case PaymentPlatform.VENMO:
         depositStoreToDisplay = venmoDepositStore ?? [];
         break;
+
       case PaymentPlatform.HDFC:
         depositStoreToDisplay = hdfcDepositStore ?? [];
         break;
+
       case PaymentPlatform.GARANTI:
         depositStoreToDisplay = garantiDepositStore ?? [];
         break;
+
+      case PaymentPlatform.WISE:
+        depositStoreToDisplay = wiseDepositStore ?? [];
+        break;
+
       default:
         break;
     }
@@ -109,7 +121,13 @@ export const DepositsTable: React.FC = () => {
 
       setPositionsRowData(sanitizedDeposits);
     }
-  }, [venmoDepositStore, hdfcDepositStore, garantiDepositStore, paymentPlatform]);
+  }, [
+    venmoDepositStore,
+    hdfcDepositStore,
+    garantiDepositStore,
+    paymentPlatform,
+    wiseDepositStore
+  ]);
 
   useEffect(() => {
     setCurrentPage(0);
@@ -121,10 +139,6 @@ export const DepositsTable: React.FC = () => {
 
   const handleChangePage = (newPage: number) => {
     setCurrentPage(newPage);
-  };
-
-  const navigateToWithdrawHandler = () => {
-    navigate('/withdraw');
   };
 
   /*

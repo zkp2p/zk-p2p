@@ -114,11 +114,15 @@ export const MailTable: React.FC<MailTableProps> = ({
             month: 'numeric',
             day: 'numeric'
           });
+
         case PaymentPlatform.GARANTI:
           return date.toLocaleDateString('en-TR', {
             month: 'numeric',
             day: 'numeric'
           });
+
+        default:
+          throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
     }
   };
@@ -135,7 +139,7 @@ export const MailTable: React.FC<MailTableProps> = ({
         return 'Garanti';
 
       default:
-        return '';
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
   };
 
@@ -160,7 +164,7 @@ export const MailTable: React.FC<MailTableProps> = ({
         return rawEmail.subject;
 
       default:
-        return '';
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
   };
 
@@ -170,12 +174,17 @@ export const MailTable: React.FC<MailTableProps> = ({
       case PaymentPlatform.VENMO:
         filter = VENMO_EMAIL_FILTER;
         break;
+
       case PaymentPlatform.HDFC:
         filter = HDFC_EMAIL_FULTER;
         break;
+
       case PaymentPlatform.GARANTI:
         filter = GARANTI_EMAIL_FULTER;
         break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     try {
@@ -235,6 +244,9 @@ export const MailTable: React.FC<MailTableProps> = ({
           case PaymentPlatform.GARANTI:
             setCtaButtonTitle("Invalid email: must be from Garanti");
             break;
+
+          default:
+            throw new Error(`Unknown payment platform: ${paymentPlatform}`);
         }
       break;
 
@@ -251,6 +263,9 @@ export const MailTable: React.FC<MailTableProps> = ({
         case PaymentPlatform.GARANTI:
           setCtaButtonTitle("Invalid email: must contain 'Para Transferi Bilgilendirmesi'");
           break;
+
+        default:
+          throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
       break;
 
