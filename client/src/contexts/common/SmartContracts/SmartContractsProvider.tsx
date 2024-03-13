@@ -56,6 +56,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [garantiRampAddress, setGarantiRampAddress] = useState<string | null>(null);
   const [garantiSendProcessorAddress, setGarantiSendProcessorAddress] = useState<string | null>(null);
 
+  // Wise
+  const [wiseRampAddress, setWiseRampAddress] = useState<string | null>(null);
+  const [wiseSendProcessorAddress, setWiseSendProcessorAddress] = useState<string | null>(null);
+
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
@@ -144,6 +148,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Garanti
     setGarantiRampAddress(null); 
     setGarantiSendProcessorAddress(null);
+
+    // Wise
+    setWiseRampAddress(null); 
+    setWiseSendProcessorAddress(null);
     
     // NFT
     setVenmoNftAddress(null);
@@ -181,6 +189,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Garanti
     setGarantiRampAddress(contractsForNetwork.garantiRamp);
     setGarantiSendProcessorAddress(contractsForNetwork.garantiSendProcessor);
+
+    // Wise
+    setWiseRampAddress(contractsForNetwork.wiseRamp);
+    setWiseSendProcessorAddress(contractsForNetwork.wiseSendProcessor);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -224,6 +236,12 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         garantiRampAbi: garantiRampAbi as Abi,
         garantiSendProcessorAddress,
         garantiSendProcessorAbi: garantiSendProcessorAbi as Abi,
+
+        // Wise
+        wiseRampAddress,
+        wiseRampAbi: garantiRampAbi as Abi, // Copied from Garanti
+        wiseSendProcessorAddress,
+        wiseSendProcessorAbi: garantiSendProcessorAbi as Abi, // Copied from Garanti
 
         // NFT
         nftAbi: nftAbi as Abi,

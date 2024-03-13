@@ -17,6 +17,10 @@ export const contractAddresses: Contracts = {
     'hdfcSendProcessor': '0x03eB0ba3f7A4451C41278Af74E8384079Ae40170',
     'hdfcRegistrationProcessor': '0xD2B4CcA64Fc4B7588D6546780fEdb4c71A4b75D6',
     'hdfcNft': '0x94874b3a294becc3dea2c320c300d2d2a4b25451',
+    'wiseRamp': '',
+    'wiseSendProcessor': '',
+    'wiseRegistrationProcessor': '',
+    'wiseNft': '',
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -36,6 +40,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0x50A368DAF428dcA0e980F640C06A79D466E62a2C',
     'garantiRegistrationProcessor': '0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D',
     'garantiNft': '',
+    'wiseRamp': '',
+    'wiseSendProcessor': '0x27a6Ecb917B4BbCb6450f50Fa873510Ac3077171', // copied from Garanti
+    'wiseRegistrationProcessor': '0x50A368DAF428dcA0e980F640C06A79D466E62a2C', // copied from Garanti
+    'wiseNft': '0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D', // copied from Garanti
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -55,6 +63,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437',
     'garantiRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D',
     'garantiNft': '',
+    'wiseRamp': '0xEfBDf422FA81071A04D2f89A70A0D938FEFA0795', // Copied from Garanti
+    'wiseSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437', // Copied from Garanti
+    'wiseRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D', // Copied from Garanti
+    'wiseNft': '',
     'socketBridge': '',
     'lifiBridge': '',
   },
@@ -74,6 +86,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xf5059a5D33d5853360D16C683c16e67980206f36',
     'garantiRegistrationProcessor': '0x851356ae760d987E095750cCeb3bC6014560891C',
     'garantiNft': '',
+    'wiseRamp': '',
+    'wiseSendProcessor': '',
+    'wiseRegistrationProcessor': '',
+    'wiseNft': '',
     'socketBridge': '',
     'lifiBridge': '',
   },

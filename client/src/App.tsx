@@ -58,6 +58,13 @@ import GarantiOnRamperIntentsProvider  from './contexts/garanti/OnRamperIntents/
 import GarantiRampProvider from './contexts/garanti/Ramp/RampProvider';
 import GarantiRegistrationProvider from './contexts/garanti/Registration/RegistrationProvider';
 
+// Wise Contexts
+import WiseDepositsProvider  from './contexts/wise/Deposits/DepositsProvider';
+import WiseLiquidityProvider from './contexts/wise/Liquidity/LiquidityProvider';
+import WiseOnRamperIntentsProvider  from './contexts/wise/OnRamperIntents/OnRamperIntentsProvider';
+import WiseRampProvider from './contexts/wise/Ramp/RampProvider';
+import WiseRegistrationProvider from './contexts/wise/Registration/RegistrationProvider';
+
 import "./App.css";
 import "./styles.css";
 import useMediaQuery from '@hooks/useMediaQuery';
@@ -152,24 +159,36 @@ const providersWithProps: ProvidersType[] = [
   [PlatformSettingsProvider, {}],
   [SendSettingsProvider, {}],
   [BalancesProvider, {}],
+
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
   [GarantiRampProvider, {}],
+  [WiseRampProvider, {}],
+
   [VenmoRegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
   [GarantiRegistrationProvider, {}],
+  [WiseRegistrationProvider, {}],
+
   [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
   [GarantiDepositsProvider, {}],
+  [WiseDepositsProvider, {}],
+
   [VenmoPermissionsProvider, {}],
   [DenyListProvider, {}],
+
   [VenmoLiquidityProvider, {}],
   [HdfcLiquidityProvider, {}],
   [GarantiLiquidityProvider, {}],
+  [WiseLiquidityProvider, {}],
+
   [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
   [GarantiOnRamperIntentsProvider, {}],
+  [WiseOnRamperIntentsProvider, {}],
+
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
   [ModalSettingsProvider, {}],
