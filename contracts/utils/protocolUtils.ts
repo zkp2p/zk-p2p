@@ -49,9 +49,7 @@ export const calculateWiseId = (wiseAccount: string): string => {
 }
 
 export const calculateWiseTagHash = (wiseTag: string): string => {
-  return BigNumber.from(ethers.utils.keccak256(
-    abiCoder.encode(["string"], [wiseTag])
-  )).toString()
+  return BigNumber.from(ethers.utils.solidityKeccak256(["string"], [wiseTag])).toString()
 }
 
 export const calculateGarantiIdHash = async (garantiId: string): Promise<string> => {
