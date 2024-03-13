@@ -124,7 +124,6 @@ describe("Wise Deploy", () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await wiseRegistrationProcessor.ramp();
       const actualOwner = await wiseRegistrationProcessor.owner();
-      const actualKeyHashAdapter = await wiseRegistrationProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await wiseRegistrationProcessor.nullifierRegistry();
       const actualAccountTLSParams = await wiseRegistrationProcessor.accountTLSParams();
       const actualOffRamperTLSParams = await wiseRegistrationProcessor.offRamperTLSParams();

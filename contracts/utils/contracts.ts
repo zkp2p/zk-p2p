@@ -30,5 +30,4 @@ export {
   WiseRegistrationProcessorMock,
   WiseSendProcessor,
   WiseSendProcessorMock,
-  WiseTimestampParsingMock
 } from "../typechain";
