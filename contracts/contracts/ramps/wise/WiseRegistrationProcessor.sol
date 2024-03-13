@@ -56,7 +56,7 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         _validateNotarySignature(_proof.public_values, _proof.proof);
 
         ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                                 // Notary not checked in validateTLSParams
+            verifier: address(0),                                 // Verifier not checked in validateTLSParams
             endpoint: _proof.public_values.endpoint,
             host: _proof.public_values.host
         });
@@ -79,12 +79,12 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         _validateOffRamperNotarySignature(_proof.public_values, _proof.proof);
 
         ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                                 // Notary not checked in validateTLSParams
+            verifier: address(0),                                 // Notary not checked in validateTLSParams
             endpoint: _proof.public_values.endpoint,
             host: _proof.public_values.host
         });
         ITLSData.TLSParams memory expectedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                                 // Notary not checked in validateTLSParams
+            verifier: address(0),                                 // Notary not checked in validateTLSParams
             endpoint: offRamperTLSParams.endpoint.replaceString("*", _proof.public_values.profileId),
             host: offRamperTLSParams.host
         });
@@ -130,11 +130,11 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
-        bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
+        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
 
         require(
-            accountTLSParams.notary.isValidSignatureNow(notaryPayload, _proof),
-            "Invalid signature from notary"
+            accountTLSParams.verifier.isValidSignatureNow(verifierPayload, _proof),
+            "Invalid signature from verifier"
         );
     }
 
@@ -146,11 +146,11 @@ contract WiseRegistrationProcessor is IWiseRegistrationProcessor, TLSBaseProcess
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
+        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
 
         require(
-            offRamperTLSParams.notary.isValidSignatureNow(notaryPayload, _proof),
-            "Invalid signature from notary"
+            offRamperTLSParams.verifier.isValidSignatureNow(verifierPayload, _proof),
+            "Invalid signature from verifier"
         );
     }
 }

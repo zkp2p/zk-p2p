@@ -19,7 +19,7 @@ const abiCoder = new ethers.utils.AbiCoder();
 
 describe("WiseRegistrationProcessor", () => {
   let owner: Account;
-  let notary: Account;
+  let verifier: Account;
   let attacker: Account;
   let ramp: Account;
 
@@ -33,7 +33,7 @@ describe("WiseRegistrationProcessor", () => {
 
   beforeEach(async () => {
     [
-      notary,
+      verifier,
       owner,
       attacker,
       ramp
@@ -44,13 +44,13 @@ describe("WiseRegistrationProcessor", () => {
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
     accountTLSParams = {
-      notary: notary.address,
+      verifier: verifier.address,
       endpoint: "POST https://wise.com/gateway/v1/payments",
       host: "wise.com",
     };
 
     offRamperTLSParams = {
-      notary: notary.address,
+      verifier: verifier.address,
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     };
@@ -75,11 +75,11 @@ describe("WiseRegistrationProcessor", () => {
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
 
       expect(accountTLSParams.endpoint).to.deep.equal(actualAccountTLSParams.endpoint);
-      expect(accountTLSParams.notary).to.deep.equal(actualAccountTLSParams.notary);
+      expect(accountTLSParams.verifier).to.deep.equal(actualAccountTLSParams.verifier);
       expect(accountTLSParams.host).to.deep.equal(actualAccountTLSParams.host);
 
       expect(offRamperTLSParams.endpoint).to.deep.equal(actualOffRamperTLSParams.endpoint);
-      expect(offRamperTLSParams.notary).to.deep.equal(actualOffRamperTLSParams.notary);
+      expect(offRamperTLSParams.verifier).to.deep.equal(actualOffRamperTLSParams.verifier);
       expect(offRamperTLSParams.host).to.deep.equal(actualOffRamperTLSParams.host);
     });
   });
@@ -148,7 +148,7 @@ describe("WiseRegistrationProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from notary");
+        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
       });
     });
 
@@ -166,7 +166,7 @@ describe("WiseRegistrationProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {
@@ -188,7 +188,7 @@ describe("WiseRegistrationProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {
@@ -272,7 +272,7 @@ describe("WiseRegistrationProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from notary");
+        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
       });
     });
 
@@ -290,7 +290,7 @@ describe("WiseRegistrationProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {
@@ -312,7 +312,7 @@ describe("WiseRegistrationProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {
@@ -339,7 +339,7 @@ describe("WiseRegistrationProcessor", () => {
       subjectCaller = owner;
 
       subjectTLSParams = {
-        notary: notary.address,
+        verifier: verifier.address,
         endpoint: "POST https://wise.com/gateway/v2/payments",
         host: "api.wise.com",
       };
@@ -355,7 +355,7 @@ describe("WiseRegistrationProcessor", () => {
       const actualTLSParams = await registrationProcessor.getAccountTLSParams();
 
       expect(actualTLSParams.endpoint).to.equal(subjectTLSParams.endpoint);
-      expect(actualTLSParams.notary).to.equal(subjectTLSParams.notary);
+      expect(actualTLSParams.verifier).to.equal(subjectTLSParams.verifier);
       expect(actualTLSParams.host).to.equal(subjectTLSParams.host);
     });
 
@@ -378,7 +378,7 @@ describe("WiseRegistrationProcessor", () => {
       subjectCaller = owner;
 
       subjectTLSParams = {
-        notary: notary.address,
+        verifier: verifier.address,
         endpoint: "GET https://wise.com/gateway/v4/profiles/41213881/transfers",
         host: "api.wise.com",
       };
@@ -394,7 +394,7 @@ describe("WiseRegistrationProcessor", () => {
       const actualTLSParams = await registrationProcessor.getOffRamperTLSParams();
 
       expect(actualTLSParams.endpoint).to.equal(subjectTLSParams.endpoint);
-      expect(actualTLSParams.notary).to.equal(subjectTLSParams.notary);
+      expect(actualTLSParams.verifier).to.equal(subjectTLSParams.verifier);
       expect(actualTLSParams.host).to.equal(subjectTLSParams.host);
     });
 

@@ -19,7 +19,7 @@ const abiCoder = new ethers.utils.AbiCoder();
 
 describe("WiseSendProcessor", () => {
   let owner: Account;
-  let notary: Account;
+  let verifier: Account;
   let attacker: Account;
   let ramp: Account;
 
@@ -32,7 +32,7 @@ describe("WiseSendProcessor", () => {
 
   beforeEach(async () => {
     [
-      notary,
+      verifier,
       owner,
       attacker,
       ramp
@@ -43,7 +43,7 @@ describe("WiseSendProcessor", () => {
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
     tlsParams = {
-      notary: notary.address,
+      verifier: verifier.address,
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     };
@@ -147,7 +147,7 @@ describe("WiseSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from notary");
+        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
       });
     });
 
@@ -171,7 +171,7 @@ describe("WiseSendProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {
@@ -199,7 +199,7 @@ describe("WiseSendProcessor", () => {
           ]
         );
 
-        subjectProof.proof = await notary.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
       it("should revert", async () => {

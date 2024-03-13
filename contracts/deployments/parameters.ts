@@ -36,7 +36,7 @@ interface EnvironmentTLSParams {
 export const ACCOUNT_TLS_PARAMS = {
   "wise": {
     "localhost": {
-      notary: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      verifier: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       endpoint: "POST https://wise.com/gateway/v1/payments",
       host: "wise.com",
     } as TLSParams,
@@ -46,7 +46,7 @@ export const ACCOUNT_TLS_PARAMS = {
 export const OFFRAMPER_TLS_PARAMS = {
   "wise": {
     "localhost": {
-      notary: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      verifier: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     } as TLSParams,

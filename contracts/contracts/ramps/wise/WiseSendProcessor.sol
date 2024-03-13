@@ -50,15 +50,15 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             bytes32 currencyId
         )
     {
-        _validateNotarySignature(_proof.expectedTLSParams.notary, _proof.public_values, _proof.proof);
+        _validateNotarySignature(_proof.expectedTLSParams.verifier, _proof.public_values, _proof.proof);
 
         ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                                 // Notary not checked in validateTLSParams
+            verifier: address(0),                                 // Notary not checked in validateTLSParams
             endpoint: _proof.public_values.endpoint,
             host: _proof.public_values.host
         });
         ITLSData.TLSParams memory expectedTLSParams = ITLSData.TLSParams({
-            notary: address(0),                                 // Notary not checked in validateTLSParams
+            verifier: address(0),                                 // Notary not checked in validateTLSParams
             endpoint: _proof.expectedTLSParams.endpoint.replaceString("*", _proof.public_values.senderId),
             host: _proof.expectedTLSParams.host
         });
@@ -85,7 +85,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     /* ============ Internal Functions ============ */
 
     function _validateNotarySignature(
-        address _notary,
+        address _verifier,
         IWiseSendProcessor.SendData memory _publicValues, 
         bytes memory _proof
     )
@@ -104,11 +104,11 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        bytes32 notaryPayload = keccak256(encodedMessage).toEthSignedMessageHash();
+        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
 
         require(
-            _notary.isValidSignatureNow(notaryPayload, _proof),
-            "Invalid signature from notary"
+            _verifier.isValidSignatureNow(verifierPayload, _proof),
+            "Invalid signature from verifier"
         );
     }
 }

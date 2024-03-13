@@ -36,7 +36,7 @@ const blockchain = new Blockchain(ethers.provider);
 
 describe("WiseRamp", () => {
   let owner: Account;
-  let notary: Account;
+  let verifier: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
   let onRamper: Account;
@@ -57,7 +57,7 @@ describe("WiseRamp", () => {
   beforeEach(async () => {
     [
       owner,
-      notary,
+      verifier,
       offRamper,
       onRamper,
       onRamperOtherAddress,
@@ -359,7 +359,7 @@ describe("WiseRamp", () => {
           subjectDepositAmount = usdc(100);
           subjectReceiveAmount = usdc(92);
           subjectTlsParams = {
-            notary: notary.address,
+            verifier: verifier.address,
             endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           } as TLSParams;
@@ -500,7 +500,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -763,9 +763,9 @@ describe("WiseRamp", () => {
               status: "outgoing_payment_sent",
               intentHash: BigNumber.from(intentHash).toString()
             }
-            const notarySignature = "0x";
+            const verifierSignature = "0x";
 
-            return ramp.connect(subjectCaller.wallet).onRamp(intentHash, sendData, notarySignature);
+            return ramp.connect(subjectCaller.wallet).onRamp(intentHash, sendData, verifierSignature);
           });
 
           it("should revert", async () => {
@@ -819,7 +819,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(101),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -958,7 +958,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1177,7 +1177,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1347,7 +1347,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1359,7 +1359,7 @@ describe("WiseRamp", () => {
             usdc(50),
             usdc(45),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1549,7 +1549,7 @@ describe("WiseRamp", () => {
   
         beforeEach(async () => {
           tlsParams =           {
-            notary: notary.address,
+            verifier: verifier.address,
             endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           };
@@ -1634,7 +1634,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1646,7 +1646,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(93),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1713,7 +1713,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              notary: notary.address,
+              verifier: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }

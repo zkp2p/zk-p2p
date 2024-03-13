@@ -81,7 +81,7 @@ contract WiseRamp is Ownable {
     struct Deposit {
         address depositor;
         string wiseTag;
-        ITLSData.TLSParams tlsParams;       // TLS information including notary and endpoint / host being notarized
+        ITLSData.TLSParams tlsParams;       // TLS information including verifier and endpoint / host being notarized
         uint256 depositAmount;              // Amount of USDC deposited
         bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -261,7 +261,7 @@ contract WiseRamp is Ownable {
      * @param _receiveCurrencyId    Id of the currency to be received off-chain
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
-     * @param _tlsParams            TLS information including notary and endpoint / host being notarized. If the on-rampers profileId
+     * @param _tlsParams            TLS information including verifier and endpoint / host being notarized. If the on-rampers profileId
      *                              must be inserted into the endpoint, replace the profileId with a '*' character
      */
     function offRamp(
@@ -394,19 +394,19 @@ contract WiseRamp is Ownable {
      *
      * @param _intentHash       Hash of the intent being fulfilled
      * @param _sendData         Struct containing unredacted data from API call to Wise
-     * @param _notarySignature  Signature by notary of the unredacted data
+     * @param _verifierSignature  Signature by verifier of the unredacted data
      */
     function onRamp(
         bytes32 _intentHash,
         IWiseSendProcessor.SendData calldata _sendData,
-        bytes calldata _notarySignature
+        bytes calldata _verifierSignature
     )
         external
     {
         (
             Intent memory intent,
             Deposit storage deposit
-        ) = _verifyOnRampProof(_sendData, _notarySignature, _intentHash);
+        ) = _verifyOnRampProof(_sendData, _verifierSignature, _intentHash);
 
         _pruneIntent(deposit, _intentHash);
 
@@ -785,7 +785,7 @@ contract WiseRamp is Ownable {
      */
     function _verifyOnRampProof(
         IWiseSendProcessor.SendData calldata _data,
-        bytes calldata _notarySignature,
+        bytes calldata _verifierSignature,
         bytes32 _intentHash
     )
         internal
@@ -805,7 +805,7 @@ contract WiseRamp is Ownable {
             IWiseSendProcessor.SendProof({
                 public_values: _data,
                 expectedTLSParams: deposit.tlsParams,
-                proof: _notarySignature
+                proof: _verifierSignature
             })
         );
 
