@@ -50,19 +50,28 @@ contract TLSBaseProcessor is Ownable {
 
     /* ============ Internal Functions ============ */
 
-    function _validateTLSParams(
-        ITLSData.TLSParams memory _expectedParams,
-        ITLSData.TLSParams memory _passedParams
+    function _validateTLSEndpoint(
+        string memory _expectedEndpoint,
+        string memory _passedEndpoint
     )
         internal
         pure
     {
         require(
-            keccak256(abi.encode(_expectedParams.endpoint)) == keccak256(abi.encode(_passedParams.endpoint)),
+            keccak256(abi.encode(_expectedEndpoint)) == keccak256(abi.encode(_passedEndpoint)),
             "Passed endpoint doesn't match expected"
         );
+    }
+
+    function _validateTLSHost(
+        string memory _expectedHost,
+        string memory _passedHost
+    )
+        internal
+        pure
+    {
         require(
-            keccak256(abi.encode(_expectedParams.host)) == keccak256(abi.encode(_passedParams.host)),
+            keccak256(abi.encode(_expectedHost)) == keccak256(abi.encode(_passedHost)),
             "Passed host doesn't match expected"
         );
     }

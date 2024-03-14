@@ -15,7 +15,8 @@ import { Account } from "@utils/test/types";
 import {
   WiseRamp,
   USDCMock,
-  WiseRegistrationProcessorMock,
+  WiseAccountRegistrationProcessorMock,
+  WiseOffRamperRegistrationProcessorMock,
   WiseSendProcessorMock
 } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
@@ -49,7 +50,8 @@ describe("WiseRamp", () => {
 
   let ramp: WiseRamp;
   let usdcToken: USDCMock;
-  let registrationProcessor: WiseRegistrationProcessorMock;
+  let accountRegistrationProcessor: WiseAccountRegistrationProcessorMock;
+  let offRamperRegistrationProcessor: WiseOffRamperRegistrationProcessorMock;
   let sendProcessor: WiseSendProcessorMock;
 
   let deployer: DeployHelper;
@@ -72,7 +74,8 @@ describe("WiseRamp", () => {
     deployer = new DeployHelper(owner.wallet);
 
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
-    registrationProcessor = await deployer.deployWiseRegistrationProcessorMock();
+    accountRegistrationProcessor = await deployer.deployWiseAccountRegistrationProcessorMock();
+    offRamperRegistrationProcessor = await deployer.deployWiseOffRamperRegistrationProcessorMock();
     sendProcessor = await deployer.deployWiseSendProcessorMock();
 
     await usdcToken.transfer(offRamper.address, usdc(10000));
@@ -117,19 +120,22 @@ describe("WiseRamp", () => {
   });
 
   describe("#initialize", async () => {
-    let subjectRegistrationProcessor: Address;
+    let subjectAccountRegistrationProcessor: Address;
+    let subjectOffRamperRegistrationProcessor: Address;
     let subjectSendProcessor: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectRegistrationProcessor = registrationProcessor.address;
+      subjectAccountRegistrationProcessor = accountRegistrationProcessor.address;
+      subjectOffRamperRegistrationProcessor = offRamperRegistrationProcessor.address;
       subjectSendProcessor = sendProcessor.address;
       subjectCaller = owner;
     });
 
     async function subject(): Promise<any> {
       return ramp.connect(subjectCaller.wallet).initialize(
-        subjectRegistrationProcessor,
+        subjectAccountRegistrationProcessor,
+        subjectOffRamperRegistrationProcessor,
         subjectSendProcessor
       );
     }
@@ -137,10 +143,12 @@ describe("WiseRamp", () => {
     it("should set the correct processor addresses", async () => {
       await subject();
 
-      const registrationProcessorAddress: Address = await ramp.registrationProcessor();
+      const accountRegistrationProcessorAddress: Address = await ramp.accountRegistrationProcessor();
+      const offRamperRegistrationProcessorAddress: Address = await ramp.offRamperRegistrationProcessor();
       const sendProcessorAddress: Address = await ramp.sendProcessor();
 
-      expect(registrationProcessorAddress).to.eq(registrationProcessor.address);
+      expect(accountRegistrationProcessorAddress).to.eq(accountRegistrationProcessor.address);
+      expect(offRamperRegistrationProcessorAddress).to.eq(offRamperRegistrationProcessor.address);
       expect(sendProcessorAddress).to.eq(sendProcessor.address);
     });
 
@@ -170,7 +178,11 @@ describe("WiseRamp", () => {
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      await ramp.initialize(registrationProcessor.address, sendProcessor.address);
+      await ramp.initialize(
+        accountRegistrationProcessor.address,
+        offRamperRegistrationProcessor.address,
+        sendProcessor.address
+      );
 
       const registerPublicValues = {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
@@ -195,7 +207,7 @@ describe("WiseRamp", () => {
       await subject();
       const accountInfo = await ramp.getAccountInfo(subjectCaller.address);
 
-      expect(accountInfo.onRampId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
+      expect(accountInfo.accountId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
       expect(accountInfo.wiseTagHash).to.eq(BigNumber.from(subjectProof.public_values.wiseTagHash).toHexString());
     });
 
@@ -215,7 +227,7 @@ describe("WiseRamp", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Account already associated with onRampId");
+        await expect(subject()).to.be.revertedWith("Account already associated with accountId");
       });
     });
   });
@@ -227,7 +239,11 @@ describe("WiseRamp", () => {
     let maliciousOnRamperProof: WiseRegistrationProof;
 
     beforeEach(async () => {
-      await ramp.initialize(registrationProcessor.address, sendProcessor.address);
+      await ramp.initialize(
+        accountRegistrationProcessor.address,
+        offRamperRegistrationProcessor.address,
+        sendProcessor.address
+      );
 
       const standardRegistrationData: WiseRegistrationData = {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
@@ -281,7 +297,7 @@ describe("WiseRamp", () => {
         await subject();
         const accountInfo = await ramp.getAccountInfo(subjectCaller.address);
   
-        expect(accountInfo.onRampId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
+        expect(accountInfo.accountId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
         expect(accountInfo.offRampId).to.eq(calculateWiseId(subjectProof.public_values.mcAccountId));
       });
   
@@ -2196,7 +2212,7 @@ describe("WiseRamp", () => {
       });
     });
 
-    describe("#setRegistrationProcessor", async () => {
+    describe("#setAccountRegistrationProcessor", async () => {
       let subjectRegistrationProcessor: Address;
       let subjectCaller: Account;
 
@@ -2206,21 +2222,59 @@ describe("WiseRamp", () => {
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).setRegistrationProcessor(subjectRegistrationProcessor);
+        return ramp.connect(subjectCaller.wallet).setAccountRegistrationProcessor(subjectRegistrationProcessor);
       }
 
-      it("should set the correct min deposit amount", async () => {
+      it("should set the correct account registration processor", async () => {
         await subject();
 
-        const newRegistrationProcessor = await ramp.registrationProcessor();
+        const newRegistrationProcessor = await ramp.accountRegistrationProcessor();
 
         expect(newRegistrationProcessor).to.eq(subjectRegistrationProcessor);
       });
 
-      it("should emit a NewRegistrationProcessorSet event", async () => {
+      it("should emit a NewAccountRegistrationProcessorSet event", async () => {
         const tx = await subject();
 
-        expect(tx).to.emit(ramp, "NewRegistrationProcessorSet").withArgs(subjectRegistrationProcessor);
+        expect(tx).to.emit(ramp, "NewAccountRegistrationProcessorSet").withArgs(subjectRegistrationProcessor);
+      });
+
+      describe("when the caller is not the owner", async () => {
+        beforeEach(async () => {
+          subjectCaller = onRamper;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+        });
+      });
+    });
+
+    describe("#setOffRamperRegistrationProcessor", async () => {
+      let subjectRegistrationProcessor: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectRegistrationProcessor = owner.address;
+        subjectCaller = owner;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.connect(subjectCaller.wallet).setOffRamperRegistrationProcessor(subjectRegistrationProcessor);
+      }
+
+      it("should set the correct off ramper registration processor", async () => {
+        await subject();
+
+        const newRegistrationProcessor = await ramp.offRamperRegistrationProcessor();
+
+        expect(newRegistrationProcessor).to.eq(subjectRegistrationProcessor);
+      });
+
+      it("should emit a NewOffRamperRegistrationProcessorSet event", async () => {
+        const tx = await subject();
+
+        expect(tx).to.emit(ramp, "NewOffRamperRegistrationProcessorSet").withArgs(subjectRegistrationProcessor);
       });
 
       describe("when the caller is not the owner", async () => {

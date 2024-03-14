@@ -4,19 +4,7 @@ pragma solidity ^0.8.18;
 
 import { ITLSData } from "./ITLSData.sol";
 
-interface IWiseRegistrationProcessor {
-
-    struct RegistrationData {
-        string endpoint;
-        string host;
-        string profileId;
-        string wiseTagHash;
-    }
-
-    struct RegistrationProof {
-        RegistrationData public_values;
-        bytes proof;
-    }
+interface IWiseOffRamperRegistrationProcessor {
 
     struct OffRamperRegistrationData {
         string endpoint;
@@ -29,12 +17,6 @@ interface IWiseRegistrationProcessor {
         OffRamperRegistrationData public_values;
         bytes proof;
     }
-
-    function processAccountProof(
-        RegistrationProof calldata _proof
-    )
-        external
-    returns (bytes32, bytes32);
 
     function processOffRamperProof(
         OffRamperRegistrationProof calldata _proof

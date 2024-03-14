@@ -52,18 +52,9 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     {
         _validateNotarySignature(_proof.expectedTLSParams.verifier, _proof.public_values, _proof.proof);
 
-        ITLSData.TLSParams memory passedTLSParams = ITLSData.TLSParams({
-            verifier: address(0),                                 // Notary not checked in validateTLSParams
-            endpoint: _proof.public_values.endpoint,
-            host: _proof.public_values.host
-        });
-        ITLSData.TLSParams memory expectedTLSParams = ITLSData.TLSParams({
-            verifier: address(0),                                 // Notary not checked in validateTLSParams
-            endpoint: _proof.expectedTLSParams.endpoint.replaceString("*", _proof.public_values.senderId),
-            host: _proof.expectedTLSParams.host
-        });
-
-        _validateTLSParams(expectedTLSParams, passedTLSParams);
+        _validateTLSEndpoint(_proof.expectedTLSParams.endpoint, _proof.public_values.endpoint);
+        _validateTLSHost(_proof.expectedTLSParams.host, _proof.public_values.host);
+        
         // Validate status
         require(
             keccak256(abi.encodePacked(_proof.public_values.status)) == PAYMENT_STATUS,
