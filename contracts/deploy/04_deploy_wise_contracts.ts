@@ -56,18 +56,29 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     getDeployedContractAddress(network, "NullifierRegistry")
   );
 
-  const registrationProcessor = await deploy("WiseRegistrationProcessor", {
+  const accountRegistrationProcessor = await deploy("WiseAccountRegistrationProcessor", {
     from: deployer,
     args: [
       wiseRamp.address,
       nullifierRegistryContract.address,
       ZERO,
       ACCOUNT_TLS_PARAMS[paymentProvider][network],
+    ],
+    log: true
+  });
+  console.log("AccountRegistrationProcessor deployed at", accountRegistrationProcessor.address);
+
+  const offRamperRegistrationProcessor = await deploy("WiseOffRamperRegistrationProcessor", {
+    from: deployer,
+    args: [
+      wiseRamp.address,
+      nullifierRegistryContract.address,
+      ZERO,
       OFFRAMPER_TLS_PARAMS[paymentProvider][network],
     ],
     log: true
   });
-  console.log("RegistrationProcessor deployed at", registrationProcessor.address);
+  console.log("AccountRegistrationProcessor deployed at", offRamperRegistrationProcessor.address);
 
   const sendProcessor = await deploy("WiseSendProcessor", {
     from: deployer,
@@ -84,7 +95,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const wiseRampContract = await ethers.getContractAt("WiseRamp", wiseRamp.address);
   if (!(await wiseRampContract.isInitialized())) {
     await wiseRampContract.initialize(
-      registrationProcessor.address,
+      accountRegistrationProcessor.address,
+      offRamperRegistrationProcessor.address,
       sendProcessor.address
     );
   
@@ -92,14 +104,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
-  await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
+  await addWritePermission(hre, nullifierRegistryContract, accountRegistrationProcessor.address);
+  await addWritePermission(hre, nullifierRegistryContract, offRamperRegistrationProcessor.address);
   console.log("NullifierRegistry permissions added...");
 
   console.log("Transferring ownership of contracts...");
   await setNewOwner(hre, wiseRampContract, multiSig);
   await setNewOwner(
     hre,
-    await ethers.getContractAt("WiseRegistrationProcessor", registrationProcessor.address),
+    await ethers.getContractAt("WiseAccountRegistrationProcessor", accountRegistrationProcessor.address),
+    multiSig
+  );
+  await setNewOwner(
+    hre,
+    await ethers.getContractAt("WiseOffRamperRegistrationProcessor", offRamperRegistrationProcessor.address),
     multiSig
   );
   await setNewOwner(
