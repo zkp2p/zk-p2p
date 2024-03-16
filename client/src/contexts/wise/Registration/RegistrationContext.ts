@@ -4,12 +4,12 @@ import { createContext } from 'react'
 interface RegistrationValues {
   isRegistered: boolean;
   registrationHash: string | null;
-  extractedVenmoId: string | null;
+  extractedWiseProfileId: string | null;
   shouldFetchVenmoNftId: boolean;
   venmoNftId: bigint | null;
   venmoNftUri: string | null;
   refetchVenmoNftId: (() => void) | null;
-  setExtractedVenmoId: ((venmoId: string) => void) | null;
+  setExtractedWiseProfileId: ((venmoId: string) => void) | null;
   refetchRampAccount: (() => void) | null;
   shouldFetchRegistration: boolean;
 }
@@ -17,12 +17,12 @@ interface RegistrationValues {
 const defaultValues: RegistrationValues = {
   isRegistered: false,
   registrationHash: null,
-  extractedVenmoId: null,
+  extractedWiseProfileId: null,
   shouldFetchVenmoNftId: false,
   venmoNftId: null,
   venmoNftUri: null,
   refetchVenmoNftId: null,
-  setExtractedVenmoId: null,
+  setExtractedWiseProfileId: null,
   refetchRampAccount: null,
   shouldFetchRegistration: false
 };

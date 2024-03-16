@@ -16,7 +16,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { wiseStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/venmo/useRegistration';
+import useRegistration from '@hooks/wise/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
