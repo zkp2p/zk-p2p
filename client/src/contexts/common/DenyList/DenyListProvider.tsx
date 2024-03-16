@@ -82,8 +82,6 @@ const DenyListProvider = ({ children }: ProvidersProps) => {
 
     const denyList = await fetchDenyList(VENMO_DENY_LIST_URL, 'venmoDepositorDenyList', setVenmoDepositorDenyList);
 
-    console.log('fetchVenmoDepositoryDenyList: ', denyList);
-
     return denyList;
   }, [fetchDenyList]);
 
