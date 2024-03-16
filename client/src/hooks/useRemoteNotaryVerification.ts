@@ -26,7 +26,7 @@ type RemoteNotaryVerificationError = {
   message: string;
 };
 
-export default function useRemoteProofGen({ paymentType, circuitType, notarization, intentHash }: VerificationParams) {
+export default function useRemoteNotaryVerification({ paymentType, circuitType, notarization, intentHash }: VerificationParams) {
   const [data, setData] = useState<RemoteNotaryVerificationResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<RemoteNotaryVerificationError | null>(null);
