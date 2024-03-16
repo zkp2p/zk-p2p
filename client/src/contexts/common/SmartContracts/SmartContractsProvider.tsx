@@ -13,6 +13,9 @@ import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { abi as garantiRampAbi } from "@helpers/abi/garanti/ramp.abi";
 import { abi as garantiSendProcessorAbi } from "@helpers/abi/garanti/send.abi";
 
+import { abi as wiseRampAbi } from "@helpers/abi/wise/ramp.abi";
+import { abi as wiseSendProcessorAbi } from "@helpers/abi/wise/send.abi";
+
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
 import { Abi } from '@helpers/types';
@@ -239,9 +242,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
         // Wise
         wiseRampAddress,
-        wiseRampAbi: garantiRampAbi as Abi, // Copied from Garanti
+        wiseRampAbi: wiseRampAbi as Abi,
         wiseSendProcessorAddress,
-        wiseSendProcessorAbi: garantiSendProcessorAbi as Abi, // Copied from Garanti
+        wiseSendProcessorAbi: wiseSendProcessorAbi as Abi,
 
         // NFT
         nftAbi: nftAbi as Abi,
