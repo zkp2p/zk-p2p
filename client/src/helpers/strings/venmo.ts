@@ -17,6 +17,11 @@ const strings: PlatformStrings = {
     Please ensure you are using an email attached to a Venmo account with a receipt after 1/10/24.
   `,
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    no-op
+  `,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from Venmo

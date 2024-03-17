@@ -18,6 +18,11 @@ const strings: PlatformStrings = {
     Please ensure you are using an email attached to a HDFC account with a receipt after 01 Sep.
   `,
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    no-op
+  `,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from HDFC

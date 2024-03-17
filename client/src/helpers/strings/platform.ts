@@ -15,6 +15,9 @@ export interface PlatformStrings {
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: string,
   NO_EMAILS_ERROR: string
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: string,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: string,
 

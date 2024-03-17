@@ -9,12 +9,16 @@ const strings: PlatformStrings = {
 
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: `
-    Sign in with Google to pull in your Wise transaction emails. The emails are not stored and never
-    leave your browser. Read more:
+    no-op
   `,
   NO_EMAILS_ERROR: `
-    No emails found.
-    Please ensure you are using an email attached to a Wise account with a receipt after 01 Sep.
+    no-op
+  `,
+
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    No Wise tags found.
+    Please follow instructions in the extension to notarize an existing Wise account tag in the account page.
   `,
 
   // New Registration
