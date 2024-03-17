@@ -49,7 +49,7 @@ export default function useRemoteNotaryVerification({ paymentType, circuitType, 
         throw new Error("Invalid payment type.");
     }
     if (!apiUrl) {
-      throw new Error("Invalid proving url.");
+      throw new Error("Invalid verification url.");
     }
 
     try {
