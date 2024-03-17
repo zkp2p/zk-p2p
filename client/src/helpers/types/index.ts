@@ -1,6 +1,6 @@
 export { ProofGenerationStatus, EmailInputStatus } from './proofGeneration';
 
-export { NotaryVerificationStatus, ProofInputStatus } from './notaryVerification';
+export { NotaryVerificationStatus, NotaryProofInputStatus, NotaryVerificationCircuitTypes } from './notaryVerification';
 
 export { TransactionStatus } from './transactionStatus';
 export type { TransactionStatusType } from './transactionStatus';

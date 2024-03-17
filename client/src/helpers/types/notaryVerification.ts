@@ -13,10 +13,16 @@ export const NotaryVerificationStatus = {
   DONE: "done"
 };
 
-export const ProofInputStatus = {
+export const NotaryProofInputStatus = {
   DEFAULT: "default",
   INVALID_SIGNATURE: "invalid-signature",
   INVALID_DOMAIN_KEY: "invalid-domain-key",
   INVALID_SUBJECT: "invalid-subject",
   VALID: "valid"
+};
+
+export const NotaryVerificationCircuitTypes = {
+  TRANSFER: 'transfer',
+  REGISTRATION_TAG: 'registration_profile_id',
+  REGISTRATION_MULTICURRENCY_ID: 'registration_account_id'
 };
