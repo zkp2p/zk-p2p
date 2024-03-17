@@ -49,7 +49,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         onlyRamp
         returns(bytes32 onRampId, bytes32 wiseTagHash)
     {
-        _validateNotarySignature(_proof.public_values, _proof.proof);
+        _validateProof(_proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(accountTLSParams.endpoint, _proof.public_values.endpoint);
         _validateTLSHost(accountTLSParams.host, _proof.public_values.host);
@@ -76,7 +76,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
 
     /* ============ Internal Functions ============ */
 
-    function _validateNotarySignature(
+    function _validateProof(
         IWiseAccountRegistrationProcessor.RegistrationData memory _publicValues, 
         bytes memory _proof
     )
@@ -84,11 +84,6 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
-        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
-
-        require(
-            accountTLSParams.verifier.isValidSignatureNow(verifierPayload, _proof),
-            "Invalid signature from verifier"
-        );
+        _validateVerifierSignature(encodedMessage, _proof, accountTLSParams.verifier);
     }
 }

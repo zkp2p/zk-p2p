@@ -1,8 +1,5 @@
 //SPDX-License-Identifier: MIT
 
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
 import { ITLSData } from "./interfaces/ITLSData.sol";
 import { IWiseOffRamperRegistrationProcessor } from "./interfaces/IWiseOffRamperRegistrationProcessor.sol";
@@ -13,8 +10,6 @@ pragma solidity ^0.8.18;
 
 contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcessor, TLSBaseProcessor {
 
-    using ECDSA for bytes32;
-    using SignatureChecker for address;
     using StringConversionUtils for string;
     
     /* ============ Events ============ */
@@ -49,7 +44,7 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         onlyRamp
         returns(bytes32 onRampId, bytes32 offRampId)
     {
-        _validateOffRamperNotarySignature(_proof.public_values, _proof.proof);
+        _validateProof(_proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(offRamperTLSParams.endpoint.replaceString("*", _proof.public_values.profileId), _proof.public_values.endpoint);
         _validateTLSHost(offRamperTLSParams.host, _proof.public_values.host);
@@ -76,7 +71,7 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
 
     /* ============ Internal Functions ============ */
 
-    function _validateOffRamperNotarySignature(
+    function _validateProof(
         IWiseOffRamperRegistrationProcessor.OffRamperRegistrationData memory _publicValues, 
         bytes memory _proof
     )
@@ -84,11 +79,6 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
-
-        require(
-            offRamperTLSParams.verifier.isValidSignatureNow(verifierPayload, _proof),
-            "Invalid signature from verifier"
-        );
+        _validateVerifierSignature(encodedMessage, _proof, offRamperTLSParams.verifier);
     }
 }

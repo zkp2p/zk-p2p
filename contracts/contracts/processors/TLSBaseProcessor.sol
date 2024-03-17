@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
 
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
@@ -9,6 +11,9 @@ import { ITLSData } from "../ramps/wise/interfaces/ITLSData.sol";
 pragma solidity ^0.8.18;
 
 contract TLSBaseProcessor is Ownable {
+
+    using SignatureChecker for address;
+    using ECDSA for bytes32;
 
     /* ============ Modifiers ============ */
     modifier onlyRamp() {
@@ -79,5 +84,21 @@ contract TLSBaseProcessor is Ownable {
     function _validateAndAddNullifier(bytes32 _nullifier) internal {
         require(!nullifierRegistry.isNullified(_nullifier), "Nullifier has already been used");
         nullifierRegistry.addNullifier(_nullifier);
+    }
+
+    function _validateVerifierSignature(
+        bytes memory _message,
+        bytes memory _signature,
+        address _verifier
+    )
+        internal
+        view
+    {
+        bytes32 verifierPayload = keccak256(_message).toEthSignedMessageHash();
+
+        require(
+            _verifier.isValidSignatureNow(verifierPayload, _signature),
+            "Invalid signature from verifier"
+        );
     }
 }
