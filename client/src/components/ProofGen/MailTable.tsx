@@ -115,11 +115,15 @@ export const MailTable: React.FC<MailTableProps> = ({
             month: 'numeric',
             day: 'numeric'
           });
+
         case PaymentPlatform.GARANTI:
           return date.toLocaleDateString('en-TR', {
             month: 'numeric',
             day: 'numeric'
           });
+
+        default:
+          throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
     }
   };
