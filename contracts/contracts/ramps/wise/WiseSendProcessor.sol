@@ -52,7 +52,10 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     {
         _validateProof(_proof.expectedTLSParams.verifierSigningKey, _proof.public_values, _proof.proof);
 
-        _validateTLSEndpoint(_proof.expectedTLSParams.endpoint, _proof.public_values.endpoint);
+        _validateTLSEndpoint(
+            _proof.expectedTLSParams.endpoint.replaceString("*", _proof.public_values.senderId),
+            _proof.public_values.endpoint
+        );
         _validateTLSHost(_proof.expectedTLSParams.host, _proof.public_values.host);
         
         // Validate status
