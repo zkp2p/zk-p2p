@@ -43,7 +43,7 @@ describe("WiseAccountRegistrationProcessor", () => {
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
     accountTLSParams = {
-      verifier: verifier.address,
+      verifierSigningKey: verifier.address,
       endpoint: "POST https://wise.com/gateway/v1/payments",
       host: "wise.com",
     };
@@ -67,7 +67,7 @@ describe("WiseAccountRegistrationProcessor", () => {
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
 
       expect(accountTLSParams.endpoint).to.deep.equal(actualAccountTLSParams.endpoint);
-      expect(accountTLSParams.verifier).to.deep.equal(actualAccountTLSParams.verifier);
+      expect(accountTLSParams.verifierSigningKey).to.deep.equal(actualAccountTLSParams.verifierSigningKey);
       expect(accountTLSParams.host).to.deep.equal(actualAccountTLSParams.host);
     });
   });
@@ -203,7 +203,7 @@ describe("WiseAccountRegistrationProcessor", () => {
       subjectCaller = owner;
 
       subjectTLSParams = {
-        verifier: verifier.address,
+        verifierSigningKey: verifier.address,
         endpoint: "POST https://wise.com/gateway/v2/payments",
         host: "api.wise.com",
       };
@@ -219,7 +219,7 @@ describe("WiseAccountRegistrationProcessor", () => {
       const actualTLSParams = await registrationProcessor.getAccountTLSParams();
 
       expect(actualTLSParams.endpoint).to.equal(subjectTLSParams.endpoint);
-      expect(actualTLSParams.verifier).to.equal(subjectTLSParams.verifier);
+      expect(actualTLSParams.verifierSigningKey).to.equal(subjectTLSParams.verifierSigningKey);
       expect(actualTLSParams.host).to.equal(subjectTLSParams.host);
     });
 

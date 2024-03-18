@@ -375,7 +375,7 @@ describe("WiseRamp", () => {
           subjectDepositAmount = usdc(100);
           subjectReceiveAmount = usdc(92);
           subjectTlsParams = {
-            verifier: verifier.address,
+            verifierSigningKey: verifier.address,
             endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           } as TLSParams;
@@ -516,7 +516,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -835,7 +835,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(101),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -974,7 +974,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1193,7 +1193,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1363,7 +1363,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1375,7 +1375,7 @@ describe("WiseRamp", () => {
             usdc(50),
             usdc(45),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1565,7 +1565,7 @@ describe("WiseRamp", () => {
   
         beforeEach(async () => {
           tlsParams =           {
-            verifier: verifier.address,
+            verifierSigningKey: verifier.address,
             endpoint: "POST https://api.transferwise.com/v1/quotes",
             host: "api.transferwise.com",
           };
@@ -1650,7 +1650,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1662,7 +1662,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(93),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }
@@ -1729,7 +1729,7 @@ describe("WiseRamp", () => {
             usdc(100),
             usdc(92),
             {
-              verifier: verifier.address,
+              verifierSigningKey: verifier.address,
               endpoint: "POST https://api.transferwise.com/v1/quotes",
               host: "api.transferwise.com",
             }

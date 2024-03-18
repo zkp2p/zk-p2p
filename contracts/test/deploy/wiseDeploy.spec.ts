@@ -141,7 +141,7 @@ describe("Wise Deploy", () => {
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(actualAccountTLSParams.endpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
       expect(actualAccountTLSParams.host).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
-      expect(actualAccountTLSParams.verifier).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifier);
+      expect(actualAccountTLSParams.verifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
       expect(actualTimestampBuffer).to.eq(0);
     });
   });
@@ -159,7 +159,7 @@ describe("Wise Deploy", () => {
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(actualOffRamperTLSParams.endpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
       expect(actualOffRamperTLSParams.host).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
-      expect(actualOffRamperTLSParams.verifier).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifier);
+      expect(actualOffRamperTLSParams.verifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
       expect(actualTimestampBuffer).to.eq(0);
     });
   });

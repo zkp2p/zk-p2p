@@ -11,8 +11,8 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { Address, TLSParams, WiseOffRamperRegistrationProof, WiseRegistrationProof } from "@utils/types";
-import { calculateWiseId, calculateWiseTagHash } from "@utils/protocolUtils";
+import { TLSParams, WiseOffRamperRegistrationProof } from "@utils/types";
+import { calculateWiseId } from "@utils/protocolUtils";
 
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
@@ -43,7 +43,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
     offRamperTLSParams = {
-      verifier: verifier.address,
+      verifierSigningKey: verifier.address,
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     };
@@ -66,7 +66,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
 
       expect(offRamperTLSParams.endpoint).to.deep.equal(actualOffRamperTLSParams.endpoint);
-      expect(offRamperTLSParams.verifier).to.deep.equal(actualOffRamperTLSParams.verifier);
+      expect(offRamperTLSParams.verifierSigningKey).to.deep.equal(actualOffRamperTLSParams.verifierSigningKey);
       expect(offRamperTLSParams.host).to.deep.equal(actualOffRamperTLSParams.host);
     });
   });
@@ -203,7 +203,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
       subjectCaller = owner;
 
       subjectTLSParams = {
-        verifier: verifier.address,
+        verifierSigningKey: verifier.address,
         endpoint: "GET https://wise.com/gateway/v4/profiles/41213881/transfers",
         host: "api.wise.com",
       };
@@ -219,7 +219,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
       const actualTLSParams = await registrationProcessor.getOffRamperTLSParams();
 
       expect(actualTLSParams.endpoint).to.equal(subjectTLSParams.endpoint);
-      expect(actualTLSParams.verifier).to.equal(subjectTLSParams.verifier);
+      expect(actualTLSParams.verifierSigningKey).to.equal(subjectTLSParams.verifierSigningKey);
       expect(actualTLSParams.host).to.equal(subjectTLSParams.host);
     });
 

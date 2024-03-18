@@ -43,7 +43,7 @@ describe("WiseSendProcessor", () => {
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
     tlsParams = {
-      verifier: verifier.address,
+      verifierSigningKey: verifier.address,
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     };
