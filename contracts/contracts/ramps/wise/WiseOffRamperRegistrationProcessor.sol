@@ -79,6 +79,6 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        _validateVerifierSignature(encodedMessage, _proof, offRamperTLSParams.verifier);
+        _validateVerifierSignature(encodedMessage, _proof, offRamperTLSParams.verifierSigningKey);
     }
 }

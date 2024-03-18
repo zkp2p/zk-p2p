@@ -4,7 +4,7 @@ pragma solidity ^0.8.18;
 
 interface ITLSData {
     struct TLSParams {
-        address verifier;
+        address verifierSigningKey;
         string endpoint;
         string host;
     }

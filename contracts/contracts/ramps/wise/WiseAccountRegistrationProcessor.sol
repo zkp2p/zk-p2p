@@ -84,6 +84,6 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
-        _validateVerifierSignature(encodedMessage, _proof, accountTLSParams.verifier);
+        _validateVerifierSignature(encodedMessage, _proof, accountTLSParams.verifierSigningKey);
     }
 }

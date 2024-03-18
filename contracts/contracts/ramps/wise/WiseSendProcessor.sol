@@ -50,7 +50,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             bytes32 currencyId
         )
     {
-        _validateNotarySignature(_proof.expectedTLSParams.verifier, _proof.public_values, _proof.proof);
+        _validateProof(_proof.expectedTLSParams.verifierSigningKey, _proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(_proof.expectedTLSParams.endpoint, _proof.public_values.endpoint);
         _validateTLSHost(_proof.expectedTLSParams.host, _proof.public_values.host);
@@ -75,7 +75,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
 
     /* ============ Internal Functions ============ */
 
-    function _validateNotarySignature(
+    function _validateProof(
         address _verifier,
         IWiseSendProcessor.SendData memory _publicValues, 
         bytes memory _proof
@@ -95,11 +95,6 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        bytes32 verifierPayload = keccak256(encodedMessage).toEthSignedMessageHash();
-
-        require(
-            _verifier.isValidSignatureNow(verifierPayload, _proof),
-            "Invalid signature from verifier"
-        );
+        _validateVerifierSignature(encodedMessage, _proof, _verifier);
     }
 }
