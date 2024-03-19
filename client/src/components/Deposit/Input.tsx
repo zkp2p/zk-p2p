@@ -153,7 +153,7 @@ const StyledInput = styled.input<StyledInputProps>`
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: 24px;
+  font-size: ${({ readOnly }) => readOnly ? '16px' : '24px'};
 
   &:focus {
     box-shadow: none;
