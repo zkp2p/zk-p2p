@@ -57,7 +57,7 @@ export const abi = [
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "onRampId",
+        "name": "accountId",
         "type": "bytes32"
       },
       {
@@ -244,7 +244,7 @@ export const abi = [
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "onRampId",
+        "name": "accountId",
         "type": "bytes32"
       },
       {
@@ -301,11 +301,11 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "address",
-        "name": "receiveProcessor",
+        "name": "registrationProcessor",
         "type": "address"
       }
     ],
-    "name": "NewReceiveProcessorSet",
+    "name": "NewAccountRegistrationProcessorSet",
     "type": "event"
   },
   {
@@ -318,7 +318,7 @@ export const abi = [
         "type": "address"
       }
     ],
-    "name": "NewRegistrationProcessorSet",
+    "name": "NewOffRamperRegistrationProcessorSet",
     "type": "event"
   },
   {
@@ -346,7 +346,7 @@ export const abi = [
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "onRampId",
+        "name": "accountId",
         "type": "bytes32"
       },
       {
@@ -456,6 +456,19 @@ export const abi = [
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "accountRegistrationProcessor",
+    "outputs": [
+      {
+        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -518,7 +531,7 @@ export const abi = [
         "components": [
           {
             "internalType": "address",
-            "name": "notary",
+            "name": "verifierSigningKey",
             "type": "address"
           },
           {
@@ -603,7 +616,7 @@ export const abi = [
                 "components": [
                   {
                     "internalType": "address",
-                    "name": "notary",
+                    "name": "verifierSigningKey",
                     "type": "address"
                   },
                   {
@@ -684,7 +697,7 @@ export const abi = [
         "components": [
           {
             "internalType": "bytes32",
-            "name": "onRampId",
+            "name": "accountId",
             "type": "bytes32"
           },
           {
@@ -756,7 +769,7 @@ export const abi = [
             "components": [
               {
                 "internalType": "address",
-                "name": "notary",
+                "name": "verifierSigningKey",
                 "type": "address"
               },
               {
@@ -851,7 +864,7 @@ export const abi = [
                 "components": [
                   {
                     "internalType": "address",
-                    "name": "notary",
+                    "name": "verifierSigningKey",
                     "type": "address"
                   },
                   {
@@ -1022,8 +1035,13 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseRegistrationProcessor",
-        "name": "_registrationProcessor",
+        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "name": "_accountRegistrationProcessor",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IWiseOffRamperRegistrationProcessor",
+        "name": "_offRamperRegistrationProcessor",
         "type": "address"
       },
       {
@@ -1178,7 +1196,7 @@ export const abi = [
         "components": [
           {
             "internalType": "address",
-            "name": "notary",
+            "name": "verifierSigningKey",
             "type": "address"
           },
           {
@@ -1200,6 +1218,19 @@ export const abi = [
     "name": "offRamp",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "offRamperRegistrationProcessor",
+    "outputs": [
+      {
+        "internalType": "contract IWiseOffRamperRegistrationProcessor",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1268,7 +1299,7 @@ export const abi = [
       },
       {
         "internalType": "bytes",
-        "name": "_notarySignature",
+        "name": "_verifierSignature",
         "type": "bytes"
       }
     ],
@@ -1330,7 +1361,7 @@ export const abi = [
                 "type": "string"
               }
             ],
-            "internalType": "struct IWiseRegistrationProcessor.RegistrationData",
+            "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationData",
             "name": "public_values",
             "type": "tuple"
           },
@@ -1340,7 +1371,7 @@ export const abi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IWiseRegistrationProcessor.RegistrationProof",
+        "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationProof",
         "name": "_proof",
         "type": "tuple"
       }
@@ -1377,7 +1408,7 @@ export const abi = [
                 "type": "string"
               }
             ],
-            "internalType": "struct IWiseRegistrationProcessor.OffRamperRegistrationData",
+            "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationData",
             "name": "public_values",
             "type": "tuple"
           },
@@ -1387,7 +1418,7 @@ export const abi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IWiseRegistrationProcessor.OffRamperRegistrationProof",
+        "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationProof",
         "name": "_proof",
         "type": "tuple"
       }
@@ -1395,19 +1426,6 @@ export const abi = [
     "name": "registerAsOffRamper",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "registrationProcessor",
-    "outputs": [
-      {
-        "internalType": "contract IWiseRegistrationProcessor",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1459,6 +1477,19 @@ export const abi = [
   {
     "inputs": [
       {
+        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "name": "_registrationProcessor",
+        "type": "address"
+      }
+    ],
+    "name": "setAccountRegistrationProcessor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_intentExpirationPeriod",
         "type": "uint256"
@@ -1498,12 +1529,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_onRampCooldownPeriod",
-        "type": "uint256"
+        "internalType": "contract IWiseOffRamperRegistrationProcessor",
+        "name": "_registrationProcessor",
+        "type": "address"
       }
     ],
-    "name": "setOnRampCooldownPeriod",
+    "name": "setOffRamperRegistrationProcessor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1511,12 +1542,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseRegistrationProcessor",
-        "name": "_registrationProcessor",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_onRampCooldownPeriod",
+        "type": "uint256"
       }
     ],
-    "name": "setRegistrationProcessor",
+    "name": "setOnRampCooldownPeriod",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

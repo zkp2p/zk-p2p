@@ -156,7 +156,7 @@ export const abi = [
             "components": [
               {
                 "internalType": "address",
-                "name": "notary",
+                "name": "verifierSigningKey",
                 "type": "address"
               },
               {
