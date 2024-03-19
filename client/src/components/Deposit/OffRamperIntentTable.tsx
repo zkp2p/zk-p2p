@@ -109,7 +109,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         const expirationTimestamp = formatExpiration(intent.timestamp);
 
         const sanitizedIntent: IntentRowData = {
-          isVenmo,
+          paymentPlatform: deposit.platformType,
           onRamper,
           amountUSDToReceive,
           amountUSDCToSend,
@@ -178,7 +178,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
           {intentsRowData.map((intentsRow, rowIndex) => (
             <IntentRow
               key={rowIndex}
-              isVenmo={intentsRow.isVenmo}
+              paymentPlatform={intentsRow.paymentPlatform}
               amountUSDToReceive={intentsRow.amountUSDToReceive}
               amountUSDCToSend={intentsRow.amountUSDCToSend}
               expirationTimestamp={intentsRow.expirationTimestamp}

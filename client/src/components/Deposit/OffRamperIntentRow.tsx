@@ -3,15 +3,17 @@ import styled from 'styled-components/macro'
 import Link from '@mui/material/Link';
 import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 
+import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import { PaymentPlatformType } from "@helpers/types";
 
 
 interface IntentRowProps {
   handleReleaseClick?: () => void;
-  isVenmo: boolean;
+  paymentPlatform: PaymentPlatformType | undefined;
   onRamper: string;
   amountUSDToReceive: string;
   amountUSDCToSend: string;
@@ -22,7 +24,7 @@ export type IntentRowData = IntentRowProps;
 
 export const IntentRow: React.FC<IntentRowProps> = ({
   handleReleaseClick,
-  isVenmo,
+  paymentPlatform,
   onRamper,
   amountUSDToReceive,
   amountUSDCToSend,
@@ -36,18 +38,51 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const { blockscanUrl } = useSmartContracts();
 
+  const {
+    PaymentPlatform,
+  } = usePlatformSettings();
+
   /*
    * Helpers
    */
 
-  const currencySymbol = isVenmo ? '$' : '₹';
-  const paymentPlatformName = isVenmo ? 'Venmo' : 'HDFC';
-
   const requestedAmountLabel = `${amountUSDCToSend} USDC`;
-  const onRamperHashLabel = `${currencySymbol}${amountUSDToReceive} from `;
   const onRamperEtherscanLink = `${blockscanUrl}/address/${onRamper}`;
-  const onRamperLinkLabel = ` on ${paymentPlatformName}`;
   const orderExpirationLabel = `${expirationTimestamp}`;
+
+  function getPlatformVariables(paymentPlatform: PaymentPlatformType | undefined) {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        return {
+          onRamperLinkLabel: ` on Venmo`,
+          onRamperHashLabel: `$${amountUSDToReceive} from `
+        };
+      case PaymentPlatform.HDFC:
+        return {
+          onRamperLinkLabel: ` on HDFC`,
+          onRamperHashLabel: `₹${amountUSDToReceive} from `
+        };
+
+      case PaymentPlatform.GARANTI:
+        return {
+          onRamperLinkLabel: ` on Garanti`,
+          onRamperHashLabel: `₺${amountUSDToReceive} from `
+        };
+
+      default:
+        return {
+          currencySymbol: '$',
+          paymentPlatformName: 'Venmo',
+          onRamperLinkLabel: ` on Venmo`,
+          onRamperHashLabel: `$${amountUSDToReceive} from `
+        };
+    }
+  }
+
+  const {
+    onRamperLinkLabel,
+    onRamperHashLabel
+  } = getPlatformVariables(paymentPlatform);
 
   /*
    * Component
