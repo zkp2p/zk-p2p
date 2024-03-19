@@ -192,11 +192,11 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
     console.time("remote-proof-gen");
     await callback();
     console.timeEnd("remote-proof-gen");
-  }
+  };
 
   const processRemoteProofGenerationResponse = (response: any, isBodyHashProof: boolean = false) => {
     setAndStoreProvingState(response.proof, response.public_values)
-  }
+  };
 
   const setAndStoreProvingState = (
     proofString: string,
@@ -214,7 +214,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
 
     setPublicSignals(publicSignalsString);
     setStoredSignalsValue(publicSignalsString);
-  }
+  };
 
   /*
    * Components

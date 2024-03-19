@@ -62,8 +62,10 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
     abi: wiseRampAbi,
     functionName: 'register',
     args: [
-      ...reformatProofForChain(verificationSignature),
-      publicSignals ? JSON.parse(publicSignals) : null,
+      [
+        publicSignals,
+        verificationSignature
+      ]
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
