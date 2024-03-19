@@ -66,7 +66,6 @@ export const MailTable: React.FC<MailTableProps> = ({
     setSelectedIndex(index);
 
     const email = fetchedEmails[index];
-    console.log(email.decodedContents);
     setEmailFull(email.decodedContents);
   };
 

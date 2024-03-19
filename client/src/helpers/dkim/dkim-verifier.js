@@ -258,6 +258,7 @@ class DkimVerifier extends MessageParser {
               status.comment = err.message;
             }
           } catch (err) {
+            console.log("err", err);
             if (err.rr) {
               rr = err.rr;
             }

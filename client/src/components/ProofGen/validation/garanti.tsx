@@ -58,17 +58,50 @@ export function sanitizeAndProcessGarantiEmailSubject(emailContent: string): { p
   const subjectLine = subjectLineMatch[0];
 
   const validationPattern = /^Subject: Para Transferi Bilgilendirmesi$/;
+  const sanitizePattern = /[ÅŸ|Åž|ÄŸ|Äž|Ä±|Ä°|Ã¼|Ãœ|Ã¶|Ã–|Ã§|Ã‡|Å|Å|Ã|Ä|Ä]/;
 
   const isValid = validationPattern.test(subjectLine);
+  const needsSanitization = sanitizePattern.test(emailContent);
 
   let processedEmail = emailContent;
-  if (!isValid) {
-    console.log("error here 70");
+  if (needsSanitization) {
+    processedEmail = sanitizeGarantiAuthEmail(emailContent);
+  } else if (!isValid) {
     throw new Error('The subject line is invalid and could not be sanitized.');
   }
 
+  const didSanitize = processedEmail !== emailContent;
   return {
     processedEmail,
-    didSanitize: false
+    didSanitize
   };
+};
+
+function sanitizeGarantiAuthEmail(emailContent: string): string {
+  // Special turkish characters: ç, ğ, ı, ö, ş, ü (and )
+  const mappings: { [key: string]: string } = {
+    'ÅŸ': 'ş',
+    'Åž': 'Ş',
+    'ÄŸ': 'ğ',
+    'Äž': 'Ğ',
+    'Ä±': 'ı',
+    'Ä°': 'İ',
+    'Ã¼': 'ü',
+    'Ãœ': 'Ü',
+    'Ã¶': 'ö',
+    'Ã–': 'Ö',
+    'Ã§': 'ç',
+    'Ã‡': 'Ç',
+    'Å': 'Ş',
+    'Å': 'ş',
+    'Ã': 'Ö',
+    'Ä': 'Ğ',
+    'Ä': 'ğ',
+  };
+
+  return Object.keys(mappings).reduce((acc, key) => {
+      const re = new RegExp(key, 'g');
+
+      return acc.replace(re, mappings[key]);
+  }, emailContent);
 };
