@@ -12,7 +12,7 @@ import { esl } from '@helpers/constants';
 import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/venmo/useRegistration';
+import useRegistration from '@hooks/wise/useRegistration';
 
 import DepositsContext from './DepositsContext';
 
@@ -27,7 +27,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { isRegistered } = useRegistration();
 
   /*
@@ -51,8 +51,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     data: depositsRaw,
     refetch: refetchDeposits,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'getAccountDeposits',
     args: [
       loggedInEthereumAddress
@@ -65,8 +65,8 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
     data: depositIntentsRaw,
     refetch: refetchDepositIntents,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'getIntentsWithOnRamperId',
     args: [
       uniqueIntentHashes
@@ -79,36 +79,36 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchDeposits_1');
+    esl && console.log('wise_shouldFetchDeposits_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
+    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
-    if (isLoggedIn && loggedInEthereumAddress && venmoRampAddress && isRegistered) {
-      esl && console.log('venmo_shouldFetchDeposits_2');
+    if (isLoggedIn && loggedInEthereumAddress && wiseRampAddress && isRegistered) {
+      esl && console.log('wise_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      esl && console.log('venmo_shouldFetchDeposits_3');
+      esl && console.log('wise_shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
       setDeposits(null);
       setDepositIntents(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, venmoRampAddress, isRegistered]);
+  }, [isLoggedIn, loggedInEthereumAddress, wiseRampAddress, isRegistered]);
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchDepositIntents_1');
+    esl && console.log('wise_shouldFetchDepositIntents_1');
     esl && console.log('checking uniqueIntentHashes: ', uniqueIntentHashes);
 
     if (uniqueIntentHashes.length > 0) {
-      esl && console.log('venmo_shouldFetchDepositIntents_2');
+      esl && console.log('wise_shouldFetchDepositIntents_2');
 
       setShouldFetchDepositIntents(true);
     } else {
-      esl && console.log('venmo_shouldFetchDepositIntents_3');
+      esl && console.log('wise_shouldFetchDepositIntents_3');
 
       setShouldFetchDepositIntents(false);
 
@@ -117,11 +117,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [uniqueIntentHashes]);
 
   useEffect(() => {
-    esl && console.log('venmo_depositsRaw_1');
+    esl && console.log('wise_depositsRaw_1');
     esl && console.log('checking depositsRaw: ', depositsRaw);
 
     if (depositsRaw) {
-      esl && console.log('venmo_depositsRaw_2');
+      esl && console.log('wise_depositsRaw_2');
 
       const depositsArrayRaw = depositsRaw as any[];
 
@@ -178,7 +178,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       }
       setIntentIndexDepositMap(intentIndexDepositMap);
     } else {
-      esl && console.log('venmo_depositsRaw_3');
+      esl && console.log('wise_depositsRaw_3');
 
       setDeposits(null);
       setUniqueIntentHashes([]);
@@ -186,11 +186,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [depositsRaw]);
 
   useEffect(() => {
-    esl && console.log('venmo_depositsIntentsRaw_1');
+    esl && console.log('wise_depositsIntentsRaw_1');
     esl && console.log('checking depositIntentsRaw: ', depositIntentsRaw);
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      esl && console.log('venmo_depositsIntentsRaw_2');
+      esl && console.log('wise_depositsIntentsRaw_2');
 
       const depositIntentsArray = depositIntentsRaw as any[];
 
@@ -226,7 +226,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
       setDepositIntents(sanitizedIntents);
     } else {
-      esl && console.log('venmo_depositsIntentsRaw_3');
+      esl && console.log('wise_depositsIntentsRaw_3');
       
       setDepositIntents([]);
     }
