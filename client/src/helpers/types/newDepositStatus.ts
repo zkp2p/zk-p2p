@@ -15,3 +15,10 @@ export const NewDepositTransactionStatus = {
 };
 
 export type NewDepositTransactionStatusType = typeof NewDepositTransactionStatus[keyof typeof NewDepositTransactionStatus];
+
+export const NewWiseDepositTransactionStatus = {
+  ...NewDepositTransactionStatus,
+  MISSING_MULTICURRENCY_REGISTRATION: 'transaction_failed'
+};
+
+export type NewWiseDepositTransactionStatusType = typeof NewWiseDepositTransactionStatus[keyof typeof NewWiseDepositTransactionStatus];

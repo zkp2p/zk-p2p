@@ -5,8 +5,8 @@ export { NotaryVerificationStatus, NotaryProofInputStatus, NotaryVerificationCir
 export { TransactionStatus } from './transactionStatus';
 export type { TransactionStatusType } from './transactionStatus';
 
-export { NewDepositTransactionStatus } from './newDepositStatus';
-export type { NewDepositTransactionStatusType } from './newDepositStatus';
+export { NewDepositTransactionStatus, NewWiseDepositTransactionStatus } from './newDepositStatus';
+export type { NewDepositTransactionStatusType, NewWiseDepositTransactionStatusType } from './newDepositStatus';
 
 export { SendTransactionStatus, FetchQuoteStatus } from './sendStatus';
 export type { SendTransactionStatusType, FetchQuoteStatusType } from './sendStatus';
