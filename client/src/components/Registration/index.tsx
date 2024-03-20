@@ -32,11 +32,11 @@ export const RegistrationForm: React.FC = () => {
 
   const handleUpdateClick = () => {
     setIsNewRegistration(true);
-  }
+  };
 
   const handleBackClick = () => {
     setIsNewRegistration(false);
-  }
+  };
 
   /*
    * Component
