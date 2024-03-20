@@ -4,7 +4,6 @@ import { ethers } from "hardhat";
 
 import {
   Address,
-  TLSParams,
   WiseOffRamperRegistrationData,
   WiseOffRamperRegistrationProof,
   WiseRegistrationData,
@@ -366,7 +365,7 @@ describe("WiseRamp", () => {
         let subjectReceiveCurrencyId: string;
         let subjectDepositAmount: BigNumber;
         let subjectReceiveAmount: BigNumber;
-        let subjectTlsParams: TLSParams;
+        let subjectVerifierSigningKey: Address;
         let subjectCaller: Account;
 
         beforeEach(async () => {
@@ -374,11 +373,7 @@ describe("WiseRamp", () => {
           subjectReceiveCurrencyId = ethers.utils.solidityKeccak256(["string"], ["EUR"]);
           subjectDepositAmount = usdc(100);
           subjectReceiveAmount = usdc(92);
-          subjectTlsParams = {
-            verifierSigningKey: verifier.address,
-            endpoint: "POST https://api.transferwise.com/v1/quotes",
-            host: "api.transferwise.com",
-          } as TLSParams;
+          subjectVerifierSigningKey = verifier.address;
 
           subjectCaller = offRamper;
         });
@@ -389,7 +384,7 @@ describe("WiseRamp", () => {
             subjectReceiveCurrencyId,
             subjectDepositAmount,
             subjectReceiveAmount,
-            subjectTlsParams
+            subjectVerifierSigningKey
           );
         }
 
@@ -411,7 +406,7 @@ describe("WiseRamp", () => {
 
           expect(deposit.depositor).to.eq(subjectCaller.address);
           expect(deposit.wiseTag).to.eq(subjectWiseTag);
-          expect(JSON.stringify(deposit.tlsParams)).to.eq(JSON.stringify(Object.values(subjectTlsParams)));
+          expect(deposit.verifierSigningKey).to.eq(subjectVerifierSigningKey);
           expect(deposit.depositAmount).to.eq(subjectDepositAmount);
           expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
           expect(deposit.outstandingIntentAmount).to.eq(ZERO);
@@ -470,11 +465,11 @@ describe("WiseRamp", () => {
 
         describe("when the depositor has reached their max amount of deposits", async () => {
           beforeEach(async () => {
-            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(102), subjectTlsParams);
-            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(103), subjectTlsParams);
-            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(104), subjectTlsParams);
-            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(105), subjectTlsParams);
-            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(106), subjectTlsParams);
+            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(102), subjectVerifierSigningKey);
+            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(103), subjectVerifierSigningKey);
+            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(104), subjectVerifierSigningKey);
+            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(105), subjectVerifierSigningKey);
+            await ramp.connect(subjectCaller.wallet).offRamp(subjectWiseTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(106), subjectVerifierSigningKey);
           });
 
           it("should revert", async () => {
@@ -515,11 +510,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
 
           subjectDepositId = ZERO;
@@ -834,11 +825,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(101),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
 
           const idHash = calculateWiseId(onRamperProof.public_values.profileId);
@@ -973,11 +960,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
 
           depositId = (await ramp.depositCounter()).sub(1);
@@ -1192,11 +1175,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address,
           );
 
           depositId = (await ramp.depositCounter()).sub(1);
@@ -1362,11 +1341,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
 
           await ramp.connect(offRamper.wallet).offRamp(
@@ -1374,11 +1349,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(50),
             usdc(45),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
 
           const currentDepositCounter = await ramp.depositCounter();
@@ -1561,21 +1532,14 @@ describe("WiseRamp", () => {
         let subjectAccount: Address;
   
         let intentHash: string;
-        let tlsParams: TLSParams;
   
-        beforeEach(async () => {
-          tlsParams =           {
-            verifierSigningKey: verifier.address,
-            endpoint: "POST https://api.transferwise.com/v1/quotes",
-            host: "api.transferwise.com",
-          };
-  
+        beforeEach(async () => {  
           await ramp.connect(offRamper.wallet).offRamp(
             "jdoe1234",
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            tlsParams
+            verifier.address
           );
   
           await ramp.connect(offRamper.wallet).offRamp(
@@ -1583,7 +1547,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(93),
-            tlsParams
+            verifier.address
           );
   
           await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1614,8 +1578,8 @@ describe("WiseRamp", () => {
           expect(deposits[1].deposit.outstandingIntentAmount).to.eq(usdc(50));
           expect(deposits[0].deposit.conversionRate).to.eq(conversionRateOne);
           expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
-          expect(JSON.stringify(deposits[0].deposit.tlsParams)).to.eq(JSON.stringify(Object.values(tlsParams)));
-          expect(JSON.stringify(deposits[1].deposit.tlsParams)).to.eq(JSON.stringify(Object.values(tlsParams)));
+          expect(deposits[0].deposit.verifierSigningKey).to.eq(verifier.address);
+          expect(deposits[1].deposit.verifierSigningKey).to.eq(verifier.address);
           expect(deposits[0].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
           expect(deposits[1].depositorId).to.eq(calculateWiseId(offRamperProof.public_values.profileId));
           expect(deposits[0].depositId).to.eq(ZERO);
@@ -1649,11 +1613,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
   
           await ramp.connect(offRamper.wallet).offRamp(
@@ -1661,11 +1621,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(93),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
   
           await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1728,11 +1684,7 @@ describe("WiseRamp", () => {
             ethers.utils.solidityKeccak256(["string"], ["EUR"]),
             usdc(100),
             usdc(92),
-            {
-              verifierSigningKey: verifier.address,
-              endpoint: "POST https://api.transferwise.com/v1/quotes",
-              host: "api.transferwise.com",
-            }
+            verifier.address
           );
   
           await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);

@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.18;
 
-import { ITLSData } from "./ITLSData.sol";
-
 interface IWiseSendProcessor {
 
     struct SendData {
@@ -21,7 +19,7 @@ interface IWiseSendProcessor {
 
     struct SendProof {
         SendData public_values;
-        ITLSData.TLSParams expectedTLSParams;
+        address verifierSigningKey;
         bytes proof;
     }
 

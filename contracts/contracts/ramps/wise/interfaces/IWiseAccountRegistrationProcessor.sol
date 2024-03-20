@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.18;
 
-import { ITLSData } from "./ITLSData.sol";
-
 interface IWiseAccountRegistrationProcessor {
 
     struct RegistrationData {

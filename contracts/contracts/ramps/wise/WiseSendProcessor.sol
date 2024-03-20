@@ -5,7 +5,6 @@ import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/Sig
 
 import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
-import { ITLSData } from "./interfaces/ITLSData.sol";
 import { IWiseSendProcessor } from "./interfaces/IWiseSendProcessor.sol";
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 import { TLSBaseProcessor } from "../../processors/TLSBaseProcessor.sol";
@@ -25,12 +24,16 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     constructor(
         address _ramp,
         INullifierRegistry _nullifierRegistry,
-        uint256 _timestampBuffer
+        uint256 _timestampBuffer,
+        string memory _endpoint,
+        string memory _host
     )
         TLSBaseProcessor(
             _ramp,
             _nullifierRegistry,
-            _timestampBuffer
+            _timestampBuffer,
+            _endpoint,
+            _host
         )
     {}
     
@@ -50,13 +53,13 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             bytes32 currencyId
         )
     {
-        _validateProof(_proof.expectedTLSParams.verifierSigningKey, _proof.public_values, _proof.proof);
+        _validateProof(_proof.verifierSigningKey, _proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(
-            _proof.expectedTLSParams.endpoint.replaceString("*", _proof.public_values.senderId),
+            endpoint.replaceString("*", _proof.public_values.senderId),
             _proof.public_values.endpoint
         );
-        _validateTLSHost(_proof.expectedTLSParams.host, _proof.public_values.host);
+        _validateTLSHost(host, _proof.public_values.host);
         
         // Validate status
         require(

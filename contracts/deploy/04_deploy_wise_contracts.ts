@@ -13,6 +13,7 @@ import {
   MULTI_SIG,
   OFFRAMPER_TLS_PARAMS,
   ONRAMP_COOL_DOWN_PERIOD,
+  SEND_TLS_PARAMS,
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
   TIMESTAMP_BUFFER,
@@ -60,9 +61,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [
       wiseRamp.address,
+      ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
       nullifierRegistryContract.address,
       ZERO,
-      ACCOUNT_TLS_PARAMS[paymentProvider][network],
+      ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint,
+      ACCOUNT_TLS_PARAMS[paymentProvider][network].host
     ],
     log: true
   });
@@ -72,9 +75,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [
       wiseRamp.address,
+      OFFRAMPER_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
       nullifierRegistryContract.address,
       ZERO,
-      OFFRAMPER_TLS_PARAMS[paymentProvider][network],
+      OFFRAMPER_TLS_PARAMS[paymentProvider][network].endpoint,
+      OFFRAMPER_TLS_PARAMS[paymentProvider][network].host,
     ],
     log: true
   });
@@ -85,7 +90,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [
       wiseRamp.address,
       nullifierRegistryContract.address,
-      TIMESTAMP_BUFFER[paymentProvider]
+      TIMESTAMP_BUFFER[paymentProvider],
+      SEND_TLS_PARAMS[paymentProvider][network].endpoint,
+      SEND_TLS_PARAMS[paymentProvider][network].host
     ],
     log: true
   });

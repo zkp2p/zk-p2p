@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: MIT
 
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
-import { ITLSData } from "./interfaces/ITLSData.sol";
 import { IWiseOffRamperRegistrationProcessor } from "./interfaces/IWiseOffRamperRegistrationProcessor.sol";
 import { StringConversionUtils } from "../../lib/StringConversionUtils.sol";
 import { TLSBaseProcessor } from "../../processors/TLSBaseProcessor.sol";
@@ -13,25 +12,29 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
     using StringConversionUtils for string;
     
     /* ============ Events ============ */
-    event OffRamperTLSParamsSet(ITLSData.TLSParams tlsParams);
+    event VerifierSigningKeySet(address _verifierSigningKey);
     
     /* ============ Public Variables ============ */
-    ITLSData.TLSParams public offRamperTLSParams;
+    address public verifierSigningKey;
     
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
+        address _verifierSigningKey,
         INullifierRegistry _nullifierRegistry,
         uint256 _timestampBuffer,
-        ITLSData.TLSParams memory _offRamperTLSParams
+        string memory _endpoint,
+        string memory _host
     )
         TLSBaseProcessor(
             _ramp,
             _nullifierRegistry,
-            _timestampBuffer
+            _timestampBuffer,
+            _endpoint,
+            _host
         )
     {
-        offRamperTLSParams = _offRamperTLSParams;
+        verifierSigningKey = _verifierSigningKey;
     }
 
     /* ============ External Functions ============ */
@@ -46,8 +49,8 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
     {
         _validateProof(_proof.public_values, _proof.proof);
 
-        _validateTLSEndpoint(offRamperTLSParams.endpoint.replaceString("*", _proof.public_values.profileId), _proof.public_values.endpoint);
-        _validateTLSHost(offRamperTLSParams.host, _proof.public_values.host);
+        _validateTLSEndpoint(endpoint.replaceString("*", _proof.public_values.profileId), _proof.public_values.endpoint);
+        _validateTLSHost(host, _proof.public_values.host);
 
         _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.mcAccountId)));
 
@@ -57,16 +60,10 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
 
     /* ============ External Admin Functions ============ */
 
-    function setOffRamperTLSParams(ITLSData.TLSParams calldata _tlsParams) external onlyOwner {
-        offRamperTLSParams = _tlsParams;
+    function setVerifierSigningKey(address _verifierSigningKey) external onlyOwner {
+        verifierSigningKey = _verifierSigningKey;
 
-        emit OffRamperTLSParamsSet(_tlsParams);
-    }
-
-    /* ============ External Getters ============ */
-
-    function getOffRamperTLSParams() external view returns(ITLSData.TLSParams memory) {
-        return offRamperTLSParams;
+        emit VerifierSigningKeySet(_verifierSigningKey);
     }
 
     /* ============ Internal Functions ============ */
@@ -79,6 +76,6 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         view
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        _validateVerifierSignature(encodedMessage, _proof, offRamperTLSParams.verifierSigningKey);
+        _validateVerifierSignature(encodedMessage, _proof, verifierSigningKey);
     }
 }

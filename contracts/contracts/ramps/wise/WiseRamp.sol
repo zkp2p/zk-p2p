@@ -6,7 +6,6 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Bytes32ArrayUtils } from "../../external/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "../../external/Uint256ArrayUtils.sol";
 
-import { ITLSData } from "./interfaces/ITLSData.sol";
 import { IWiseAccountRegistrationProcessor } from "./interfaces/IWiseAccountRegistrationProcessor.sol";
 import { IWiseOffRamperRegistrationProcessor } from "./interfaces/IWiseOffRamperRegistrationProcessor.sol";
 import { IWiseSendProcessor } from "./interfaces/IWiseSendProcessor.sol";
@@ -82,7 +81,7 @@ contract WiseRamp is Ownable {
     struct Deposit {
         address depositor;
         string wiseTag;
-        ITLSData.TLSParams tlsParams;       // TLS information including verifier and endpoint / host being notarized
+        address verifierSigningKey;         // Public key of the verifier depositor wants to sign the TLS proof
         uint256 depositAmount;              // Amount of USDC deposited
         bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -266,15 +265,14 @@ contract WiseRamp is Ownable {
      * @param _receiveCurrencyId    Id of the currency to be received off-chain
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
-     * @param _tlsParams            TLS information including verifier and endpoint / host being notarized. If the on-rampers profileId
-     *                              must be inserted into the endpoint, replace the profileId with a '*' character
+     * @param _verifierSigningKey   Public key of the verifier depositor wants to sign the TLS proof
      */
     function offRamp(
         string calldata _wiseTag,
         bytes32 _receiveCurrencyId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
-        ITLSData.TLSParams calldata _tlsParams
+        address _verifierSigningKey
     )
         external
         onlyRegisteredUser
@@ -300,7 +298,7 @@ contract WiseRamp is Ownable {
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
             intentHashes: new bytes32[](0),
-            tlsParams: _tlsParams
+            verifierSigningKey: _verifierSigningKey
         });
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
@@ -820,7 +818,7 @@ contract WiseRamp is Ownable {
         ) = sendProcessor.processProof(
             IWiseSendProcessor.SendProof({
                 public_values: _data,
-                expectedTLSParams: deposit.tlsParams,
+                verifierSigningKey: deposit.verifierSigningKey,
                 proof: _verifierSignature
             })
         );

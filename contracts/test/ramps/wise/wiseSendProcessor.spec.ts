@@ -28,8 +28,6 @@ describe("WiseSendProcessor", () => {
 
   let deployer: DeployHelper;
 
-  let tlsParams: TLSParams;
-
   beforeEach(async () => {
     [
       verifier,
@@ -42,15 +40,15 @@ describe("WiseSendProcessor", () => {
 
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
-    tlsParams = {
-      verifierSigningKey: verifier.address,
-      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
-      host: "wise.com",
-    };
+    // tlsParams = {
+    //   verifierSigningKey: verifier.address,
+    // };
 
     registrationProcessor = await deployer.deployWiseSendProcessor(
       ramp.address,
-      nullifierRegistry.address
+      nullifierRegistry.address,
+      "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      "wise.com"
     );
 
     await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
@@ -85,7 +83,7 @@ describe("WiseSendProcessor", () => {
           status: "OUTGOING_PAYMENT_SENT",
           intentHash: "12345",
         },
-        expectedTLSParams: tlsParams,
+        verifierSigningKey: verifier.address,
         proof: "0xe490922cc46624fe055c3bee676cdd368067ca70c835b1ea9378251edaf140d7126cae0d6426ef8e1867efb874188ca6fc7798a20f2c130dcaa82bdb28aeb75d1c"
       } as WiseSendProof;
 

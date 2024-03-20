@@ -54,6 +54,17 @@ export const OFFRAMPER_TLS_PARAMS = {
   } as EnvironmentTLSParams,
 }
 
+export const SEND_TLS_PARAMS = {
+  "wise": {
+    "localhost": {
+      verifierSigningKey: "",     // We don't pass this in for deploys
+      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      host: "wise.com",
+    } as TLSParams,
+    "base": {} as TLSParams,
+  } as EnvironmentTLSParams,
+}
+
 export const TIMESTAMP_BUFFER = {
   "venmo": BigNumber.from(30),
   "hdfc": BigNumber.from(30),

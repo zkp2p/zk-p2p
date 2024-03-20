@@ -6,7 +6,6 @@ import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/Sig
 
 import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
-import { ITLSData } from "../ramps/wise/interfaces/ITLSData.sol";
 
 pragma solidity ^0.8.18;
 
@@ -23,6 +22,9 @@ contract TLSBaseProcessor is Ownable {
 
     /* ============ State Variables ============ */
     address public immutable ramp;
+    string public endpoint;
+    string public host;
+
     IKeyHashAdapterV2 public mailServerKeyHashAdapter;
     INullifierRegistry public nullifierRegistry;
     uint256 public timestampBuffer;
@@ -31,11 +33,16 @@ contract TLSBaseProcessor is Ownable {
     constructor(
         address _ramp,
         INullifierRegistry _nullifierRegistry,
-        uint256 _timestampBuffer
+        uint256 _timestampBuffer,
+        string memory _endpoint,
+        string memory _host
     )
         Ownable()
     {
         ramp = _ramp;
+        endpoint = _endpoint;
+        host = _host;
+
         nullifierRegistry = _nullifierRegistry;
         timestampBuffer = _timestampBuffer;
     }

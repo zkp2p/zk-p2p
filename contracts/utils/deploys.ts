@@ -351,41 +351,53 @@ export default class DeployHelper {
 
   public async deployWiseAccountRegistrationProcessor(
     ramp: Address,
+    verifierSigningKey: Address,
     nullifierRegistry: Address,
-    accountTLSParams: TLSParams,
+    endpoint: string,
+    host: string,
     timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<WiseAccountRegistrationProcessor> {
     return await new WiseAccountRegistrationProcessor__factory(this._deployerSigner).deploy(
       ramp,
+      verifierSigningKey,
       nullifierRegistry,
       timestampBuffer,
-      accountTLSParams
+      endpoint,
+      host
     );
   }
 
   public async deployWiseOffRamperRegistrationProcessor(
     ramp: Address,
+    verifierSigningKey: Address,
     nullifierRegistry: Address,
-    accountTLSParams: TLSParams,
+    endpoint: string,
+    host: string,
     timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<WiseOffRamperRegistrationProcessor> {
     return await new WiseOffRamperRegistrationProcessor__factory(this._deployerSigner).deploy(
       ramp,
+      verifierSigningKey,
       nullifierRegistry,
       timestampBuffer,
-      accountTLSParams
+      endpoint,
+      host
     );
   }
 
   public async deployWiseSendProcessor(
     ramp: Address,
     nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
     timestampBuffer: BigNumber = BigNumber.from(30),
   ): Promise<WiseSendProcessor> {
     return await new WiseSendProcessor__factory(this._deployerSigner).deploy(
       ramp,
       nullifierRegistry,
-      timestampBuffer
+      timestampBuffer,
+      endpoint,
+      host
     );
   }
 

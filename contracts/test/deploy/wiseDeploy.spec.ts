@@ -133,15 +133,17 @@ describe("Wise Deploy", () => {
       const actualRamp = await wiseAccountRegistrationProcessor.ramp();
       const actualOwner = await wiseAccountRegistrationProcessor.owner();
       const actualNullifierRegistry = await wiseAccountRegistrationProcessor.nullifierRegistry();
-      const actualAccountTLSParams = await wiseAccountRegistrationProcessor.accountTLSParams();
+      const actualAccountEndpoint = await wiseAccountRegistrationProcessor.endpoint();
+      const actualAccountHost = await wiseAccountRegistrationProcessor.host();
+      const actualAccountVerifierSigningKey = await wiseAccountRegistrationProcessor.verifierSigningKey();
       const actualTimestampBuffer = await wiseAccountRegistrationProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(wiseRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
-      expect(actualAccountTLSParams.endpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
-      expect(actualAccountTLSParams.host).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
-      expect(actualAccountTLSParams.verifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
+      expect(actualAccountEndpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
+      expect(actualAccountHost).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
+      expect(actualAccountVerifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
       expect(actualTimestampBuffer).to.eq(0);
     });
   });
@@ -151,15 +153,17 @@ describe("Wise Deploy", () => {
       const actualRamp = await wiseOffRamperRegistrationProcessor.ramp();
       const actualOwner = await wiseOffRamperRegistrationProcessor.owner();
       const actualNullifierRegistry = await wiseOffRamperRegistrationProcessor.nullifierRegistry();
-      const actualOffRamperTLSParams = await wiseOffRamperRegistrationProcessor.offRamperTLSParams();
+      const actualOffRamperEndpoint = await wiseOffRamperRegistrationProcessor.endpoint();
+      const actualOffRamperHost = await wiseOffRamperRegistrationProcessor.host();
+      const actualOffRamperVerifierSigningKey = await wiseOffRamperRegistrationProcessor.verifierSigningKey();
       const actualTimestampBuffer = await wiseOffRamperRegistrationProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(wiseRamp.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
-      expect(actualOffRamperTLSParams.endpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
-      expect(actualOffRamperTLSParams.host).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
-      expect(actualOffRamperTLSParams.verifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
+      expect(actualOffRamperEndpoint).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].endpoint);
+      expect(actualOffRamperHost).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].host);
+      expect(actualOffRamperVerifierSigningKey).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
       expect(actualTimestampBuffer).to.eq(0);
     });
   });

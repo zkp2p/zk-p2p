@@ -11,7 +11,7 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { Address, TLSParams, WiseOffRamperRegistrationProof, WiseRegistrationProof } from "@utils/types";
+import { Address, WiseRegistrationProof } from "@utils/types";
 import { calculateWiseId, calculateWiseTagHash } from "@utils/protocolUtils";
 
 const expect = getWaffleExpect();
@@ -28,8 +28,6 @@ describe("WiseAccountRegistrationProcessor", () => {
 
   let deployer: DeployHelper;
 
-  let accountTLSParams: TLSParams;
-
   beforeEach(async () => {
     [
       verifier,
@@ -42,16 +40,12 @@ describe("WiseAccountRegistrationProcessor", () => {
 
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
-    accountTLSParams = {
-      verifierSigningKey: verifier.address,
-      endpoint: "POST https://wise.com/gateway/v1/payments",
-      host: "wise.com",
-    };
-
     registrationProcessor = await deployer.deployWiseAccountRegistrationProcessor(
       ramp.address,
+      verifier.address,
       nullifierRegistry.address,
-      accountTLSParams
+      "POST https://wise.com/gateway/v1/payments",
+      "wise.com"
     );
 
     await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
@@ -61,14 +55,16 @@ describe("WiseAccountRegistrationProcessor", () => {
     it("should set the correct state", async () => {
       const rampAddress = await registrationProcessor.ramp();
       const nullifierRegistryAddress = await registrationProcessor.nullifierRegistry();
-      const actualAccountTLSParams = await registrationProcessor.getAccountTLSParams();
+      const actualVerifier = await registrationProcessor.verifierSigningKey();
+      const actualEndpoint = await registrationProcessor.endpoint();
+      const actualHost = await registrationProcessor.host();
 
       expect(rampAddress).to.eq(ramp.address);
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
 
-      expect(accountTLSParams.endpoint).to.deep.equal(actualAccountTLSParams.endpoint);
-      expect(accountTLSParams.verifierSigningKey).to.deep.equal(actualAccountTLSParams.verifierSigningKey);
-      expect(accountTLSParams.host).to.deep.equal(actualAccountTLSParams.host);
+      expect("POST https://wise.com/gateway/v1/payments").to.deep.equal(actualEndpoint);
+      expect(verifier.address).to.deep.equal(actualVerifier);
+      expect("wise.com").to.deep.equal(actualHost);
     });
   });
 
@@ -195,32 +191,26 @@ describe("WiseAccountRegistrationProcessor", () => {
     });
   });
 
-  describe("#setAccountTLSParams", async () => {
-    let subjectTLSParams: TLSParams;
+  describe("#setVerifierSigningKey", async () => {
+    let subjectVerifierSigningKey: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectTLSParams = {
-        verifierSigningKey: verifier.address,
-        endpoint: "POST https://wise.com/gateway/v2/payments",
-        host: "api.wise.com",
-      };
+      subjectVerifierSigningKey = verifier.address;
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setAccountTLSParams(subjectTLSParams);
+      return await registrationProcessor.connect(subjectCaller.wallet).setVerifierSigningKey(subjectVerifierSigningKey);
     }
 
     it("should set the correct venmo address", async () => {
       await subject();
 
-      const actualTLSParams = await registrationProcessor.getAccountTLSParams();
+      const actualVerifier = await registrationProcessor.verifierSigningKey();
 
-      expect(actualTLSParams.endpoint).to.equal(subjectTLSParams.endpoint);
-      expect(actualTLSParams.verifierSigningKey).to.equal(subjectTLSParams.verifierSigningKey);
-      expect(actualTLSParams.host).to.equal(subjectTLSParams.host);
+      expect(actualVerifier).to.equal(subjectVerifierSigningKey);
     });
 
     describe("when the caller is not the owner", async () => {
