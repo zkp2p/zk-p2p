@@ -11,7 +11,7 @@ import { TitleCenteredRow } from '@components/layouts/Row';
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
 import { VerificationStepRow, VerificationState, VerificationStepType } from "@components/Notary/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
-import { LoginStatus, NotaryVerificationStatus } from  "@helpers/types";
+import { LoginStatus, NotaryVerificationStatus, NotaryVerificationCircuitType } from  "@helpers/types";
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
@@ -24,7 +24,7 @@ interface ValidateNotarizationProps {
   publicSignals: string;
   onBackClick: () => void
   status: string;
-  circuitType: string;
+  circuitType: NotaryVerificationCircuitType;
   buttonTitle: string;
   submitTransactionStatus: string;
   isSubmitMining: boolean;

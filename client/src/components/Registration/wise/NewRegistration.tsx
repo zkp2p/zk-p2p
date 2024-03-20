@@ -10,7 +10,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { NumberedStep } from "@components/common/NumberedStep";
 import { NotaryForm } from '@components/Notary/NotaryForm';
 import { wiseStrings } from "@helpers/strings";
-import { PaymentPlatform } from '@helpers/types';
+import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/wise/useRegistration';
 
@@ -160,6 +160,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
       <NotaryForm
         paymentPlatformType={PaymentPlatform.WISE}
+        circuitType={NotaryVerificationCircuit.REGISTRATION_TAG}
         verificationSignature={verificationSignature}
         publicSignals={publicSignals}
         setVerificationSignature={setVerificationSignature}

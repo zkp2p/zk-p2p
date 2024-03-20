@@ -329,8 +329,8 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
       }
     }
 
-    const successfulRegistration = circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
-    if (successfulRegistration) {
+    const isCircuitTypeRegistration = circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
+    if (isCircuitTypeRegistration) {
       extractAndRecordVenmoId(emailFull);
     }
   };

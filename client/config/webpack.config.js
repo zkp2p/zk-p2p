@@ -677,6 +677,7 @@ module.exports = function (webpackEnv) {
         'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
 
         'process.env.WISE_TAG_PROOF': JSON.stringify(process.env.WISE_TAG_PROOF),
+        'process.env.MC_ID_PROOF': JSON.stringify(process.env.MC_ID_PROOF),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

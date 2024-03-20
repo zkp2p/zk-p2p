@@ -5,7 +5,14 @@ import crypto from 'crypto';
 import { Col } from "@components/legacy/Layout";
 import { ValidateNotarization } from '@components/Notary/ValidateNotarization';
 import { RequestTable } from '@components/Notary/RequestTable';
-import { PaymentPlatformType, PaymentPlatform, NotaryProofInputStatus, NotaryVerificationStatus, NotaryVerificationCircuitTypes } from  "@helpers/types";
+import {
+  PaymentPlatformType,
+  PaymentPlatform,
+  NotaryProofInputStatus,
+  NotaryVerificationStatus,
+  NotaryVerificationCircuit,
+  NotaryVerificationCircuitType,
+} from  "@helpers/types";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useRegistration from '@hooks/wise/useRegistration';
 import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
@@ -14,6 +21,7 @@ import { colors } from '@theme/colors';
 
 interface NotaryFormProps {
   paymentPlatformType: PaymentPlatformType;
+  circuitType: NotaryVerificationCircuitType;
   verificationSignature: string;
   publicSignals: string;
   setVerificationSignature: (verificationSignature: string) => void;
@@ -28,6 +36,7 @@ interface NotaryFormProps {
 
 export const NotaryForm: React.FC<NotaryFormProps> = ({
   paymentPlatformType,
+  circuitType,
   verificationSignature,
   publicSignals,
   setVerificationSignature,
@@ -43,6 +52,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   /*
    * Context
    */
+
   const { setExtractedWiseProfileId } = useRegistration();
 
   /*
@@ -73,7 +83,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
     fetchData: remoteGenerateProof
   } = useRemoteNotaryVerification({
     paymentType: paymentPlatformType,
-    circuitType: 'registration_profile_id',
+    circuitType: circuitType,
     notarization: notarization,
     intentHash: '0x123',
   });
@@ -156,8 +166,8 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
       await generateFastProof(remoteGenerateProof);
     }
 
-    const successfulRegistration = false; // circuitType === CircuitType.EMAIL_VENMO_REGISTRATION;
-    if (successfulRegistration) {
+    const isCircuitTypeRegistration = circuitType === NotaryVerificationCircuit.REGISTRATION_TAG;
+    if (isCircuitTypeRegistration) {
       cacheWiseTagFromNotarization(notarization);
     }
   };
@@ -175,7 +185,9 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   };
 
   const cacheWiseTagFromNotarization = (notarization: string) => {
-    // no-op: this needs to be injected by extension
+    if (setExtractedWiseProfileId) {
+      setExtractedWiseProfileId("@alexanders6341");
+    };
   };
 
   /*
@@ -230,7 +242,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
           onBackClick={handleModalBackClicked}
           onVerifyNotarizationCompletion={onVerifyNotarizationCompletion}
           status={proofGenStatus}
-          circuitType={NotaryVerificationCircuitTypes.REGISTRATION_TAG}
+          circuitType={NotaryVerificationCircuit.REGISTRATION_TAG}
           buttonTitle={getModalCtaTitle()}
           submitTransactionStatus={submitTransactionStatus}
           isSubmitMining={isSubmitMining}
@@ -246,6 +258,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
 
       <RequestTable
         paymentPlatform={paymentPlatformType}
+        circuitType={circuitType}
         setTagNotarization={setNotarization}
         handleVerifyNotarizationClicked={handleVerifyNotarizationClicked}
         notarizationSelectionStatus={notarizationSelectionStatus}
