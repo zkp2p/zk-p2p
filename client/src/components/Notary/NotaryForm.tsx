@@ -77,7 +77,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
    */
 
   const {
-    data: remoteGenerateProofResponse,
+    data: remoteNotaryVerificationResponse,
     // loading: isRemoteGenerateProofLoading,
     error: remoteGenerateProofError,
     fetchData: remoteGenerateProof
@@ -89,22 +89,19 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   });
 
   useEffect(() => {
-    console.log("remoteGenerateProofResponse", remoteGenerateProofResponse);
+    console.log("remoteNotaryVerificationResponse: ", remoteNotaryVerificationResponse);
     
-    if (remoteGenerateProofResponse) {
-      processRemoteProofGenerationResponse(remoteGenerateProofResponse);
+    if (remoteNotaryVerificationResponse) {
+      processRemoteProofGenerationResponse(remoteNotaryVerificationResponse);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [remoteGenerateProofResponse]);
+  }, [remoteNotaryVerificationResponse]);
 
   useEffect(() => {
-    console.log("Status Check", storedProofValue, storedSignalsValue);
-
     switch (paymentPlatformType) {
       case PaymentPlatform.WISE:
         if (storedProofValue && storedSignalsValue) {
-          console.log("Update Proof Gen Status");
           setProofGenStatus(NotaryVerificationStatus.TRANSACTION_CONFIGURED);
         }
         break;

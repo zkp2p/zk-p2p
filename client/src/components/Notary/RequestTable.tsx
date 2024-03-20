@@ -8,13 +8,24 @@ import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { RequestRow } from '@components/Notary/RequestRow';
-import { fetchWiseTagNotarizations, WiseTagNotarization } from '@hooks/useBrowserExtension';
-import { NotaryProofInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers/types';
+import {
+  fetchWiseTagNotarizations,
+  fetchMultiCurrencyIdNotarizations,
+  Notarization,
+} from '@hooks/useBrowserExtension';
+import {
+  NotaryProofInputStatus,
+  NotaryVerificationCircuitType,
+  NotaryVerificationCircuit,
+  PaymentPlatformType,
+  PaymentPlatform
+} from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
 
 
 interface RequestTableProps {
   paymentPlatform: PaymentPlatformType;
+  circuitType: NotaryVerificationCircuitType;
   setTagNotarization: (notarization: string) => void;
   handleVerifyNotarizationClicked: () => void;
   notarizationSelectionStatus: string;
@@ -23,6 +34,7 @@ interface RequestTableProps {
 
 export const RequestTable: React.FC<RequestTableProps> = ({
   paymentPlatform,
+  circuitType,
   setTagNotarization,
   handleVerifyNotarizationClicked,
   notarizationSelectionStatus,
@@ -40,7 +52,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
   const [isExtensionInstalled, setIsExtensionInstalled] = useState<boolean>(false);
 
-  const [injectedTagNotarizations, setInjectedTagNotarizations] = useState<WiseTagNotarization[]>([]);
+  const [injectedTagNotarizations, setInjectedTagNotarizations] = useState<Notarization[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -58,8 +70,6 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     setSelectedIndex(index);
 
     const notarization = injectedTagNotarizations[index];
-
-    console.log(notarization.proof);
     
     setTagNotarization(notarization.proof);
   };
@@ -103,10 +113,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     }
   };
 
-  const rowSubjectText = (injectedNotarization: WiseTagNotarization) => {
+  const rowSubjectText = (injectedNotarization: Notarization) => {
     switch (paymentPlatform) {
       case PaymentPlatform.WISE:
-        return injectedNotarization.tag;
+        return injectedNotarization.metadata;
 
       default:
         return '';
@@ -114,14 +124,33 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   };
 
   async function fetchData() {
-    const notarizationsListResponse = await fetchWiseTagNotarizations();
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        const wiseTagNotarizations = await fetchWiseTagNotarizations();
+    
+        console.log(wiseTagNotarizations);
+    
+        if (wiseTagNotarizations?.length > 0) {
+          setInjectedTagNotarizations(wiseTagNotarizations);
+        } else {
+          setInjectedTagNotarizations([]);
+        };
+        break;
 
-    console.log(notarizationsListResponse);
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+        const multiCurrencyIdNotarizations = await fetchMultiCurrencyIdNotarizations();
+    
+        console.log(multiCurrencyIdNotarizations);
+    
+        if (multiCurrencyIdNotarizations?.length > 0) {
+          setInjectedTagNotarizations(multiCurrencyIdNotarizations);
+        } else {
+          setInjectedTagNotarizations([]);
+        };
+        break;
 
-    if (notarizationsListResponse?.length > 0) {
-      setInjectedTagNotarizations(notarizationsListResponse);
-    } else {
-      setInjectedTagNotarizations([]);
+      default:
+        throw new Error('Invalid circuit type');
     };
   };
 
@@ -137,22 +166,42 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   }, [injectedTagNotarizations]);
 
   useEffect(() => {
+  useEffect(() => {
+    const notarizationMetadataCTA = defaultCTAForInputStatus();
+
     switch (notarizationSelectionStatus) {
       case NotaryProofInputStatus.DEFAULT:
-        setCtaButtonTitle("Select Wise Tag");
+        setCtaButtonTitle(`Select ${notarizationMetadataCTA}`);
         break;
 
       case NotaryProofInputStatus.VALID:
       default:
         if (!isProofModalOpen) {
-          setCtaButtonTitle("Verify Wise Tag");
+          setCtaButtonTitle(`Verify ${notarizationMetadataCTA}`);
         } else {
-          setCtaButtonTitle("Verifying Wise Tag");
+          setCtaButtonTitle(`Verifying ${notarizationMetadataCTA}`);
         }
         break;
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notarizationSelectionStatus, paymentPlatform, isProofModalOpen]);
+
+  const defaultCTAForInputStatus = () => {
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        return 'Wise Tag';
+
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+        return 'Multi Currency Id';
+
+      case NotaryVerificationCircuit.TRANSFER:
+        return 'Transaction';
+
+      default:
+        throw new Error('Invalid circuit type');
+    }
+  };
 
   /*
    * Component
