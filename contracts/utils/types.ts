@@ -109,6 +109,6 @@ export interface WiseSendData {
 
 export interface WiseSendProof {
   public_values: WiseSendData;
-  expectedTLSParams: TLSParams;
+  verifierSigningKey: Address;
   proof: string;
 }
