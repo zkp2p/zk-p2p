@@ -328,18 +328,3 @@ const DescriptionAndHelperContainer = styled.div`
   vertical-align: middle;
   line-height: 1.3;
 `;
-
-const LiquidityLink = styled.button`
-  width: 100%;
-  font-size: 15px;
-  font-family: 'Graphik';
-  color: #FFFFFF;
-  opacity: 0.3;
-  text-align: center;
-  padding: 20px 0px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  display: inline;
-`;

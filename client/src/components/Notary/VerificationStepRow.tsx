@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from 'styled-components/macro';
-import { Download, Cpu, Check, Circle, Play, Upload } from 'react-feather';
+import { Cpu, Check, Circle, Play, Upload } from 'react-feather';
 import { CircularProgressbarWithChildren } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
