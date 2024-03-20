@@ -37,9 +37,8 @@ const strings: PlatformStrings = {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Creating a new deposit requires you to submit your UPI ID, the USDC liquidity to deposit and
-    desired USDC/INR conversion rate. You will receive INR payments from users who claim your deposit.
-    Your UPI ID is made public on-chain hence do not use your phone number UPI ID.
+    Depositing requires registering a valid Wise multi currency id. Provide the USDC liquidity to deposit and
+    desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid UPI ID where users will send payments.

@@ -11,7 +11,6 @@ import { NumberedStep } from "@components/common/NumberedStep";
 import { NotaryForm } from '@components/Notary/NotaryForm';
 import { wiseStrings } from "@helpers/strings";
 import { PaymentPlatform } from '@helpers/types';
-import { reformatProofForChain } from "@helpers/submitProof";
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/wise/useRegistration';
 
