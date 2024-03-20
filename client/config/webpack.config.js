@@ -676,6 +676,10 @@ module.exports = function (webpackEnv) {
         'process.env.USE_WISE': JSON.stringify(process.env.USE_WISE),
         'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
 
+        'process.env.NOTARY_VERIFICATION_SIGNING_KEY': JSON.stringify(NOTARY_VERIFICATION_SIGNING_KEY),
+        'process.env.NOTARY_VERIFICATION_ENDPOINT': JSON.stringify(NOTARY_VERIFICATION_ENDPOINT),
+        'process.env.NOTARY_VERIFICATION_HOST': JSON.stringify(NOTARY_VERIFICATION_HOST),
+
         'process.env.WISE_TAG_PROOF': JSON.stringify(process.env.WISE_TAG_PROOF),
         'process.env.MC_ID_PROOF': JSON.stringify(process.env.MC_ID_PROOF),
       }),
