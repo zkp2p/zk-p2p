@@ -25,6 +25,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const [registrationHash, setRegistrationHash] = useState<string | null>(null);
+  const [onRampId, setOnRampId] = useState<string | null>(null);
+  const [offRampId, setOffRampId] = useState<string | null>(null);
 
   const [extractedProfileIdStorageKey, setExtractedProfileIdStorageKey] = useState<string | null>(null);
   const [extractedWiseProfileId, setExtractedWiseProfileId] = useState<string | null>(() => {
@@ -58,6 +60,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
   // The !! operator will convert any truthy value to true and any falsy value to false.
   const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
+
+  const isRegisteredForDeposit = !!(offRampId && offRampId !== ZERO_ADDRESS);
 
   /*
    * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
@@ -133,27 +137,36 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, wiseRampAddress, setextractedWiseProfileId]);
 
   useEffect(() => {
-    esl && console.log('wise_rampAccountRaw_1');
-    esl && console.log('checking rampAccountRaw: ', rampAccountRaw);
+    console.log('wise_rampAccountRaw_1');
+    console.log('checking rampAccountRaw: ', rampAccountRaw);
   
     if (rampAccountRaw) {
       esl && console.log('wise_rampAccountRaw_2');
 
       const rampAccountData = rampAccountRaw as any;
-      const rampAccountProcessed = rampAccountData.wiseTagHash;
-      // const rampAccountOnRampId = rampAccountData.onRampId;
-      // const rampAccountOffRampId = rampAccountData.offRampId;
+      const wiseTagHashProcessed = rampAccountData.wiseTagHash;
+      const onRampIdProcessed = rampAccountData.onRampId;
       
-      if (rampAccountProcessed !== ZERO_ADDRESS) {
+      if (wiseTagHashProcessed !== ZERO_ADDRESS) {
         esl && console.log('wise_rampAccountRaw_3');
 
-        setRegistrationHash(rampAccountProcessed);
+        setRegistrationHash(wiseTagHashProcessed);
+        setOnRampId(onRampIdProcessed);
+
+        const offRampIdProcessed = rampAccountData.offRampId;
+        if (offRampIdProcessed !== ZERO_ADDRESS) {
+          setOffRampId(offRampIdProcessed);
+        } else {
+          setOffRampId(null);
+        };
 
         setShouldFetchVenmoNftId(true); 
       } else {
         esl && console.log('wise_rampAccountRaw_4');
 
         setRegistrationHash(null);
+        setOnRampId(null);
+        setOffRampId(null);
 
         setShouldFetchVenmoNftId(false);
       }
@@ -161,6 +174,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       esl && console.log('wise_rampAccountRaw_5');
       
       setRegistrationHash(null);
+      setOnRampId(null);
+      setOffRampId(null);
 
       setShouldFetchVenmoNftId(false);
     }
@@ -291,6 +306,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       value={{
         isRegistered,
         registrationHash,
+        isRegisteredForDeposit,
+        offRampId,
+        onRampId,
         extractedWiseProfileId,
         shouldFetchVenmoNftId,
         venmoNftId,

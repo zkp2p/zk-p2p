@@ -3,7 +3,10 @@ import { createContext } from 'react'
 
 interface RegistrationValues {
   isRegistered: boolean;
-  registrationHash: string | null;
+  registrationHash: string | null; // wiseTagHash
+  isRegisteredForDeposit: boolean;
+  offRampId: string | null;
+  onRampId: string | null;
   extractedWiseProfileId: string | null;
   shouldFetchVenmoNftId: boolean;
   venmoNftId: bigint | null;
@@ -17,6 +20,9 @@ interface RegistrationValues {
 const defaultValues: RegistrationValues = {
   isRegistered: false,
   registrationHash: null,
+  isRegisteredForDeposit: false,
+  offRampId: null,
+  onRampId: null,
   extractedWiseProfileId: null,
   shouldFetchVenmoNftId: false,
   venmoNftId: null,
