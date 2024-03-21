@@ -28,6 +28,7 @@ export {
   WiseRamp,
   WiseAccountRegistrationProcessor,
   WiseAccountRegistrationProcessorMock,
+  WiseAccountRegistry,
   WiseOffRamperRegistrationProcessor,
   WiseOffRamperRegistrationProcessorMock,
   WiseSendProcessor,

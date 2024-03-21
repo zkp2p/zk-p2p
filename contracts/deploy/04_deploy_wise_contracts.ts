@@ -50,6 +50,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ],
     log: true
   });
+  const wiseAccountRegistry = await deploy("WiseAccountRegistry", {
+    from: deployer,
+    args: [deployer],
+    log: true
+  });
   console.log("WiseRamp deployed at", wiseRamp.address);
 
   const nullifierRegistryContract = await ethers.getContractAt(
@@ -60,7 +65,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const accountRegistrationProcessor = await deploy("WiseAccountRegistrationProcessor", {
     from: deployer,
     args: [
-      wiseRamp.address,
+      wiseAccountRegistry.address,
       ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
       nullifierRegistryContract.address,
       ZERO,
@@ -74,7 +79,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const offRamperRegistrationProcessor = await deploy("WiseOffRamperRegistrationProcessor", {
     from: deployer,
     args: [
-      wiseRamp.address,
+      wiseAccountRegistry.address,
       OFFRAMPER_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
       nullifierRegistryContract.address,
       ZERO,
@@ -102,12 +107,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const wiseRampContract = await ethers.getContractAt("WiseRamp", wiseRamp.address);
   if (!(await wiseRampContract.isInitialized())) {
     await wiseRampContract.initialize(
-      accountRegistrationProcessor.address,
-      offRamperRegistrationProcessor.address,
+      wiseAccountRegistry.address,
       sendProcessor.address
     );
   
     console.log("WiseRamp initialized...");
+  }
+
+  const wiseAccountRegistryContract = await ethers.getContractAt("WiseAccountRegistry", wiseAccountRegistry.address);
+  if (!(await wiseAccountRegistryContract.isInitialized())) {
+    await wiseAccountRegistryContract.initialize(
+      accountRegistrationProcessor.address,
+      offRamperRegistrationProcessor.address
+    );
+  
+    console.log("WiseAccountRegistry initialized...");
   }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
@@ -117,6 +131,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log("Transferring ownership of contracts...");
   await setNewOwner(hre, wiseRampContract, multiSig);
+  await setNewOwner(hre, wiseAccountRegistryContract, multiSig);
   await setNewOwner(
     hre,
     await ethers.getContractAt("WiseAccountRegistrationProcessor", accountRegistrationProcessor.address),

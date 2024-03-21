@@ -30,11 +30,12 @@ import {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
-  WiseRamp,
   WiseAccountRegistrationProcessor,
   WiseAccountRegistrationProcessorMock,
+  WiseAccountRegistry,
   WiseOffRamperRegistrationProcessor,
   WiseOffRamperRegistrationProcessorMock,
+  WiseRamp,
   WiseSendProcessor,
   WiseSendProcessorMock,
 } from "./contracts";
@@ -67,6 +68,7 @@ import {
 import {
   WiseRamp__factory,
   WiseAccountRegistrationProcessor__factory,
+  WiseAccountRegistry__factory,
   WiseOffRamperRegistrationProcessor__factory,
   WiseSendProcessor__factory,
   mocks as wiseMocks
@@ -346,6 +348,15 @@ export default class DeployHelper {
       onRampCoolDownPeriod,
       sustainabilityFee,
       sustainabilityFeeRecipient
+    );
+  }
+
+  // Wise Contracts
+  public async deployWiseAccountRegistry(
+    owner: Address,
+  ): Promise<WiseAccountRegistry> {
+    return await new WiseAccountRegistry__factory(this._deployerSigner).deploy(
+      owner
     );
   }
 

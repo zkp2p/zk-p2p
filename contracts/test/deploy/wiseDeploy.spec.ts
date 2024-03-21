@@ -5,6 +5,7 @@ import { deployments, ethers } from "hardhat";
 import {
   NullifierRegistry,
   WiseRamp,
+  WiseAccountRegistry,
   WiseAccountRegistrationProcessor,
   WiseOffRamperRegistrationProcessor,
   WiseSendProcessor,
@@ -12,6 +13,7 @@ import {
 import {
   NullifierRegistry__factory,
   WiseRamp__factory,
+  WiseAccountRegistry__factory,
   WiseAccountRegistrationProcessor__factory,
   WiseOffRamperRegistrationProcessor__factory,  
   WiseSendProcessor__factory,
@@ -52,6 +54,7 @@ describe("Wise Deploy", () => {
   let multiSig: Address;
 
   let wiseRamp: WiseRamp;
+  let wiseAccountRegistry: WiseAccountRegistry;
   let wiseAccountRegistrationProcessor: WiseAccountRegistrationProcessor;
   let wiseOffRamperRegistrationProcessor: WiseOffRamperRegistrationProcessor;
   let wiseSendProcessor: WiseSendProcessor;
@@ -73,6 +76,9 @@ describe("Wise Deploy", () => {
     const wiseRampAddress  = await getDeployedContractAddress(network, "WiseRamp");
     wiseRamp = new WiseRamp__factory(deployer.wallet).attach(wiseRampAddress);
 
+    const wiseAccountRegistryAddress  = await getDeployedContractAddress(network, "WiseAccountRegistry");
+    wiseAccountRegistry = new WiseAccountRegistry__factory(deployer.wallet).attach(wiseAccountRegistryAddress);
+
     const wiseAccountRegistrationProcessorAddress  = await getDeployedContractAddress(network, "WiseAccountRegistrationProcessor");
     wiseAccountRegistrationProcessor = new WiseAccountRegistrationProcessor__factory(deployer.wallet).attach(wiseAccountRegistrationProcessorAddress);
 
@@ -88,17 +94,17 @@ describe("Wise Deploy", () => {
 
   describe("WiseRamp", async () => {
     it("should have the correct processors, usdc, and poseidon set", async () => {
-      const actualAccountRegistrationProcessor = await wiseRamp.accountRegistrationProcessor();
-      const actualOffRamperRegistrationProcessor = await wiseRamp.offRamperRegistrationProcessor();
+      const actualAccountRegistry = await wiseRamp.accountRegistry();
       const actualSendProcessor = await wiseRamp.sendProcessor();
       const actualUsdc = await wiseRamp.usdc();
+      const isInitialized = await wiseAccountRegistry.isInitialized();
 
       const expectedUsdc = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-      expect(actualAccountRegistrationProcessor).to.eq(wiseAccountRegistrationProcessor.address);
-      expect(actualOffRamperRegistrationProcessor).to.eq(wiseOffRamperRegistrationProcessor.address);
+      expect(actualAccountRegistry).to.eq(wiseAccountRegistry.address);
       expect(actualSendProcessor).to.eq(wiseSendProcessor.address);
       expect(actualUsdc).to.eq(expectedUsdc);
+      expect(isInitialized).to.be.true;
     });
 
     it("should have the correct limitations set", async () => {
@@ -128,6 +134,19 @@ describe("Wise Deploy", () => {
     });
   });
 
+  describe("WiseAccountRegistry", async () => {
+    it("should have the correct processors, usdc, and poseidon set", async () => {
+      const actualAccountRegistrationProcessor = await wiseAccountRegistry.accountRegistrationProcessor();
+      const actualOffRamperRegistrationProcessor = await wiseAccountRegistry.offRamperRegistrationProcessor();
+      const isInitialized = await wiseAccountRegistry.isInitialized();
+
+      expect(actualAccountRegistrationProcessor).to.eq(wiseAccountRegistrationProcessor.address);
+      expect(actualOffRamperRegistrationProcessor).to.eq(wiseOffRamperRegistrationProcessor.address);
+      expect(isInitialized).to.be.true;
+    });
+  });
+
+
   describe("WiseAccountRegistrationProcessor", async () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await wiseAccountRegistrationProcessor.ramp();
@@ -138,7 +157,7 @@ describe("Wise Deploy", () => {
       const actualAccountVerifierSigningKey = await wiseAccountRegistrationProcessor.verifierSigningKey();
       const actualTimestampBuffer = await wiseAccountRegistrationProcessor.timestampBuffer();
 
-      expect(actualRamp).to.eq(wiseRamp.address);
+      expect(actualRamp).to.eq(wiseAccountRegistry.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(actualAccountEndpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
@@ -158,7 +177,7 @@ describe("Wise Deploy", () => {
       const actualOffRamperVerifierSigningKey = await wiseOffRamperRegistrationProcessor.verifierSigningKey();
       const actualTimestampBuffer = await wiseOffRamperRegistrationProcessor.timestampBuffer();
 
-      expect(actualRamp).to.eq(wiseRamp.address);
+      expect(actualRamp).to.eq(wiseAccountRegistry.address);
       expect(actualOwner).to.eq(multiSig);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
       expect(actualOffRamperEndpoint).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].endpoint);
