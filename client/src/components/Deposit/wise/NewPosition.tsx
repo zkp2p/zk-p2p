@@ -15,7 +15,7 @@ import { LoginStatus, NewWiseDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { wiseStrings } from '@helpers/strings';
-import { keccak256 } from '@helpers/keccack';
+import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import {
   NOTARY_VERIFICATION_SIGNING_KEY,
@@ -265,7 +265,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     if (extractedWiseProfileId) {
-      setWiseTagInput(extractedWiseProfileId);
+      setWiseTagInput('richardl3291');
     } else {
       setWiseTagInput('');
     }
@@ -273,7 +273,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     const verifyWiseTagInput = async () => {
-      if (wiseTagInput.length < 18) {
+      if (wiseTagInput.length < 4) {
         setIsWiseTagInputValid(false);
       } else {
         if (registrationHash) {
@@ -346,7 +346,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Register Multi Currency Id';
 
       case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
-        return 'Venmo id does not match registration';
+        return 'Wise tag does not match registration';
 
       case NewWiseDepositTransactionStatus.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
@@ -445,13 +445,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   };
 
-  return (
-    <Container>
-      {isNewRegistration ? (
+  /*
+   * Component
+   */
+
+  function renderContent() {
+    if (isNewRegistration) {
+      return (
         <NewAccountRegistration
           handleBackClick={handleNewRegistrationBackClick}
         />
-      ) : (
+      );
+    } else {
+      return (
         <>
           <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
             <div style={{ flex: 0.5 }}>
@@ -481,14 +487,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             </InstructionsAndTogglesContainer>
             <InputsContainer>
               <Input
-                label="Status"
+                label="Depositor Status"
                 name={`multiCurrency`}
                 value={offRampId ? 'Registered' : 'Not Registered'}
                 onChange={() => {}}
                 readOnly={true}
                 type="string"
                 placeholder="multi_currency_id"
-                helperText={wiseStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
+                helperText={wiseStrings.get('NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP')}
+                valueFontSize="18px"
               />
 
               <Input
@@ -498,7 +505,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 onChange={(e) => {setWiseTagInput(e.currentTarget.value)}}
                 type="string"
                 placeholder="alexanders6341"
-                helperText={wiseStrings.get('NEW_DEPOSIT_ID_TOOLTIP')} // todo: update
+                helperText={wiseStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
+                valueFontSize="20px"
               />
 
               <Input
@@ -544,7 +552,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             </InputsContainer>
           </Body>
         </>
-      )}
+      );
+    }
+  };
+
+  return (
+    <Container>
+      {renderContent()}
     </Container>
   );
 };

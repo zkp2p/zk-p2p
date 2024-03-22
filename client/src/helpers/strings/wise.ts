@@ -40,18 +40,24 @@ const strings: PlatformStrings = {
     Depositing requires registering a valid Wise multi currency id. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
-  NEW_DEPOSIT_ID_TOOLTIP: `
-    This is a valid UPI ID where users will send payments.
-    This connects your UPI account to your wallet address on chain.
-    This must match the Wise account you used to register.
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
+    This is a second registration step required for depositors only to connect a Wise multi currency id
+    to your account.
   `,
-  NEW_DEPOSIT_NAME_TOOLTIP:"",
+  NEW_DEPOSIT_ID_TOOLTIP: `
+    This is a valid Wise tag where users will send payments.
+    This connects your Wise tag to your address on chain.
+    This must match the Wise tag you used to register.
+  `,
+  NEW_DEPOSIT_NAME_TOOLTIP: `
+    no-op
+  `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you Wise payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
-    This is the amount of INR you will receive if your entire deposit is claimed.
+    This is the amount of EUR you will receive if your entire deposit is claimed.
   `,
 
   // Instruction Drawer

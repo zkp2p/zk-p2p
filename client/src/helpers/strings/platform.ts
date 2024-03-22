@@ -26,6 +26,7 @@ export interface PlatformStrings {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: string,
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: string,
   NEW_DEPOSIT_ID_TOOLTIP: string,
   NEW_DEPOSIT_NAME_TOOLTIP: string,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: string,

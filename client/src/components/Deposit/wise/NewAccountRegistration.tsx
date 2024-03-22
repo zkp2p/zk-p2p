@@ -4,7 +4,6 @@ import { ArrowLeft } from 'react-feather';
 import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
-import { ThemedText } from '@theme/text';
 import { RowBetween } from '@components/layouts/Row';
 import { NumberedStep } from '@components/common/NumberedStep';
 import { NotaryForm } from '@components/Notary/NotaryForm';
@@ -12,6 +11,8 @@ import { wiseStrings } from '@helpers/strings';
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/wise/useRegistration';
+import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
 
 
 interface NewAccountRegistrationProps {
@@ -126,8 +127,8 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
    */
 
   return (
-    <>
-      <>
+    <Container>
+      <TitleContainer>
         <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
           <div style={{ flex: 0.5 }}>
             <button
@@ -155,7 +156,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
             </Link>
           </NumberedStep>
         </InstructionsAndTogglesContainer>
-      </>
+      </TitleContainer>
 
       <NotaryForm
         paymentPlatformType={PaymentPlatform.WISE}
@@ -171,9 +172,21 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
         onVerifyNotarizationCompletion={handleBackClick}
         transactionAddress={submitRegistrationTransactionHash}
       />
-    </>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const TitleContainer = styled.div`
+  padding: 1.5rem;
+  background-color: ${colors.container};
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+`;
 
 const InstructionsAndTogglesContainer = styled.div`
   display: grid;
