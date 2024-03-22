@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
 import { Zap, UserX } from 'react-feather';
 import Link from '@mui/material/Link';
+import { isChrome, isFirefox, isChromium } from 'react-device-detect';
 
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -21,6 +22,10 @@ import {
   PaymentPlatform
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
+
+import chromeSvg from '../../assets/images/browsers/chrome.svg';
+import braveSvg from '../../assets/images/browsers/brave.svg';
+import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 
 interface RequestTableProps {
@@ -50,6 +55,8 @@ export const RequestTable: React.FC<RequestTableProps> = ({
    * State
    */
 
+  const [browser, setBrowser] = useState<string>("");
+
   const [isExtensionInstalled, setIsExtensionInstalled] = useState<boolean>(false);
 
   const [injectedTagNotarizations, setInjectedTagNotarizations] = useState<Notarization[]>([]);
@@ -77,6 +84,34 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   /*
    * Helpers
    */
+
+  async function getBrowser() {
+    if (isFirefox) {
+      return "firefox";
+    } else if (isChrome) {
+      return "chrome";
+    } else if (isChromium) {
+      return "brave";
+    };
+
+    return "unknown";
+  };
+
+  const browserSvg = () => {
+    switch (browser) {
+      case 'firefox':
+        return firefoxSvg;
+
+      case 'brave':
+        return braveSvg;
+
+      case 'chrome':
+        return chromeSvg;
+
+      default:
+        return chromeSvg;
+    }
+  };
 
   function formatDateTime(unixTimestamp: string): string {
     const date = new Date(Number(unixTimestamp));
@@ -152,11 +187,23 @@ export const RequestTable: React.FC<RequestTableProps> = ({
       default:
         throw new Error('Invalid circuit type');
     };
+
+    // window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
+
+    // console.log('Client posted FETCH_REQUEST_HISTORY message');
   };
 
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    async function detectBrowser() {
+      setBrowser(await getBrowser());
+    }
+
+    detectBrowser();
+  }, []);
 
   useEffect(() => {
     setSelectedIndex(null);
@@ -166,6 +213,25 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   }, [injectedTagNotarizations]);
 
   useEffect(() => {
+    const handleMessage = function(event: { origin: string; data: { type: string; status: string; }; }) {
+      if (event.origin !== window.location.origin) {
+        return;
+      };
+
+      if (event.data.type && event.data.type === "REQUEST_HISTORY_RESPONSE") {
+        console.log('Client received REQUEST_HISTORY_RESPONSE message');
+
+        
+      };
+    };
+  
+    window.addEventListener("message", handleMessage);
+  
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
   useEffect(() => {
     const notarizationMetadataCTA = defaultCTAForInputStatus();
 
@@ -230,6 +296,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
               onClick={handleInstallExtensionClicked}
               height={48}
               width={216}
+              leftAccessorySvg={browserSvg()}
             >
               Add to Chrome
             </Button>
@@ -295,18 +362,6 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   )
 };
 
-const EmptyNotarizationsContainer = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1.9rem 0rem;
-  max-width: 75%;
-  margin: auto;
-  gap: 1rem;
-`;
-
 const Container = styled.div`
   width: 100%;
   display: flex;
@@ -318,6 +373,18 @@ const Container = styled.div`
   border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   overflow: hidden;
+`;
+
+const EmptyNotarizationsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.9rem 0rem;
+  max-width: 75%;
+  margin: auto;
+  gap: 1rem;
 `;
 
 const ErrorContainer = styled.div`
