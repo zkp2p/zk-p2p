@@ -173,7 +173,7 @@ describe("WiseSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Passed endpoint doesn't match expected");
+        await expect(subject()).to.be.revertedWith("Endpoint does not match expected");
       });
     });
 
@@ -201,7 +201,7 @@ describe("WiseSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Passed host doesn't match expected");
+        await expect(subject()).to.be.revertedWith("Host does not match expected");
       });
     });
 
