@@ -459,7 +459,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         )}
       </Content>
 
-      {isLoggedIn ? (
+      {isLoggedIn && (paymentPlatform === PaymentPlatform.VENMO) ? (
         <LiquidityLink onClick={navigateToWithdrawHandler}>
           Looking for your legacy deposits?
         </LiquidityLink>

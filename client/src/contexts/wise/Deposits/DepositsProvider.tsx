@@ -133,7 +133,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
 
         const depositData = depositWithAvailableLiquidityData.deposit;
         const deposit: Deposit = {
-          platformType: PaymentPlatform.VENMO,
+          platformType: PaymentPlatform.WISE,
           depositor: depositData.depositor.toString(),
           venmoId: depositData.wiseTag,
           depositAmount: depositData.depositAmount,

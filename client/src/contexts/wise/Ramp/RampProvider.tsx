@@ -16,7 +16,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
 
   /*
    * State
@@ -36,8 +36,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
   const {
     data: minimumDepositAmountRaw,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'minDepositAmount',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -48,8 +48,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
     data: depositCounterRaw,
     refetch: refetchDepositCounter,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'depositCounter',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -59,8 +59,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
   const {
     data: onRampCooldownPeriodRaw,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'onRampCooldownPeriod',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -72,9 +72,9 @@ const RampProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     esl && console.log('venmo_shouldFetchRampState_1');
-    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
+    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
 
-    if (venmoRampAddress) {
+    if (wiseRampAddress) {
       esl && console.log('venmo_shouldFetchRampState_2');
 
       setShouldFetchRampState(true);
@@ -86,7 +86,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
       setMinimumDepositAmount(null);
       setDepositCounter(null);
     }
-  }, [venmoRampAddress]);
+  }, [wiseRampAddress]);
 
   useEffect(() => {
     esl && console.log('venmo_minDepositAmountRaw_1');

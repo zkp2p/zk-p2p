@@ -21,10 +21,9 @@ import {
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
  } from './helper';
-import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_VENMO } from '@helpers/constants';
-import { unpackPackedVenmoId } from '@helpers/poseidonHash';
+import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_WISE } from '@helpers/constants';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRampState from '@hooks/venmo/useRampState';
+import useRampState from '@hooks/wise/useRampState';
 import useDenyList from '@hooks/useDenyList';
 
 import LiquidityContext from './LiquidityContext';
@@ -42,7 +41,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
   const { fetchVenmoDepositoryDenyList } = useDenyList();
 
@@ -50,7 +49,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const currentRampAddressRef = useRef(venmoRampAddress);
+  const currentRampAddressRef = useRef(wiseRampAddress);
 
   const [fetchDepositsTrigger, setFetchDepositsTrigger] = useState(0);
 
@@ -74,6 +73,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     for (let i = 0; i < depositIdsToFetch.length; i += BATCH_SIZE) {
       const depositIdBatch = depositIdsToFetch.slice(i, i + BATCH_SIZE);
       const rawDepositsData = await fetchDepositBatch(depositIdBatch);
+
+      console.log('rawDepositsData: ', rawDepositsData);
       
       const deposits = sanitizeRawDeposits(rawDepositsData as any);
       for (let j = 0; j < deposits.length; j++) {
@@ -123,8 +124,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     try {
       // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
       const data = await readContract({
-        address: venmoRampAddress as `0x${string}`,
-        abi: venmoRampAbi as Abi,
+        address: wiseRampAddress as `0x${string}`,
+        abi: wiseRampAbi as Abi,
         functionName: 'getDepositFromIds',
         args: [depositIdBatch],
         account: CALLER_ACCOUNT,
@@ -144,11 +145,17 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     for (let i = rawDepositsData.length - 1; i >= 0; i--) {
       const depositWithAvailableLiquidityData = rawDepositsData[i];
       
+      // struct Deposit {
+      //   string wiseTag; --> venmoId
+      //   ITLSData.TLSParams tlsParams;       // TLS information including verifier and endpoint / host being notarized
+      //   bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
+      // }
+
       const depositData = depositWithAvailableLiquidityData.deposit;
       const deposit: Deposit = {
-        platformType: PaymentPlatform.VENMO,
+        platformType: PaymentPlatform.WISE,
         depositor: depositData.depositor.toString(),
-        venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
+        venmoId: depositData.wiseTag,
         depositAmount: depositData.depositAmount,
         remainingDepositAmount: depositData.remainingDeposits,
         outstandingIntentAmount: depositData.outstandingIntentAmount,
@@ -160,7 +167,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         deposit,
         availableLiquidity: depositWithAvailableLiquidityData.availableLiquidity,
         depositId: depositWithAvailableLiquidityData.depositId,
-        depositorIdHash: depositWithAvailableLiquidityData.depositorIdHash,
+        depositorIdHash: depositWithAvailableLiquidityData.depositorId,
       }
 
       sanitizedDeposits.push(depositWithLiquidity);
@@ -174,23 +181,23 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    currentRampAddressRef.current = venmoRampAddress;
-  }, [venmoRampAddress]);
+    currentRampAddressRef.current = wiseRampAddress;
+  }, [wiseRampAddress]);
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchDeposits_1');
+    esl && console.log('wise_shouldFetchDeposits_1');
     esl && console.log('checking depositCounter: ', depositCounter);
-    esl && console.log('checking venmoRampAddress: ', venmoRampAddress);
+    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
 
     const fetchData = async () => {
-      if (depositCounter && venmoRampAddress) {
-        esl && console.log('venmo_shouldFetchDeposits_2');
+      if (depositCounter && wiseRampAddress) {
+        esl && console.log('wise_shouldFetchDeposits_2');
   
         setShouldFetchDeposits(true);
 
-        await fetchAndPruneDeposits(depositCounter, venmoRampAddress);
+        await fetchAndPruneDeposits(depositCounter, wiseRampAddress);
       } else {
-        esl && console.log('venmo_shouldFetchDeposits_3');
+        esl && console.log('wise_shouldFetchDeposits_3');
   
         setShouldFetchDeposits(false);
   
@@ -203,20 +210,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositCounter, venmoRampAddress, fetchDepositsTrigger]);
+  }, [depositCounter, wiseRampAddress, fetchDepositsTrigger]);
 
   useEffect(() => {
-    esl && console.log('venmo_depositStore_1');
+    esl && console.log('wise_depositStore_1');
     esl && console.log('checking deposits: ', deposits);
 
     if (deposits && deposits.length > 0) {
-      esl && console.log('venmo_depositStore_2');
+      esl && console.log('wise_depositStore_2');
 
       const newStore = createDepositsStore(deposits);
 
       setDepositStore(newStore);
     } else {
-      esl && console.log('venmo_depositStore_3');
+      esl && console.log('wise_depositStore_3');
 
       setDepositStore(null);
     }
@@ -247,7 +254,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
     if (depositStore) {
       return fetchDepositForMaxAvailableTransferSize(
-        MAX_USDC_TRANSFER_SIZE_VENMO,
+        MAX_USDC_TRANSFER_SIZE_WISE,
         depositStore,
         onRamperRegistrationHash
       );
