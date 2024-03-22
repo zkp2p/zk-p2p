@@ -265,7 +265,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     if (extractedWiseProfileId) {
-      setWiseTagInput('richardl3291');
+      setWiseTagInput(extractedWiseProfileId);
     } else {
       setWiseTagInput('');
     }
@@ -277,9 +277,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         setIsWiseTagInputValid(false);
       } else {
         if (registrationHash) {
-          const wiseTagHash = keccak256(wiseTagInput);
+          const wiseTagHash = calculateWiseTagHash(wiseTagInput);
           const validWiseTagInput = wiseTagHash === registrationHash;
-
           setIsWiseTagInputValid(validWiseTagInput);
 
           if (validWiseTagInput && setExtractedWiseProfileId) {
