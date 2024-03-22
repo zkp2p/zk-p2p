@@ -16,5 +16,5 @@ interface IWiseAccountRegistry {
 
     function isRegisteredUser(address _account) external view returns (bool);
     
-    function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool);
+    function isAllowedUser(address _account, bytes32 _deniedUser) external view returns (bool);
 }

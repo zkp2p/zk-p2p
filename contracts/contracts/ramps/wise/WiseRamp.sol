@@ -208,7 +208,7 @@ contract WiseRamp is Ownable {
         GlobalAccountInfo storage globalAccountInfo = globalAccount[account.accountId];
 
         require(account.offRampId != bytes32(0), "Must be registered as off ramper");
-        require(keccak256(abi.encodePacked(_wiseTag)) == account.wiseTagHash, "Wise tag does not match registered wise tag");
+        require(keccak256(abi.encode(_wiseTag)) == account.wiseTagHash, "Wise tag does not match registered wise tag");
         require(globalAccountInfo.deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -250,7 +250,7 @@ contract WiseRamp is Ownable {
         Deposit storage deposit = deposits[_depositId];
 
         // Caller validity checks
-        require(!accountRegistry.isDeniedUser(deposit.depositor, onRamperId), "Onramper on depositor's denylist");
+        require(accountRegistry.isAllowedUser(deposit.depositor, onRamperId), "Onramper on depositor's denylist");
         require(
             globalAccount[onRamperId].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
             "On ramp cool down period not elapsed"
@@ -501,11 +501,11 @@ contract WiseRamp is Ownable {
     }
 
     function getIdCurrentIntentHash(address _account) external view returns (bytes32) {
-        return globalAccount[accountRegistry.getAccountInfo(_account).accountId].currentIntentHash;
+        return globalAccount[accountRegistry.getAccountId(_account)].currentIntentHash;
     }
 
     function getLastOnRampTimestamp(address _account) external view returns (uint256) {
-        return globalAccount[accountRegistry.getAccountInfo(_account).accountId].lastOnrampTimestamp;
+        return globalAccount[accountRegistry.getAccountId(_account)].lastOnrampTimestamp;
     }
 
     function getIntentsWithOnRamperId(bytes32[] calldata _intentHashes) external view returns (IntentWithOnRamperId[] memory) {
@@ -517,7 +517,7 @@ contract WiseRamp is Ownable {
             intentsWithOnRamperId[i] = IntentWithOnRamperId({
                 intentHash: _intentHashes[i],
                 intent: intent,
-                onRamperId: accountRegistry.getAccountInfo(intent.onRamper).accountId
+                onRamperId: accountRegistry.getAccountId(intent.onRamper)
             });
         }
 
@@ -525,7 +525,7 @@ contract WiseRamp is Ownable {
     }
 
     function getAccountDeposits(address _account) external view returns (DepositWithAvailableLiquidity[] memory accountDeposits) {
-        uint256[] memory accountDepositIds = globalAccount[accountRegistry.getAccountInfo(_account).accountId].deposits;
+        uint256[] memory accountDepositIds = globalAccount[accountRegistry.getAccountId(_account)].deposits;
         accountDeposits = new DepositWithAvailableLiquidity[](accountDepositIds.length);
         
         for (uint256 i = 0; i < accountDepositIds.length; ++i) {
@@ -535,7 +535,7 @@ contract WiseRamp is Ownable {
 
             accountDeposits[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
-                depositorId: accountRegistry.getAccountInfo(deposit.depositor).accountId,
+                depositorId: accountRegistry.getAccountId(deposit.depositor),
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -552,7 +552,7 @@ contract WiseRamp is Ownable {
 
             depositArray[i] = DepositWithAvailableLiquidity({
                 depositId: depositId,
-                depositorId: accountRegistry.getAccountInfo(deposit.depositor).accountId,
+                depositorId: accountRegistry.getAccountId(deposit.depositor),
                 deposit: deposit,
                 availableLiquidity: deposit.remainingDeposits + reclaimableAmount
             });
@@ -618,7 +618,7 @@ contract WiseRamp is Ownable {
     function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {
         Intent memory intent = intents[_intentHash];
 
-        delete globalAccount[accountRegistry.getAccountInfo(intent.onRamper).accountId].currentIntentHash;
+        delete globalAccount[accountRegistry.getAccountId(intent.onRamper)].currentIntentHash;
         delete intents[_intentHash];
         _deposit.intentHashes.removeStorage(_intentHash);
 
@@ -632,7 +632,7 @@ contract WiseRamp is Ownable {
     function _closeDepositIfNecessary(uint256 _depositId, Deposit storage _deposit) internal {
         uint256 openDepositAmount = _deposit.outstandingIntentAmount + _deposit.remainingDeposits;
         if (openDepositAmount == 0) {
-            globalAccount[accountRegistry.getAccountInfo(_deposit.depositor).accountId].deposits.removeStorage(_depositId);
+            globalAccount[accountRegistry.getAccountId(_deposit.depositor)].deposits.removeStorage(_depositId);
             emit DepositClosed(_depositId, _deposit.depositor);
             delete deposits[_depositId];
         }
