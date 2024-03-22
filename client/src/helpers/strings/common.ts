@@ -198,8 +198,10 @@ const strings: CommonStrings = {
     Submit transaction to complete registration
   `,
 
+  // Extension Instructions
   EXTENSION_DOWNLOAD_INSTRUCTIONS: `
-    Download the extension to enable fast verification and registration
+    ZKP2P's browser side bar is your browser assistant that allows you
+    to prove ownership of your account and transaction history
   `,
 
   // Notary Verification Modal Steps

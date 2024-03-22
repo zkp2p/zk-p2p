@@ -9,7 +9,6 @@ import {
   PaymentPlatform
 } from '@helpers/types';
 import { esl } from '@helpers/constants';
-import { unpackPackedVenmoId } from '@helpers/poseidonHash';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/wise/useRegistration';
@@ -136,7 +135,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         const deposit: Deposit = {
           platformType: PaymentPlatform.VENMO,
           depositor: depositData.depositor.toString(),
-          venmoId: unpackPackedVenmoId(depositData.packedVenmoId),
+          venmoId: depositData.wiseTag,
           depositAmount: depositData.depositAmount,
           remainingDepositAmount: depositData.remainingDeposits,
           outstandingIntentAmount: depositData.outstandingIntentAmount,

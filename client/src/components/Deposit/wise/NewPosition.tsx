@@ -375,7 +375,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewWiseDepositTransactionStatus.DEFAULT:
       default:
-        return 'Input valid Venmo Id';
+        return 'Input valid Wise tag';
     }
   }
 

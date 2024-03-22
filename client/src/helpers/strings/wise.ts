@@ -23,9 +23,8 @@ const strings: PlatformStrings = {
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration requires a confirmation email from Wise
-    with subject "You have done a UPI txn", which is used to prove you own a Wise account. Your Wise ID is
-    hashed to conceal your identity.
+    You must register in order to use ZKP2P. Registration requires a notarized message from Wise, which is used
+    to prove you own a Wise account. Your Wise ID is hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
