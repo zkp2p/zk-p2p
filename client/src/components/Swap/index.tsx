@@ -68,7 +68,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
     hdfcRampAddress,
     hdfcRampAbi,
     garantiRampAddress,
-    garantiRampAbi
+    garantiRampAbi,
+    wiseRampAddress,
+    wiseRampAbi
   } = useSmartContracts();
   const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
   
@@ -215,6 +217,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
       case PaymentPlatform.GARANTI:
         setRampAddress(garantiRampAddress);
         setRampAbi(garantiRampAbi as any);
+        break;
+
+      case PaymentPlatform.WISE:
+        setRampAddress(wiseRampAddress);
+        setRampAbi(wiseRampAbi as any);
         break;
 
       default:

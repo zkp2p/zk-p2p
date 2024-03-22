@@ -69,6 +69,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           paymentPlatformName: 'Venmo',
           instructionsText: `Scan and send $${amount}`,
         };
+
       case PaymentPlatform.HDFC:
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
@@ -76,12 +77,21 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           paymentPlatformName: 'HDFC',
           instructionsText: `Scan and send ₹${amount} <br />to ${venmoId}`,
         };
+
       case PaymentPlatform.GARANTI:
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
           paymentPlatformName: 'Garanti',
-          instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name.`,
+          instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name`,
         };
+
+      case PaymentPlatform.WISE:
+        return {
+          troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
+          paymentPlatformName: 'Wise',
+          instructionsText: `Using your Wise app, send €${amount} <br />to the above Wise tag`,
+        };
+
       default:
         return {
           troubleScanningQRCodeLink: link,

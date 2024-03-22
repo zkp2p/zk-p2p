@@ -13,6 +13,8 @@ import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
 import useRampState from '@hooks/venmo/useRampState';
 import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useGarantiRampState from '@hooks/garanti/useRampState';
+import useWiseOnRamperIntents from '@hooks/wise/useOnRamperIntents';
+import useWiseRampState from '@hooks/wise/useRampState';
 
 
 
@@ -60,6 +62,18 @@ export const Swap: React.FC = () => {
   } = useGarantiRampState();
 
   const {
+    currentIntentHash: currentWiseIntentHash,
+    refetchIntentHash: refetchWiseIntentHash,
+    shouldFetchIntentHash: shouldFetchWiseIntentHash,
+    refetchLastOnRampTimestamp: refetchLastWiseOnRampTimestamp
+  } = useWiseOnRamperIntents();
+
+  const {
+    refetchDepositCounter: refetchWiseDepositCounter,
+    shouldFetchRampState: shouldFetchWiseRampState,
+  } = useWiseRampState();
+
+  const {
     PaymentPlatform,
     paymentPlatform
   } = usePlatformSettings();
@@ -75,6 +89,10 @@ export const Swap: React.FC = () => {
    */
 
   useEffect(() => {
+    if (shouldFetchUsdcBalance) {
+      refetchUsdcBalance?.();
+    }
+
     if (shouldFetchVenmoIntentHash) {
       refetchVenmoIntentHash?.();
       refetchLastVenmoOnRampTimestamp?.();
@@ -82,10 +100,6 @@ export const Swap: React.FC = () => {
 
     if (shouldFetchVenmoRampState) {
       refetchVenmoDepositCounter?.();
-    }
-
-    if (shouldFetchUsdcBalance) {
-      refetchUsdcBalance?.();
     }
 
     if (shouldFetchHdfcIntentHash) {
@@ -104,6 +118,15 @@ export const Swap: React.FC = () => {
 
     if (shouldFetchGarantiRampState) {
       refetchGarantiDepositCounter?.();
+    }
+
+    if (shouldFetchWiseIntentHash) {
+      refetchWiseIntentHash?.();
+      refetchLastWiseOnRampTimestamp?.();
+    }
+
+    if (shouldFetchWiseRampState) {
+      refetchWiseDepositCounter?.();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,6 +152,10 @@ export const Swap: React.FC = () => {
 
       case PaymentPlatform.GARANTI:
         setSelectedIntentHash(currentGarantiIntentHash);
+        break;
+
+      case PaymentPlatform.WISE:
+        setSelectedIntentHash(currentWiseIntentHash);
         break;
     }
   };
@@ -156,6 +183,14 @@ export const Swap: React.FC = () => {
         );
 
       case PaymentPlatform.GARANTI:
+        return (
+          <GarantiOnRamp
+            handleBackClick={handleBackClick}
+            selectedIntentHash={selectedIntentHash as any}
+          />
+        );
+
+      case PaymentPlatform.WISE:
         return (
           <GarantiOnRamp
             handleBackClick={handleBackClick}

@@ -24,6 +24,10 @@ import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 
+// Wise
+import useWiseOnRamperIntents from '@hooks/wise/useOnRamperIntents';
+import useWiseLiquidity from '@hooks/wise/useLiquidity';
+
 
 interface OnRamperIntentTableProps {
   onIntentRowClick?: () => void;
@@ -68,6 +72,15 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     depositStore: garantiDepositStore
   } = useGarantiLiquidity();
 
+  const {
+    currentIntentHash: currentWiseIntentHash,
+    currentIntent: currentWiseIntent,
+    refetchIntentHash: refetchWiseIntentHash
+  } = useWiseOnRamperIntents();
+  const {
+    depositStore: wiseDepositStore
+  } = useWiseLiquidity();
+
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
  
  const {
@@ -76,7 +89,9 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   hdfcRampAddress,
   hdfcRampAbi,
   garantiRampAddress,
-  garantiRampAbi
+  garantiRampAbi,
+  wiseRampAddress,
+  wiseRampAbi,
   } = useSmartContracts();
 
   /*
@@ -158,12 +173,17 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRampAbi(garantiRampAbi as any);
         break;
 
+      case PaymentPlatform.WISE:
+        setRampAddress(wiseRampAddress);
+        setRampAbi(wiseRampAbi as any);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress]);
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress, wiseRampAddress]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -179,12 +199,22 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setCurrentIntentHash(currentGarantiIntentHash);
         break;
 
+      case PaymentPlatform.WISE:
+        setCurrentIntentHash(currentWiseIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, currentVenmoIntentHash, currentHdfcIntentHash, currentGarantiIntentHash]);
+  }, [
+    paymentPlatform,
+    currentVenmoIntentHash,
+    currentHdfcIntentHash,
+    currentGarantiIntentHash,
+    currentWiseIntentHash
+  ]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -200,12 +230,22 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setDepositStore(garantiDepositStore);
         break;
 
+      case PaymentPlatform.WISE:
+        setDepositStore(wiseDepositStore);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoDepositStore, hdfcDepositStore, garantiDepositStore]);
+  }, [
+    paymentPlatform,
+    venmoDepositStore,
+    hdfcDepositStore,
+    garantiDepositStore,
+    wiseDepositStore
+  ]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -221,12 +261,22 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setCurrentIntent(currentGarantiIntent);
         break;
 
+      case PaymentPlatform.WISE:
+        setCurrentIntent(currentWiseIntent);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, currentVenmoIntent, currentHdfcIntent, currentGarantiIntent]);
+  }, [
+    paymentPlatform,
+    currentVenmoIntent,
+    currentHdfcIntent,
+    currentGarantiIntent,
+    currentWiseIntent
+  ]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -242,12 +292,22 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRefetchIntentHash(() => refetchGarantiIntentHash);
         break;
 
+      case PaymentPlatform.WISE:
+        setRefetchIntentHash(() => refetchWiseIntentHash);
+        break;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoIntentHash, refetchHdfcIntentHash, refetchGarantiIntentHash]);
+  }, [
+    paymentPlatform,
+    refetchVenmoIntentHash,
+    refetchHdfcIntentHash,
+    refetchGarantiIntentHash,
+    refetchWiseIntentHash
+  ]);
  
   useEffect(() => {
     if (currentIntent && depositStore) {

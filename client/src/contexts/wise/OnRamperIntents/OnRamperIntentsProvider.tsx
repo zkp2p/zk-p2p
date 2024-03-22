@@ -5,8 +5,8 @@ import { Intent, OnRamperIntent, StoredDeposit } from '@helpers/types';
 import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLiquidity from '@hooks/venmo/useLiquidity';
-import useRegistration from '@hooks/venmo/useRegistration';
+import useLiquidity from '@hooks/wise/useLiquidity';
+import useRegistration from '@hooks/wise/useRegistration';
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -22,7 +22,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { isRegistered } = useRegistration();
-  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
+  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { depositStore } = useLiquidity();
 
   /*
@@ -40,14 +40,14 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  // getVenmoIdCurrentIntentHash(address _account) external view returns (bytes32)
+  // getIdCurrentIntentHash(address _account) external view returns (bytes32)
   const {
     data: intentHashRaw,
     refetch: refetchIntentHash,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
-    functionName: 'getVenmoIdCurrentIntentHash',
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
+    functionName: 'getIdCurrentIntentHash',
     args: [
       loggedInEthereumAddress
     ],
@@ -59,8 +59,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     data: lastOnRampTimeStampRaw,
     refetch: refetchLastOnRampTimestamp,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'getLastOnRampTimestamp',
     args: [
       loggedInEthereumAddress
@@ -72,8 +72,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   const {
     data: intentRaw,
   } = useContractRead({
-    address: venmoRampAddress,
-    abi: venmoRampAbi,
+    address: wiseRampAddress,
+    abi: wiseRampAbi,
     functionName: 'intents',
     args: [
       currentIntentHash
@@ -89,7 +89,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
     // Find the StoredDeposit object with the matching depositId
     const matchingDeposit = storedDeposits.find(storedDeposit => storedDeposit.depositId === depositId);
     
-    // esl && console.log('venmo_matchingDeposit: ', matchingDeposit);
+    // esl && console.log('wise_matchingDeposit: ', matchingDeposit);
 
     // If a matching deposit is found, return the venmoId, otherwise return null
     return matchingDeposit ? matchingDeposit.deposit.venmoId : null;
@@ -100,17 +100,17 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchIntentHash_1');
+    esl && console.log('wise_shouldFetchIntentHash_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      esl && console.log('venmo_shouldFetchIntentHash_2');
+      esl && console.log('wise_shouldFetchIntentHash_2');
 
       setShouldFetchIntentHash(true);
     } else {
-      esl && console.log('venmo_shouldFetchIntentHash_3');
+      esl && console.log('wise_shouldFetchIntentHash_3');
 
       setShouldFetchIntentHash(false);
 
@@ -120,15 +120,15 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchIntent_1');
+    esl && console.log('wise_shouldFetchIntent_1');
     esl && console.log('checking currentIntentHash: ', currentIntentHash);
     
     if (currentIntentHash) {
-      esl && console.log('venmo_shouldFetchIntent_2');
+      esl && console.log('wise_shouldFetchIntent_2');
 
       setShouldFetchIntent(true);
     } else {
-      esl && console.log('venmo_shouldFetchIntent_3');
+      esl && console.log('wise_shouldFetchIntent_3');
 
       setShouldFetchIntent(false);
       
@@ -137,44 +137,44 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [currentIntentHash]);
 
   useEffect(() => {
-    esl && console.log('venmo_intentHashRaw_1');
+    esl && console.log('wise_intentHashRaw_1');
     esl && console.log('checking intentHashRaw: ', intentHashRaw);
   
     if (intentHashRaw !== ZERO_ADDRESS) {
-      esl && console.log('venmo_intentHashRaw_2');
+      esl && console.log('wise_intentHashRaw_2');
       
       const intentHashProcessed = intentHashRaw as string;
 
       setCurrentIntentHash(intentHashProcessed);
     } else {
-      esl && console.log('venmo_intentHashRaw_3');
+      esl && console.log('wise_intentHashRaw_3');
 
       setCurrentIntentHash(null);
     }
   }, [intentHashRaw]);
 
   useEffect(() => {
-    esl && console.log('venmo_lastOnRampTimeStampRaw_1');
+    esl && console.log('wise_lastOnRampTimeStampRaw_1');
     esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
   
     if (lastOnRampTimeStampRaw || lastOnRampTimeStampRaw === ZERO) {
-      esl && console.log('venmo_lastOnRampTimeStampRaw_2');
+      esl && console.log('wise_lastOnRampTimeStampRaw_2');
 
       setLastOnRampTimestamp(lastOnRampTimeStampRaw as bigint);
     } else {
-      esl && console.log('venmo_lastOnRampTimeStampRaw_3');
+      esl && console.log('wise_lastOnRampTimeStampRaw_3');
 
       setLastOnRampTimestamp(null);
     }
   }, [lastOnRampTimeStampRaw]);
 
   useEffect(() => {
-    esl && console.log('venmo_intentRaw_1');
+    esl && console.log('wise_intentRaw_1');
     esl && console.log('checking intentRaw: ', intentRaw);
     esl && console.log('checking depositStore: ', depositStore);
   
     if (intentRaw && depositStore && depositStore.length > 0) {
-      esl && console.log('venmo_intentRaw_2');
+      esl && console.log('wise_intentRaw_2');
 
       const intentData = intentRaw as any;
       const intentProcessed: Intent = {
@@ -194,12 +194,12 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   
         setCurrentIntent(onRampIntentProcessed);
       } else {
-        esl && console.log('venmo_intentRaw_3');
+        esl && console.log('wise_intentRaw_3');
 
         setCurrentIntent(null);
       }
     } else {
-      esl && console.log('venmo_intentRaw_4');
+      esl && console.log('wise_intentRaw_4');
 
       setCurrentIntent(null);
     }
