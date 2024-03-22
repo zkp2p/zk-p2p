@@ -65,6 +65,8 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
   const [ctaButtonTitle, setCtaButtonTitle] = useState<string>("");
 
+  const [isShowingTable, setIsShowingTable] = useState<boolean>(false);
+
   /*
    * Handlers
    */
@@ -79,6 +81,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     const notarization = injectedTagNotarizations[index];
     
     setTagNotarization(notarization.proof);
+  };
+
+  const handleToggleRequestTablePressed = () => {
+    setIsShowingTable(!isShowingTable);
   };
 
   /*
@@ -291,7 +297,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
             </div>
           </ThemedText.DeprecatedBody>
 
-          <LoginOrUploadButtonContainer>
+          <InstallExtensionButtonContainer>
             <Button
               onClick={handleInstallExtensionClicked}
               height={48}
@@ -300,7 +306,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
             >
               Add to Chrome
             </Button>
-          </LoginOrUploadButtonContainer>
+          </InstallExtensionButtonContainer>
         </ErrorContainer>
       ) : (
         <ExtensionDetectedContainer>
@@ -310,43 +316,49 @@ export const RequestTable: React.FC<RequestTableProps> = ({
             </ThemedText.SubHeader>
           </TitleContainer>
 
-          <TitleAndTableContainer>
-            <TitleAndOAuthContainer>
-              <NotarizationsTitleContainer>
-                <TitleLabel>Confirmed Wise Requests</TitleLabel>
-              </NotarizationsTitleContainer>
+          {isShowingTable ? (
+            <TitleAndTableContainer>
+              <TitleAndOAuthContainer>
+                <NotarizationsTitleContainer>
+                  <TitleLabel>Confirmed Wise Requests</TitleLabel>
+                </NotarizationsTitleContainer>
 
-              <AccessoryButton
-                onClick={fetchData}
-                height={36}
-                title={'Refresh'}
-                icon={'refresh'}
-              />
-            </TitleAndOAuthContainer>
+                <AccessoryButton
+                  onClick={fetchData}
+                  height={36}
+                  title={'Refresh'}
+                  icon={'refresh'}
+                />
+              </TitleAndOAuthContainer>
 
-            {injectedTagNotarizations.length === 0 ? (
-              <EmptyNotarizationsContainer>
-                <StyledUserX />
-                <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                  { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
-                </ThemedText.SubHeaderSmall>
-              </EmptyNotarizationsContainer>
-            ) : (
-              <Table>
-                {injectedTagNotarizations.map((notarization, index) => (
-                  <RequestRow
-                    key={index}
-                    platformText={rowPlatformText()}
-                    subjectText={rowSubjectText(notarization)}
-                    dateText={formatDateTime(notarization.date)}
-                    isSelected={index === selectedIndex}
-                    isLastRow={index === injectedTagNotarizations.length - 1}
-                    onRowClick={() => handleRowClick(index)}
-                  />
-                ))}
-              </Table>
-            )}
-          </TitleAndTableContainer>
+              {injectedTagNotarizations.length === 0 ? (
+                <EmptyNotarizationsContainer>
+                  <StyledUserX />
+                  <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                    { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
+                  </ThemedText.SubHeaderSmall>
+                </EmptyNotarizationsContainer>
+              ) : (
+                <Table>
+                  {injectedTagNotarizations.map((notarization, index) => (
+                    <RequestRow
+                      key={index}
+                      platformText={rowPlatformText()}
+                      subjectText={rowSubjectText(notarization)}
+                      dateText={formatDateTime(notarization.date)}
+                      isSelected={index === selectedIndex}
+                      isLastRow={index === injectedTagNotarizations.length - 1}
+                      onRowClick={() => handleRowClick(index)}
+                    />
+                  ))}
+                </Table>
+              )}
+            </TitleAndTableContainer>
+          ) : (
+            <TagFoundContainer>
+              We detected a tag for you!
+            </TagFoundContainer>
+          )}
 
           <ButtonContainer>
             <Button
@@ -356,6 +368,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
               {ctaButtonTitle}
             </Button>
           </ButtonContainer>
+
+          <TableToggleLink onClick={handleToggleRequestTablePressed}>
+            See all tags
+          </TableToggleLink>
         </ExtensionDetectedContainer>
       )}
     </Container>
@@ -440,6 +456,14 @@ const TitleAndOAuthContainer = styled.div`
   padding: 1rem 1.5rem;
 `;
 
+const TagFoundContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: #FFFFFF;
+`;
+
 const NotarizationsTitleContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -464,7 +488,7 @@ const ButtonContainer = styled.div`
   padding-top: 1rem;
 `;
 
-const LoginOrUploadButtonContainer = styled.div`
+const InstallExtensionButtonContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -476,4 +500,18 @@ const StyledUserX = styled(UserX)`
   color: #FFF;
   width: 28px;
   height: 28px;
+`;
+
+const TableToggleLink = styled.button`
+  width: 100%;
+  font-size: 15px;
+  font-family: 'Graphik';
+  color: #FFFFFF;
+  opacity: 0.3;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
 `;
