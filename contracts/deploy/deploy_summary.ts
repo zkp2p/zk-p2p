@@ -45,6 +45,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     GarantiRegistrationProcessor:       ${getDeployedContractAddress(network, "GarantiRegistrationProcessor")}
     GarantiSendProcessor:               ${getDeployedContractAddress(network, "GarantiSendProcessor")}
     GarantiKeyHashAdapter:              ${getDeployedContractAddress(network, "GarantiManagedKeyHashAdapter")}
+    WiseAccountRegistry:                ${getDeployedContractAddress(network, "WiseAccountRegistry")}
     WiseAccountRegistrationProcessor:   ${getDeployedContractAddress(network, "WiseAccountRegistrationProcessor")}
     WiseOffRamperRegistrationProcessor: ${getDeployedContractAddress(network, "WiseOffRamperRegistrationProcessor")}
     WiseSendProcessor:                  ${getDeployedContractAddress(network, "WiseSendProcessor")}
