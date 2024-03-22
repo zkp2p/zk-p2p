@@ -4,7 +4,6 @@ import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;
@@ -25,7 +24,6 @@ contract TLSBaseProcessor is Ownable {
     string public endpoint;
     string public host;
 
-    IKeyHashAdapterV2 public mailServerKeyHashAdapter;
     INullifierRegistry public nullifierRegistry;
     uint256 public timestampBuffer;
 
@@ -71,7 +69,7 @@ contract TLSBaseProcessor is Ownable {
     {
         require(
             keccak256(abi.encode(_expectedEndpoint)) == keccak256(abi.encode(_passedEndpoint)),
-            "Passed endpoint doesn't match expected"
+            "Endpoint does not match expected"
         );
     }
 
@@ -84,7 +82,7 @@ contract TLSBaseProcessor is Ownable {
     {
         require(
             keccak256(abi.encode(_expectedHost)) == keccak256(abi.encode(_passedHost)),
-            "Passed host doesn't match expected"
+            "Host does not match expected"
         );
     }
 
