@@ -191,12 +191,6 @@ export const DepositsTable: React.FC = () => {
         )}
       </Content>
 
-      {isLoggedIn ? (
-        <LiquidityLink onClick={navigateToWithdrawHandler}>
-          Looking for your legacy deposits?
-        </LiquidityLink>
-      ) : null}
-
       {positionsRowData.length > ROWS_PER_PAGE && (
         <PaginationContainer>
           <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
@@ -336,18 +330,4 @@ const PositionRowStyled = styled.div`
     border-bottom-left-radius: 16px;
     border-bottom-right-radius: 16px;
   }
-`;
-
-const LiquidityLink = styled.button`
-  font-size: 15px;
-  font-family: 'Graphik';
-  color: #FFFFFF;
-  opacity: 0.3;
-  text-align: center;
-  padding: 20px 0px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  display: inline;
 `;
