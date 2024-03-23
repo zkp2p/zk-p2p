@@ -3,7 +3,7 @@ export default {
   "chainId": "8453",
   "contracts": {
     "GarantiBodyHashVerifier": {
-      "address": "0x6904E887086C30598E942828C70C8f4724d8dc27",
+      "address": "0xA52E53Efa715a2909328Bffb3d7f2eE2B84A5Cb7",
       "abi": [
         {
           "inputs": [
@@ -1684,7 +1684,7 @@ export default {
       ]
     },
     "GarantiRegistrationProcessor": {
-      "address": "0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D",
+      "address": "0x6E6eAc7e8995fb6d44aE5E559874B8C969010293",
       "abi": [
         {
           "inputs": [
@@ -2041,7 +2041,7 @@ export default {
       ]
     },
     "GarantiSendProcessor": {
-      "address": "0x50A368DAF428dcA0e980F640C06A79D466E62a2C",
+      "address": "0x1048dd39f95aBE7712291752B63f61BD397c695E",
       "abi": [
         {
           "inputs": [

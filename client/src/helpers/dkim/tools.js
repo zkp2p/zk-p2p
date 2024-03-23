@@ -273,7 +273,7 @@ const getPublicKey = async (type, nameOrKey, minBitLength, resolver) => {
   } else {
     resolver = resolveDNSHTTP;
   }
-  console.log("key", nameOrKey);
+
   // let list = await resolver(name, "TXT");
   let list = [nameOrKey];
 
@@ -284,7 +284,7 @@ const getPublicKey = async (type, nameOrKey, minBitLength, resolver) => {
       .join("")
       .replaceAll(/\s+/g, "")
       .replaceAll('"', "");
-  console.log("rr", rr);
+
   if (rr) {
     // prefix value for parsing as there is no default value
     let entry = parseDkimHeaders("DNS: TXT;" + rr);

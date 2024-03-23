@@ -33,8 +33,8 @@ export const contractAddresses: Contracts = {
     'hdfcRegistrationProcessor': '0xC8d7C6a5a8B2158012FB679DB1c3d7fbC1cC2980',
     'hdfcNft': '0x6b64BC61cd03cdD7Ac3aF6Ad6A02977265d21ecB',
     'garantiRamp': '0x27a6Ecb917B4BbCb6450f50Fa873510Ac3077171',
-    'garantiSendProcessor': '0x50A368DAF428dcA0e980F640C06A79D466E62a2C',
-    'garantiRegistrationProcessor': '0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D',
+    'garantiSendProcessor': '0x1048dd39f95aBE7712291752B63f61BD397c695E',
+    'garantiRegistrationProcessor': '0x6E6eAc7e8995fb6d44aE5E559874B8C969010293',
     'garantiNft': '',
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'

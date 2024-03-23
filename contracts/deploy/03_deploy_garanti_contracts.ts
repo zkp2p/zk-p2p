@@ -33,31 +33,32 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const garantiRamp = await deploy("GarantiRamp", {
-    from: deployer,
-    args: [
-      deployer,
-      usdcAddress,
-      MIN_DEPOSIT_AMOUNT[paymentProvider][network],
-      MAX_ONRAMP_AMOUNT[paymentProvider][network],
-      INTENT_EXPIRATION_PERIOD[paymentProvider][network],
-      ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
-      SUSTAINABILITY_FEE[paymentProvider][network],
-      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
-        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
-        : deployer,
-    ],
-    log: true
-  });
-  console.log("GarantiRamp deployed at", garantiRamp.address);
-
-  const keyHashAdapter = await deploy("GarantiManagedKeyHashAdapter", {
-    contract: "ManagedKeyHashAdapterV2",
-    from: deployer,
-    args: [SERVER_KEY_HASH[paymentProvider]],
-    log: true
-  });
-  console.log("KeyHashAdapter deployed at", keyHashAdapter.address);
+  // const garantiRamp = await deploy("GarantiRamp", {
+  //   from: deployer,
+  //   args: [
+  //     deployer,
+  //     usdcAddress,
+  //     MIN_DEPOSIT_AMOUNT[paymentProvider][network],
+  //     MAX_ONRAMP_AMOUNT[paymentProvider][network],
+  //     INTENT_EXPIRATION_PERIOD[paymentProvider][network],
+  //     ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
+  //     SUSTAINABILITY_FEE[paymentProvider][network],
+  //     SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+  //       ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network]
+  //       : deployer,
+  //   ],
+  //   log: true
+  // });
+  // console.log("GarantiRamp deployed at", garantiRamp.address);
+  const garantiRamp = await getDeployedContractAddress(network, "GarantiRamp");
+  // const keyHashAdapter = await deploy("GarantiManagedKeyHashAdapter", {
+  //   contract: "ManagedKeyHashAdapterV2",
+  //   from: deployer,
+  //   args: [SERVER_KEY_HASH[paymentProvider]],
+  //   log: true
+  // });
+  // console.log("KeyHashAdapter deployed at", keyHashAdapter.address);
+  const keyHashAdapter = await getDeployedContractAddress(network, "GarantiManagedKeyHashAdapter");
 
   const nullifierRegistryContract = await ethers.getContractAt(
     "NullifierRegistry",
@@ -77,8 +78,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const registrationProcessor = await deploy("GarantiRegistrationProcessor", {
     from: deployer,
     args: [
-      garantiRamp.address,
-      keyHashAdapter.address,
+      garantiRamp,
+      keyHashAdapter,
       nullifierRegistryContract.address,
       bodyHashVerifierDeploy.address,
       FROM_EMAIL[paymentProvider],
@@ -92,7 +93,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [
       getDeployedContractAddress(network, "GarantiRamp"),
-      keyHashAdapter.address,
+      keyHashAdapter,
       nullifierRegistryContract.address,
       bodyHashVerifierDeploy.address,
       FROM_EMAIL[paymentProvider],
@@ -103,7 +104,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const garantiRampContract = await ethers.getContractAt("GarantiRamp", garantiRamp.address);
+  const garantiRampContract = await ethers.getContractAt("GarantiRamp", garantiRamp);
   if (!(await garantiRampContract.isInitialized())) {
     await garantiRampContract.initialize(
       registrationProcessor.address,
@@ -118,7 +119,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("NullifierRegistry permissions added...");
 
   console.log("Transferring ownership of contracts...");
-  await setNewOwner(hre, garantiRampContract, multiSig);
+  // await setNewOwner(hre, garantiRampContract, multiSig);
   await setNewOwner(
     hre,
     await ethers.getContractAt("GarantiRegistrationProcessor", registrationProcessor.address),
@@ -129,21 +130,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await ethers.getContractAt("GarantiSendProcessor", sendProcessor.address),
     multiSig
   );
-  await setNewOwner(
-    hre,
-    await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapter.address),
-    multiSig
-  );
+  // await setNewOwner(
+  //   hre,
+  //   await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapter.address),
+  //   multiSig
+  // );
 
   console.log("Deploy finished...");
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
-  const network = hre.network.name;
-  if (network != "localhost") {
-    try { getDeployedContractAddress(hre.network.name, "GarantiRamp") } catch (e) {return false;}
-    return true;
-  }
+  // const network = hre.network.name;
+  // if (network != "localhost") {
+  //   try { getDeployedContractAddress(hre.network.name, "GarantiRamp") } catch (e) {return false;}
+  //   return true;
+  // }
   return false;
 };
 
