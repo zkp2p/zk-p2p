@@ -5,6 +5,7 @@ import SwapForm from "@components/Swap";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
 import { OnRamp as GarantiOnRamp } from '@components/Swap/garanti/OnRamp';
+import { OnRamp as WiseOnRamp } from '@components/Swap/wise/OnRamp';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -192,7 +193,7 @@ export const Swap: React.FC = () => {
 
       case PaymentPlatform.WISE:
         return (
-          <GarantiOnRamp
+          <WiseOnRamp
             handleBackClick={handleBackClick}
             selectedIntentHash={selectedIntentHash as any}
           />

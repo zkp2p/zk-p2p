@@ -137,8 +137,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, wiseRampAddress, setextractedWiseProfileId]);
 
   useEffect(() => {
-    console.log('wise_rampAccountRaw_1');
-    console.log('checking rampAccountRaw: ', rampAccountRaw);
+    esl && console.log('wise_rampAccountRaw_1');
+    esl && console.log('checking rampAccountRaw: ', rampAccountRaw);
   
     if (rampAccountRaw) {
       esl && console.log('wise_rampAccountRaw_2');

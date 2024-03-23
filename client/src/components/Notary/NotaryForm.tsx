@@ -194,7 +194,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   const generateFastProof = async (callback: any) => {
     setProofGenStatus(NotaryVerificationStatus.UPLOADING_PROOF_FILES)
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 250));
 
     setProofGenStatus(NotaryVerificationStatus.GENERATING_PROOF);
 

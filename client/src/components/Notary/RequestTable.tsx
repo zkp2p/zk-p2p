@@ -12,6 +12,7 @@ import { RequestRow } from '@components/Notary/RequestRow';
 import {
   fetchWiseTagNotarizations,
   fetchMultiCurrencyIdNotarizations,
+  fetchTransferNotarizations,
   Notarization,
 } from '@hooks/useBrowserExtension';
 import {
@@ -103,6 +104,14 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     return "unknown";
   };
 
+  const notarizationToggleCta = () => {
+    if (isShowingTable) {
+      return 'Go back';
+    } else {
+      return 'See all tags';
+    }
+  };
+
   const browserSvg = () => {
     switch (browser) {
       case 'firefox':
@@ -165,38 +174,46 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   };
 
   async function fetchData() {
-    switch (circuitType) {
-      case NotaryVerificationCircuit.REGISTRATION_TAG:
-        const wiseTagNotarizations = await fetchWiseTagNotarizations();
-    
-        console.log(wiseTagNotarizations);
-    
-        if (wiseTagNotarizations?.length > 0) {
-          setInjectedTagNotarizations(wiseTagNotarizations);
-        } else {
-          setInjectedTagNotarizations([]);
-        };
-        break;
-
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        const multiCurrencyIdNotarizations = await fetchMultiCurrencyIdNotarizations();
-    
-        console.log(multiCurrencyIdNotarizations);
-    
-        if (multiCurrencyIdNotarizations?.length > 0) {
-          setInjectedTagNotarizations(multiCurrencyIdNotarizations);
-        } else {
-          setInjectedTagNotarizations([]);
-        };
-        break;
-
-      default:
-        throw new Error('Invalid circuit type');
+    if (isShowingTable) {
+      switch (circuitType) {
+        case NotaryVerificationCircuit.REGISTRATION_TAG:
+          const wiseTagNotarizations = await fetchWiseTagNotarizations();
+      
+          if (wiseTagNotarizations?.length > 0) {
+            setInjectedTagNotarizations(wiseTagNotarizations);
+          } else {
+            setInjectedTagNotarizations([]);
+          };
+          break;
+  
+        case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+          const multiCurrencyIdNotarizations = await fetchMultiCurrencyIdNotarizations();
+      
+          if (multiCurrencyIdNotarizations?.length > 0) {
+            setInjectedTagNotarizations(multiCurrencyIdNotarizations);
+          } else {
+            setInjectedTagNotarizations([]);
+          };
+          break;
+  
+        case NotaryVerificationCircuit.TRANSFER:
+          const transferNotarizations = await fetchTransferNotarizations();
+      
+          if (transferNotarizations?.length > 0) {
+            setInjectedTagNotarizations(transferNotarizations);
+          } else {
+            setInjectedTagNotarizations([]);
+          };
+          break;
+  
+        default:
+          throw new Error('Invalid circuit type');
+      };
+    } else {
+      window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
+  
+      console.log('Client posted FETCH_REQUEST_HISTORY message');
     };
-
-    // window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
-
-    // console.log('Client posted FETCH_REQUEST_HISTORY message');
   };
 
   /*
@@ -227,11 +244,13 @@ export const RequestTable: React.FC<RequestTableProps> = ({
       if (event.data.type && event.data.type === "REQUEST_HISTORY_RESPONSE") {
         console.log('Client received REQUEST_HISTORY_RESPONSE message');
 
-        
+        console.log(event);
       };
     };
   
     window.addEventListener("message", handleMessage);
+
+    window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
   
     return () => {
       window.removeEventListener("message", handleMessage);
@@ -370,7 +389,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
           </ButtonContainer>
 
           <TableToggleLink onClick={handleToggleRequestTablePressed}>
-            See all tags
+            {notarizationToggleCta()}
           </TableToggleLink>
         </ExtensionDetectedContainer>
       )}

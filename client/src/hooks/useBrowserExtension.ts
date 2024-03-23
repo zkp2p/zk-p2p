@@ -37,11 +37,11 @@ export async function fetchMultiCurrencyIdNotarizations(): Promise<Notarization[
  * Transfer
  */
 
-export async function fetchTransferNotarization(): Promise<Notarization[]> {
+export async function fetchTransferNotarizations(): Promise<Notarization[]> {
   return [
     {
-      proof: process.env.MC_ID_PROOF || '', // TRANSFER_PROOF
-      metadata: '$23 EUR for Alex',
+      proof: process.env.TRANSFER_PROOF || '',
+      metadata: '.05 EUR for Richard',
       date: '1710611636'
     }
   ];
