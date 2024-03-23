@@ -44,7 +44,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
   const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
-  const { fetchVenmoDepositoryDenyList } = useDenyList();
+  const { fetchVenmoDepositorDenyList } = useDenyList();
 
   /*
    * State
@@ -66,7 +66,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const fetchAndPruneDeposits = async (depositCounter: bigint, rampAddress: string) => {
     const existingPrunedIds = fetchStoredPrunedDepositIds(rampAddress);
     const depositIdsToFetch = initializeDepositIdsToFetch(depositCounter, existingPrunedIds);
-    const venmoDenyList = await fetchVenmoDepositoryDenyList();
+    const venmoDenyList = await fetchVenmoDepositorDenyList();
 
     const batchedDeposits: DepositWithAvailableLiquidity[] = [];
     const depositIdsToPrune: bigint[] = [];
