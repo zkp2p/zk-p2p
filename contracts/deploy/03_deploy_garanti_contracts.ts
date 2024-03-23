@@ -103,7 +103,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const garantiRampContract = await ethers.getContractAt("GarantiRamp", garantiRamp);
+  const garantiRampContract = await ethers.getContractAt("GarantiRamp", garantiRamp.address);
   if (!(await garantiRampContract.isInitialized())) {
     await garantiRampContract.initialize(
       registrationProcessor.address,
