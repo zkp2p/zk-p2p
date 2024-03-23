@@ -385,7 +385,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
   const generateFastProof = async (callback: any) => {
     setProofGenStatus(ProofGenerationStatus.UPLOADING_PROOF_FILES)
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 500))
 
     setProofGenStatus(ProofGenerationStatus.GENERATING_PROOF);
 
