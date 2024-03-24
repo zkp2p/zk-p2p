@@ -45,6 +45,15 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
    * Component
    */
 
+  const optionalPlatformRequirement = () => {
+    const requirementCopy = platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_FOUR');
+    return requirementCopy ? (
+      <RequirementStepRow step={4}>
+        {requirementCopy}
+      </RequirementStepRow>
+    ) : null;
+  };
+
   return (
     <ModalAndOverlayContainer>
       <Overlay />
@@ -82,6 +91,8 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
           <RequirementStepRow step={3}>
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
           </RequirementStepRow>
+
+          {optionalPlatformRequirement()}
         </RequirementListContainer>
 
         <DisclaimerLabel>

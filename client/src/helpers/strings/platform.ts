@@ -37,6 +37,7 @@ export interface PlatformStrings {
   PAYMENT_REQUIREMENT_STEP_ONE: string,
   PAYMENT_REQUIREMENT_STEP_TWO: string,
   PAYMENT_REQUIREMENT_STEP_THREE: string,
+  PAYMENT_REQUIREMENT_STEP_FOUR: string,
 }
 
 export class PlatformStringProvider {

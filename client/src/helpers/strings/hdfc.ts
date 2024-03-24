@@ -76,7 +76,7 @@ const strings: PlatformStrings = {
   PAYMENT_REQUIREMENT_STEP_THREE: `
     Send the exact INR amount including decimals as displayed on the payment screen
   `,
-
+  PAYMENT_REQUIREMENT_STEP_FOUR: ``,
 };
 
 export default strings;
