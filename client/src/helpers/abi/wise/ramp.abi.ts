@@ -49,31 +49,6 @@ export const abi = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
-        "internalType": "address",
-        "name": "accountOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "accountId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "wiseTagHash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "AccountRegistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": false,
         "internalType": "uint256",
         "name": "depositId",
@@ -301,62 +276,11 @@ export const abi = [
       {
         "indexed": false,
         "internalType": "address",
-        "name": "registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "NewAccountRegistrationProcessorSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "NewOffRamperRegistrationProcessorSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
         "name": "sendProcessor",
         "type": "address"
       }
     ],
     "name": "NewSendProcessorSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "accountOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "accountId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "offRampId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "OffRamperRegistered",
     "type": "event"
   },
   {
@@ -418,67 +342,16 @@ export const abi = [
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "listOwner",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "deniedUser",
-        "type": "bytes32"
-      }
-    ],
-    "name": "UserAddedToDenylist",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "listOwner",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "approvedUser",
-        "type": "bytes32"
-      }
-    ],
-    "name": "UserRemovedFromDenylist",
-    "type": "event"
-  },
-  {
     "inputs": [],
-    "name": "accountRegistrationProcessor",
+    "name": "accountRegistry",
     "outputs": [
       {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "internalType": "contract IWiseAccountRegistry",
         "name": "",
         "type": "address"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_deniedUser",
-        "type": "bytes32"
-      }
-    ],
-    "name": "addAccountToDenylist",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -528,26 +401,9 @@ export const abi = [
         "type": "string"
       },
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "verifierSigningKey",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "endpoint",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "host",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct ITLSData.TLSParams",
-        "name": "tlsParams",
-        "type": "tuple"
+        "internalType": "address",
+        "name": "verifierSigningKey",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -613,26 +469,9 @@ export const abi = [
                 "type": "string"
               },
               {
-                "components": [
-                  {
-                    "internalType": "address",
-                    "name": "verifierSigningKey",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "endpoint",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "host",
-                    "type": "string"
-                  }
-                ],
-                "internalType": "struct ITLSData.TLSParams",
-                "name": "tlsParams",
-                "type": "tuple"
+                "internalType": "address",
+                "name": "verifierSigningKey",
+                "type": "address"
               },
               {
                 "internalType": "uint256",
@@ -686,66 +525,6 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "getAccountInfo",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "accountId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "offRampId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "wiseTagHash",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "deposits",
-            "type": "uint256[]"
-          }
-        ],
-        "internalType": "struct WiseRamp.AccountInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "getDeniedUsers",
-    "outputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "",
-        "type": "bytes32[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "_depositId",
         "type": "uint256"
@@ -766,26 +545,9 @@ export const abi = [
             "type": "string"
           },
           {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "verifierSigningKey",
-                "type": "address"
-              },
-              {
-                "internalType": "string",
-                "name": "endpoint",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "host",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct ITLSData.TLSParams",
-            "name": "tlsParams",
-            "type": "tuple"
+            "internalType": "address",
+            "name": "verifierSigningKey",
+            "type": "address"
           },
           {
             "internalType": "uint256",
@@ -861,26 +623,9 @@ export const abi = [
                 "type": "string"
               },
               {
-                "components": [
-                  {
-                    "internalType": "address",
-                    "name": "verifierSigningKey",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "endpoint",
-                    "type": "string"
-                  },
-                  {
-                    "internalType": "string",
-                    "name": "host",
-                    "type": "string"
-                  }
-                ],
-                "internalType": "struct ITLSData.TLSParams",
-                "name": "tlsParams",
-                "type": "tuple"
+                "internalType": "address",
+                "name": "verifierSigningKey",
+                "type": "address"
               },
               {
                 "internalType": "uint256",
@@ -1035,13 +780,8 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
-        "name": "_accountRegistrationProcessor",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "_offRamperRegistrationProcessor",
+        "internalType": "contract IWiseAccountRegistry",
+        "name": "_accountRegistry",
         "type": "address"
       },
       {
@@ -1102,30 +842,6 @@ export const abi = [
         "internalType": "uint256",
         "name": "intentTimestamp",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_deniedUser",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isDeniedUser",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -1193,44 +909,14 @@ export const abi = [
         "type": "uint256"
       },
       {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "verifierSigningKey",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "endpoint",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "host",
-            "type": "string"
-          }
-        ],
-        "internalType": "struct ITLSData.TLSParams",
-        "name": "_tlsParams",
-        "type": "tuple"
+        "internalType": "address",
+        "name": "_verifierSigningKey",
+        "type": "address"
       }
     ],
     "name": "offRamp",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "offRamperRegistrationProcessor",
-    "outputs": [
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1337,119 +1023,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "endpoint",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "host",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "profileId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "wiseTagHash",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationData",
-            "name": "public_values",
-            "type": "tuple"
-          },
-          {
-            "internalType": "bytes",
-            "name": "proof",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationProof",
-        "name": "_proof",
-        "type": "tuple"
-      }
-    ],
-    "name": "register",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "endpoint",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "host",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "profileId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "mcAccountId",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationData",
-            "name": "public_values",
-            "type": "tuple"
-          },
-          {
-            "internalType": "bytes",
-            "name": "proof",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationProof",
-        "name": "_proof",
-        "type": "tuple"
-      }
-    ],
-    "name": "registerAsOffRamper",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "_intentHash",
         "type": "bytes32"
       }
     ],
     "name": "releaseFundsToOnramper",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_approvedUser",
-        "type": "bytes32"
-      }
-    ],
-    "name": "removeAccountFromDenylist",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1472,19 +1051,6 @@ export const abi = [
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
-        "name": "_registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "setAccountRegistrationProcessor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -1522,19 +1088,6 @@ export const abi = [
       }
     ],
     "name": "setMinDepositAmount",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "_registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "setOffRamperRegistrationProcessor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

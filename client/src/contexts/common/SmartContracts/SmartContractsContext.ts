@@ -37,6 +37,8 @@ interface SmartContractsValues {
   wiseRampAbi: Abi | null;
   wiseSendProcessorAddress: string | null;
   wiseSendProcessorAbi: Abi | null;
+  wiseAccountRegistryAddress: string | null;
+  wiseAccountRegistryAbi: Abi | null;
 
   // nft
   nftAbi: Abi | null;
@@ -85,6 +87,8 @@ const defaultValues: SmartContractsValues = {
   wiseRampAbi: null,
   wiseSendProcessorAddress: null,
   wiseSendProcessorAbi: null,
+  wiseAccountRegistryAddress: null,
+  wiseAccountRegistryAbi: null,
   
   // nft
   nftAbi: null,

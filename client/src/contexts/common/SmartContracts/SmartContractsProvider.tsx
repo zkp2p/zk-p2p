@@ -15,6 +15,7 @@ import { abi as garantiSendProcessorAbi } from "@helpers/abi/garanti/send.abi";
 
 import { abi as wiseRampAbi } from "@helpers/abi/wise/ramp.abi";
 import { abi as wiseSendProcessorAbi } from "@helpers/abi/wise/send.abi";
+import { abi as wiseAccountRegistryAbi } from "@helpers/abi/wise/accountRegistry.abi";
 
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
@@ -62,6 +63,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   // Wise
   const [wiseRampAddress, setWiseRampAddress] = useState<string | null>(null);
   const [wiseSendProcessorAddress, setWiseSendProcessorAddress] = useState<string | null>(null);
+  const [wiseAccountRegistryAddress, setWiseAccountRegistryAddress] = useState<string | null>(null);
 
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
@@ -155,6 +157,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Wise
     setWiseRampAddress(null); 
     setWiseSendProcessorAddress(null);
+    setWiseAccountRegistryAddress(null);
     
     // NFT
     setVenmoNftAddress(null);
@@ -196,6 +199,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Wise
     setWiseRampAddress(contractsForNetwork.wiseRamp);
     setWiseSendProcessorAddress(contractsForNetwork.wiseSendProcessor);
+    setWiseAccountRegistryAddress(contractsForNetwork.wiseAccountRegistry);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -245,6 +249,8 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         wiseRampAbi: wiseRampAbi as Abi,
         wiseSendProcessorAddress,
         wiseSendProcessorAbi: wiseSendProcessorAbi as Abi,
+        wiseAccountRegistryAddress,
+        wiseAccountRegistryAbi: wiseAccountRegistryAbi as Abi,
 
         // NFT
         nftAbi: nftAbi as Abi,
