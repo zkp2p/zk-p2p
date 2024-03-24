@@ -54,7 +54,7 @@ export const contractAddresses: Contracts = {
     'garantiRamp': '0xEfBDf422FA81071A04D2f89A70A0D938FEFA0795',
     'garantiSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437',
     'garantiRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D',
-    'garantiNft': '',
+    'garantiNft': '0x64940a0906d4386e2089a40153D856EEA070Ad88',
     'socketBridge': '',
     'lifiBridge': '',
   },
