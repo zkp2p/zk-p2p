@@ -26,7 +26,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    * Context
    */
 
-  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
+  const { wiseAccountRegistryAddress, wiseAccountRegistryAbi } = useSmartContracts();
   const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
@@ -57,8 +57,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: wiseAccountRegistryAddress,
+    abi: wiseAccountRegistryAbi,
     functionName: 'register',
     args: [
       [
