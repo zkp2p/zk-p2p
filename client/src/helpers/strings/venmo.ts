@@ -72,6 +72,9 @@ const strings: PlatformStrings = {
     Amount USD to send, which may not match your requested USDC amount, is double checked
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
+    Custom messages for Venmo payment consists of text only
+  `,
+  PAYMENT_REQUIREMENT_STEP_FOUR: `
     'Turn on for purchases' at the payment screen is toggled off
   `,
 };

@@ -3,7 +3,7 @@ import { createContext } from 'react'
 
 interface DenyListValues {
   venmoDepositorDenyList: string[] | null;
-  fetchVenmoDepositoryDenyList: () => Promise<string[] | null>;
+  fetchVenmoDepositorDenyList: () => Promise<string[] | null>;
   hdfcDepositorDenyList: string[] | null;
   fetchHdfcDepositoryDenyList: () => Promise<string[] | null>;
   garantiDepositorDenyList: string[] | null;
@@ -12,7 +12,7 @@ interface DenyListValues {
 
 const defaultValues: DenyListValues = {
   venmoDepositorDenyList: null,
-  fetchVenmoDepositoryDenyList: async () => null,
+  fetchVenmoDepositorDenyList: async () => null,
   hdfcDepositorDenyList: null,
   fetchHdfcDepositoryDenyList: async () => null,
   garantiDepositorDenyList: null,

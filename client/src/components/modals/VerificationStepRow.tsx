@@ -102,7 +102,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.DOWNLOAD:
         return 240000;
       case VerificationStepType.UPLOAD:
-        return 1000;
+        return 500;
       case VerificationStepType.PROVE:
         return isProvingTypeFast ? 90000 : 600000;
       default:

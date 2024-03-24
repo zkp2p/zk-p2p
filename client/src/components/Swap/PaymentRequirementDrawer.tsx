@@ -27,6 +27,15 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
    * Component
    */
 
+  const optionalPlatformRequirement = () => {
+    const requirementCopy = platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_FOUR');
+    return requirementCopy ? (
+      <InstructionStep step={4}>
+        {requirementCopy}
+      </InstructionStep>
+    ) : null;
+  };
+
   return (
     <Wrapper ref={ref}>
       <TitleLabelAndDropdownIconContainer>
@@ -54,6 +63,8 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
           <InstructionStep step={3}>
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
           </InstructionStep>
+
+          {optionalPlatformRequirement()}
         </RequirementListContainer>
 
         <DisclaimerLabel>

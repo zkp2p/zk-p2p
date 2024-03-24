@@ -74,7 +74,7 @@ const DenyListProvider = ({ children }: ProvidersProps) => {
     return denyList;
   }, [fetchDenyList]);
 
-  const fetchVenmoDepositoryDenyList = useCallback(async () => {
+  const fetchVenmoDepositorDenyList = useCallback(async () => {
     const VENMO_DENY_LIST_URL = process.env.VENMO_DENY_LIST_URL;
     if (!VENMO_DENY_LIST_URL) {
       throw new Error("VENMO_DENY_LIST_URL environment variable is not defined.");
@@ -82,15 +82,13 @@ const DenyListProvider = ({ children }: ProvidersProps) => {
 
     const denyList = await fetchDenyList(VENMO_DENY_LIST_URL, 'venmoDepositorDenyList', setVenmoDepositorDenyList);
 
-    console.log('fetchVenmoDepositoryDenyList: ', denyList);
-
     return denyList;
   }, [fetchDenyList]);
 
   return (
     <DenyListContext.Provider value={{
       venmoDepositorDenyList,
-      fetchVenmoDepositoryDenyList,
+      fetchVenmoDepositorDenyList,
       hdfcDepositorDenyList,
       fetchHdfcDepositoryDenyList,
       garantiDepositorDenyList,

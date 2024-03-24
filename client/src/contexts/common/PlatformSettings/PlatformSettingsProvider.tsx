@@ -26,7 +26,7 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
     const storedSelectedPaymentPlatform = localStorage.getItem('storedSelectedPaymentPlatform');
     
     if (storedSelectedPaymentPlatform) {
-      setPaymentPlatform(JSON.parse(storedSelectedPaymentPlatform));
+      setPaymentPlatform(PaymentPlatform.VENMO);
     }
   }, []);
 
