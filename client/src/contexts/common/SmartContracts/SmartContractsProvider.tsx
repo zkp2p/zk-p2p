@@ -185,7 +185,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
     setHdfcNftAddress(contractsForNetwork.hdfcNft);
-    setGarantiNftAddress(contractsForNetwork.garanti);
+    setGarantiNftAddress(contractsForNetwork.garantiNft);
 
     // Socket
     setSocketBridgeAddress(contractsForNetwork.socketBridge);
