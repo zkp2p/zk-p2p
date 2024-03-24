@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { wiseRampAddress, wiseRampAbi, venmoNftAddress, nftAbi } = useSmartContracts();
+  const { wiseAccountRegistryAddress, wiseAccountRegistryAbi, venmoNftAddress, nftAbi } = useSmartContracts();
 
   /*
    * State
@@ -72,8 +72,8 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: rampAccountRaw,
     refetch: refetchRampAccount,
   } = useContractRead({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: wiseAccountRegistryAddress,
+    abi: wiseAccountRegistryAbi,
     functionName: 'getAccountInfo',
     args: [
       loggedInEthereumAddress
@@ -116,9 +116,9 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     esl && console.log('wise_shouldFetchRegistration_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
-    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
+    esl && console.log('checking wiseAccountRegistryAddress: ', wiseAccountRegistryAddress);
     
-    if (isLoggedIn && loggedInEthereumAddress && wiseRampAddress) {
+    if (isLoggedIn && loggedInEthereumAddress && wiseAccountRegistryAddress) {
       esl && console.log('wise_shouldFetchRegistration_2');
 
       setShouldFetchRegistration(true);
@@ -134,7 +134,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setVenmoNftUri(null);
       setVenmoNftId(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, wiseRampAddress, setextractedWiseProfileId]);
+  }, [isLoggedIn, loggedInEthereumAddress, wiseAccountRegistryAddress, setextractedWiseProfileId]);
 
   useEffect(() => {
     esl && console.log('wise_rampAccountRaw_1');
