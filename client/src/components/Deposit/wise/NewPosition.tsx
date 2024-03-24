@@ -17,11 +17,7 @@ import { ZERO } from '@helpers/constants';
 import { wiseStrings } from '@helpers/strings';
 import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
-import {
-  NOTARY_VERIFICATION_SIGNING_KEY,
-  NOTARY_VERIFICATION_ENDPOINT,
-  NOTARY_VERIFICATION_HOST,
-} from '@helpers/notary';
+import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/wise/useDeposits';
@@ -83,11 +79,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       keccak256('EUR'),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
-      [
-        NOTARY_VERIFICATION_SIGNING_KEY,
-        NOTARY_VERIFICATION_ENDPOINT,
-        NOTARY_VERIFICATION_HOST,
-      ]
+      NOTARY_VERIFICATION_SIGNING_KEY
     ],
     enabled: shouldConfigureNewDepositWrite
   });
