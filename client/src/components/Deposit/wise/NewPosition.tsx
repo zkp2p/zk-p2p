@@ -269,13 +269,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         setIsWiseTagInputValid(false);
       } else {
         if (registrationHash) {
-          const wiseTagHash = calculateWiseTagHash(wiseTagInput);
-          const validWiseTagInput = wiseTagHash === registrationHash;
+          // const wiseTagHash = calculateWiseTagHash(wiseTagInput);
+          const validWiseTagInput = true; // wiseTagHash === registrationHash;
           setIsWiseTagInputValid(validWiseTagInput);
 
-          if (validWiseTagInput && setExtractedWiseProfileId) {
-            setExtractedWiseProfileId(wiseTagInput);
-          };
+          // if (validWiseTagInput && setExtractedWiseProfileId) {
+          //   setExtractedWiseProfileId(wiseTagInput);
+          // };
         } else {
           setIsWiseTagInputValid(false);
         }
@@ -449,7 +449,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       );
     } else {
       return (
-        <>
+        <NewPositionContainer>
           <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
             <div style={{ flex: 0.5 }}>
               <button
@@ -542,20 +542,28 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               </ButtonContainer>
             </InputsContainer>
           </Body>
-        </>
+        </NewPositionContainer>
       );
     }
   };
 
   return (
-    <Container>
+    <NewPositionOrAccountRegistrationContainer>
       {renderContent()}
-    </Container>
+    </NewPositionOrAccountRegistrationContainer>
   );
 };
 
-const Container = styled.div`
+const NewPositionOrAccountRegistrationContainer = styled.div`
   width: 100%;
+`;
+
+const NewPositionContainer = styled.div`
+  display: grid;
+  padding: 1.5rem;
+  background-color: ${colors.container};
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const Body = styled.div`

@@ -226,38 +226,30 @@ export default function Deposit() {
       switch (paymentPlatform) {
         case PaymentPlatform.VENMO:
           return (
-            <NewPositionContainer>
-              <VenmoNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <VenmoNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
 
         case PaymentPlatform.HDFC:
           return (
-            <NewPositionContainer>
-              <HdfcNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <HdfcNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
 
         case PaymentPlatform.GARANTI:
           return (
-            <NewPositionContainer>
-              <GarantiNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <GarantiNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
 
         case PaymentPlatform.WISE:
           return (
-            <NewPositionContainer>
-              <WiseNewPosition
-                handleBackClick={handleBackClickOnNewDeposit}
-              />
-            </NewPositionContainer>
+            <WiseNewPosition
+              handleBackClick={handleBackClickOnNewDeposit}
+            />
           );
       }
     }
@@ -299,14 +291,6 @@ const DepositAndIntentContainer = styled.div`
 
 const Content = styled.main`
   gap: 1rem;
-`;
-
-const NewPositionContainer = styled.div`
-  display: grid;
-  padding: 1.5rem;
-  background-color: ${colors.container};
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const VerticalDivider = styled.div`
