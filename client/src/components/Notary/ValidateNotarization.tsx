@@ -11,7 +11,7 @@ import { TitleCenteredRow } from '@components/layouts/Row';
 import { LabeledTextArea } from '@components/legacy/LabeledTextArea';
 import { VerificationStepRow, VerificationState, VerificationStepType } from "@components/Notary/VerificationStepRow";
 import { commonStrings } from "@helpers/strings";
-import { LoginStatus, NotaryVerificationStatus, NotaryVerificationCircuitType } from  "@helpers/types";
+import { LoginStatus, NotaryVerificationStatus, NotaryVerificationCircuitType, NotaryVerificationCircuit } from  "@helpers/types";
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
@@ -149,13 +149,20 @@ export const ValidateNotarization: React.FC<ValidateNotarizationProps> = ({
 
       case NotaryVerificationStatus.DONE:
         switch (circuitType) {
-          case 'transfer':
+          case NotaryVerificationCircuit.TRANSFER:
             setCtaButtonTitle('Go to Send');
             break;
     
-          case 'registration':
-          default:
+          case NotaryVerificationCircuit.REGISTRATION_TAG:
             setCtaButtonTitle('Go to Registration');
+            break;
+
+          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+            setCtaButtonTitle('Go to Deposit');
+            break;
+
+          default:
+            throw new Error(`Unknown circuit type: ${circuitType}`);
         };
         break;
 
@@ -326,13 +333,13 @@ export const ValidateNotarization: React.FC<ValidateNotarizationProps> = ({
           <ProofAndSignalsContainer>
             <LabeledTextArea
               label="Proof Output"
-              value={verificationSignature[0]}
+              value={verificationSignature}
               disabled={true}
               height={"12vh"} />
 
             <LabeledTextArea
               label="Public Signals"
-              value={publicSignals[0]}
+              value={publicSignals}
               disabled={true}
               height={"12vh"}
               secret />
