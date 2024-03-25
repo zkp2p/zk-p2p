@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'react-feather';
-import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
+import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
 import { NotaryForm } from '@components/Notary/NotaryForm';
@@ -32,12 +32,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
    * Context
    */
 
-  const {
-    wiseRampAddress,
-    wiseRampAbi,
-    wiseSendProcessorAddress,
-    wiseSendProcessorAbi,
-  } = useSmartContracts();
+  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
 
@@ -46,7 +41,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   const [shouldConfigureRampWrite, setShouldConfigureRampWrite] = useState<boolean>(false);
-  const [shouldFetchVerifyProof, setShouldFetchVerifyProof] = useState<boolean>(false);
   const [submitOnRampTransactionHash, setSubmitOnRampTransactionHash] = useState<string | null>(null);
 
   // ----- transaction state -----
@@ -61,40 +55,31 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // );
 
   /*
-   * Contract Reads
-   */
-
-  const {
-    data: verifyProofRaw,
-  } = useContractRead({
-    address: wiseSendProcessorAddress,
-    abi: wiseSendProcessorAbi,
-    functionName: "verifyProof",
-    args: [
-      [
-        publicSignals,
-        verificationSignature
-      ]
-    ],
-    enabled: shouldFetchVerifyProof,
-  });
-
-  /*
    * Contract Writes
    */
 
   //
-  // onRamp(uint256[2] memory _a, uint256[2][2] memory _b, uint256[2] memory _c, uint256[10] memory _signals)
+  // onRamp(bytes32 _intentHash, IWiseSendProcessor.SendData calldata _sendData, bytes calldata _verifierSignature)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
     address: wiseRampAddress,
     abi: wiseRampAbi,
     functionName: 'onRamp',
     args: [
+      selectedIntentHash,
       [
-        publicSignals,
-        verificationSignature
-      ]
+        publicSignals[0],
+        publicSignals[1],
+        publicSignals[2],
+        publicSignals[3],
+        publicSignals[4],
+        publicSignals[8],
+        publicSignals[6],
+        publicSignals[5],
+        publicSignals[7],
+        publicSignals[9],
+      ],
+      verificationSignature
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -128,26 +113,11 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
   useEffect(() => {
     if (verificationSignature && publicSignals) {
-      // console.log("proof", proof);
-      // console.log("public signals", publicSignals);
-      // console.log("vkey", vkey);
-
-      // const proofVerified = await snarkjs.groth16.verify(vkey, JSON.parse(publicSignals), JSON.parse(proof));
-      // console.log("proofVerified", proofVerified);
-
-      setShouldFetchVerifyProof(true);
-    } else {
-      setShouldFetchVerifyProof(false);
-    }
-  }, [verificationSignature, publicSignals]);
-
-  useEffect(() => {
-    if (verifyProofRaw) {
       setShouldConfigureRampWrite(true);
     } else {
       setShouldConfigureRampWrite(false);
     }
-  }, [verifyProofRaw]);
+  }, [verificationSignature, publicSignals]);
 
   useEffect(() => {
     if (submitOnRampResult?.hash) {
@@ -209,6 +179,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         paymentPlatformType={PaymentPlatform.WISE}
         circuitType={NotaryVerificationCircuit.TRANSFER}
         verificationSignature={verificationSignature}
+        selectedIntentHash={selectedIntentHash}
         publicSignals={publicSignals}
         setVerificationSignature={setVerificationSignature}
         setPublicSignals={setPublicSignals}
@@ -216,7 +187,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         isSubmitMining={isSubmitOnRampMining}
         isSubmitSuccessful={isSubmitOnRampSuccessful}
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
-        onVerifyNotarizationCompletion={handleBackClick}
+        onVerifyNotarizationCompletion={handleVerificationCompleteClick}
         transactionAddress={submitOnRampTransactionHash}
       />
     </Container>
