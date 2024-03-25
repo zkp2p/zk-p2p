@@ -32,6 +32,7 @@ interface NotaryFormProps {
   handleSubmitVerificationClick?: () => void;
   onVerifyNotarizationCompletion?: () => void;
   transactionAddress?: string | null;
+  selectedIntentHash?: string;
 }
 
 export const NotaryForm: React.FC<NotaryFormProps> = ({
@@ -47,6 +48,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   handleSubmitVerificationClick,
   onVerifyNotarizationCompletion,
   transactionAddress,
+  selectedIntentHash
 }) => {
 
   /*
@@ -85,11 +87,11 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
     paymentType: paymentPlatformType,
     circuitType: circuitType,
     notarization: notarization,
-    intentHash: '0x123',
+    intentHash: selectedIntentHash ? BigInt(selectedIntentHash).toString() : '',
   });
 
   useEffect(() => {
-    console.log("remoteNotaryVerificationResponse: ", remoteNotaryVerificationResponse);
+    // console.log("remoteNotaryVerificationResponse: ", remoteNotaryVerificationResponse);
     
     if (remoteNotaryVerificationResponse) {
       processRemoteProofGenerationResponse(remoteNotaryVerificationResponse);

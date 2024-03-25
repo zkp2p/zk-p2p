@@ -174,40 +174,30 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   };
 
   async function fetchData() {
+    let notarizations = [];
+
     if (isShowingTable) {
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
-          const wiseTagNotarizations = await fetchWiseTagNotarizations();
-      
-          if (wiseTagNotarizations?.length > 0) {
-            setInjectedTagNotarizations(wiseTagNotarizations);
-          } else {
-            setInjectedTagNotarizations([]);
-          };
+          notarizations = await fetchWiseTagNotarizations();
           break;
   
         case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-          const multiCurrencyIdNotarizations = await fetchMultiCurrencyIdNotarizations();
-      
-          if (multiCurrencyIdNotarizations?.length > 0) {
-            setInjectedTagNotarizations(multiCurrencyIdNotarizations);
-          } else {
-            setInjectedTagNotarizations([]);
-          };
+          notarizations = await fetchMultiCurrencyIdNotarizations();
           break;
   
         case NotaryVerificationCircuit.TRANSFER:
-          const transferNotarizations = await fetchTransferNotarizations();
-      
-          if (transferNotarizations?.length > 0) {
-            setInjectedTagNotarizations(transferNotarizations);
-          } else {
-            setInjectedTagNotarizations([]);
-          };
+          notarizations = await fetchTransferNotarizations();
           break;
   
         default:
           throw new Error('Invalid circuit type');
+      };
+
+      if (notarizations.length > 0) {
+        setInjectedTagNotarizations(notarizations);
+      } else {
+        setInjectedTagNotarizations([]);
       };
     } else {
       window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
@@ -250,7 +240,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   
     window.addEventListener("message", handleMessage);
 
-    window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
+    fetchData();
   
     return () => {
       window.removeEventListener("message", handleMessage);
