@@ -73,10 +73,10 @@ const strings: PlatformStrings = {
     Send payment from your Garanti bank account. Do not send payment from any other bank accounts
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Check that Garanti BBVA e-mail notifications are enabled for your account and you have set the alert minimum to 10 TRY
+    Ensure email notifications are enabled AND you have set the alert minimum to 10 TRY
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    If you had to change your e-mail notification settings, wait 24 hours before sending payment
+    Wait 24 hours after updating email notifications to send payment.
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: `Send the exact TRY amount including decimals as displayed on the payment screen`,
 };
