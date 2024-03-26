@@ -14,7 +14,7 @@ interface IWiseSendProcessor {
         string currencyId;
         string status;
         string timestamp;
-        bytes32 intentHash;
+        uint256 intentHash;
     }
 
     struct SendProof {

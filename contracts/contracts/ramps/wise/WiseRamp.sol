@@ -499,8 +499,12 @@ contract WiseRamp is Ownable {
         return deposits[_depositId];
     }
 
-    function getIdCurrentIntentHash(address _account) external view returns (bytes32) {
+    function getIdCurrentIntentHash(address _account) public view returns (bytes32) {
         return globalAccount[accountRegistry.getAccountId(_account)].currentIntentHash;
+    }
+
+    function getIdCurrentIntentHashAsUint(address _account) external view returns (uint256) {
+        return uint256(getIdCurrentIntentHash(_account));
     }
 
     function getLastOnRampTimestamp(address _account) external view returns (uint256) {
@@ -666,10 +670,12 @@ contract WiseRamp is Ownable {
         internal
         returns(Intent storage intent, Deposit storage deposit, bytes32 intentHash)
     {
-        intentHash = _data.intentHash;
+        intentHash = bytes32(_data.intentHash);
         intent = intents[intentHash];
+        require(intent.onRamper == msg.sender, "Caller must be the on-ramper");
+
         deposit = deposits[intent.deposit];
-        
+
         (
             uint256 amount,
             uint256 timestamp,
@@ -685,7 +691,6 @@ contract WiseRamp is Ownable {
         );
 
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
-        require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accountRegistry.getAccountInfo(deposit.depositor).offRampId == offRamperId, "Offramper id does not match");
         require(accountRegistry.getAccountId(intent.onRamper) == onRamperId, "Onramper id does not match");

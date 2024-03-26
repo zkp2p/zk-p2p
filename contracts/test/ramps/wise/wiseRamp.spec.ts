@@ -32,7 +32,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("WiseRamp", () => {
+describe("WiseRamp", () => {
   let owner: Account;
   let verifier: Account;
   let offRamper: Account;
@@ -975,6 +975,16 @@ describe.only("WiseRamp", () => {
         });
       });
 
+      describe("when the caller is not the onRamper for the intent", async () => {
+        beforeEach(async () => {
+          subjectSendData.intentHash = ZERO_BYTES32;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be the on-ramper");
+        });
+      });
+
       describe("when the amount paid was not enough", async () => {
         beforeEach(async () => {
           subjectSendData.amount = "45.00";
@@ -1001,7 +1011,7 @@ describe.only("WiseRamp", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Intent does not exist");
+          await expect(subject()).to.be.revertedWith("Caller must be the on-ramper");
         });
       });
 

@@ -69,18 +69,18 @@ describe("WiseSendProcessor", () => {
 
       subjectProof = {
         public_values: {
-          endpoint: "GET https://wise.com/gateway/v3/profiles/41213881/transfers",
+          endpoint: 'GET https://wise.com/gateway/v3/profiles/41213881/transfers',
           host: "wise.com",
-          transferId: "981609478",
+          transferId: "909460084",
           senderId: "41213881",
-          recipientId: "740362059",
-          timestamp: "1709140561000",
-          currencyId: "SGD",
-          amount: "9.0",
+          recipientId: "403384647",
+          timestamp: "1703270934000",
+          currencyId: "EUR",
+          amount: "1.0",
           status: "OUTGOING_PAYMENT_SENT",
-          intentHash: ethers.utils.hexZeroPad(BigNumber.from("12345").toHexString(), 32),
+          intentHash: BigNumber.from("2109098755843864455034980037347310810989244226703714011137935097150268285982").toString(),
         },
-        proof: "0xe490922cc46624fe055c3bee676cdd368067ca70c835b1ea9378251edaf140d7126cae0d6426ef8e1867efb874188ca6fc7798a20f2c130dcaa82bdb28aeb75d1c"
+        proof: "0x8fedde36a43e95dc6eedc10bc90dca4c8e7eebf43b7db19b62fc8bf3b043b5a668fda894f2f97dd981adff7130c1794f9ab780d69eef903f128d6200365da9331b"
       } as WiseSendProof;
 
       subjectVerifierSigningKey = verifier.address;
@@ -105,7 +105,7 @@ describe("WiseSendProcessor", () => {
         currencyId
       ] = await subjectCallStatic();
       
-      expect(amount).to.eq(usdc(9));
+      expect(amount).to.eq(usdc(1));
       expect(timestamp).to.eq(BigNumber.from(subjectProof.public_values.timestamp).div(1000).add(30));
       expect(onRamperId).to.eq(calculateWiseId(subjectProof.public_values.senderId));
       expect(offRamperId).to.eq(calculateWiseId(subjectProof.public_values.recipientId));
@@ -125,7 +125,7 @@ describe("WiseSendProcessor", () => {
       expect(isNullified).to.be.true;
     });
 
-    describe("when the profile has already been verified", async () => {
+    describe("when the transfer has already been used", async () => {
       beforeEach(async () => {
         await subject();
       });
@@ -150,7 +150,7 @@ describe("WiseSendProcessor", () => {
         subjectProof.public_values.endpoint = "GET https://wise.com/gateway/v4/profiles/41213881";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "string", "string"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -178,7 +178,7 @@ describe("WiseSendProcessor", () => {
         subjectProof.public_values.host = "api.wise.com";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "string", "string"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
