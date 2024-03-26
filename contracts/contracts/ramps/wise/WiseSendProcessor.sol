@@ -82,7 +82,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     /* ============ Internal Functions ============ */
 
     function _validateProof(
-        address _verifier,
+        address _verifierSigningKey,
         IWiseSendProcessor.SendData memory _publicValues, 
         bytes memory _proof
     )
@@ -101,6 +101,6 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        _validateVerifierSignature(encodedMessage, _proof, _verifier);
+        _validateVerifierSignature(encodedMessage, _proof, _verifierSigningKey);
     }
 }

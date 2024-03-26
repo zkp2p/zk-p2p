@@ -24,7 +24,7 @@ describe("WiseSendProcessor", () => {
   let ramp: Account;
 
   let nullifierRegistry: NullifierRegistry;
-  let registrationProcessor: WiseSendProcessor;
+  let sendProcessor: WiseSendProcessor;
 
   let deployer: DeployHelper;
 
@@ -40,24 +40,20 @@ describe("WiseSendProcessor", () => {
 
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
-    // tlsParams = {
-    //   verifierSigningKey: verifier.address,
-    // };
-
-    registrationProcessor = await deployer.deployWiseSendProcessor(
+    sendProcessor = await deployer.deployWiseSendProcessor(
       ramp.address,
       nullifierRegistry.address,
       "GET https://wise.com/gateway/v3/profiles/*/transfers",
       "wise.com"
     );
 
-    await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
+    await nullifierRegistry.connect(owner.wallet).addWritePermission(sendProcessor.address);
   });
 
   describe("#constructor", async () => {
     it("should set the correct state", async () => {
-      const rampAddress = await registrationProcessor.ramp();
-      const nullifierRegistryAddress = await registrationProcessor.nullifierRegistry();
+      const rampAddress = await sendProcessor.ramp();
+      const nullifierRegistryAddress = await sendProcessor.nullifierRegistry();
 
       expect(rampAddress).to.eq(ramp.address);
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
@@ -91,11 +87,11 @@ describe("WiseSendProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
+      return await sendProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
     async function subjectCallStatic(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
+      return await sendProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
     }
 
     it("should process the proof", async () => {
@@ -227,13 +223,13 @@ describe("WiseSendProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
+      return await sendProcessor.connect(subjectCaller.wallet).setTimestampBuffer(subjectTimestampBuffer);
     }
 
     it("should set the timestamp buffer", async () => {
       await subject();
 
-      const timestampBuffer = await registrationProcessor.timestampBuffer();
+      const timestampBuffer = await sendProcessor.timestampBuffer();
 
       expect(subjectTimestampBuffer).to.deep.equal(timestampBuffer);
     });

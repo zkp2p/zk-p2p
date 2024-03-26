@@ -38,8 +38,8 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
 
     struct AllowList {
         bool isEnabled;                     // Boolean indicating if the allowlist is enabled
-        bytes32[] allowedUsers;              // Array of accountIds that are denied from taking depositors liquidity
-        mapping(bytes32 => bool) isAllowed;  // Mapping of accountId to boolean indicating if the user is denied
+        bytes32[] allowedUsers;             // Array of accountIds that are allowed from taking depositors liquidity
+        mapping(bytes32 => bool) isAllowed; // Mapping of accountId to boolean indicating if the user is allowed
     }
 
     /* ============ Modifiers ============ */

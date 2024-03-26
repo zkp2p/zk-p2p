@@ -539,7 +539,7 @@ describe("WiseRamp", () => {
         });
       });
 
-      describe("when the caller is on the depositor's denylist", async () => {
+      describe("when isAllowedUser is false", async () => {
         beforeEach(async () => {
           await accountRegistry.connect(offRamper.wallet).addAccountToDenylist(calculateWiseId(onRamperProof.public_values.profileId));
         });
