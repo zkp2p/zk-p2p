@@ -56,9 +56,11 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_ONE') }
           </InstructionStep>
 
-          <InstructionStep step={2}>
-            { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_TWO') }
-          </InstructionStep>
+          <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
+            <InstructionStep step={2}>
+              { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_TWO') }
+            </InstructionStep>
+          </span>
 
           <InstructionStep step={3}>
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
