@@ -78,17 +78,21 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
    */
 
   useEffect(() => {
-    if (venmoDepositIntents && hdfcDepositIntents && garantiDepositIntents) {
-      const combinedDepositIntents = [...venmoDepositIntents, ...hdfcDepositIntents, ...garantiDepositIntents];
+    let combinedDepositIntents: DepositIntent[] = [];
 
-      setDepositIntents(combinedDepositIntents);
-    } else if (venmoDepositIntents) {
-      setDepositIntents(venmoDepositIntents);
-    } else if (hdfcDepositIntents) {
-      setDepositIntents(hdfcDepositIntents);
-    } else if (garantiDepositIntents) {
-      setDepositIntents(garantiDepositIntents);
+    if (venmoDepositIntents) {
+      combinedDepositIntents = combinedDepositIntents.concat(venmoDepositIntents);
     }
+
+    if (hdfcDepositIntents) {
+      combinedDepositIntents = combinedDepositIntents.concat(hdfcDepositIntents);
+    }
+
+    if (garantiDepositIntents) {
+      combinedDepositIntents = combinedDepositIntents.concat(garantiDepositIntents);
+    }
+
+    setDepositIntents(combinedDepositIntents);
   }, [venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents]);
 
   useEffect(() => {
