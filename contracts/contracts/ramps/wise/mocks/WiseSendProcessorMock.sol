@@ -14,7 +14,8 @@ contract WiseSendProcessorMock is IWiseSendProcessor {
 
     /* ============ External View Functions ============ */
     function processProof(
-        SendProof calldata _proof
+        SendProof calldata _proof,
+        address /*_verifierSigningKey*/
     )
         public
         pure
@@ -24,7 +25,6 @@ contract WiseSendProcessorMock is IWiseSendProcessor {
             uint256 timestamp,
             bytes32 offRamperIdHash,
             bytes32 onRamperIdHash,
-            bytes32 intentHash,
             bytes32 currencyId
         )
     {
@@ -33,7 +33,6 @@ contract WiseSendProcessorMock is IWiseSendProcessor {
             _proof.public_values.timestamp.stringToUint(0),
             bytes32(_proof.public_values.recipientId.stringToUint(0)),
             bytes32(_proof.public_values.senderId.stringToUint(0)),
-            bytes32(_proof.public_values.intentHash.stringToUint(0)),
             keccak256(abi.encodePacked(_proof.public_values.currencyId))
         );
     }

@@ -39,7 +39,8 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     
     /* ============ External Functions ============ */
     function processProof(
-        IWiseSendProcessor.SendProof calldata _proof
+        IWiseSendProcessor.SendProof calldata _proof,
+        address _verifierSigningKey
     )
         public
         override
@@ -49,11 +50,10 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             uint256 timestamp,
             bytes32 offRamperId,
             bytes32 onRamperId,
-            bytes32 intentHash,
             bytes32 currencyId
         )
     {
-        _validateProof(_proof.verifierSigningKey, _proof.public_values, _proof.proof);
+        _validateProof(_verifierSigningKey, _proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(
             endpoint.replaceString("*", _proof.public_values.senderId),
@@ -75,7 +75,6 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
 
         offRamperId = bytes32(_proof.public_values.recipientId.stringToUint(0));
         onRamperId = bytes32(_proof.public_values.senderId.stringToUint(0));
-        intentHash = bytes32(_proof.public_values.intentHash.stringToUint(0));
         currencyId = keccak256(abi.encodePacked(_proof.public_values.currencyId));
     }
 

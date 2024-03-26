@@ -635,7 +635,7 @@ describe("WiseRamp", () => {
           }
           const verifierSignature = "0x";
 
-          return ramp.connect(subjectCaller.wallet).onRamp(intentHash, sendData, verifierSignature);
+          return ramp.connect(subjectCaller.wallet).onRamp(sendData, verifierSignature);
         });
 
         it("should revert", async () => {
@@ -810,12 +810,12 @@ describe("WiseRamp", () => {
     });
 
     describe("#onRamp", async () => {
-      let subjectIntentHash: string;
       let subjectSendData: WiseSendData;
       let subjectNotarySignature: string;
       let subjectCaller: Account;
 
       let depositId: BigNumber;
+      let intentHash: string;
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
@@ -832,7 +832,7 @@ describe("WiseRamp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        subjectIntentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
+        intentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
         
         subjectSendData = {
           endpoint: "POST https://api.transferwise.com/v1/quotes",
@@ -844,14 +844,14 @@ describe("WiseRamp", () => {
           currencyId: "EUR",
           amount: "46.00",
           status: "outgoing_payment_sent",
-          intentHash: BigNumber.from(subjectIntentHash).toString()
+          intentHash: intentHash
         }
         subjectNotarySignature = "0x";
         subjectCaller = onRamper;
       });
 
       async function subject(): Promise<any> {
-        return ramp.connect(subjectCaller.wallet).onRamp(subjectIntentHash, subjectSendData, subjectNotarySignature);
+        return ramp.connect(subjectCaller.wallet).onRamp(subjectSendData, subjectNotarySignature);
       }
 
       it("should transfer the usdc correctly to all parties", async () => {
@@ -870,7 +870,7 @@ describe("WiseRamp", () => {
       it("should delete the intent from the intents mapping", async () => {
         await subject();
 
-        const intent = await ramp.intents(subjectIntentHash);
+        const intent = await ramp.intents(intentHash);
 
         expect(intent.onRamper).to.eq(ADDRESS_ZERO);
         expect(intent.to).to.eq(ADDRESS_ZERO);
@@ -888,7 +888,7 @@ describe("WiseRamp", () => {
 
         expect(postDeposit.remainingDeposits).to.eq(preDeposit.remainingDeposits);
         expect(postDeposit.outstandingIntentAmount).to.eq(preDeposit.outstandingIntentAmount.sub(usdc(50)));
-        expect(postDeposit.intentHashes).to.not.include(subjectIntentHash);
+        expect(postDeposit.intentHashes).to.not.include(intentHash);
       });
 
       it("should log the block timestamp for user's lastOnrampTimestamp", async () => {
@@ -902,7 +902,7 @@ describe("WiseRamp", () => {
 
       it("should emit an IntentFulfilled event", async () => {
         await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
-          subjectIntentHash,
+          intentHash,
           depositId,
           onRamper.address,
           receiver.address,
@@ -934,7 +934,7 @@ describe("WiseRamp", () => {
 
         it("should emit an IntentFulfilled event", async () => {
           await expect(subject()).to.emit(ramp, "IntentFulfilled").withArgs(
-            subjectIntentHash,
+            intentHash,
             depositId,
             onRamper.address,
             receiver.address,
@@ -952,10 +952,10 @@ describe("WiseRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          subjectIntentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
+          intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
 
           subjectSendData.timestamp = currentTimestamp.toString();
-          subjectSendData.intentHash = BigNumber.from(subjectIntentHash).toString()
+          subjectSendData.intentHash = intentHash;
         });
 
         it("should prune the deposit", async () => {
@@ -967,7 +967,7 @@ describe("WiseRamp", () => {
           expect(accountDeposits.some(obj => obj.depositId == depositId)).to.be.false;
           expect(deposit.remainingDeposits).to.eq(ZERO);
           expect(deposit.outstandingIntentAmount).to.eq(ZERO);
-          expect(deposit.intentHashes).to.not.include(subjectIntentHash);
+          expect(deposit.intentHashes).to.not.include(intentHash);
         });
 
         it("should emit a DepositClosed event", async () => {

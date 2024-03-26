@@ -323,12 +323,10 @@ contract WiseRamp is Ownable {
      * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,
      * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.
      *
-     * @param _intentHash       Hash of the intent being fulfilled
      * @param _sendData         Struct containing unredacted data from API call to Wise
      * @param _verifierSignature  Signature by verifier of the unredacted data
      */
     function onRamp(
-        bytes32 _intentHash,
         IWiseSendProcessor.SendData calldata _sendData,
         bytes calldata _verifierSignature
     )
@@ -336,16 +334,17 @@ contract WiseRamp is Ownable {
     {
         (
             Intent memory intent,
-            Deposit storage deposit
-        ) = _verifyOnRampProof(_sendData, _verifierSignature, _intentHash);
+            Deposit storage deposit,
+            bytes32 intentHash
+        ) = _verifyOnRampProof(_sendData, _verifierSignature);
 
-        _pruneIntent(deposit, _intentHash);
+        _pruneIntent(deposit, intentHash);
 
         deposit.outstandingIntentAmount -= intent.amount;
         globalAccount[accountRegistry.getAccountId(intent.onRamper)].lastOnrampTimestamp = block.timestamp;
         _closeDepositIfNecessary(intent.deposit, deposit);
 
-        _transferFunds(_intentHash, intent);
+        _transferFunds(intentHash, intent);
     }
 
     /**
@@ -662,38 +661,34 @@ contract WiseRamp is Ownable {
      */
     function _verifyOnRampProof(
         IWiseSendProcessor.SendData calldata _data,
-        bytes calldata _verifierSignature,
-        bytes32 _intentHash
+        bytes calldata _verifierSignature
     )
         internal
-        returns(Intent storage intent, Deposit storage deposit)
+        returns(Intent storage intent, Deposit storage deposit, bytes32 intentHash)
     {
-        intent = intents[_intentHash];
+        intentHash = _data.intentHash;
+        intent = intents[intentHash];
         deposit = deposits[intent.deposit];
-
+        
         (
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
             bytes32 onRamperId,
-            bytes32 intentHash,
             bytes32 currencyId
         ) = sendProcessor.processProof(
             IWiseSendProcessor.SendProof({
                 public_values: _data,
-                verifierSigningKey: deposit.verifierSigningKey,
                 proof: _verifierSignature
-            })
+            }),
+            deposit.verifierSigningKey
         );
 
-        require(intentHash == _intentHash, "Intent hash does not match");
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.onRamper != address(0), "Intent does not exist");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accountRegistry.getAccountInfo(deposit.depositor).offRampId == offRamperId, "Offramper id does not match");
         require(accountRegistry.getAccountId(intent.onRamper) == onRamperId, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
-
-        return (intent, deposit);
     }
 }

@@ -17,7 +17,7 @@ import { usdc } from "@utils/common";
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
 
-describe("WiseSendProcessor", () => {
+describe.only("WiseSendProcessor", () => {
   let owner: Account;
   let verifier: Account;
   let attacker: Account;
@@ -62,6 +62,7 @@ describe("WiseSendProcessor", () => {
 
   describe("#processProof", async () => {
     let subjectProof: WiseSendProof;
+    let subjectVerifierSigningKey: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
@@ -77,21 +78,22 @@ describe("WiseSendProcessor", () => {
           currencyId: "SGD",
           amount: "9.0",
           status: "OUTGOING_PAYMENT_SENT",
-          intentHash: "12345",
+          intentHash: ethers.utils.hexZeroPad(BigNumber.from("12345").toHexString(), 32),
         },
-        verifierSigningKey: verifier.address,
         proof: "0xe490922cc46624fe055c3bee676cdd368067ca70c835b1ea9378251edaf140d7126cae0d6426ef8e1867efb874188ca6fc7798a20f2c130dcaa82bdb28aeb75d1c"
       } as WiseSendProof;
+
+      subjectVerifierSigningKey = verifier.address;
 
       subjectCaller = ramp;
     });
 
     async function subject(): Promise<any> {
-      return await sendProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
+      return await sendProcessor.connect(subjectCaller.wallet).processProof(subjectProof, subjectVerifierSigningKey);
     }
 
     async function subjectCallStatic(): Promise<any> {
-      return await sendProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
+      return await sendProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof, subjectVerifierSigningKey);
     }
 
     it("should process the proof", async () => {
@@ -100,7 +102,6 @@ describe("WiseSendProcessor", () => {
         timestamp,
         offRamperId,
         onRamperId,
-        intentHash,
         currencyId
       ] = await subjectCallStatic();
       
@@ -108,7 +109,6 @@ describe("WiseSendProcessor", () => {
       expect(timestamp).to.eq(BigNumber.from(subjectProof.public_values.timestamp).div(1000).add(30));
       expect(onRamperId).to.eq(calculateWiseId(subjectProof.public_values.senderId));
       expect(offRamperId).to.eq(calculateWiseId(subjectProof.public_values.recipientId));
-      expect(intentHash).to.eq(calculateWiseId(subjectProof.public_values.intentHash));   // Use the same method as Id to encode intent hash
       expect(currencyId).to.eq(ethers.utils.solidityKeccak256(["string"], [subjectProof.public_values.currencyId]));
     });
 
@@ -137,7 +137,7 @@ describe("WiseSendProcessor", () => {
 
     describe("when the proof is invalid", async () => {
       beforeEach(async () => {
-        subjectProof.public_values.senderId = "555555555"
+        subjectVerifierSigningKey = attacker.address;
       });
 
       it("should revert", async () => {

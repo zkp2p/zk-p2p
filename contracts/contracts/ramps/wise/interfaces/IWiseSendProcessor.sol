@@ -14,18 +14,18 @@ interface IWiseSendProcessor {
         string currencyId;
         string amount;
         string status;
-        string intentHash;
+        bytes32 intentHash;
     }
 
     struct SendProof {
         SendData public_values;
-        address verifierSigningKey;
         bytes proof;
     }
 
     function processProof(
-        SendProof calldata _proof
+        SendProof calldata _proof,
+        address _verifierSigningKey
     )
         external
-    returns(uint256, uint256, bytes32, bytes32, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32, bytes32);
 }
