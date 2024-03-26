@@ -32,7 +32,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("WiseRamp", () => {
+describe.only("WiseRamp", () => {
   let owner: Account;
   let verifier: Account;
   let offRamper: Account;
@@ -298,11 +298,11 @@ describe("WiseRamp", () => {
 
       describe("when the user has not registered as on off-ramper", async () => {
         beforeEach(async () => {
-          subjectWiseTag = "snakamoto1234"
+          subjectCaller = onRamper
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Wise tag does not match registered wise tag");
+          await expect(subject()).to.be.revertedWith("Must be registered as off ramper");
         });
       });
 
@@ -985,6 +985,16 @@ describe("WiseRamp", () => {
         });
       });
 
+      describe("when the payment was in the incorrect currecy", async () => {
+        beforeEach(async () => {
+          subjectSendData.currencyId = "SGD";
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Wrong currency sent");
+        });
+      });
+
       describe("when the amount paid was not enough", async () => {
         beforeEach(async () => {
           subjectSendData.amount = "45.00";
@@ -1400,6 +1410,38 @@ describe("WiseRamp", () => {
         });
       });
     });
+
+    describe("#getIdCurrentIntentHashAsUint", async () => {
+      let subjectAccount: Address;
+
+      let intentHash: string;
+
+      beforeEach(async () => {  
+        await ramp.connect(offRamper.wallet).offRamp(
+          "jdoe1234",
+          ethers.utils.solidityKeccak256(["string"], ["EUR"]),
+          usdc(100),
+          usdc(92),
+          verifier.address
+        );
+
+        await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
+        intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), ZERO, await blockchain.getCurrentTimestamp());
+
+        subjectAccount = onRamper.address;
+      });
+
+      async function subject(): Promise<any> {
+        return ramp.getIdCurrentIntentHashAsUint(subjectAccount);
+      }
+
+      it("should return the expected deposits", async () => {
+        const intentHashAsUint = await subject();
+
+        expect(intentHashAsUint).to.eq(BigNumber.from(intentHash));
+      });
+    });
+
 
     describe("#getAccountDeposits", async () => {
       let subjectAccount: Address;
