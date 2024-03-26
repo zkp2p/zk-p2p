@@ -78,15 +78,16 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
         currencyId = keccak256(abi.encodePacked(_proof.public_values.currencyId));
     }
 
-    /* ============ Internal Functions ============ */
+    /* ============ View Functions ============ */
 
-    function _validateProof(
+    function verifyProof(
         address _verifierSigningKey,
         IWiseSendProcessor.SendData memory _publicValues, 
         bytes memory _proof
     )
         internal
         view
+        returns(bool)
     {   
         bytes memory encodedMessage = abi.encode(
             _publicValues.endpoint,
@@ -100,6 +101,22 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        _validateVerifierSignature(encodedMessage, _proof, _verifierSigningKey);
+        return _isValidVerifierSignature(encodedMessage, _proof, _verifierSigningKey);
+    }
+
+    /* ============ Internal Functions ============ */
+
+    function _validateProof(
+        address _verifierSigningKey,
+        IWiseSendProcessor.SendData memory _publicValues, 
+        bytes memory _proof
+    )
+        internal
+        view
+    {   
+        require(
+            verifyProof(_verifierSigningKey, _publicValues, _proof),
+            "Invalid signature from verifier"
+        );
     }
 }

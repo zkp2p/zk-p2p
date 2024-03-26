@@ -71,6 +71,20 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         emit VerifierSigningKeySet(_verifierSigningKey);
     }
 
+    /* ============ View Functions ============ */
+
+    function verifyProof(
+        IWiseAccountRegistrationProcessor.RegistrationData memory _publicValues,
+        bytes memory _proof
+    )
+        public
+        view
+        returns(bool)
+    {
+        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
+        return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+    }
+    
     /* ============ Internal Functions ============ */
 
     function _validateProof(
@@ -80,7 +94,9 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         internal
         view
     {   
-        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
-        _validateVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+        require(
+            verifyProof(_publicValues, _proof),
+            "Invalid signature from verifier"
+        );
     }
 }

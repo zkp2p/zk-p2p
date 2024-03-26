@@ -17,7 +17,7 @@ import { usdc } from "@utils/common";
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
 
-describe.only("WiseSendProcessor", () => {
+describe("WiseSendProcessor", () => {
   let owner: Account;
   let verifier: Account;
   let attacker: Account;

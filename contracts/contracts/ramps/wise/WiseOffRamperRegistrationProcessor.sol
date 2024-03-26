@@ -66,6 +66,20 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         emit VerifierSigningKeySet(_verifierSigningKey);
     }
 
+    /* ============ View Functions ============ */
+
+    function verifyProof(
+        IWiseOffRamperRegistrationProcessor.OffRamperRegistrationData memory _publicValues, 
+        bytes memory _proof
+    )
+        internal
+        view
+        returns(bool)
+    {   
+        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
+        return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+    }
+
     /* ============ Internal Functions ============ */
 
     function _validateProof(
@@ -75,7 +89,9 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         internal
         view
     {   
-        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        _validateVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+        require(
+            verifyProof(_publicValues, _proof),
+            "Invalid signature from verifier"
+        );
     }
 }

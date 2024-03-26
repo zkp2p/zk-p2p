@@ -32,7 +32,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("WiseRamp", () => {
+describe.only("WiseRamp", () => {
   let owner: Account;
   let verifier: Account;
   let offRamper: Account;
@@ -631,7 +631,7 @@ describe("WiseRamp", () => {
             currencyId: "EUR",
             amount: "46.00",
             status: "outgoing_payment_sent",
-            intentHash: BigNumber.from(intentHash).toString()
+            intentHash: intentHash
           }
           const verifierSignature = "0x";
 
