@@ -60,11 +60,11 @@ export const PaymentRequirementDrawer: React.FC<PaymentRequirementDrawerProps> =
             <InstructionStep step={2}>
               { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_TWO') }
             </InstructionStep>
-          </span>
 
-          <InstructionStep step={3}>
-            { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
-          </InstructionStep>
+            <InstructionStep step={3}>
+              { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE') }
+            </InstructionStep>
+          </span>
 
           {optionalPlatformRequirement()}
         </RequirementListContainer>

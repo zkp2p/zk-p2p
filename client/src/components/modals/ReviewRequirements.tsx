@@ -90,9 +90,11 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
             </RequirementStepRow>
           </span>
 
-          <RequirementStepRow step={3}>
-            {platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE')}
-          </RequirementStepRow>
+          <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
+            <RequirementStepRow step={3}>
+              {platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE')}
+            </RequirementStepRow>
+          </span>
 
           {optionalPlatformRequirement()}
         </RequirementListContainer>
