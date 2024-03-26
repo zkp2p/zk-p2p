@@ -145,6 +145,34 @@ describe("WiseSendProcessor", () => {
       });
     });
 
+    describe("when the payment status is not OUTGOING_PAYMENT_SENT", async () => {
+      beforeEach(async () => {
+        subjectProof.public_values.status = "PENDING";
+
+        const encodedMsg = abiCoder.encode(
+          ["string", "string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
+          [
+            subjectProof.public_values.endpoint,
+            subjectProof.public_values.host,
+            subjectProof.public_values.transferId,
+            subjectProof.public_values.senderId,
+            subjectProof.public_values.recipientId,
+            subjectProof.public_values.amount,
+            subjectProof.public_values.currencyId,
+            subjectProof.public_values.status,
+            subjectProof.public_values.timestamp,
+            subjectProof.public_values.intentHash
+          ]
+        );
+
+        subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Payment status not confirmed as sent");
+      });
+    });
+
     describe("when the TLS proof is for a different endpoint", async () => {
       beforeEach(async () => {
         subjectProof.public_values.endpoint = "GET https://wise.com/gateway/v4/profiles/41213881";
