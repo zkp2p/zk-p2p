@@ -35,6 +35,7 @@ jobs:
       - name: Post coverage report
         uses: romeovs/lcov-reporter-action@v0.2.16
         with:
+          working-directory: ./contracts
           lcov-file: ./coverage/lcov.info
 
 
