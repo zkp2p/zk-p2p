@@ -63,9 +63,11 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437',
     'garantiRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D',
     'garantiNft': '',
-    'wiseRamp': '0xEfBDf422FA81071A04D2f89A70A0D938FEFA0795', // Copied from Garanti
-    'wiseSendProcessor': '0xd30087458186424C12BEAEbf1167142284E33437', // Copied from Garanti
-    'wiseRegistrationProcessor': '0xFbBdAa7354fB1d40B48130F026e6DD371474dB8D', // Copied from Garanti
+    'wiseRamp': '0xfb5294d3E7EDE246dcD933b064ADcBd2e2624059',
+    'wiseAccountRegistry': '0x7eDD66B19A22293af86A2d96761FD7146BA3fF6c',
+    'wiseSendProcessor': '0xFb08d7be04cCD00dF074bBa1D28D4B9887a8D5e6',
+    'wiseAccountRegistrationProcessor': '0x8E9ca43089F380A904D2d121fAa021bb4fbb0f4a',
+    'wiseOffRamperRegistrationProcessor': '0xEF14b8a0196002dA629c1eC585371274FA9Da7d8',
     'wiseNft': '',
     'socketBridge': '',
     'lifiBridge': '',

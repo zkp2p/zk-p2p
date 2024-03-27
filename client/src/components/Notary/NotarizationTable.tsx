@@ -98,13 +98,18 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       const requestHistory = event.data.requestHistory.notaryRequests;
       const notaryProofs = requestHistory.map((request: ExtensionNotaryProofRequest) => {
         return {
-          proof: request.proof,
-          metadata: request.id,
+          proof: JSON.stringify(request.proof),
+          metadata: request.url,
           date: '1710571636'
         } as ExtensionNotaryProofRow;
       });
 
       setLoadedNotaryProofs(notaryProofs);
+
+      // Select the first row by default
+      const selectedNotaryProof: ExtensionNotaryProofRow = notaryProofs[0];
+      setSelectedIndex(0);
+      setNotaryProof(selectedNotaryProof.proof);
     };
   };
 
@@ -360,7 +365,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             </TitleAndTableContainer>
           ) : (
             <TagFoundContainer>
-              We detected a tag for you!
+              We detected the following notarized tag from your extension:&nbsp;<strong>Wise Tag</strong>
             </TagFoundContainer>
           )}
 
@@ -464,8 +469,12 @@ const TagFoundContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 2rem 1rem;
   font-size: 16px;
   color: #FFFFFF;
+
+  border: 1px solid ${colors.defaultBorderColor};
+  border-radius: 8px;
 `;
 
 const NotarizationsTitleContainer = styled.div`
