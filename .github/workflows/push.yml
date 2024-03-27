@@ -33,7 +33,7 @@ jobs:
         run: yarn deploy:localhost
         working-directory: ./contracts
       - name: Post coverage report
-        uses: JoA-MoS/lcov-reporter-action
+        uses: JoA-MoS/lcov-reporter-action@master
         with:
           lcov-file: ./coverage/lcov.info
           working-directory: ./contracts
