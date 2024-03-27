@@ -33,7 +33,7 @@ jobs:
         run: yarn deploy:localhost
         working-directory: ./contracts
       - name: Post coverage report
-        uses: romeovs/lcov-reporter-action@v0.2.16
+        uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           working-directory: ./contracts
           lcov-file: ./coverage/lcov.info
