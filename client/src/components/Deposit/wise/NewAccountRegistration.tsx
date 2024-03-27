@@ -6,7 +6,7 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 
 import { RowBetween } from '@components/layouts/Row';
 import { NumberedStep } from '@components/common/NumberedStep';
-import { NotaryForm } from '@components/Notary/NotaryForm';
+import { VerifyNotarizationForm } from '@components/Notary/VerifyNotarizationForm';
 import { wiseStrings } from '@helpers/strings';
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -30,7 +30,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
   const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
-  const [verificationSignature, setVerificationSignature] = useState<string>('');
+  const [verifierProof, setVerifierProof] = useState<string>('');
   const [submitRegistrationTransactionHash, setSubmitRegistrationTransactionHash] = useState<string | null>(null);
   // const [proof, setProof] = useState<string>(
   //   JSON.stringify()
@@ -63,7 +63,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
     args: [
       [
         publicSignals,
-        verificationSignature
+        verifierProof
       ]
     ],
     onError: (error: { message: any }) => {
@@ -95,14 +95,14 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
    */
 
   useEffect(() => {
-    if (verificationSignature && publicSignals) {
+    if (verifierProof && publicSignals) {
       // TODO: perform local verification
 
       setShouldConfigureRegistrationWrite(true);
     } else {
       setShouldConfigureRegistrationWrite(false);
     }
-  }, [verificationSignature, publicSignals]);
+  }, [verifierProof, publicSignals]);
 
   useEffect(() => {
     if (submitRegistrationResult?.hash) {
@@ -158,12 +158,12 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
         </InstructionsAndTogglesContainer>
       </TitleContainer>
 
-      <NotaryForm
+      <VerifyNotarizationForm
         paymentPlatformType={PaymentPlatform.WISE}
         circuitType={NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID}
-        verificationSignature={verificationSignature}
+        verifierProof={verifierProof}
         publicSignals={publicSignals}
-        setVerificationSignature={setVerificationSignature}
+        setVerifierProof={setVerifierProof}
         setPublicSignals={setPublicSignals}
         submitTransactionStatus={submitRegistrationStatus}
         isSubmitMining={isSubmitRegistrationMining}

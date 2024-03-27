@@ -18,9 +18,9 @@ import useAccount from '@hooks/useAccount';
 import useSmartContracts from "@hooks/useSmartContracts";
 
 
-interface ValidateNotarizationProps {
+interface VerifyNotarizationModalProps {
   title: string;
-  verificationSignature: string;
+  verifierProof: string;
   publicSignals: string;
   onBackClick: () => void
   status: string;
@@ -36,9 +36,9 @@ interface ValidateNotarizationProps {
   verificationFailureErrorCode: number | null;
 }
 
-export const ValidateNotarization: React.FC<ValidateNotarizationProps> = ({
+export const VerifyNotarizationModal: React.FC<VerifyNotarizationModalProps> = ({
   title,
-  verificationSignature,
+  verifierProof,
   publicSignals,
   onBackClick,
   status,
@@ -333,7 +333,7 @@ export const ValidateNotarization: React.FC<ValidateNotarizationProps> = ({
           <ProofAndSignalsContainer>
             <LabeledTextArea
               label="Proof Output"
-              value={verificationSignature}
+              value={verifierProof}
               disabled={true}
               height={"12vh"} />
 

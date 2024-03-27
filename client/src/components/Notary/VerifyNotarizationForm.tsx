@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import crypto from 'crypto';
 
 import { Col } from "@components/legacy/Layout";
-import { ValidateNotarization } from '@components/Notary/ValidateNotarization';
-import { RequestTable } from '@components/Notary/RequestTable';
+import { VerifyNotarizationModal } from '@components/Notary/VerifyNotarizationModal';
+import { NotarizationTable } from '@components/Notary/NotarizationTable';
 import {
   PaymentPlatformType,
   PaymentPlatform,
@@ -19,12 +19,12 @@ import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
 import { colors } from '@theme/colors';
 
 
-interface NotaryFormProps {
+interface VerifyNotarizationFormProps {
   paymentPlatformType: PaymentPlatformType;
   circuitType: NotaryVerificationCircuitType;
-  verificationSignature: string;
+  verifierProof: string;
   publicSignals: string;
-  setVerificationSignature: (verificationSignature: string) => void;
+  setVerifierProof: (verifierProof: string) => void;
   setPublicSignals: (publicSignals: string) => void;
   submitTransactionStatus: string;
   isSubmitMining: boolean;
@@ -35,12 +35,12 @@ interface NotaryFormProps {
   selectedUIntIntentHash?: string;
 }
 
-export const NotaryForm: React.FC<NotaryFormProps> = ({
+export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
   paymentPlatformType,
   circuitType,
-  verificationSignature,
+  verifierProof,
   publicSignals,
-  setVerificationSignature,
+  setVerifierProof,
   setPublicSignals,
   submitTransactionStatus,
   isSubmitMining,
@@ -69,7 +69,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
-  const [notarizationSelectionStatus, setNotarizationSelectionStatus] = useState<string>(NotaryProofInputStatus.DEFAULT);
+  const [notaryProofSelectionStatus, setnotaryProofSelectionStatus] = useState<string>(NotaryProofInputStatus.DEFAULT);
   const [proofGenStatus, setProofGenStatus] = useState(NotaryVerificationStatus.NOT_STARTED);
 
   const [verificationFailureErrorCode, setVerificationFailureErrorCode] = useState<number | null>(null);
@@ -109,7 +109,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
         break;
       
       default:
-        throw new Error('Invalid platform invoking NotaryForm');
+        throw new Error('Invalid platform invoking VerifyNotarizationForm');
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,10 +131,10 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
         const hashedNotarization = hash.digest('hex');
         setNotarizationHash(hashedNotarization);
 
-        setNotarizationSelectionStatus(NotaryProofInputStatus.VALID);
+        setnotaryProofSelectionStatus(NotaryProofInputStatus.VALID);
       } else {
         setNotarizationHash("");
-        setNotarizationSelectionStatus(NotaryProofInputStatus.DEFAULT);
+        setnotaryProofSelectionStatus(NotaryProofInputStatus.DEFAULT);
       }
     }
   
@@ -144,20 +144,20 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
 
   useEffect(() => {
     if (storedProofValue && storedSignalsValue) {
-      setVerificationSignature(storedProofValue);
+      setVerifierProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
     }
-  }, [storedProofValue, storedSignalsValue, setVerificationSignature, setPublicSignals]);
+  }, [storedProofValue, storedSignalsValue, setVerifierProof, setPublicSignals]);
 
   /*
    * Handlers
    */
 
-  const handleVerifyNotarizationClicked = async () => {
+  const handleVerifyNotaryProofClicked = async () => {
     setShouldShowVerificationModal(true);
 
     if (storedProofValue && storedSignalsValue) {
-      setVerificationSignature(storedProofValue);
+      setVerifierProof(storedProofValue);
       setPublicSignals(storedSignalsValue);
 
       setProofGenStatus(NotaryVerificationStatus.TRANSACTION_CONFIGURED);
@@ -220,7 +220,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
     setNotarizationHash(hashedNotarization);
 
     // Set proof and public signals
-    setVerificationSignature(proofString);
+    setVerifierProof(proofString);
     setStoredProofValue(proofString);
 
     setPublicSignals(publicSignalsString);
@@ -234,9 +234,9 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   return (
     <Container>
       {shouldShowVerificationModal && (
-        <ValidateNotarization
+        <VerifyNotarizationModal
           title={"Verify Request"}
-          verificationSignature={verificationSignature}
+          verifierProof={verifierProof}
           publicSignals={publicSignals}
           onBackClick={handleModalBackClicked}
           onVerifyNotarizationCompletion={onVerifyNotarizationCompletion}
@@ -255,12 +255,12 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
 
       <VerticalDivider/>
 
-      <RequestTable
+      <NotarizationTable
         paymentPlatform={paymentPlatformType}
         circuitType={circuitType}
-        setTagNotarization={setNotarization}
-        handleVerifyNotarizationClicked={handleVerifyNotarizationClicked}
-        notarizationSelectionStatus={notarizationSelectionStatus}
+        setNotaryProof={setNotarization}
+        handleVerifyNotaryProofClicked={handleVerifyNotaryProofClicked}
+        notaryProofSelectionStatus={notaryProofSelectionStatus}
         isProofModalOpen={shouldShowVerificationModal}
       />
     </Container>

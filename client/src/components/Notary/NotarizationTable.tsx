@@ -8,7 +8,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
-import { RequestRow } from '@components/Notary/RequestRow';
+import { NotarizationRow } from '@components/Notary/NotarizationRow';
 import {
   fetchWiseTagNotarizations,
   fetchMultiCurrencyIdNotarizations,
@@ -29,21 +29,21 @@ import braveSvg from '../../assets/images/browsers/brave.svg';
 import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 
-interface RequestTableProps {
+interface NotarizationTableProps {
   paymentPlatform: PaymentPlatformType;
   circuitType: NotaryVerificationCircuitType;
-  setTagNotarization: (notarization: string) => void;
-  handleVerifyNotarizationClicked: () => void;
-  notarizationSelectionStatus: string;
+  setNotaryProof: (notarization: string) => void;
+  handleVerifyNotaryProofClicked: () => void;
+  notaryProofSelectionStatus: string;
   isProofModalOpen: boolean;
 };
 
-export const RequestTable: React.FC<RequestTableProps> = ({
+export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   paymentPlatform,
   circuitType,
-  setTagNotarization,
-  handleVerifyNotarizationClicked,
-  notarizationSelectionStatus,
+  setNotaryProof,
+  handleVerifyNotaryProofClicked,
+  notaryProofSelectionStatus,
   isProofModalOpen
 }) => {
   /*
@@ -60,7 +60,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
   const [isExtensionInstalled, setIsExtensionInstalled] = useState<boolean>(false);
 
-  const [injectedTagNotarizations, setInjectedTagNotarizations] = useState<Notarization[]>([]);
+  const [loadedNotaryProofs, setLoadedNotaryProofs] = useState<Notarization[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -79,12 +79,12 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   const handleRowClick = (index: number) => {
     setSelectedIndex(index);
 
-    const notarization = injectedTagNotarizations[index];
+    const notarization = loadedNotaryProofs[index];
     
-    setTagNotarization(notarization.proof);
+    setNotaryProof(notarization.proof);
   };
 
-  const handleToggleRequestTablePressed = () => {
+  const handleToggleNotarizationTablePressed = () => {
     setIsShowingTable(!isShowingTable);
   };
 
@@ -179,10 +179,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     }
   };
 
-  const rowSubjectText = (injectedNotarization: Notarization) => {
+  const rowSubjectText = (notaryProof: Notarization) => {
     switch (paymentPlatform) {
       case PaymentPlatform.WISE:
-        return injectedNotarization.metadata;
+        return notaryProof.metadata;
 
       default:
         return '';
@@ -211,9 +211,9 @@ export const RequestTable: React.FC<RequestTableProps> = ({
       };
 
       if (notarizations.length > 0) {
-        setInjectedTagNotarizations(notarizations);
+        setLoadedNotaryProofs(notarizations);
       } else {
-        setInjectedTagNotarizations([]);
+        setLoadedNotaryProofs([]);
       };
     } else {
       window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
@@ -236,10 +236,10 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
   useEffect(() => {
     setSelectedIndex(null);
-    setTagNotarization('');
+    setNotaryProof('');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [injectedTagNotarizations]);
+  }, [loadedNotaryProofs]);
 
   useEffect(() => {
     const handleMessage = function(event: { origin: string; data: { type: string; status: string; }; }) {
@@ -266,7 +266,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
   useEffect(() => {
     const notarizationMetadataCTA = defaultCTAForInputStatus();
 
-    switch (notarizationSelectionStatus) {
+    switch (notaryProofSelectionStatus) {
       case NotaryProofInputStatus.DEFAULT:
         setCtaButtonTitle(`Select ${notarizationMetadataCTA}`);
         break;
@@ -282,7 +282,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notarizationSelectionStatus, paymentPlatform, isProofModalOpen]);
+  }, [notaryProofSelectionStatus, paymentPlatform, isProofModalOpen]);
 
   const defaultCTAForInputStatus = () => {
     switch (circuitType) {
@@ -356,7 +356,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                 />
               </TitleAndOAuthContainer>
 
-              {injectedTagNotarizations.length === 0 ? (
+              {loadedNotaryProofs.length === 0 ? (
                 <EmptyNotarizationsContainer>
                   <StyledUserX />
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
@@ -365,14 +365,14 @@ export const RequestTable: React.FC<RequestTableProps> = ({
                 </EmptyNotarizationsContainer>
               ) : (
                 <Table>
-                  {injectedTagNotarizations.map((notarization, index) => (
-                    <RequestRow
+                  {loadedNotaryProofs.map((notarization, index) => (
+                    <NotarizationRow
                       key={index}
                       platformText={rowPlatformText()}
                       subjectText={rowSubjectText(notarization)}
                       dateText={formatDateTime(notarization.date)}
                       isSelected={index === selectedIndex}
-                      isLastRow={index === injectedTagNotarizations.length - 1}
+                      isLastRow={index === loadedNotaryProofs.length - 1}
                       onRowClick={() => handleRowClick(index)}
                     />
                   ))}
@@ -387,14 +387,14 @@ export const RequestTable: React.FC<RequestTableProps> = ({
 
           <ButtonContainer>
             <Button
-              disabled={notarizationSelectionStatus !== NotaryProofInputStatus.VALID || isProofModalOpen}
-              onClick={handleVerifyNotarizationClicked}
+              disabled={notaryProofSelectionStatus !== NotaryProofInputStatus.VALID || isProofModalOpen}
+              onClick={handleVerifyNotaryProofClicked}
             >
               {ctaButtonTitle}
             </Button>
           </ButtonContainer>
 
-          <TableToggleLink onClick={handleToggleRequestTablePressed}>
+          <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
             {notarizationToggleCta()}
           </TableToggleLink>
         </ExtensionDetectedContainer>

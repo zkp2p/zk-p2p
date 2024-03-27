@@ -6,7 +6,7 @@ import { ArrowLeft } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
-import { NotaryForm } from '@components/Notary/NotaryForm';
+import { VerifyNotarizationForm } from '@components/Notary/VerifyNotarizationForm';
 import { NumberedStep } from "@components/common/NumberedStep";
 import { wiseStrings } from "@helpers/strings";
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
@@ -44,8 +44,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const [submitOnRampTransactionHash, setSubmitOnRampTransactionHash] = useState<string | null>(null);
 
   // ----- transaction state -----
-  const [verificationSignature, setVerificationSignature] = useState<string>('');
-  // const [verificationSignature, setVerificationSignature] = useState<string>(
+  const [verifierProof, setVerifierProof] = useState<string>('');
+  // const [verifierProof, setVerifierProof] = useState<string>(
   //   JSON.stringify()
   // );
 
@@ -67,7 +67,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
     functionName: 'onRamp',
     args: [
       publicSignals,
-      verificationSignature
+      verifierProof
     ],
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -100,12 +100,12 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   useEffect(() => {
-    if (verificationSignature && publicSignals) {
+    if (verifierProof && publicSignals) {
       setShouldConfigureRampWrite(true);
     } else {
       setShouldConfigureRampWrite(false);
     }
-  }, [verificationSignature, publicSignals]);
+  }, [verifierProof, publicSignals]);
 
   useEffect(() => {
     if (submitOnRampResult?.hash) {
@@ -163,12 +163,12 @@ export const OnRamp: React.FC<OnRampProps> = ({
         </InstructionsAndTogglesContainer>
       </TitleContainer>
 
-      <NotaryForm
+      <VerifyNotarizationForm
         paymentPlatformType={PaymentPlatform.WISE}
         circuitType={NotaryVerificationCircuit.TRANSFER}
-        verificationSignature={verificationSignature}
+        verifierProof={verifierProof}
         publicSignals={publicSignals}
-        setVerificationSignature={setVerificationSignature}
+        setVerifierProof={setVerifierProof}
         setPublicSignals={setPublicSignals}
         submitTransactionStatus={submitOnRampStatus}
         isSubmitMining={isSubmitOnRampMining}

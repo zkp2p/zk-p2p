@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 import { colors } from '@theme/colors';
 
 
-interface RequestRowProps {
+interface NotarizationRowProps {
   platformText: string;
   subjectText: string;
   dateText: string;
@@ -13,15 +13,15 @@ interface RequestRowProps {
   onRowClick: () => void;
 }
 
-export const RequestRow: React.FC<RequestRowProps> = ({
+export const NotarizationRow: React.FC<NotarizationRowProps> = ({
   platformText,
   subjectText,
   dateText,
   isSelected,
   isLastRow,
   onRowClick,
-}: RequestRowProps) => {
-  RequestRow.displayName = "RequestRow";
+}: NotarizationRowProps) => {
+  NotarizationRow.displayName = "NotarizationRow";
 
   const subjectLabel = `${subjectText}`;
   const dateLabel = `${dateText}`;
