@@ -10,10 +10,9 @@ import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { NotarizationRow } from '@components/Notary/NotarizationRow';
 import {
-  fetchWiseTagNotarizations,
-  fetchMultiCurrencyIdNotarizations,
-  fetchTransferNotarizations,
-  Notarization,
+  ExtensionEventMessage,
+  ExtensionNotaryProofRequest,
+  ExtensionNotaryProofRow
 } from '@hooks/useBrowserExtension';
 import {
   NotaryProofInputStatus,
@@ -60,7 +59,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const [isExtensionInstalled, setIsExtensionInstalled] = useState<boolean>(false);
 
-  const [loadedNotaryProofs, setLoadedNotaryProofs] = useState<Notarization[]>([]);
+  const [loadedNotaryProofs, setLoadedNotaryProofs] = useState<ExtensionNotaryProofRow[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -86,6 +85,27 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const handleToggleNotarizationTablePressed = () => {
     setIsShowingTable(!isShowingTable);
+  };
+
+  const handleReceiveNotarizationHistoryMessage = function(event: ExtensionEventMessage) {
+    if (event.origin !== window.location.origin) {
+      return;
+    };
+
+    if (event.data.type && event.data.type === "REQUEST_HISTORY_RESPONSE") {
+      console.log('Client received REQUEST_HISTORY_RESPONSE message');
+
+      const requestHistory = event.data.requestHistory.notaryRequests;
+      const notaryProofs = requestHistory.map((request: ExtensionNotaryProofRequest) => {
+        return {
+          proof: request.proof,
+          metadata: request.id,
+          date: '1710571636'
+        } as ExtensionNotaryProofRow;
+      });
+
+      setLoadedNotaryProofs(notaryProofs);
+    };
   };
 
   /*
@@ -179,7 +199,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     }
   };
 
-  const rowSubjectText = (notaryProof: Notarization) => {
+  const rowSubjectText = (notaryProof: ExtensionNotaryProofRow) => {
     switch (paymentPlatform) {
       case PaymentPlatform.WISE:
         return notaryProof.metadata;
@@ -190,36 +210,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   async function fetchData() {
-    let notarizations = [];
-
-    if (isShowingTable) {
-      switch (circuitType) {
-        case NotaryVerificationCircuit.REGISTRATION_TAG:
-          notarizations = await fetchWiseTagNotarizations();
-          break;
-  
-        case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-          notarizations = await fetchMultiCurrencyIdNotarizations();
-          break;
-  
-        case NotaryVerificationCircuit.TRANSFER:
-          notarizations = await fetchTransferNotarizations();
-          break;
-  
-        default:
-          throw new Error('Invalid circuit type');
-      };
-
-      if (notarizations.length > 0) {
-        setLoadedNotaryProofs(notarizations);
-      } else {
-        setLoadedNotaryProofs([]);
-      };
-    } else {
-      window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
-  
-      console.log('Client posted FETCH_REQUEST_HISTORY message');
-    };
+    window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
   };
 
   /*
@@ -242,24 +233,12 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   }, [loadedNotaryProofs]);
 
   useEffect(() => {
-    const handleMessage = function(event: { origin: string; data: { type: string; status: string; }; }) {
-      if (event.origin !== window.location.origin) {
-        return;
-      };
-
-      if (event.data.type && event.data.type === "REQUEST_HISTORY_RESPONSE") {
-        console.log('Client received REQUEST_HISTORY_RESPONSE message');
-
-        console.log(event);
-      };
-    };
-  
-    window.addEventListener("message", handleMessage);
+    window.addEventListener("message", handleReceiveNotarizationHistoryMessage);
 
     fetchData();
   
     return () => {
-      window.removeEventListener("message", handleMessage);
+      window.removeEventListener("message", handleReceiveNotarizationHistoryMessage);
     };
   }, []);
 

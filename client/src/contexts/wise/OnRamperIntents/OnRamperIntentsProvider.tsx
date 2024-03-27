@@ -169,8 +169,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [intentHashRaw]);
 
   useEffect(() => {
-    console.log('wise_intentHashAsUintRaw_1');
-    console.log('checking intentHashAsUintRaw: ', intentHashAsUintRaw);
+    esl && console.log('wise_intentHashAsUintRaw_1');
+    esl && console.log('checking intentHashAsUintRaw: ', intentHashAsUintRaw);
   
     if (intentHashAsUintRaw !== ZERO_ADDRESS) {
       esl && console.log('wise_intentHashAsUintRaw_2');
