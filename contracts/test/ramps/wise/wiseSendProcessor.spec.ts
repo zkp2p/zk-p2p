@@ -10,7 +10,7 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { Address, TLSParams, WiseSendProof } from "@utils/types";
+import { Address, WiseSendData, WiseSendProof } from "@utils/types";
 import { calculateWiseId } from "@utils/protocolUtils";
 import { usdc } from "@utils/common";
 
@@ -78,8 +78,8 @@ describe("WiseSendProcessor", () => {
           currencyId: "EUR",
           amount: "1.0",
           status: "OUTGOING_PAYMENT_SENT",
-          intentHash: BigNumber.from("2109098755843864455034980037347310810989244226703714011137935097150268285982").toString(),
-        },
+          intentHash: BigNumber.from("2109098755843864455034980037347310810989244226703714011137935097150268285982"),
+        } as WiseSendData,
         proof: "0x8fedde36a43e95dc6eedc10bc90dca4c8e7eebf43b7db19b62fc8bf3b043b5a668fda894f2f97dd981adff7130c1794f9ab780d69eef903f128d6200365da9331b"
       } as WiseSendProof;
 

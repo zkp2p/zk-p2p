@@ -56,11 +56,10 @@ export interface WiseSendData {
   currencyId: string;
   amount: string;
   status: string;
-  intentHash: string;
+  intentHash: BigNumber;
 }
 
 export interface WiseSendProof {
   public_values: WiseSendData;
-  verifierSigningKey: Address;
   proof: string;
 }

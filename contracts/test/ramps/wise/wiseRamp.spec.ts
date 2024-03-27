@@ -844,7 +844,7 @@ describe("WiseRamp", () => {
           currencyId: "EUR",
           amount: "46.00",
           status: "outgoing_payment_sent",
-          intentHash: intentHash
+          intentHash: BigNumber.from(intentHash)
         }
         subjectNotarySignature = "0x";
         subjectCaller = onRamper;
@@ -955,7 +955,7 @@ describe("WiseRamp", () => {
           intentHash = calculateIntentHash(calculateWiseId(onRamperProof.public_values.profileId), depositId, currentTimestamp);
 
           subjectSendData.timestamp = currentTimestamp.toString();
-          subjectSendData.intentHash = intentHash;
+          subjectSendData.intentHash = BigNumber.from(intentHash);
         });
 
         it("should prune the deposit", async () => {
@@ -977,7 +977,7 @@ describe("WiseRamp", () => {
 
       describe("when the caller is not the onRamper for the intent", async () => {
         beforeEach(async () => {
-          subjectSendData.intentHash = ZERO_BYTES32;
+          subjectSendData.intentHash = BigNumber.from(ZERO_BYTES32);
         });
 
         it("should revert", async () => {
