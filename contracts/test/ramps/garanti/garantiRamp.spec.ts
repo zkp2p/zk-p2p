@@ -108,7 +108,7 @@ describe("GarantiRamp", () => {
     });
   });
 
-  describe.only("#initialize", async () => {
+  describe("#initialize", async () => {
     let subjectRegistrationProcessor: Address;
     let subjectSendProcessor: Address;
     let subjectCaller: Account;
@@ -157,7 +157,7 @@ describe("GarantiRamp", () => {
     });
   });
 
-  describe("#register", async () => {
+  describe.only("#register", async () => {
     let subjectProof: any;
     let subjectBodyHashProof: any;
     let subjectCaller: Account;
