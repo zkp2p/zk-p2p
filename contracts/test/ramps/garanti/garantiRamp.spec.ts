@@ -157,7 +157,7 @@ describe("GarantiRamp", () => {
     });
   });
 
-  describe.only("#register", async () => {
+  describe("#register", async () => {
     let subjectProof: any;
     let subjectBodyHashProof: any;
     let subjectCaller: Account;
