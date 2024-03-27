@@ -698,6 +698,25 @@ export const abi = [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_account",
+        "type": "address"
+      }
+    ],
+    "name": "getIdCurrentIntentHashAsUint",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32[]",
         "name": "_intentHashes",
         "type": "bytes32[]"
@@ -922,11 +941,6 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_intentHash",
-        "type": "bytes32"
-      },
-      {
         "components": [
           {
             "internalType": "string",
@@ -955,7 +969,7 @@ export const abi = [
           },
           {
             "internalType": "string",
-            "name": "timestamp",
+            "name": "amount",
             "type": "string"
           },
           {
@@ -965,18 +979,18 @@ export const abi = [
           },
           {
             "internalType": "string",
-            "name": "amount",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
             "name": "status",
             "type": "string"
           },
           {
             "internalType": "string",
-            "name": "intentHash",
+            "name": "timestamp",
             "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "intentHash",
+            "type": "uint256"
           }
         ],
         "internalType": "struct IWiseSendProcessor.SendData",
