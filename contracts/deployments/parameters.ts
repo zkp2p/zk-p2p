@@ -2,6 +2,7 @@ import "module-alias/register";
 import { BigNumber } from "ethers";
 import { ONE_DAY_IN_SECONDS, THREE_MINUTES_IN_SECONDS, ZERO } from "@utils/constants";
 import { ether, usdc } from "@utils/common/units";
+import { TLSParams } from "@utils/types";
 
 // Deployment Parameters
 export const SERVER_KEY_HASH = {
@@ -28,10 +29,47 @@ export const FROM_EMAIL = {
   "garanti": "garanti@info.garantibbva.com.tr",
 };
 
+interface EnvironmentTLSParams {
+  [environment: string]: TLSParams;
+}
+
+export const ACCOUNT_TLS_PARAMS = {
+  "wise": {
+    "localhost": {
+      verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      endpoint: "POST https://wise.com/gateway/v1/payments",
+      host: "wise.com",
+    } as TLSParams,
+  } as EnvironmentTLSParams,
+}
+
+export const OFFRAMPER_TLS_PARAMS = {
+  "wise": {
+    "localhost": {
+      verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      host: "wise.com",
+    } as TLSParams,
+    "base": {} as TLSParams,
+  } as EnvironmentTLSParams,
+}
+
+export const SEND_TLS_PARAMS = {
+  "wise": {
+    "localhost": {
+      verifierSigningKey: "",     // We don't pass this in for deploys
+      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      host: "wise.com",
+    } as TLSParams,
+    "base": {} as TLSParams,
+  } as EnvironmentTLSParams,
+}
+
 export const TIMESTAMP_BUFFER = {
   "venmo": BigNumber.from(30),
   "hdfc": BigNumber.from(30),
   "garanti": BigNumber.from(30),
+  "wise": BigNumber.from(30),
 };
 
 export const MIN_DEPOSIT_AMOUNT: any = {
@@ -50,6 +88,13 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "base_staging": usdc(10),
   },
   "garanti": {
+    "localhost": usdc(21),
+    "goerli": usdc(20),
+    "sepolia": usdc(20),
+    "base": usdc(20),
+    "base_staging": usdc(10),
+  },
+  "wise": {
     "localhost": usdc(21),
     "goerli": usdc(20),
     "sepolia": usdc(20),
@@ -79,6 +124,13 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "base": usdc(100),
     "base_staging": usdc(100),
   },
+  "wise": {
+    "localhost": usdc(998),
+    "goerli": usdc(999),
+    "sepolia": usdc(999),
+    "base": usdc(200),
+    "base_staging": usdc(200),
+  },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
   "venmo": {
@@ -96,6 +148,13 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
   "garanti": {
+    "localhost": ONE_DAY_IN_SECONDS.sub(2),
+    "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
+    "base": ONE_DAY_IN_SECONDS,
+    "base_staging": THREE_MINUTES_IN_SECONDS,
+  },
+  "wise": {
     "localhost": ONE_DAY_IN_SECONDS.sub(2),
     "goerli": THREE_MINUTES_IN_SECONDS,
     "sepolia": THREE_MINUTES_IN_SECONDS,
@@ -125,6 +184,13 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
+  "wise": {
+    "localhost": THREE_MINUTES_IN_SECONDS.sub(2),
+    "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
+    "base": ONE_DAY_IN_SECONDS.div(2),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
+  },
 };
 export const SUSTAINABILITY_FEE: any = {
   "venmo": {
@@ -148,6 +214,13 @@ export const SUSTAINABILITY_FEE: any = {
     "base": ZERO,
     "base_staging": ZERO,
   },
+  "wise": {
+    "localhost": ether(.002),
+    "goerli": ether(.001),
+    "sepolia": ether(.001),
+    "base": ZERO,
+    "base_staging": ZERO,
+  },
 };
 export const SUSTAINABILITY_FEE_RECIPIENT: any = {
   "venmo": {
@@ -165,6 +238,13 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
   },
   "garanti": {
+    "localhost": "",
+    "goerli": "",
+    "sepolia": "",
+    "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
+    "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+  },
+  "wise": {
     "localhost": "",
     "goerli": "",
     "sepolia": "",

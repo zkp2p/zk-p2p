@@ -73,4 +73,52 @@ library StringConversionUtils {
         }
         return string(result);
     }
+
+    function replaceString(
+        string memory _str,
+        string memory _lookupValue,
+        string memory _replaceValue
+    )
+        internal
+        pure
+        returns (string memory)
+    {
+        bytes memory strBytes = bytes(_str);
+        bytes memory lookupBytes = bytes(_lookupValue);
+
+        uint256 lookupIndex = indexOf(_str, _lookupValue);
+        if (lookupIndex == type(uint256).max) {
+            return _str;
+        }
+
+        // Split the original string into two parts: before and after the keyword
+        string memory beforeKeyword = substring(_str, 0, lookupIndex);
+        string memory afterKeyword = substring(_str, lookupIndex + lookupBytes.length, strBytes.length);
+        
+        return string.concat(beforeKeyword, _replaceValue, afterKeyword);
+    }
+
+    function indexOf(string memory str, string memory substr) internal pure returns (uint) {
+        bytes memory strBytes = bytes(str);
+        bytes memory substrBytes = bytes(substr);
+        
+        if (strBytes.length < substrBytes.length) return type(uint256).max;
+        
+        for (uint i = 0; i <= strBytes.length - substrBytes.length; i++) {
+            bool found = true;
+            for (uint j = 0; j < substrBytes.length; j++) {
+                if (strBytes[i + j] != substrBytes[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) return i;
+        }
+        
+        return type(uint256).max;
+    }
+
+    function stringComparison(string memory _a, string memory _b) internal pure returns (bool) {
+        return (keccak256(abi.encodePacked(_a)) == keccak256(abi.encodePacked(_b)));
+    }
 }

@@ -1,6 +1,6 @@
 import { BigNumber, Signer, ethers } from "ethers";
 
-import { Address } from "@utils/types";
+import { Address, TLSParams } from "@utils/types";
 
 const circom = require("circomlibjs");
 
@@ -30,6 +30,14 @@ import {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
+  WiseAccountRegistrationProcessor,
+  WiseAccountRegistrationProcessorMock,
+  WiseAccountRegistry,
+  WiseOffRamperRegistrationProcessor,
+  WiseOffRamperRegistrationProcessorMock,
+  WiseRamp,
+  WiseSendProcessor,
+  WiseSendProcessorMock,
 } from "./contracts";
 import {
   GarantiRamp__factory,
@@ -57,6 +65,14 @@ import {
   VenmoRegistrationProcessorV2__factory,
   VenmoSendProcessorV2__factory,
 } from "../typechain/factories/contracts/ramps/venmo-v2";
+import {
+  WiseRamp__factory,
+  WiseAccountRegistrationProcessor__factory,
+  WiseAccountRegistry__factory,
+  WiseOffRamperRegistrationProcessor__factory,
+  WiseSendProcessor__factory,
+  mocks as wiseMocks
+} from "../typechain/factories/contracts/ramps/wise";
 import {
   StringConversionUtilsMock__factory,
   USDCMock__factory,
@@ -312,6 +328,90 @@ export default class DeployHelper {
     return await new GarantiBodyHashVerifier__factory(this._deployerSigner).deploy();
   }
 
+  // Wise Contracts
+  public async deployWiseRamp(
+    owner: Address,
+    usdcToken: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<WiseRamp> {
+    return await new WiseRamp__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  // Wise Contracts
+  public async deployWiseAccountRegistry(
+    owner: Address,
+  ): Promise<WiseAccountRegistry> {
+    return await new WiseAccountRegistry__factory(this._deployerSigner).deploy(
+      owner
+    );
+  }
+
+  public async deployWiseAccountRegistrationProcessor(
+    ramp: Address,
+    verifierSigningKey: Address,
+    nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<WiseAccountRegistrationProcessor> {
+    return await new WiseAccountRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      verifierSigningKey,
+      nullifierRegistry,
+      timestampBuffer,
+      endpoint,
+      host
+    );
+  }
+
+  public async deployWiseOffRamperRegistrationProcessor(
+    ramp: Address,
+    verifierSigningKey: Address,
+    nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<WiseOffRamperRegistrationProcessor> {
+    return await new WiseOffRamperRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      verifierSigningKey,
+      nullifierRegistry,
+      timestampBuffer,
+      endpoint,
+      host
+    );
+  }
+
+  public async deployWiseSendProcessor(
+    ramp: Address,
+    nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<WiseSendProcessor> {
+    return await new WiseSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      nullifierRegistry,
+      timestampBuffer,
+      endpoint,
+      host
+    );
+  }
+
   public async deployManagedKeyHashAdapter(venmoKeyHash: string): Promise<ManagedKeyHashAdapter> {
     return await new ManagedKeyHashAdapter__factory(this._deployerSigner).deploy(venmoKeyHash);
   }
@@ -342,7 +442,7 @@ export default class DeployHelper {
 
   public async deployHDFCTimestampParsingMock(): Promise<HDFCTimestampParsingMock> {
     return await new hdfcMocks.HDFCTimestampParsingMock__factory(this._deployerSigner).deploy();
-  }  
+  }   
 
   public async deployGarantiSendProcessorMock(): Promise<GarantiSendProcessorMock> {
     return await new garantiMocks.GarantiSendProcessorMock__factory(this._deployerSigner).deploy();
@@ -351,6 +451,17 @@ export default class DeployHelper {
   public async deployGarantiRegistrationProcessorMock(): Promise<GarantiRegistrationProcessorMock> {
     return await new garantiMocks.GarantiRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
+  public async deployWiseSendProcessorMock(): Promise<WiseSendProcessorMock> {
+    return await new wiseMocks.WiseSendProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployWiseAccountRegistrationProcessorMock(): Promise<WiseAccountRegistrationProcessorMock> {
+    return await new wiseMocks.WiseAccountRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
+  public async deployWiseOffRamperRegistrationProcessorMock(): Promise<WiseOffRamperRegistrationProcessorMock> {
+    return await new wiseMocks.WiseOffRamperRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
   public async deployPoseidon3(): Promise<any> {
     const contract = new ethers.ContractFactory(
       circom.poseidonContract.generateABI(3),

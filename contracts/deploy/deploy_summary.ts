@@ -28,26 +28,31 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     multiSig:                   ${multiSig}
     multiSig nonce:             ${await hre.ethers.provider.getTransactionCount(multiSig)}
     ----------------------------------------------------------------------
-    Ramp:                         ${getDeployedContractAddress(network, "Ramp")}
-    HDFCRamp:                     ${getDeployedContractAddress(network, "HDFCRamp")}
-    VenmoRampV2:                  ${getDeployedContractAddress(network, "VenmoRampV2")}
-    GarantiRamp:                  ${getDeployedContractAddress(network, "GarantiRamp")}
-    VenmoRegistrationProcessor:   ${getDeployedContractAddress(network, "VenmoRegistrationProcessor")}
-    VenmoSendProcessor:           ${getDeployedContractAddress(network, "VenmoSendProcessor")}
-    VenmoRegistrationProcessorV2: ${getDeployedContractAddress(network, "VenmoRegistrationProcessorV2")}
-    VenmoSendProcessorV2:         ${getDeployedContractAddress(network, "VenmoSendProcessorV2")}
-    VenmoKeyHashAdapter:          ${getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter")}
-    VenmoKeyHashAdapterV2:        ${getDeployedContractAddress(network, "VenmoManagedKeyHashAdapterV2")}
-    HDFCRegistrationProcessor:    ${getDeployedContractAddress(network, "HDFCRegistrationProcessor")}
-    HDFCSendProcessor:            ${getDeployedContractAddress(network, "HDFCSendProcessor")}
-    HDFCKeyHashAdapter:           ${getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter")}
-    GarantiRegistrationProcessor: ${getDeployedContractAddress(network, "GarantiRegistrationProcessor")}
-    GarantiSendProcessor:         ${getDeployedContractAddress(network, "GarantiSendProcessor")}
-    GarantiKeyHashAdapter:        ${getDeployedContractAddress(network, "GarantiManagedKeyHashAdapter")}
-    NullifierRegistry:            ${getDeployedContractAddress(network, "NullifierRegistry")}
-    USDC:                         ${USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock")}
-    Poseidon3:                    ${getDeployedContractAddress(network, "Poseidon3")}
-    Poseidon6:                    ${getDeployedContractAddress(network, "Poseidon6")}
+    Ramp:                               ${getDeployedContractAddress(network, "Ramp")}
+    HDFCRamp:                           ${getDeployedContractAddress(network, "HDFCRamp")}
+    VenmoRampV2:                        ${getDeployedContractAddress(network, "VenmoRampV2")}
+    GarantiRamp:                        ${getDeployedContractAddress(network, "GarantiRamp")}
+    WiseRamp:                           ${getDeployedContractAddress(network, "WiseRamp")}
+    VenmoRegistrationProcessor:         ${getDeployedContractAddress(network, "VenmoRegistrationProcessor")}
+    VenmoSendProcessor:                 ${getDeployedContractAddress(network, "VenmoSendProcessor")}
+    VenmoRegistrationProcessorV2:       ${getDeployedContractAddress(network, "VenmoRegistrationProcessorV2")}
+    VenmoSendProcessorV2:               ${getDeployedContractAddress(network, "VenmoSendProcessorV2")}
+    VenmoKeyHashAdapter:                ${getDeployedContractAddress(network, "VenmoManagedKeyHashAdapter")}
+    VenmoKeyHashAdapterV2:              ${getDeployedContractAddress(network, "VenmoManagedKeyHashAdapterV2")}
+    HDFCRegistrationProcessor:          ${getDeployedContractAddress(network, "HDFCRegistrationProcessor")}
+    HDFCSendProcessor:                  ${getDeployedContractAddress(network, "HDFCSendProcessor")}
+    HDFCKeyHashAdapter:                 ${getDeployedContractAddress(network, "HDFCManagedKeyHashAdapter")}
+    GarantiRegistrationProcessor:       ${getDeployedContractAddress(network, "GarantiRegistrationProcessor")}
+    GarantiSendProcessor:               ${getDeployedContractAddress(network, "GarantiSendProcessor")}
+    GarantiKeyHashAdapter:              ${getDeployedContractAddress(network, "GarantiManagedKeyHashAdapter")}
+    WiseAccountRegistry:                ${getDeployedContractAddress(network, "WiseAccountRegistry")}
+    WiseAccountRegistrationProcessor:   ${getDeployedContractAddress(network, "WiseAccountRegistrationProcessor")}
+    WiseOffRamperRegistrationProcessor: ${getDeployedContractAddress(network, "WiseOffRamperRegistrationProcessor")}
+    WiseSendProcessor:                  ${getDeployedContractAddress(network, "WiseSendProcessor")}
+    NullifierRegistry:                  ${getDeployedContractAddress(network, "NullifierRegistry")}
+    USDC:                               ${USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock")}
+    Poseidon3:                          ${getDeployedContractAddress(network, "Poseidon3")}
+    Poseidon6:                          ${getDeployedContractAddress(network, "Poseidon6")}
     `
   );
 };
