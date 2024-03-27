@@ -33,9 +33,9 @@ jobs:
         run: yarn deploy:localhost
         working-directory: ./contracts
       - name: Post coverage report
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        working-directory: ./contracts
+        uses: JoA-MoS/lcov-reporter-action
         with:
           lcov-file: ./coverage/lcov.info
+          working-directory: ./contracts
 
 
