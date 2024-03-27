@@ -40,6 +40,11 @@ export const ACCOUNT_TLS_PARAMS = {
       endpoint: "POST https://wise.com/gateway/v1/payments",
       host: "wise.com",
     } as TLSParams,
+    "sepolia": {
+      verifierSigningKey: "0x166338393593e85bfde8B65358Ec5801A3445D12",
+      endpoint: "POST https://wise.com/gateway/v1/payments",
+      host: "wise.com",
+    } as TLSParams,
   } as EnvironmentTLSParams,
 }
 
@@ -50,6 +55,11 @@ export const OFFRAMPER_TLS_PARAMS = {
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     } as TLSParams,
+    "sepolia": {
+      verifierSigningKey: "0x166338393593e85bfde8B65358Ec5801A3445D12",
+      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      host: "wise.com",
+    } as TLSParams,
     "base": {} as TLSParams,
   } as EnvironmentTLSParams,
 }
@@ -57,6 +67,11 @@ export const OFFRAMPER_TLS_PARAMS = {
 export const SEND_TLS_PARAMS = {
   "wise": {
     "localhost": {
+      verifierSigningKey: "",     // We don't pass this in for deploys
+      endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
+      host: "wise.com",
+    } as TLSParams,
+    "sepolia": {
       verifierSigningKey: "",     // We don't pass this in for deploys
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
