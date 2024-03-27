@@ -15,7 +15,7 @@ import { LoginStatus, NewWiseDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { wiseStrings } from '@helpers/strings';
-import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
+import { keccak256 } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -334,7 +334,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Missing registration';
 
       case NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
-        return 'Register Multi Currency Id';
+        return 'Complete New Depositor Verification';
 
       case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
         return 'Wise tag does not match registration';
@@ -478,9 +478,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             </InstructionsAndTogglesContainer>
             <InputsContainer>
               <Input
-                label="Depositor Status"
+                label="Depositor Verification"
                 name={`multiCurrency`}
-                value={offRampId ? 'Registered' : 'Not Registered'}
+                value={offRampId ? 'Verified' : 'Not Verified'}
                 onChange={() => {}}
                 readOnly={true}
                 type="string"
@@ -524,7 +524,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 value={receiveAmountInput}
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
-                inputLabel="USD"
+                inputLabel="EUR"
                 placeholder="1050"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />
