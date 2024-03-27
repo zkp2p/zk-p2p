@@ -7,6 +7,8 @@ interface OnRamperIntentsValues {
   currentIntent: OnRamperIntent | null;
   currentIntentHash: string | null;
   refetchIntentHash: (() => void) | null;
+  currentIntentHashAsUint: string | null;
+  refetchIntentHashAsUint: (() => void) | null;
   lastOnRampTimestamp: bigint | null;
   refetchLastOnRampTimestamp: (() => void) | null;
   shouldFetchIntentHash: boolean;
@@ -16,6 +18,8 @@ const defaultValues: OnRamperIntentsValues = {
   currentIntent: null,
   currentIntentHash: null,
   refetchIntentHash: null,
+  currentIntentHashAsUint: null,
+  refetchIntentHashAsUint: null,
   lastOnRampTimestamp: null,
   refetchLastOnRampTimestamp: null,
   shouldFetchIntentHash: false

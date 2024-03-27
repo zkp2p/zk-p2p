@@ -142,12 +142,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
     for (let i = rawDepositsData.length - 1; i >= 0; i--) {
       const depositWithAvailableLiquidityData = rawDepositsData[i];
-      
-      // struct Deposit {
-      //   string wiseTag; --> venmoId
-      //   ITLSData.TLSParams tlsParams;       // TLS information including verifier and endpoint / host being notarized
-      //   bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
-      // }
 
       const depositData = depositWithAvailableLiquidityData.deposit;
       const deposit: Deposit = {

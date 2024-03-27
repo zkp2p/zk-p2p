@@ -63,7 +63,7 @@ export const Swap: React.FC = () => {
   } = useGarantiRampState();
 
   const {
-    currentIntentHash: currentWiseIntentHash,
+    currentIntentHashAsUint: currentWiseIntentHashAsUint,
     refetchIntentHash: refetchWiseIntentHash,
     shouldFetchIntentHash: shouldFetchWiseIntentHash,
     refetchLastOnRampTimestamp: refetchLastWiseOnRampTimestamp
@@ -156,7 +156,7 @@ export const Swap: React.FC = () => {
         break;
 
       case PaymentPlatform.WISE:
-        setSelectedIntentHash(currentWiseIntentHash);
+        setSelectedIntentHash(currentWiseIntentHashAsUint);
         break;
     }
   };
@@ -195,7 +195,7 @@ export const Swap: React.FC = () => {
         return (
           <WiseOnRamp
             handleBackClick={handleBackClick}
-            selectedIntentHash={selectedIntentHash as any}
+            selectedUIntIntentHash={currentWiseIntentHashAsUint as any}
           />
         );
 

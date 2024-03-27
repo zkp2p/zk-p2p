@@ -19,12 +19,12 @@ import useSmartContracts from '@hooks/useSmartContracts';
 
 interface OnRampProps {
   handleBackClick: () => void;
-  selectedIntentHash: string;
+  selectedUIntIntentHash: string;
 }
 
 export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
-  selectedIntentHash
+  selectedUIntIntentHash
 }) => {
   const navigate = useNavigate();
 
@@ -66,19 +66,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
     abi: wiseRampAbi,
     functionName: 'onRamp',
     args: [
-      selectedIntentHash,
-      [
-        publicSignals[0],
-        publicSignals[1],
-        publicSignals[2],
-        publicSignals[3],
-        publicSignals[4],
-        publicSignals[8],
-        publicSignals[6],
-        publicSignals[5],
-        publicSignals[7],
-        publicSignals[9],
-      ],
+      publicSignals,
       verificationSignature
     ],
     onError: (error: { message: any }) => {
@@ -179,7 +167,6 @@ export const OnRamp: React.FC<OnRampProps> = ({
         paymentPlatformType={PaymentPlatform.WISE}
         circuitType={NotaryVerificationCircuit.TRANSFER}
         verificationSignature={verificationSignature}
-        selectedIntentHash={selectedIntentHash}
         publicSignals={publicSignals}
         setVerificationSignature={setVerificationSignature}
         setPublicSignals={setPublicSignals}
@@ -189,6 +176,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         handleSubmitVerificationClick={handleWriteSubmitOnRampClick}
         onVerifyNotarizationCompletion={handleVerificationCompleteClick}
         transactionAddress={submitOnRampTransactionHash}
+        selectedUIntIntentHash={selectedUIntIntentHash}
       />
     </Container>
   );

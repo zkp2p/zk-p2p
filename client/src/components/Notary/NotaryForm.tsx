@@ -32,7 +32,7 @@ interface NotaryFormProps {
   handleSubmitVerificationClick?: () => void;
   onVerifyNotarizationCompletion?: () => void;
   transactionAddress?: string | null;
-  selectedIntentHash?: string;
+  selectedUIntIntentHash?: string;
 }
 
 export const NotaryForm: React.FC<NotaryFormProps> = ({
@@ -48,7 +48,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
   handleSubmitVerificationClick,
   onVerifyNotarizationCompletion,
   transactionAddress,
-  selectedIntentHash
+  selectedUIntIntentHash
 }) => {
 
   /*
@@ -87,7 +87,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
     paymentType: paymentPlatformType,
     circuitType: circuitType,
     notarization: notarization,
-    intentHash: selectedIntentHash ? BigInt(selectedIntentHash).toString() : '',
+    intentHash: selectedUIntIntentHash ?? '',
   });
 
   useEffect(() => {
@@ -241,7 +241,7 @@ export const NotaryForm: React.FC<NotaryFormProps> = ({
           onBackClick={handleModalBackClicked}
           onVerifyNotarizationCompletion={onVerifyNotarizationCompletion}
           status={proofGenStatus}
-          circuitType={NotaryVerificationCircuit.REGISTRATION_TAG}
+          circuitType={circuitType}
           buttonTitle={getModalCtaTitle()}
           submitTransactionStatus={submitTransactionStatus}
           isSubmitMining={isSubmitMining}

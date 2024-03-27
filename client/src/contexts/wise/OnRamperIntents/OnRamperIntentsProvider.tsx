@@ -30,6 +30,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
+  const [currentIntentHashAsUint, setCurrentIntentHashAsUint] = useState<string | null>(null);
   const [currentIntent, setCurrentIntent] = useState<OnRamperIntent | null>(null);
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
 
@@ -40,19 +41,33 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    * Contract Reads
    */
 
-  // getIdCurrentIntentHash(address _account) external view returns (bytes32)
+  // getIdCurrentIntentHashAsUint(address _account) external view returns (bytes32)
   const {
-    data: intentHashRaw,
-    refetch: refetchIntentHash,
+    data: intentHashAsUintRaw,
+    refetch: refetchIntentHashAsUint,
   } = useContractRead({
     address: wiseRampAddress,
     abi: wiseRampAbi,
-    functionName: 'getIdCurrentIntentHash',
+    functionName: 'getIdCurrentIntentHashAsUint',
     args: [
       loggedInEthereumAddress
     ],
     enabled: shouldFetchIntentHash,
-  })
+  });
+
+    // getIdCurrentIntentHash(address _account) external view returns (bytes32)
+    const {
+      data: intentHashRaw,
+      refetch: refetchIntentHash,
+    } = useContractRead({
+      address: wiseRampAddress,
+      abi: wiseRampAbi,
+      functionName: 'getIdCurrentIntentHash',
+      args: [
+        loggedInEthereumAddress
+      ],
+      enabled: shouldFetchIntentHash,
+    })
 
   // function getLastOnRampTimestamp(address _account) external view returns (uint256)
   const {
@@ -154,6 +169,23 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
   }, [intentHashRaw]);
 
   useEffect(() => {
+    console.log('wise_intentHashAsUintRaw_1');
+    console.log('checking intentHashAsUintRaw: ', intentHashAsUintRaw);
+  
+    if (intentHashAsUintRaw !== ZERO_ADDRESS) {
+      esl && console.log('wise_intentHashAsUintRaw_2');
+      
+      const intentHashAsUintProcessed = intentHashAsUintRaw as string;
+
+      setCurrentIntentHashAsUint(intentHashAsUintProcessed);
+    } else {
+      esl && console.log('wise_intentHashAsUintRaw_3');
+
+      setCurrentIntentHashAsUint(null);
+    }
+  }, [intentHashAsUintRaw]);
+
+  useEffect(() => {
     esl && console.log('wise_lastOnRampTimeStampRaw_1');
     esl && console.log('checking lastOnRampTimeStampRaw: ', lastOnRampTimeStampRaw);
   
@@ -211,6 +243,8 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         currentIntentHash,
         currentIntent,
         refetchIntentHash,
+        currentIntentHashAsUint,
+        refetchIntentHashAsUint,
         lastOnRampTimestamp,
         refetchLastOnRampTimestamp,
         shouldFetchIntentHash
