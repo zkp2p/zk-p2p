@@ -128,6 +128,22 @@ export const RequestTable: React.FC<RequestTableProps> = ({
     }
   };
 
+  const addToBrowserCopy = () => {
+    switch (browser) {
+      case 'firefox':
+        return 'Add to Firefox';
+
+      case 'brave':
+        return 'Add to Brave';
+
+      case 'chrome':
+        return 'Add to Chrome';
+
+      default:
+        return 'Add to browser';
+    }
+  };
+
   function formatDateTime(unixTimestamp: string): string {
     const date = new Date(Number(unixTimestamp));
     const now = new Date();
@@ -313,7 +329,7 @@ export const RequestTable: React.FC<RequestTableProps> = ({
               width={216}
               leftAccessorySvg={browserSvg()}
             >
-              Add to Chrome
+              { addToBrowserCopy() }
             </Button>
           </InstallExtensionButtonContainer>
         </ErrorContainer>
