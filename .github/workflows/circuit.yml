@@ -57,3 +57,9 @@ jobs:
       - name: Testing Garanti regexes...
         run: yarn test test/regexes
         working-directory: ./circuits-circom/circuits/garanti
+      - name: Installing Mercado Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/mercado
+      - name: Testing Mercado regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/mercado

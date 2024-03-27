@@ -3,7 +3,7 @@ import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
 import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
 import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../utils/test-utils";
-import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binaryFormat";
+import { bigIntToChunkedBytes } from "@zk-email/helpers/src/binaryFormat";
 import { ethers } from "ethers";
 import ganache from "ganache";
 
@@ -21,7 +21,7 @@ const fs = require('fs');
 const N = 121;
 const K = 17;
 
-describe("Paylah registration WASM tester", function () {
+describe("Mercado registration WASM tester", function () {
     jest.setTimeout(10 * 60 * 1000); // 10 minutes
 
     let cir;
@@ -30,10 +30,10 @@ describe("Paylah registration WASM tester", function () {
 
     beforeAll(async () => {
         cir = await wasm_tester(
-            path.join(__dirname, "../paylah_registration.circom"),
+            path.join(__dirname, "../mercado_registration.circom"),
             {
                 include: path.join(__dirname, "../node_modules"),
-                output: path.join(__dirname, "../build/paylah_registration"),
+                output: path.join(__dirname, "../build/mercado_registration"),
                 recompile: false, // setting this to true will recompile the circuit (~3-5min)
                 verbose: true,
             }
@@ -44,9 +44,7 @@ describe("Paylah registration WASM tester", function () {
     });
 
     it("Should generate witnesses", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const input_path = path.join(__dirname, "../inputs/input_paylah_registration.json");
+        const input_path = path.join(__dirname, "../inputs/input_mercado_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
@@ -58,9 +56,7 @@ describe("Paylah registration WASM tester", function () {
     });
 
     it("Should return the correct modulus hash", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_receive.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo receive payment transaction
-        const input_path = path.join(__dirname, "../inputs/input_paylah_registration.json");
+        const input_path = path.join(__dirname, "../inputs/input_mercado_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
@@ -81,9 +77,7 @@ describe("Paylah registration WASM tester", function () {
     });
 
     it("Should return the correct packed from email", async () => {
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const input_path = path.join(__dirname, "../inputs/input_paylah_registration.json");
+        const input_path = path.join(__dirname, "../inputs/input_mercado_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
@@ -92,7 +86,7 @@ describe("Paylah registration WASM tester", function () {
         );
 
         // Get returned packed from email
-        // Indexes 2 to 5 represent the packed from email (15 \ 7)
+        // Indexes 2 to 5 represent the packed from email (20 \ 7)
         const packed_from_email = witness.slice(2, 5);
 
         // Get expected packed from email
@@ -124,9 +118,7 @@ describe("Paylah registration WASM tester", function () {
             })
         );
 
-        // To preserve privacy of emails, load inputs generated using `yarn gen-input`. Ping us if you want an example venmo_send.eml to run tests 
-        // Otherwise, you can download the original eml from any Venmo send payment transaction
-        const input_path = path.join(__dirname, "../inputs/input_paylah_registration.json");
+        const input_path = path.join(__dirname, "../inputs/input_mercado_registration.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
         const witness = await cir.calculateWitness(
@@ -143,22 +135,16 @@ describe("Paylah registration WASM tester", function () {
         const regex_end_to_email = regex_start_sub_array_to_email.indexOf("13"); // Look for `\r` to end the from which is 13 in ascii. e.g. `to:0xAnonKumar@gmail.com`
         const to_email_array = regex_start_sub_array_to_email.slice(0, regex_end_to_email);
 
-        // Get expected packed account number array
-        const regex_start_mobile_number = Number(input["paylah_payer_mobile_num_idx"]);
-        const regex_start_sub_array_mobile_number = input["in_body_padded"].slice(regex_start_mobile_number);
-        const regex_end_mobile_number = regex_start_sub_array_mobile_number.indexOf("41"); // Look for `)` to end the from which is 41 in ascii.
-        const mobile_number_array = regex_start_sub_array_mobile_number.slice(0, regex_end_mobile_number);
+        // Get mercado user id salt
+        const mercado_user_id_salt = input["mercado_user_id_salt"];
 
         // Chunk bytes into 7 and pack
         const toEmailChunkedArray = chunkArray(to_email_array, 7, 49);
         const packed_to_email_array = toEmailChunkedArray.map((arr, i) => bytesToPacked(arr));
 
-        const mobileNumberChunkedArray = chunkArray(mobile_number_array, 7, 7);
-        const packed_mobile_number_array = mobileNumberChunkedArray.map((arr, i) => bytesToPacked(arr));
-
-        const combinedArray = packed_to_email_array.concat(packed_mobile_number_array)
-        const expected_hash = poseidon(combinedArray)
-
+        const expected_hash = poseidon(packed_to_email_array.concat(mercado_user_id_salt));
         assert.equal(JSON.stringify(poseidon.F.e(hashed_onramper_id)), JSON.stringify(expected_hash), true);
     });
+
+    // TODO: ADD FAILING TESTCASE.
 });

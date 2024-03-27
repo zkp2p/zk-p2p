@@ -28,7 +28,8 @@ async function getArgs() {
   const circuitTypeArg = args.find((arg) => arg.startsWith("--circuit_type="));
   const intentHashArg = args.find((arg) => arg.startsWith("--intent_hash="));
   const nonceArg = args.find((arg) => arg.startsWith("--nonce="));
-  const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="))
+  const outputFileNameArg = args.find((arg) => arg.startsWith("--output_file="));
+  const mercadoUserIdSaltArg = args.find((arg) => arg.startsWith("--mercado_user_id_salt="));
 
   if (!emailFileArg || !paymentTypeArg || !circuitTypeArg) {
     console.log("Usage: npx ts-node generate_inputs.ts --email_file=emls/venmo_send.eml --payment_type=venmo --circuit_type=send --intent_hash=12345 --nonce=1 --output_file=inputs/input_venmo_send.json");
@@ -40,12 +41,13 @@ async function getArgs() {
   const circuit_type = circuitTypeArg.split("=")[1];
   const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
+  const mercaod_user_id_salt = mercadoUserIdSaltArg ? mercadoUserIdSaltArg.split("=")[1] : "11111";
 
   const email_file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
   const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_${payment_type}_${circuit_type}_${nonce}` : `input_${payment_type}_${circuit_type}`;
   const output_file_path = `${email_file_dir}/../inputs/${outputFileName}.json`;
 
-  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path };
+  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path, mercaod_user_id_salt };
 }
 
 export interface ICircuitInputs {
@@ -84,6 +86,9 @@ export interface ICircuitInputs {
   intermediate_hash?: string[];
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
+  mercado_payee_id_idx?: string;
+  mercado_amount_idx?: string;
+  mercado_user_id_salt?: string;
   intent_hash?: string;
 
   // subject commands only
@@ -111,6 +116,9 @@ export enum CircuitType {
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
   EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
+  EMAIL_MERCADO_REGISTRATION = "mercado_registration",
+  EMAIL_MERCADO_SEND = "mercado_send",
+  EMAIL_MERCADO_BODY_SUFFIX_HASHER = "mercado_body_suffix_hasher"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -128,6 +136,16 @@ async function findSelector(a: Uint8Array, selector: number[]): Promise<number> 
     i++;
   }
   return -1;
+}
+
+function createArrayWithLineBreaksInserted(str: string) {
+  // Create an array of strings with ith element having a =\r\n at ith position
+  let arr: string[] = [str];
+  for (let i = 1; i < str.length; i++) {
+    let temp = str.slice(0, i) + "=\r\n" + str.slice(i);
+    arr.push(temp);
+  }
+  return arr;
 }
 
 // Returns the part of str that appears after substr
@@ -168,7 +186,8 @@ export async function getCircuitInputs(
   body: Buffer,
   body_hash: string,
   intent_hash: string,
-  circuit: CircuitType
+  circuit: CircuitType,
+  mercado_user_id_salt?: string
 ): Promise<{
   valid: {
     validSignatureFormat?: boolean;
@@ -181,8 +200,11 @@ export async function getCircuitInputs(
   let MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_HEADER_PADDED_BYTES;
   let MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = MAX_BODY_PADDED_BYTES;
   let MAX_INTERMEDIATE_PADDING_LENGTH = MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE;
-  let STRING_PRESELECTOR_FOR_EMAIL_TYPE = STRING_PRESELECTOR;
-  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE: string | string[] = STRING_PRESELECTOR;
+  let STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE: string | string[] = STRING_PRESELECTOR;
+
+
+
 
   // Update preselector string based on circuit type
   if (circuit === CircuitType.EMAIL_VENMO_SEND) {
@@ -221,6 +243,17 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
+  } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = ["Los", "L=\r\nos", "Lo=\r\ns"];
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
+  } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -252,8 +285,20 @@ export async function getCircuitInputs(
   assert((await Uint8ArrayToString(shaOut)) === (await Uint8ArrayToString(Uint8Array.from(await shaHash(prehashBytesUnpadded)))), "SHA256 calculation did not match!");
 
   // Precompute SHA prefix
-  const selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE.split("").map((char) => char.charCodeAt(0));
-  const selector_loc = await findSelector(bodyPadded, selector);
+  let selector, selector_loc;
+  if (typeof STRING_PRESELECTOR_FOR_EMAIL_TYPE == "string") {
+    selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE.split("").map((char) => char.charCodeAt(0));
+    selector_loc = await findSelector(bodyPadded, selector);
+  } else {
+    for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE.length; i++) {
+      console.log("Trying selector: ", STRING_PRESELECTOR_FOR_EMAIL_TYPE[i])
+      selector = STRING_PRESELECTOR_FOR_EMAIL_TYPE[i].split("").map((char) => char.charCodeAt(0));
+      selector_loc = await findSelector(bodyPadded, selector);
+      if (selector_loc != -1) {
+        break;
+      }
+    }
+  }
   console.log("Body selector found at: ", selector_loc);
   let shaCutoffIndex = Math.floor((await findSelector(bodyPadded, selector)) / 64) * 64;
   const precomputeText = bodyPadded.slice(0, shaCutoffIndex);
@@ -593,6 +638,141 @@ export async function getCircuitInputs(
       in_body_suffix_padded,
       in_body_suffix_len_padded_bytes,
     }
+  } else if (circuit == CircuitType.EMAIL_MERCADO_SEND) {
+    // Iterate over in_body_padded and convert each int to a char
+    // for (let i = 0; i < in_body_padded.length; i++) {
+    //   in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    // }
+    // // log in_body_padded
+    // console.log(in_body_padded.join(''));
+
+    // Calculate SHA end selector.
+    let intermediateBodyText;
+    for (let i = 0; i < STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.length; i++) {
+      const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE[i].split("").map((char) => char.charCodeAt(0));
+      const intermediateSelectorLoc = await findSelector(bodyRemaining, intermediateShaSelector);
+      if (intermediateSelectorLoc != -1) {
+        const intermediateShaCutoffIndex = Math.floor(intermediateSelectorLoc / 64) * 64;
+        intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
+        break;
+      }
+    }
+
+    intermediateBodyText = padWithZero(intermediateBodyText, MAX_INTERMEDIATE_PADDING_LENGTH);
+    const in_body_intermediate = await Uint8ArrayToCharArray(intermediateBodyText);
+
+    const bodyIntermediateLen = MAX_INTERMEDIATE_PADDING_LENGTH - (MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE - bodyRemainingLen);
+    const in_body_len_intermediate_bytes = bodyIntermediateLen.toString();
+    console.log(bodyIntermediateLen, " bytes in intermediate body (to be hashed with precomputed and returned to contract)");
+
+    // Regexes
+    const mercado_amount_selector = Buffer.from("$");
+    let mercado_amount_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_amount_selector);
+    console.log("mercado_amount_selector_index: ", mercado_amount_selector_index)
+    // Find the first digit after mercado_amount_selector_index to get mercado_amount_idx
+    while (mercado_amount_selector_index < bodyRemaining.length) {
+      console.log(mercado_amount_selector_index, bodyRemaining[mercado_amount_selector_index]);
+      if (
+        Number(bodyRemaining[mercado_amount_selector_index]) > 47
+        && Number(bodyRemaining[mercado_amount_selector_index]) < 58) {
+        break;
+      }
+      mercado_amount_selector_index++;
+    }
+    const mercado_amount_idx = mercado_amount_selector_index.toString();
+    console.log("mercado_amount_idx: ", mercado_amount_idx);
+
+    const mercado_payee_id_selector = [
+      Buffer.from("CVU:"), Buffer.from("C=\r\nVU:"), Buffer.from("CV=\r\nU:"), Buffer.from("CVU\r\n:"), Buffer.from("CVU:\r\n")
+    ];
+    let mercado_payee_id_selector_index = -1;
+    let i = 0;
+    for (i = 0; i < mercado_payee_id_selector.length; i++) {
+      mercado_payee_id_selector_index = Buffer.from(bodyRemaining).indexOf(mercado_payee_id_selector[i]);
+      if (mercado_payee_id_selector_index !== -1) {
+        break;
+      }
+    }
+    // Find the first digit after mercado_payee_id_selector_index to get mercado_payee_id_idx
+    while (mercado_payee_id_selector_index < bodyRemaining.length) {
+      if (
+        Number(bodyRemaining[mercado_payee_id_selector_index]) > 47
+        && Number(bodyRemaining[mercado_payee_id_selector_index]) < 58) {
+        break;
+      }
+      mercado_payee_id_selector_index++;
+    }
+    const mercado_payee_id_idx = mercado_payee_id_selector_index.toString();
+
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+    const mercado_user_id_salt = "340282366920938463463374607431768211455"; // 2 ** 128 - 1
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'mercado_payee_id_idx': mercado_payee_id_idx,
+      'mercado_amount_idx': mercado_amount_idx,
+      'mercado_user_id_salt': mercado_user_id_salt,
+      'intent_hash': intent_hash
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      precomputed_sha,
+      in_body_padded: in_body_intermediate,
+      in_body_len_padded_bytes: in_body_len_intermediate_bytes,
+      body_hash_idx,
+      // mercado specific indices
+      email_from_idx,
+      email_to_idx,
+      mercado_payee_id_idx,
+      mercado_amount_idx,
+      mercado_user_id_salt,
+      // Ids
+      intent_hash
+    }
+
+  } else if (circuit == CircuitType.EMAIL_MERCADO_REGISTRATION) {
+    // Iterate over in_body_padded and convert each int to a char
+    // for (let i = 0; i < in_body_padded.length; i++) {
+    //   in_body_padded[i] = String.fromCharCode(Number(in_body_padded[i]));
+    // }
+    // // log in_body_padded
+    // console.log(in_body_padded.join(''));
+
+    const email_to_idx = raw_header.length - trimStrByStr(raw_header, "to:").length;
+
+    console.log({
+      'email_from_idx': email_from_idx,
+      'email_to_idx': email_to_idx,
+      'mercado_user_id_salt': mercado_user_id_salt
+    });
+
+    circuitInputs = {
+      in_padded,
+      modulus,
+      signature,
+      in_len_padded_bytes,
+      // mercado specific indices
+      email_from_idx,
+      email_to_idx,
+      mercado_user_id_salt
+    }
+  } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
+    const intermediate_hash = precomputed_sha;
+    const in_body_suffix_padded = in_body_padded;
+    const in_body_suffix_len_padded_bytes = in_body_len_padded_bytes;
+
+    // console.log("decoded body hash: ", JSON.stringify(intermediate_hash));
+
+    circuitInputs = {
+      intermediate_hash,
+      in_body_suffix_padded,
+      in_body_suffix_len_padded_bytes,
+    }
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
@@ -613,7 +793,8 @@ export async function generate_inputs(
   raw_email: Buffer | string,
   type: CircuitType,
   intent_hash: string,
-  nonce_raw: number | string | null = null
+  nonce_raw: number | string | null = null,
+  mercado_user_id_salt: string = "1111"
 ): Promise<ICircuitInputs> {
   const nonce = typeof nonce_raw == "string" ? nonce_raw.trim() : nonce_raw;
 
@@ -659,7 +840,7 @@ export async function generate_inputs(
   const pubKeyData = pki.publicKeyFromPem(pubkey.toString());
   // const pubKeyData = CryptoJS.parseKey(pubkey.toString(), 'pem');
   let modulus = BigInt(pubKeyData.n.toString());
-  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type);
+  let fin_result = await getCircuitInputs(sig, modulus, message, body, body_hash, intent_hash, type, mercado_user_id_salt);
   return fin_result.circuitInputs;
 }
 
@@ -698,7 +879,7 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Email file read");
 
   const type = `${args.payment_type}_${args.circuit_type}` as CircuitType;
-  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce);
+  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce, args.mercaod_user_id_salt);
   console.log("Input generation successful");
   if (writeToFile) {
     fs.writeFileSync(args.output_file_path, JSON.stringify(gen_inputs), { flag: "w" });
