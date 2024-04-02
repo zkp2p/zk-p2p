@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Zap, UserX } from 'react-feather';
+import { Zap, UserX, UserCheck } from 'react-feather';
 import Link from '@mui/material/Link';
 import { isChrome, isFirefox, isChromium } from 'react-device-detect';
 
@@ -30,6 +30,8 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 
 const ROWS_PER_PAGE = 3;
+const VERSION_REFETCH_INTERVAL = 5000;
+const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
 
 interface NotarizationTableProps {
   paymentPlatform: PaymentPlatformType;
@@ -213,23 +215,45 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
     detectBrowser();
 
+    // Moot to run this on an interval because the content script needs to be injected
     refetchExtensionVersion();
   }, []);
 
   useEffect(() => {
-    if (isSidebarInstalled) {
-      switch (circuitType) {
-        case NotaryVerificationCircuit.REGISTRATION_TAG:
-          refetchProfileRequests();
-          break;
-
-        case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        case NotaryVerificationCircuit.TRANSFER:
-          refetchTransferRequests();
-          break;
-      }
+    if (!isSidebarInstalled) {
+      return;
     }
-    
+  
+    let intervalId: NodeJS.Timeout | null = null;
+  
+    const setupInterval = (callback: () => void) => {
+      callback();
+  
+      if (intervalId) {
+        clearInterval(intervalId);
+      };
+      
+      intervalId = setInterval(callback, VERSION_REFETCH_INTERVAL);
+    };
+  
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        setupInterval(refetchProfileRequests);
+        break;
+  
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+      case NotaryVerificationCircuit.TRANSFER:
+        setupInterval(refetchTransferRequests);
+        break;
+  
+      default:
+        break;
+    }
+  
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circuitType, isSidebarInstalled]);
 
@@ -246,8 +270,13 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           });
     
           setLoadedNotaryProofs(proofRows);
+
+          const firstAccountNotarization = profileProofs[0];
+          setSelectedIndex(0);
+          setNotaryProof(firstAccountNotarization.proof);
         } else {
-          setLoadedNotaryProofs([]);
+          // setLoadedNotaryProofs([]);
+          console.log('Blank transfer proofs returned on every other request');
         }
         break;
 
@@ -263,19 +292,26 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           });
     
           setLoadedNotaryProofs(proofRows);
+
+          const firstTransferNotarization = transferProofs[0];
+          setSelectedIndex(0);
+          setNotaryProof(firstTransferNotarization.proof);
         } else {
-          setLoadedNotaryProofs([]);
+          // setLoadedNotaryProofs([]);
+          console.log('Blank transfer proofs returned on every other request');
         }
         break;
     }
-  }, [profileProofs, circuitType, transferProofs]);
-
-  useEffect(() => {
-    setSelectedIndex(null);
-    setNotaryProof('');
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadedNotaryProofs]);
+  }, [circuitType, profileProofs, transferProofs]);
+
+  // useEffect(() => {
+  //   setSelectedIndex(null);
+  //   setNotaryProof('');
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [loadedNotaryProofs]);
 
   useEffect(() => {
     const notarizationMetadataCTA = defaultCTAForInputStatus();
@@ -321,40 +357,34 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   return (
     <Container>
       {!isSidebarInstalled ? (
-        <ErrorContainer>
-          <ThemedText.DeprecatedBody textAlign="center">
+        <InstallExtensionContainer>
+          <IconAndCopyContainer>
             <ZapIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
-            <div>
-             { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
-              <Link
-                href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
-                target="_blank"
-              >
-                Learn More ↗
-              </Link>
-            </div>
-          </ThemedText.DeprecatedBody>
+            <ThemedText.DeprecatedBody textAlign="center">
+              <div>
+                { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
+                <Link
+                  href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
+                  target="_blank"
+                >
+                  Learn More ↗
+                </Link>
+              </div>
+            </ThemedText.DeprecatedBody>
+          </IconAndCopyContainer>
 
-          <InstallExtensionButtonContainer>
-            <Button
-              onClick={handleInstallExtensionClicked}
-              height={48}
-              width={216}
-              leftAccessorySvg={browserSvg()}
-            >
-              { addToBrowserCopy() }
-            </Button>
-          </InstallExtensionButtonContainer>
-        </ErrorContainer>
+          <Button
+            onClick={handleInstallExtensionClicked}
+            height={48}
+            width={216}
+            leftAccessorySvg={browserSvg()}
+          >
+            { addToBrowserCopy() }
+          </Button>
+        </InstallExtensionContainer>
       ) : (
         <ExtensionDetectedContainer>
-          {/* <TitleContainer>
-            <ThemedText.SubHeader textAlign="left">
-              Notarizations
-            </ThemedText.SubHeader>
-          </TitleContainer> */}
-
           {isShowingTable ? (
             <TitleAndTableContainer>
               <TitleAndOAuthContainer>
@@ -373,6 +403,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               {loadedNotaryProofs.length === 0 ? (
                 <EmptyNotarizationsContainer>
                   <StyledUserX />
+
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
                     { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
                   </ThemedText.SubHeaderSmall>
@@ -410,18 +441,28 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               )}
             </TitleAndTableContainer>
           ) : (
-            selectedIndex ? (
-              <TagFoundContainer>
-                We detected the following notarized tag from your extension:&nbsp;<strong>Wise Tag</strong>
-              </TagFoundContainer>
-            ) : (
-              <NoSelectedNotarizationsContainer>
-                <StyledUserX />
-                <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                  { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
-                </ThemedText.SubHeaderSmall>
-              </NoSelectedNotarizationsContainer>
-            )
+              selectedIndex !== null ? (
+                <TagDetectionContainer>
+                  <TagDetectionIconAndCopyContainer>
+                    <StyledUserCheck />
+
+                    <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                      We detected the following tag from your Wise account:&nbsp;<strong>[Wise Tag]</strong><br/>
+                      Verify and submit this tag to complete registration.
+                    </ThemedText.SubHeaderSmall>
+                  </TagDetectionIconAndCopyContainer>
+                </TagDetectionContainer>
+              ) : (
+                <TagDetectionContainer>
+                  <TagDetectionIconAndCopyContainer>
+                    <StyledUserX />
+    
+                    <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                      { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
+                    </ThemedText.SubHeaderSmall>
+                  </TagDetectionIconAndCopyContainer>
+                </TagDetectionContainer>
+              )
           )}
 
           <ButtonContainer>
@@ -455,19 +496,7 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-const EmptyNotarizationsContainer = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1.9rem 0rem;
-  max-width: 75%;
-  margin: auto;
-  gap: 1rem;
-`;
-
-const ErrorContainer = styled.div`
+const InstallExtensionContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -478,6 +507,14 @@ const ErrorContainer = styled.div`
   min-height: 25vh;
   line-height: 1.3;
   gap: 36px;
+`;
+
+const IconAndCopyContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
 `;
 
 const IconStyle = css`
@@ -497,13 +534,17 @@ const ExtensionDetectedContainer = styled.div`
   padding: 1.5rem;
 `;
 
-// const TitleContainer = styled.div`
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: space-between;
-//   align-items: flex-end;
-//   padding: 0px 1rem;
-// `;
+const EmptyNotarizationsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.9rem 0rem;
+  max-width: 75%;
+  margin: auto;
+  gap: 1rem;
+`;
 
 const TitleAndTableContainer = styled.div`
   border: 1px solid ${colors.defaultBorderColor};
@@ -518,18 +559,6 @@ const TitleAndOAuthContainer = styled.div`
   align-items: center;
   border-bottom: 1px solid ${colors.defaultBorderColor};
   padding: 1rem 1.5rem;
-`;
-
-const TagFoundContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem 1rem;
-  font-size: 16px;
-  color: #FFFFFF;
-
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 8px;
 `;
 
 const NotarizationsTitleContainer = styled.div`
@@ -556,15 +585,13 @@ const ButtonContainer = styled.div`
   padding-top: 1rem;
 `;
 
-const InstallExtensionButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  margin: auto;
-  gap: 1rem;
+const StyledUserX = styled(UserX)`
+  color: #FFF;
+  width: 28px;
+  height: 28px;
 `;
 
-const StyledUserX = styled(UserX)`
+const StyledUserCheck = styled(UserCheck)`
   color: #FFF;
   width: 28px;
   height: 28px;
@@ -617,14 +644,23 @@ const PageInfo = styled.span`
   font-size: 16px;
 `;
 
-const NoSelectedNotarizationsContainer = styled.div`
-  width: 100%;
+const TagDetectionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #0A0D14;
+
+  border: 1px solid ${colors.defaultBorderColor};
+  border-radius: 8px;
+`;
+
+const TagDetectionIconAndCopyContainer = styled.div`
+  // min-height: 184px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 75%;
-  padding: 2rem 0rem 1.5rem;
-  margin: auto;
+  padding: 2rem 1rem;
   gap: 1rem;
+
+  border-radius: 8px;
 `;

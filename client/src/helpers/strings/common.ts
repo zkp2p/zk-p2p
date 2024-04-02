@@ -201,7 +201,8 @@ const strings: CommonStrings = {
   // Extension Instructions
   EXTENSION_DOWNLOAD_INSTRUCTIONS: `
     ZKP2P's browser side bar is your browsing assistant that allows
-    you to prove ownership of your account and transaction history
+    you to prove ownership of your account and transaction history.
+    You must reload this page to connect to the extension.
   `,
 
   // Notary Verification Modal Steps
