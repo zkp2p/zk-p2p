@@ -8,6 +8,7 @@ interface IWiseAccountRegistrationProcessor {
         string endpoint;
         string host;
         string profileId;
+        string accessDate;
         string wiseTagHash;
         address userAddress;
     }
