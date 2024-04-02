@@ -13,7 +13,7 @@ contract WiseAccountRegistrationProcessorMock is IWiseAccountRegistrationProcess
     constructor() {}
 
     /* ============ External View Functions ============ */
-    function processAccountProof(
+    function processProof(
         RegistrationProof calldata _proof
     )
         public

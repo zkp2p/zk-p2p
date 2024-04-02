@@ -8,6 +8,7 @@ interface IWiseAccountRegistrationProcessor {
         string endpoint;
         string host;
         string profileId;
+        string accessDate;
         string wiseTagHash;
     }
 
@@ -16,7 +17,7 @@ interface IWiseAccountRegistrationProcessor {
         bytes proof;
     }
 
-    function processAccountProof(
+    function processProof(
         RegistrationProof calldata _proof
     )
         external

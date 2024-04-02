@@ -13,7 +13,7 @@ contract WiseOffRamperRegistrationProcessorMock is IWiseOffRamperRegistrationPro
     constructor() {}
 
     /* ============ External View Functions ============ */
-    function processOffRamperProof(
+    function processProof(
        OffRamperRegistrationProof calldata _proof
     )
         public

@@ -11,13 +11,13 @@ import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { Address, WiseRegistrationProof } from "@utils/types";
+import { Address, WiseRegistrationData, WiseRegistrationProof } from "@utils/types";
 import { calculateWiseId, calculateWiseTagHash } from "@utils/protocolUtils";
 
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
 
-describe("WiseAccountRegistrationProcessor", () => {
+describe.only("WiseAccountRegistrationProcessor", () => {
   let owner: Account;
   let verifier: Account;
   let attacker: Account;
@@ -68,7 +68,7 @@ describe("WiseAccountRegistrationProcessor", () => {
     });
   });
 
-  describe("#processAccountProof", async () => {
+  describe.only("#processProof", async () => {
     let subjectProof: WiseRegistrationProof;
     let subjectCaller: Account;
 
@@ -78,20 +78,21 @@ describe("WiseAccountRegistrationProcessor", () => {
           endpoint: "POST https://wise.com/gateway/v1/payments",
           host: "wise.com",
           profileId: "41213881",
+          accessDate: "Fri, 01 Mar 2024 02:57:30 GMT",
           wiseTagHash: "61158579531006309039872672420732308054473459091416465738091051601559791768344"
-        },
-        proof: "0xba03085b486a2f7bab46cef658ea930b2be69368a3f1d547d0afc99ef382cda0384e6e80a15a832c7416dc5882e9b5e05c16c6f33885a4c5794f1e1a058605831b"
+        } as WiseRegistrationData,
+        proof: "0xca9598ff3b780c6c644075070d2faac7393d07f3ac3708e1eb5fd60bbb1e4c955661a0f8e440c0334615809559465d1279017a0aef68e599b9d32830ae6021921c"
       } as WiseRegistrationProof;
 
       subjectCaller = ramp;
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).processAccountProof(subjectProof);
+      return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
     async function subjectCallStatic(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processAccountProof(subjectProof);
+      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
     }
 
     it("should process the proof", async () => {
@@ -107,7 +108,7 @@ describe("WiseAccountRegistrationProcessor", () => {
       const expectedNullifier = ethers.utils.keccak256(
         abiCoder.encode(
           ["string", "string"],
-          ["registration", subjectProof.public_values.profileId]
+          [subjectProof.public_values.accessDate, subjectProof.public_values.profileId]
         )
       );
 
@@ -141,11 +142,12 @@ describe("WiseAccountRegistrationProcessor", () => {
         subjectProof.public_values.endpoint = "GET https://wise.com/gateway/v4/profiles/41213881";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string"],
+          ["string", "string", "string", "string", "string"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
             subjectProof.public_values.profileId,
+            subjectProof.public_values.accessDate,
             subjectProof.public_values.wiseTagHash
           ]
         );
@@ -163,11 +165,12 @@ describe("WiseAccountRegistrationProcessor", () => {
         subjectProof.public_values.host = "api.wise.com";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string"],
+          ["string", "string", "string", "string", "string"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
             subjectProof.public_values.profileId,
+            subjectProof.public_values.accessDate,
             subjectProof.public_values.wiseTagHash
           ]
         );

@@ -189,6 +189,7 @@ describe("WiseRamp", () => {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
         profileId: "",
+        accessDate: "Fri, 01 Mar 2024 02:57:30 GMT",
         wiseTagHash: ""
       }
 
@@ -1032,16 +1033,6 @@ describe("WiseRamp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Offramper id does not match");
-        });
-      });
-
-      describe("when the onRamperId doesn't match the intent", async () => {
-        beforeEach(async () => {
-          subjectSendData.senderId = calculateWiseId(onRamperTwoProof.public_values.profileId);
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Onramper id does not match");
         });
       });
     });

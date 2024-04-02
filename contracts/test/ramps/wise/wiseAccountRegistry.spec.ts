@@ -186,6 +186,7 @@ describe("WiseAccountRegistry", () => {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
         profileId: "",
+        accessDate: "Fri, 01 Mar 2024 02:57:30 GMT",
         wiseTagHash: ""
       }
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
@@ -252,7 +253,7 @@ describe("WiseAccountRegistry", () => {
         });
   
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("OnRampId does not match");
+          await expect(subject()).to.be.revertedWith("AccountId does not match");
         });
       });
   
