@@ -49,7 +49,6 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            bytes32 onRamperId,
             bytes32 currencyId
         )
     {
@@ -74,7 +73,6 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
         timestamp = _proof.public_values.timestamp.stringToUint(0) / 1000 + timestampBuffer;
 
         offRamperId = bytes32(_proof.public_values.recipientId.stringToUint(0));
-        onRamperId = bytes32(_proof.public_values.senderId.stringToUint(0));
         currencyId = keccak256(abi.encodePacked(_proof.public_values.currencyId));
     }
 

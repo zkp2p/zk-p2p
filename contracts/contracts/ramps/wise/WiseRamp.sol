@@ -680,7 +680,6 @@ contract WiseRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            ,
             bytes32 currencyId
         ) = sendProcessor.processProof(
             IWiseSendProcessor.SendProof({

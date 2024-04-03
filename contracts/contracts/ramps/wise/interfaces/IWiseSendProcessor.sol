@@ -27,5 +27,5 @@ interface IWiseSendProcessor {
         address _verifierSigningKey
     )
         external
-    returns(uint256, uint256, bytes32, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32);
 }
