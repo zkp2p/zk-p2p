@@ -17,8 +17,12 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wise tags found.
+    No Wise tag requests found.
     Please follow instructions in the extension to notarize an existing Wise account tag in the account page.
+  `,
+  NO_TRANSFER_NOTARIZATIONS_ERROR: `
+    No Wise transfer requests found.
+    Please follow instructions in the extension to notarize an existing Wise payment in the transactions page.
   `,
 
   // New Registration

@@ -22,6 +22,9 @@ const strings: PlatformStrings = {
   NO_NOTARIZATIONS_ERROR: `
     no-op
   `,
+  NO_TRANSFER_NOTARIZATIONS_ERROR: `
+    Lorem ipsum
+  `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `

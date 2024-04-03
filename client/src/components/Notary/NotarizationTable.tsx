@@ -107,6 +107,56 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * Helpers
    */
 
+  const detectedNotarizationCopy = () => {
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        return {
+          detected_copy: 'The following tag was detected from your Wise account',
+          metadata_copy: '[Wise Tag]',
+          metadata_type_copy: 'tag',
+          transaction_type_copy: 'registration'
+        };
+
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+        return {
+          detected_copy: 'The following profile was detected from your Wise account',
+          metadata_copy: '[MC ID]',
+          metadata_type_copy: 'profile id',
+          transaction_type_copy: 'depositor registration'
+          };
+
+      case NotaryVerificationCircuit.TRANSFER:
+        return {
+          detected_copy: 'The following transaction was detected from your Wise account history',
+          metadata_copy: '[Transfer to X for Y]',
+          metadata_type_copy: 'transaction',
+          transaction_type_copy: 'order'
+        };
+
+      default:
+        return {
+          detected_copy: '',
+          metadata_copy: '',
+          metadata_type_copy: '',
+          transaction_type_copy: ''
+        };
+    }
+  };
+
+  const noNotarizationsErrorString = () => {
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        return platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR');
+
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+      case NotaryVerificationCircuit.TRANSFER:
+        return platformStrings.getForPlatform(paymentPlatform, 'NO_TRANSFER_NOTARIZATIONS_ERROR');
+
+      default:
+        return '';
+    }
+  };
+
   async function getBrowser() {
     if (isFirefox) {
       return "firefox";
@@ -201,7 +251,19 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const paginatedData = loadedNotaryProofs.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
 
   async function fetchData() {
-    window.postMessage({ type: 'FETCH_REQUEST_HISTORY' }, '*');
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        refetchProfileRequests();
+        break;
+
+      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+      case NotaryVerificationCircuit.TRANSFER:
+        refetchTransferRequests();
+        break;
+
+      default:
+        break;
+    }
   };
 
   /*
@@ -261,7 +323,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
         if (profileProofs && profileProofs.length > 0) {
-          const proofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
+          const accountProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
             return {
               proof: JSON.stringify(request.proof),
               metadata: request.url,
@@ -269,9 +331,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             } as ExtensionNotaryProofRow;
           });
     
-          setLoadedNotaryProofs(proofRows);
+          setLoadedNotaryProofs(accountProofRows);
 
-          const firstAccountNotarization = profileProofs[0];
+          const firstAccountNotarization = accountProofRows[0];
           setSelectedIndex(0);
           setNotaryProof(firstAccountNotarization.proof);
         } else {
@@ -283,17 +345,19 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0) {
-          const proofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+          const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
             return {
               proof: JSON.stringify(request.proof),
               metadata: request.url,
               date: '1710571636'
             } as ExtensionNotaryProofRow;
           });
-    
-          setLoadedNotaryProofs(proofRows);
 
-          const firstTransferNotarization = transferProofs[0];
+          console.log('transferProofRows: ', transferProofRows);
+    
+          setLoadedNotaryProofs(transferProofRows);
+
+          const firstTransferNotarization = transferProofRows[0];
           setSelectedIndex(0);
           setNotaryProof(firstTransferNotarization.proof);
         } else {
@@ -354,6 +418,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * Component
    */
 
+  const notarizationCopy = detectedNotarizationCopy();
+
   return (
     <Container>
       {!isSidebarInstalled ? (
@@ -389,7 +455,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             <TitleAndTableContainer>
               <TitleAndOAuthContainer>
                 <NotarizationsTitleContainer>
-                  <TitleLabel>Confirmed Wise Requests</TitleLabel>
+                  <TitleLabel>Loaded Wise Requests</TitleLabel>
                 </NotarizationsTitleContainer>
 
                 <AccessoryButton
@@ -405,7 +471,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                   <StyledUserX />
 
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                    { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
+                    { noNotarizationsErrorString() }
                   </ThemedText.SubHeaderSmall>
                 </EmptyNotarizationsContainer>
               ) : (
@@ -447,8 +513,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                     <StyledUserCheck />
 
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      We detected the following tag from your Wise account:&nbsp;<strong>[Wise Tag]</strong><br/>
-                      Verify and submit this tag to complete registration.
+                      {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong><br/>
+                      Verify and submit this {notarizationCopy.metadata_type_copy} to complete {notarizationCopy.transaction_type_copy}
                     </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
                 </TagDetectionContainer>
@@ -458,7 +524,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                     <StyledUserX />
     
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      { platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR') }
+                      { noNotarizationsErrorString() }
                     </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
                 </TagDetectionContainer>
@@ -654,7 +720,6 @@ const TagDetectionContainer = styled.div`
 `;
 
 const TagDetectionIconAndCopyContainer = styled.div`
-  // min-height: 184px;
   display: flex;
   flex-direction: column;
   justify-content: center;

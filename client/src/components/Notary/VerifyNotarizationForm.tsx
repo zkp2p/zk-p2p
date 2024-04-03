@@ -185,7 +185,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   const cacheWiseTagFromNotarization = (notarization: string) => {
     if (setExtractedWiseProfileId) {
-      setExtractedWiseProfileId("@alexanders6341");
+      // setExtractedWiseProfileId("@alexanders6341"); // wise tag not currently part of request
     };
   };
 

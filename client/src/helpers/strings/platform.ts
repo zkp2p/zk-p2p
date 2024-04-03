@@ -17,6 +17,7 @@ export interface PlatformStrings {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: string,
+  NO_TRANSFER_NOTARIZATIONS_ERROR: string,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: string,

@@ -90,7 +90,7 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
   };
 
   const handleExtensionProfileHistoryMessageReceived = function(event: ExtensionEventMessage) {
-    console.log('Client received REQUEST_HISTORY_RESPONSE message');
+    // console.log('Client received REQUEST_PROFILE_HISTORY_RESPONSE message');
 
     if (event.data.requestHistory && event.data.requestHistory.notaryRequests) {
       const requestHistory = event.data.requestHistory.notaryRequests;
@@ -104,7 +104,17 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
   };
 
   const handleExtensionTransferHistoryMessageReceived = function(event: ExtensionEventMessage) {
-    // no-op
+    console.log('Client received REQUEST_TRANSFER_RESPONSE message');
+
+    if (event.data.requestHistory && event.data.requestHistory.notaryRequests) {
+      const requestHistory = event.data.requestHistory.notaryRequests;
+
+      setTransferProofs(requestHistory);
+    } else {
+      console.log('REQUEST_TRANSFER_RESPONSE was blank');
+
+      setTransferProofs(null);
+    }
   };
 
   /*
