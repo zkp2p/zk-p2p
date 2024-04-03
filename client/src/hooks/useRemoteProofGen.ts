@@ -54,6 +54,7 @@ export default function useRemoteProofGen({ paymentType, circuitType, emailBody,
       case PaymentPlatform.VENMO:
         apiUrl = REMOTE_PROOF_API_URL;
         break
+        
       case PaymentPlatform.HDFC:
         apiUrl = REMOTE_PROOF_UPI_API_URL;
         break;

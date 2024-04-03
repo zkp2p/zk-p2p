@@ -113,6 +113,9 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
           case PaymentPlatform.GARANTI:
             setCtaButtonTitle("Invalid email: must be from Garanti");
             break;
+
+          default:
+            throw new Error(`Unknown payment platform: ${paymentPlatform}`);
         }
         break;
 
@@ -129,6 +132,9 @@ export const UploadEmail: React.FC<UploadEmailProps> = ({
           case PaymentPlatform.GARANTI:
             setCtaButtonTitle("Invalid email: must contain 'Para Transferi Bilgilendirmesi'");
             break;
+
+          default:
+            throw new Error(`Unknown payment platform: ${paymentPlatform}`);
         }
         break;
 

@@ -5,9 +5,13 @@ import DepositTable from "@components/Deposit";
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
+import useWiseDeposits from '@hooks/wise/useDeposits';
+
 import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
+import useWiseRegistration from '@hooks/wise/useRegistration';
+
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
@@ -20,6 +24,18 @@ export const Deposit: React.FC = () => {
   const {
     isRegistered: isRegisteredOnVenmo
   } = useVenmoRegistration();
+
+  const {
+    isRegistered: isRegisteredOnHdfc
+  } = useHdfcRegistration();
+
+  const {
+    isRegistered: isRegisteredOnGaranti
+  } = useGarantiRegistration();
+
+  const {
+    isRegistered: isRegisteredOnWise
+  } = useWiseRegistration();
 
   const {
     refetchDeposits: refetchVenmoDeposits,
@@ -45,12 +61,11 @@ export const Deposit: React.FC = () => {
   } = useGarantiDeposits();
 
   const {
-    isRegistered: isRegisteredOnHdfc
-  } = useHdfcRegistration();
-
-  const {
-    isRegistered: isRegisteredOnGaranti
-  } = useGarantiRegistration();
+    refetchDeposits: refetchWiseDeposits,
+    shouldFetchDeposits: shouldFetchWiseDeposits,
+    refetchDepositIntents: refetchWiseDepositIntents,
+    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
+  } = useWiseDeposits();
 
   const {
     PaymentPlatform,
@@ -101,6 +116,20 @@ export const Deposit: React.FC = () => {
         }
 
         if (shouldFetchUsdcBalance && isRegisteredOnGaranti) {
+          refetchUsdcBalance?.();
+        }
+        break;
+
+      case PaymentPlatform.WISE:
+        if (shouldFetchWiseDeposits) {
+          refetchWiseDeposits?.();
+        }
+
+        if (shouldFetchWiseDepositIntents) {
+          refetchWiseDepositIntents?.();
+        }
+
+        if (shouldFetchUsdcBalance && isRegisteredOnWise) {
           refetchUsdcBalance?.();
         }
         break;

@@ -657,7 +657,6 @@ module.exports = function (webpackEnv) {
         'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
         'process.env.PRIVY_APP_ID': JSON.stringify(process.env.PRIVY_APP_ID),
         'process.env.ZERODEV_APP_ID': JSON.stringify(process.env.ZERODEV_APP_ID),
-        'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
         'process.env.SOCKET_API_KEY': JSON.stringify(process.env.SOCKET_API_KEY),
         'process.env.ALCHEMY_SOLANA_API_KEY': JSON.stringify(process.env.ALCHEMY_SOLANA_API_KEY),
 
@@ -672,6 +671,12 @@ module.exports = function (webpackEnv) {
         'process.env.REMOTE_PROOF_GARANTI_API_URL': JSON.stringify(process.env.REMOTE_PROOF_GARANTI_API_URL),
         'process.env.GARANTI_DOMAIN_KEYS': JSON.stringify(process.env.GARANTI_DOMAIN_KEYS),
         'process.env.GARANTI_DENY_LIST_URL': JSON.stringify(process.env.GARANTI_DENY_LIST_URL),
+        'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
+
+        'process.env.USE_WISE': JSON.stringify(process.env.USE_WISE),
+        'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
+
+        'process.env.NOTARY_VERIFICATION_SIGNING_KEY': JSON.stringify(process.env.NOTARY_VERIFICATION_SIGNING_KEY),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

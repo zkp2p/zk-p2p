@@ -31,6 +31,7 @@ import SendSettingsProvider from './contexts/common/SendSettings/SendSettingsPro
 import SmartContractsProvider from './contexts/common/SmartContracts/SmartContractsProvider';
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
+import ExtensionNotarizationsProvider from './contexts/common/ExtensionNotarizations/ExtensionNotarizationsProvider';
 import { ModalSettingsProvider } from 'contexts/common/ModalSettings';
 
 // Legacy Contexts
@@ -57,6 +58,13 @@ import GarantiLiquidityProvider from './contexts/garanti/Liquidity/LiquidityProv
 import GarantiOnRamperIntentsProvider  from './contexts/garanti/OnRamperIntents/OnRamperIntentsProvider';
 import GarantiRampProvider from './contexts/garanti/Ramp/RampProvider';
 import GarantiRegistrationProvider from './contexts/garanti/Registration/RegistrationProvider';
+
+// Wise Contexts
+import WiseDepositsProvider  from './contexts/wise/Deposits/DepositsProvider';
+import WiseLiquidityProvider from './contexts/wise/Liquidity/LiquidityProvider';
+import WiseOnRamperIntentsProvider  from './contexts/wise/OnRamperIntents/OnRamperIntentsProvider';
+import WiseRampProvider from './contexts/wise/Ramp/RampProvider';
+import WiseRegistrationProvider from './contexts/wise/Registration/RegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -152,24 +160,38 @@ const providersWithProps: ProvidersType[] = [
   [PlatformSettingsProvider, {}],
   [SendSettingsProvider, {}],
   [BalancesProvider, {}],
+
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
   [GarantiRampProvider, {}],
+  [WiseRampProvider, {}],
+
   [VenmoRegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
   [GarantiRegistrationProvider, {}],
+  [WiseRegistrationProvider, {}],
+
   [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
   [GarantiDepositsProvider, {}],
+  [WiseDepositsProvider, {}],
+
+  [ExtensionNotarizationsProvider, {}],
+
   [VenmoPermissionsProvider, {}],
   [DenyListProvider, {}],
+
   [VenmoLiquidityProvider, {}],
   [HdfcLiquidityProvider, {}],
   [GarantiLiquidityProvider, {}],
+  [WiseLiquidityProvider, {}],
+
   [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
   [GarantiOnRamperIntentsProvider, {}],
+  [WiseOnRamperIntentsProvider, {}],
+
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],
   [ModalSettingsProvider, {}],

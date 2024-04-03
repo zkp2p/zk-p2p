@@ -18,6 +18,11 @@ const strings: PlatformStrings = {
     Please ensure you are using an email attached to a Garanti account with a receipt after 01 Sep.
   `,
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    no-op
+  `,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from Garanti
@@ -38,6 +43,9 @@ const strings: PlatformStrings = {
     desired USDC/TRY conversion rate. You will receive TRY payments from users who claim your deposit.
     Your Garanti IBAN will be made public on-chain.
   `,
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
+    no-op
+  `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid IBAN where users will send payments.
     This connects your Garanti IBAN to your wallet address on chain.
@@ -45,7 +53,8 @@ const strings: PlatformStrings = {
   `,
   NEW_DEPOSIT_NAME_TOOLTIP:`
     This must be the name associated with your Garanti account. If it does not match
-    payments will not go through and you will not be able to off-ramp`,
+    payments will not go through and you will not be able to off-ramp
+  `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you Garanti payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.

@@ -50,6 +50,23 @@ export interface CommonStrings {
   PROOF_MODAL_REGISTRATION_SUBMIT_TITLE: string,
   PROOF_MODAL_SUBMIT_SUBTITLE: string,
   PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE: string,
+
+  // Extension Instructions
+  EXTENSION_DOWNLOAD_INSTRUCTIONS: string,
+
+  // Notary Verification Modal Steps
+  VERIFICATION_MODAL_UPLOAD_TITLE: string,
+  VERIFICATION_MODAL_UPLOAD_SUBTITLE: string,
+  VERIFICATION_MODAL_PROVE_TITLE: string,
+  VERIFICATION_MODAL_PROVE_REGISTRATION_TITLE: string,
+  VERIFICATION_MODAL_PROVE_SUBTITLE_FAST: string,
+  VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: string,
+  VERIFICATION_MODAL_VERIFY_TITLE: string,
+  VERIFICATION_MODAL_VERIFY_SUBTITLE: string,
+  VERIFICATION_MODAL_SUBMIT_TITLE: string,
+  VERIFICATION_MODAL_REGISTRATION_SUBMIT_TITLE: string,
+  VERIFICATION_MODAL_SUBMIT_SUBTITLE: string,
+  VERIFICATION_MODAL_REGISTRATION_SUBMIT_SUBTITLE: string,
 };
 
 const strings: CommonStrings = {
@@ -133,6 +150,8 @@ const strings: CommonStrings = {
     All transactions are peer-to-peer. Review all of the requirements below before sending a payment
     to prevent loss of funds.
   `,
+
+  // Proof Modal
   PROOF_MODAL_DOWNLOAD_TITLE: `
     Downloading Verification Keys
   `,
@@ -178,6 +197,63 @@ const strings: CommonStrings = {
   PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE: `
     Submit transaction to complete registration
   `,
+
+  // Extension Instructions
+  EXTENSION_DOWNLOAD_INSTRUCTIONS: `
+    ZKP2P's browser side bar is your browsing assistant that allows
+    you to prove ownership of your account and transaction history.
+    You must reload this page to connect to the extension.
+  `,
+
+  // Notary Verification Modal Steps
+  VERIFICATION_MODAL_UPLOAD_TITLE: `
+    Uploading Proof
+  `,
+
+  VERIFICATION_MODAL_UPLOAD_SUBTITLE: `
+    Proof is sent to remote server for verification
+  `,
+
+  VERIFICATION_MODAL_PROVE_TITLE: `
+    Validating Payment
+  `,
+
+  VERIFICATION_MODAL_PROVE_REGISTRATION_TITLE: `
+    Validating Credentials
+  `,
+
+  VERIFICATION_MODAL_PROVE_SUBTITLE_FAST: `
+    Payment validation can take up to 30 seconds
+  `,
+
+  VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: `
+    Credential validation can take up to 30 seconds
+  `,
+
+  VERIFICATION_MODAL_VERIFY_TITLE: `
+    Local Proof Verification
+  `,
+
+  VERIFICATION_MODAL_VERIFY_SUBTITLE: `
+    Constructing and verifying transaction
+  `,
+
+  VERIFICATION_MODAL_SUBMIT_TITLE: `
+    Complete Order
+  `,
+
+  VERIFICATION_MODAL_REGISTRATION_SUBMIT_TITLE: `
+    Complete Registration
+  `,
+
+  VERIFICATION_MODAL_SUBMIT_SUBTITLE: `
+    Submit transaction to complete the on ramp
+  `,
+
+  VERIFICATION_MODAL_REGISTRATION_SUBMIT_SUBTITLE: `
+    Submit transaction to complete registration
+  `,
+
 };
 
 export class CommonStringProvider {

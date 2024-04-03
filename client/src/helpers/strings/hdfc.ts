@@ -18,6 +18,11 @@ const strings: PlatformStrings = {
     Please ensure you are using an email attached to a HDFC account with a receipt after 01 Sep.
   `,
 
+  // Notarizations Instructions
+  NO_NOTARIZATIONS_ERROR: `
+    no-op
+  `,
+
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration requires a confirmation email from HDFC
@@ -38,12 +43,17 @@ const strings: PlatformStrings = {
     desired USDC/INR conversion rate. You will receive INR payments from users who claim your deposit.
     Your UPI ID is made public on-chain hence do not use your phone number UPI ID.
   `,
+  NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
+    no-op
+  `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid UPI ID where users will send payments.
     This connects your UPI account to your wallet address on chain.
     This must match the HDFC account you used to register.
   `,
-  NEW_DEPOSIT_NAME_TOOLTIP:"",
+  NEW_DEPOSIT_NAME_TOOLTIP:`
+    no-op
+  `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
     This is the amount of USDC you will deposit for users to claim by sending you HDFC payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.

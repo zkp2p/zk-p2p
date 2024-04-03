@@ -4,9 +4,12 @@ import styled from 'styled-components/macro'
 import { ExistingRegistration as VenmoExistingRegistration } from "@components/Registration/venmo/ExistingRegistration";
 import { ExistingRegistration as HdfcExistingRegistration } from '@components/Registration/hdfc/ExistingRegistration';
 import { ExistingRegistration as GarantiExistingRegistration } from '@components/Registration/garanti/ExistingRegistration';
+import { ExistingRegistration as WiseExistingRegistration } from '@components/Registration/wise/ExistingRegistration';
+
 import { NewRegistration as VenmoNewRegistration } from "@components/Registration/venmo/NewRegistration";
 import { NewRegistration as HdfcNewRegistration } from '@components/Registration/hdfc/NewRegistration';
 import { NewRegistration as GarantiNewRegistration } from '@components/Registration/garanti/NewRegistration';
+import { NewRegistration as WiseNewRegistration } from '@components/Registration/wise/NewRegistration';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
  
@@ -29,11 +32,11 @@ export const RegistrationForm: React.FC = () => {
 
   const handleUpdateClick = () => {
     setIsNewRegistration(true);
-  }
+  };
 
   const handleBackClick = () => {
     setIsNewRegistration(false);
-  }
+  };
 
   /*
    * Component
@@ -50,6 +53,9 @@ export const RegistrationForm: React.FC = () => {
       case PaymentPlatform.GARANTI:
         return <GarantiExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
+      case PaymentPlatform.WISE:
+        return <WiseExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
+
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
     }
@@ -65,6 +71,9 @@ export const RegistrationForm: React.FC = () => {
 
       case PaymentPlatform.GARANTI:
         return <GarantiNewRegistration handleBackClick={handleBackClick} />;
+
+      case PaymentPlatform.WISE:
+        return <WiseNewRegistration handleBackClick={handleBackClick} />;
 
       default:
         throw new Error(`Unknown payment platform: ${paymentPlatform}`);
