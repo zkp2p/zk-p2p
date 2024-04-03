@@ -26,7 +26,6 @@ export interface WiseRegistrationData {
   endpoint: string;
   host: string;
   profileId: string;
-  accessDate: string;
   wiseTagHash: string;
   userAddress: Address;
 }
