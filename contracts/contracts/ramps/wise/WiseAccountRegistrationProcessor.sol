@@ -57,7 +57,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         _validateTLSEndpoint(endpoint, _proof.public_values.endpoint);
         _validateTLSHost(host, _proof.public_values.host);
 
-        _validateAndAddNullifier(keccak256(abi.encode(_proof.public_values.accessDate, _proof.public_values.profileId)));
+        _validateAndAddNullifier(keccak256(abi.encode(_proof.public_values.userAddress, _proof.public_values.profileId)));
 
         onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
         wiseTagHash = bytes32(_proof.public_values.wiseTagHash.stringToUint(0));
@@ -85,8 +85,8 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
             _publicValues.endpoint,
             _publicValues.host,
             _publicValues.profileId,
-            _publicValues.accessDate,
-            _publicValues.wiseTagHash
+            _publicValues.wiseTagHash,
+            _publicValues.userAddress
         );
         return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
     }

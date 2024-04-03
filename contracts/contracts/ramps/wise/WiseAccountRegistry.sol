@@ -101,6 +101,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
     )
         external
     {
+        require(msg.sender == _proof.public_values.userAddress, "Caller must be address specified in proof");
         require(accounts[msg.sender].accountId == bytes32(0), "Account already associated with accountId");
         (
             bytes32 accountId,

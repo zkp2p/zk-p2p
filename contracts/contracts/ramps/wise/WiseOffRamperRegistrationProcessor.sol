@@ -43,6 +43,7 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         IWiseOffRamperRegistrationProcessor.OffRamperRegistrationProof calldata _proof
     )
         public
+        view
         override
         onlyRamp
         returns(bytes32 onRampId, bytes32 offRampId)

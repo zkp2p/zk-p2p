@@ -68,7 +68,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
     });
   });
 
-  describe.only("#processProof", async () => {
+  describe("#processProof", async () => {
     let subjectProof: WiseOffRamperRegistrationProof;
     let subjectCaller: Account;
 
