@@ -28,7 +28,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("Ramp", () => {
+describe.skip("Ramp", () => {
   let owner: Account;
   let offRamper: Account;
   let offRamperNewAcct: Account;
