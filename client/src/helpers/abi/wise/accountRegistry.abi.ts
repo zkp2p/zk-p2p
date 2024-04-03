@@ -499,6 +499,11 @@ export const abi = [
               },
               {
                 "internalType": "string",
+                "name": "accessDate",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
                 "name": "wiseTagHash",
                 "type": "string"
               }
