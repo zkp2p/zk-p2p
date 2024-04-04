@@ -1,7 +1,5 @@
 # ZKP2P Contracts
 
-Test Coverage
-
 [![Coverage Status](https://coveralls.io/repos/github/zkp2p/zk-p2p/badge.svg)](https://coveralls.io/github/zkp2p/zk-p2p)
 
 ### Local Node Configuration Steps:
