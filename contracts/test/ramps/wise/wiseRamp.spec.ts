@@ -189,18 +189,23 @@ describe("WiseRamp", () => {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
         profileId: "",
-        wiseTagHash: ""
+        wiseTagHash: "",
+        userAddress: ""
       }
 
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       offRamperProof.public_values.profileId = "012345678";
       offRamperProof.public_values.wiseTagHash = calculateWiseTagHash("jdoe1234");
+      offRamperProof.public_values.userAddress = offRamper.address;
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       onRamperProof.public_values.profileId = "123456789";
+      onRamperProof.public_values.userAddress = onRamper.address;
       onRamperTwoProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       onRamperTwoProof.public_values.profileId = "567890123";
+      onRamperTwoProof.public_values.userAddress = onRamperTwo.address;
       maliciousOnRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       maliciousOnRamperProof.public_values.profileId = "123456789";
+      maliciousOnRamperProof.public_values.userAddress = maliciousOnRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
       await accountRegistry.connect(onRamper.wallet).register(onRamperProof);
@@ -561,6 +566,7 @@ describe("WiseRamp", () => {
 
       describe("when the caller is the depositor from another Ethereum account", async () => {
         beforeEach(async () => {
+          offRamperProof.public_values.userAddress = offRamperNewAcct.address;
           await accountRegistry.connect(offRamperNewAcct.wallet).register(offRamperProof);
 
           subjectCaller = offRamperNewAcct;
@@ -745,6 +751,7 @@ describe("WiseRamp", () => {
 
       describe("when the call comes from a different Eth address tied to the same venmoIdHash", async () => {
         beforeEach(async () => {
+          onRamperProof.public_values.userAddress = onRamperOtherAddress.address;
           await accountRegistry.connect(onRamperOtherAddress.wallet).register(onRamperProof);
 
           subjectCaller = onRamperOtherAddress;
@@ -1032,16 +1039,6 @@ describe("WiseRamp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Offramper id does not match");
-        });
-      });
-
-      describe("when the onRamperId doesn't match the intent", async () => {
-        beforeEach(async () => {
-          subjectSendData.senderId = calculateWiseId(onRamperTwoProof.public_values.profileId);
-        });
-
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Onramper id does not match");
         });
       });
     });

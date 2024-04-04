@@ -68,7 +68,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
     });
   });
 
-  describe("#processOffRamperProof", async () => {
+  describe("#processProof", async () => {
     let subjectProof: WiseOffRamperRegistrationProof;
     let subjectCaller: Account;
 
@@ -88,11 +88,11 @@ describe("WiseOffRamperRegistrationProcessor", () => {
     });
 
     async function subject(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).processOffRamperProof(subjectProof);
+      return await registrationProcessor.connect(subjectCaller.wallet).processProof(subjectProof);
     }
 
     async function subjectCallStatic(): Promise<any> {
-      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processOffRamperProof(subjectProof);
+      return await registrationProcessor.connect(subjectCaller.wallet).callStatic.processProof(subjectProof);
     }
 
     it("should process the proof", async () => {
@@ -100,31 +100,6 @@ describe("WiseOffRamperRegistrationProcessor", () => {
       
       expect(onRamperId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
       expect(offRamperId).to.eq(calculateWiseId(subjectProof.public_values.mcAccountId));
-    });
-
-    it("should add the hash of the proof inputs to the nullifier registry", async () => {
-      await subject();
-
-      const expectedNullifier = ethers.utils.keccak256(
-        abiCoder.encode(
-          ["string", "string"],
-          ["registration", subjectProof.public_values.mcAccountId]
-        )
-      );
-
-      const isNullified = await nullifierRegistry.isNullified(expectedNullifier);
-
-      expect(isNullified).to.be.true;
-    });
-
-    describe("when the profile has already been verified", async () => {
-      beforeEach(async () => {
-        await subject();
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Nullifier has already been used");
-      });
     });
 
     describe("when the proof is invalid", async () => {

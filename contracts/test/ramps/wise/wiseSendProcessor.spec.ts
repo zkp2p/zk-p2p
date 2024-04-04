@@ -101,13 +101,11 @@ describe("WiseSendProcessor", () => {
         amount,
         timestamp,
         offRamperId,
-        onRamperId,
         currencyId
       ] = await subjectCallStatic();
       
       expect(amount).to.eq(usdc(1));
       expect(timestamp).to.eq(BigNumber.from(subjectProof.public_values.timestamp).div(1000).add(30));
-      expect(onRamperId).to.eq(calculateWiseId(subjectProof.public_values.senderId));
       expect(offRamperId).to.eq(calculateWiseId(subjectProof.public_values.recipientId));
       expect(currencyId).to.eq(ethers.utils.solidityKeccak256(["string"], [subjectProof.public_values.currencyId]));
     });

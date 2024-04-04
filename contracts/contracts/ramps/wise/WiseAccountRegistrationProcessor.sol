@@ -44,7 +44,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
 
     /* ============ External Functions ============ */
 
-    function processAccountProof(
+    function processProof(
         IWiseAccountRegistrationProcessor.RegistrationProof calldata _proof
     )
         public
@@ -57,7 +57,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         _validateTLSEndpoint(endpoint, _proof.public_values.endpoint);
         _validateTLSHost(host, _proof.public_values.host);
 
-        _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.profileId)));
+        _validateAndAddNullifier(keccak256(abi.encode(_proof.public_values.userAddress, _proof.public_values.profileId)));
 
         onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
         wiseTagHash = bytes32(_proof.public_values.wiseTagHash.stringToUint(0));
@@ -81,7 +81,13 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
         view
         returns(bool)
     {
-        bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.wiseTagHash);
+        bytes memory encodedMessage = abi.encode(
+            _publicValues.endpoint,
+            _publicValues.host,
+            _publicValues.profileId,
+            _publicValues.wiseTagHash,
+            _publicValues.userAddress
+        );
         return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
     }
     

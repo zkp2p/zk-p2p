@@ -16,7 +16,7 @@ interface IWiseOffRamperRegistrationProcessor {
         bytes proof;
     }
 
-    function processOffRamperProof(
+    function processProof(
         OffRamperRegistrationProof calldata _proof
     )
         external

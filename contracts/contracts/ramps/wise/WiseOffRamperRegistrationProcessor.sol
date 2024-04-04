@@ -39,10 +39,11 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
 
     /* ============ External Functions ============ */
 
-    function processOffRamperProof(
+    function processProof(
         IWiseOffRamperRegistrationProcessor.OffRamperRegistrationProof calldata _proof
     )
         public
+        view
         override
         onlyRamp
         returns(bytes32 onRampId, bytes32 offRampId)
@@ -51,8 +52,6 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
 
         _validateTLSEndpoint(endpoint.replaceString("*", _proof.public_values.profileId), _proof.public_values.endpoint);
         _validateTLSHost(host, _proof.public_values.host);
-
-        _validateAndAddNullifier(keccak256(abi.encode("registration", _proof.public_values.mcAccountId)));
 
         onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
         offRampId = bytes32(_proof.public_values.mcAccountId.stringToUint(0));

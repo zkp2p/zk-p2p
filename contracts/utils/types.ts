@@ -27,6 +27,7 @@ export interface WiseRegistrationData {
   host: string;
   profileId: string;
   wiseTagHash: string;
+  userAddress: Address;
 }
 
 export interface WiseRegistrationProof {

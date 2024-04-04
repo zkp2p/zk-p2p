@@ -9,6 +9,7 @@ interface IWiseAccountRegistrationProcessor {
         string host;
         string profileId;
         string wiseTagHash;
+        address userAddress;
     }
 
     struct RegistrationProof {
@@ -16,7 +17,7 @@ interface IWiseAccountRegistrationProcessor {
         bytes proof;
     }
 
-    function processAccountProof(
+    function processProof(
         RegistrationProof calldata _proof
     )
         external

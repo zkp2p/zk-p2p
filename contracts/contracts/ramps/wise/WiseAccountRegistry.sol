@@ -101,6 +101,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
     )
         external
     {
+        require(msg.sender == _proof.public_values.userAddress, "Caller must be address specified in proof");
         require(accounts[msg.sender].accountId == bytes32(0), "Account already associated with accountId");
         (
             bytes32 accountId,
@@ -131,7 +132,6 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
             bytes32 offRampId
         ) = _verifyOffRamperRegistrationProof(_proof);
 
-        accounts[msg.sender].accountId = accountId;
         accounts[msg.sender].offRampId = offRampId;
 
         emit OffRamperRegistered(msg.sender, accountId, offRampId);
@@ -302,7 +302,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
         (
             accountId,
             wiseTagHash
-        ) = accountRegistrationProcessor.processAccountProof(_proof);
+        ) = accountRegistrationProcessor.processProof(_proof);
     }
 
     /**
@@ -318,8 +318,8 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
         (
             accountId,
             offRampId
-        ) = offRamperRegistrationProcessor.processOffRamperProof(_proof);
+        ) = offRamperRegistrationProcessor.processProof(_proof);
 
-        require(accountId == accounts[msg.sender].accountId, "OnRampId does not match");
+        require(accountId == accounts[msg.sender].accountId, "AccountId does not match");
     }
 }

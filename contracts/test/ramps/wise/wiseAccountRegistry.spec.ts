@@ -29,6 +29,7 @@ const expect = getWaffleExpect();
 describe("WiseAccountRegistry", () => {
   let owner: Account;
   let offRamper: Account;
+  let onRamper: Account;
   let unregisteredUser: Account;
 
   let accountRegistry: WiseAccountRegistry;
@@ -42,6 +43,7 @@ describe("WiseAccountRegistry", () => {
     [
       owner,
       offRamper,
+      onRamper,
       unregisteredUser,
     ] = await getAccounts();
 
@@ -128,7 +130,8 @@ describe("WiseAccountRegistry", () => {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
         profileId: "405394441",
-        wiseTagHash: calculateWiseTagHash("jdoe1234")
+        wiseTagHash: calculateWiseTagHash("jdoe1234"),
+        userAddress: offRamper.address
       } as WiseRegistrationData
 
       subjectProof = {
@@ -159,6 +162,16 @@ describe("WiseAccountRegistry", () => {
       );
     });
 
+    describe("when the caller is not the address signed by verifier", async () => {
+      beforeEach(async () => {
+        subjectProof.public_values.userAddress = onRamper.address;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Caller must be address specified in proof");
+      });
+    });
+
     describe("when the caller is already registered", async () => {
       beforeEach(async () => {
         await subject();
@@ -186,13 +199,16 @@ describe("WiseAccountRegistry", () => {
         endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
         host: "api.transferwise.com",
         profileId: "",
-        wiseTagHash: ""
+        wiseTagHash: "",
+        userAddress: ""
       }
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       offRamperProof.public_values.profileId = "012345678";
       offRamperProof.public_values.wiseTagHash = calculateWiseTagHash("jdoe1234");
+      offRamperProof.public_values.userAddress = offRamper.address;
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       onRamperProof.public_values.profileId = "123456789";
+      onRamperProof.public_values.userAddress = onRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
     });
@@ -252,7 +268,7 @@ describe("WiseAccountRegistry", () => {
         });
   
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("OnRampId does not match");
+          await expect(subject()).to.be.revertedWith("AccountId does not match");
         });
       });
   

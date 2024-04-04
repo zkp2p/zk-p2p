@@ -680,7 +680,6 @@ contract WiseRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            bytes32 onRamperId,
             bytes32 currencyId
         ) = sendProcessor.processProof(
             IWiseSendProcessor.SendProof({
@@ -693,7 +692,6 @@ contract WiseRamp is Ownable {
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(accountRegistry.getAccountInfo(deposit.depositor).offRampId == offRamperId, "Offramper id does not match");
-        require(accountRegistry.getAccountId(intent.onRamper) == onRamperId, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
     }
 }
