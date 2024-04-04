@@ -15,7 +15,7 @@ import { LoginStatus, NewWiseDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { wiseStrings } from '@helpers/strings';
-import { keccak256 } from '@helpers/keccack';
+import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -43,7 +43,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
-  const { extractedWiseProfileId, registrationHash, setExtractedWiseProfileId, isRegisteredForDeposit, offRampId } = useRegistration();
+  const {
+    extractedWiseProfileId,
+    registrationHash,
+    setExtractedWiseProfileId,
+    isRegisteredForDeposit,
+    offRampId,
+    
+  } = useRegistration();
   const { openModal } = useModal();
 
   /*
@@ -269,13 +276,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         setIsWiseTagInputValid(false);
       } else {
         if (registrationHash) {
-          // const wiseTagHash = calculateWiseTagHash(wiseTagInput);
-          const validWiseTagInput = true; // wiseTagHash === registrationHash;
+          const wiseTagHash = calculateWiseTagHash(wiseTagInput);
+          const validWiseTagInput = wiseTagHash === registrationHash;
           setIsWiseTagInputValid(validWiseTagInput);
 
-          // if (validWiseTagInput && setExtractedWiseProfileId) {
-          //   setExtractedWiseProfileId(wiseTagInput);
-          // };
+          if (validWiseTagInput && setExtractedWiseProfileId) {
+            setExtractedWiseProfileId(wiseTagInput);
+          };
         } else {
           setIsWiseTagInputValid(false);
         }
