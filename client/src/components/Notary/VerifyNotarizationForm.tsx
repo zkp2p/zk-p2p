@@ -15,6 +15,7 @@ import {
 } from  "@helpers/types";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useRegistration from '@hooks/wise/useRegistration';
+import useAccount from '@hooks/useAccount';
 import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
 import { colors } from '@theme/colors';
 
@@ -56,6 +57,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    */
 
   const { setExtractedWiseProfileId } = useRegistration();
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State
@@ -88,6 +90,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
     circuitType: circuitType,
     notarization: notarization,
     intentHash: selectedUIntIntentHash ?? '',
+    userAddress: loggedInEthereumAddress ?? ''
   });
 
   useEffect(() => {

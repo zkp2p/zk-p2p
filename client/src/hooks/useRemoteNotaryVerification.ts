@@ -14,6 +14,7 @@ type VerificationParams = {
   circuitType: string;
   notarization: string;
   intentHash: string;
+  userAddress: string;
 }
 
 type RemoteNotaryVerificationResponse = {
@@ -26,7 +27,13 @@ type RemoteNotaryVerificationError = {
   message: string;
 };
 
-export default function useRemoteNotaryVerification({ paymentType, circuitType, notarization, intentHash }: VerificationParams) {
+export default function useRemoteNotaryVerification({
+  paymentType,
+  circuitType,
+  notarization,
+  intentHash,
+  userAddress
+}: VerificationParams) {
   const [data, setData] = useState<RemoteNotaryVerificationResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<RemoteNotaryVerificationError | null>(null);
@@ -63,6 +70,7 @@ export default function useRemoteNotaryVerification({ paymentType, circuitType, 
           "circuit_type": circuitType,
           "proof": notarization,
           "intent_hash": intentHash,
+          "user_address": userAddress,
           "nonce": nonce,
         })
       });
