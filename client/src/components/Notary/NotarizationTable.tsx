@@ -332,13 +332,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           });
     
           setLoadedNotaryProofs(accountProofRows);
-
-          const firstAccountNotarization = accountProofRows[0];
-          setSelectedIndex(0);
-          setNotaryProof(firstAccountNotarization.proof);
         } else {
-          // setLoadedNotaryProofs([]);
-          console.log('Blank transfer proofs returned on every other request');
+          setLoadedNotaryProofs([]);
         }
         break;
 
@@ -352,17 +347,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               date: '1710571636'
             } as ExtensionNotaryProofRow;
           });
-
-          console.log('transferProofRows: ', transferProofRows);
     
           setLoadedNotaryProofs(transferProofRows);
-
-          const firstTransferNotarization = transferProofRows[0];
-          setSelectedIndex(0);
-          setNotaryProof(firstTransferNotarization.proof);
         } else {
-          // setLoadedNotaryProofs([]);
-          console.log('Blank transfer proofs returned on every other request');
+          setLoadedNotaryProofs([]);
         }
         break;
     }
@@ -370,12 +358,19 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circuitType, profileProofs, transferProofs]);
 
-  // useEffect(() => {
-  //   setSelectedIndex(null);
-  //   setNotaryProof('');
+  useEffect(() => {
+    if (loadedNotaryProofs.length > 0) {
+      const firstAccountNotarization = loadedNotaryProofs[0];
 
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [loadedNotaryProofs]);
+      setSelectedIndex(0);
+      setNotaryProof(firstAccountNotarization.proof);
+    } else {
+      setSelectedIndex(null);
+      setNotaryProof('');
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedNotaryProofs]);
 
   useEffect(() => {
     const notarizationMetadataCTA = defaultCTAForInputStatus();
@@ -540,9 +535,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             </Button>
           </ButtonContainer>
 
-          <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
-            {notarizationToggleCta()}
-          </TableToggleLink>
+          {loadedNotaryProofs.length > 0 && (
+            <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
+              {notarizationToggleCta()}
+            </TableToggleLink>
+          )}
         </ExtensionDetectedContainer>
       )}
     </Container>
