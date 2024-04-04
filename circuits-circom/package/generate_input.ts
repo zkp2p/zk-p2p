@@ -41,13 +41,13 @@ async function getArgs() {
   const circuit_type = circuitTypeArg.split("=")[1];
   const intentHash = intentHashArg ? intentHashArg.split("=")[1] : "12345";
   const nonce = nonceArg ? nonceArg.split("=")[1] : null;
-  const mercaod_user_id_salt = mercadoUserIdSaltArg ? mercadoUserIdSaltArg.split("=")[1] : "11111";
+  const mercado_user_id_salt = mercadoUserIdSaltArg ? mercadoUserIdSaltArg.split("=")[1] : "11111";
 
   const email_file_dir = email_file.substring(0, email_file.lastIndexOf("/") + 1);
   const outputFileName = outputFileNameArg ? outputFileNameArg.split("=")[1] : nonce ? `input_${payment_type}_${circuit_type}_${nonce}` : `input_${payment_type}_${circuit_type}`;
   const output_file_path = `${email_file_dir}/../inputs/${outputFileName}.json`;
 
-  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path, mercaod_user_id_salt };
+  return { email_file, payment_type, circuit_type, intentHash, nonce, output_file_path, mercado_user_id_salt };
 }
 
 export interface ICircuitInputs {
@@ -247,10 +247,10 @@ export async function getCircuitInputs(
     MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 640;
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10624;  // 10624 is the max observed body length for one email
     STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
-    MAX_INTERMEDIATE_PADDING_LENGTH = 3328; // For divided circuits, we calculate what the padded intermediate length should be
+    MAX_INTERMEDIATE_PADDING_LENGTH = 3200; // For divided circuits, we calculate what the padded intermediate length should be
   } else if (circuit == CircuitType.EMAIL_MERCADO_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = createArrayWithLineBreaksInserted("\"46\" align=3D\"right");
-    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7680 is estimated length plus padding from intermediate cutoff to end
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 7744;  // 7744 is estimated length plus padding from intermediate cutoff to end
   }
 
   // Derive modulus from signature
@@ -512,7 +512,7 @@ export async function getCircuitInputs(
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_REGISTRATION) {
     // Calculate SHA end selector.
-    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
+    const intermediateShaSelector = String(STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE).split("").map((char) => char.charCodeAt(0));
     let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
@@ -556,7 +556,7 @@ export async function getCircuitInputs(
     }
   } else if (circuit == CircuitType.EMAIL_GARANTI_SEND) {
     // Calculate SHA end selector.
-    const intermediateShaSelector = STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE.split("").map((char) => char.charCodeAt(0));
+    const intermediateShaSelector = String(STRING_PRESELECTOR_FOR_EMAIL_TYPE_INTERMEDIATE).split("").map((char) => char.charCodeAt(0));
     let intermediateShaCutoffIndex = Math.floor((await findSelector(bodyRemaining, intermediateShaSelector)) / 64) * 64;
     let intermediateBodyText = bodyRemaining.slice(0, intermediateShaCutoffIndex);
 
@@ -868,7 +868,7 @@ async function test_generate(writeToFile: boolean = true) {
   console.log("Email file read");
 
   const type = `${args.payment_type}_${args.circuit_type}` as CircuitType;
-  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce, args.mercaod_user_id_salt);
+  const gen_inputs = await generate_inputs(email, type, args.intentHash, args.nonce, args.mercado_user_id_salt);
   console.log("Input generation successful");
   if (writeToFile) {
     fs.writeFileSync(args.output_file_path, JSON.stringify(gen_inputs), { flag: "w" });

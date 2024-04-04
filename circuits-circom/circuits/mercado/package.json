@@ -24,6 +24,7 @@
         "test": "jest",
         "build": "tsc",
         "gen-input:mercado:send": "npx tsx ../../package/generate_input.ts --email_file=./emls/mercado_send.eml --payment_type=mercado --circuit_type=send --output_file=input_mercado_send",
+        "gen-input:mercado:send:2": "npx tsx ../../package/generate_input.ts --email_file=./emls/mercado_send_2.eml --payment_type=mercado --circuit_type=send --output_file=input_mercado_send_2",
         "gen-input:mercado:registration": "npx tsx ../../package/generate_input.ts --email_file=./emls/mercado_send.eml --payment_type=mercado --circuit_type=registration --output_file=input_mercado_registration",
         "gen-input:mercado:body-suffix-hasher": "npx tsx ../../package/generate_input.ts --email_file=./emls/mercado_send.eml --payment_type=mercado --circuit_type=body_suffix_hasher --output_file=input_mercado_body_suffix_hasher",
         "compile:mercado:send": "CIRCUIT_DIR=mercado CIRCUIT_NAME=mercado_send && cd ../../scripts && ./1_compile.sh && cd ..",
