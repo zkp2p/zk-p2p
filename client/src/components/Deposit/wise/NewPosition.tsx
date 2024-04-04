@@ -334,7 +334,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Missing registration';
 
       case NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
-        return 'Complete New Depositor Verification';
+        return 'Complete Depositor Verification';
 
       case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
         return 'Wise tag does not match registration';

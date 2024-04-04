@@ -10,7 +10,7 @@ import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { NotarizationRow } from '@components/Notary/NotarizationRow';
 import {
-  ExtensionEventMessage,
+  // ExtensionEventMessage,
   ExtensionNotaryProofRequest,
   ExtensionNotaryProofRow
 } from '@hooks/useBrowserExtension';
@@ -31,7 +31,11 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 const ROWS_PER_PAGE = 3;
 const VERSION_REFETCH_INTERVAL = 5000;
-const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
+// const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
+
+const USE_WISE_DEFAULT_DEPOSITOR = process.env.USE_WISE_DEFAULT_DEPOSITOR;
+const WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF;
+const WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF;
 
 interface NotarizationTableProps {
   paymentPlatform: PaymentPlatformType;
@@ -322,8 +326,18 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   useEffect(() => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
+        let defaultDepositorProof: (ExtensionNotaryProofRow | null) = null;
+        if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
+          defaultDepositorProof = {
+            proof: WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF,
+            metadata: '[HARD_CODED] richardl3291',
+            date: '1710571636'
+          } as ExtensionNotaryProofRow;
+        }
+        
+        let allAccountProofRows = defaultDepositorProof ? [defaultDepositorProof] : [];
         if (profileProofs && profileProofs.length > 0) {
-          const accountProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
+          const fetchedProfileProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
             return {
               proof: JSON.stringify(request.proof),
               metadata: request.url,
@@ -331,16 +345,26 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             } as ExtensionNotaryProofRow;
           });
     
-          setLoadedNotaryProofs(accountProofRows);
+          setLoadedNotaryProofs(allAccountProofRows.concat(fetchedProfileProofRows));
         } else {
-          setLoadedNotaryProofs([]);
+          setLoadedNotaryProofs(allAccountProofRows);
         }
         break;
 
       case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
       case NotaryVerificationCircuit.TRANSFER:
+        let defaultDepositorTransferProof: (ExtensionNotaryProofRow | null) = null;
+        if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
+          defaultDepositorTransferProof = {
+            proof: WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF,
+            metadata: '[HARD_CODED] richardl3291 (mc_id)',
+            date: '1710571636'
+          } as ExtensionNotaryProofRow;
+        }
+
+        let allTransferProofRows = defaultDepositorTransferProof ? [defaultDepositorTransferProof] : [];
         if (transferProofs && transferProofs.length > 0) {
-          const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+          const fetchedTransferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
             return {
               proof: JSON.stringify(request.proof),
               metadata: request.url,
@@ -348,9 +372,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             } as ExtensionNotaryProofRow;
           });
     
-          setLoadedNotaryProofs(transferProofRows);
+          setLoadedNotaryProofs(allTransferProofRows.concat(fetchedTransferProofRows));
         } else {
-          setLoadedNotaryProofs([]);
+          setLoadedNotaryProofs(allTransferProofRows);
         }
         break;
     }
