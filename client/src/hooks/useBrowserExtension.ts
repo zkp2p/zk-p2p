@@ -25,19 +25,14 @@ export type ExtensionNotaryProofRequest = {
   maxTranscriptSize: number,
   method: string,
   notaryUrl: string,
-  proof: any, // returned as an object
+  proof: any,                 // returned as an object
   secretHeaders: string[],
   secretResps: string[],
   status: string,
   url: string,
-  verification: any, // returned as an object
+  verification: any,          // returned as an object
+  metadata: any,              // different depending on the notarization
   websocketProxyUrl: string,
-};
-
-export type ExtensionNotaryProofRow = {
-  proof: string;
-  metadata: string;
-  date: string;
 };
 
 export const ExtensionPostMessage = {

@@ -9,11 +9,7 @@ import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { NotarizationRow } from '@components/Notary/NotarizationRow';
-import {
-  // ExtensionEventMessage,
-  ExtensionNotaryProofRequest,
-  ExtensionNotaryProofRow
-} from '@hooks/useBrowserExtension';
+import { ExtensionNotaryProofRequest } from '@hooks/useBrowserExtension';
 import {
   NotaryProofInputStatus,
   NotaryVerificationCircuitType,
@@ -36,10 +32,18 @@ const USE_WISE_DEFAULT_DEPOSITOR = process.env.USE_WISE_DEFAULT_DEPOSITOR;
 const WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF;
 const WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF;
 
+type ExtensionNotaryProofRow = {
+  proof: string;
+  metadata: string;
+  subject: string;
+  date: string;
+};
+
 interface NotarizationTableProps {
   paymentPlatform: PaymentPlatformType;
   circuitType: NotaryVerificationCircuitType;
   setNotaryProof: (notarization: string) => void;
+  setNotaryProofMetadata: (metadata: string) => void;
   handleVerifyNotaryProofClicked: () => void;
   notaryProofSelectionStatus: string;
   isProofModalOpen: boolean;
@@ -49,6 +53,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   paymentPlatform,
   circuitType,
   setNotaryProof,
+  setNotaryProofMetadata,
   handleVerifyNotaryProofClicked,
   notaryProofSelectionStatus,
   isProofModalOpen
@@ -96,6 +101,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     const notarization = loadedNotaryProofs[index];
     
     setNotaryProof(notarization.proof);
+    setNotaryProofMetadata(notarization.metadata);
   };
 
   const handleToggleNotarizationTablePressed = () => {
@@ -110,39 +116,72 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * Helpers
    */
 
+  function parseTimestamp(timestamp: string): string {
+    const date = new Date(timestamp);
+    const now = new Date();
+
+    const isToday = date.getDate() === now.getDate() &&
+                    date.getMonth() === now.getMonth() &&
+                    date.getFullYear() === now.getFullYear();
+
+    if (isToday) {
+      return date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } else {
+      return date.toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric'
+      });
+    }
+  };
+
   const detectedNotarizationCopy = () => {
-    switch (circuitType) {
-      case NotaryVerificationCircuit.REGISTRATION_TAG:
-        return {
-          detected_copy: 'The following tag was detected from your Wise account',
-          metadata_copy: '[Wise Tag]',
-          metadata_type_copy: 'tag',
-          transaction_type_copy: 'registration'
-        };
-
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        return {
-          detected_copy: 'The following profile was detected from your Wise account',
-          metadata_copy: '[MC ID]',
-          metadata_type_copy: 'profile id',
-          transaction_type_copy: 'depositor registration'
+    if (selectedIndex !== null) {
+      const selectedRequest = paginatedData[selectedIndex];
+      
+      switch (circuitType) {
+        case NotaryVerificationCircuit.REGISTRATION_TAG:
+          return {
+            detected_copy: 'The following tag was detected from your Wise account',
+            metadata_copy: selectedRequest.metadata,
+            metadata_type_copy: 'tag',
+            transaction_type_copy: 'registration'
           };
-
-      case NotaryVerificationCircuit.TRANSFER:
-        return {
-          detected_copy: 'The following transaction was detected from your Wise account history',
-          metadata_copy: '[Transfer to X for Y]',
-          metadata_type_copy: 'transaction',
-          transaction_type_copy: 'order'
-        };
-
-      default:
-        return {
-          detected_copy: '',
-          metadata_copy: '',
-          metadata_type_copy: '',
-          transaction_type_copy: ''
-        };
+  
+        case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
+          return {
+            detected_copy: 'The following transaction receipt was detected from your Wise account',
+            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_type_copy: 'history transaction receipt',
+            transaction_type_copy: 'depositor registration'
+            };
+  
+        case NotaryVerificationCircuit.TRANSFER:
+          return {
+            detected_copy: 'The following transaction was detected from your Wise account history',
+            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_type_copy: 'transaction',
+            transaction_type_copy: 'order'
+          };
+  
+        default:
+          return {
+            detected_copy: '',
+            metadata_copy: '',
+            metadata_type_copy: '',
+            transaction_type_copy: ''
+          };
+      }
+    } else {
+      return {
+        detected_copy: '',
+        metadata_copy: '',
+        metadata_type_copy: '',
+        transaction_type_copy: ''
+      };
     }
   };
 
@@ -210,32 +249,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       default:
         return 'Add to browser';
     }
-  };
-
-  function formatDateTime(unixTimestamp: string): string {
-    const date = new Date(Number(unixTimestamp));
-    const now = new Date();
-
-    const isToday = date.getDate() === now.getDate() &&
-                    date.getMonth() === now.getMonth() &&
-                    date.getFullYear() === now.getFullYear();
-
-    if (isToday) {
-      return date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    } else {
-      return date.toLocaleDateString('en-US', {
-        month: 'numeric',
-        day: 'numeric'
-      });
-    }
-  };
-
-  const rowSubjectText = (notaryProof: ExtensionNotaryProofRow) => {
-    return notaryProof.metadata;
   };
 
   const totalPages = Math.ceil(loadedNotaryProofs.length / ROWS_PER_PAGE);
@@ -320,22 +333,27 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorProof = {
             proof: WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF,
-            metadata: '[HARD_CODED] richardl3291',
-            date: '1710571636'
+            subject: '[env] Request for @richardl3291',
+            metadata: 'richardl3291',
+            date: 'N/A'
           } as ExtensionNotaryProofRow;
         }
         
         let allAccountProofRows = defaultDepositorProof ? [defaultDepositorProof] : [];
         if (profileProofs && profileProofs.length > 0) {
           const fetchedProfileProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
+            const wiseTag = request.metadata[1].split('@')[1];
+            const subject = `Request for @${wiseTag}`;
+
             return {
               proof: JSON.stringify(request.proof),
-              metadata: request.url,
-              date: '1710571636'
+              subject: subject,
+              metadata: wiseTag,
+              date: parseTimestamp(request.metadata[0])
             } as ExtensionNotaryProofRow;
           });
     
-          setLoadedNotaryProofs(allAccountProofRows.concat(fetchedProfileProofRows));
+          setLoadedNotaryProofs(fetchedProfileProofRows.concat(allAccountProofRows));
         } else {
           setLoadedNotaryProofs(allAccountProofRows);
         }
@@ -346,22 +364,27 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorTransferProof = {
             proof: WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF,
-            metadata: '[HARD_CODED] richardl3291 (mc_id)',
-            date: '1710571636'
+            subject: '[env] Sent €0.1 EUR',
+            metadata: '0.1',
+            date: 'N/A'
           } as ExtensionNotaryProofRow;
         }
 
         let allTransferProofRows = defaultDepositorTransferProof ? [defaultDepositorTransferProof] : [];
         if (transferProofs && transferProofs.length > 0) {
           const fetchedTransferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+            const [timestamp, amount, currency] = request.metadata;
+            const subject = `Sent €${amount} ${currency}`;
+
             return {
               proof: JSON.stringify(request.proof),
-              metadata: request.url,
-              date: '1710571636'
+              subject: subject,
+              metadata: amount,
+              date: parseTimestamp(timestamp)
             } as ExtensionNotaryProofRow;
           });
     
-          setLoadedNotaryProofs(allTransferProofRows.concat(fetchedTransferProofRows));
+          setLoadedNotaryProofs(fetchedTransferProofRows.concat(allTransferProofRows));
         } else {
           setLoadedNotaryProofs(allTransferProofRows);
         }
@@ -370,10 +393,14 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0) {
           const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+            const [timestamp, amount, currency] = request.metadata;
+            const subject = `Sent €${amount} ${currency}`;
+
             return {
               proof: JSON.stringify(request.proof),
-              metadata: request.url,
-              date: '1710571636'
+              subject: subject,
+              metadata: amount,
+              date: parseTimestamp(timestamp)
             } as ExtensionNotaryProofRow;
           });
     
@@ -391,8 +418,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     if (loadedNotaryProofs.length > 0) {
       const firstAccountNotarization = loadedNotaryProofs[0];
 
-      setSelectedIndex(0);
-      setNotaryProof(firstAccountNotarization.proof);
+      if (selectedIndex == null) {
+        setSelectedIndex(0);
+        setNotaryProof(firstAccountNotarization.proof);
+      }
     } else {
       setSelectedIndex(null);
       setNotaryProof('');
@@ -503,8 +532,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                   {paginatedData.map((notarization, index) => (
                     <NotarizationRow
                       key={index}
-                      subjectText={rowSubjectText(notarization)}
-                      dateText={formatDateTime(notarization.date)}
+                      subjectText={notarization.subject}
+                      dateText={notarization.date}
                       isSelected={index === selectedIndex}
                       isLastRow={index === loadedNotaryProofs.length - 1}
                       onRowClick={() => handleRowClick(index)}
@@ -537,7 +566,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                     <StyledUserCheck />
 
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong><br/>
+                      {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong>. 
                       Verify and submit this {notarizationCopy.metadata_type_copy} to complete {notarizationCopy.transaction_type_copy}
                     </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
@@ -750,7 +779,7 @@ const TagDetectionIconAndCopyContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 2rem 3rem;
   gap: 1rem;
 
   border-radius: 8px;

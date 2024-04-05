@@ -64,6 +64,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    */
 
   const [notarization, setNotarization] = useState<string>("");
+  const [notarizationProofMetadata, setNotarizationProofMetadata] = useState<any | null>(null);
   const [notarizationHash, setNotarizationHash] = useState<string>("");
 
   const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${notarizationHash}_PROOF`, '');
@@ -170,7 +171,9 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
     const isCircuitTypeRegistration = circuitType === NotaryVerificationCircuit.REGISTRATION_TAG;
     if (isCircuitTypeRegistration) {
-      cacheWiseTagFromNotarization(notarization);
+      if (setExtractedWiseProfileId) {
+        setExtractedWiseProfileId(notarizationProofMetadata);
+      };
     }
   };
 
@@ -184,12 +187,6 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   const getModalCtaTitle = () => {
     return 'Complete Order';
-  };
-
-  const cacheWiseTagFromNotarization = (notarization: string) => {
-    if (setExtractedWiseProfileId) {
-      // setExtractedWiseProfileId("@alexanders6341"); // wise tag not currently part of request
-    };
   };
 
   /*
@@ -262,6 +259,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
         paymentPlatform={paymentPlatformType}
         circuitType={circuitType}
         setNotaryProof={setNotarization}
+        setNotaryProofMetadata={setNotarizationProofMetadata}
         handleVerifyNotaryProofClicked={handleVerifyNotaryProofClicked}
         notaryProofSelectionStatus={notaryProofSelectionStatus}
         isProofModalOpen={shouldShowVerificationModal}
