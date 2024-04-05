@@ -274,6 +274,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
     // Moot to run this on an interval because the content script needs to be injected
     refetchExtensionVersion();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

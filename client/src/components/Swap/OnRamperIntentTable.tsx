@@ -75,7 +75,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   const {
     currentIntentHash: currentWiseIntentHash,
     currentIntent: currentWiseIntent,
-    refetchIntentHash: refetchWiseIntentHash
+    refetchIntentHash: refetchWiseIntentHash,
+    refetchIntentHashAsUint: refetchWiseIntentHashAsUint
   } = useWiseOnRamperIntents();
   const {
     depositStore: wiseDepositStore
@@ -102,6 +103,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   const [currentIntent, setCurrentIntent] = useState<OnRamperIntent | null>(null);
   const [depositStore, setDepositStore] = useState<StoredDeposit[] | null>(null);
   const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
+  const [refetchIntentHashAsUint, setRefetchIntentHashAsUint] = useState<(() => void) | null>(null);
 
   const [intentsRowData, setIntentsRowData] = useState<IntentRowData[]>([]);
 
@@ -141,6 +143,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
       console.log('writeSubmitCancelIntentAsync successful: ', data);
       
       refetchIntentHash?.();
+      refetchIntentHashAsUint?.();
     },
   });
 
@@ -308,6 +311,25 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     refetchGarantiIntentHash,
     refetchWiseIntentHash
   ]);
+
+  useEffect(() => {
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+      case PaymentPlatform.HDFC:
+      case PaymentPlatform.GARANTI:
+        setRefetchIntentHashAsUint(() => {});
+        break;
+
+      case PaymentPlatform.WISE:
+        setRefetchIntentHashAsUint(() => refetchWiseIntentHashAsUint);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentPlatform, refetchWiseIntentHashAsUint]);
  
   useEffect(() => {
     if (currentIntent && depositStore) {
