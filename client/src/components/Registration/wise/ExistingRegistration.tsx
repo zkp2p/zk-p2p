@@ -201,7 +201,6 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           )}
         </Content>
       </Column>
-
     </Container>
   );
 };

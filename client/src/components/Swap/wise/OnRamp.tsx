@@ -33,7 +33,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
-  const { refetchIntentHash } = useOnRamperIntents();
+  const { refetchIntentHash, refetchIntentHashAsUint } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
 
   /*
@@ -92,6 +92,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
       refetchUsdcBalance?.();
       
       refetchIntentHash?.();
+
+      refetchIntentHashAsUint?.();
     },
   });
 

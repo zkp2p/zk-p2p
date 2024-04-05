@@ -501,6 +501,11 @@ export const abi = [
                 "internalType": "string",
                 "name": "wiseTagHash",
                 "type": "string"
+              },
+              {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
               }
             ],
             "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationData",

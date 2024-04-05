@@ -4,7 +4,6 @@ import React, { useEffect, useState, ReactNode } from 'react';
 import {
   ExtensionEventMessage,
   ExtensionNotaryProofRequest,
-  ExtensionNotaryProofRow,
   ExtensionEventVersionMessage,
   ExtensionPostMessage,
   ExtensionReceiveMessage,
@@ -41,19 +40,19 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
   const refetchExtensionVersion = () => {
     window.postMessage({ type: ExtensionPostMessage.FETCH_EXTENSION_VERSION }, '*');
 
-    console.log('Posted Message: ', ExtensionPostMessage.FETCH_EXTENSION_VERSION);
+    // console.log('Posted Message: ', ExtensionPostMessage.FETCH_EXTENSION_VERSION);
   };
 
   const refetchProfileRequests = () => {
     window.postMessage({ type: ExtensionPostMessage.FETCH_PROFILE_REQUEST_HISTORY }, '*');
 
-    console.log('Posted Message: ', ExtensionPostMessage.FETCH_PROFILE_REQUEST_HISTORY);
+    // console.log('Posted Message: ', ExtensionPostMessage.FETCH_PROFILE_REQUEST_HISTORY);
   };
 
   const refetchTransferRequests = () => {
     window.postMessage({ type: ExtensionPostMessage.FETCH_TRANSFER_REQUEST_HISTORY }, '*');
 
-    console.log('Posted Message: ', ExtensionPostMessage.FETCH_TRANSFER_REQUEST_HISTORY);
+    // console.log('Posted Message: ', ExtensionPostMessage.FETCH_TRANSFER_REQUEST_HISTORY);
   };
 
   /*
@@ -79,32 +78,42 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
   };
 
   const handleExtensionVersionMessageReceived = function(event: ExtensionEventVersionMessage) {
-    console.log('Client received EXTENSION_VERSION_RESPONSE message');
+    // console.log('Client received EXTENSION_VERSION_RESPONSE message');
 
     const version = event.data.version;
 
-    console.log('Extension Version: ', version);
+    // console.log('Extension Version: ', version);
 
     setSideBarVersion(version);
     setIsSidebarInstalled(true);
   };
 
   const handleExtensionProfileHistoryMessageReceived = function(event: ExtensionEventMessage) {
-    console.log('Client received REQUEST_HISTORY_RESPONSE message');
+    // console.log('Client received REQUEST_PROFILE_HISTORY_RESPONSE message');
 
     if (event.data.requestHistory && event.data.requestHistory.notaryRequests) {
       const requestHistory = event.data.requestHistory.notaryRequests;
 
       setProfileProofs(requestHistory);
     } else {
-      console.log('REQUEST_HISTORY_RESPONSE was blank');
+      // console.log('REQUEST_HISTORY_RESPONSE was blank');
 
       setProfileProofs(null);
     }
   };
 
   const handleExtensionTransferHistoryMessageReceived = function(event: ExtensionEventMessage) {
-    // no-op
+    // console.log('Client received REQUEST_TRANSFER_RESPONSE message');
+
+    if (event.data.requestHistory && event.data.requestHistory.notaryRequests) {
+      const requestHistory = event.data.requestHistory.notaryRequests;
+
+      setTransferProofs(requestHistory);
+    } else {
+      // console.log('REQUEST_TRANSFER_RESPONSE was blank');
+
+      setTransferProofs(null);
+    }
   };
 
   /*

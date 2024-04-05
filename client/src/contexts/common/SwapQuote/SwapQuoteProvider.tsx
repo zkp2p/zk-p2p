@@ -140,6 +140,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const {
     currentIntentHash: currentWiseIntentHash,
     refetchIntentHash: refetchWiseIntentHash,
+    refetchIntentHashAsUint: refetchWiseIntentHashAsUint,
     shouldFetchIntentHash: shouldFetchWiseIntentHash,
     lastOnRampTimestamp: lastWiseOnRampTimestamp,
     refetchLastOnRampTimestamp: refetchWiseLastOnRampTimestamp
@@ -163,6 +164,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
   const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
+  const [refetchIntentHashAsUint, setRefetchIntentHashAsUint] = useState<(() => void) | null>(null);
   const [shouldFetchIntentHash, setShouldFetchIntentHash] = useState<boolean>(false);
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
   const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
@@ -491,6 +493,31 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   );
 
   useEffect(() => {
+    esl && console.log('refetchWiseIntentHashAsUint: ', refetchWiseIntentHashAsUint);
+
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+      case PaymentPlatform.HDFC:
+      case PaymentPlatform.GARANTI:
+        setRefetchIntentHashAsUint(() => {});
+        break;
+
+      case PaymentPlatform.WISE:
+        setRefetchIntentHashAsUint(() =>  refetchWiseIntentHashAsUint);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+      paymentPlatform,
+      refetchWiseIntentHashAsUint
+    ]
+  );
+
+  useEffect(() => {
     esl && console.log('shouldFetchVenmoIntentHash: ', shouldFetchVenmoIntentHash);
     esl && console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
     esl && console.log('shouldFetchGarantiIntentHash: ', shouldFetchGarantiIntentHash);
@@ -728,6 +755,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         shouldFetchDeposits,
         currentIntentHash,
         refetchIntentHash,
+        refetchIntentHashAsUint,
         shouldFetchIntentHash,
         lastOnRampTimestamp,
         refetchLastOnRampTimestamp,

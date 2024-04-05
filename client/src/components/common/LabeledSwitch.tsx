@@ -27,7 +27,7 @@ export const LabeledSwitch: React.FC<LabeledSwitchProps> = ({
   return (
     <Container>
       <SwitchLabel>
-        {switchChecked ? checkedLabel :uncheckedLabel}
+        {switchChecked ? checkedLabel : uncheckedLabel}
       </SwitchLabel>
       
       <HelperContainer>

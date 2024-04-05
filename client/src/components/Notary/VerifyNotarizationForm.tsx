@@ -15,6 +15,7 @@ import {
 } from  "@helpers/types";
 import useLocalStorage from '@hooks/useLocalStorage';
 import useRegistration from '@hooks/wise/useRegistration';
+import useAccount from '@hooks/useAccount';
 import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
 import { colors } from '@theme/colors';
 
@@ -56,12 +57,14 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    */
 
   const { setExtractedWiseProfileId } = useRegistration();
+  const { loggedInEthereumAddress } = useAccount();
 
   /*
    * State
    */
 
   const [notarization, setNotarization] = useState<string>("");
+  const [notarizationProofMetadata, setNotarizationProofMetadata] = useState<any | null>(null);
   const [notarizationHash, setNotarizationHash] = useState<string>("");
 
   const [storedProofValue, setStoredProofValue] = useLocalStorage<string>(`${notarizationHash}_PROOF`, '');
@@ -88,6 +91,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
     circuitType: circuitType,
     notarization: notarization,
     intentHash: selectedUIntIntentHash ?? '',
+    userAddress: loggedInEthereumAddress ?? ''
   });
 
   useEffect(() => {
@@ -167,7 +171,9 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
     const isCircuitTypeRegistration = circuitType === NotaryVerificationCircuit.REGISTRATION_TAG;
     if (isCircuitTypeRegistration) {
-      cacheWiseTagFromNotarization(notarization);
+      if (setExtractedWiseProfileId) {
+        setExtractedWiseProfileId(notarizationProofMetadata);
+      };
     }
   };
 
@@ -181,12 +187,6 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   const getModalCtaTitle = () => {
     return 'Complete Order';
-  };
-
-  const cacheWiseTagFromNotarization = (notarization: string) => {
-    if (setExtractedWiseProfileId) {
-      setExtractedWiseProfileId("@alexanders6341");
-    };
   };
 
   /*
@@ -259,6 +259,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
         paymentPlatform={paymentPlatformType}
         circuitType={circuitType}
         setNotaryProof={setNotarization}
+        setNotaryProofMetadata={setNotarizationProofMetadata}
         handleVerifyNotaryProofClicked={handleVerifyNotaryProofClicked}
         notaryProofSelectionStatus={notaryProofSelectionStatus}
         isProofModalOpen={shouldShowVerificationModal}

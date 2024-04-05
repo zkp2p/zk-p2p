@@ -15,6 +15,7 @@ interface SwapQuoteValues {
   onRampCooldownPeriod: bigint | null;
   currentIntentHash: string | null;
   refetchIntentHash: (() => void) | null;
+  refetchIntentHashAsUint: (() => void) | null;
   shouldFetchIntentHash: boolean;
   lastOnRampTimestamp: bigint | null;
   refetchLastOnRampTimestamp: (() => void) | null;
@@ -29,6 +30,7 @@ const defaultValues: SwapQuoteValues = {
   getDepositForMaxAvailableTransferSize: null,
   shouldFetchDeposits: false,
   refetchDepositCounter: null,
+  refetchIntentHashAsUint: null,
   shouldFetchRampState: false,
   onRampCooldownPeriod: null,
   currentIntentHash: null,

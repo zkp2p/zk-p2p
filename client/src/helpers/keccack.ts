@@ -8,5 +8,5 @@ export const keccak256 = (inputString: string): string => {
 };
 
 export const calculateWiseTagHash = (wiseTag: string): string => {
-  return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))).toString()
+  return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))).toHexString();
 };
