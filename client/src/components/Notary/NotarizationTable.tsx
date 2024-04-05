@@ -239,15 +239,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const rowSubjectText = (notaryProof: ExtensionNotaryProofRow) => {
-    switch (paymentPlatform) {
-      case PaymentPlatform.WISE:
-        // https://wise.com/gateway/v1/payments
-        // I want to return notaryProof.metadata but only after https://wise.com/
-        return notaryProof.metadata.split('wise.com/')[1];
-
-      default:
-        return '';
-    }
+    return notaryProof.metadata;
   };
 
   const totalPages = Math.ceil(loadedNotaryProofs.length / ROWS_PER_PAGE);
@@ -352,7 +344,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         break;
 
       case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-      case NotaryVerificationCircuit.TRANSFER:
         let defaultDepositorTransferProof: (ExtensionNotaryProofRow | null) = null;
         if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorTransferProof = {
@@ -375,6 +366,22 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           setLoadedNotaryProofs(allTransferProofRows.concat(fetchedTransferProofRows));
         } else {
           setLoadedNotaryProofs(allTransferProofRows);
+        }
+        break;
+
+      case NotaryVerificationCircuit.TRANSFER:
+        if (transferProofs && transferProofs.length > 0) {
+          const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+            return {
+              proof: JSON.stringify(request.proof),
+              metadata: request.url,
+              date: '1710571636'
+            } as ExtensionNotaryProofRow;
+          });
+    
+          setLoadedNotaryProofs(transferProofRows);
+        } else {
+          setLoadedNotaryProofs([]);
         }
         break;
     }
