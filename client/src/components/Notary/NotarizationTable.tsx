@@ -18,8 +18,7 @@ import {
   NotaryProofInputStatus,
   NotaryVerificationCircuitType,
   NotaryVerificationCircuit,
-  PaymentPlatformType,
-  PaymentPlatform
+  PaymentPlatformType
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';

@@ -86,6 +86,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     onRampCooldownPeriod,
     currentIntentHash,
     refetchIntentHash,
+    refetchIntentHashAsUint,
     shouldFetchIntentHash,
     lastOnRampTimestamp,
     refetchLastOnRampTimestamp,
@@ -192,6 +193,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       setCurrentQuote(ZERO_QUOTE);
 
       refetchIntentHash?.();
+      refetchIntentHashAsUint?.();
       refetchLastOnRampTimestamp?.();
 
       setShouldAutoSelectIntent(true);
@@ -235,11 +237,12 @@ const SwapForm: React.FC<SwapFormProps> = ({
     if (shouldFetchIntentHash) {
       const intervalId = setInterval(() => {
         refetchIntentHash?.();
+        refetchIntentHashAsUint?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchIntentHash, refetchIntentHash]);
+  }, [shouldFetchIntentHash, refetchIntentHash, refetchIntentHashAsUint]);
 
   useEffect(() => {
     if (shouldFetchDeposits) {
