@@ -227,13 +227,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         hour12: true
       });
     } else {
-      switch (paymentPlatform) {
-        default:
-          return date.toLocaleDateString('en-US', {
-            month: 'numeric',
-            day: 'numeric'
-          });
-      }
+      return date.toLocaleDateString('en-US', {
+        month: 'numeric',
+        day: 'numeric'
+      });
     }
   };
 
