@@ -140,7 +140,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            Multi Currency Id Registration
+            Wise Recipient Id Registration
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.5 }}/>
@@ -148,12 +148,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { wiseStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
-            <Link
-              href={"https://bridge.base.org/deposit"}
-              target="_blank">
-                Base Bridge ↗
-            </Link>
+            { wiseStrings.get('PROOF_FORM_TITLE_RECIPIENT_ID_REGISTRATION_INSTRUCTIONS') }
           </NumberedStep>
         </InstructionsAndTogglesContainer>
       </TitleContainer>

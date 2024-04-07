@@ -7,6 +7,11 @@ const strings: PlatformStrings = {
     submit a registration transaction.
   `,
 
+  PROOF_FORM_TITLE_RECIPIENT_ID_REGISTRATION_INSTRUCTIONS: `
+    Use the ZKP2P extension to generate proof of valid recipient id. Provide details of a past transaction to
+    prove a valid recipient id and complete registration.
+  `,
+
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: `
     no-op

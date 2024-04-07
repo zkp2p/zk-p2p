@@ -138,7 +138,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 
               { !isRegistered && (
                 <NumberedInputContainer>
-                  <NumberedStep>
+                  {/* <NumberedStep>
                     { wiseStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
                       href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration"
@@ -146,7 +146,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                     >
                       Learn more ↗
                     </Link>
-                  </NumberedStep>
+                  </NumberedStep> */}
                 </NumberedInputContainer>
               )}
               

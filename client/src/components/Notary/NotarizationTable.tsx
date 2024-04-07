@@ -491,7 +491,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         return 'Wise Tag';
 
       case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        return 'Multi Currency Id';
+        return 'Wise Recipient Id';
 
       case NotaryVerificationCircuit.TRANSFER:
         return 'Transaction';
