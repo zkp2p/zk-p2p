@@ -37,17 +37,17 @@ const strings: PlatformStrings = {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Wise multi currency account id. Provide the USDC liquidity to deposit and
+    Depositing requires registering a valid Wise recipient id. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required ONLY for depositors to connect a Wise multi currency account id
+    This is a second registration step required ONLY for depositors to connect a Wise recipient id
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid Wise tag where users will send payments.
     This connects your Wise tag to your address on chain.
-    This Wise tag must be of the account with which you reigstered.
+    This Wise tag must be from the account you registered with.
   `,
   NEW_DEPOSIT_NAME_TOOLTIP: `
     no-op
@@ -79,10 +79,10 @@ const strings: PlatformStrings = {
     Send payment from your ZKP2P registered Wise acount
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Chose the right receiving currency (EUR) while sending the payment
+    Chose the right receive currency (EUR) while sending the payment
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact amount including decimals as displayed above
+    Send the exact EUR amount including decimals as displayed above
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: ``,
 };
