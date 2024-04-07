@@ -270,7 +270,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       const isRequestedUsdcAmountPositive = requestedUsdcAmount !== '0';
       const isValidRequestedUsdcAmount = getBestDepositForAmount && requestedUsdcAmount && isRequestedUsdcAmountPositive;
       const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
-      const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING;
+      const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING; // exception for Wise
 
       if (isValidRequestedUsdcAmount) {
         const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);

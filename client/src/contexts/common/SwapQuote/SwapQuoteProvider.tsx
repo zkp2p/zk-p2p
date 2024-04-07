@@ -124,7 +124,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   // Wise
   const {
     isRegistered: isRegisteredOnWise,
-    registrationHash: wiseRegistrationHash
+    accountId: wiseAccountId
   } = useWiseRegistration();
   const {
     refetchDeposits: refetchWiseDeposits,
@@ -241,7 +241,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('venmoRegistrationHash: ', venmoRegistrationHash);
     esl && console.log('hdfcRegistrationHash: ', hdfcRegistrationHash);
     esl && console.log('garantiRegistrationHash: ', garantiRegistrationHash);
-    esl && console.log('wiseRegistrationHash: ', wiseRegistrationHash);
+    esl && console.log('wiseAccountId: ', wiseAccountId);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -258,7 +258,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-        setRegistrationHash(wiseRegistrationHash);
+        setRegistrationHash(wiseAccountId);
         break;
 
       default:
@@ -266,7 +266,14 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, hdfcRegistrationHash, venmoRegistrationHash, garantiRegistrationHash, wiseRegistrationHash]);
+  }, [
+      paymentPlatform,
+      hdfcRegistrationHash,
+      venmoRegistrationHash,
+      garantiRegistrationHash,
+      wiseAccountId
+    ]
+  );
 
   /*
    * Liquidity

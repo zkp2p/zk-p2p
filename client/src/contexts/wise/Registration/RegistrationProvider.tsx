@@ -25,7 +25,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const [registrationHash, setRegistrationHash] = useState<string | null>(null);
-  const [onRampId, setOnRampId] = useState<string | null>(null);
+  const [accountId, setAccountId] = useState<string | null>(null);
   const [offRampId, setOffRampId] = useState<string | null>(null);
 
   const [extractedProfileIdStorageKey, setExtractedProfileIdStorageKey] = useState<string | null>(null);
@@ -145,13 +145,13 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
 
       const rampAccountData = rampAccountRaw as any;
       const wiseTagHashProcessed = rampAccountData.wiseTagHash;
-      const onRampIdProcessed = rampAccountData.onRampId;
+      const accountIdProcessed = rampAccountData.accountId;
       
       if (wiseTagHashProcessed !== ZERO_ADDRESS) {
         esl && console.log('wise_rampAccountRaw_3');
 
         setRegistrationHash(wiseTagHashProcessed);
-        setOnRampId(onRampIdProcessed);
+        setAccountId(accountIdProcessed);
 
         const offRampIdProcessed = rampAccountData.offRampId;
         if (offRampIdProcessed !== ZERO_ADDRESS) {
@@ -165,7 +165,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         esl && console.log('wise_rampAccountRaw_4');
 
         setRegistrationHash(null);
-        setOnRampId(null);
+        setAccountId(null);
         setOffRampId(null);
 
         setShouldFetchVenmoNftId(false);
@@ -174,7 +174,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       esl && console.log('wise_rampAccountRaw_5');
       
       setRegistrationHash(null);
-      setOnRampId(null);
+      setAccountId(null);
       setOffRampId(null);
 
       setShouldFetchVenmoNftId(false);
@@ -308,7 +308,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         registrationHash,
         isRegisteredForDeposit,
         offRampId,
-        onRampId,
+        accountId,
         extractedWiseProfileId,
         shouldFetchVenmoNftId,
         venmoNftId,

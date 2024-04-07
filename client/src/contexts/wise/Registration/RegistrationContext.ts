@@ -6,7 +6,7 @@ interface RegistrationValues {
   registrationHash: string | null; // wiseTagHash
   isRegisteredForDeposit: boolean;
   offRampId: string | null;
-  onRampId: string | null;
+  accountId: string | null;
   extractedWiseProfileId: string | null;
   shouldFetchVenmoNftId: boolean;
   venmoNftId: bigint | null;
@@ -22,7 +22,7 @@ const defaultValues: RegistrationValues = {
   registrationHash: null,
   isRegisteredForDeposit: false,
   offRampId: null,
-  onRampId: null,
+  accountId: null,
   extractedWiseProfileId: null,
   shouldFetchVenmoNftId: false,
   venmoNftId: null,
