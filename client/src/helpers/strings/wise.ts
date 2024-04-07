@@ -85,7 +85,7 @@ const strings: PlatformStrings = {
     Send payment from your ZKP2P registered Wise acount
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Chose the right receive currency (EUR) while sending the payment
+    Choose the send currency of your choice and ensure the receive currency is set to EUR when making the payment.
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
     Send the exact EUR amount including decimals as displayed above
