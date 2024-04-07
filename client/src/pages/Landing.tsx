@@ -14,7 +14,7 @@ import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
 
 
-const CURRENCIES = ['USD', 'INR', 'TRY'];
+const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR'];
 
 export const Landing: React.FC = () => {
   const currentDeviceSize = useMediaQuery();
