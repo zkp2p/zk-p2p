@@ -46,7 +46,7 @@ const strings: PlatformStrings = {
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required ONLY for depositors to connect a Wise recipient id
+    This is a second registration step required only for depositors to connect a Wise recipient id
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
