@@ -79,17 +79,15 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Send payment from your UPI ID linked to your Wise bank account. Do not send payment from UPI Lite or other bank accounts
+    Send payment from your ZKP2P registered Wise acount
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Wise InstaAlert email notifications are enabled for your account
+    Chose the right receiving currency (EUR) while sending the payment
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact INR amount including decimals as displayed on the payment screen
+    Send the exact amount including decimals as displayed above
   `,
-  PAYMENT_REQUIREMENT_STEP_FOUR: `
-    Lorem ipsum dolor sit ament
-  `,
+  PAYMENT_REQUIREMENT_STEP_FOUR: ``,
 };
 
 export default strings;
