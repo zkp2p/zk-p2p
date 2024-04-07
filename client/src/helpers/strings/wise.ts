@@ -3,7 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide a proof generated using ZKP2P Extension to complete registration. Base ETH is required to
+    Use the ZKP2P extension to generate a proof of Wise account. Provide the proof to complete registration. Base ETH is required to
     submit a registration transaction.
   `,
 
@@ -27,8 +27,7 @@ const strings: PlatformStrings = {
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register by installing the ZKP2P Extension and proving the authenticity of your Wise account in order 
-    to use ZKP2P. Your Wise ID is hashed to conceal your identity.
+    You must register in order to use ZKP2P. Click on Register above to initiate registration.
   `,
 
   // On Ramp Instructions
