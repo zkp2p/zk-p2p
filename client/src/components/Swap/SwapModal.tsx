@@ -12,7 +12,7 @@ import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
-import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK } from "@helpers/docUrls";
+import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, WISE_SEND_PAGE_LINK } from "@helpers/docUrls";
 
 
 interface SwapModalProps {
@@ -87,7 +87,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
       case PaymentPlatform.WISE:
         return {
-          troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
+          troubleScanningQRCodeLink: WISE_SEND_PAGE_LINK,
           paymentPlatformName: 'Wise',
           instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
         };
