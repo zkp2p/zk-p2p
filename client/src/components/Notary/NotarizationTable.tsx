@@ -17,6 +17,7 @@ import {
   PaymentPlatformType
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
+import { ZKP2P_EXTENSION_CHROME_PAGE_LINK } from '@helpers/docUrls';
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 
 import chromeSvg from '../../assets/images/browsers/chrome.svg';
@@ -517,7 +518,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               <div>
                 { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
                 <Link
-                  href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
+                  href="https://docs.zkp2p.xyz/zkp2p/user-guides/zkp2p-extension"
                   target="_blank"
                 >
                   Learn More ↗
