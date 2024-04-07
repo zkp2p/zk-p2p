@@ -32,7 +32,8 @@ const strings: PlatformStrings = {
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Click on Register above to initiate registration.
+    You must register in order to use ZKP2P. Registration invovles proving access
+    to a Wise account. Your Wise details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
