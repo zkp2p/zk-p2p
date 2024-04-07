@@ -122,16 +122,22 @@ const SwapForm: React.FC<SwapFormProps> = ({
       setShouldConfigureSignalIntentWrite(false);
   
       if (value === "" || value === "0" || value === ".") {
-        setCurrentQuote(ZERO_QUOTE);
+        const zeroQuoteCopy = ZERO_QUOTE;
+        zeroQuoteCopy[field] = value;
+
+        setCurrentQuote(zeroQuoteCopy);
       } else if (isValidInput(value)) {
         quoteCopy[field] = value;
+
         setCurrentQuote(quoteCopy);
       }
     } else if (field === 'depositId' || field === 'conversionRate') {
       quoteCopy[field] = BigInt(value);
+
       setCurrentQuote(quoteCopy);
     } else {
       quoteCopy[field] = value;
+      
       setCurrentQuote(quoteCopy);
     }
   };
