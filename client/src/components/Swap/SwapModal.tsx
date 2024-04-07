@@ -89,7 +89,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
           paymentPlatformName: 'Wise',
-          instructionsText: `Using your Wise app, send €${amount} <br />to the above Wise tag`,
+          instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
         };
 
       default:
