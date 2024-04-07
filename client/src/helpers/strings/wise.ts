@@ -3,7 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide a notarized response from your Wise account page to complete registration. Base ETH is required to
+    Provide a proof generated using ZKP2P Extension to complete registration. Base ETH is required to
     submit a registration transaction.
   `,
 
@@ -17,40 +17,38 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wise tag requests found.
-    Please follow instructions in the extension to notarize an existing Wise account tag in the account page.
+    No Wise tag proofs found.
+    Please follow instructions in the extension to prove an existing Wise account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
-    No Wise transfer requests found.
-    Please follow instructions in the extension to notarize an existing Wise payment in the transactions page.
+    No Wise transfer proofs found.
+    Please follow instructions in the extension to prove an existing Wise payment.
   `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration requires a notarized message from Wise, which is used
-    to prove you own a Wise account. Your Wise ID is hashed to conceal your identity.
+    You must register by installing the ZKP2P Extension and proving the authenticity of your Wise account in order 
+    to use ZKP2P. Your Wise ID is hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Provide the transaction alert email you received from Wise containing "You have done a UPI txn"
-    to complete the order. You can sign in with Google to pull the email or manually upload/paste
-    the email.
+    Generate a proof of payment using the ZKP2P Extension to complete the order.
   `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Wise multi currency id. Provide the USDC liquidity to deposit and
+    Depositing requires registering a valid Wise multi currency account id. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required for depositors only to connect a Wise multi currency id
+    This is a second registration step required ONLY for depositors to connect a Wise multi currency account id
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid Wise tag where users will send payments.
     This connects your Wise tag to your address on chain.
-    This must match the Wise tag you used to register.
+    This Wise tag must be of the account with which you reigstered.
   `,
   NEW_DEPOSIT_NAME_TOOLTIP: `
     no-op
@@ -71,10 +69,10 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment on any UPI ID linked to your Wise bank account. Ensure you have email notifications from Wise InstaAlerts enabled
+    Click 'Send' and complete the payment from your Wise account. Ensure you have access to a dekstop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
-    Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+    Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
   `,
 
   // Payment Requirements
