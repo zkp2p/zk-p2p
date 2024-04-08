@@ -223,11 +223,11 @@ const strings: CommonStrings = {
   `,
 
   VERIFICATION_MODAL_PROVE_SUBTITLE_FAST: `
-    Payment validation can take up to 30 seconds
+    Payment validation will take up to 10 seconds
   `,
 
   VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: `
-    Credential validation can take up to 30 seconds
+    Credential validation will take up to 10 seconds
   `,
 
   VERIFICATION_MODAL_VERIFY_TITLE: `
