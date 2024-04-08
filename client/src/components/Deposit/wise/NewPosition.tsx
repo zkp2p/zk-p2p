@@ -29,10 +29,12 @@ import useModal from '@hooks/useModal';
 
 interface NewPositionProps {
   handleBackClick: () => void;
+  receiveCurrencyId: string;
 }
  
 export const NewPosition: React.FC<NewPositionProps> = ({
-  handleBackClick
+  handleBackClick,
+  receiveCurrencyId
 }) => {
   /*
    * Contexts
@@ -83,7 +85,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       wiseTagInput,
-      keccak256('EUR'),
+      keccak256(receiveCurrencyId), // TODO: update to dynamically fetch currency
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY
@@ -531,7 +533,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 value={receiveAmountInput}
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
-                inputLabel="EUR"
+                inputLabel={receiveCurrencyId} // TODO: update to dynamically fetch currency
                 placeholder="1050"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />

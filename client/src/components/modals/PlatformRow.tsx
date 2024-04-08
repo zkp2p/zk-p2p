@@ -38,7 +38,7 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
 const Container = styled.div<{ selected: boolean }>`
   display: flex;
   flex-direction: row;
-  height: 100%;
+  height: 54px;
   padding: 12px 24px 12px 20px;
 
   ${({ selected }) => selected && `

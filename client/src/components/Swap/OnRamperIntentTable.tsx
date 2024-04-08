@@ -234,6 +234,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         setDepositStore(wiseDepositStore);
         break;
 
@@ -265,6 +267,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         setCurrentIntent(currentWiseIntent);
         break;
 
@@ -296,6 +300,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         setRefetchIntentHash(() => refetchWiseIntentHash);
         break;
 
@@ -321,6 +327,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         setRefetchIntentHashAsUint(() => refetchWiseIntentHashAsUint);
         break;
 

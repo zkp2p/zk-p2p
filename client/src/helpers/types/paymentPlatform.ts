@@ -5,15 +5,18 @@ import europeFlagSvg from '../../assets/images/europe-flag.svg';
 
 const USE_GARANTI = process.env.USE_GARANTI === 'true';
 const USE_WISE = process.env.USE_WISE === 'true';
+const USE_WISE_GBP_SGD = process.env.USE_WISE_GBP_SGD === 'true';
 
 export const PaymentPlatform = {
   VENMO: "venmo",
   HDFC: "hdfc",
   GARANTI: "garanti",
-  WISE: "wise"
+  WISE: "wise",
+  WISE_GBP: "wise_gbp",
+  WISE_SGD: "wise_sgd",
 };
 
-function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] {
+function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean, USE_WISE_GBP_SGD: boolean): string[] {
   let platforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
   
   if (USE_GARANTI) {
@@ -24,10 +27,15 @@ function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] 
     platforms.push(PaymentPlatform.WISE);
   };
 
+  if (USE_WISE_GBP_SGD) {
+    platforms.push(PaymentPlatform.WISE_GBP);
+    platforms.push(PaymentPlatform.WISE_SGD);
+  }
+  
   return platforms;
 };
 
-export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE);
+export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE, USE_WISE_GBP_SGD);
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 
@@ -61,6 +69,18 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.WISE,
     platformName: 'Wise',
     platformCurrency: 'EUR',
+    flagSvg: europeFlagSvg
+  },
+  [PaymentPlatform.WISE_GBP]: {
+    platformId: PaymentPlatform.WISE_GBP,
+    platformName: 'Wise',
+    platformCurrency: 'GBP',
+    flagSvg: europeFlagSvg
+  },
+  [PaymentPlatform.WISE_SGD]: {
+    platformId: PaymentPlatform.WISE_SGD,
+    platformName: 'Wise',
+    platformCurrency: 'SGD',
     flagSvg: europeFlagSvg
   }
 };

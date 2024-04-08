@@ -121,6 +121,8 @@ export const Deposit: React.FC = () => {
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         if (shouldFetchWiseDeposits) {
           refetchWiseDeposits?.();
         }

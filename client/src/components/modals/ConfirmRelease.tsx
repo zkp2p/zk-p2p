@@ -110,7 +110,9 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-          refetchGarantiDeposits?.();
+        case PaymentPlatform.WISE_GBP:
+        case PaymentPlatform.WISE_SGD:
+          refetchGarantiDeposits?.(); // TODO: fix this
           break;
 
         default:
@@ -157,6 +159,8 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         if (wiseRampAddress && wiseRampAbi) {
           setReleaseRampAddress(wiseRampAddress);
           setReleaseRampAbi(wiseRampAbi);

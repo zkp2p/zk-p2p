@@ -192,6 +192,8 @@ export const Swap: React.FC = () => {
         );
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         return (
           <WiseOnRamp
             handleBackClick={handleBackClick}

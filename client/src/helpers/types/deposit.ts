@@ -20,6 +20,7 @@ export interface Deposit {
   outstandingIntentAmount: bigint;
   conversionRate: bigint;
   intentHashes: string[];
+  receiveCurrencyId?: string;
 }
 
 // struct DepositWithAvailableLiquidity {

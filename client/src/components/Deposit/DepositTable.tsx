@@ -10,6 +10,7 @@ import { PositionRow } from "@components/Deposit/DepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
+import { keccak256 } from '@helpers/keccack';
 import { Abi } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
@@ -164,6 +165,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
+        case PaymentPlatform.WISE_GBP:
+        case PaymentPlatform.WISE_SGD:
           refetchWiseDeposits?.();
           break;
 
@@ -197,6 +200,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
+        case PaymentPlatform.WISE_GBP:
+        case PaymentPlatform.WISE_SGD:
           setIsRegistered(isWiseRegistered);
           break;
 
@@ -227,9 +232,26 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-          depositsToDisplay = wiseDeposits;
+          depositsToDisplay = wiseDeposits?.filter(
+            depositWithLiquidity => 
+              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('EUR')
+            ) || null;
           break;
-
+        
+        case PaymentPlatform.WISE_GBP:
+          depositsToDisplay = wiseDeposits?.filter(
+            depositWithLiquidity =>
+              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('GBP')
+            ) || null;
+          break;
+        
+        case PaymentPlatform.WISE_SGD:
+          depositsToDisplay = wiseDeposits?.filter(
+            depositWithLiquidity => 
+              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('SGD')
+            ) || null;
+          break;
+          
         default:
           throw new Error(`Unknown payment platform: ${paymentPlatform}`);
       }
@@ -344,6 +366,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
+      case PaymentPlatform.WISE_GBP:
+      case PaymentPlatform.WISE_SGD:
         if (wiseDeposits) {
           const selectedDeposit = wiseDeposits[rowIndex];
           setSelectedDepositIdToWithdraw(selectedDeposit.depositId);

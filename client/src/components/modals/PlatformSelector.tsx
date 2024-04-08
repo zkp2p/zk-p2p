@@ -7,6 +7,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { PlatformRow } from '@components/modals/PlatformRow';
+import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
@@ -48,8 +49,9 @@ export const PlatformSelector: React.FC = () => {
   return (
     <Wrapper ref={ref}>
       <PlatformNameAndChevronContainer onClick={toggleOpen}>
+        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency}
         </PlatformLabel>
         <StyledChevronDown/>
       </PlatformNameAndChevronContainer>
@@ -115,8 +117,8 @@ const PlatformNameAndChevronContainer = styled.div`
   border-radius: 24px;
   background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 8px 6px 14px;
-  gap: 4px;
+  padding: 4px 6px 4px 4px;
+  gap: 6px;
   cursor: pointer;
 
   &:hover {
@@ -188,6 +190,10 @@ const StyledX = styled(X)`
 const Table = styled.div`
   width: 100%;
   color: #616161;
+  height: 284px;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
 `;
 
 const TableFooter = styled.div`

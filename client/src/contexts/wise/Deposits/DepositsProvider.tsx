@@ -141,6 +141,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
           outstandingIntentAmount: depositData.outstandingIntentAmount,
           conversionRate: depositData.conversionRate,
           intentHashes: depositData.intentHashes,
+          receiveCurrencyId: depositData.receiveCurrencyId,
         };
 
         const depositWithLiquidity: DepositWithAvailableLiquidity = {
