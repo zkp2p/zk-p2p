@@ -14,6 +14,7 @@ import {
   IndicativeQuote,
   PaymentPlatform,
   StoredDeposit,
+  paymentPlatformInfo
 } from '@helpers/types';
 import {
   calculateUsdFromRequestedUSDC,
@@ -21,13 +22,14 @@ import {
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
  } from './helper';
-import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_WISE } from '@helpers/constants';
+ import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_WISE } from '@helpers/constants';
+ import { keccak256 } from '@helpers/keccack';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/wise/useRampState';
 import useDenyList from '@hooks/useDenyList';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 import LiquidityContext from './LiquidityContext';
-
 
 const BATCH_SIZE = 30;
 const PRUNED_DEPOSITS_PREFIX = 'prunedWiseDepositIds_';
@@ -41,6 +43,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
+  const { currencyIndex } = usePlatformSettings();
   const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
   const { fetchVenmoDepositorDenyList } = useDenyList();
@@ -96,6 +99,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       const venmoDenyListSet = new Set(venmoDenyList);
       const filteredDeposits = batchedDeposits.filter(deposit => !venmoDenyListSet.has(deposit.deposit.venmoId.replace(/\0+$/, '')));
+
       setDeposits(filteredDeposits);
     }
   };
@@ -153,6 +157,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         outstandingIntentAmount: depositData.outstandingIntentAmount,
         conversionRate: depositData.conversionRate,
         intentHashes: depositData.intentHashes,
+        receiveCurrencyId: depositData.receiveCurrencyId,
       };
 
       const depositWithLiquidity: DepositWithAvailableLiquidity = {
@@ -234,14 +239,15 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       return fetchBestDepositForAmount(
         requestedOnRampInputAmount,
         depositStore,
-        onRamperRegistrationHash
+        onRamperRegistrationHash,
+        keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0])
       );
     } else {
       return {
         error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore]);
+  }, [depositStore, currencyIndex]);
 
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
     if (depositStore) {

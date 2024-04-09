@@ -84,8 +84,6 @@ export const Registration: React.FC = () => {
           break;
 
         case PaymentPlatform.WISE:
-        case PaymentPlatform.WISE_GBP:
-        case PaymentPlatform.WISE_SGD:
           if (shouldFetchWiseRegistration) {
             refetchWiseAccount?.();
           }

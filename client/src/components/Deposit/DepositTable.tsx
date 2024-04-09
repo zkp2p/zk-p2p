@@ -11,7 +11,7 @@ import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { keccak256 } from '@helpers/keccack';
-import { Abi } from '@helpers/types';
+import { Abi, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -66,7 +66,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     wiseRampAbi
   } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
-  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
+  const { PaymentPlatform, paymentPlatform, currencyIndex } = usePlatformSettings();
 
   const {
     isRegistered: isVenmoRegistered
@@ -165,8 +165,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-        case PaymentPlatform.WISE_GBP:
-        case PaymentPlatform.WISE_SGD:
           refetchWiseDeposits?.();
           break;
 
@@ -200,8 +198,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-        case PaymentPlatform.WISE_GBP:
-        case PaymentPlatform.WISE_SGD:
           setIsRegistered(isWiseRegistered);
           break;
 
@@ -232,24 +228,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-          depositsToDisplay = wiseDeposits?.filter(
-            depositWithLiquidity => 
-              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('EUR')
-            ) || null;
-          break;
-        
-        case PaymentPlatform.WISE_GBP:
-          depositsToDisplay = wiseDeposits?.filter(
-            depositWithLiquidity =>
-              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('GBP')
-            ) || null;
-          break;
-        
-        case PaymentPlatform.WISE_SGD:
-          depositsToDisplay = wiseDeposits?.filter(
-            depositWithLiquidity => 
-              depositWithLiquidity.deposit.receiveCurrencyId === keccak256('SGD')
-            ) || null;
+          const paymentPlatformCurrency = paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0];
+          depositsToDisplay = wiseDeposits?.filter(deposit => keccak256(paymentPlatformCurrency) === deposit.deposit.receiveCurrencyId) || null
           break;
           
         default:
@@ -285,7 +265,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venmoDeposits, hdfcDeposits, garantiDeposits, wiseDeposits, paymentPlatform]);
+  }, [venmoDeposits, hdfcDeposits, garantiDeposits, wiseDeposits, paymentPlatform, currencyIndex]);
 
   useEffect(() => {
     const executeWithdrawDeposit = async () => {
@@ -366,8 +346,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         if (wiseDeposits) {
           const selectedDeposit = wiseDeposits[rowIndex];
           setSelectedDepositIdToWithdraw(selectedDeposit.depositId);

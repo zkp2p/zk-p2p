@@ -18,9 +18,11 @@ import { wiseStrings } from '@helpers/strings';
 import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
+import { PaymentPlatform, paymentPlatformInfo } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/wise/useDeposits';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 import useRampState from '@hooks/wise/useRampState';
 import useRegistration from '@hooks/wise/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -29,12 +31,10 @@ import useModal from '@hooks/useModal';
 
 interface NewPositionProps {
   handleBackClick: () => void;
-  receiveCurrencyId: string;
 }
  
 export const NewPosition: React.FC<NewPositionProps> = ({
-  handleBackClick,
-  receiveCurrencyId
+  handleBackClick
 }) => {
   /*
    * Contexts
@@ -45,13 +45,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
+  const { currencyIndex } = usePlatformSettings();
   const {
     extractedWiseProfileId,
     registrationHash,
     setExtractedWiseProfileId,
     isRegisteredForDeposit,
     offRampId,
-    
   } = useRegistration();
   const { openModal } = useModal();
 
@@ -85,7 +85,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       wiseTagInput,
-      keccak256(receiveCurrencyId), // TODO: update to dynamically fetch currency
+      keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0]),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY
@@ -533,7 +533,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 value={receiveAmountInput}
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
-                inputLabel={receiveCurrencyId} // TODO: update to dynamically fetch currency
+                inputLabel={paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0]} // TODO: update to dynamically fetch currency
                 placeholder="1050"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />

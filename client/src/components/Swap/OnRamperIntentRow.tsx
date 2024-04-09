@@ -10,8 +10,7 @@ import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
-import { PaymentPlatformType } from "@helpers/types";
-
+import { paymentPlatformInfo, PaymentPlatformType } from "@helpers/types";
 
 interface IntentRowProps {
   paymentPlatform: PaymentPlatformType | undefined;
@@ -51,6 +50,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   const { blockscanUrl } = useSmartContracts();
   const {
     PaymentPlatform,
+    currencyIndex,
     reviewedRequirementsForPlatform,
     markPlatformRequirementsAsReviewed
   } = usePlatformSettings();
@@ -76,28 +76,28 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       case PaymentPlatform.VENMO:
         return {
           qrLink: `https://venmo.com/code?user_id=${depositorVenmoId}`,
-          currencySymbol: '$',
+          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0],
           paymentPlatformName: 'Venmo',
         };
 
       case PaymentPlatform.HDFC:
         return {
           qrLink: `upi://pay?pa=${depositorVenmoId.replace(/\0/g, '')}&am=${amountUSDToSend}&cu=INR`,
-          currencySymbol: '₹',
+          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0],
           paymentPlatformName: 'HDFC',
         };
 
       case PaymentPlatform.GARANTI:
         return {
           qrLink: ``,
-          currencySymbol: '₺',
+          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0],
           paymentPlatformName: 'Garanti',
         };
 
       case PaymentPlatform.WISE:
         return {
           qrLink: `https://wise.com/pay/me/${depositorVenmoId}`,
-          currencySymbol: '€',
+          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0], // TODO
           paymentPlatformName: 'Wise',
         };
 

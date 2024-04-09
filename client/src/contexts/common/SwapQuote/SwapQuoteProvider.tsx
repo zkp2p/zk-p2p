@@ -192,8 +192,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_WISE);
         break;
 
@@ -229,8 +227,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setIsRegistered(isRegisteredOnWise);
         break;
 
@@ -303,8 +299,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setRefetchDeposits(() => refetchWiseDeposits);
         break;
 
@@ -335,8 +329,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setGetBestDepositForAmount(() => getBestWiseDepositForAmount as any);
         break;
 
@@ -374,8 +366,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setGetDepositForMaxAvailableTransferSize(() => getWiseDepositForMaxAvailableTransferSize as any);
         break;
 
@@ -413,8 +403,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setShouldFetchDeposits(shouldFetchWiseDeposits);
         break;
 
@@ -457,8 +445,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setCurrentIntentHash(currentWiseIntentHash);
         break;
 
@@ -496,8 +482,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setRefetchIntentHash(() =>  refetchWiseIntentHash);
         break;
 
@@ -526,8 +510,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setRefetchIntentHashAsUint(() =>  refetchWiseIntentHashAsUint);
         break;
 
@@ -562,8 +544,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setShouldFetchIntentHash(shouldFetchWiseIntentHash);
         break;
 
@@ -601,8 +581,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setLastOnRampTimestamp(lastWiseOnRampTimestamp);
         break;
 
@@ -640,8 +618,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setRefetchLastOnRampTimestamp(() => refetchWiseLastOnRampTimestamp);
         break;
 
@@ -684,8 +660,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setRefetchDepositCounter(() => refetchWiseDepositCounter);
         break;
 
@@ -723,8 +697,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setShouldFetchRampState(shouldFetchWiseRampState);
         break;
 
@@ -762,8 +734,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         setOnRampCooldownPeriod(wiseOnRampCooldownPeriod);
         break;
 

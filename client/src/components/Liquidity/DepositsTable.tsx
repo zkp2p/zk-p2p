@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
+import { keccak256 } from '@helpers/keccack';
 import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
@@ -58,7 +59,8 @@ export const DepositsTable: React.FC = () => {
   } = useAccount();
 
   const {
-    paymentPlatform
+    paymentPlatform,
+    currencyIndex
   } = usePlatformSettings();
 
   /*
@@ -99,15 +101,25 @@ export const DepositsTable: React.FC = () => {
     if (depositStoreToDisplay.length === 0) {
       setPositionsRowData([]);  
     } else {
+      const preprocessedMulticurrencyDeposits = depositStoreToDisplay.filter((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+        const deposit = depositWithLiquidity.deposit;
+        if (deposit.receiveCurrencyId) {
+          const platformCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency[currencyIndex ?? 0];
+          return deposit.receiveCurrencyId === keccak256(platformCurrency);
+        } else {
+          return true
+        }
+      });
+
       var sanitizedDeposits: DepositPrime[] = [];
-      sanitizedDeposits = depositStoreToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedDeposits = preprocessedMulticurrencyDeposits.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
         const deposit = depositWithLiquidity.deposit
         const platformType = deposit.platformType
         const depositor = deposit.depositor;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
-        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency;
+        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency[currencyIndex ?? 0];
 
         return {
           depositor,
@@ -126,6 +138,7 @@ export const DepositsTable: React.FC = () => {
     hdfcDepositStore,
     garantiDepositStore,
     paymentPlatform,
+    currencyIndex,
     wiseDepositStore
   ]);
 

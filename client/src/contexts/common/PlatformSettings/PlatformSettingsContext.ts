@@ -6,6 +6,8 @@ import { PaymentPlatformType, PaymentPlatform, paymentPlatforms } from '@helpers
 interface PlatformSettingsValues {
   paymentPlatform?: PaymentPlatformType;
   setPaymentPlatform?: React.Dispatch<React.SetStateAction<PaymentPlatformType>>;
+  currencyIndex?: number;
+  setCurrencyIndex?: React.Dispatch<React.SetStateAction<number>>;
   PaymentPlatform: typeof PaymentPlatform;
   paymentPlatforms: PaymentPlatformType[];
   reviewedRequirementsForPlatform: () => boolean;

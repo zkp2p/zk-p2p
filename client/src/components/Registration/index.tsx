@@ -54,8 +54,6 @@ export const RegistrationForm: React.FC = () => {
         return <GarantiExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         return <WiseExistingRegistration handleNewRegistrationClick={handleUpdateClick} />;
 
       default:
@@ -75,8 +73,6 @@ export const RegistrationForm: React.FC = () => {
         return <GarantiNewRegistration handleBackClick={handleBackClick} />;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         return <WiseNewRegistration handleBackClick={handleBackClick} />;
 
       default:

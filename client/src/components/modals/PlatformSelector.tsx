@@ -24,7 +24,7 @@ export const PlatformSelector: React.FC = () => {
    * Contexts
    */
 
-  const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+  const { paymentPlatform, setPaymentPlatform, currencyIndex, setCurrencyIndex } = usePlatformSettings();
 
   /*
    * Handlers
@@ -34,9 +34,10 @@ export const PlatformSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (platform: PaymentPlatformType) => {
-    if (setPaymentPlatform) {
+  const handleSelectPlatform = (platform: PaymentPlatformType, currencyIndex: number) => {
+    if (setPaymentPlatform && setCurrencyIndex) {
       setPaymentPlatform(platform);
+      setCurrencyIndex(currencyIndex);
 
       toggleOpen();
     }
@@ -51,7 +52,7 @@ export const PlatformSelector: React.FC = () => {
       <PlatformNameAndChevronContainer onClick={toggleOpen}>
         <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency}
+          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency[currencyIndex ?? 0]}
         </PlatformLabel>
         <StyledChevronDown/>
       </PlatformNameAndChevronContainer>
@@ -77,16 +78,18 @@ export const PlatformSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {paymentPlatforms.map((platform, index) => (
-                <PlatformRow
-                  key={index}
-                  platformName={paymentPlatformInfo[platform].platformName}
-                  platformCurrency={paymentPlatformInfo[platform].platformCurrency}
-                  flagSvg={paymentPlatformInfo[platform].flagSvg}
-                  isSelected={paymentPlatform === platform}
-                  onRowClick={() => handleSelectPlatform(platform)}
-                />
-              ))}
+              {paymentPlatforms.map((platform, index) => 
+                paymentPlatformInfo[platform].platformCurrency.map((currency, currIndex) => (
+                  <PlatformRow
+                    key={`${index}-${currIndex}`}
+                    platformName={paymentPlatformInfo[platform].platformName}
+                    platformCurrency={currency}
+                    flagSvg={paymentPlatformInfo[platform].flagSvg}
+                    isSelected={paymentPlatform === platform && currencyIndex === currIndex}
+                    onRowClick={() => handleSelectPlatform(platform, currIndex)}
+                  />
+                ))
+              )}
             </Table>
 
             <HorizontalDivider/>

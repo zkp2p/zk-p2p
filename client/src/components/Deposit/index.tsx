@@ -9,7 +9,6 @@ import { NewPosition as WiseNewPosition } from '@components/Deposit/wise/NewPosi
 import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
-import { keccak256 } from '@helpers/keccack';
 import { DEPOSIT_REFETCH_INTERVAL } from '@helpers/constants';
 import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
@@ -188,19 +187,7 @@ export default function Deposit() {
 
       case PaymentPlatform.WISE:
         if (wiseDepositIntents) {
-          setDepositIntents(wiseDepositIntents.filter(depositIntent => depositIntent.deposit.receiveCurrencyId === keccak256('EUR')));
-        }
-        break;
-
-      case PaymentPlatform.WISE_GBP:
-        if (wiseDepositIntents) {
-          setDepositIntents(wiseDepositIntents.filter(depositIntent => depositIntent.deposit.receiveCurrencyId === keccak256('GBP')));
-        }
-        break;
-
-      case PaymentPlatform.WISE_SGD:
-        if (wiseDepositIntents) {
-          setDepositIntents(wiseDepositIntents.filter(depositIntent => depositIntent.deposit.receiveCurrencyId === keccak256('SGD')));
+          setDepositIntents(wiseDepositIntents);
         }
         break;
 
@@ -261,23 +248,6 @@ export default function Deposit() {
         case PaymentPlatform.WISE:
           return (
             <WiseNewPosition
-              receiveCurrencyId={'EUR'}
-              handleBackClick={handleBackClickOnNewDeposit}
-            />
-          );
-
-        case PaymentPlatform.WISE_GBP:
-          return (
-            <WiseNewPosition
-              receiveCurrencyId={'GBP'}
-              handleBackClick={handleBackClickOnNewDeposit}
-            />
-          );
-
-        case PaymentPlatform.WISE_SGD:
-          return (
-            <WiseNewPosition
-              receiveCurrencyId={'SGD'}
               handleBackClick={handleBackClickOnNewDeposit}
             />
           );

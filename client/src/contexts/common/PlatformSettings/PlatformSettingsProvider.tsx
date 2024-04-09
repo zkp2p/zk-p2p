@@ -15,6 +15,7 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
    */
 
   const [paymentPlatform, setPaymentPlatform] = useState<PaymentPlatformType>(PaymentPlatform.VENMO);
+  const [currencyIndex, setCurrencyIndex] = useState<number>(0);
 
   const [didUserReviewRequirementsForPlatform, setDidUserReviewRequirementsForPlatform] = useState<boolean>(false);
 
@@ -27,14 +28,16 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
     
     if (storedSelectedPaymentPlatform) {
       setPaymentPlatform(JSON.parse(storedSelectedPaymentPlatform));
+      setCurrencyIndex(Number(0));
     }
   }, []);
 
   useEffect(() => {
     if (paymentPlatform) {
       localStorage.setItem('storedSelectedPaymentPlatform', JSON.stringify(paymentPlatform));
+      localStorage.setItem('storedSelectedCurrencyIndex', JSON.stringify(currencyIndex));
     }
-  }, [paymentPlatform]);
+  }, [paymentPlatform, currencyIndex]);
 
   useEffect(() => {
     const reviewStatusKey = getReviewStatusKey(paymentPlatform);
@@ -78,6 +81,8 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
       value={{
         paymentPlatform,
         setPaymentPlatform,
+        currencyIndex,
+        setCurrencyIndex,
         PaymentPlatform,
         paymentPlatforms,
         reviewedRequirementsForPlatform,

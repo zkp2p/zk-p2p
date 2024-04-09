@@ -12,6 +12,7 @@ import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
+import useWiseDeposits from '@hooks/wise/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -57,6 +58,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
   const {
     refetchDeposits: refetchGarantiDeposits
   } = useGarantiDeposits();
+  
+  const {
+    refetchDeposits: refetchWiseDeposits
+  } = useWiseDeposits();
 
   /*
    * State
@@ -110,9 +115,7 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-        case PaymentPlatform.WISE_GBP:
-        case PaymentPlatform.WISE_SGD:
-          refetchGarantiDeposits?.(); // TODO: fix this
+          refetchWiseDeposits?.();
           break;
 
         default:
@@ -159,8 +162,6 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
         break;
 
       case PaymentPlatform.WISE:
-      case PaymentPlatform.WISE_GBP:
-      case PaymentPlatform.WISE_SGD:
         if (wiseRampAddress && wiseRampAbi) {
           setReleaseRampAddress(wiseRampAddress);
           setReleaseRampAbi(wiseRampAbi);
