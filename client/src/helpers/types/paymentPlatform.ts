@@ -5,18 +5,15 @@ import europeFlagSvg from '../../assets/images/europe-flag.svg';
 
 const USE_GARANTI = process.env.USE_GARANTI === 'true';
 const USE_WISE = process.env.USE_WISE === 'true';
-const USE_WISE_GBP_SGD = process.env.USE_WISE_GBP_SGD === 'true';
 
 export const PaymentPlatform = {
   VENMO: "venmo",
   HDFC: "hdfc",
   GARANTI: "garanti",
-  WISE: "wise",
-  WISE_GBP: "wise_gbp",
-  WISE_SGD: "wise_sgd",
+  WISE: "wise"
 };
 
-function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean, USE_WISE_GBP_SGD: boolean): string[] {
+function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] {
   let platforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
   
   if (USE_GARANTI) {
@@ -30,7 +27,7 @@ function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean, USE_WISE_G
   return platforms;
 };
 
-export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE, USE_WISE_GBP_SGD);
+export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE);
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 
