@@ -25,7 +25,7 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 
 const ROWS_PER_PAGE = 3;
-const VERSION_REFETCH_INTERVAL = 5000;
+const NOTARY_PROOF_FETCH_INTERVAL = 5000;
 // const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
 
 const USE_WISE_DEFAULT_DEPOSITOR = process.env.USE_WISE_DEFAULT_DEPOSITOR;
@@ -302,7 +302,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         clearInterval(intervalId);
       };
       
-      intervalId = setInterval(callback, VERSION_REFETCH_INTERVAL);
+      intervalId = setInterval(callback, NOTARY_PROOF_FETCH_INTERVAL);
     };
   
     switch (circuitType) {
