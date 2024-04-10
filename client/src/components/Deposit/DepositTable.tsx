@@ -228,7 +228,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.WISE:
-          const paymentPlatformCurrency = paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0];
+          const paymentPlatformCurrency = paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0];
           depositsToDisplay = wiseDeposits?.filter(deposit => keccak256(paymentPlatformCurrency) === deposit.deposit.receiveCurrencyId) || null
           break;
           

@@ -85,7 +85,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       wiseTagInput,
-      keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0]),
+      keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0]),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY
@@ -533,7 +533,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 value={receiveAmountInput}
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
-                inputLabel={paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0]} // TODO: update to dynamically fetch currency
+                inputLabel={paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0]}
                 placeholder="1050"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />

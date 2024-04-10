@@ -240,7 +240,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         requestedOnRampInputAmount,
         depositStore,
         onRamperRegistrationHash,
-        keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrency[currencyIndex ?? 0])
+        keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0])
       );
     } else {
       return {

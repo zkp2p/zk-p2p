@@ -34,38 +34,43 @@ export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPla
 interface PaymentPlatformData {
   platformId: PaymentPlatformType;
   platformName: string;
-  platformCurrency: string[];
+  platformCurrencies: string[];
   currencySymbols: string[];
-  flagSvg: string;
+  flagSvgs: string[];
+  platformCurrencyIcons: string[];
 }
 
 export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformData> = {
   [PaymentPlatform.VENMO]: {
     platformId: PaymentPlatform.VENMO,
     platformName: 'Venmo',
-    platformCurrency: ['USD'],
+    platformCurrencies: ['USD'],
     currencySymbols: ['$'],
-    flagSvg: americaFlagSvg
+    flagSvgs: [americaFlagSvg],
+    platformCurrencyIcons: ['usdc'] // TODO: need USD icon
   },
   [PaymentPlatform.HDFC]: {
     platformId: PaymentPlatform.HDFC,
     platformName: 'HDFC',
-    platformCurrency: ['INR'],
+    platformCurrencies: ['INR'],
     currencySymbols: ['₹'],
-    flagSvg: indiaFlagSvg
+    flagSvgs: [indiaFlagSvg],
+    platformCurrencyIcons: ['usdc'] // TODO: need INR icon
   },
   [PaymentPlatform.GARANTI]: {
     platformId: PaymentPlatform.GARANTI,
     platformName: 'Garanti',
-    platformCurrency: ['TRY'],
+    platformCurrencies: ['TRY'],
     currencySymbols: ['₺'],
-    flagSvg: turkeyFlagSvg
+    flagSvgs: [turkeyFlagSvg],
+    platformCurrencyIcons: ['usdc'] // TODO: need TRY icon
   },
   [PaymentPlatform.WISE]: {
     platformId: PaymentPlatform.WISE,
     platformName: 'Wise',
-    platformCurrency: ['EUR', 'GBP', 'SGD'],
+    platformCurrencies: ['EUR', 'GBP', 'SGD'],
     currencySymbols: ['€', '£', 'SGD$'],
-    flagSvg: europeFlagSvg // TODO
+    flagSvgs: [europeFlagSvg, americaFlagSvg, turkeyFlagSvg],
+    platformCurrencyIcons: ['usdc', 'usdc', 'usdc'] // TODO: need EUR, GBP, SGD icons
   }
 };

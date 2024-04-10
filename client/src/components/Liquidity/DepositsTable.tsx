@@ -104,7 +104,7 @@ export const DepositsTable: React.FC = () => {
       const preprocessedMulticurrencyDeposits = depositStoreToDisplay.filter((depositWithLiquidity: DepositWithAvailableLiquidity) => {
         const deposit = depositWithLiquidity.deposit;
         if (deposit.receiveCurrencyId) {
-          const platformCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency[currencyIndex ?? 0];
+          const platformCurrency = paymentPlatformInfo[deposit.platformType].platformCurrencies[currencyIndex ?? 0];
           return deposit.receiveCurrencyId === keccak256(platformCurrency);
         } else {
           return true
@@ -119,7 +119,7 @@ export const DepositsTable: React.FC = () => {
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
-        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency[currencyIndex ?? 0];
+        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrencies[currencyIndex ?? 0];
 
         return {
           depositor,

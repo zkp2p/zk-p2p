@@ -50,11 +50,13 @@ export const PlatformSelector: React.FC<{ onlyDisplayPlatform: boolean }> = ({ o
   return (
     <Wrapper ref={ref}>
       <PlatformNameAndChevronContainer onClick={toggleOpen} onlyDisplayPlatform={onlyDisplayPlatform}>
-        { !onlyDisplayPlatform && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/> }
+        { !onlyDisplayPlatform 
+          && <SVGIconThemed icon={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencyIcons[currencyIndex ?? 0]} width={'24'} height={'24'}/> 
+        }
         <PlatformLabel>
           { onlyDisplayPlatform
             ? paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName
-            : paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency[currencyIndex ?? 0]
+            : paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex ?? 0]
           }
         </PlatformLabel>
         <StyledChevronDown/>
@@ -86,20 +88,20 @@ export const PlatformSelector: React.FC<{ onlyDisplayPlatform: boolean }> = ({ o
                   <PlatformRow
                     key={`${index}`}
                     platformName={paymentPlatformInfo[platform].platformName}
-                    platformCurrency={paymentPlatformInfo[platform].platformCurrency[0]}
-                    flagSvg={paymentPlatformInfo[platform].flagSvg}
+                    platformCurrency=''
+                    flagSvg={paymentPlatformInfo[platform].flagSvgs[0]} // TODO: what svg to use here?
                     isSelected={paymentPlatform === platform}
                     onlyDisplayPlatform={onlyDisplayPlatform}
                     onRowClick={() => handleSelectPlatform(platform, 0)}
                   />
                 ))
                 : paymentPlatforms.map((platform, index) => 
-                  paymentPlatformInfo[platform].platformCurrency.map((currency, currIndex) => (
+                  paymentPlatformInfo[platform].platformCurrencies.map((currency, currIndex) => (
                     <PlatformRow
                       key={`${index}-${currIndex}`}
                       platformName={paymentPlatformInfo[platform].platformName}
                       platformCurrency={currency}
-                      flagSvg={paymentPlatformInfo[platform].flagSvg}
+                      flagSvg={paymentPlatformInfo[platform].flagSvgs[currIndex]}
                       isSelected={paymentPlatform === platform && currencyIndex === currIndex}
                       onlyDisplayPlatform={onlyDisplayPlatform}
                       onRowClick={() => handleSelectPlatform(platform, currIndex)}

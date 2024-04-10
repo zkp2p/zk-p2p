@@ -97,7 +97,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       case PaymentPlatform.WISE:
         return {
           qrLink: `https://wise.com/pay/me/${depositorVenmoId}`,
-          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0], // TODO
+          currencySymbol: paymentPlatformInfo[paymentPlatform].currencySymbols[currencyIndex ?? 0],
           paymentPlatformName: 'Wise',
         };
 
