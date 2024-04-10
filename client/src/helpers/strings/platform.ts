@@ -56,11 +56,7 @@ export class PlatformStringProvider {
       this.strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       this.strings = garantiCopy;
-    } else if (
-      platformType === PaymentPlatform.WISE
-      || platformType === PaymentPlatform.WISE_GBP
-      || platformType === PaymentPlatform.WISE_SGD
-    ) {
+    } else if (platformType === PaymentPlatform.WISE) {
       this.strings = wiseCopy;
     }  else {
       throw new Error('Invalid platform type');
@@ -79,11 +75,7 @@ export class PlatformStringProvider {
       strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       strings = garantiCopy;
-    } else if (
-      platformType === PaymentPlatform.WISE
-      || platformType === PaymentPlatform.WISE_GBP
-      || platformType === PaymentPlatform.WISE_SGD
-    ) {
+    } else if (platformType === PaymentPlatform.WISE) {
       strings = wiseCopy;
     } else {
       throw new Error('Invalid platform type');

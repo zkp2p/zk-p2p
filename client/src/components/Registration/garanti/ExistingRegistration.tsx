@@ -134,7 +134,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
           ) : (
             <Body>
               <PlatformSelectorContainer>
-                <PlatformSelector />
+                <PlatformSelector onlyDisplayPlatform={true} />
               </PlatformSelectorContainer>
 
               { !isRegistered && (

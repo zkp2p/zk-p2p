@@ -172,7 +172,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
-        <PlatformSelector />
+        <PlatformSelector onlyDisplayPlatform={false} />
       </TitleRow>
 
       <Content>

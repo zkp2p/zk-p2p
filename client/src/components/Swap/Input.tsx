@@ -68,7 +68,7 @@ export const Input: React.FC<InputProps> = ({
 
         <SelectorAccessory hasAccessoryLabel={accessoryLabel !== ""}>
           {inputLabel ? (
-            <PlatformSelector/>
+            <PlatformSelector onlyDisplayPlatform={false} />
           ) : (
             <TokenSelector/>
           )}

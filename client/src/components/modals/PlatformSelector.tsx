@@ -14,7 +14,7 @@ import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
-export const PlatformSelector: React.FC = () => {
+export const PlatformSelector: React.FC<{ onlyDisplayPlatform: boolean }> = ({ onlyDisplayPlatform = false }) => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -49,10 +49,13 @@ export const PlatformSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <PlatformNameAndChevronContainer onClick={toggleOpen}>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+      <PlatformNameAndChevronContainer onClick={toggleOpen} onlyDisplayPlatform={onlyDisplayPlatform}>
+        { !onlyDisplayPlatform && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/> }
         <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency[currencyIndex ?? 0]}
+          { onlyDisplayPlatform
+            ? paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName
+            : paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrency[currencyIndex ?? 0]
+          }
         </PlatformLabel>
         <StyledChevronDown/>
       </PlatformNameAndChevronContainer>
@@ -78,17 +81,30 @@ export const PlatformSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {paymentPlatforms.map((platform, index) => 
-                paymentPlatformInfo[platform].platformCurrency.map((currency, currIndex) => (
+              { onlyDisplayPlatform
+                ? paymentPlatforms.map((platform, index) => (
                   <PlatformRow
-                    key={`${index}-${currIndex}`}
+                    key={`${index}`}
                     platformName={paymentPlatformInfo[platform].platformName}
-                    platformCurrency={currency}
+                    platformCurrency={paymentPlatformInfo[platform].platformCurrency[0]}
                     flagSvg={paymentPlatformInfo[platform].flagSvg}
-                    isSelected={paymentPlatform === platform && currencyIndex === currIndex}
-                    onRowClick={() => handleSelectPlatform(platform, currIndex)}
+                    isSelected={paymentPlatform === platform}
+                    onlyDisplayPlatform={onlyDisplayPlatform}
+                    onRowClick={() => handleSelectPlatform(platform, 0)}
                   />
                 ))
+                : paymentPlatforms.map((platform, index) => 
+                  paymentPlatformInfo[platform].platformCurrency.map((currency, currIndex) => (
+                    <PlatformRow
+                      key={`${index}-${currIndex}`}
+                      platformName={paymentPlatformInfo[platform].platformName}
+                      platformCurrency={currency}
+                      flagSvg={paymentPlatformInfo[platform].flagSvg}
+                      isSelected={paymentPlatform === platform && currencyIndex === currIndex}
+                      onlyDisplayPlatform={onlyDisplayPlatform}
+                      onRowClick={() => handleSelectPlatform(platform, currIndex)}
+                    />
+                  ))
               )}
             </Table>
 
@@ -113,15 +129,15 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const PlatformNameAndChevronContainer = styled.div`
+const PlatformNameAndChevronContainer = styled.div<{ onlyDisplayPlatform: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
   border-radius: 24px;
   background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 4px 6px 4px 4px;
-  gap: 6px;
+  padding: ${({ onlyDisplayPlatform }) => onlyDisplayPlatform ? '6px 8px 6px 14px': '4px 6px 4px 4px'};
+  gap: ${({ onlyDisplayPlatform }) => onlyDisplayPlatform ? '4px' : '6px'};
   cursor: pointer;
 
   &:hover {

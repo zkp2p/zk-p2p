@@ -395,7 +395,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : !isRegistered ? (
           <ErrorContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector />
+              <PlatformSelector onlyDisplayPlatform={false} />
             </PlatformSelectorContainer>
 
             <ThemedText.DeprecatedBody textAlign="center">
@@ -413,7 +413,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <PlatformSelectorContainer>
-                <PlatformSelector />
+                <PlatformSelector onlyDisplayPlatform={false} />
               </PlatformSelectorContainer>
 
               <ThemedText.DeprecatedBody textAlign="center">
@@ -426,7 +426,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : (
           <PositionsContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector />
+              <PlatformSelector onlyDisplayPlatform={false} />
             </PlatformSelectorContainer>
             
             <PositionCountTitle>
@@ -435,7 +435,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               </ThemedText.LabelSmall>
 
               <PlatformSelectorContainer>
-                <PlatformSelector />
+                <PlatformSelector onlyDisplayPlatform={false} />
               </PlatformSelectorContainer>
             </PositionCountTitle>
 

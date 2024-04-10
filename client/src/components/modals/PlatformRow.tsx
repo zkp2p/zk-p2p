@@ -6,6 +6,7 @@ interface PlatformRowProps {
   platformName: string;
   platformCurrency: string;
   isSelected: boolean;
+  onlyDisplayPlatform: boolean;
   flagSvg: string;
   onRowClick: () => void;
 }
@@ -14,6 +15,7 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
   platformName,
   platformCurrency,
   isSelected,
+  onlyDisplayPlatform,
   flagSvg,
   onRowClick,
 }: PlatformRowProps) => {
@@ -28,7 +30,7 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
         <FlagSvg src={flagSvg} />
         <PlatformAndCurrencyLabel>
           <PlatformLabel>{platformName}</PlatformLabel>
-          <CurrencyLabel>{platformCurrency}</CurrencyLabel>
+          { !onlyDisplayPlatform && <CurrencyLabel>{platformCurrency}</CurrencyLabel> }
         </PlatformAndCurrencyLabel>
       </DetailsContainer>
     </Container>
