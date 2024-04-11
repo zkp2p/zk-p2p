@@ -77,21 +77,30 @@ export const DepositsTable: React.FC = () => {
 
   useEffect(() => {
     let depositStoreToDisplay: DepositWithAvailableLiquidity[] = [];
+    let conversionCurrenciesToDisplay: string[] = [];
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         depositStoreToDisplay = venmoDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'USD')
         break;
 
       case PaymentPlatform.HDFC:
         depositStoreToDisplay = hdfcDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'EUR')
         break;
 
       case PaymentPlatform.GARANTI:
         depositStoreToDisplay = garantiDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'TRY')
         break;
 
       case PaymentPlatform.WISE:
         depositStoreToDisplay = wiseDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(depositToDisplay => (
+          paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies.find(
+            currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
+          ) ?? 'EUR'
+        ))
         break;
 
       default:
@@ -101,25 +110,15 @@ export const DepositsTable: React.FC = () => {
     if (depositStoreToDisplay.length === 0) {
       setPositionsRowData([]);  
     } else {
-      const preprocessedMulticurrencyDeposits = depositStoreToDisplay.filter((depositWithLiquidity: DepositWithAvailableLiquidity) => {
-        const deposit = depositWithLiquidity.deposit;
-        if (deposit.receiveCurrencyId) {
-          const platformCurrency = paymentPlatformInfo[deposit.platformType].platformCurrencies[currencyIndex ?? 0];
-          return deposit.receiveCurrencyId === keccak256(platformCurrency);
-        } else {
-          return true
-        }
-      });
-
       var sanitizedDeposits: DepositPrime[] = [];
-      sanitizedDeposits = preprocessedMulticurrencyDeposits.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedDeposits = depositStoreToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity, index: number) => {
         const deposit = depositWithLiquidity.deposit
         const platformType = deposit.platformType
         const depositor = deposit.depositor;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
-        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrencies[currencyIndex ?? 0];
+        const conversionCurrency = conversionCurrenciesToDisplay[index];
 
         return {
           depositor,
@@ -127,7 +126,7 @@ export const DepositsTable: React.FC = () => {
           availableDepositAmount,
           totalDepositAmount,
           conversionRate,
-          conversionCurrency
+          conversionCurrency,
         };
       });
 
@@ -172,7 +171,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
-        <PlatformSelector onlyDisplayPlatform={false} />
+        <PlatformSelector/>
       </TitleRow>
 
       <Content>

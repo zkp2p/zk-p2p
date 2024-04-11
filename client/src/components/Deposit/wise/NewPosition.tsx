@@ -533,7 +533,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 value={receiveAmountInput}
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
-                inputLabel={paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0]}
+                hasSelector={true}
                 placeholder="1050"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />

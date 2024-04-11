@@ -23,7 +23,7 @@ export const PlatformSelector: React.FC = () => {
    * Contexts
    */
 
-  const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+  const { paymentPlatform, setPaymentPlatform, setCurrencyIndex } = usePlatformSettings();
 
   /*
    * Handlers
@@ -34,8 +34,9 @@ export const PlatformSelector: React.FC = () => {
   };
 
   const handleSelectPlatform = (platform: PaymentPlatformType) => {
-    if (setPaymentPlatform) {
+    if (setPaymentPlatform && setCurrencyIndex) {
       setPaymentPlatform(platform);
+      setCurrencyIndex(0);
 
       toggleOpen();
     }
@@ -47,12 +48,20 @@ export const PlatformSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <PlatformNameAndChevronContainer onClick={toggleOpen}>
-        <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-        </PlatformLabel>
+      <CurrencyContainer onClick={toggleOpen}>
+        <CurrencyLogoAndNameContainer>
+          <CurrencyNameContainer>
+            <CurrencyHeader>
+              {'Platform'}
+            </CurrencyHeader>
+            <CurrencyNameLabel>
+              {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+            </CurrencyNameLabel>
+          </CurrencyNameContainer>
+        </CurrencyLogoAndNameContainer>
+
         <StyledChevronDown/>
-      </PlatformNameAndChevronContainer>
+      </CurrencyContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -61,7 +70,7 @@ export const PlatformSelector: React.FC = () => {
           <ModalContainer>
             <TableHeader>
               <ThemedText.SubHeader style={{ textAlign: 'left' }}>
-                Select a platform
+                Select a Platform
               </ThemedText.SubHeader>
 
               <button
@@ -77,7 +86,7 @@ export const PlatformSelector: React.FC = () => {
             <Table>
               {paymentPlatforms.map((platform, index) => (
                 <PlatformRow
-                  key={index}
+                  key={`${index}`}
                   platformName={paymentPlatformInfo[platform].platformName}
                   isSelected={paymentPlatform === platform}
                   onRowClick={() => handleSelectPlatform(platform)}
@@ -88,7 +97,7 @@ export const PlatformSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <TableFooter>
-              Let us know which platforms you are interested in seeing ZKP2P add support
+              Let us know which networks you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
@@ -106,15 +115,16 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const PlatformNameAndChevronContainer = styled.div`
+const CurrencyContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 188px;
+  border-radius: 16px;
+  border: 1px solid ${colors.defaultBorderColor};
+  justify-content: space-between;
   align-items: center;
-  border-radius: 24px;
   background: ${colors.selectorColor};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 8px 6px 14px;
-  gap: 4px;
+  padding: 1.1rem 1rem;
   cursor: pointer;
 
   &:hover {
@@ -123,11 +133,30 @@ const PlatformNameAndChevronContainer = styled.div`
   }
 `;
 
-const PlatformLabel = styled.div`
+const CurrencyLogoAndNameContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+`;
+
+const CurrencyNameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+  text-align: left;
+`;
+
+const CurrencyHeader = styled.div`
+  font-size: 14px;
+  color: #CED4DA;
+`;
+
+const CurrencyNameLabel = styled.div`
+  font-size: 16px;
   color: #FFF;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  padding: 1px 5px 0px 5px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`

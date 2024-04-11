@@ -6,14 +6,14 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
-import { PlatformRow } from '@components/modals/PlatformRow';
-import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { CurrencyRow } from '@components/modals/CurrencyRow';
+import { paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
-export const PlatformSelector: React.FC = () => {
+export const CurrencySelector: React.FC = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -23,7 +23,7 @@ export const PlatformSelector: React.FC = () => {
    * Contexts
    */
 
-  const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+  const { paymentPlatform, currencyIndex, setCurrencyIndex } = usePlatformSettings();
 
   /*
    * Handlers
@@ -33,9 +33,9 @@ export const PlatformSelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectPlatform = (platform: PaymentPlatformType) => {
-    if (setPaymentPlatform) {
-      setPaymentPlatform(platform);
+  const handleSelectCurrency = (currencyIndex: number) => {
+    if (setCurrencyIndex) {
+      setCurrencyIndex(currencyIndex);
 
       toggleOpen();
     }
@@ -47,12 +47,22 @@ export const PlatformSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <PlatformNameAndChevronContainer onClick={toggleOpen}>
-        <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-        </PlatformLabel>
+      <CurrencyContainer onClick={toggleOpen}>
+        <CurrencyLogoAndNameContainer>
+          <CurrencySvg src={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currencyIndex ?? 0]} />
+
+          <CurrencyNameContainer>
+            <CurrencyHeader>
+              {'Currency'}
+            </CurrencyHeader>
+            <CurrencyNameLabel>
+              {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex ?? 0]}
+            </CurrencyNameLabel>
+          </CurrencyNameContainer>
+        </CurrencyLogoAndNameContainer>
+
         <StyledChevronDown/>
-      </PlatformNameAndChevronContainer>
+      </CurrencyContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -61,7 +71,7 @@ export const PlatformSelector: React.FC = () => {
           <ModalContainer>
             <TableHeader>
               <ThemedText.SubHeader style={{ textAlign: 'left' }}>
-                Select a platform
+                Select a Currency
               </ThemedText.SubHeader>
 
               <button
@@ -75,12 +85,13 @@ export const PlatformSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <Table>
-              {paymentPlatforms.map((platform, index) => (
-                <PlatformRow
-                  key={index}
-                  platformName={paymentPlatformInfo[platform].platformName}
-                  isSelected={paymentPlatform === platform}
-                  onRowClick={() => handleSelectPlatform(platform)}
+              { paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies.map((currency, currIndex) => (
+                <CurrencyRow
+                  key={currIndex}
+                  platformCurrency={currency}
+                  flagSvg={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currIndex]}
+                  isSelected={currencyIndex === currIndex}
+                  onRowClick={() => handleSelectCurrency(currIndex)}
                 />
               ))}
             </Table>
@@ -88,7 +99,7 @@ export const PlatformSelector: React.FC = () => {
             <HorizontalDivider/>
 
             <TableFooter>
-              Let us know which platforms you are interested in seeing ZKP2P add support
+              Let us know which currencies you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
@@ -106,15 +117,16 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const PlatformNameAndChevronContainer = styled.div`
+const CurrencyContainer = styled.div`
   display: flex;
   flex-direction: row;
+  width: 188px;
+  border-radius: 16px;
+  border: 1px solid ${colors.defaultBorderColor};
+  justify-content: space-between;
   align-items: center;
-  border-radius: 24px;
   background: ${colors.selectorColor};
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 8px 6px 14px;
-  gap: 4px;
+  padding: 1.1rem 1rem;
   cursor: pointer;
 
   &:hover {
@@ -123,11 +135,36 @@ const PlatformNameAndChevronContainer = styled.div`
   }
 `;
 
-const PlatformLabel = styled.div`
+const CurrencyLogoAndNameContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+`;
+
+const CurrencyNameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+  text-align: left;
+`;
+
+const CurrencyHeader = styled.div`
+  font-size: 14px;
+  color: #CED4DA;
+`;
+
+const CurrencyNameLabel = styled.div`
+  font-size: 16px;
   color: #FFF;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  padding: 1px 5px 0px 5px;
+`;
+
+const CurrencySvg = styled.img`
+  border-radius: 18px;
+  width: 32px;
+  height: 32px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`

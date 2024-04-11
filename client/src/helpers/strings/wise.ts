@@ -41,7 +41,7 @@ const strings: PlatformStrings = {
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
     Depositing requires registering a valid Wise multi currency id. Provide the USDC liquidity to deposit and
-    desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
+    desired USDC to fiat conversion rate. You will receive fiat payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
     This is a second registration step required for depositors only to connect a Wise multi currency id
@@ -60,7 +60,7 @@ const strings: PlatformStrings = {
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
-    This is the amount of EUR you will receive if your entire deposit is claimed.
+    This is the amount of fiat currency you will receive if your entire deposit is claimed.
   `,
 
   // Instruction Drawer
@@ -72,10 +72,10 @@ const strings: PlatformStrings = {
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
     Click 'Send' and complete the payment on any UPI ID linked to your Wise bank account. Ensure you have email notifications from Wise InstaAlerts enabled
-  `,
+  `, // TODO: update this
   INSTRUCTION_DRAWER_STEP_FOUR: `
     Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
-  `,
+  `, // TODO: update this
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `

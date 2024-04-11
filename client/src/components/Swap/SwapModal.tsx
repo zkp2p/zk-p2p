@@ -24,6 +24,7 @@ interface SwapModalProps {
   onBackClick: () => void
   onCompleteClick: () => void
   paymentPlatform: PaymentPlatformType
+  receiveCurrencyId: string;
 }
 
 export const SwapModal: React.FC<SwapModalProps> = ({
@@ -34,7 +35,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   amount,
   onBackClick,
   onCompleteClick,
-  paymentPlatform
+  paymentPlatform,
+  receiveCurrencyId
 }) => {
 
   /*
@@ -86,10 +88,23 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         };
 
       case PaymentPlatform.WISE:
+        let currencySymbol = '';
+        switch (receiveCurrencyId) {
+          case '0xfff16d60be267153303bbfa66e593fb8d06e24ea5ef24b6acca5224c2ca6b907':
+            currencySymbol = '€';
+            break;
+          case '0x90832e2dc3221e4d56977c1aa8f6a6706b9ad6542fbbdaac13097d0fa5e42e67':
+            currencySymbol = '£';
+            break;
+          case '0xc241cc1f9752d2d53d1ab67189223a3f330e48b75f73ebf86f50b2c78fe8df88':
+            currencySymbol = 'SGD$';
+            break;
+        }
+
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
           paymentPlatformName: 'Wise',
-          instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
+          instructionsText: `Scan and send ${currencySymbol}${amount} <br />to ${venmoId}`,
         };
 
       default:

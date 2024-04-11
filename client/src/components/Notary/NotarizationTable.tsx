@@ -162,7 +162,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Wise account history',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`, // TODO: update this
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };

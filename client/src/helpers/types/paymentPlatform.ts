@@ -35,7 +35,6 @@ interface PaymentPlatformData {
   platformId: PaymentPlatformType;
   platformName: string;
   platformCurrencies: string[];
-  currencySymbols: string[];
   flagSvgs: string[];
   platformCurrencyIcons: string[];
 }
@@ -45,7 +44,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.VENMO,
     platformName: 'Venmo',
     platformCurrencies: ['USD'],
-    currencySymbols: ['$'],
     flagSvgs: [americaFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need USD icon
   },
@@ -53,7 +51,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.HDFC,
     platformName: 'HDFC',
     platformCurrencies: ['INR'],
-    currencySymbols: ['₹'],
     flagSvgs: [indiaFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need INR icon
   },
@@ -61,7 +58,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.GARANTI,
     platformName: 'Garanti',
     platformCurrencies: ['TRY'],
-    currencySymbols: ['₺'],
     flagSvgs: [turkeyFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need TRY icon
   },
@@ -69,7 +65,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.WISE,
     platformName: 'Wise',
     platformCurrencies: ['EUR', 'GBP', 'SGD'],
-    currencySymbols: ['€', '£', 'SGD$'],
     flagSvgs: [europeFlagSvg, americaFlagSvg, turkeyFlagSvg],
     platformCurrencyIcons: ['usdc', 'usdc', 'usdc'] // TODO: need EUR, GBP, SGD icons
   }

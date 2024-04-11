@@ -12,9 +12,12 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { IndicativeQuote } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
+import { CurrencySelector } from '@components/Swap/CurrencySelector';
+import { PlatformSelector } from '@components/Swap/PlatformSelector';
 import { SettingsDropdown } from './SettingsDropdown';
 import { DEPOSIT_REFETCH_INTERVAL, EMPTY_STRING, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
+import { paymentPlatformInfo } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -72,7 +75,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     wiseRampAddress,
     wiseRampAbi
   } = useSmartContracts();
-  const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
+  const { paymentPlatform, PaymentPlatform, currencyIndex } = usePlatformSettings();
   
   const { 
     isRegistered,
@@ -505,12 +508,17 @@ const SwapForm: React.FC<SwapFormProps> = ({
         </TitleContainer>
 
         <MainContentWrapper>
+          <PlatformCurrencyContainer>
+            <PlatformSelector />
+            <CurrencySelector />
+          </PlatformCurrencyContainer>
           <Input
             label="Requesting"
             name={`requestedUSDC`}
             value={currentQuote.requestedUSDC}
             onChange={event => handleInputChange(event, 'requestedUSDC')}
             type="number"
+            inputLabel="USDC"
             accessoryLabel={usdcBalanceLabel}
             accessoryButtonLabel="Max"
             onAccessoryButtonClick={setInputToMax}
@@ -525,7 +533,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             type="number"
             accessoryLabel={bestAvailableRateLabel}
             accessoryLabelAlignment="left"
-            inputLabel="$"
+            inputLabel={paymentPlatformInfo[paymentPlatform || PaymentPlatform.VENMO].platformCurrencies[currencyIndex ?? 0]}
             placeholder="0.00"
             readOnly={true}
           />
@@ -614,6 +622,14 @@ const MainContentWrapper = styled.div`
   align-self: center;
   border-radius: 4px;
   justify-content: center;
+`;
+
+const PlatformCurrencyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const CTAButton = styled(Button)`

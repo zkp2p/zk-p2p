@@ -1,8 +1,5 @@
 import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
-
-import { TokenSelector } from '@components/Swap/TokenSelector';
-import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { colors } from '@theme/colors';
 
 
@@ -68,10 +65,10 @@ export const Input: React.FC<InputProps> = ({
 
         <SelectorAccessory hasAccessoryLabel={accessoryLabel !== ""}>
           {inputLabel ? (
-            <PlatformSelector onlyDisplayPlatform={false} />
-          ) : (
-            <TokenSelector/>
-          )}
+            <InputLabel>
+              <span>{inputLabel}</span>
+            </InputLabel>
+          ) : null}
         </SelectorAccessory>
       </LabelInputAndAccessoryContainer>
       
@@ -208,4 +205,11 @@ const AccessoryLabel = styled.div`
 const AccessoryTextButton = styled.div`
   cursor: pointer;
   color: #FFFFFF;
+`;
+
+const InputLabel = styled.div`
+  pointer-events: none;
+  color: #9ca3af;
+  font-size: 20px;
+  text-align: right;
 `;

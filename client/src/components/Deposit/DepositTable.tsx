@@ -39,6 +39,7 @@ export interface DepositPrime {
   outstandingIntentAmount: string;
   intentCount: string;
   conversionRate: string;
+  conversionCurrency: string;
 }
 
 interface PositionTableProps {
@@ -66,7 +67,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     wiseRampAbi
   } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
-  const { PaymentPlatform, paymentPlatform, currencyIndex } = usePlatformSettings();
+  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
   const {
     isRegistered: isVenmoRegistered
@@ -213,23 +214,33 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   useEffect(() => {
     let depositsToDisplay: DepositWithAvailableLiquidity[] | null = [];
+    let conversionCurrenciesToDisplay: string[] = [];
     if (paymentPlatform) {
       switch (paymentPlatform) {
         case PaymentPlatform.VENMO:
-          depositsToDisplay = venmoDeposits;
+          depositsToDisplay = venmoDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'USD')
           break;
 
         case PaymentPlatform.HDFC:
-          depositsToDisplay = hdfcDeposits;
+          depositsToDisplay = hdfcDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'INR')
           break;
 
         case PaymentPlatform.GARANTI:
-          depositsToDisplay = garantiDeposits;
+          depositsToDisplay = garantiDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'TRY')
           break;
 
         case PaymentPlatform.WISE:
-          const paymentPlatformCurrency = paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0];
-          depositsToDisplay = wiseDeposits?.filter(deposit => keccak256(paymentPlatformCurrency) === deposit.deposit.receiveCurrencyId) || null
+          depositsToDisplay = wiseDeposits ?? [];
+          
+          conversionCurrenciesToDisplay = depositsToDisplay.map(depositToDisplay => (
+            paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies.find(
+              currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
+            ) ?? 'EUR'
+          ))
+
           break;
           
         default:
@@ -241,7 +252,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       setPositionsRowData([]);  
     } else {
       var sanitizedPositions: DepositPrime[] = [];
-      sanitizedPositions = depositsToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedPositions = depositsToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity, index: number) => {
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
@@ -250,6 +261,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
+        const conversionCurrency = conversionCurrenciesToDisplay[index];
 
         return {
           depositor,
@@ -257,7 +269,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           totalDepositAmount,
           outstandingIntentAmount,
           intentCount,
-          conversionRate
+          conversionRate,
+          conversionCurrency
         };
       });
 
@@ -265,7 +278,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venmoDeposits, hdfcDeposits, garantiDeposits, wiseDeposits, paymentPlatform, currencyIndex]);
+  }, [venmoDeposits, hdfcDeposits, garantiDeposits, wiseDeposits, paymentPlatform]);
 
   useEffect(() => {
     const executeWithdrawDeposit = async () => {
@@ -395,7 +408,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : !isRegistered ? (
           <ErrorContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector onlyDisplayPlatform={false} />
+              <PlatformSelector/>
             </PlatformSelectorContainer>
 
             <ThemedText.DeprecatedBody textAlign="center">
@@ -413,7 +426,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <PlatformSelectorContainer>
-                <PlatformSelector onlyDisplayPlatform={false} />
+                <PlatformSelector/>
               </PlatformSelectorContainer>
 
               <ThemedText.DeprecatedBody textAlign="center">
@@ -426,7 +439,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : (
           <PositionsContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector onlyDisplayPlatform={false} />
+              <PlatformSelector/>
             </PlatformSelectorContainer>
             
             <PositionCountTitle>
@@ -435,7 +448,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               </ThemedText.LabelSmall>
 
               <PlatformSelectorContainer>
-                <PlatformSelector onlyDisplayPlatform={false} />
+                <PlatformSelector/>
               </PlatformSelectorContainer>
             </PositionCountTitle>
 
@@ -448,6 +461,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                     outstandingIntentAmount={positionRow.outstandingIntentAmount}
                     intentCount={positionRow.intentCount}
                     conversionRate={positionRow.conversionRate}
+                    conversionCurrency={positionRow.conversionCurrency}
                     rowIndex={rowIndex}
                     isCancelDepositLoading={rowIndex === selectedRowIndexToWithdraw && (isSubmitWithdrawLoading || isSubmitWithdrawMining)}
                     handleWithdrawClick={() => {
