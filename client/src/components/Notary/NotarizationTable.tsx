@@ -154,7 +154,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
           return {
             detected_copy: 'The following transaction receipt was detected from your Wise account',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_copy: `${selectedRequest.subject} on ${selectedRequest.date}`,
             metadata_type_copy: 'history transaction receipt',
             transaction_type_copy: 'depositor registration'
             };
@@ -162,7 +162,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Wise account history',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`, // TODO: update this
+            metadata_copy: `${selectedRequest.subject} on ${selectedRequest.date}`, // TODO: update this
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
@@ -364,7 +364,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorTransferProof = {
             proof: WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF,
-            subject: '[env] Sent €0.1 EUR',
+            subject: '[env] Sent 0.1 EUR',
             metadata: '0.1',
             date: 'N/A'
           } as ExtensionNotaryProofRow;
@@ -372,9 +372,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
         let allTransferProofRows = defaultDepositorTransferProof ? [defaultDepositorTransferProof] : [];
         if (transferProofs && transferProofs.length > 0) {
-          const fetchedTransferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+          const fetchedTransferProofRows = transferProofs.filter(
+            (request: ExtensionNotaryProofRequest) => request.metadata[5] === 'SENDER'
+          ).map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
-            const subject = `Sent €${amount} ${currency}`;
+            const subject = `Sent ${amount} ${currency}`;
 
             return {
               proof: JSON.stringify(request.proof),
@@ -392,9 +394,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0) {
-          const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+          const transferProofRows = transferProofs.filter(
+            (request: ExtensionNotaryProofRequest) => request.metadata[5] === 'SENDER'
+          ).map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
-            const subject = `Sent €${amount} ${currency}`;
+            const subject = `Sent ${amount} ${currency}`;
 
             return {
               proof: JSON.stringify(request.proof),
