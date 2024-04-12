@@ -1,5 +1,11 @@
 import { PaymentPlatformType } from '@helpers/types';
 
+export const ReceiveCurrencyId = {
+  EUR: "0xfff16d60be267153303bbfa66e593fb8d06e24ea5ef24b6acca5224c2ca6b907",
+  GBP: "0x90832e2dc3221e4d56977c1aa8f6a6706b9ad6542fbbdaac13097d0fa5e42e67",
+  SGD: "0xc241cc1f9752d2d53d1ab67189223a3f330e48b75f73ebf86f50b2c78fe8df88",
+};
+export type ReceiveCurrencyIdType = typeof ReceiveCurrencyId[keyof typeof ReceiveCurrencyId];
 
 // struct Deposit {
 //   address depositor;
@@ -9,6 +15,7 @@ import { PaymentPlatformType } from '@helpers/types';
 //   uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)
 //   uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD
 //   bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
+//   bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Wise currency code))
 // }
 export interface Deposit {
   platformType: PaymentPlatformType;
@@ -20,7 +27,7 @@ export interface Deposit {
   outstandingIntentAmount: bigint;
   conversionRate: bigint;
   intentHashes: string[];
-  receiveCurrencyId?: string;
+  receiveCurrencyId?: ReceiveCurrencyIdType;
 }
 
 // struct DepositWithAvailableLiquidity {

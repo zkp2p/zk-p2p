@@ -10,14 +10,13 @@ import { Button } from '@components/common/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { IndicativeQuote } from '@helpers/types';
+import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { CurrencySelector } from '@components/Swap/CurrencySelector';
-import { PlatformSelector } from '@components/Swap/PlatformSelector';
+import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { SettingsDropdown } from './SettingsDropdown';
 import { DEPOSIT_REFETCH_INTERVAL, EMPTY_STRING, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
-import { paymentPlatformInfo } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -509,7 +508,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
         <MainContentWrapper>
           <PlatformCurrencyContainer>
-            <PlatformSelector />
+            <PlatformSelector usePillSelector={false} />
             <CurrencySelector />
           </PlatformCurrencyContainer>
           <Input
@@ -533,7 +532,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             type="number"
             accessoryLabel={bestAvailableRateLabel}
             accessoryLabelAlignment="left"
-            inputLabel={paymentPlatformInfo[paymentPlatform || PaymentPlatform.VENMO].platformCurrencies[currencyIndex ?? 0]}
+            inputLabel={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]}
             placeholder="0.00"
             readOnly={true}
           />

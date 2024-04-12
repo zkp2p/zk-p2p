@@ -7,7 +7,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { CurrencyRow } from '@components/modals/CurrencyRow';
-import { paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { CurrencyIndexType, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
@@ -33,7 +33,7 @@ export const CurrencySelector: React.FC = () => {
     toggleOpen();
   };
 
-  const handleSelectCurrency = (currencyIndex: number) => {
+  const handleSelectCurrency = (currencyIndex: CurrencyIndexType) => {
     if (setCurrencyIndex) {
       setCurrencyIndex(currencyIndex);
 
@@ -48,9 +48,9 @@ export const CurrencySelector: React.FC = () => {
   return (
     <Wrapper ref={ref}>
       <CurrencyAndChevronContainer onClick={toggleOpen}>
-        <CurrencySvg src={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currencyIndex ?? 0]} />
+        <CurrencySvg src={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currencyIndex]} />
         <CurrencyLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex ?? 0]}
+          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]}
         </CurrencyLabel>
         <StyledChevronDown/>
       </CurrencyAndChevronContainer>

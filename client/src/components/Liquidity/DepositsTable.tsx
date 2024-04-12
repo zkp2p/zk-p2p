@@ -7,7 +7,7 @@ import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { keccak256 } from '@helpers/keccack';
-import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
+import { CurrencyCode, PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -81,17 +81,17 @@ export const DepositsTable: React.FC = () => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         depositStoreToDisplay = venmoDepositStore ?? [];
-        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'USD')
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.USD)
         break;
 
       case PaymentPlatform.HDFC:
         depositStoreToDisplay = hdfcDepositStore ?? [];
-        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'EUR')
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.INR)
         break;
 
       case PaymentPlatform.GARANTI:
         depositStoreToDisplay = garantiDepositStore ?? [];
-        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => 'TRY')
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.TRY)
         break;
 
       case PaymentPlatform.WISE:
@@ -99,7 +99,7 @@ export const DepositsTable: React.FC = () => {
         conversionCurrenciesToDisplay = depositStoreToDisplay.map(depositToDisplay => (
           paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies.find(
             currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
-          ) ?? 'EUR'
+          ) ?? CurrencyCode.EUR
         ))
         break;
 
@@ -171,7 +171,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
-        <PlatformSelector/>
+        <PlatformSelector usePillSelector={true}/>
       </TitleRow>
 
       <Content>

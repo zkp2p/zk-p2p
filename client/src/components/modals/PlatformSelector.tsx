@@ -7,13 +7,13 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { PlatformRow } from '@components/modals/PlatformRow';
-import { paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { CurrencyIndex, paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
-export const PlatformSelector: React.FC = () => {
+export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePillSelector }) => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -23,7 +23,7 @@ export const PlatformSelector: React.FC = () => {
    * Contexts
    */
 
-  const { paymentPlatform, setPaymentPlatform } = usePlatformSettings();
+  const { paymentPlatform, setPaymentPlatform, setCurrencyIndex } = usePlatformSettings();
 
   /*
    * Handlers
@@ -34,8 +34,9 @@ export const PlatformSelector: React.FC = () => {
   };
 
   const handleSelectPlatform = (platform: PaymentPlatformType) => {
-    if (setPaymentPlatform) {
+    if (setPaymentPlatform && setCurrencyIndex) {
       setPaymentPlatform(platform);
+      setCurrencyIndex(CurrencyIndex.DEFAULT);
 
       toggleOpen();
     }
@@ -47,12 +48,29 @@ export const PlatformSelector: React.FC = () => {
 
   return (
     <Wrapper ref={ref}>
-      <PlatformNameAndChevronContainer onClick={toggleOpen}>
-        <PlatformLabel>
-          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-        </PlatformLabel>
-        <StyledChevronDown/>
-      </PlatformNameAndChevronContainer>
+      { usePillSelector ? (
+        <PlatformNameAndChevronContainer onClick={toggleOpen}>
+          <PlatformLabel>
+            {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+          </PlatformLabel>
+          <StyledChevronDown/>
+        </PlatformNameAndChevronContainer>
+        ) : (
+          <CurrencyContainer onClick={toggleOpen}>
+            <CurrencyLogoAndNameContainer>
+              <CurrencyNameContainer>
+                <CurrencyHeader>
+                  {'Platform'}
+                </CurrencyHeader>
+                <CurrencyNameLabel>
+                  {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+                </CurrencyNameLabel>
+              </CurrencyNameContainer>
+            </CurrencyLogoAndNameContainer>
+            <StyledChevronDown/>
+          </CurrencyContainer>
+        )
+      }
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -128,6 +146,50 @@ const PlatformLabel = styled.div`
   font-weight: 700;
   letter-spacing: 0.02em;
   padding: 1px 5px 0px 5px;
+`;
+
+const CurrencyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 188px;
+  border-radius: 16px;
+  border: 1px solid ${colors.defaultBorderColor};
+  justify-content: space-between;
+  align-items: center;
+  background: ${colors.selectorColor};
+  padding: 1.1rem 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${colors.selectorHover};
+    border: 1px solid ${colors.selectorHoverBorder};
+  }
+`;
+
+const CurrencyLogoAndNameContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: flex-start;
+`;
+
+const CurrencyNameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: center;
+  text-align: left;
+`;
+
+const CurrencyHeader = styled.div`
+  font-size: 14px;
+  color: #CED4DA;
+`;
+
+const CurrencyNameLabel = styled.div`
+  font-size: 16px;
+  color: #FFF;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`

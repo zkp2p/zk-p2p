@@ -13,6 +13,25 @@ export const PaymentPlatform = {
   WISE: "wise"
 };
 
+export const CurrencyCode = {
+  USD: "USD",
+  INR: "INR",
+  TRY: "TRY",
+  EUR: "EUR",
+  GBP: "GBP",
+  SGD: "SGD"
+};
+
+export const CurrencyIndex = {
+  DEFAULT: 0,
+  USD: 0,
+  INR: 0,
+  TRY: 0,
+  EUR: 0,
+  GBP: 1,
+  SGD: 2
+};
+
 function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] {
   let platforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
   
@@ -30,11 +49,13 @@ function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] 
 export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE);
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
+export type CurrencyCodeType = typeof CurrencyCode[keyof typeof CurrencyCode];
+export type CurrencyIndexType = typeof CurrencyIndex[keyof typeof CurrencyIndex];
 
 interface PaymentPlatformData {
   platformId: PaymentPlatformType;
   platformName: string;
-  platformCurrencies: string[];
+  platformCurrencies: CurrencyCodeType[];
   flagSvgs: string[];
   platformCurrencyIcons: string[];
 }
@@ -43,28 +64,28 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
   [PaymentPlatform.VENMO]: {
     platformId: PaymentPlatform.VENMO,
     platformName: 'Venmo',
-    platformCurrencies: ['USD'],
+    platformCurrencies: [CurrencyCode.USD],
     flagSvgs: [americaFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need USD icon
   },
   [PaymentPlatform.HDFC]: {
     platformId: PaymentPlatform.HDFC,
     platformName: 'HDFC',
-    platformCurrencies: ['INR'],
+    platformCurrencies: [CurrencyCode.INR],
     flagSvgs: [indiaFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need INR icon
   },
   [PaymentPlatform.GARANTI]: {
     platformId: PaymentPlatform.GARANTI,
     platformName: 'Garanti',
-    platformCurrencies: ['TRY'],
+    platformCurrencies: [CurrencyCode.TRY],
     flagSvgs: [turkeyFlagSvg],
     platformCurrencyIcons: ['usdc'] // TODO: need TRY icon
   },
   [PaymentPlatform.WISE]: {
     platformId: PaymentPlatform.WISE,
     platformName: 'Wise',
-    platformCurrencies: ['EUR', 'GBP', 'SGD'],
+    platformCurrencies: [CurrencyCode.EUR, CurrencyCode.GBP, CurrencyCode.SGD],
     flagSvgs: [europeFlagSvg, americaFlagSvg, turkeyFlagSvg],
     platformCurrencyIcons: ['usdc', 'usdc', 'usdc'] // TODO: need EUR, GBP, SGD icons
   }

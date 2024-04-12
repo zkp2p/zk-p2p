@@ -1,6 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
-import { PaymentPlatform, PaymentPlatformType, paymentPlatforms } from '@helpers/types';
+import { CurrencyIndex, PaymentPlatform, PaymentPlatformType, paymentPlatforms } from '@helpers/types';
 
 import PlatformSettingsContext from './PlatformSettingsContext'
 
@@ -15,7 +15,7 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
    */
 
   const [paymentPlatform, setPaymentPlatform] = useState<PaymentPlatformType>(PaymentPlatform.VENMO);
-  const [currencyIndex, setCurrencyIndex] = useState<number>(0);
+  const [currencyIndex, setCurrencyIndex] = useState<number>(CurrencyIndex.USD);
 
   const [didUserReviewRequirementsForPlatform, setDidUserReviewRequirementsForPlatform] = useState<boolean>(false);
 

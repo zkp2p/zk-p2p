@@ -1,13 +1,13 @@
 import { createContext } from 'react';
 
-import { PaymentPlatformType, PaymentPlatform, paymentPlatforms } from '@helpers/types';
+import { CurrencyIndexType, PaymentPlatformType, PaymentPlatform, paymentPlatforms } from '@helpers/types';
 
 
 interface PlatformSettingsValues {
   paymentPlatform?: PaymentPlatformType;
   setPaymentPlatform?: React.Dispatch<React.SetStateAction<PaymentPlatformType>>;
-  currencyIndex?: number;
-  setCurrencyIndex?: React.Dispatch<React.SetStateAction<number>>;
+  currencyIndex: CurrencyIndexType;
+  setCurrencyIndex: React.Dispatch<React.SetStateAction<CurrencyIndexType>>;
   PaymentPlatform: typeof PaymentPlatform;
   paymentPlatforms: PaymentPlatformType[];
   reviewedRequirementsForPlatform: () => boolean;
@@ -19,6 +19,8 @@ const defaultValues: PlatformSettingsValues = {
   PaymentPlatform,
   reviewedRequirementsForPlatform: () => false,
   markPlatformRequirementsAsReviewed: () => {},
+  currencyIndex: 0,
+  setCurrencyIndex: () => {},
 };
 
 const PlatformSettingsContext = createContext<PlatformSettingsValues>(defaultValues);

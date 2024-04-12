@@ -9,9 +9,8 @@ import { RowBetween } from '@components/layouts/Row';
 import { PositionRow } from "@components/Deposit/DepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
-import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
 import { keccak256 } from '@helpers/keccack';
-import { Abi, paymentPlatformInfo } from '@helpers/types';
+import { Abi, CurrencyCode, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -219,17 +218,17 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       switch (paymentPlatform) {
         case PaymentPlatform.VENMO:
           depositsToDisplay = venmoDeposits ?? [];
-          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'USD')
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.USD)
           break;
 
         case PaymentPlatform.HDFC:
           depositsToDisplay = hdfcDeposits ?? [];
-          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'INR')
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.INR)
           break;
 
         case PaymentPlatform.GARANTI:
           depositsToDisplay = garantiDeposits ?? [];
-          conversionCurrenciesToDisplay = depositsToDisplay.map(() => 'TRY')
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.TRY)
           break;
 
         case PaymentPlatform.WISE:
@@ -238,7 +237,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           conversionCurrenciesToDisplay = depositsToDisplay.map(depositToDisplay => (
             paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies.find(
               currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
-            ) ?? 'EUR'
+            ) ?? CurrencyCode.EUR
           ))
 
           break;
@@ -408,7 +407,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : !isRegistered ? (
           <ErrorContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector/>
+              <PlatformSelector usePillSelector={true} />
             </PlatformSelectorContainer>
 
             <ThemedText.DeprecatedBody textAlign="center">
@@ -426,7 +425,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <PlatformSelectorContainer>
-                <PlatformSelector/>
+                <PlatformSelector usePillSelector={true}/>
               </PlatformSelectorContainer>
 
               <ThemedText.DeprecatedBody textAlign="center">
@@ -439,7 +438,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : (
           <PositionsContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector/>
+              <PlatformSelector usePillSelector={true}/>
             </PlatformSelectorContainer>
             
             <PositionCountTitle>
@@ -448,7 +447,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               </ThemedText.LabelSmall>
 
               <PlatformSelectorContainer>
-                <PlatformSelector/>
+                <PlatformSelector usePillSelector={true}/>
               </PlatformSelectorContainer>
             </PositionCountTitle>
 

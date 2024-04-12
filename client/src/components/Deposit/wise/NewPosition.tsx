@@ -85,7 +85,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       wiseTagInput,
-      keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex ?? 0]),
+      keccak256(paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies[currencyIndex]),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY

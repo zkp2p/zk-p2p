@@ -349,7 +349,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const venmoIdString = currentIntent.depositorVenmoId.toString();
         const depositorAddress = storedDeposit.deposit.depositor;
         const recipientAddress = currentIntent.intent.to;
-        const receiveCurrencyId = storedDeposit.deposit.receiveCurrencyId ?? '';
+        const receiveCurrencyId = storedDeposit.deposit.receiveCurrencyId;
 
         const sanitizedIntent: IntentRowData = {
           paymentPlatform,

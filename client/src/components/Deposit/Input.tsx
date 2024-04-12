@@ -19,7 +19,6 @@ interface InputProps {
   readOnly?: boolean;
   accessoryLabel?: string;
   hasSelector?: boolean;
-  selectorDisabled?: boolean;
   helperText?: string;
   enableMax?: boolean
   valueFontSize?: string;
@@ -39,7 +38,6 @@ export const Input: React.FC<InputProps> = ({
   readOnly = false,
   accessoryLabel="",
   hasSelector = false,
-  selectorDisabled = false,
   helperText="",
   valueFontSize="24px",
   enableMax=false,
