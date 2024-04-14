@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Zap, UserX, UserCheck } from 'react-feather';
+import { Sidebar, UserX, UserCheck } from 'react-feather';
 import Link from '@mui/material/Link';
 import { isChrome, isFirefox, isChromium } from 'react-device-detect';
 
@@ -157,7 +157,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
             metadata_type_copy: 'history transaction receipt',
             transaction_type_copy: 'depositor registration'
-            };
+          };
   
         case NotaryVerificationCircuit.TRANSFER:
           return {
@@ -478,7 +478,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       {!isSidebarInstalled ? (
         <InstallExtensionContainer>
           <IconAndCopyContainer>
-            <ZapIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+            <SidebarIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
             <ThemedText.DeprecatedBody textAlign="center">
               <div>
@@ -644,8 +644,9 @@ const IconStyle = css`
   margin-bottom: 0.5rem;
 `;
 
-const ZapIcon = styled(Zap)`
+const SidebarIcon = styled(Sidebar)`
   ${IconStyle}
+  transform: rotate(180deg);
 `;
 
 const ExtensionDetectedContainer = styled.div`
