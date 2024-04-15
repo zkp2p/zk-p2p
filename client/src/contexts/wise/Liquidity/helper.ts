@@ -1,6 +1,7 @@
 import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
+  ReceiveCurrencyIdType,
   StoredDeposit
 } from '@helpers/types';
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
@@ -46,7 +47,7 @@ export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
   userCurrentIdHash: string = '',
-  receiveCurrencyId: string
+  receiveCurrencyId: ReceiveCurrencyIdType
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 

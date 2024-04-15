@@ -10,7 +10,7 @@ import { PositionRow } from "@components/Deposit/DepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { keccak256 } from '@helpers/keccack';
-import { Abi, CurrencyCode, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
+import { Abi, CurrencyCode, ReceiveCurrencyId, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -237,7 +237,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           conversionCurrenciesToDisplay = depositsToDisplay.map(depositToDisplay => (
             paymentPlatformInfo[PaymentPlatform.WISE].platformCurrencies.find(
               currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
-            ) ?? CurrencyCode.EUR
+            ) ?? ReceiveCurrencyId.EUR
           ))
 
           break;

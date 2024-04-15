@@ -28,6 +28,7 @@ export type { ReceiveTokenData, ReceiveTokenType } from './receiveTokens';
 
 export type { Abi, AbiEntry } from './smartContracts';
 
+export { ReceiveCurrencyId } from './deposit';
 export type {
   Deposit,
   DepositWithAvailableLiquidity,

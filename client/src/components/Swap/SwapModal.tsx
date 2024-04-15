@@ -8,7 +8,7 @@ import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
-import { CurrencyCode, PaymentPlatformType } from '@helpers/types';
+import { PaymentPlatformType, ReceiveCurrencyId } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
@@ -90,13 +90,13 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.WISE:
         let currencySymbol = '';
         switch (receiveCurrencyId) {
-          case CurrencyCode.EUR:
+          case ReceiveCurrencyId.EUR:
             currencySymbol = '€';
             break;
-          case CurrencyCode.GBP:
+          case ReceiveCurrencyId.GBP:
             currencySymbol = '£';
             break;
-          case CurrencyCode.SGD:
+          case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
         }

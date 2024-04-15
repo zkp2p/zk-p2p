@@ -10,7 +10,7 @@ import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
-import { CurrencyCode, PaymentPlatformType } from "@helpers/types";
+import { PaymentPlatformType, ReceiveCurrencyId, ReceiveCurrencyIdType } from "@helpers/types";
 
 interface IntentRowProps {
   paymentPlatform: PaymentPlatformType | undefined;
@@ -21,7 +21,7 @@ interface IntentRowProps {
   depositorName?: string;
   depositorAddress: string;
   recipientAddress: string;
-  receiveCurrencyId?: string;
+  receiveCurrencyId?: ReceiveCurrencyIdType;
   handleCompleteOrderClick: () => void;
   shouldAutoSelectIntent: boolean;
   resetShouldAutoSelectIntent: () => void;
@@ -98,13 +98,13 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       case PaymentPlatform.WISE:
         let currencySymbol = '';
         switch (receiveCurrencyId) {
-          case CurrencyCode.EUR:
+          case ReceiveCurrencyId.EUR:
             currencySymbol = '€';
             break;
-          case CurrencyCode.GBP:
+          case ReceiveCurrencyId.GBP:
             currencySymbol = '£';
             break;
-          case CurrencyCode.SGD:
+          case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
         }
