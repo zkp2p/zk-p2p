@@ -125,13 +125,13 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                     date.getFullYear() === now.getFullYear();
 
     if (isToday) {
-      return date.toLocaleTimeString('en-US', {
+      return "at " + date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       });
     } else {
-      return date.toLocaleDateString('en-US', {
+      return "on " + date.toLocaleDateString('en-US', {
         month: 'numeric',
         day: 'numeric'
       });
@@ -154,7 +154,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
           return {
             detected_copy: 'The following transaction receipt was detected from your Wise account',
-            metadata_copy: `${selectedRequest.subject} on ${selectedRequest.date}`,
+            metadata_copy: `${selectedRequest.subject} ${selectedRequest.date}`,
             metadata_type_copy: 'history transaction receipt',
             transaction_type_copy: 'depositor registration'
             };
@@ -162,7 +162,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Wise account history',
-            metadata_copy: `${selectedRequest.subject} on ${selectedRequest.date}`, // TODO: update this
+            metadata_copy: `${selectedRequest.subject} ${selectedRequest.date}`,
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
