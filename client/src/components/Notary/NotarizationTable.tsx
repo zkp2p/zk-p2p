@@ -27,6 +27,7 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 const ROWS_PER_PAGE = 3;
 const NOTARY_PROOF_FETCH_INTERVAL = 5000;
 // const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
+const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih';
 
 const USE_WISE_DEFAULT_DEPOSITOR = process.env.USE_WISE_DEFAULT_DEPOSITOR;
 const WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF;
@@ -92,7 +93,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    */
 
   const handleInstallExtensionClicked = () => {
-    alert('This will link to extension download page');
+    window.open(CHROME_EXTENSION_URL, '_blank');
   };
 
   const handleRowClick = (index: number) => {

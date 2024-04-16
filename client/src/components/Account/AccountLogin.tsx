@@ -37,6 +37,7 @@ export const AccountLogin: React.FC<AccountLoginProps> = ({
   /*
   * Handlers
   */
+
   const handleOverlayClick = () => {
     onBackClick();
   }
