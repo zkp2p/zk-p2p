@@ -99,10 +99,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     setIsInstallExtensionClicked(true)
   };
 
-  const handleCloseModal = () => {
-    setIsInstallExtensionClicked(false);
-  }
-
   const handleRowClick = (index: number) => {
     setSelectedIndex(index);
 
