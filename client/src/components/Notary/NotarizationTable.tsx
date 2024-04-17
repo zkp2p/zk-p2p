@@ -88,12 +88,15 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const [currentPage, setCurrentPage] = useState(0);
 
+  const [isInstallExtensionClicked, setIsInstallExtensionClicked] = useState<boolean>(false);
+
   /*
    * Handlers
    */
 
   const handleInstallExtensionClicked = () => {
     window.open(CHROME_EXTENSION_URL, '_blank');
+    setIsInstallExtensionClicked(true)
   };
 
   const handleRowClick = (index: number) => {
@@ -326,6 +329,34 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circuitType, isSidebarInstalled]);
+  
+  useEffect(() => {
+    if (!isInstallExtensionClicked) {
+      return;
+    }
+  
+    let intervalId: NodeJS.Timeout | null = null;
+  
+    const setupInterval = (callback: () => void) => {
+      callback();
+  
+      if (intervalId) {
+        clearInterval(intervalId);
+      };
+      
+      intervalId = setInterval(callback, NOTARY_PROOF_FETCH_INTERVAL);
+    };
+  
+    if (!isSidebarInstalled) {
+      setupInterval(refetchExtensionVersion);
+    }
+  
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circuitType, isInstallExtensionClicked, isSidebarInstalled]);
 
   useEffect(() => {
     switch (circuitType) {
@@ -499,9 +530,16 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             height={48}
             width={216}
             leftAccessorySvg={browserSvg()}
+            loading={isInstallExtensionClicked}
+            disabled={isInstallExtensionClicked}
           >
             { addToBrowserCopy() }
           </Button>
+          { isInstallExtensionClicked && (
+            <ThemedText.LabelSmall textAlign="left">
+              Waiting for installation...
+            </ThemedText.LabelSmall>
+          )}
         </InstallExtensionContainer>
       ) : (
         <ExtensionDetectedContainer>
