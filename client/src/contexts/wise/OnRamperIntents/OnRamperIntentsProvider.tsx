@@ -1,12 +1,13 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Intent, OnRamperIntent, StoredDeposit } from '@helpers/types';
+import { Intent, OnRamperIntent, PaymentPlatform, StoredDeposit } from '@helpers/types';
 import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/wise/useLiquidity';
 import useRegistration from '@hooks/wise/useRegistration';
+import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
 
@@ -21,6 +22,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { postOnramperIntent } = useExtensionNotarizations();
   const { isRegistered } = useRegistration();
   const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
   const { depositStore } = useLiquidity();
@@ -235,7 +237,16 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
       setCurrentIntent(null);
     }
-  }, [intentRaw, depositStore]);
+  }, [intentRaw, depositStore, postOnramperIntent]);
+
+  useEffect(() => {
+    esl && console.log('wise_postOnramperIntent_1');
+  
+    if (currentIntent) {
+      esl && console.log('wise_postOnramperIntent_2');
+      postOnramperIntent(PaymentPlatform.WISE, JSON.stringify(currentIntent));
+    }
+  }, [currentIntent, postOnramperIntent]);
 
   return (
     <OnRamperIntentsContext.Provider
