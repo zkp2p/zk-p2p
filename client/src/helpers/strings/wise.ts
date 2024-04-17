@@ -22,7 +22,7 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wise username details found.
+    No Wisetag details found.
     Please follow instructions in the browser assistant to prove ownership of an existing Wise account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
@@ -74,7 +74,7 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment from your Wise account. Ensure you have access to a dekstop to prove the payment later
+    Click 'Send' and complete the payment from your Wise account. Ensure you have access to a desktop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
     Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
@@ -85,7 +85,7 @@ const strings: PlatformStrings = {
     Send payment from your ZKP2P registered Wise account
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Choose any send currency and ensure the receive currency is set to the correct currency above when making the payment.
+    Choose a send currency and ensure the receive currency is set to the same requested currency above when making the payment.
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
     Send the exact amount including decimals as displayed above
