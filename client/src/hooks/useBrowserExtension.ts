@@ -39,6 +39,7 @@ export const ExtensionPostMessage = {
   FETCH_EXTENSION_VERSION: "fetch_extension_version",
   FETCH_PROFILE_REQUEST_HISTORY: "fetch_profile_request_history",
   FETCH_TRANSFER_REQUEST_HISTORY: "fetch_transfer_request_history",
+  OPEN_SIDEBAR: "open_sidebar",
 };
 
 export const ExtensionReceiveMessage = {
