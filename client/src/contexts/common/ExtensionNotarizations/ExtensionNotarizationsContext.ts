@@ -6,6 +6,7 @@ import { ExtensionNotaryProofRequest } from '@hooks/useBrowserExtension';
 interface ExtensionNotarizationsValues {
   isSidebarInstalled: boolean;
   sideBarVersion: string | null;
+  openSidebar: () => void;
   refetchExtensionVersion: () => void;
   refetchProfileRequests: () => void;
   refetchTransferRequests: () => void;
@@ -16,6 +17,7 @@ interface ExtensionNotarizationsValues {
 const defaultValues: ExtensionNotarizationsValues = {
   isSidebarInstalled: false,
   sideBarVersion: null,
+  openSidebar: () => {},
   refetchExtensionVersion: () => {},
   refetchProfileRequests: () => {},
   refetchTransferRequests: () => {},

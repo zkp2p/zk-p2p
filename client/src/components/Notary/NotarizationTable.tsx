@@ -64,6 +64,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    */
 
   const {
+    openSidebar,
     refetchExtensionVersion,
     refetchProfileRequests,
     refetchTransferRequests,
@@ -623,14 +624,26 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               )
           )}
 
-          <ButtonContainer>
-            <Button
-              disabled={notaryProofSelectionStatus !== NotaryProofInputStatus.VALID || isProofModalOpen}
-              onClick={handleVerifyNotaryProofClicked}
-            >
-              {ctaButtonTitle}
-            </Button>
-          </ButtonContainer>
+          {
+            loadedNotaryProofs.length === 0 ? (
+              <ButtonContainer>
+                <Button
+                  onClick={openSidebar}
+                >
+                  {'Open Sidebar'}
+                </Button>
+              </ButtonContainer>
+            ) : (
+              <ButtonContainer>
+                <Button
+                  disabled={notaryProofSelectionStatus === NotaryProofInputStatus.DEFAULT || isProofModalOpen}
+                  onClick={handleVerifyNotaryProofClicked}
+                >
+                  {ctaButtonTitle}
+                </Button>
+              </ButtonContainer>
+            )
+          }
 
           {loadedNotaryProofs.length > 0 && (
             <TableToggleLink onClick={handleToggleNotarizationTablePressed}>

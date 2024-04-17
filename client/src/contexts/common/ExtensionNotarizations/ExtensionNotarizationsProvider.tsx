@@ -55,6 +55,12 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
     // console.log('Posted Message: ', ExtensionPostMessage.FETCH_TRANSFER_REQUEST_HISTORY);
   };
 
+  const openSidebar = () => {
+    window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR }, '*');
+
+    // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
+  };
+
   /*
    * Handlers
    */
@@ -137,6 +143,7 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
       value={{
         isSidebarInstalled,
         sideBarVersion,
+        openSidebar,
         refetchExtensionVersion,
         refetchProfileRequests,
         refetchTransferRequests,

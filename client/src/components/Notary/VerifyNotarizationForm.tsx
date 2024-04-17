@@ -72,7 +72,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   const [shouldShowVerificationModal, setShouldShowVerificationModal] = useState<boolean>(false);
 
-  const [notaryProofSelectionStatus, setnotaryProofSelectionStatus] = useState<string>(NotaryProofInputStatus.DEFAULT);
+  const [notaryProofSelectionStatus, setNotaryProofSelectionStatus] = useState<string>(NotaryProofInputStatus.DEFAULT);
   const [proofGenStatus, setProofGenStatus] = useState(NotaryVerificationStatus.NOT_STARTED);
 
   const [verificationFailureErrorCode, setVerificationFailureErrorCode] = useState<number | null>(null);
@@ -135,10 +135,10 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
         const hashedNotarization = hash.digest('hex');
         setNotarizationHash(hashedNotarization);
 
-        setnotaryProofSelectionStatus(NotaryProofInputStatus.VALID);
+        setNotaryProofSelectionStatus(NotaryProofInputStatus.VALID);
       } else {
         setNotarizationHash("");
-        setnotaryProofSelectionStatus(NotaryProofInputStatus.DEFAULT);
+        setNotaryProofSelectionStatus(NotaryProofInputStatus.DEFAULT);
       }
     }
   
