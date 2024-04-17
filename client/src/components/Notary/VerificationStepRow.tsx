@@ -6,6 +6,7 @@ import 'react-circular-progressbar/dist/styles.css';
 
 import Spinner from "@components/common/Spinner";
 import { commonStrings } from "@helpers/strings";
+import { NotaryVerificationCircuit } from '@helpers/types';
 
 
 export const VerificationStepType = {
@@ -169,20 +170,22 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
       case VerificationStepType.PROVE:
         switch (circuitType) {
-          case 'registration':
+          case NotaryVerificationCircuit.REGISTRATION_TAG:
+          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_REGISTRATION_TITLE');
 
-          case 'transfer':
+          case NotaryVerificationCircuit.TRANSFER:
           default:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_TITLE');
         }
 
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
-          case 'registration':
+          case NotaryVerificationCircuit.REGISTRATION_TAG:
+          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_REGISTRATION_SUBMIT_TITLE');
 
-          case 'transfer':
+          case NotaryVerificationCircuit.TRANSFER:
           default:
             return commonStrings.get('VERIFICATION_MODAL_SUBMIT_TITLE');
         }
@@ -199,20 +202,22 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
 
       case VerificationStepType.PROVE:
         switch (circuitType) {
-          case 'registration':
+          case NotaryVerificationCircuit.REGISTRATION_TAG:
+          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST');
 
-          case 'transfer':
+          case NotaryVerificationCircuit.TRANSFER:
           default:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_SUBTITLE_FAST');
         }
 
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
-          case 'registration':
+          case NotaryVerificationCircuit.REGISTRATION_TAG:
+          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_REGISTRATION_SUBMIT_SUBTITLE');
 
-          case 'transfer':
+          case NotaryVerificationCircuit.TRANSFER:
           default:
             return commonStrings.get('VERIFICATION_MODAL_SUBMIT_SUBTITLE');
         }

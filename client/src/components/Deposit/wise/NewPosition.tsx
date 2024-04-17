@@ -478,7 +478,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             <InstructionsAndTogglesContainer>
               <NumberedStep>
                 { wiseStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-                <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
+                <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/wise-deposit-id-verification" target="_blank">
                   Fetch your Wise tag ↗
                 </Link>
               </NumberedStep>
@@ -532,7 +532,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                 onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
                 type="number"
                 inputLabel="EUR"
-                placeholder="1050"
+                placeholder="940"
                 helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
               />
 

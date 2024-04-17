@@ -10,6 +10,7 @@ import wiseCopy from './wise';
 export interface PlatformStrings {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: string,
+  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS?: string,
 
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: string,
@@ -58,13 +59,14 @@ export class PlatformStringProvider {
       this.strings = garantiCopy;
     } else if (platformType === PaymentPlatform.WISE) {
       this.strings = wiseCopy;
-    }  else {
+    } else {
       throw new Error('Invalid platform type');
     }
   }
 
   get(key: keyof PlatformStrings): string {
-    return this.strings[key];
+    if (!this.strings[key]) throw new Error(`Invalid key: ${key}`);
+    return this.strings[key] ?? '';
   }
 
   static getForPlatform(platformType: PaymentPlatformType, key: keyof PlatformStrings): string {
@@ -80,6 +82,6 @@ export class PlatformStringProvider {
     } else {
       throw new Error('Invalid platform type');
     }
-    return strings[key];
+    return strings[key] ?? '';
   }
 };

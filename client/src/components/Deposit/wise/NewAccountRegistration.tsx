@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro'
 import { ArrowLeft } from 'react-feather';
-import Link from '@mui/material/Link';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
@@ -140,7 +139,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            Multi Currency Id Registration
+            Wise Depositor ID Registration
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.5 }}/>
@@ -148,12 +147,7 @@ export const NewAccountRegistration: React.FC<NewAccountRegistrationProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { wiseStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
-            <Link
-              href={"https://bridge.base.org/deposit"}
-              target="_blank">
-                Base Bridge ↗
-            </Link>
+            { wiseStrings.get('PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS') }
           </NumberedStep>
         </InstructionsAndTogglesContainer>
       </TitleContainer>

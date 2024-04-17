@@ -3,8 +3,13 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Provide a notarized response from your Wise account page to complete registration. Base ETH is required to
+    Use the ZKP2P browser assistant to prove ownership of your Wise account. Provide the proof to complete registration. Base ETH is required to
     submit a registration transaction.
+  `,
+
+  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS: `
+    Use the ZKP2P browser assistant to generate proof of valid depositor ID. Provide details of a past transaction to
+    prove a valid depositor ID and complete registration.
   `,
 
   // Mail Instructions
@@ -17,40 +22,38 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wise tag requests found.
-    Please follow instructions in the extension to notarize an existing Wise account tag in the account page.
+    No Wisetag details found.
+    Please follow instructions in the browser assistant to prove ownership of an existing Wise account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
-    No Wise transfer requests found.
-    Please follow instructions in the extension to notarize an existing Wise payment in the transactions page.
+    No Wise transfer receipts detected.
+    Please follow instructions in the extension to prove receipt of a previous Wise payment.
   `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration requires a notarized message from Wise, which is used
-    to prove you own a Wise account. Your Wise ID is hashed to conceal your identity.
+    You must register in order to use ZKP2P. Registration involves proving access
+    to a Wise account. Your Wise details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Provide the transaction alert email you received from Wise containing "You have done a UPI txn"
-    to complete the order. You can sign in with Google to pull the email or manually upload/paste
-    the email.
+    Prove a receipt of a payment using the ZKP2P browser assistant to complete the order.
   `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Wise multi currency id. Provide the USDC liquidity to deposit and
+    Depositing requires registering a valid Wise depositor ID. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required for depositors only to connect a Wise multi currency id
+    This is a second registration step required only for depositors to connect a Wise depositor ID
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
     This is a valid Wise tag where users will send payments.
     This connects your Wise tag to your address on chain.
-    This must match the Wise tag you used to register.
+    This Wise tag must be from the account you registered with.
   `,
   NEW_DEPOSIT_NAME_TOOLTIP: `
     no-op
@@ -71,25 +74,23 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment on any UPI ID linked to your Wise bank account. Ensure you have email notifications from Wise InstaAlerts enabled
+    Click 'Send' and complete the payment from your Wise account. Ensure you have access to a desktop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
-    Continue through to validate email proof of transaction. Submit transaction containing proof to receive the requested USDC
+    Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
   `,
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Send payment from your UPI ID linked to your Wise bank account. Do not send payment from UPI Lite or other bank accounts
+    Send payment from your ZKP2P registered Wise account
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Wise InstaAlert email notifications are enabled for your account
+    Choose a send currency and ensure the receive currency is set to the same requested currency above when making the payment.
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact INR amount including decimals as displayed on the payment screen
+    Send the exact amount including decimals as displayed above
   `,
-  PAYMENT_REQUIREMENT_STEP_FOUR: `
-    Lorem ipsum dolor sit ament
-  `,
+  PAYMENT_REQUIREMENT_STEP_FOUR: ``,
 };
 
 export default strings;
