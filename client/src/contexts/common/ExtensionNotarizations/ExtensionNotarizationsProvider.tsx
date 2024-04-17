@@ -58,7 +58,7 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
   const openSidebar = () => {
     window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR }, '*');
 
-    console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
+    // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
   };
 
   /*
