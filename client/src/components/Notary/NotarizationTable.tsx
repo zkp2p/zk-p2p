@@ -335,7 +335,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   }, [circuitType, isSidebarInstalled]);
   
   useEffect(() => {
-    if (!isInstallExtensionClicked || isSidebarInstalled) {
+    if (!isInstallExtensionClicked) {
       return;
     }
   
@@ -351,14 +351,16 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       intervalId = setInterval(callback, NOTARY_PROOF_FETCH_INTERVAL);
     };
   
-    setupInterval(refetchExtensionVersion);
+    if (!isSidebarInstalled) {
+      setupInterval(refetchExtensionVersion);
+    }
   
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
   
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [circuitType, isInstallExtensionClicked]);
+  }, [circuitType, isInstallExtensionClicked, isSidebarInstalled]);
 
   useEffect(() => {
     switch (circuitType) {
