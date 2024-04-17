@@ -3,13 +3,13 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P extension to generate a proof of Wise account. Provide the proof to complete registration. Base ETH is required to
+    Use the ZKP2P browser assistant to prove ownership of your Wise account. Provide the proof to complete registration. Base ETH is required to
     submit a registration transaction.
   `,
 
-  PROOF_FORM_TITLE_RECIPIENT_ID_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P extension to generate proof of valid recipient id. Provide details of a past transaction to
-    prove a valid recipient id and complete registration.
+  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS: `
+    Use the ZKP2P browser assistant to generate proof of valid depositor ID. Provide details of a past transaction to
+    prove a valid depositor ID and complete registration.
   `,
 
   // Mail Instructions
@@ -22,32 +22,32 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wise tag proofs found.
-    Please follow instructions in the extension to prove an existing Wise account.
+    No Wise username details found.
+    Please follow instructions in the browser assistant to prove ownership of an existing Wise account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
-    No Wise transfer proofs found.
-    Please follow instructions in the extension to prove an existing Wise payment.
+    No Wise transfer receipts detected.
+    Please follow instructions in the extension to prove receipt of a previous Wise payment.
   `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration invovles proving access
+    You must register in order to use ZKP2P. Registration involves proving access
     to a Wise account. Your Wise details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Generate a proof of payment using the ZKP2P Extension to complete the order.
+    Prove a receipt of a payment using the ZKP2P browser assistant to complete the order.
   `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Wise recipient id. Provide the USDC liquidity to deposit and
+    Depositing requires registering a valid Wise depositor ID. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required only for depositors to connect a Wise recipient id
+    This is a second registration step required only for depositors to connect a Wise depositor ID
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
@@ -82,13 +82,13 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Send payment from your ZKP2P registered Wise acount
+    Send payment from your ZKP2P registered Wise account
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Choose the send currency of your choice and ensure the receive currency is set to EUR when making the payment.
+    Choose any send currency and ensure the receive currency is set to the correct currency above when making the payment.
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Send the exact EUR amount including decimals as displayed above
+    Send the exact amount including decimals as displayed above
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: ``,
 };

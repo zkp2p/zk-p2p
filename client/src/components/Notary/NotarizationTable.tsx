@@ -17,7 +17,6 @@ import {
   PaymentPlatformType
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
-import { ZKP2P_EXTENSION_CHROME_PAGE_LINK } from '@helpers/docUrls';
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 
 import chromeSvg from '../../assets/images/browsers/chrome.svg';
@@ -151,7 +150,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
           return {
-            detected_copy: 'The following tag was detected from your Wise account',
+            detected_copy: 'The following username was detected from your Wise account',
             metadata_copy: selectedRequest.metadata,
             metadata_type_copy: 'tag',
             transaction_type_copy: 'registration'
@@ -161,7 +160,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           return {
             detected_copy: 'The following transaction receipt was detected from your Wise account',
             metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
-            metadata_type_copy: 'history transaction receipt',
+            metadata_type_copy: 'previous transaction receipt',
             transaction_type_copy: 'depositor registration'
           };
   
@@ -491,7 +490,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         return 'Wise Tag';
 
       case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        return 'Wise Recipient Id';
+        return 'Wise Depositor ID';
 
       case NotaryVerificationCircuit.TRANSFER:
         return 'Transaction';
@@ -518,7 +517,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               <div>
                 { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
                 <Link
-                  href="https://docs.zkp2p.xyz/zkp2p/user-guides/zkp2p-extension"
+                  href={CHROME_EXTENSION_URL}
                   target="_blank"
                 >
                   Learn More ↗

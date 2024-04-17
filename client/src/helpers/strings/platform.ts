@@ -10,7 +10,7 @@ import wiseCopy from './wise';
 export interface PlatformStrings {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: string,
-  PROOF_FORM_TITLE_RECIPIENT_ID_REGISTRATION_INSTRUCTIONS?: string,
+  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS?: string,
 
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: string,
@@ -65,6 +65,7 @@ export class PlatformStringProvider {
   }
 
   get(key: keyof PlatformStrings): string {
+    if (!this.strings[key]) throw new Error(`Invalid key: ${key}`);
     return this.strings[key] ?? '';
   }
 

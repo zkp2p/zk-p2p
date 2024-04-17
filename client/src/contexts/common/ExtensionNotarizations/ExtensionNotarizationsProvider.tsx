@@ -136,6 +136,7 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
     return () => {
       window.removeEventListener("message", handleExtensionMessage);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

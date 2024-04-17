@@ -142,7 +142,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             </QRContainer>
             <QRLabel>
               <Link href={troubleScanningQRCodeLink} target="_blank">  
-                Trouble scanning QR?
+                {paymentPlatform === PaymentPlatform.WISE ? `Send via Wise.com ↗` : "Trouble scanning QR?"}
               </Link>
             </QRLabel>     
           </div>
