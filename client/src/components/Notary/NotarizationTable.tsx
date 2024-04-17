@@ -259,10 +259,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const paginatedData = loadedNotaryProofs.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
 
-  async function fetchStatus() {
-    refetchExtensionVersion();
-  }
-
   async function fetchData() {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
