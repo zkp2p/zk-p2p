@@ -1,14 +1,16 @@
 import React, { useEffect, useState, ReactNode } from 'react'
 import { useContractRead } from 'wagmi'
 
-import { Intent, OnRamperIntent, StoredDeposit } from '@helpers/types';
+import { Deposit, Intent, OnRamperIntent, PaymentPlatform, StoredDeposit } from '@helpers/types';
 import { esl, ZERO, ZERO_ADDRESS } from '@helpers/constants';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLiquidity from '@hooks/wise/useLiquidity';
 import useRegistration from '@hooks/wise/useRegistration';
+import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 
 import OnRamperIntentsContext from './OnRamperIntentsContext'
+import { toUsdcString } from '@helpers/units';
 
 
 interface ProvidersProps {
@@ -21,9 +23,10 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
+  const { postOnramperIntent } = useExtensionNotarizations();
   const { isRegistered } = useRegistration();
   const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
-  const { depositStore } = useLiquidity();
+  const { depositStore, calculateUsdFromRequestedUSDC } = useLiquidity();
 
   /*
    * State
@@ -100,14 +103,14 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
    * Helpers
    */
 
-  function getVenmoIdByDepositId(storedDeposits: StoredDeposit[], depositId: bigint): string | null {
+  function getDepositByDepositId(storedDeposits: StoredDeposit[], depositId: bigint): Deposit | null {
     // Find the StoredDeposit object with the matching depositId
     const matchingDeposit = storedDeposits.find(storedDeposit => storedDeposit.depositId === depositId);
     
     // esl && console.log('wise_matchingDeposit: ', matchingDeposit);
 
-    // If a matching deposit is found, return the venmoId, otherwise return null
-    return matchingDeposit ? matchingDeposit.deposit.venmoId : null;
+    // If a matching deposit is found, return the deposit, otherwise return null
+    return matchingDeposit ? matchingDeposit.deposit : null;
   }
 
   /*
@@ -217,11 +220,11 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         timestamp: intentData[4],
       };
 
-      const depositorVenmoId = getVenmoIdByDepositId(depositStore, intentProcessed.deposit);
-      if (depositorVenmoId) {
+      const deposit = getDepositByDepositId(depositStore, intentProcessed.deposit);
+      if (deposit) {
         const onRampIntentProcessed: OnRamperIntent = {
           intent: intentProcessed,
-          depositorVenmoId: depositorVenmoId
+          depositorVenmoId: deposit.venmoId
         };
   
         setCurrentIntent(onRampIntentProcessed);
@@ -235,7 +238,26 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
 
       setCurrentIntent(null);
     }
-  }, [intentRaw, depositStore]);
+  }, [intentRaw, depositStore, postOnramperIntent]);
+
+  useEffect(() => {
+    esl && console.log('wise_postOnramperIntent_1');
+  
+    if (currentIntent && depositStore) {
+      esl && console.log('wise_postOnramperIntent_2');
+      const deposit = getDepositByDepositId(depositStore, currentIntent.intent.deposit);
+
+      if (deposit) {
+        const fiatToSendBigInt = calculateUsdFromRequestedUSDC(currentIntent.intent.amount, deposit.conversionRate);
+        const fiatToSend = toUsdcString(fiatToSendBigInt);
+        postOnramperIntent(
+          PaymentPlatform.WISE,
+          JSON.stringify(currentIntent),
+          fiatToSend
+        );
+      }
+    }
+  }, [currentIntent, depositStore, postOnramperIntent]);
 
   return (
     <OnRamperIntentsContext.Provider

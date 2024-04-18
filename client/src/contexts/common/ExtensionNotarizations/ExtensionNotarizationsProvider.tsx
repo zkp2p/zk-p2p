@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 // import { esl } from '@helpers/constants';
+import { PaymentPlatformType } from '@helpers/types';
 import {
   ExtensionEventMessage,
   ExtensionNotaryProofRequest,
@@ -59,6 +60,12 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
     window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR }, '*');
 
     // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
+  };
+
+  const postOnramperIntent = (platform: PaymentPlatformType, onramperIntent: string, fiatToSend: string) => {
+    window.postMessage({ type: ExtensionPostMessage.POST_ONRAMPER_INTENT, platform, onramperIntent, fiatToSend }, '*');
+
+    // console.log('Posted Message: ', ExtensionPostMessage.POST_ONRAMPER_INTENT);
   };
 
   /*
@@ -144,6 +151,7 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
       value={{
         isSidebarInstalled,
         sideBarVersion,
+        postOnramperIntent,
         openSidebar,
         refetchExtensionVersion,
         refetchProfileRequests,
