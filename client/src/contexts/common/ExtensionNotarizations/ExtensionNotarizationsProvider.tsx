@@ -62,10 +62,10 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
     // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
   };
 
-  const postOnramperIntent = (platform: PaymentPlatformType, onramperIntent: string) => {
-    window.postMessage({ type: ExtensionPostMessage.POST_ONRAMPER_INTENT, platform, onramperIntent }, '*');
+  const postOnramperIntent = (platform: PaymentPlatformType, onramperIntent: string, fiatToSend: string) => {
+    window.postMessage({ type: ExtensionPostMessage.POST_ONRAMPER_INTENT, platform, onramperIntent, fiatToSend }, '*');
 
-    console.log('Posted Message: ', ExtensionPostMessage.POST_ONRAMPER_INTENT);
+    // console.log('Posted Message: ', ExtensionPostMessage.POST_ONRAMPER_INTENT);
   };
 
   /*
