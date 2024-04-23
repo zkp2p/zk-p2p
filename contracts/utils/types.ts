@@ -22,6 +22,7 @@ export interface TLSParams {
   host: string;
 }
 
+// Wise Proof Types
 export interface WiseRegistrationData {
   endpoint: string;
   host: string;
@@ -62,5 +63,36 @@ export interface WiseSendData {
 
 export interface WiseSendProof {
   public_values: WiseSendData;
+  proof: string;
+}
+
+// Revolut Proof Types
+export interface RevolutRegistrationData {
+  endpoint: string;
+  host: string;
+  profileId: string;
+  userAddress: Address;
+}
+
+export interface RevolutRegistrationProof {
+  public_values: RevolutRegistrationData;
+  proof: string;
+}
+
+export interface RevolutSendData {
+  endpoint: string;
+  host: string;
+  transferId: string;
+  senderId: string;
+  recipientId: string;
+  timestamp: string;
+  currencyId: string;
+  amount: string;
+  status: string;
+  intentHash: BigNumber;
+}
+
+export interface RevolutSendProof {
+  public_values: RevolutSendData;
   proof: string;
 }
