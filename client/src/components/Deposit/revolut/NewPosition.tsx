@@ -455,18 +455,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           </InstructionsAndTogglesContainer>
           <InputsContainer>
             <Input
-              label="Depositor Verification"
-              name={`multiCurrency`}
-              value={offRampId ? 'Verified' : 'Not Verified'}
-              onChange={() => {}}
-              readOnly={true}
-              type="string"
-              placeholder="multi_currency_id"
-              helperText={revolutStrings.get('NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP')}
-              valueFontSize="18px"
-            />
-
-            <Input
               label="Revtag"
               name={`revTag`}
               value={revTagInput}
