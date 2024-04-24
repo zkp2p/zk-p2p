@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-feather';
 import styled, { css } from 'styled-components/macro';
-import { useNavigate } from 'react-router-dom';
 
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
@@ -15,7 +14,6 @@ import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 import useWiseLiquidity from '@hooks/wise/useLiquidity';
-import useAccount from '@hooks/useAccount';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -31,8 +29,6 @@ export interface DepositPrime {
 }
 
 export const DepositsTable: React.FC = () => {
-  const navigate = useNavigate();
-
   /*
    * Contexts
    */
@@ -52,10 +48,6 @@ export const DepositsTable: React.FC = () => {
   const {
     depositStore: wiseDepositStore,
   } = useWiseLiquidity();
-
-  const {
-    isLoggedIn
-  } = useAccount();
 
   const {
     paymentPlatform

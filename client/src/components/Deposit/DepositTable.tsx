@@ -295,10 +295,6 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     navigate('/register');
   };
 
-  const navigateToWithdrawHandler = () => {
-    navigate('/withdraw');
-  };
-
   const handleWithdrawClick = async (rowIndex: number) => {
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:

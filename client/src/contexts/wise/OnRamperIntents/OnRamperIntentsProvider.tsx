@@ -257,7 +257,7 @@ const OnRamperIntentsProvider = ({ children }: ProvidersProps) => {
         );
       }
     }
-  }, [currentIntent, depositStore, postOnramperIntent]);
+  }, [currentIntent, depositStore, postOnramperIntent, calculateUsdFromRequestedUSDC]);
 
   return (
     <OnRamperIntentsContext.Provider

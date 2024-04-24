@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 
-import { OnRamperIntent } from '@helpers/types';
 import { ExtensionNotaryProofRequest } from '@hooks/useBrowserExtension';
 
 

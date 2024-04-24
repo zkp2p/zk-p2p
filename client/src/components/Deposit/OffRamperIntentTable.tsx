@@ -6,7 +6,7 @@ import { toUsdString, toUsdcString } from '@helpers/units';
 import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { ThemedText } from '@theme/text'
 import { colors } from '@theme/colors';
-import { DepositIntent, PaymentPlatform } from '@helpers/types';
+import { DepositIntent } from '@helpers/types';
 import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
@@ -105,8 +105,6 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
 
         const amountUSDC = intent.amount
         const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
-
-        const isVenmo = deposit.platformType === PaymentPlatform.VENMO;
         const onRamper = intent.onRamper;
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC, true);
