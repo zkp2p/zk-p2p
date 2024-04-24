@@ -83,12 +83,11 @@ export interface RevolutSendData {
   endpoint: string;
   host: string;
   transferId: string;
-  senderId: string;
   recipientId: string;
-  timestamp: string;
-  currencyId: string;
   amount: string;
+  currencyId: string;
   status: string;
+  timestamp: string;
   intentHash: BigNumber;
 }
 

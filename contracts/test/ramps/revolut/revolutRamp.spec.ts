@@ -24,14 +24,14 @@ import {
 import { Blockchain, ether, usdc } from "@utils/common";
 import { BigNumber } from "ethers";
 import { ZERO, ZERO_BYTES32, ADDRESS_ZERO, ONE } from "@utils/constants";
-import { calculateIntentHash, calculateRevolutIdHash } from "@utils/protocolUtils";
+import { calculateIntentHash, calculateRevolutIdHash, calculateRevolutIdHashBN } from "@utils/protocolUtils";
 import { ONE_DAY_IN_SECONDS } from "@utils/constants";
 
 const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe.only("RevolutRamp", () => {
+describe("RevolutRamp", () => {
   let owner: Account;
   let verifier: Account;
   let offRamper: Account;
@@ -181,23 +181,23 @@ describe.only("RevolutRamp", () => {
       );
 
       const standardRegistrationData: RevolutRegistrationData = {
-        endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
-        host: "api.transferwise.com",
+        endpoint: "GET https://app.revolut.com/api/retail/user/current",
+        host: "app.revolut.com",
         profileId: "",
         userAddress: ""
       }
 
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      offRamperProof.public_values.profileId = calculateRevolutIdHash("012345678");
+      offRamperProof.public_values.profileId = calculateRevolutIdHashBN("012345678");
       offRamperProof.public_values.userAddress = offRamper.address;
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperProof.public_values.profileId = calculateRevolutIdHash("123456789");
+      onRamperProof.public_values.profileId = calculateRevolutIdHashBN("123456789");
       onRamperProof.public_values.userAddress = onRamper.address;
       onRamperTwoProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperTwoProof.public_values.profileId = calculateRevolutIdHash("567890123");
+      onRamperTwoProof.public_values.profileId = calculateRevolutIdHashBN("567890123");
       onRamperTwoProof.public_values.userAddress = onRamperTwo.address;
       maliciousOnRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHash("123456789");
+      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHashBN("123456789");
       maliciousOnRamperProof.public_values.userAddress = maliciousOnRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
@@ -357,7 +357,11 @@ describe.only("RevolutRamp", () => {
         await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(onRamperProof.public_values.profileId, subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          subjectDepositId,
+          currentTimestamp
+        );
 
         const intent = await ramp.intents(intentHash);
 
@@ -373,7 +377,11 @@ describe.only("RevolutRamp", () => {
 
         await subject();
 
-        const intentHash = calculateIntentHash(onRamperProof.public_values.profileId, subjectDepositId, await blockchain.getCurrentTimestamp());
+        const intentHash = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          subjectDepositId,
+          await blockchain.getCurrentTimestamp()
+        );
 
         const postDeposit = await ramp.getDeposit(subjectDepositId);
 
@@ -386,7 +394,7 @@ describe.only("RevolutRamp", () => {
         await subject();
 
         const expectedIntentHash = calculateIntentHash(
-          onRamperProof.public_values.profileId,
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
           subjectDepositId,
           await blockchain.getCurrentTimestamp()
         );
@@ -400,12 +408,16 @@ describe.only("RevolutRamp", () => {
         const txn = await subject();
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        const intentHash = calculateIntentHash(onRamperProof.public_values.profileId, subjectDepositId, currentTimestamp);
+        const intentHash = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          subjectDepositId,
+          currentTimestamp
+        );
 
-        expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
+        await expect(txn).to.emit(ramp, "IntentSignaled").withArgs(
           intentHash,
           subjectDepositId,
-          onRamperProof.public_values.profileId,
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
           subjectTo,
           subjectAmount,
           currentTimestamp
@@ -424,7 +436,11 @@ describe.only("RevolutRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          oldIntentHash = calculateIntentHash(onRamperProof.public_values.profileId, subjectDepositId, currentTimestamp);
+          oldIntentHash = calculateIntentHash(
+            BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+            subjectDepositId,
+            currentTimestamp
+          );
 
           await blockchain.increaseTimeAsync(timeJump);
 
@@ -439,7 +455,11 @@ describe.only("RevolutRamp", () => {
 
           await subject();
 
-          const newIntentHash = calculateIntentHash(onRamperTwoProof.public_values.profileId, subjectDepositId, await blockchain.getCurrentTimestamp());
+          const newIntentHash = calculateIntentHash(
+            BigNumber.from(onRamperTwoProof.public_values.profileId).toHexString(),
+            subjectDepositId,
+            await blockchain.getCurrentTimestamp()
+          );
           const postDeposit = await ramp.getDeposit(subjectDepositId);
 
           expect(postDeposit.outstandingIntentAmount).to.eq(subjectAmount);
@@ -463,7 +483,11 @@ describe.only("RevolutRamp", () => {
           await subject();
 
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(onRamperTwoProof.public_values.profileId, subjectDepositId, currentTimestamp);
+          const intentHash = calculateIntentHash(
+            BigNumber.from(onRamperTwoProof.public_values.profileId).toHexString(),
+            subjectDepositId,
+            currentTimestamp
+          );
 
           const intent = await ramp.intents(intentHash);
 
@@ -477,7 +501,7 @@ describe.only("RevolutRamp", () => {
           await subject();
 
           const expectedIntentHash = calculateIntentHash(
-            onRamperTwoProof.public_values.profileId,
+            BigNumber.from(onRamperTwoProof.public_values.profileId).toHexString(),
             subjectDepositId,
             await blockchain.getCurrentTimestamp()
           );
@@ -508,7 +532,7 @@ describe.only("RevolutRamp", () => {
 
       describe("when isAllowedUser is false", async () => {
         beforeEach(async () => {
-          await accountRegistry.connect(offRamper.wallet).addAccountToDenylist(onRamperProof.public_values.profileId);
+          await accountRegistry.connect(offRamper.wallet).addAccountToDenylist(BigNumber.from(onRamperProof.public_values.profileId).toHexString());
         });
 
         it("should revert", async () => {
@@ -586,12 +610,15 @@ describe.only("RevolutRamp", () => {
           const depositId = (await ramp.depositCounter()).sub(1);
   
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          const intentHash = calculateIntentHash(onRamperProof.public_values.profileId, depositId, currentTimestamp);
+          const intentHash = calculateIntentHash(
+            BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+            depositId,
+            currentTimestamp
+          );
           
           const sendData = {
-            endpoint: "https://api.transferwise.com/v1/quotes",
-            endpointType: "POST",
-            host: "api.transferwise.com",
+            endpoint: "GET https://app.revolut.com/api/retail/transaction/asdfsd-asdfasd-oidafda",
+            host: "app.revolut.com",
             transferId: "736281573",
             senderId: onRamperProof.public_values.profileId,
             recipientId: "jdoe1234",
@@ -665,7 +692,7 @@ describe.only("RevolutRamp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        subjectIntentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
+        subjectIntentHash = calculateIntentHash(BigNumber.from(idHash).toHexString(), depositId, currentTimestamp);
 
         subjectCaller = onRamper;
       });
@@ -801,18 +828,17 @@ describe.only("RevolutRamp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        intentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
+        intentHash = calculateIntentHash(BigNumber.from(idHash).toHexString(), depositId, currentTimestamp);
         
         subjectSendData = {
-          endpoint: "POST https://api.transferwise.com/v1/quotes",
-          host: "api.transferwise.com",
-          transferId: "736281573",
-          senderId: onRamperProof.public_values.profileId,
+          endpoint: "GET https://app.revolut.com/api/retail/transaction/asdfsd-asdfasd-oidafda",
+          host: "app.revolut.com",
+          transferId: "asdfsd-asdfasd-oidafda",
           recipientId: "jdoe1234",
-          timestamp: currentTimestamp.toString(),
-          currencyId: "EUR",
           amount: "46.00",
+          currencyId: "EUR",
           status: "outgoing_payment_sent",
+          timestamp: currentTimestamp.toString(),
           intentHash: BigNumber.from(intentHash)
         }
         subjectNotarySignature = "0x";
@@ -921,7 +947,7 @@ describe.only("RevolutRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          intentHash = calculateIntentHash(onRamperProof.public_values.profileId, depositId, currentTimestamp);
+          intentHash = calculateIntentHash(BigNumber.from(onRamperProof.public_values.profileId).toHexString(), depositId, currentTimestamp);
 
           subjectSendData.timestamp = currentTimestamp.toString();
           subjectSendData.intentHash = BigNumber.from(intentHash);
@@ -1026,7 +1052,7 @@ describe.only("RevolutRamp", () => {
         await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
 
         const currentTimestamp = await blockchain.getCurrentTimestamp();
-        subjectIntentHash = calculateIntentHash(idHash, depositId, currentTimestamp);
+        subjectIntentHash = calculateIntentHash(BigNumber.from(idHash).toHexString(), depositId, currentTimestamp);
         subjectCaller = offRamper;
       });
 
@@ -1132,7 +1158,11 @@ describe.only("RevolutRamp", () => {
 
           await ramp.connect(onRamper.wallet).signalIntent(depositId, usdc(50), receiver.address);
           const currentTimestamp = await blockchain.getCurrentTimestamp();
-          subjectIntentHash = calculateIntentHash(onRamperProof.public_values.profileId, depositId, currentTimestamp);
+          subjectIntentHash = calculateIntentHash(
+            BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+            depositId,
+            currentTimestamp
+          );
         });
 
         it("should prune the deposit", async () => {
@@ -1154,7 +1184,11 @@ describe.only("RevolutRamp", () => {
 
       describe("when the intent does not exist", async () => {
         beforeEach(async () => {
-          subjectIntentHash = calculateIntentHash(onRamperProof.public_values.profileId, depositId, ONE);
+          subjectIntentHash = calculateIntentHash(
+            BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+            depositId,
+            ONE
+          );
         });
 
         it("should revert", async () => {
@@ -1385,7 +1419,11 @@ describe.only("RevolutRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(onRamperProof.public_values.profileId, ZERO, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          ZERO,
+          await
+           blockchain.getCurrentTimestamp());
 
         subjectAccount = onRamper.address;
       });
@@ -1451,8 +1489,8 @@ describe.only("RevolutRamp", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(deposits[0].deposit.verifierSigningKey).to.eq(verifier.address);
         expect(deposits[1].deposit.verifierSigningKey).to.eq(verifier.address);
-        expect(deposits[0].depositorId).to.eq(offRamperProof.public_values.profileId);
-        expect(deposits[1].depositorId).to.eq(offRamperProof.public_values.profileId);
+        expect(deposits[0].depositorId).to.eq(BigNumber.from(offRamperProof.public_values.profileId).toHexString());
+        expect(deposits[1].depositorId).to.eq(BigNumber.from(offRamperProof.public_values.profileId).toHexString());
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
@@ -1496,7 +1534,11 @@ describe.only("RevolutRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
-        intentHash = calculateIntentHash(onRamperProof.public_values.profileId, ONE, await blockchain.getCurrentTimestamp());
+        intentHash = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          ONE,
+          await
+           blockchain.getCurrentTimestamp());
 
 
         subjectDepositIds = [ZERO, ONE];
@@ -1524,8 +1566,8 @@ describe.only("RevolutRamp", () => {
         expect(deposits[1].deposit.conversionRate).to.eq(conversionRateTwo);
         expect(deposits[0].availableLiquidity).to.eq(usdc(100));
         expect(deposits[1].availableLiquidity).to.eq(usdc(50));
-        expect(deposits[0].depositorId).to.eq(offRamperProof.public_values.profileId);
-        expect(deposits[1].depositorId).to.eq(offRamperProof.public_values.profileId);
+        expect(deposits[0].depositorId).to.eq(BigNumber.from(offRamperProof.public_values.profileId).toHexString());
+        expect(deposits[1].depositorId).to.eq(BigNumber.from(offRamperProof.public_values.profileId).toHexString());
         expect(deposits[0].depositId).to.eq(ZERO);
         expect(deposits[1].depositId).to.eq(ONE);
         expect(JSON.stringify(deposits[0].deposit.intentHashes)).to.eq(JSON.stringify([]));
@@ -1559,9 +1601,17 @@ describe.only("RevolutRamp", () => {
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
-        const intentHashOne = calculateIntentHash(onRamperProof.public_values.profileId, ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashOne = calculateIntentHash(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          ZERO,
+          await
+           blockchain.getCurrentTimestamp());
         await ramp.connect(onRamperTwo.wallet).signalIntent(ZERO, usdc(40), receiver.address);
-        const intentHashTwo = calculateIntentHash(onRamperTwoProof.public_values.profileId, ZERO, await blockchain.getCurrentTimestamp());
+        const intentHashTwo = calculateIntentHash(
+          BigNumber.from(onRamperTwoProof.public_values.profileId).toHexString(),
+          ZERO,
+          await
+           blockchain.getCurrentTimestamp());
 
         subjectIntentHashes = [intentHashOne, intentHashTwo];
       });
@@ -1579,8 +1629,8 @@ describe.only("RevolutRamp", () => {
         expect(intents[1].intent.deposit).to.eq(ZERO);
         expect(intents[0].intent.amount).to.eq(usdc(50));
         expect(intents[1].intent.amount).to.eq(usdc(40));
-        expect(intents[0].onRamperId).to.eq(onRamperProof.public_values.profileId);
-        expect(intents[1].onRamperId).to.eq(onRamperTwoProof.public_values.profileId);
+        expect(intents[0].onRamperId).to.eq(BigNumber.from(onRamperProof.public_values.profileId).toHexString());
+        expect(intents[1].onRamperId).to.eq(BigNumber.from(onRamperTwoProof.public_values.profileId).toHexString());
         expect(intents[0].intentHash).to.eq(subjectIntentHashes[0]);
         expect(intents[1].intentHash).to.eq(subjectIntentHashes[1]);
       });

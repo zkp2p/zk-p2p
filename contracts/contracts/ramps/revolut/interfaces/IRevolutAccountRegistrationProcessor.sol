@@ -7,7 +7,7 @@ interface IRevolutAccountRegistrationProcessor {
     struct RegistrationData {
         string endpoint;
         string host;
-        bytes32 profileId;
+        string profileId;
         address userAddress;
     }
 

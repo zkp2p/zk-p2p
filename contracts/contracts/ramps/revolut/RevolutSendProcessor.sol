@@ -18,7 +18,7 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
     using StringConversionUtils for string;
 
     /* ============ Constants ============ */
-    bytes32 public constant PAYMENT_STATUS = keccak256(abi.encodePacked("OUTGOING_PAYMENT_SENT"));
+    bytes32 public constant PAYMENT_STATUS = keccak256(abi.encodePacked("COMPLETED"));
 
     /* ============ Constructor ============ */
     constructor(
@@ -55,7 +55,7 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
         _validateProof(_verifierSigningKey, _proof.public_values, _proof.proof);
 
         _validateTLSEndpoint(
-            endpoint.replaceString("*", _proof.public_values.senderId),
+            endpoint.replaceString("*", _proof.public_values.transferId),
             _proof.public_values.endpoint
         );
         _validateTLSHost(host, _proof.public_values.host);
@@ -67,12 +67,12 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
         );
         _validateAndAddNullifier(keccak256(abi.encodePacked("Revolut", _proof.public_values.transferId)));
 
-        amount = _proof.public_values.amount.stringToUint(6);
+        amount = _parseAmount(_proof.public_values.amount);
 
         // Add the buffer to build in flexibility with L2 timestamps
         timestamp = _proof.public_values.timestamp.stringToUint(0) / 1000 + timestampBuffer;
 
-        offRamperId = bytes32(_proof.public_values.recipientId.stringToUint(0));
+        offRamperId = keccak256(abi.encodePacked(_proof.public_values.recipientId));
         currencyId = keccak256(abi.encodePacked(_proof.public_values.currencyId));
     }
 
@@ -91,7 +91,6 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
             _publicValues.endpoint,
             _publicValues.host,
             _publicValues.transferId,
-            _publicValues.senderId,
             _publicValues.recipientId,
             _publicValues.amount,
             _publicValues.currencyId,
@@ -116,5 +115,10 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
             verifyProof(_verifierSigningKey, _publicValues, _proof),
             "Invalid signature from verifier"
         );
+    }
+
+    function _parseAmount(string memory amount) internal pure returns(uint256) {
+        require(bytes(amount)[0] == 0x2D, "Not a send transaction");   
+        return amount.stringToUint(6);
     }
 }

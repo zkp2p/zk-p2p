@@ -4,27 +4,26 @@ import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { NullifierRegistry, WiseAccountRegistrationProcessor } from "@utils/contracts";
+import { NullifierRegistry, RevolutAccountRegistrationProcessor } from "@utils/contracts";
 import DeployHelper from "@utils/deploys";
 
 import {
   getWaffleExpect,
   getAccounts
 } from "@utils/test/index";
-import { Address, WiseRegistrationData, WiseRegistrationProof } from "@utils/types";
-import { calculateWiseId, calculateWiseTagHash } from "@utils/protocolUtils";
+import { Address, RevolutRegistrationData, RevolutRegistrationProof } from "@utils/types";
 
 const expect = getWaffleExpect();
 const abiCoder = new ethers.utils.AbiCoder();
 
-describe("WiseAccountRegistrationProcessor", () => {
+describe("RevolutAccountRegistrationProcessor", () => {
   let owner: Account;
   let verifier: Account;
   let attacker: Account;
   let ramp: Account;
 
   let nullifierRegistry: NullifierRegistry;
-  let registrationProcessor: WiseAccountRegistrationProcessor;
+  let registrationProcessor: RevolutAccountRegistrationProcessor;
 
   let deployer: DeployHelper;
 
@@ -40,12 +39,12 @@ describe("WiseAccountRegistrationProcessor", () => {
 
     nullifierRegistry = await deployer.deployNullifierRegistry();
 
-    registrationProcessor = await deployer.deployWiseAccountRegistrationProcessor(
+    registrationProcessor = await deployer.deployRevolutAccountRegistrationProcessor(
       ramp.address,
       verifier.address,
       nullifierRegistry.address,
-      "POST https://wise.com/gateway/v1/payments",
-      "wise.com"
+      "GET https://app.revolut.com/api/retail/user/current",
+      "app.revolut.com"
     );
 
     await nullifierRegistry.connect(owner.wallet).addWritePermission(registrationProcessor.address);
@@ -62,26 +61,26 @@ describe("WiseAccountRegistrationProcessor", () => {
       expect(rampAddress).to.eq(ramp.address);
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
 
-      expect("POST https://wise.com/gateway/v1/payments").to.deep.equal(actualEndpoint);
+      expect("GET https://app.revolut.com/api/retail/user/current").to.deep.equal(actualEndpoint);
       expect(verifier.address).to.deep.equal(actualVerifier);
-      expect("wise.com").to.deep.equal(actualHost);
+      expect("app.revolut.com").to.deep.equal(actualHost);
     });
   });
 
   describe("#processProof", async () => {
-    let subjectProof: WiseRegistrationProof;
+    let subjectProof: RevolutRegistrationProof;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectProof = {
         public_values: {
-          endpoint: "POST https://wise.com/gateway/v1/payments",
-          host: "wise.com",
-          profileId: "41213881",
+          endpoint: "GET https://app.revolut.com/api/retail/user/current",
+          host: "app.revolut.com",
+          profileId: "55990530848032332592411724135893856847123084097520685404734279999550883729894",
           userAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-        } as WiseRegistrationData,
-        proof: "0xe8d9937381ea1a4e4079d1007edc3d63fbeeb62b5759c9259f1c11b671ef8b7014fb621bea79abfe22aa3d29a77d2601adb25b55890c2f3e1f9f436870d549b61b"
-      } as WiseRegistrationProof;
+        } as RevolutRegistrationData,
+        proof: "0x89744209cbc46ef9a472d18ae1405030cc996b7bad62dcb3042bbe837e4bdbf65438f59cad5500012f59e7c72e53edc94f2eaddcdfbf785bdd75292e37cceed91b"
+      } as RevolutRegistrationProof;
 
       subjectCaller = ramp;
     });
@@ -95,9 +94,9 @@ describe("WiseAccountRegistrationProcessor", () => {
     }
 
     it("should process the proof", async () => {
-      const [ onRamperId, wiseTagHash ] = await subjectCallStatic();
+      const onRamperId = await subjectCallStatic();
 
-      expect(onRamperId).to.eq(calculateWiseId(subjectProof.public_values.profileId));
+      expect(onRamperId).to.eq(BigNumber.from(subjectProof.public_values.profileId).toHexString());
     });
 
     it("should add the hash of the proof inputs to the nullifier registry", async () => {
@@ -127,7 +126,7 @@ describe("WiseAccountRegistrationProcessor", () => {
 
     describe("when the proof is invalid", async () => {
       beforeEach(async () => {
-        subjectProof.public_values.wiseTagHash = calculateWiseTagHash("snakamoto1234");
+        subjectProof.public_values.profileId = "55990530848032332592411724135893856847123084097520685404734279999550883729893";
       });
 
       it("should revert", async () => {
@@ -137,10 +136,10 @@ describe("WiseAccountRegistrationProcessor", () => {
 
     describe("when the TLS proof is for a different endpoint", async () => {
       beforeEach(async () => {
-        subjectProof.public_values.endpoint = "GET https://wise.com/gateway/v4/profiles/41213881";
+        subjectProof.public_values.endpoint = "GET https://app.revolut.com/api/business/user/current";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "bytes32", "address"],
+          ["string", "string", "string", "address"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -159,10 +158,10 @@ describe("WiseAccountRegistrationProcessor", () => {
 
     describe("when the host doesn't match", async () => {
       beforeEach(async () => {
-        subjectProof.public_values.host = "api.wise.com";
+        subjectProof.public_values.host = "api.revolut.com";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "bytes32", "address"],
+          ["string", "string", "string", "address"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,

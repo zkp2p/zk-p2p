@@ -59,7 +59,7 @@ contract RevolutAccountRegistrationProcessor is IRevolutAccountRegistrationProce
 
         _validateAndAddNullifier(keccak256(abi.encode(_proof.public_values.userAddress, _proof.public_values.profileId)));
 
-        onRampId = _proof.public_values.profileId;
+        onRampId = bytes32(_proof.public_values.profileId.stringToUint(0));
     }
 
     /* ============ External Admin Functions ============ */

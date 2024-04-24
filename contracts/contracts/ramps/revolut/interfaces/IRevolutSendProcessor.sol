@@ -8,7 +8,6 @@ interface IRevolutSendProcessor {
         string endpoint;
         string host;
         string transferId;
-        string senderId;
         string recipientId;
         string amount;
         string currencyId;

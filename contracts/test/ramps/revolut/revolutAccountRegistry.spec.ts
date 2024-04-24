@@ -1,5 +1,6 @@
 import "module-alias/register";
 
+import { BigNumber } from "ethers";
 import {
   Address,
   RevolutRegistrationData,
@@ -18,7 +19,7 @@ import {
   getAccounts
 } from "@utils/test/index";
 import { usdc } from "@utils/common";
-import { calculateRevolutIdHash } from "@utils/protocolUtils";
+import { calculateRevolutIdHash, calculateRevolutIdHashBN } from "@utils/protocolUtils";
 
 const expect = getWaffleExpect();
 
@@ -115,9 +116,9 @@ describe("RevolutAccountRegistry", () => {
       );
 
       const registerPublicValues = {
-        endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
-        host: "api.transferwise.com",
-        profileId: calculateRevolutIdHash("405394441"),
+        endpoint: "GET https://app.revolut.com/api/retail/user/current",
+        host: "app.revolut.com",
+        profileId: calculateRevolutIdHashBN("ctl04gpe-cd21-0t5m-7zgd-055f09e381g5"),
         userAddress: offRamper.address
       } as RevolutRegistrationData
 
@@ -137,13 +138,13 @@ describe("RevolutAccountRegistry", () => {
       await subject();
       const accountId = await accountRegistry.getAccountId(subjectCaller.address);
 
-      expect(accountId).to.eq(subjectProof.public_values.profileId);
+      expect(accountId).to.eq(BigNumber.from(subjectProof.public_values.profileId).toHexString());
     });
 
     it("should emit an AccountRegistered event", async () => {
       await expect(subject()).to.emit(accountRegistry, "AccountRegistered").withArgs(
         subjectCaller.address,
-        subjectProof.public_values.profileId,
+        BigNumber.from(subjectProof.public_values.profileId).toHexString(),
       );
     });
 
@@ -161,7 +162,7 @@ describe("RevolutAccountRegistry", () => {
       beforeEach(async () => {
         await subject();
 
-        subjectProof.public_values.profileId = calculateRevolutIdHash("405394441");
+        subjectProof.public_values.profileId = calculateRevolutIdHashBN("405394441");
       });
 
       it("should revert", async () => {
@@ -180,16 +181,16 @@ describe("RevolutAccountRegistry", () => {
       );
 
       const standardRegistrationData: RevolutRegistrationData = {
-        endpoint: "GET https://api.transferwise.com/v4/profiles/41246868/multi-currency-account",
-        host: "api.transferwise.com",
+        endpoint: "GET https://app.revolut.com/api/retail/user/current",
+        host: "app.revolut.com",
         profileId: "",
         userAddress: ""
       }
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      offRamperProof.public_values.profileId = calculateRevolutIdHash("012345678");
+      offRamperProof.public_values.profileId = calculateRevolutIdHashBN("012345678");
       offRamperProof.public_values.userAddress = offRamper.address;
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperProof.public_values.profileId = calculateRevolutIdHash("123456789");
+      onRamperProof.public_values.profileId = calculateRevolutIdHashBN("123456789");
       onRamperProof.public_values.userAddress = onRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
@@ -200,7 +201,7 @@ describe("RevolutAccountRegistry", () => {
       let subjectCaller: Account;
   
       beforeEach(async () => {
-        subjectDeniedUser = onRamperProof.public_values.profileId;
+        subjectDeniedUser = BigNumber.from(onRamperProof.public_values.profileId).toHexString();
         subjectCaller = offRamper;
       });
   
@@ -222,8 +223,8 @@ describe("RevolutAccountRegistry", () => {
         const tx = await subject();
   
         await expect(tx).to.emit(accountRegistry, "UserAddedToDenylist").withArgs(
-          offRamperProof.public_values.profileId,
-          onRamperProof.public_values.profileId
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString()
         );
       });
   
@@ -253,9 +254,11 @@ describe("RevolutAccountRegistry", () => {
       let subjectCaller: Account;
   
       beforeEach(async () => {
-        await accountRegistry.connect(offRamper.wallet).addAccountToDenylist(onRamperProof.public_values.profileId);
+        await accountRegistry.connect(offRamper.wallet).addAccountToDenylist(
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString()
+        );
   
-        subjectApprovedUser = onRamperProof.public_values.profileId;
+        subjectApprovedUser = BigNumber.from(onRamperProof.public_values.profileId).toHexString();
         subjectCaller = offRamper;
       });
   
@@ -281,8 +284,8 @@ describe("RevolutAccountRegistry", () => {
         const tx = await subject();
   
         expect(tx).to.emit(accountRegistry, "UserRemovedFromDenylist").withArgs(
-          offRamperProof.public_values.profileId,
-          onRamperProof.public_values.profileId
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString()
         );
       });
   
@@ -362,7 +365,10 @@ describe("RevolutAccountRegistry", () => {
       beforeEach(async () => {
         await accountRegistry.connect(offRamper.wallet).enableAllowlist();
 
-        subjectAllowedUsers = [onRamperProof.public_values.profileId, calculateRevolutIdHash("1111111")];
+        subjectAllowedUsers = [
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString(),
+          calculateRevolutIdHash("1111111")
+        ];
         subjectCaller = offRamper;
       });
   
@@ -387,12 +393,12 @@ describe("RevolutAccountRegistry", () => {
         const tx = await subject();
   
         expect(tx).to.emit(accountRegistry, "UserAddedToAllowlist").withArgs(
-          offRamperProof.public_values.profileId,
-          onRamperProof.public_values.profileId
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString()
         );
 
         expect(tx).to.emit(accountRegistry, "UserAddedToAllowlist").withArgs(
-          offRamperProof.public_values.profileId,
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
           calculateRevolutIdHash("1111111")
         );
       });
@@ -426,10 +432,10 @@ describe("RevolutAccountRegistry", () => {
         await accountRegistry.connect(offRamper.wallet).enableAllowlist();
 
         await accountRegistry.connect(offRamper.wallet).addAccountsToAllowlist(
-          [onRamperProof.public_values.profileId, calculateRevolutIdHash("1111111")]
+          [BigNumber.from(onRamperProof.public_values.profileId).toHexString(), calculateRevolutIdHash("1111111")]
         );
   
-        subjectRemovedUsers = [onRamperProof.public_values.profileId, calculateRevolutIdHash("1111111")];
+        subjectRemovedUsers = [BigNumber.from(onRamperProof.public_values.profileId).toHexString(), calculateRevolutIdHash("1111111")];
         subjectCaller = offRamper;
       });
   
@@ -458,13 +464,13 @@ describe("RevolutAccountRegistry", () => {
       it("should emit a UserRemovedFromAllowlist event", async () => {
         const tx = await subject();
   
-        expect(tx).to.emit(accountRegistry, "UserRemovedFromAllowlist").withArgs(
-          offRamperProof.public_values.profileId,
-          onRamperProof.public_values.profileId
+        await expect(tx).to.emit(accountRegistry, "UserRemovedFromAllowlist").withArgs(
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
+          BigNumber.from(onRamperProof.public_values.profileId).toHexString()
         );
 
-        expect(tx).to.emit(accountRegistry, "UserRemovedFromAllowlist").withArgs(
-          offRamperProof.public_values.profileId,
+        await expect(tx).to.emit(accountRegistry, "UserRemovedFromAllowlist").withArgs(
+          BigNumber.from(offRamperProof.public_values.profileId).toHexString(),
           calculateRevolutIdHash("1111111")
         );
       });
@@ -497,7 +503,7 @@ describe("RevolutAccountRegistry", () => {
   
       beforeEach(async () => {  
         subjectAccount = offRamper.address;
-        subjectAllowedUser = onRamperProof.public_values.profileId;
+        subjectAllowedUser = BigNumber.from(onRamperProof.public_values.profileId).toHexString();
         subjectCaller = offRamper;
       });
   

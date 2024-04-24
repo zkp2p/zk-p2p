@@ -21,6 +21,6 @@ contract RevolutAccountRegistrationProcessorMock is IRevolutAccountRegistrationP
         override
         returns(bytes32 onRampId)
     {
-        return(_proof.public_values.profileId);
+        return bytes32(_proof.public_values.profileId.stringToUint(0));
     }
 }
