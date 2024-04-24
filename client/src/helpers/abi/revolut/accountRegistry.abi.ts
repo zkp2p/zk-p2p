@@ -395,9 +395,9 @@ export const abi = [
                 "type": "string"
               },
               {
-                "internalType": "bytes32",
+                "internalType": "string",
                 "name": "profileId",
-                "type": "bytes32"
+                "type": "string"
               },
               {
                 "internalType": "address",

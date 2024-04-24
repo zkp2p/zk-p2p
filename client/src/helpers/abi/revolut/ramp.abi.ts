@@ -959,11 +959,6 @@ export const abi = [
           },
           {
             "internalType": "string",
-            "name": "senderId",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
             "name": "recipientId",
             "type": "string"
           },
