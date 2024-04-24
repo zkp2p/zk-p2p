@@ -59,7 +59,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
    */
 
   //
-  // onRamp(bytes32 _intentHash, IWiseSendProcessor.SendData calldata _sendData, bytes calldata _verifierSignature)
+  // onRamp(bytes32 _intentHash, IRevolutSendProcessor.SendData calldata _sendData, bytes calldata _verifierSignature)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
     address: revolutRampAddress,

@@ -56,7 +56,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    * Context
    */
 
-  const { setExtractedWiseProfileId } = useRegistration();
+  const { setExtractedRevolutProfileId } = useRegistration();
   const { loggedInEthereumAddress } = useAccount();
 
   /*
@@ -171,8 +171,8 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
     const isCircuitTypeRegistration = circuitType === NotaryVerificationCircuit.REGISTRATION_TAG;
     if (isCircuitTypeRegistration) {
-      if (setExtractedWiseProfileId) {
-        setExtractedWiseProfileId(notarizationProofMetadata);
+      if (setExtractedRevolutProfileId) {
+        setExtractedRevolutProfileId(notarizationProofMetadata);
       };
     }
   };

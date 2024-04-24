@@ -88,7 +88,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.REVOLUT:
         return {
           troubleScanningQRCodeLink: REVOLUT_SEND_PAGE_LINK,
-          paymentPlatformName: 'Wise',
+          paymentPlatformName: 'Revolut',
           instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
         };
 

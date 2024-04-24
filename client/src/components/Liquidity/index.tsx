@@ -48,11 +48,11 @@ export default function Deposit() {
 
   const {
     refetchDepositCounter: refetchRevolutDepositCounter,
-    shouldFetchRampState: shouldFetchWiseRampState
+    shouldFetchRampState: shouldFetchRevolutRampState
   } = useRevolutRampState();
   const {
     refetchDeposits: refetchRevolutDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits
+    shouldFetchDeposits: shouldFetchRevolutDeposits
   } = useRevolutLiquidity();
 
   /*
@@ -120,24 +120,24 @@ export default function Deposit() {
   }, [shouldFetchGarantiRampState, refetchGarantiDepositCounter]);
 
   useEffect(() => {
-    if (shouldFetchWiseDeposits) {
+    if (shouldFetchRevolutDeposits) {
       const intervalId = setInterval(() => {
         refetchRevolutDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchWiseDeposits, refetchRevolutDeposits]);
+  }, [shouldFetchRevolutDeposits, refetchRevolutDeposits]);
 
   useEffect(() => {
-    if (shouldFetchWiseRampState) {
+    if (shouldFetchRevolutRampState) {
       const intervalId = setInterval(() => {
         refetchRevolutDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchWiseRampState, refetchRevolutDepositCounter]);
+  }, [shouldFetchRevolutRampState, refetchRevolutDepositCounter]);
 
   /*
    * Component

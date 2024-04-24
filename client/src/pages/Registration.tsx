@@ -37,9 +37,9 @@ export const Registration: React.FC = () => {
 
   const {
     refetchRampAccount: refetchRevolutAccount,
-    shouldFetchRegistration: shouldFetchWiseRegistration,
+    shouldFetchRegistration: shouldFetchRevolutRegistration,
     // refetchVenmoNftId: refetchRevolutVenmoNftId,
-    // shouldFetchVenmoNftId: shouldFetchWiseVenmoNftId
+    // shouldFetchVenmoNftId: shouldFetchRevolutVenmoNftId
   } = useRevolutRegistration();
 
   const {
@@ -84,11 +84,11 @@ export const Registration: React.FC = () => {
           break;
 
         case PaymentPlatform.REVOLUT:
-          if (shouldFetchWiseRegistration) {
+          if (shouldFetchRevolutRegistration) {
             refetchRevolutAccount?.();
           }
   
-          // if (shouldFetchWiseVenmoNftId) {
+          // if (shouldFetchRevolutVenmoNftId) {
           //   refetchRevolutVenmoNftId?.();
           // }
           break;

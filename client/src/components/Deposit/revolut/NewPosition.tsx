@@ -10,11 +10,11 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { LoginStatus, NewWiseDepositTransactionStatus } from '@helpers/types';
+import { LoginStatus, NewRevolutDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { revolutStrings } from '@helpers/strings';
-import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
+import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -43,9 +43,9 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
   const {
-    extractedWiseProfileId,
+    extractedRevolutProfileId,
     registrationHash,
-    setExtractedWiseProfileId,
+    setExtractedRevolutProfileId,
     isRegisteredForDeposit,
     offRampId,
     
@@ -56,12 +56,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    * State
    */
   
-  const [depositState, setDepositState] = useState(NewWiseDepositTransactionStatus.DEFAULT);
+  const [depositState, setDepositState] = useState(NewRevolutDepositTransactionStatus.DEFAULT);
   const [revTagInput, setRevolutTagInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
 
-  const [isWiseTagInputValid, setIsWiseTagInputValid] = useState<boolean>(false);
+  const [isRevolutTagInputValid, setIsRevolutTagInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
   const [isNewRegistration, setIsNewRegistration] = useState<boolean>(false);
@@ -107,7 +107,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       refetchUsdcApprovalToRamp?.();
 
-      setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_SUCCEEDED);
+      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SUCCEEDED);
     },
   });
 
@@ -153,19 +153,19 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       const successfulDepositTransaction = mineDepositTransactionStatus === 'success';
 
       if (successfulDepositTransaction) {
-        setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_SUCCEEDED);
+        setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SUCCEEDED);
       } else {
         if (!registrationHash) {
-          setDepositState(NewWiseDepositTransactionStatus.MISSING_REGISTRATION);
+          setDepositState(NewRevolutDepositTransactionStatus.MISSING_REGISTRATION);
         } else {
           if (!isRegisteredForDeposit) {
-            setDepositState(NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION);
+            setDepositState(NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION);
           } else {
             if (!revTagInput) { 
-              setDepositState(NewWiseDepositTransactionStatus.DEFAULT);
+              setDepositState(NewRevolutDepositTransactionStatus.DEFAULT);
             } else {
-              if (!isWiseTagInputValid) {
-                setDepositState(NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID);
+              if (!isRevolutTagInputValid) {
+                setDepositState(NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID);
               } else {
                 const usdcBalanceLoaded = usdcBalance !== null;
                 const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
@@ -182,16 +182,16 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                   const successfulApproveTransaction = mineApproveTransactionStatus === 'success';
   
                   if (isDepositAmountGreaterThanBalance) {
-                    setDepositState(NewWiseDepositTransactionStatus.INSUFFICIENT_BALANCE);
+                    setDepositState(NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE);
                   } else if (isDepositAmountLessThanMinDepositSize) {
-                    setDepositState(NewWiseDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+                    setDepositState(NewRevolutDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET);
                   } else if (isDepositAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
                     if (signingApproveTransaction) {
-                      setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_SIGNING);
+                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
                     } else if (miningApproveTransaction) {
-                      setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_MINING);
+                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
                     } else {
-                      setDepositState(NewWiseDepositTransactionStatus.APPROVAL_REQUIRED);
+                      setDepositState(NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED);
                     }
                   } else {
                     if (receiveAmountInput) {
@@ -199,18 +199,18 @@ export const NewPosition: React.FC<NewPositionProps> = ({
                       const miningDepositTransaction = mineDepositTransactionStatus === 'loading';
   
                       if (signingDepositTransaction) {
-                        setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_SIGNING);
+                        setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
                       } else if (miningDepositTransaction){
-                        setDepositState(NewWiseDepositTransactionStatus.TRANSACTION_MINING);
+                        setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
                       } else {
-                        setDepositState(NewWiseDepositTransactionStatus.VALID);
+                        setDepositState(NewRevolutDepositTransactionStatus.VALID);
                       }
                     } else {
-                      setDepositState(NewWiseDepositTransactionStatus.MISSING_AMOUNTS);
+                      setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
                     }
                   }
                 } else {
-                  setDepositState(NewWiseDepositTransactionStatus.MISSING_AMOUNTS);
+                  setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
                 }
               }
             }
@@ -229,7 +229,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       minimumDepositAmount,
       usdcBalance,
       usdcApprovalToRamp,
-      isWiseTagInputValid,
+      isRevolutTagInputValid,
       signApproveTransactionStatus,
       mineApproveTransactionStatus,
       signDepositTransactionStatus,
@@ -238,10 +238,10 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   );
 
   useEffect(() => {
-    const isApprovalRequired = depositState === NewWiseDepositTransactionStatus.APPROVAL_REQUIRED;
+    const isApprovalRequired = depositState === NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED;
     setShouldConfigureApprovalWrite(isApprovalRequired);
     
-    setShouldConfigureNewDepositWrite(depositState === NewWiseDepositTransactionStatus.VALID);
+    setShouldConfigureNewDepositWrite(depositState === NewRevolutDepositTransactionStatus.VALID);
   }, [depositState]);
 
   useEffect(() => {
@@ -262,34 +262,34 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [depositAmountInput, usdcApprovalToRamp]);
 
   useEffect(() => {
-    if (extractedWiseProfileId) {
-      setRevolutTagInput(extractedWiseProfileId);
+    if (extractedRevolutProfileId) {
+      setRevolutTagInput(extractedRevolutProfileId);
     } else {
       setRevolutTagInput('');
     }
-  }, [extractedWiseProfileId]);
+  }, [extractedRevolutProfileId]);
 
   useEffect(() => {
-    const verifyWiseTagInput = async () => {
+    const verifyRevolutTagInput = async () => {
       if (revTagInput.length < 4) {
-        setIsWiseTagInputValid(false);
+        setIsRevolutTagInputValid(false);
       } else {
         if (registrationHash) {
-          const revTagHash = calculateWiseTagHash(revTagInput);
-          const validWiseTagInput = revTagHash === registrationHash;
-          setIsWiseTagInputValid(validWiseTagInput);
+          const revTagHash = calculateRevolutTagHash(revTagInput);
+          const validRevolutTagInput = revTagHash === registrationHash;
+          setIsRevolutTagInputValid(validRevolutTagInput);
 
-          if (validWiseTagInput && setExtractedWiseProfileId) {
-            setExtractedWiseProfileId(revTagInput);
+          if (validRevolutTagInput && setExtractedRevolutProfileId) {
+            setExtractedRevolutProfileId(revTagInput);
           };
         } else {
-          setIsWiseTagInputValid(false);
+          setIsRevolutTagInputValid(false);
         }
       }
     };
 
-    verifyWiseTagInput();
-  }, [revTagInput, registrationHash, setExtractedWiseProfileId]);
+    verifyRevolutTagInput();
+  }, [revTagInput, registrationHash, setExtractedRevolutProfileId]);
 
   /*
    * Helpers
@@ -303,21 +303,21 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaDisabled = (): boolean => {
     switch (depositState) {
-      case NewWiseDepositTransactionStatus.DEFAULT:
-      case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
-      case NewWiseDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
-      case NewWiseDepositTransactionStatus.CONVENIENCE_FEE_INVALID:
-      case NewWiseDepositTransactionStatus.MAX_INTENTS_REACHED:
-      case NewWiseDepositTransactionStatus.MISSING_REGISTRATION:
-      case NewWiseDepositTransactionStatus.MISSING_AMOUNTS:
-      case NewWiseDepositTransactionStatus.TRANSACTION_SIGNING:
-      case NewWiseDepositTransactionStatus.TRANSACTION_MINING:
+      case NewRevolutDepositTransactionStatus.DEFAULT:
+      case NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID:
+      case NewRevolutDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewRevolutDepositTransactionStatus.CONVENIENCE_FEE_INVALID:
+      case NewRevolutDepositTransactionStatus.MAX_INTENTS_REACHED:
+      case NewRevolutDepositTransactionStatus.MISSING_REGISTRATION:
+      case NewRevolutDepositTransactionStatus.MISSING_AMOUNTS:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_MINING:
         return true;
 
-      case NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
-      case NewWiseDepositTransactionStatus.INSUFFICIENT_BALANCE:
-      case NewWiseDepositTransactionStatus.APPROVAL_REQUIRED:
-      case NewWiseDepositTransactionStatus.VALID:
+      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
+      case NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE:
+      case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
+      case NewRevolutDepositTransactionStatus.VALID:
       default:
         return false;
     }
@@ -325,8 +325,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaLoading = (): boolean => {
     switch (depositState) {
-      case NewWiseDepositTransactionStatus.TRANSACTION_SIGNING:
-      case NewWiseDepositTransactionStatus.TRANSACTION_MINING:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_MINING:
         return loginStatus === LoginStatus.AUTHENTICATED;
 
       default:
@@ -336,42 +336,42 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaText = (): string => {
     switch (depositState) {
-      case NewWiseDepositTransactionStatus.MISSING_REGISTRATION:
+      case NewRevolutDepositTransactionStatus.MISSING_REGISTRATION:
         return 'Missing registration';
 
-      case NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
+      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
         return 'Complete Depositor Verification';
 
-      case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
+      case NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID:
         return 'Revtag does not match registration';
 
-      case NewWiseDepositTransactionStatus.MISSING_AMOUNTS:
+      case NewRevolutDepositTransactionStatus.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
       
-      case NewWiseDepositTransactionStatus.INSUFFICIENT_BALANCE:
+      case NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE:
         return `Insufficient balance — Deposit USDC`;
       
-      case NewWiseDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
+      case NewRevolutDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET:
         const minimumDepositAmountString = minimumDepositAmount ? toUsdcString(minimumDepositAmount, true) : '0';
         return `Minimum deposit amount is ${minimumDepositAmountString}`;
 
-      case NewWiseDepositTransactionStatus.TRANSACTION_SIGNING:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING:
         return 'Signing Transaction';
 
-      case NewWiseDepositTransactionStatus.TRANSACTION_MINING:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_MINING:
         return 'Mining Transaction';
 
-      case NewWiseDepositTransactionStatus.APPROVAL_REQUIRED:
+      case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
         const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp, true) : '0';
         return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
 
-      case NewWiseDepositTransactionStatus.VALID:
+      case NewRevolutDepositTransactionStatus.VALID:
         return 'Create Deposit';
 
-      case NewWiseDepositTransactionStatus.TRANSACTION_SUCCEEDED:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_SUCCEEDED:
         return 'Go to Deposits';
 
-      case NewWiseDepositTransactionStatus.DEFAULT:
+      case NewRevolutDepositTransactionStatus.DEFAULT:
       default:
         return 'Input valid Revtag';
     }
@@ -379,11 +379,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaOnClick = async () => {
     switch (depositState) {
-      case NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
+      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
         handleNewRegistrationClick();
         break;
 
-      case NewWiseDepositTransactionStatus.APPROVAL_REQUIRED:
+      case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
         try {
           await writeSubmitApproveAsync?.();
         } catch (error) {
@@ -391,7 +391,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         }
         break;
 
-      case NewWiseDepositTransactionStatus.VALID:
+      case NewRevolutDepositTransactionStatus.VALID:
         try {
           await writeSubmitDepositAsync?.();
         } catch (error) {
@@ -399,11 +399,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         }
         break;
 
-      case NewWiseDepositTransactionStatus.TRANSACTION_SUCCEEDED:
+      case NewRevolutDepositTransactionStatus.TRANSACTION_SUCCEEDED:
         handleBackClick();
         break;
 
-      case NewWiseDepositTransactionStatus.INSUFFICIENT_BALANCE:
+      case NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE:
         openModal(MODALS.RECEIVE);
         break;
 

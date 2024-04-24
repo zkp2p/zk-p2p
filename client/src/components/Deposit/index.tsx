@@ -5,7 +5,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
 import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
 import { NewPosition as GarantiNewPosition } from '@components/Deposit/garanti/NewPosition';
-import { NewPosition as WiseNewPosition } from '@components/Deposit/revolut/NewPosition';
+import { NewPosition as RevolutNewPosition } from '@components/Deposit/revolut/NewPosition';
 import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
@@ -49,9 +49,9 @@ export default function Deposit() {
 
   const {
     refetchDeposits: refetchRevolutDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits,
+    shouldFetchDeposits: shouldFetchRevolutDeposits,
     depositIntents: revolutDepositIntents,
-    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
+    shouldFetchDepositIntents: shouldFetchRevolutDepositIntents,
     refetchDepositIntents: refetchRevolutDepositIntents,
   } = useRevolutDeposits();
 
@@ -106,7 +106,7 @@ export default function Deposit() {
   }, [shouldFetchGarantiDeposits]);
 
   useEffect(() => {
-    if (shouldFetchWiseDeposits) {
+    if (shouldFetchRevolutDeposits) {
       const intervalId = setInterval(() => {
         refetchRevolutDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
@@ -115,7 +115,7 @@ export default function Deposit() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchWiseDeposits]);
+  }, [shouldFetchRevolutDeposits]);
 
   useEffect(() => {
     if (shouldFetchVenmoDepositIntents) {
@@ -154,7 +154,7 @@ export default function Deposit() {
   }, [shouldFetchGarantiDepositIntents]);
 
   useEffect(() => {
-    if (shouldFetchWiseDepositIntents) {
+    if (shouldFetchRevolutDepositIntents) {
       const intervalId = setInterval(() => {
         refetchRevolutDepositIntents?.();
       }, DEPOSIT_REFETCH_INTERVAL);
@@ -163,7 +163,7 @@ export default function Deposit() {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchWiseDepositIntents]);
+  }, [shouldFetchRevolutDepositIntents]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -247,7 +247,7 @@ export default function Deposit() {
 
         case PaymentPlatform.REVOLUT:
           return (
-            <WiseNewPosition
+            <RevolutNewPosition
               handleBackClick={handleBackClickOnNewDeposit}
             />
           );

@@ -197,7 +197,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           break;
 
         case PaymentPlatform.REVOLUT:
-          setIsRegistered(isWiseRegistered);
+          setIsRegistered(isRevolutRegistered);
           break;
 
         default:
@@ -208,7 +208,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, isVenmoRegistered, isHdfcRegistered, isGarantiRegistered, isWiseRegistered]);
+  }, [paymentPlatform, isVenmoRegistered, isHdfcRegistered, isGarantiRegistered, isRevolutRegistered]);
 
   useEffect(() => {
     let depositsToDisplay: DepositWithAvailableLiquidity[] | null = [];

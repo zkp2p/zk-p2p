@@ -34,7 +34,7 @@ export const Deposit: React.FC = () => {
   } = useGarantiRegistration();
 
   const {
-    isRegistered: isRegisteredOnWise
+    isRegistered: isRegisteredOnRevolut
   } = useRevolutRegistration();
 
   const {
@@ -62,9 +62,9 @@ export const Deposit: React.FC = () => {
 
   const {
     refetchDeposits: refetchRevolutDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits,
+    shouldFetchDeposits: shouldFetchRevolutDeposits,
     refetchDepositIntents: refetchRevolutDepositIntents,
-    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
+    shouldFetchDepositIntents: shouldFetchRevolutDepositIntents,
   } = useRevolutDeposits();
 
   const {
@@ -121,15 +121,15 @@ export const Deposit: React.FC = () => {
         break;
 
       case PaymentPlatform.REVOLUT:
-        if (shouldFetchWiseDeposits) {
+        if (shouldFetchRevolutDeposits) {
           refetchRevolutDeposits?.();
         }
 
-        if (shouldFetchWiseDepositIntents) {
+        if (shouldFetchRevolutDepositIntents) {
           refetchRevolutDepositIntents?.();
         }
 
-        if (shouldFetchUsdcBalance && isRegisteredOnWise) {
+        if (shouldFetchUsdcBalance && isRegisteredOnRevolut) {
           refetchUsdcBalance?.();
         }
         break;

@@ -30,7 +30,7 @@ import LiquidityContext from './LiquidityContext';
 
 
 const BATCH_SIZE = 30;
-const PRUNED_DEPOSITS_PREFIX = 'prunedWiseDepositIds_';
+const PRUNED_DEPOSITS_PREFIX = 'prunedRevolutDepositIds_';
 
 interface ProvidersProps {
   children: ReactNode;

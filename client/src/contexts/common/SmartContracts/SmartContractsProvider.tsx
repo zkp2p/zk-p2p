@@ -60,7 +60,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [garantiRampAddress, setGarantiRampAddress] = useState<string | null>(null);
   const [garantiSendProcessorAddress, setGarantiSendProcessorAddress] = useState<string | null>(null);
 
-  // Wise
+  // Revolut
   const [revolutRampAddress, setRevolutRampAddress] = useState<string | null>(null);
   const [revolutSendProcessorAddress, setRevolutSendProcessorAddress] = useState<string | null>(null);
   const [revolutAccountRegistryAddress, setRevolutAccountRegistryAddress] = useState<string | null>(null);
@@ -154,7 +154,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setGarantiRampAddress(null); 
     setGarantiSendProcessorAddress(null);
 
-    // Wise
+    // Revolut
     setRevolutRampAddress(null); 
     setRevolutSendProcessorAddress(null);
     setRevolutAccountRegistryAddress(null);
@@ -196,7 +196,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setGarantiRampAddress(contractsForNetwork.garantiRamp);
     setGarantiSendProcessorAddress(contractsForNetwork.garantiSendProcessor);
 
-    // Wise
+    // Revolut
     setRevolutRampAddress(contractsForNetwork.revolutRamp);
     setRevolutSendProcessorAddress(contractsForNetwork.revolutSendProcessor);
     setRevolutAccountRegistryAddress(contractsForNetwork.revolutAccountRegistry);
@@ -244,7 +244,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         garantiSendProcessorAddress,
         garantiSendProcessorAbi: garantiSendProcessorAbi as Abi,
 
-        // Wise
+        // Revolut
         revolutRampAddress,
         revolutRampAbi: revolutRampAbi as Abi,
         revolutSendProcessorAddress,

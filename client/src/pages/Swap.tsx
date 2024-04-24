@@ -5,7 +5,7 @@ import SwapForm from "@components/Swap";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
 import { OnRamp as GarantiOnRamp } from '@components/Swap/garanti/OnRamp';
-import { OnRamp as WiseOnRamp } from '@components/Swap/revolut/OnRamp';
+import { OnRamp as RevolutOnRamp } from '@components/Swap/revolut/OnRamp';
 import useHdfcOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useHdfcRampState from '@hooks/hdfc/useRampState';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -63,15 +63,15 @@ export const Swap: React.FC = () => {
   } = useGarantiRampState();
 
   const {
-    currentIntentHashAsUint: currentWiseIntentHashAsUint,
+    currentIntentHashAsUint: currentRevolutIntentHashAsUint,
     refetchIntentHash: refetchRevolutIntentHash,
-    shouldFetchIntentHash: shouldFetchWiseIntentHash,
-    refetchLastOnRampTimestamp: refetchLastWiseOnRampTimestamp
+    shouldFetchIntentHash: shouldFetchRevolutIntentHash,
+    refetchLastOnRampTimestamp: refetchLastRevolutOnRampTimestamp
   } = useRevolutOnRamperIntents();
 
   const {
     refetchDepositCounter: refetchRevolutDepositCounter,
-    shouldFetchRampState: shouldFetchWiseRampState,
+    shouldFetchRampState: shouldFetchRevolutRampState,
   } = useRevolutRampState();
 
   const {
@@ -121,12 +121,12 @@ export const Swap: React.FC = () => {
       refetchGarantiDepositCounter?.();
     }
 
-    if (shouldFetchWiseIntentHash) {
+    if (shouldFetchRevolutIntentHash) {
       refetchRevolutIntentHash?.();
-      refetchLastWiseOnRampTimestamp?.();
+      refetchLastRevolutOnRampTimestamp?.();
     }
 
-    if (shouldFetchWiseRampState) {
+    if (shouldFetchRevolutRampState) {
       refetchRevolutDepositCounter?.();
     }
 
@@ -156,7 +156,7 @@ export const Swap: React.FC = () => {
         break;
 
       case PaymentPlatform.REVOLUT:
-        setSelectedIntentHash(currentWiseIntentHashAsUint);
+        setSelectedIntentHash(currentRevolutIntentHashAsUint);
         break;
     }
   };
@@ -193,9 +193,9 @@ export const Swap: React.FC = () => {
 
       case PaymentPlatform.REVOLUT:
         return (
-          <WiseOnRamp
+          <RevolutOnRamp
             handleBackClick={handleBackClick}
-            selectedUIntIntentHash={currentWiseIntentHashAsUint as any}
+            selectedUIntIntentHash={currentRevolutIntentHashAsUint as any}
           />
         );
 

@@ -29,7 +29,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   const [offRampId, setOffRampId] = useState<string | null>(null);
 
   const [extractedProfileIdStorageKey, setExtractedProfileIdStorageKey] = useState<string | null>(null);
-  const [extractedWiseProfileId, setExtractedWiseProfileId] = useState<string | null>(() => {
+  const [extractedRevolutProfileId, setExtractedRevolutProfileId] = useState<string | null>(() => {
     if (extractedProfileIdStorageKey) {
       return localStorage.getItem(extractedProfileIdStorageKey) || null;
     }
@@ -47,10 +47,10 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    * Overridden Setters
    */
 
-  const setextractedWiseProfileId = useCallback((value: string | null) => {
+  const setextractedRevolutProfileId = useCallback((value: string | null) => {
     if (extractedProfileIdStorageKey) {
       localStorage.setItem(extractedProfileIdStorageKey, value || '');
-      setExtractedWiseProfileId(value);
+      setExtractedRevolutProfileId(value);
     }
   }, [extractedProfileIdStorageKey]);
 
@@ -130,11 +130,11 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       setShouldFetchVenmoNftUri(false);
 
       setRegistrationHash(null);
-      setextractedWiseProfileId(null);
+      setextractedRevolutProfileId(null);
       setVenmoNftUri(null);
       setVenmoNftId(null);
     }
-  }, [isLoggedIn, loggedInEthereumAddress, revolutAccountRegistryAddress, setextractedWiseProfileId]);
+  }, [isLoggedIn, loggedInEthereumAddress, revolutAccountRegistryAddress, setextractedRevolutProfileId]);
 
   useEffect(() => {
     esl && console.log('revolut_rampAccountRaw_1');
@@ -188,7 +188,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     if (loggedInEthereumAddress) {
       esl && console.log('revolut_extractedProfileIdStorageKey_2');
 
-      setExtractedProfileIdStorageKey(`extractedWiseProfileId_${loggedInEthereumAddress}`);
+      setExtractedProfileIdStorageKey(`extractedRevolutProfileId_${loggedInEthereumAddress}`);
     } else {
       esl && console.log('revolut_extractedProfileIdStorageKey_3');
 
@@ -197,22 +197,22 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   }, [loggedInEthereumAddress]);
 
   useEffect(() => {
-    esl && console.log('revolut_extractedWiseProfileId_1');
+    esl && console.log('revolut_extractedRevolutProfileId_1');
     esl && console.log('checking extractedProfileIdStorageKey: ', extractedProfileIdStorageKey);
 
     if (extractedProfileIdStorageKey) {
-      esl && console.log('revolut_extractedWiseProfileId_2');
+      esl && console.log('revolut_extractedRevolutProfileId_2');
 
       const storedValue = localStorage.getItem(extractedProfileIdStorageKey);
       if (storedValue !== null) {
-        setExtractedWiseProfileId(storedValue);
+        setExtractedRevolutProfileId(storedValue);
       } else {
-        setExtractedWiseProfileId(null);
+        setExtractedRevolutProfileId(null);
       }
     } else {
-      esl && console.log('revolut_extractedWiseProfileId_3');
+      esl && console.log('revolut_extractedRevolutProfileId_3');
 
-      setExtractedWiseProfileId(null);
+      setExtractedRevolutProfileId(null);
     }
   }, [extractedProfileIdStorageKey]);
 
@@ -309,12 +309,12 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
         isRegisteredForDeposit,
         offRampId,
         accountId,
-        extractedWiseProfileId,
+        extractedRevolutProfileId,
         shouldFetchVenmoNftId,
         venmoNftId,
         venmoNftUri,
         refetchVenmoNftId,
-        setExtractedWiseProfileId,
+        setExtractedRevolutProfileId,
         refetchRampAccount,
         shouldFetchRegistration,
       }}

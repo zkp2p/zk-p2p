@@ -3,7 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P browser assistant to prove ownership of your Wise account. Provide the proof to complete registration. Base ETH is required to
+    Use the ZKP2P browser assistant to prove ownership of your Revolut account. Provide the proof to complete registration. Base ETH is required to
     submit a registration transaction.
   `,
 
@@ -22,18 +22,18 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Wisetag details found.
-    Please follow instructions in the browser assistant to prove ownership of an existing Wise account.
+    No Revoluttag details found.
+    Please follow instructions in the browser assistant to prove ownership of an existing Revolut account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
-    No Wise transfer receipts detected.
-    Please follow instructions in the extension to prove receipt of a previous Wise payment.
+    No Revolut transfer receipts detected.
+    Please follow instructions in the extension to prove receipt of a previous Revolut payment.
   `,
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
     You must register in order to use ZKP2P. Registration involves proving access
-    to a Wise account. Your Wise details are hashed to conceal your identity.
+    to a Revolut account. Your Revolut details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
@@ -43,11 +43,11 @@ const strings: PlatformStrings = {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Wise depositor ID. Provide the USDC liquidity to deposit and
+    Depositing requires registering a valid Revolut depositor ID. Provide the USDC liquidity to deposit and
     desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
-    This is a second registration step required only for depositors to connect a Wise depositor ID
+    This is a second registration step required only for depositors to connect a Revolut depositor ID
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
@@ -59,7 +59,7 @@ const strings: PlatformStrings = {
     no-op
   `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
-    This is the amount of USDC you will deposit for users to claim by sending you Wise payments.
+    This is the amount of USDC you will deposit for users to claim by sending you Revolut payments.
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
@@ -74,7 +74,7 @@ const strings: PlatformStrings = {
     Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment from your Wise account. Ensure you have access to a desktop to prove the payment later
+    Click 'Send' and complete the payment from your Revolut account. Ensure you have access to a desktop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
     Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
@@ -82,7 +82,7 @@ const strings: PlatformStrings = {
 
   // Payment Requirements
   PAYMENT_REQUIREMENT_STEP_ONE: `
-    Send payment from your ZKP2P registered Wise account
+    Send payment from your ZKP2P registered Revolut account
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
     Choose a send currency and ensure the receive currency is set to the same requested currency above when making the payment.
