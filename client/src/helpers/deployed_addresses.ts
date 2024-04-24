@@ -45,9 +45,9 @@ export const contractAddresses: Contracts = {
     'garantiRegistrationProcessor': '0x6E6eAc7e8995fb6d44aE5E559874B8C969010293',
     'garantiNft': '',
     'revolutRamp': '',
-    'revolutSendProcessor': '0x27a6Ecb917B4BbCb6450f50Fa873510Ac3077171', // copied from Garanti
-    'revolutRegistrationProcessor': '0x50A368DAF428dcA0e980F640C06A79D466E62a2C', // copied from Garanti
-    'revolutNft': '0x5ca44163d25d09198a3eb89c9AB82fA8074f6C0D', // copied from Garanti
+    'revolutSendProcessor': '',
+    'revolutRegistrationProcessor': '',
+    'revolutNft': '',
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -71,7 +71,6 @@ export const contractAddresses: Contracts = {
     'revolutAccountRegistry': '',
     'revolutSendProcessor': '',
     'revolutAccountRegistrationProcessor': '',
-    'revolutOffRamperRegistrationProcessor': '',
     'revolutNft': '',
     'socketBridge': '',
     'lifiBridge': '',
@@ -92,11 +91,10 @@ export const contractAddresses: Contracts = {
     'garantiSendProcessor': '0xf5059a5D33d5853360D16C683c16e67980206f36',
     'garantiRegistrationProcessor': '0x851356ae760d987E095750cCeb3bC6014560891C',
     'garantiNft': '',
-    'revolutRamp': '',
-    'revolutAccountRegistry': '',
-    'revolutSendProcessor': '',
-    'revolutAccountRegistrationProcessor': '',
-    'revolutOffRamperRegistrationProcessor': '',
+    'revolutRamp': '0x0E801D84Fa97b50751Dbf25036d067dCf18858bF',
+    'revolutAccountRegistry': '0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf',
+    'revolutSendProcessor': '0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00',
+    'revolutAccountRegistrationProcessor': '0x9d4454B023096f34B160D6B654540c56A1F81688',
     'revolutNft': '',
     'socketBridge': '',
     'lifiBridge': '',
