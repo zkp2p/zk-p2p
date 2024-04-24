@@ -24,12 +24,6 @@ export const abi = [
         "internalType": "bytes32",
         "name": "accountId",
         "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "revTagHash",
-        "type": "bytes32"
       }
     ],
     "name": "AccountRegistered",
@@ -59,44 +53,6 @@ export const abi = [
       }
     ],
     "name": "NewAccountRegistrationProcessorSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "NewOffRamperRegistrationProcessorSet",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "accountOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "accountId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "offRampId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "OffRamperRegistered",
     "type": "event"
   },
   {
@@ -199,7 +155,7 @@ export const abi = [
     "name": "accountRegistrationProcessor",
     "outputs": [
       {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "internalType": "contract IRevolutAccountRegistrationProcessor",
         "name": "",
         "type": "address"
       }
@@ -267,42 +223,6 @@ export const abi = [
         "type": "address"
       }
     ],
-    "name": "getAccountInfo",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "bytes32",
-            "name": "accountId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "offRampId",
-            "type": "bytes32"
-          },
-          {
-            "internalType": "bytes32",
-            "name": "revTagHash",
-            "type": "bytes32"
-          }
-        ],
-        "internalType": "struct IWiseAccountRegistry.AccountInfo",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
     "name": "getAllowedUsers",
     "outputs": [
       {
@@ -336,13 +256,8 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "internalType": "contract IRevolutAccountRegistrationProcessor",
         "name": "_accountRegistrationProcessor",
-        "type": "address"
-      },
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "_offRamperRegistrationProcessor",
         "type": "address"
       }
     ],
@@ -452,19 +367,6 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "offRamperRegistrationProcessor",
-    "outputs": [
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
@@ -493,14 +395,9 @@ export const abi = [
                 "type": "string"
               },
               {
-                "internalType": "string",
+                "internalType": "bytes32",
                 "name": "profileId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "revTagHash",
-                "type": "string"
+                "type": "bytes32"
               },
               {
                 "internalType": "address",
@@ -508,7 +405,7 @@ export const abi = [
                 "type": "address"
               }
             ],
-            "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationData",
+            "internalType": "struct IRevolutAccountRegistrationProcessor.RegistrationData",
             "name": "public_values",
             "type": "tuple"
           },
@@ -518,59 +415,12 @@ export const abi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IWiseAccountRegistrationProcessor.RegistrationProof",
+        "internalType": "struct IRevolutAccountRegistrationProcessor.RegistrationProof",
         "name": "_proof",
         "type": "tuple"
       }
     ],
     "name": "register",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "components": [
-          {
-            "components": [
-              {
-                "internalType": "string",
-                "name": "endpoint",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "host",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "profileId",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "mcAccountId",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationData",
-            "name": "public_values",
-            "type": "tuple"
-          },
-          {
-            "internalType": "bytes",
-            "name": "proof",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IWiseOffRamperRegistrationProcessor.OffRamperRegistrationProof",
-        "name": "_proof",
-        "type": "tuple"
-      }
-    ],
-    "name": "registerAsOffRamper",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -611,25 +461,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseAccountRegistrationProcessor",
+        "internalType": "contract IRevolutAccountRegistrationProcessor",
         "name": "_registrationProcessor",
         "type": "address"
       }
     ],
     "name": "setAccountRegistrationProcessor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "contract IWiseOffRamperRegistrationProcessor",
-        "name": "_registrationProcessor",
-        "type": "address"
-      }
-    ],
-    "name": "setOffRamperRegistrationProcessor",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

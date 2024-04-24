@@ -346,7 +346,7 @@ export const abi = [
     "name": "accountRegistry",
     "outputs": [
       {
-        "internalType": "contract IWiseAccountRegistry",
+        "internalType": "contract IRevolutAccountRegistry",
         "name": "",
         "type": "address"
       }
@@ -397,7 +397,7 @@ export const abi = [
       },
       {
         "internalType": "string",
-        "name": "revTag",
+        "name": "revolutTag",
         "type": "string"
       },
       {
@@ -465,7 +465,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "revTag",
+                "name": "revolutTag",
                 "type": "string"
               },
               {
@@ -504,7 +504,7 @@ export const abi = [
                 "type": "bytes32[]"
               }
             ],
-            "internalType": "struct WiseRamp.Deposit",
+            "internalType": "struct RevolutRamp.Deposit",
             "name": "deposit",
             "type": "tuple"
           },
@@ -514,7 +514,7 @@ export const abi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct WiseRamp.DepositWithAvailableLiquidity[]",
+        "internalType": "struct RevolutRamp.DepositWithAvailableLiquidity[]",
         "name": "accountDeposits",
         "type": "tuple[]"
       }
@@ -541,7 +541,7 @@ export const abi = [
           },
           {
             "internalType": "string",
-            "name": "revTag",
+            "name": "revolutTag",
             "type": "string"
           },
           {
@@ -580,7 +580,7 @@ export const abi = [
             "type": "bytes32[]"
           }
         ],
-        "internalType": "struct WiseRamp.Deposit",
+        "internalType": "struct RevolutRamp.Deposit",
         "name": "",
         "type": "tuple"
       }
@@ -619,7 +619,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "revTag",
+                "name": "revolutTag",
                 "type": "string"
               },
               {
@@ -658,7 +658,7 @@ export const abi = [
                 "type": "bytes32[]"
               }
             ],
-            "internalType": "struct WiseRamp.Deposit",
+            "internalType": "struct RevolutRamp.Deposit",
             "name": "deposit",
             "type": "tuple"
           },
@@ -668,7 +668,7 @@ export const abi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct WiseRamp.DepositWithAvailableLiquidity[]",
+        "internalType": "struct RevolutRamp.DepositWithAvailableLiquidity[]",
         "name": "depositArray",
         "type": "tuple[]"
       }
@@ -759,7 +759,7 @@ export const abi = [
                 "type": "uint256"
               }
             ],
-            "internalType": "struct WiseRamp.Intent",
+            "internalType": "struct RevolutRamp.Intent",
             "name": "intent",
             "type": "tuple"
           },
@@ -769,7 +769,7 @@ export const abi = [
             "type": "bytes32"
           }
         ],
-        "internalType": "struct WiseRamp.IntentWithOnRamperId[]",
+        "internalType": "struct RevolutRamp.IntentWithOnRamperId[]",
         "name": "",
         "type": "tuple[]"
       }
@@ -799,12 +799,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseAccountRegistry",
+        "internalType": "contract IRevolutAccountRegistry",
         "name": "_accountRegistry",
         "type": "address"
       },
       {
-        "internalType": "contract IWiseSendProcessor",
+        "internalType": "contract IRevolutSendProcessor",
         "name": "_sendProcessor",
         "type": "address"
       }
@@ -909,7 +909,7 @@ export const abi = [
     "inputs": [
       {
         "internalType": "string",
-        "name": "_revTag",
+        "name": "_revolutTag",
         "type": "string"
       },
       {
@@ -993,7 +993,7 @@ export const abi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct IWiseSendProcessor.SendData",
+        "internalType": "struct IRevolutSendProcessor.SendData",
         "name": "_sendData",
         "type": "tuple"
       },
@@ -1059,7 +1059,7 @@ export const abi = [
     "name": "sendProcessor",
     "outputs": [
       {
-        "internalType": "contract IWiseSendProcessor",
+        "internalType": "contract IRevolutSendProcessor",
         "name": "",
         "type": "address"
       }
@@ -1122,7 +1122,7 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "contract IWiseSendProcessor",
+        "internalType": "contract IRevolutSendProcessor",
         "name": "_sendProcessor",
         "type": "address"
       }

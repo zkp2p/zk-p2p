@@ -15,6 +15,16 @@ export const abi = [
         "internalType": "uint256",
         "name": "_timestampBuffer",
         "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_endpoint",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_host",
+        "type": "string"
       }
     ],
     "stateMutability": "nonpayable",
@@ -54,12 +64,25 @@ export const abi = [
   },
   {
     "inputs": [],
-    "name": "mailServerKeyHashAdapter",
+    "name": "endpoint",
     "outputs": [
       {
-        "internalType": "contract IKeyHashAdapterV2",
+        "internalType": "string",
         "name": "",
-        "type": "address"
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "host",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -124,7 +147,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "timestamp",
+                "name": "amount",
                 "type": "string"
               },
               {
@@ -134,44 +157,22 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "amount",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
                 "name": "status",
                 "type": "string"
               },
               {
                 "internalType": "string",
+                "name": "timestamp",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
                 "name": "intentHash",
-                "type": "string"
+                "type": "uint256"
               }
             ],
-            "internalType": "struct IWiseSendProcessor.SendData",
+            "internalType": "struct IRevolutSendProcessor.SendData",
             "name": "public_values",
-            "type": "tuple"
-          },
-          {
-            "components": [
-              {
-                "internalType": "address",
-                "name": "verifierSigningKey",
-                "type": "address"
-              },
-              {
-                "internalType": "string",
-                "name": "endpoint",
-                "type": "string"
-              },
-              {
-                "internalType": "string",
-                "name": "host",
-                "type": "string"
-              }
-            ],
-            "internalType": "struct ITLSData.TLSParams",
-            "name": "expectedTLSParams",
             "type": "tuple"
           },
           {
@@ -180,9 +181,14 @@ export const abi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct IWiseSendProcessor.SendProof",
+        "internalType": "struct IRevolutSendProcessor.SendProof",
         "name": "_proof",
         "type": "tuple"
+      },
+      {
+        "internalType": "address",
+        "name": "_verifierSigningKey",
+        "type": "address"
       }
     ],
     "name": "processProof",
@@ -200,16 +206,6 @@ export const abi = [
       {
         "internalType": "bytes32",
         "name": "offRamperId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "onRamperId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "intentHash",
         "type": "bytes32"
       },
       {
