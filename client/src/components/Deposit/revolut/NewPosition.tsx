@@ -64,8 +64,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const [isRevolutTagInputValid, setIsRevolutTagInputValid] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
-  const [isNewRegistration, setIsNewRegistration] = useState<boolean>(false);
-
   const [shouldConfigureNewDepositWrite, setShouldConfigureNewDepositWrite] = useState<boolean>(false);
   const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
 
@@ -158,60 +156,56 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         if (!registrationHash) {
           setDepositState(NewRevolutDepositTransactionStatus.MISSING_REGISTRATION);
         } else {
-          if (!isRegisteredForDeposit) {
-            setDepositState(NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION);
+          if (!revTagInput) { 
+            setDepositState(NewRevolutDepositTransactionStatus.DEFAULT);
           } else {
-            if (!revTagInput) { 
-              setDepositState(NewRevolutDepositTransactionStatus.DEFAULT);
+            if (!isRevolutTagInputValid) {
+              setDepositState(NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID);
             } else {
-              if (!isRevolutTagInputValid) {
-                setDepositState(NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID);
-              } else {
-                const usdcBalanceLoaded = usdcBalance !== null;
-                const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
-                const minimumDepositAmountLoaded = minimumDepositAmount !== null;
-    
-                if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
-                  const depositAmountBI = toBigInt(depositAmountInput);
-                  const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
-                  const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-                  const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
-            
-                  const signingApproveTransaction = signApproveTransactionStatus === 'loading';
-                  const miningApproveTransaction = mineApproveTransactionStatus === 'loading';
-                  const successfulApproveTransaction = mineApproveTransactionStatus === 'success';
+              const usdcBalanceLoaded = usdcBalance !== null;
+              const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
+              const minimumDepositAmountLoaded = minimumDepositAmount !== null;
   
-                  if (isDepositAmountGreaterThanBalance) {
-                    setDepositState(NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE);
-                  } else if (isDepositAmountLessThanMinDepositSize) {
-                    setDepositState(NewRevolutDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET);
-                  } else if (isDepositAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
-                    if (signingApproveTransaction) {
-                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
-                    } else if (miningApproveTransaction) {
-                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
-                    } else {
-                      setDepositState(NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED);
-                    }
+              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+                const depositAmountBI = toBigInt(depositAmountInput);
+                const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
+                const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
+                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
+          
+                const signingApproveTransaction = signApproveTransactionStatus === 'loading';
+                const miningApproveTransaction = mineApproveTransactionStatus === 'loading';
+                const successfulApproveTransaction = mineApproveTransactionStatus === 'success';
+
+                if (isDepositAmountGreaterThanBalance) {
+                  setDepositState(NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE);
+                } else if (isDepositAmountLessThanMinDepositSize) {
+                  setDepositState(NewRevolutDepositTransactionStatus.MIN_DEPOSIT_THRESHOLD_NOT_MET);
+                } else if (isDepositAmountGreaterThanApprovedBalance && !successfulApproveTransaction) {
+                  if (signingApproveTransaction) {
+                    setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
+                  } else if (miningApproveTransaction) {
+                    setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
                   } else {
-                    if (receiveAmountInput) {
-                      const signingDepositTransaction = signDepositTransactionStatus === 'loading';
-                      const miningDepositTransaction = mineDepositTransactionStatus === 'loading';
-  
-                      if (signingDepositTransaction) {
-                        setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
-                      } else if (miningDepositTransaction){
-                        setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
-                      } else {
-                        setDepositState(NewRevolutDepositTransactionStatus.VALID);
-                      }
-                    } else {
-                      setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
-                    }
+                    setDepositState(NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED);
                   }
                 } else {
-                  setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
+                  if (receiveAmountInput) {
+                    const signingDepositTransaction = signDepositTransactionStatus === 'loading';
+                    const miningDepositTransaction = mineDepositTransactionStatus === 'loading';
+
+                    if (signingDepositTransaction) {
+                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SIGNING);
+                    } else if (miningDepositTransaction){
+                      setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_MINING);
+                    } else {
+                      setDepositState(NewRevolutDepositTransactionStatus.VALID);
+                    }
+                  } else {
+                    setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
+                  }
                 }
+              } else {
+                setDepositState(NewRevolutDepositTransactionStatus.MISSING_AMOUNTS);
               }
             }
           }
@@ -375,10 +369,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   const ctaOnClick = async () => {
     switch (depositState) {
-      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
-        handleNewRegistrationClick();
-        break;
-
       case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
         try {
           await writeSubmitApproveAsync?.();
@@ -419,14 +409,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   /*
    * Handlers
    */
-
-  const handleNewRegistrationClick = () => {
-    setIsNewRegistration(true);
-  };
-
-  const handleNewRegistrationBackClick = () => {
-    setIsNewRegistration(false);
-  };
 
   const handleInputChange = (value: string, setInputFunction: React.Dispatch<React.SetStateAction<string>>) => {
     if (value === "") {
