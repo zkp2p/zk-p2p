@@ -314,7 +314,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       case NewRevolutDepositTransactionStatus.TRANSACTION_MINING:
         return true;
 
-      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
       case NewRevolutDepositTransactionStatus.INSUFFICIENT_BALANCE:
       case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
       case NewRevolutDepositTransactionStatus.VALID:
@@ -338,9 +337,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     switch (depositState) {
       case NewRevolutDepositTransactionStatus.MISSING_REGISTRATION:
         return 'Missing registration';
-
-      case NewRevolutDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION:
-        return 'Complete Depositor Verification';
 
       case NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID:
         return 'Revtag does not match registration';
