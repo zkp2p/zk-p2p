@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { OnRamperIntentsContext } from '../../contexts/wise/OnRamperIntents';
+import { OnRamperIntentsContext } from '../../contexts/revolut/OnRamperIntents';
 
 const useOnRamperIntents = () => {
   return { ...useContext(OnRamperIntentsContext) }

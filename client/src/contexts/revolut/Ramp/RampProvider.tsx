@@ -16,7 +16,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
+  const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
 
   /*
    * State
@@ -36,8 +36,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
   const {
     data: minimumDepositAmountRaw,
   } = useContractRead({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: 'minDepositAmount',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -48,8 +48,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
     data: depositCounterRaw,
     refetch: refetchDepositCounter,
   } = useContractRead({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: 'depositCounter',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -59,8 +59,8 @@ const RampProvider = ({ children }: ProvidersProps) => {
   const {
     data: onRampCooldownPeriodRaw,
   } = useContractRead({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: 'onRampCooldownPeriod',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
@@ -71,65 +71,65 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('wise_shouldFetchRampState_1');
-    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
+    esl && console.log('revolut_shouldFetchRampState_1');
+    esl && console.log('checking revolutRampAddress: ', revolutRampAddress);
 
-    if (wiseRampAddress) {
-      esl && console.log('wise_shouldFetchRampState_2');
+    if (revolutRampAddress) {
+      esl && console.log('revolut_shouldFetchRampState_2');
 
       setShouldFetchRampState(true);
     } else {
-      esl && console.log('wise_shouldFetchRampState_3');
+      esl && console.log('revolut_shouldFetchRampState_3');
 
       setShouldFetchRampState(false);
 
       setMinimumDepositAmount(null);
       setDepositCounter(null);
     }
-  }, [wiseRampAddress]);
+  }, [revolutRampAddress]);
 
   useEffect(() => {
-    esl && console.log('wise_minDepositAmountRaw_1');
+    esl && console.log('revolut_minDepositAmountRaw_1');
     esl && console.log('checking minimumDepositAmountRaw: ', minimumDepositAmountRaw);
   
     if (minimumDepositAmountRaw) {
-      esl && console.log('wise_minDepositAmountRaw_2');
+      esl && console.log('revolut_minDepositAmountRaw_2');
 
       const minimumDepositAmountProcessed = (minimumDepositAmountRaw as bigint);
       
       setMinimumDepositAmount(minimumDepositAmountProcessed);
     } else {
-      esl && console.log('wise_minDepositAmountRaw_3');
+      esl && console.log('revolut_minDepositAmountRaw_3');
 
       setMinimumDepositAmount(null);
     }
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
-    esl && console.log('wise_depositCounterRaw_1');
+    esl && console.log('revolut_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
     if (depositCounterRaw || depositCounterRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('wise_depositCounterRaw_2');
+      esl && console.log('revolut_depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);
     } else {
-      esl && console.log('wise_depositCounterRaw_3');
+      esl && console.log('revolut_depositCounterRaw_3');
       
       setDepositCounter(null);
     }
   }, [depositCounterRaw]);
 
   useEffect(() => {
-    esl && console.log('wise_onRampCooldownPeriodRaw_1');
+    esl && console.log('revolut_onRampCooldownPeriodRaw_1');
     esl && console.log('checking onRampCooldownPeriodRaw: ', onRampCooldownPeriodRaw);
   
     if (onRampCooldownPeriodRaw || onRampCooldownPeriodRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('wise_onRampCooldownPeriodRaw_2');
+      esl && console.log('revolut_onRampCooldownPeriodRaw_2');
       
       setOnRampCooldownPeriod(onRampCooldownPeriodRaw as bigint);
     } else {
-      esl && console.log('wise_onRampCooldownPeriodRaw_3');
+      esl && console.log('revolut_onRampCooldownPeriodRaw_3');
       
       setOnRampCooldownPeriod(null);
     }

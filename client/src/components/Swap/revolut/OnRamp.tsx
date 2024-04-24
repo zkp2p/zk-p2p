@@ -8,12 +8,12 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { RowBetween } from '@components/layouts/Row';
 import { VerifyNotarizationForm } from '@components/Notary/VerifyNotarizationForm';
 import { NumberedStep } from "@components/common/NumberedStep";
-import { wiseStrings } from "@helpers/strings";
+import { revolutStrings } from "@helpers/strings";
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
-import useOnRamperIntents from '@hooks/wise/useOnRamperIntents';
+import useOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -32,7 +32,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
    * Context
    */
 
-  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
+  const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
   const { refetchIntentHash, refetchIntentHashAsUint } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
 
@@ -62,8 +62,8 @@ export const OnRamp: React.FC<OnRampProps> = ({
   // onRamp(bytes32 _intentHash, IWiseSendProcessor.SendData calldata _sendData, bytes calldata _verifierSignature)
   //
   const { config: writeSubmitOnRampConfig } = usePrepareContractWrite({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: 'onRamp',
     args: [
       publicSignals,
@@ -157,7 +157,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            {wiseStrings.get('PROOF_FORM_TITLE_SEND_INSTRUCTIONS')}
+            {revolutStrings.get('PROOF_FORM_TITLE_SEND_INSTRUCTIONS')}
             <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
@@ -166,7 +166,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
       </TitleContainer>
 
       <VerifyNotarizationForm
-        paymentPlatformType={PaymentPlatform.WISE}
+        paymentPlatformType={PaymentPlatform.REVOLUT}
         circuitType={NotaryVerificationCircuit.TRANSFER}
         verifierProof={verifierProof}
         publicSignals={publicSignals}

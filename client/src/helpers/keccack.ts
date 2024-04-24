@@ -7,6 +7,6 @@ export const keccak256 = (inputString: string): string => {
   return ethers.utils.solidityKeccak256(["string"], [inputString]);
 };
 
-export const calculateWiseTagHash = (wiseTag: string): string => {
-  return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))).toHexString();
+export const calculateWiseTagHash = (revTag: string): string => {
+  return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [revTag]))).toHexString();
 };

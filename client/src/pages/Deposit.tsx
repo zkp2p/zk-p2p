@@ -5,12 +5,12 @@ import DepositTable from "@components/Deposit";
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
-import useWiseDeposits from '@hooks/wise/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 
 import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
-import useWiseRegistration from '@hooks/wise/useRegistration';
+import useRevolutRegistration from '@hooks/revolut/useRegistration';
 
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -35,7 +35,7 @@ export const Deposit: React.FC = () => {
 
   const {
     isRegistered: isRegisteredOnWise
-  } = useWiseRegistration();
+  } = useRevolutRegistration();
 
   const {
     refetchDeposits: refetchVenmoDeposits,
@@ -61,11 +61,11 @@ export const Deposit: React.FC = () => {
   } = useGarantiDeposits();
 
   const {
-    refetchDeposits: refetchWiseDeposits,
+    refetchDeposits: refetchRevolutDeposits,
     shouldFetchDeposits: shouldFetchWiseDeposits,
-    refetchDepositIntents: refetchWiseDepositIntents,
+    refetchDepositIntents: refetchRevolutDepositIntents,
     shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
-  } = useWiseDeposits();
+  } = useRevolutDeposits();
 
   const {
     PaymentPlatform,
@@ -120,13 +120,13 @@ export const Deposit: React.FC = () => {
         }
         break;
 
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         if (shouldFetchWiseDeposits) {
-          refetchWiseDeposits?.();
+          refetchRevolutDeposits?.();
         }
 
         if (shouldFetchWiseDepositIntents) {
-          refetchWiseDepositIntents?.();
+          refetchRevolutDepositIntents?.();
         }
 
         if (shouldFetchUsdcBalance && isRegisteredOnWise) {

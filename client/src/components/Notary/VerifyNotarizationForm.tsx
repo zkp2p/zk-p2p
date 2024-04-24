@@ -14,7 +14,7 @@ import {
   NotaryVerificationCircuitType,
 } from  "@helpers/types";
 import useLocalStorage from '@hooks/useLocalStorage';
-import useRegistration from '@hooks/wise/useRegistration';
+import useRegistration from '@hooks/revolut/useRegistration';
 import useAccount from '@hooks/useAccount';
 import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
 import { colors } from '@theme/colors';
@@ -106,7 +106,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   useEffect(() => {
     switch (paymentPlatformType) {
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         if (storedProofValue && storedSignalsValue) {
           setProofGenStatus(NotaryVerificationStatus.TRANSACTION_CONFIGURED);
         }

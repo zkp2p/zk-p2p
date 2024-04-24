@@ -59,12 +59,12 @@ import GarantiOnRamperIntentsProvider  from './contexts/garanti/OnRamperIntents/
 import GarantiRampProvider from './contexts/garanti/Ramp/RampProvider';
 import GarantiRegistrationProvider from './contexts/garanti/Registration/RegistrationProvider';
 
-// Wise Contexts
-import WiseDepositsProvider  from './contexts/wise/Deposits/DepositsProvider';
-import WiseLiquidityProvider from './contexts/wise/Liquidity/LiquidityProvider';
-import WiseOnRamperIntentsProvider  from './contexts/wise/OnRamperIntents/OnRamperIntentsProvider';
-import WiseRampProvider from './contexts/wise/Ramp/RampProvider';
-import WiseRegistrationProvider from './contexts/wise/Registration/RegistrationProvider';
+// Revolut Contexts
+import RevolutDepositsProvider  from './contexts/revolut/Deposits/DepositsProvider';
+import RevolutLiquidityProvider from './contexts/revolut/Liquidity/LiquidityProvider';
+import RevolutOnRamperIntentsProvider  from './contexts/revolut/OnRamperIntents/OnRamperIntentsProvider';
+import RevolutRampProvider from './contexts/revolut/Ramp/RampProvider';
+import RevolutRegistrationProvider from './contexts/revolut/Registration/RegistrationProvider';
 
 import "./App.css";
 import "./styles.css";
@@ -164,18 +164,18 @@ const providersWithProps: ProvidersType[] = [
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
   [GarantiRampProvider, {}],
-  [WiseRampProvider, {}],
+  [RevolutRampProvider, {}],
 
   [VenmoRegistrationProvider, {}],
   [HdfcRegistrationProvider, {}],
   [GarantiRegistrationProvider, {}],
-  [WiseRegistrationProvider, {}],
+  [RevolutRegistrationProvider, {}],
 
   [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
   [HdfcDepositsProvider, {}],
   [GarantiDepositsProvider, {}],
-  [WiseDepositsProvider, {}],
+  [RevolutDepositsProvider, {}],
 
   [ExtensionNotarizationsProvider, {}],
 
@@ -185,12 +185,12 @@ const providersWithProps: ProvidersType[] = [
   [VenmoLiquidityProvider, {}],
   [HdfcLiquidityProvider, {}],
   [GarantiLiquidityProvider, {}],
-  [WiseLiquidityProvider, {}],
+  [RevolutLiquidityProvider, {}],
 
   [VenmoOnRamperIntentsProvider, {}],
   [HdfcOnRamperIntentsProvider, {}],
   [GarantiOnRamperIntentsProvider, {}],
-  [WiseOnRamperIntentsProvider, {}],
+  [RevolutOnRamperIntentsProvider, {}],
 
   [SwapQuoteProvider, {}],
   [ProofGenSettingsProvider, {}],

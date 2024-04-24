@@ -3,7 +3,7 @@ import { createContext } from 'react'
 
 interface RegistrationValues {
   isRegistered: boolean;
-  registrationHash: string | null; // wiseTagHash
+  registrationHash: string | null; // revTagHash
   isRegisteredForDeposit: boolean;
   offRampId: string | null;
   accountId: string | null;

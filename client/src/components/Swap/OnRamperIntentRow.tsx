@@ -94,11 +94,11 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           paymentPlatformName: 'Garanti',
         };
 
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         return {
-          qrLink: `https://wise.com/pay/me/${depositorVenmoId}`,
+          qrLink: `https://revolut.me/${depositorVenmoId}`,
           currencySymbol: '€',
-          paymentPlatformName: 'Wise',
+          paymentPlatformName: 'Revolut',
         };
 
       default:

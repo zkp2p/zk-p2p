@@ -14,9 +14,9 @@ import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { wiseStrings, commonStrings } from '@helpers/strings';
+import { revolutStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
-import useRegistration from '@hooks/wise/useRegistration';
+import useRegistration from '@hooks/revolut/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 
@@ -139,7 +139,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               { !isRegistered && (
                 <NumberedInputContainer>
                   <NumberedStep>
-                    { wiseStrings.get('REGISTRATION_INSTRUCTIONS') }
+                    { revolutStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
                       href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration"
                       target="_blank"
@@ -191,8 +191,8 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 
                 {
                   isRegistered && <ReadOnlyInput
-                    label="Wise Tag"
-                    name={`wiseTag`}
+                    label="Revtag"
+                    name={`revTag`}
                     value={registrationHash ? registrationHash : ""}
                   />
                 }

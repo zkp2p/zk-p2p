@@ -4,7 +4,7 @@ import { useContractRead } from 'wagmi';
 import { esl } from '@helpers/constants'
 import useAccount from '@hooks/useAccount'
 import useSmartContracts from '@hooks/useSmartContracts'
-import useRegistration from '@hooks/wise/useRegistration';
+import useRegistration from '@hooks/revolut/useRegistration';
 
 import PermissionsContext from './PermissionsContext'
 
@@ -19,7 +19,7 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
+  const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
   const { isRegistered } = useRegistration();
 
   /*
@@ -41,8 +41,8 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
     data: deniedUsersRaw,
     refetch: refetchDeniedUsers,
   } = useContractRead({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: "getDeniedUsers",
     args: [
       loggedInEthereumAddress
@@ -61,17 +61,17 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('wise_shouldFetchDeniedUsers_1');
+    esl && console.log('revolut_shouldFetchDeniedUsers_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking isRegistered: ', isRegistered);
 
     if (isLoggedIn && loggedInEthereumAddress && isRegistered) {
-      esl && console.log('wise_shouldFetchDeniedUsers_2');
+      esl && console.log('revolut_shouldFetchDeniedUsers_2');
 
       setShouldFetchDeniedUsers(true);
     } else {
-      esl && console.log('wise_shouldFetchDeniedUsers_3');
+      esl && console.log('revolut_shouldFetchDeniedUsers_3');
 
       setShouldFetchDeniedUsers(false);
 
@@ -80,17 +80,17 @@ const PermissionsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, isRegistered]);
 
   useEffect(() => {
-    esl && console.log('wise_deniedUsersRaw_1');
+    esl && console.log('revolut_deniedUsersRaw_1');
     esl && console.log('checking deniedUsersRaw: ', deniedUsersRaw);
   
     if (deniedUsersRaw && deniedUsersRaw.length > 0) {
-      esl && console.log('wise_deniedUsersRaw_2');
+      esl && console.log('revolut_deniedUsersRaw_2');
 
       const deniedUsersProcessed = deniedUsersRaw as string[];
 
       setDeniedUsers(deniedUsersProcessed);
     } else {
-      esl && console.log('wise_deniedUsersRaw_3');
+      esl && console.log('revolut_deniedUsersRaw_3');
       
       setDeniedUsers(null);
     }

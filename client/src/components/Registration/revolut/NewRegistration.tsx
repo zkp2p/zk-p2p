@@ -9,10 +9,10 @@ import { colors } from '@theme/colors';
 import { RowBetween } from '@components/layouts/Row';
 import { NumberedStep } from "@components/common/NumberedStep";
 import { VerifyNotarizationForm } from '@components/Notary/VerifyNotarizationForm';
-import { wiseStrings } from "@helpers/strings";
+import { revolutStrings } from "@helpers/strings";
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRegistration from '@hooks/wise/useRegistration';
+import useRegistration from '@hooks/revolut/useRegistration';
 
 
 interface NewRegistrationProps {
@@ -26,7 +26,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
    * Context
    */
 
-  const { wiseAccountRegistryAddress, wiseAccountRegistryAbi } = useSmartContracts();
+  const { revolutAccountRegistryAddress, revolutAccountRegistryAbi } = useSmartContracts();
   const { refetchRampAccount } = useRegistration();
 
   // ----- transaction state -----
@@ -57,8 +57,8 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
   const {
     config: writeSubmitRegistrationConfig
   } = usePrepareContractWrite({
-    address: wiseAccountRegistryAddress,
-    abi: wiseAccountRegistryAbi,
+    address: revolutAccountRegistryAddress,
+    abi: revolutAccountRegistryAbi,
     functionName: 'register',
     args: [
       [
@@ -148,7 +148,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { wiseStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
+            { revolutStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
             <Link
               href={"https://bridge.base.org/deposit"}
               target="_blank">
@@ -159,7 +159,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
       </TitleContainer>
 
       <VerifyNotarizationForm
-        paymentPlatformType={PaymentPlatform.WISE}
+        paymentPlatformType={PaymentPlatform.REVOLUT}
         circuitType={NotaryVerificationCircuit.REGISTRATION_TAG}
         verifierProof={verifierProof}
         publicSignals={publicSignals}

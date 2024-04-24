@@ -10,19 +10,18 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { NewAccountRegistration } from "@components/Deposit/wise/NewAccountRegistration";
 import { LoginStatus, NewWiseDepositTransactionStatus } from '@helpers/types';
 import { toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
-import { wiseStrings } from '@helpers/strings';
+import { revolutStrings } from '@helpers/strings';
 import { keccak256, calculateWiseTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
-import useDeposits from '@hooks/wise/useDeposits';
-import useRampState from '@hooks/wise/useRampState';
-import useRegistration from '@hooks/wise/useRegistration';
+import useDeposits from '@hooks/revolut/useDeposits';
+import useRampState from '@hooks/revolut/useRampState';
+import useRegistration from '@hooks/revolut/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 
@@ -39,7 +38,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   const { isLoggedIn, loginStatus } = useAccount();
-  const { wiseRampAddress, wiseRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
+  const { revolutRampAddress, revolutRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
@@ -58,7 +57,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
   
   const [depositState, setDepositState] = useState(NewWiseDepositTransactionStatus.DEFAULT);
-  const [wiseTagInput, setWiseTagInput] = useState<string>('');
+  const [revTagInput, setRevolutTagInput] = useState<string>('');
   const [depositAmountInput, setDepositAmountInput] = useState<string>('');
   const [receiveAmountInput, setReceiveAmountInput] = useState<string>('');
 
@@ -75,14 +74,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   //
-  // offRamp(string calldata _wiseTag, bytes32 _receiveCurrencyId, uint256 _depositAmount, uint256 _receiveAmount, ITLSData.TLSParams calldata _tlsParams)
+  // offRamp(string calldata _revTag, bytes32 _receiveCurrencyId, uint256 _depositAmount, uint256 _receiveAmount, ITLSData.TLSParams calldata _tlsParams)
   //
   const { config: writeDepositConfig } = usePrepareContractWrite({
-    address: wiseRampAddress,
-    abi: wiseRampAbi,
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
     functionName: 'offRamp',
     args: [
-      wiseTagInput,
+      revTagInput,
       keccak256('EUR'),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
@@ -120,7 +119,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     abi: usdcAbi,
     functionName: "approve",
     args: [
-      wiseRampAddress,
+      revolutRampAddress,
       amountToApprove
     ],
     enabled: shouldConfigureApprovalWrite
@@ -162,7 +161,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           if (!isRegisteredForDeposit) {
             setDepositState(NewWiseDepositTransactionStatus.MISSING_MULTICURRENCY_REGISTRATION);
           } else {
-            if (!wiseTagInput) { 
+            if (!revTagInput) { 
               setDepositState(NewWiseDepositTransactionStatus.DEFAULT);
             } else {
               if (!isWiseTagInputValid) {
@@ -223,7 +222,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     updateDepositState();
   }, [
       isRegisteredForDeposit,
-      wiseTagInput,
+      revTagInput,
       registrationHash,
       depositAmountInput,
       receiveAmountInput,
@@ -264,24 +263,24 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     if (extractedWiseProfileId) {
-      setWiseTagInput(extractedWiseProfileId);
+      setRevolutTagInput(extractedWiseProfileId);
     } else {
-      setWiseTagInput('');
+      setRevolutTagInput('');
     }
   }, [extractedWiseProfileId]);
 
   useEffect(() => {
     const verifyWiseTagInput = async () => {
-      if (wiseTagInput.length < 4) {
+      if (revTagInput.length < 4) {
         setIsWiseTagInputValid(false);
       } else {
         if (registrationHash) {
-          const wiseTagHash = calculateWiseTagHash(wiseTagInput);
-          const validWiseTagInput = wiseTagHash === registrationHash;
+          const revTagHash = calculateWiseTagHash(revTagInput);
+          const validWiseTagInput = revTagHash === registrationHash;
           setIsWiseTagInputValid(validWiseTagInput);
 
           if (validWiseTagInput && setExtractedWiseProfileId) {
-            setExtractedWiseProfileId(wiseTagInput);
+            setExtractedWiseProfileId(revTagInput);
           };
         } else {
           setIsWiseTagInputValid(false);
@@ -290,7 +289,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     };
 
     verifyWiseTagInput();
-  }, [wiseTagInput, registrationHash, setExtractedWiseProfileId]);
+  }, [revTagInput, registrationHash, setExtractedWiseProfileId]);
 
   /*
    * Helpers
@@ -344,7 +343,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Complete Depositor Verification';
 
       case NewWiseDepositTransactionStatus.INVALID_DEPOSITOR_ID:
-        return 'Wise tag does not match registration';
+        return 'Revtag does not match registration';
 
       case NewWiseDepositTransactionStatus.MISSING_AMOUNTS:
         return 'Input deposit and receive amounts';
@@ -374,7 +373,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       case NewWiseDepositTransactionStatus.DEFAULT:
       default:
-        return 'Input valid Wise tag';
+        return 'Input valid Revtag';
     }
   }
 
@@ -448,111 +447,103 @@ export const NewPosition: React.FC<NewPositionProps> = ({
    */
 
   function renderContent() {
-    if (isNewRegistration) {
-      return (
-        <NewAccountRegistration
-          handleBackClick={handleNewRegistrationBackClick}
-        />
-      );
-    } else {
-      return (
-        <NewPositionContainer>
-          <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
-            <div style={{ flex: 0.5 }}>
-              <button
-                onClick={handleBackClick}
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-              >
-                <StyledArrowLeft/>
-              </button>
-            </div>
+    return (
+      <NewPositionContainer>
+        <RowBetween style={{ padding: '0.25rem 0rem 1.5rem 0rem' }}>
+          <div style={{ flex: 0.5 }}>
+            <button
+              onClick={handleBackClick}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              <StyledArrowLeft/>
+            </button>
+          </div>
 
-            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-              New Deposit
-            </ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+            New Deposit
+          </ThemedText.HeadlineSmall>
 
-            <div style={{ flex: 0.5 }}/>
-          </RowBetween>
+          <div style={{ flex: 0.5 }}/>
+        </RowBetween>
 
-          <Body>
-            <InstructionsAndTogglesContainer>
-              <NumberedStep>
-                { wiseStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-                <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/wise-deposit-id-verification" target="_blank">
-                  Fetch your Wise tag ↗
-                </Link>
-              </NumberedStep>
-            </InstructionsAndTogglesContainer>
-            <InputsContainer>
-              <Input
-                label="Depositor Verification"
-                name={`multiCurrency`}
-                value={offRampId ? 'Verified' : 'Not Verified'}
-                onChange={() => {}}
-                readOnly={true}
-                type="string"
-                placeholder="multi_currency_id"
-                helperText={wiseStrings.get('NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP')}
-                valueFontSize="18px"
-              />
+        <Body>
+          <InstructionsAndTogglesContainer>
+            <NumberedStep>
+              { revolutStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
+              <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/wise-deposit-id-verification" target="_blank">
+                Fetch your Revtag ↗
+              </Link>
+            </NumberedStep>
+          </InstructionsAndTogglesContainer>
+          <InputsContainer>
+            <Input
+              label="Depositor Verification"
+              name={`multiCurrency`}
+              value={offRampId ? 'Verified' : 'Not Verified'}
+              onChange={() => {}}
+              readOnly={true}
+              type="string"
+              placeholder="multi_currency_id"
+              helperText={revolutStrings.get('NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP')}
+              valueFontSize="18px"
+            />
 
-              <Input
-                label="Wise Tag"
-                name={`wiseTag`}
-                value={wiseTagInput}
-                onChange={(e) => {setWiseTagInput(e.currentTarget.value)}}
-                type="string"
-                placeholder="alexanders6341"
-                helperText={wiseStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
-                valueFontSize="20px"
-              />
+            <Input
+              label="Revtag"
+              name={`revTag`}
+              value={revTagInput}
+              onChange={(e) => {setRevolutTagInput(e.currentTarget.value)}}
+              type="string"
+              placeholder="alexanders6341"
+              helperText={revolutStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
+              valueFontSize="20px"
+            />
 
-              <Input
-                label="Deposit Amount"
-                name={`depositAmount`}
-                value={depositAmountInput}
-                onChange={(e) => handleInputChange(e.currentTarget.value, setDepositAmountInput)}
-                type="number"
-                inputLabel="USDC"
-                placeholder="1000"
-                accessoryLabel={usdcBalanceLabel}
-                helperText={wiseStrings.get('NEW_DEPOSIT_AMOUNT_TOOLTIP')}
-                enableMax={true}
-                maxButtonOnClick={() => {
-                  if (usdcBalance) {
-                    setDepositAmountInput(toUsdcString(usdcBalance, false));
-                  }
-                }}
-              />
+            <Input
+              label="Deposit Amount"
+              name={`depositAmount`}
+              value={depositAmountInput}
+              onChange={(e) => handleInputChange(e.currentTarget.value, setDepositAmountInput)}
+              type="number"
+              inputLabel="USDC"
+              placeholder="1000"
+              accessoryLabel={usdcBalanceLabel}
+              helperText={revolutStrings.get('NEW_DEPOSIT_AMOUNT_TOOLTIP')}
+              enableMax={true}
+              maxButtonOnClick={() => {
+                if (usdcBalance) {
+                  setDepositAmountInput(toUsdcString(usdcBalance, false));
+                }
+              }}
+            />
 
-              <Input
-                label="Receive Amount"
-                name={`receiveAmount`}
-                value={receiveAmountInput}
-                onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
-                type="number"
-                inputLabel="EUR"
-                placeholder="940"
-                helperText={wiseStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
-              />
+            <Input
+              label="Receive Amount"
+              name={`receiveAmount`}
+              value={receiveAmountInput}
+              onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
+              type="number"
+              inputLabel="EUR"
+              placeholder="940"
+              helperText={revolutStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
+            />
 
-              <ButtonContainer>
-                <Button
-                  fullWidth={true}
-                  disabled={ctaDisabled()}
-                  loading={ctaLoading()}
-                  onClick={async () => {
-                    ctaOnClick();
-                  }}>
-                  { ctaText() }
-                </Button>
-              </ButtonContainer>
-            </InputsContainer>
-          </Body>
-        </NewPositionContainer>
-      );
-    }
-  };
+            <ButtonContainer>
+              <Button
+                fullWidth={true}
+                disabled={ctaDisabled()}
+                loading={ctaLoading()}
+                onClick={async () => {
+                  ctaOnClick();
+                }}>
+                { ctaText() }
+              </Button>
+            </ButtonContainer>
+          </InputsContainer>
+        </Body>
+      </NewPositionContainer>
+    );
+  }
 
   return (
     <NewPositionOrAccountRegistrationContainer>

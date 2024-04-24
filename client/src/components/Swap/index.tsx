@@ -69,8 +69,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
     hdfcRampAbi,
     garantiRampAddress,
     garantiRampAbi,
-    wiseRampAddress,
-    wiseRampAbi
+    revolutRampAddress,
+    revolutRampAbi
   } = useSmartContracts();
   const { paymentPlatform, PaymentPlatform } = usePlatformSettings();
   
@@ -227,9 +227,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
         setRampAbi(garantiRampAbi as any);
         break;
 
-      case PaymentPlatform.WISE:
-        setRampAddress(wiseRampAddress);
-        setRampAbi(wiseRampAbi as any);
+      case PaymentPlatform.REVOLUT:
+        setRampAddress(revolutRampAddress);
+        setRampAbi(revolutRampAbi as any);
         break;
 
       default:
@@ -276,7 +276,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       const isRequestedUsdcAmountPositive = requestedUsdcAmount !== '0';
       const isValidRequestedUsdcAmount = getBestDepositForAmount && requestedUsdcAmount && isRequestedUsdcAmountPositive;
       const isRegisteredAndLoggedIn = isRegistered && isLoggedIn;
-      const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING; // exception for Wise
+      const registrationHashForQuote = isRegisteredAndLoggedIn && registrationHash ? registrationHash : EMPTY_STRING; // exception for Revolut
 
       if (isValidRequestedUsdcAmount) {
         const indicativeQuote: IndicativeQuote = await getBestDepositForAmount(currentQuote.requestedUSDC, registrationHashForQuote);

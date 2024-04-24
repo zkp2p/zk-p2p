@@ -48,7 +48,7 @@ export default function useRemoteNotaryVerification({
 
     let apiUrl;
     switch (paymentType) {
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         apiUrl = REMOTE_NOTARY_VERIFICATION_URL;
         break
 

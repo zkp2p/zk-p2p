@@ -397,7 +397,7 @@ export const abi = [
       },
       {
         "internalType": "string",
-        "name": "wiseTag",
+        "name": "revTag",
         "type": "string"
       },
       {
@@ -465,7 +465,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "wiseTag",
+                "name": "revTag",
                 "type": "string"
               },
               {
@@ -541,7 +541,7 @@ export const abi = [
           },
           {
             "internalType": "string",
-            "name": "wiseTag",
+            "name": "revTag",
             "type": "string"
           },
           {
@@ -619,7 +619,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "wiseTag",
+                "name": "revTag",
                 "type": "string"
               },
               {
@@ -909,7 +909,7 @@ export const abi = [
     "inputs": [
       {
         "internalType": "string",
-        "name": "_wiseTag",
+        "name": "_revTag",
         "type": "string"
       },
       {

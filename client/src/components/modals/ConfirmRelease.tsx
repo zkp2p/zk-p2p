@@ -39,8 +39,8 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
     hdfcRampAbi,
     garantiRampAddress,
     garantiRampAbi,
-    wiseRampAddress,
-    wiseRampAbi,
+    revolutRampAddress,
+    revolutRampAbi,
     blockscanUrl 
 } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
@@ -109,7 +109,7 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           refetchGarantiDeposits?.();
           break;
 
-        case PaymentPlatform.WISE:
+        case PaymentPlatform.REVOLUT:
           refetchGarantiDeposits?.();
           break;
 
@@ -156,10 +156,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
         }
         break;
 
-      case PaymentPlatform.WISE:
-        if (wiseRampAddress && wiseRampAbi) {
-          setReleaseRampAddress(wiseRampAddress);
-          setReleaseRampAbi(wiseRampAbi);
+      case PaymentPlatform.REVOLUT:
+        if (revolutRampAddress && revolutRampAbi) {
+          setReleaseRampAddress(revolutRampAddress);
+          setReleaseRampAbi(revolutRampAbi);
         }
         break;
 
@@ -176,8 +176,8 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
     hdfcRampAbi,
     garantiRampAddress,
     garantiRampAbi,
-    wiseRampAddress,
-    wiseRampAbi
+    revolutRampAddress,
+    revolutRampAbi
   ]);
 
   useEffect(() => {

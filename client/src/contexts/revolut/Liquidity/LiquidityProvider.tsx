@@ -21,9 +21,9 @@ import {
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
  } from './helper';
-import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_WISE } from '@helpers/constants';
+import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_REVOLUT } from '@helpers/constants';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useRampState from '@hooks/wise/useRampState';
+import useRampState from '@hooks/revolut/useRampState';
 import useDenyList from '@hooks/useDenyList';
 
 import LiquidityContext from './LiquidityContext';
@@ -41,7 +41,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { wiseRampAddress, wiseRampAbi } = useSmartContracts();
+  const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
   const { depositCounter } = useRampState();
   const { fetchVenmoDepositorDenyList } = useDenyList();
 
@@ -49,7 +49,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * State
    */
 
-  const currentRampAddressRef = useRef(wiseRampAddress);
+  const currentRampAddressRef = useRef(revolutRampAddress);
 
   const [fetchDepositsTrigger, setFetchDepositsTrigger] = useState(0);
 
@@ -122,8 +122,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     try {
       // function getDepositFromIds(uint256[] memory _depositIds) external view returns (Deposit[] memory depositArray)
       const data = await readContract({
-        address: wiseRampAddress as `0x${string}`,
-        abi: wiseRampAbi as Abi,
+        address: revolutRampAddress as `0x${string}`,
+        abi: revolutRampAbi as Abi,
         functionName: 'getDepositFromIds',
         args: [depositIdBatch],
         account: CALLER_ACCOUNT,
@@ -145,9 +145,9 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
 
       const depositData = depositWithAvailableLiquidityData.deposit;
       const deposit: Deposit = {
-        platformType: PaymentPlatform.WISE,
+        platformType: PaymentPlatform.REVOLUT,
         depositor: depositData.depositor.toString(),
-        venmoId: depositData.wiseTag,
+        venmoId: depositData.revTag,
         depositAmount: depositData.depositAmount,
         remainingDepositAmount: depositData.remainingDeposits,
         outstandingIntentAmount: depositData.outstandingIntentAmount,
@@ -173,23 +173,23 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    currentRampAddressRef.current = wiseRampAddress;
-  }, [wiseRampAddress]);
+    currentRampAddressRef.current = revolutRampAddress;
+  }, [revolutRampAddress]);
 
   useEffect(() => {
-    esl && console.log('wise_shouldFetchDeposits_1');
+    esl && console.log('revolut_shouldFetchDeposits_1');
     esl && console.log('checking depositCounter: ', depositCounter);
-    esl && console.log('checking wiseRampAddress: ', wiseRampAddress);
+    esl && console.log('checking revolutRampAddress: ', revolutRampAddress);
 
     const fetchData = async () => {
-      if (depositCounter && wiseRampAddress) {
-        esl && console.log('wise_shouldFetchDeposits_2');
+      if (depositCounter && revolutRampAddress) {
+        esl && console.log('revolut_shouldFetchDeposits_2');
   
         setShouldFetchDeposits(true);
 
-        await fetchAndPruneDeposits(depositCounter, wiseRampAddress);
+        await fetchAndPruneDeposits(depositCounter, revolutRampAddress);
       } else {
-        esl && console.log('wise_shouldFetchDeposits_3');
+        esl && console.log('revolut_shouldFetchDeposits_3');
   
         setShouldFetchDeposits(false);
   
@@ -202,20 +202,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositCounter, wiseRampAddress, fetchDepositsTrigger]);
+  }, [depositCounter, revolutRampAddress, fetchDepositsTrigger]);
 
   useEffect(() => {
-    esl && console.log('wise_depositStore_1');
+    esl && console.log('revolut_depositStore_1');
     esl && console.log('checking deposits: ', deposits);
 
     if (deposits && deposits.length > 0) {
-      esl && console.log('wise_depositStore_2');
+      esl && console.log('revolut_depositStore_2');
 
       const newStore = createDepositsStore(deposits);
 
       setDepositStore(newStore);
     } else {
-      esl && console.log('wise_depositStore_3');
+      esl && console.log('revolut_depositStore_3');
 
       setDepositStore(null);
     }
@@ -246,7 +246,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
     if (depositStore) {
       return fetchDepositForMaxAvailableTransferSize(
-        MAX_USDC_TRANSFER_SIZE_WISE,
+        MAX_USDC_TRANSFER_SIZE_REVOLUT,
         depositStore,
         onRamperRegistrationHash
       );

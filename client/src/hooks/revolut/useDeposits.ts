@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { DepositsContext } from '../../contexts/wise/Deposits';
+import { DepositsContext } from '../../contexts/revolut/Deposits';
 
 const useDeposits = () => {
   return { ...useContext(DepositsContext) };

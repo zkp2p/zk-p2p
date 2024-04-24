@@ -51,9 +51,9 @@ const strings: PlatformStrings = {
     to your account.
   `,
   NEW_DEPOSIT_ID_TOOLTIP: `
-    This is a valid Wise tag where users will send payments.
-    This connects your Wise tag to your address on chain.
-    This Wise tag must be from the account you registered with.
+    This is a valid Revtag where users will send payments.
+    This connects your Revtag to your address on chain.
+    This Revtag must be from the account you registered with.
   `,
   NEW_DEPOSIT_NAME_TOOLTIP: `
     no-op

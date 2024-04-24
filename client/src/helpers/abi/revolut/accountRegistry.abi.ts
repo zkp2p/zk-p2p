@@ -28,7 +28,7 @@ export const abi = [
       {
         "indexed": true,
         "internalType": "bytes32",
-        "name": "wiseTagHash",
+        "name": "revTagHash",
         "type": "bytes32"
       }
     ],
@@ -283,7 +283,7 @@ export const abi = [
           },
           {
             "internalType": "bytes32",
-            "name": "wiseTagHash",
+            "name": "revTagHash",
             "type": "bytes32"
           }
         ],
@@ -499,7 +499,7 @@ export const abi = [
               },
               {
                 "internalType": "string",
-                "name": "wiseTagHash",
+                "name": "revTagHash",
                 "type": "string"
               },
               {

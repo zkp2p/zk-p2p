@@ -4,30 +4,30 @@ import turkeyFlagSvg from '../../assets/images/turkey-flag.svg';
 import europeFlagSvg from '../../assets/images/europe-flag.svg';
 
 const USE_GARANTI = process.env.USE_GARANTI === 'true';
-const USE_WISE = process.env.USE_WISE === 'true';
+const USE_REVOLUT = process.env.USE_REVOLUT === 'true';
 
 export const PaymentPlatform = {
   VENMO: "venmo",
   HDFC: "hdfc",
   GARANTI: "garanti",
-  WISE: "wise"
+  REVOLUT: "revolut"
 };
 
-function getPaymentPlatforms(USE_GARANTI: boolean, USE_WISE: boolean): string[] {
+function getPaymentPlatforms(USE_GARANTI: boolean, USE_REVOLUT: boolean): string[] {
   let platforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
   
   if (USE_GARANTI) {
     platforms.push(PaymentPlatform.GARANTI);
   };
 
-  if (USE_WISE) {
-    platforms.push(PaymentPlatform.WISE);
+  if (USE_REVOLUT) {
+    platforms.push(PaymentPlatform.REVOLUT);
   };
 
   return platforms;
 };
 
-export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_WISE);
+export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_REVOLUT);
 
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 
@@ -57,9 +57,9 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformCurrency: 'TRY',
     flagSvg: turkeyFlagSvg
   },
-  [PaymentPlatform.WISE]: {
-    platformId: PaymentPlatform.WISE,
-    platformName: 'Wise',
+  [PaymentPlatform.REVOLUT]: {
+    platformId: PaymentPlatform.REVOLUT,
+    platformName: 'Revolut',
     platformCurrency: 'EUR',
     flagSvg: europeFlagSvg
   }

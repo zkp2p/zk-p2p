@@ -23,12 +23,12 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
-import useWiseDeposits from '@hooks/wise/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 
 import useRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
-import useWiseRegistration from '@hooks/wise/useRegistration';
+import useRevolutRegistration from '@hooks/revolut/useRegistration';
 
 
 export interface DepositPrime {
@@ -61,8 +61,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     hdfcRampAbi,
     garantiRampAddress,
     garantiRampAbi,
-    wiseRampAddress,
-    wiseRampAbi
+    revolutRampAddress,
+    revolutRampAbi
   } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
@@ -80,8 +80,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   } = useGarantiRegistration();
 
   const {
-    isRegistered: isWiseRegistered
-  } = useWiseRegistration();
+    isRegistered: isRevolutRegistered
+  } = useRevolutRegistration();
 
   const {
     deposits: venmoDeposits,
@@ -99,9 +99,9 @@ export const PositionTable: React.FC<PositionTableProps> = ({
   } = useGarantiDeposits();
 
   const {
-    deposits: wiseDeposits,
-    refetchDeposits: refetchWiseDeposits
-  } = useWiseDeposits();
+    deposits: revolutDeposits,
+    refetchDeposits: refetchRevolutDeposits
+  } = useRevolutDeposits();
 
   /*
    * State
@@ -163,8 +163,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           refetchGarantiDeposits?.();
           break;
 
-        case PaymentPlatform.WISE:
-          refetchWiseDeposits?.();
+        case PaymentPlatform.REVOLUT:
+          refetchRevolutDeposits?.();
           break;
 
         default:
@@ -196,7 +196,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           setIsRegistered(isGarantiRegistered);
           break;
 
-        case PaymentPlatform.WISE:
+        case PaymentPlatform.REVOLUT:
           setIsRegistered(isWiseRegistered);
           break;
 
@@ -226,8 +226,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           depositsToDisplay = garantiDeposits;
           break;
 
-        case PaymentPlatform.WISE:
-          depositsToDisplay = wiseDeposits;
+        case PaymentPlatform.REVOLUT:
+          depositsToDisplay = revolutDeposits;
           break;
 
         default:
@@ -263,7 +263,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [venmoDeposits, hdfcDeposits, garantiDeposits, wiseDeposits, paymentPlatform]);
+  }, [venmoDeposits, hdfcDeposits, garantiDeposits, revolutDeposits, paymentPlatform]);
 
   useEffect(() => {
     const executeWithdrawDeposit = async () => {
@@ -339,15 +339,15 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         }
         break;
 
-      case PaymentPlatform.WISE:
-        if (wiseDeposits) {
-          const selectedDeposit = wiseDeposits[rowIndex];
+      case PaymentPlatform.REVOLUT:
+        if (revolutDeposits) {
+          const selectedDeposit = revolutDeposits[rowIndex];
           setSelectedDepositIdToWithdraw(selectedDeposit.depositId);
 
           setSelectedRowIndexToWithdraw(rowIndex);
           
-          setWithdrawRampAddress(wiseRampAddress as any);
-          setWithdrawRampAbi(wiseRampAbi as any);
+          setWithdrawRampAddress(revolutRampAddress as any);
+          setWithdrawRampAbi(revolutRampAbi as any);
 
           setShouldConfigureWithdrawWrite(true);
         }
