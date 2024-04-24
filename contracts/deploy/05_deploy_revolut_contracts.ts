@@ -11,7 +11,6 @@ import {
   MAX_ONRAMP_AMOUNT,
   MIN_DEPOSIT_AMOUNT,
   MULTI_SIG,
-  OFFRAMPER_TLS_PARAMS,
   ONRAMP_COOL_DOWN_PERIOD,
   SEND_TLS_PARAMS,
   SUSTAINABILITY_FEE,
@@ -30,11 +29,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const [ deployer ] = await hre.getUnnamedAccounts();
   const multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer;
-  const paymentProvider = PaymentProviders.Wise;
+  const paymentProvider = PaymentProviders.Revolut;
 
   let usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const wiseRamp = await deploy("WiseRamp", {
+  const revolutRamp = await deploy("RevolutRamp", {
     from: deployer,
     args: [
       deployer,
@@ -50,22 +49,22 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     ],
     log: true
   });
-  const wiseAccountRegistry = await deploy("WiseAccountRegistry", {
+  const revolutAccountRegistry = await deploy("RevolutAccountRegistry", {
     from: deployer,
     args: [deployer],
     log: true
   });
-  console.log("WiseRamp deployed at", wiseRamp.address);
+  console.log("RevolutRamp deployed at", revolutRamp.address);
 
   const nullifierRegistryContract = await ethers.getContractAt(
     "NullifierRegistry",
     getDeployedContractAddress(network, "NullifierRegistry")
   );
 
-  const accountRegistrationProcessor = await deploy("WiseAccountRegistrationProcessor", {
+  const accountRegistrationProcessor = await deploy("RevolutAccountRegistrationProcessor", {
     from: deployer,
     args: [
-      wiseAccountRegistry.address,
+      revolutAccountRegistry.address,
       ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
       nullifierRegistryContract.address,
       ZERO,
@@ -76,24 +75,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   });
   console.log("AccountRegistrationProcessor deployed at", accountRegistrationProcessor.address);
 
-  const offRamperRegistrationProcessor = await deploy("WiseOffRamperRegistrationProcessor", {
+  const sendProcessor = await deploy("RevolutSendProcessor", {
     from: deployer,
     args: [
-      wiseAccountRegistry.address,
-      OFFRAMPER_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
-      nullifierRegistryContract.address,
-      ZERO,
-      OFFRAMPER_TLS_PARAMS[paymentProvider][network].endpoint,
-      OFFRAMPER_TLS_PARAMS[paymentProvider][network].host,
-    ],
-    log: true
-  });
-  console.log("AccountRegistrationProcessor deployed at", offRamperRegistrationProcessor.address);
-
-  const sendProcessor = await deploy("WiseSendProcessor", {
-    from: deployer,
-    args: [
-      wiseRamp.address,
+      revolutRamp.address,
       nullifierRegistryContract.address,
       TIMESTAMP_BUFFER[paymentProvider],
       SEND_TLS_PARAMS[paymentProvider][network].endpoint,
@@ -104,47 +89,40 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("SendProcessor deployed at ", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const wiseRampContract = await ethers.getContractAt("WiseRamp", wiseRamp.address);
-  if (!(await wiseRampContract.isInitialized())) {
-    await wiseRampContract.initialize(
-      wiseAccountRegistry.address,
+  const revolutRampContract = await ethers.getContractAt("RevolutRamp", revolutRamp.address);
+  if (!(await revolutRampContract.isInitialized())) {
+    await revolutRampContract.initialize(
+      revolutAccountRegistry.address,
       sendProcessor.address
     );
   
-    console.log("WiseRamp initialized...");
+    console.log("RevolutRamp initialized...");
   }
 
-  const wiseAccountRegistryContract = await ethers.getContractAt("WiseAccountRegistry", wiseAccountRegistry.address);
-  if (!(await wiseAccountRegistryContract.isInitialized())) {
-    await wiseAccountRegistryContract.initialize(
-      accountRegistrationProcessor.address,
-      offRamperRegistrationProcessor.address
+  const revolutAccountRegistryContract = await ethers.getContractAt("RevolutAccountRegistry", revolutAccountRegistry.address);
+  if (!(await revolutAccountRegistryContract.isInitialized())) {
+    await revolutAccountRegistryContract.initialize(
+      accountRegistrationProcessor.address
     );
   
-    console.log("WiseAccountRegistry initialized...");
+    console.log("RevolutAccountRegistry initialized...");
   }
 
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, accountRegistrationProcessor.address);
-  await addWritePermission(hre, nullifierRegistryContract, offRamperRegistrationProcessor.address);
   console.log("NullifierRegistry permissions added...");
 
   console.log("Transferring ownership of contracts...");
-  await setNewOwner(hre, wiseRampContract, multiSig);
-  await setNewOwner(hre, wiseAccountRegistryContract, multiSig);
+  await setNewOwner(hre, revolutRampContract, multiSig);
+  await setNewOwner(hre, revolutAccountRegistryContract, multiSig);
   await setNewOwner(
     hre,
-    await ethers.getContractAt("WiseAccountRegistrationProcessor", accountRegistrationProcessor.address),
+    await ethers.getContractAt("RevolutAccountRegistrationProcessor", accountRegistrationProcessor.address),
     multiSig
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("WiseOffRamperRegistrationProcessor", offRamperRegistrationProcessor.address),
-    multiSig
-  );
-  await setNewOwner(
-    hre,
-    await ethers.getContractAt("WiseSendProcessor", sendProcessor.address),
+    await ethers.getContractAt("RevolutSendProcessor", sendProcessor.address),
     multiSig
   );
 
@@ -152,13 +130,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
-  return true;
-  // const network = hre.network.name;
-  // if (network != "localhost") {
-  //   try { getDeployedContractAddress(hre.network.name, "WiseRamp") } catch (e) {return false;}
-  //   return true;
-  // }
-  // return false;
+  const network = hre.network.name;
+  if (network != "localhost") {
+    try { getDeployedContractAddress(hre.network.name, "RevolutRamp") } catch (e) {return false;}
+    return true;
+  }
+  return false;
 };
 
 export default func;
