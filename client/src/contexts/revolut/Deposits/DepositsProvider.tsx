@@ -135,7 +135,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
         const deposit: Deposit = {
           platformType: PaymentPlatform.REVOLUT,
           depositor: depositData.depositor.toString(),
-          venmoId: depositData.revTag,
+          venmoId: depositData.revolutTag,
           depositAmount: depositData.depositAmount,
           remainingDepositAmount: depositData.remainingDeposits,
           outstandingIntentAmount: depositData.outstandingIntentAmount,

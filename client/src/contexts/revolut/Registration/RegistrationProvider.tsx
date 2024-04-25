@@ -25,8 +25,6 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const [registrationHash, setRegistrationHash] = useState<string | null>(null);
-  const [accountId, setAccountId] = useState<string | null>(null);
-  const [offRampId, setOffRampId] = useState<string | null>(null);
 
   const [extractedProfileIdStorageKey, setExtractedProfileIdStorageKey] = useState<string | null>(null);
   const [extractedRevolutProfileId, setExtractedRevolutProfileId] = useState<string | null>(() => {
@@ -61,8 +59,6 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   // The !! operator will convert any truthy value to true and any falsy value to false.
   const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
 
-  const isRegisteredForDeposit = !!(offRampId && offRampId !== ZERO_ADDRESS);
-
   /*
    * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
    */
@@ -74,7 +70,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   } = useContractRead({
     address: revolutAccountRegistryAddress,
     abi: revolutAccountRegistryAbi,
-    functionName: 'getAccountInfo',
+    functionName: 'getAccountId',
     args: [
       loggedInEthereumAddress
     ],
@@ -143,40 +139,18 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     if (rampAccountRaw) {
       esl && console.log('revolut_rampAccountRaw_2');
 
-      const rampAccountData = rampAccountRaw as any;
-      const revTagHashProcessed = rampAccountData.revTagHash;
-      const accountIdProcessed = rampAccountData.accountId;
+      const revTagHashProcessed = rampAccountRaw as any;
       
       if (revTagHashProcessed !== ZERO_ADDRESS) {
         esl && console.log('revolut_rampAccountRaw_3');
 
         setRegistrationHash(revTagHashProcessed);
-        setAccountId(accountIdProcessed);
-
-        const offRampIdProcessed = rampAccountData.offRampId;
-        if (offRampIdProcessed !== ZERO_ADDRESS) {
-          setOffRampId(offRampIdProcessed);
-        } else {
-          setOffRampId(null);
-        };
-
-        setShouldFetchVenmoNftId(true); 
-      } else {
-        esl && console.log('revolut_rampAccountRaw_4');
-
-        setRegistrationHash(null);
-        setAccountId(null);
-        setOffRampId(null);
-
-        setShouldFetchVenmoNftId(false);
+        setShouldFetchVenmoNftId(true);
       }
     } else {
-      esl && console.log('revolut_rampAccountRaw_5');
+      esl && console.log('revolut_rampAccountRaw_4');
       
       setRegistrationHash(null);
-      setAccountId(null);
-      setOffRampId(null);
-
       setShouldFetchVenmoNftId(false);
     }
   }, [rampAccountRaw]);
@@ -306,9 +280,6 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
       value={{
         isRegistered,
         registrationHash,
-        isRegisteredForDeposit,
-        offRampId,
-        accountId,
         extractedRevolutProfileId,
         shouldFetchVenmoNftId,
         venmoNftId,

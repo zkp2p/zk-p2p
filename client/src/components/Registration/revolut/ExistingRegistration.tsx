@@ -191,7 +191,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                 
                 {
                   isRegistered && <ReadOnlyInput
-                    label="Revtag"
+                    label="Revolut Identifier"
                     name={`revTag`}
                     value={registrationHash ? registrationHash : ""}
                   />

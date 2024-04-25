@@ -124,7 +124,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   // Revolut
   const {
     isRegistered: isRegisteredOnRevolut,
-    accountId: revolutAccountId
+    registrationHash: revolutRegistrationHash
   } = useRevolutRegistration();
   const {
     refetchDeposits: refetchRevolutDeposits,
@@ -241,7 +241,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('venmoRegistrationHash: ', venmoRegistrationHash);
     esl && console.log('hdfcRegistrationHash: ', hdfcRegistrationHash);
     esl && console.log('garantiRegistrationHash: ', garantiRegistrationHash);
-    esl && console.log('revolutAccountId: ', revolutAccountId);
+    esl && console.log('revolutRegistrationHash: ', revolutRegistrationHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -258,7 +258,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.REVOLUT:
-        setRegistrationHash(revolutAccountId);
+        setRegistrationHash(revolutRegistrationHash);
         break;
 
       default:
@@ -271,7 +271,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       hdfcRegistrationHash,
       venmoRegistrationHash,
       garantiRegistrationHash,
-      revolutAccountId
+      revolutRegistrationHash
     ]
   );
 
@@ -634,7 +634,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       refetchRevolutLastOnRampTimestamp
     ]
   );
-
 
   /*
    * Ramp State

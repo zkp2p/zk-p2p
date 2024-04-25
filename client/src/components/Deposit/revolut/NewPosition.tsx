@@ -46,9 +46,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     extractedRevolutProfileId,
     registrationHash,
     setExtractedRevolutProfileId,
-    isRegisteredForDeposit,
-    offRampId,
-    
   } = useRegistration();
   const { openModal } = useModal();
 
@@ -215,7 +212,6 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
     updateDepositState();
   }, [
-      isRegisteredForDeposit,
       revTagInput,
       registrationHash,
       depositAmountInput,
@@ -271,7 +267,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         if (registrationHash) {
           const revTagHash = calculateRevolutTagHash(revTagInput);
           const validRevolutTagInput = revTagHash === registrationHash;
-          setIsRevolutTagInputValid(validRevolutTagInput);
+          setIsRevolutTagInputValid(true);
 
           if (validRevolutTagInput && setExtractedRevolutProfileId) {
             setExtractedRevolutProfileId(revTagInput);
