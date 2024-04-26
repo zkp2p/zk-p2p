@@ -261,13 +261,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
   useEffect(() => {
     const verifyRevolutTagInput = async () => {
-      if (revTagInput.length < 4) {
+      if (revTagInput.length < 6) {
         setIsRevolutTagInputValid(false);
       } else {
         if (registrationHash) {
           const revTagHash = calculateRevolutTagHash(revTagInput);
           const validRevolutTagInput = revTagHash === registrationHash;
-          setIsRevolutTagInputValid(true);
+          setIsRevolutTagInputValid(validRevolutTagInput);
 
           if (validRevolutTagInput && setExtractedRevolutProfileId) {
             setExtractedRevolutProfileId(revTagInput);
