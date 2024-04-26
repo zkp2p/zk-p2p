@@ -22,8 +22,8 @@ export const NotaryProofInputStatus = {
 };
 
 export const NotaryVerificationCircuit = {
-  TRANSFER: 'send',
-  REGISTRATION_TAG: 'registration_individual_id',
+  TRANSFER: 'transfer',
+  REGISTRATION_TAG: 'registration',
 };
 
 export type NotaryVerificationCircuitType = typeof NotaryVerificationCircuit[keyof typeof NotaryVerificationCircuit];

@@ -144,7 +144,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const detectedNotarizationCopy = () => {
     if (selectedIndex !== null) {
-      const selectedRequest = paginatedData[selectedIndex];
+      const selectedRequest: ExtensionNotaryProofRow = paginatedData[selectedIndex];
       
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
@@ -354,7 +354,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         if (USE_REVOLUT_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorProof = {
             proof: REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF,
-            subject: '[env] Request for @richar5gsl',
+            subject: '[env] Proof for Revtag: richar5gsl',
             metadata: 'richar5gsl',
             date: 'N/A'
           } as ExtensionNotaryProofRow;
@@ -363,8 +363,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         let allAccountProofRows = defaultDepositorProof ? [defaultDepositorProof] : [];
         if (profileProofs && profileProofs.length > 0) {
           const fetchedProfileProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
-            const revTag = request.metadata[1].split('@')[1];
-            const subject = `Request for @${revTag}`;
+            const revTag = request.metadata[1];
+            const subject = `Proof for Revtag: ${revTag}`;
 
             return {
               proof: JSON.stringify(request.proof),
@@ -384,12 +384,14 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         if (transferProofs && transferProofs.length > 0) {
           const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
-            const subject = `Sent €${amount} ${currency}`;
+
+            const formattedAmount = (Math.abs(amount) / 100).toFixed(2);
+            const subject = `Proof for payment: €${formattedAmount} ${currency}`;
 
             return {
               proof: JSON.stringify(request.proof),
               subject: subject,
-              metadata: amount,
+              metadata: formattedAmount,
               date: parseTimestamp(timestamp)
             } as ExtensionNotaryProofRow;
           });
