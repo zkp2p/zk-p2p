@@ -118,7 +118,7 @@ describe("RevolutAccountRegistry", () => {
       const registerPublicValues = {
         endpoint: "GET https://app.revolut.com/api/retail/user/current",
         host: "app.revolut.com",
-        profileId: calculateRevolutIdHashBN("ctl04gpe-cd21-0t5m-7zgd-055f09e381g5"),
+        profileId: calculateRevolutIdHashBN("johndo8egm"),
         userAddress: offRamper.address
       } as RevolutRegistrationData
 

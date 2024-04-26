@@ -188,16 +188,16 @@ describe("RevolutRamp", () => {
       }
 
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      offRamperProof.public_values.profileId = calculateRevolutIdHashBN("012345678");
+      offRamperProof.public_values.profileId = calculateRevolutIdHashBN("johndo8egm");
       offRamperProof.public_values.userAddress = offRamper.address;
       onRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperProof.public_values.profileId = calculateRevolutIdHashBN("123456789");
+      onRamperProof.public_values.profileId = calculateRevolutIdHashBN("janedo8egm");
       onRamperProof.public_values.userAddress = onRamper.address;
       onRamperTwoProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      onRamperTwoProof.public_values.profileId = calculateRevolutIdHashBN("567890123");
+      onRamperTwoProof.public_values.profileId = calculateRevolutIdHashBN("satonakegm");
       onRamperTwoProof.public_values.userAddress = onRamperTwo.address;
       maliciousOnRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHashBN("123456789");
+      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHashBN("jondoe6kgm");
       maliciousOnRamperProof.public_values.userAddress = maliciousOnRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
@@ -219,7 +219,7 @@ describe("RevolutRamp", () => {
       let subjectCaller: Account;
 
       beforeEach(async () => {
-        subjectRevolutTag = "jdoe1234";
+        subjectRevolutTag = "johndo8egm";
         subjectReceiveCurrencyId = ethers.utils.solidityKeccak256(["string"], ["EUR"]);
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(92);
@@ -304,6 +304,16 @@ describe("RevolutRamp", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Maximum deposit amount reached");
+        });
+      });
+
+      describe("when the passed revTag does not match the one encoded from registration", async () => {
+        beforeEach(async () => {
+          subjectRevolutTag = "johndo7egm";
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Revolut tag must match id");
         });
       });
 

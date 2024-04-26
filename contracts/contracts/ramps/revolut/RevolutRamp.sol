@@ -207,6 +207,7 @@ contract RevolutRamp is Ownable {
         bytes32 account = accountRegistry.getAccountId(msg.sender);
         GlobalAccountInfo storage globalAccountInfo = globalAccount[account];
 
+        require(keccak256(abi.encode(_revolutTag)) == account, "Revolut tag must match id");
         require(globalAccountInfo.deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -677,7 +678,7 @@ contract RevolutRamp is Ownable {
         (
             uint256 amount,
             uint256 timestamp,
-            bytes32 revolutTagHash,
+            bytes32 offRamperId,
             bytes32 currencyId
         ) = sendProcessor.processProof(
             IRevolutSendProcessor.SendProof({
@@ -689,7 +690,7 @@ contract RevolutRamp is Ownable {
 
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(keccak256(abi.encodePacked(deposit.revolutTag)) == revolutTagHash, "Revolut tag does not match");
+        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Revolut tag does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
     }
 }
