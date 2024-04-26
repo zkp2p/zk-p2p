@@ -21,9 +21,15 @@ import {
   ManagedKeyHashAdapterV2,
   NullifierRegistry,
   Ramp,
-  VenmoRampV2,
+  RevolutAccountRegistry,
+  RevolutAccountRegistrationProcessor,
+  RevolutAccountRegistrationProcessorMock,
+  RevolutRamp,
+  RevolutSendProcessor,
+  RevolutSendProcessorMock,
   StringConversionUtilsMock,
   USDCMock,
+  VenmoRampV2,
   VenmoRegistrationProcessor,
   VenmoRegistrationProcessorMock,
   VenmoRegistrationProcessorV2,
@@ -73,6 +79,13 @@ import {
   WiseSendProcessor__factory,
   mocks as wiseMocks
 } from "../typechain/factories/contracts/ramps/wise";
+import {
+  RevolutRamp__factory,
+  RevolutAccountRegistrationProcessor__factory,
+  RevolutAccountRegistry__factory,
+  RevolutSendProcessor__factory,
+  mocks as revolutMocks
+} from "../typechain/factories/contracts/ramps/revolut";
 import {
   StringConversionUtilsMock__factory,
   USDCMock__factory,
@@ -328,6 +341,71 @@ export default class DeployHelper {
     return await new GarantiBodyHashVerifier__factory(this._deployerSigner).deploy();
   }
 
+  // Revolut Contracts
+  public async deployRevolutRamp(
+    owner: Address,
+    usdcToken: Address,
+    minDepositAmount: BigNumber,
+    maxOnRampAmount: BigNumber,
+    intentExpirationPeriod: BigNumber,
+    onRampCoolDownPeriod: BigNumber,
+    sustainabilityFee: BigNumber,
+    sustainabilityFeeRecipient: Address,
+  ): Promise<RevolutRamp> {
+    return await new RevolutRamp__factory(this._deployerSigner).deploy(
+      owner,
+      usdcToken,
+      minDepositAmount,
+      maxOnRampAmount,
+      intentExpirationPeriod,
+      onRampCoolDownPeriod,
+      sustainabilityFee,
+      sustainabilityFeeRecipient
+    );
+  }
+
+  public async deployRevolutAccountRegistry(
+    owner: Address,
+  ): Promise<RevolutAccountRegistry> {
+    return await new RevolutAccountRegistry__factory(this._deployerSigner).deploy(
+      owner
+    );
+  }
+
+  public async deployRevolutAccountRegistrationProcessor(
+    ramp: Address,
+    verifierSigningKey: Address,
+    nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<RevolutAccountRegistrationProcessor> {
+    return await new RevolutAccountRegistrationProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      verifierSigningKey,
+      nullifierRegistry,
+      timestampBuffer,
+      endpoint,
+      host
+    );
+  }
+
+  public async deployRevolutSendProcessor(
+    ramp: Address,
+    nullifierRegistry: Address,
+    endpoint: string,
+    host: string,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<RevolutSendProcessor> {
+    return await new RevolutSendProcessor__factory(this._deployerSigner).deploy(
+      ramp,
+      nullifierRegistry,
+      timestampBuffer,
+      endpoint,
+      host
+    );
+  }
+
   // Wise Contracts
   public async deployWiseRamp(
     owner: Address,
@@ -351,7 +429,6 @@ export default class DeployHelper {
     );
   }
 
-  // Wise Contracts
   public async deployWiseAccountRegistry(
     owner: Address,
   ): Promise<WiseAccountRegistry> {
@@ -460,6 +537,14 @@ export default class DeployHelper {
   }
   public async deployWiseOffRamperRegistrationProcessorMock(): Promise<WiseOffRamperRegistrationProcessorMock> {
     return await new wiseMocks.WiseOffRamperRegistrationProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployRevolutSendProcessorMock(): Promise<RevolutSendProcessorMock> {
+    return await new revolutMocks.RevolutSendProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployRevolutAccountRegistrationProcessorMock(): Promise<RevolutAccountRegistrationProcessorMock> {
+    return await new revolutMocks.RevolutAccountRegistrationProcessorMock__factory(this._deployerSigner).deploy();
   }
 
   public async deployPoseidon3(): Promise<any> {

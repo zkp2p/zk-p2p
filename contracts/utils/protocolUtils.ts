@@ -52,6 +52,14 @@ export const calculateWiseTagHash = (wiseTag: string): string => {
   return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))).toString()
 }
 
+export const calculateRevolutIdHash = (wiseTag: string): string => {
+  return ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))
+}
+
+export const calculateRevolutIdHashBN = (wiseTag: string): string => {
+  return BigNumber.from(ethers.utils.keccak256(abiCoder.encode(["string"], [wiseTag]))).toString()
+}
+
 export const calculateGarantiIdHash = async (garantiId: string): Promise<string> => {
   const poseidon = await buildPoseidon();
 

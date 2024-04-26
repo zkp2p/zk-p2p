@@ -41,6 +41,13 @@ export const ACCOUNT_TLS_PARAMS = {
       host: "wise.com",
     } as TLSParams,
   } as EnvironmentTLSParams,
+  "revolut": {
+    "localhost": {
+      verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      endpoint: "GET https://app.revolut.com/api/retail/user/current",
+      host: "app.revolut.com",
+    } as TLSParams,
+  } as EnvironmentTLSParams,
 }
 
 export const OFFRAMPER_TLS_PARAMS = {
@@ -63,6 +70,14 @@ export const SEND_TLS_PARAMS = {
     } as TLSParams,
     "base": {} as TLSParams,
   } as EnvironmentTLSParams,
+  "revolut": {
+    "localhost": {
+      verifierSigningKey: "",     // We don't pass this in for deploys
+      endpoint: "GET https://app.revolut.com/api/retail/transaction/*",
+      host: "app.revolut.com",
+    } as TLSParams,
+    "base": {} as TLSParams,
+  } as EnvironmentTLSParams,
 }
 
 export const TIMESTAMP_BUFFER = {
@@ -70,6 +85,7 @@ export const TIMESTAMP_BUFFER = {
   "hdfc": BigNumber.from(30),
   "garanti": BigNumber.from(30),
   "wise": BigNumber.from(30),
+  "revolut": BigNumber.from(30),
 };
 
 export const MIN_DEPOSIT_AMOUNT: any = {
@@ -96,6 +112,13 @@ export const MIN_DEPOSIT_AMOUNT: any = {
   },
   "wise": {
     "localhost": usdc(21),
+    "goerli": usdc(20),
+    "sepolia": usdc(20),
+    "base": usdc(20),
+    "base_staging": usdc(10),
+  },
+  "revolut": {
+    "localhost": usdc(22),
     "goerli": usdc(20),
     "sepolia": usdc(20),
     "base": usdc(20),
@@ -131,6 +154,13 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "base": usdc(200),
     "base_staging": usdc(200),
   },
+  "revolut": {
+    "localhost": usdc(22),
+    "goerli": usdc(20),
+    "sepolia": usdc(20),
+    "base": usdc(20),
+    "base_staging": usdc(10),
+  },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
   "venmo": {
@@ -156,6 +186,13 @@ export const INTENT_EXPIRATION_PERIOD: any = {
   },
   "wise": {
     "localhost": ONE_DAY_IN_SECONDS.sub(2),
+    "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
+    "base": ONE_DAY_IN_SECONDS,
+    "base_staging": THREE_MINUTES_IN_SECONDS,
+  },
+  "revolut": {
+    "localhost": ONE_DAY_IN_SECONDS.sub(3),
     "goerli": THREE_MINUTES_IN_SECONDS,
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
@@ -191,6 +228,13 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
   },
+  "revolut": {
+    "localhost": THREE_MINUTES_IN_SECONDS.sub(3),
+    "goerli": THREE_MINUTES_IN_SECONDS,
+    "sepolia": THREE_MINUTES_IN_SECONDS,
+    "base": ONE_DAY_IN_SECONDS.div(2),
+    "base_staging": THREE_MINUTES_IN_SECONDS,
+  },
 };
 export const SUSTAINABILITY_FEE: any = {
   "venmo": {
@@ -221,6 +265,13 @@ export const SUSTAINABILITY_FEE: any = {
     "base": ZERO,
     "base_staging": ZERO,
   },
+  "revolut": {
+    "localhost": ether(.003),
+    "goerli": ether(.001),
+    "sepolia": ether(.001),
+    "base": ZERO,
+    "base_staging": ZERO,
+  },
 };
 export const SUSTAINABILITY_FEE_RECIPIENT: any = {
   "venmo": {
@@ -245,6 +296,13 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
   },
   "wise": {
+    "localhost": "",
+    "goerli": "",
+    "sepolia": "",
+    "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
+    "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+  },
+  "revolut": {
     "localhost": "",
     "goerli": "",
     "sepolia": "",

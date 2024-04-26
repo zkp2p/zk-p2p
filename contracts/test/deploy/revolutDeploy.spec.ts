@@ -4,19 +4,17 @@ import { deployments, ethers } from "hardhat";
 
 import {
   NullifierRegistry,
-  WiseRamp,
-  WiseAccountRegistry,
-  WiseAccountRegistrationProcessor,
-  WiseOffRamperRegistrationProcessor,
-  WiseSendProcessor,
+  RevolutRamp,
+  RevolutAccountRegistry,
+  RevolutAccountRegistrationProcessor,
+  RevolutSendProcessor,
 } from "../../utils/contracts"
 import {
   NullifierRegistry__factory,
-  WiseRamp__factory,
-  WiseAccountRegistry__factory,
-  WiseAccountRegistrationProcessor__factory,
-  WiseOffRamperRegistrationProcessor__factory,  
-  WiseSendProcessor__factory,
+  RevolutRamp__factory,
+  RevolutAccountRegistry__factory,
+  RevolutAccountRegistrationProcessor__factory,
+  RevolutSendProcessor__factory,
 } from "../../typechain"
 
 import {
@@ -36,7 +34,6 @@ import {
   MAX_ONRAMP_AMOUNT,
   MIN_DEPOSIT_AMOUNT,
   MULTI_SIG,
-  OFFRAMPER_TLS_PARAMS,
   ONRAMP_COOL_DOWN_PERIOD,
   SUSTAINABILITY_FEE,
   SUSTAINABILITY_FEE_RECIPIENT,
@@ -47,17 +44,16 @@ import { PaymentProviders } from "../../utils/types"
 
 const expect = getWaffleExpect();
 
-const paymentProvider = PaymentProviders.Wise;
+const paymentProvider = PaymentProviders.Revolut;
 
-describe.skip("Wise Deploy", () => {
+describe("Revolut Deploy", () => {
   let deployer: Account;
   let multiSig: Address;
 
-  let wiseRamp: WiseRamp;
-  let wiseAccountRegistry: WiseAccountRegistry;
-  let wiseAccountRegistrationProcessor: WiseAccountRegistrationProcessor;
-  let wiseOffRamperRegistrationProcessor: WiseOffRamperRegistrationProcessor;
-  let wiseSendProcessor: WiseSendProcessor;
+  let wiseRamp: RevolutRamp;
+  let wiseAccountRegistry: RevolutAccountRegistry;
+  let wiseAccountRegistrationProcessor: RevolutAccountRegistrationProcessor;
+  let wiseSendProcessor: RevolutSendProcessor;
   let nullifierRegistry: NullifierRegistry;
 
   const network: string = deployments.getNetworkName();
@@ -73,26 +69,23 @@ describe.skip("Wise Deploy", () => {
 
     multiSig = MULTI_SIG[network] ? MULTI_SIG[network] : deployer.address;
 
-    const wiseRampAddress  = await getDeployedContractAddress(network, "WiseRamp");
-    wiseRamp = new WiseRamp__factory(deployer.wallet).attach(wiseRampAddress);
+    const wiseRampAddress  = await getDeployedContractAddress(network, "RevolutRamp");
+    wiseRamp = new RevolutRamp__factory(deployer.wallet).attach(wiseRampAddress);
 
-    const wiseAccountRegistryAddress  = await getDeployedContractAddress(network, "WiseAccountRegistry");
-    wiseAccountRegistry = new WiseAccountRegistry__factory(deployer.wallet).attach(wiseAccountRegistryAddress);
+    const wiseAccountRegistryAddress  = await getDeployedContractAddress(network, "RevolutAccountRegistry");
+    wiseAccountRegistry = new RevolutAccountRegistry__factory(deployer.wallet).attach(wiseAccountRegistryAddress);
 
-    const wiseAccountRegistrationProcessorAddress  = await getDeployedContractAddress(network, "WiseAccountRegistrationProcessor");
-    wiseAccountRegistrationProcessor = new WiseAccountRegistrationProcessor__factory(deployer.wallet).attach(wiseAccountRegistrationProcessorAddress);
+    const wiseAccountRegistrationProcessorAddress  = await getDeployedContractAddress(network, "RevolutAccountRegistrationProcessor");
+    wiseAccountRegistrationProcessor = new RevolutAccountRegistrationProcessor__factory(deployer.wallet).attach(wiseAccountRegistrationProcessorAddress);
 
-    const wiseOffRamperRegistrationProcessorAddress  = await getDeployedContractAddress(network, "WiseOffRamperRegistrationProcessor");
-    wiseOffRamperRegistrationProcessor = new WiseOffRamperRegistrationProcessor__factory(deployer.wallet).attach(wiseOffRamperRegistrationProcessorAddress);
-
-    const wiseSendProcessorAddress  = await getDeployedContractAddress(network, "WiseSendProcessor");
-    wiseSendProcessor = new WiseSendProcessor__factory(deployer.wallet).attach(wiseSendProcessorAddress);
+    const wiseSendProcessorAddress  = await getDeployedContractAddress(network, "RevolutSendProcessor");
+    wiseSendProcessor = new RevolutSendProcessor__factory(deployer.wallet).attach(wiseSendProcessorAddress);
 
     const nullifierRegistryAddress  = await getDeployedContractAddress(network, "NullifierRegistry");
     nullifierRegistry = new NullifierRegistry__factory(deployer.wallet).attach(nullifierRegistryAddress);
   });
 
-  describe("WiseRamp", async () => {
+  describe("RevolutRamp", async () => {
     it("should have the correct processors, usdc, and poseidon set", async () => {
       const actualAccountRegistry = await wiseRamp.accountRegistry();
       const actualSendProcessor = await wiseRamp.sendProcessor();
@@ -134,20 +127,18 @@ describe.skip("Wise Deploy", () => {
     });
   });
 
-  describe("WiseAccountRegistry", async () => {
+  describe("RevolutAccountRegistry", async () => {
     it("should have the correct processors, usdc, and poseidon set", async () => {
       const actualAccountRegistrationProcessor = await wiseAccountRegistry.accountRegistrationProcessor();
-      const actualOffRamperRegistrationProcessor = await wiseAccountRegistry.offRamperRegistrationProcessor();
       const isInitialized = await wiseAccountRegistry.isInitialized();
 
       expect(actualAccountRegistrationProcessor).to.eq(wiseAccountRegistrationProcessor.address);
-      expect(actualOffRamperRegistrationProcessor).to.eq(wiseOffRamperRegistrationProcessor.address);
       expect(isInitialized).to.be.true;
     });
   });
 
 
-  describe("WiseAccountRegistrationProcessor", async () => {
+  describe("RevolutAccountRegistrationProcessor", async () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await wiseAccountRegistrationProcessor.ramp();
       const actualOwner = await wiseAccountRegistrationProcessor.owner();
@@ -167,27 +158,7 @@ describe.skip("Wise Deploy", () => {
     });
   });
 
-  describe("WiseOffRamperRegistrationProcessor", async () => {
-    it("should have the correct parameters set", async () => {
-      const actualRamp = await wiseOffRamperRegistrationProcessor.ramp();
-      const actualOwner = await wiseOffRamperRegistrationProcessor.owner();
-      const actualNullifierRegistry = await wiseOffRamperRegistrationProcessor.nullifierRegistry();
-      const actualOffRamperEndpoint = await wiseOffRamperRegistrationProcessor.endpoint();
-      const actualOffRamperHost = await wiseOffRamperRegistrationProcessor.host();
-      const actualOffRamperVerifierSigningKey = await wiseOffRamperRegistrationProcessor.verifierSigningKey();
-      const actualTimestampBuffer = await wiseOffRamperRegistrationProcessor.timestampBuffer();
-
-      expect(actualRamp).to.eq(wiseAccountRegistry.address);
-      expect(actualOwner).to.eq(multiSig);
-      expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
-      expect(actualOffRamperEndpoint).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].endpoint);
-      expect(actualOffRamperHost).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].host);
-      expect(actualOffRamperVerifierSigningKey).to.eq(OFFRAMPER_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
-      expect(actualTimestampBuffer).to.eq(0);
-    });
-  });
-
-  describe("WiseSendProcessor", async () => {
+  describe("RevolutSendProcessor", async () => {
     it("should have the correct parameters set", async () => {
       const actualRamp = await wiseSendProcessor.ramp();
       const actualOwner = await wiseSendProcessor.owner();
@@ -205,11 +176,9 @@ describe.skip("Wise Deploy", () => {
     it("should have the correct write permissions set", async () => {
       const sendHasWritePermission = await nullifierRegistry.isWriter(wiseSendProcessor.address);
       const accountRegistrationHasWritePermission = await nullifierRegistry.isWriter(wiseAccountRegistrationProcessor.address);
-      const offRamperRegistrationHasWritePermission = await nullifierRegistry.isWriter(wiseOffRamperRegistrationProcessor.address);
 
       expect(sendHasWritePermission).to.be.true;
       expect(accountRegistrationHasWritePermission).to.be.true;
-      expect(offRamperRegistrationHasWritePermission).to.be.true;
     });
   });
 });
