@@ -12,7 +12,7 @@ import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
-import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, WISE_SEND_PAGE_LINK } from "@helpers/docUrls";
+import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_SEND_PAGE_LINK } from "@helpers/docUrls";
 
 
 interface SwapModalProps {
@@ -85,10 +85,10 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name`,
         };
 
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         return {
-          troubleScanningQRCodeLink: WISE_SEND_PAGE_LINK,
-          paymentPlatformName: 'Wise',
+          troubleScanningQRCodeLink: REVOLUT_SEND_PAGE_LINK,
+          paymentPlatformName: 'Revolut',
           instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
         };
 
@@ -142,7 +142,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             </QRContainer>
             <QRLabel>
               <Link href={troubleScanningQRCodeLink} target="_blank">  
-                {paymentPlatform === PaymentPlatform.WISE ? `Send via Wise.com ↗` : "Trouble scanning QR?"}
+                {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
               </Link>
             </QRLabel>     
           </div>

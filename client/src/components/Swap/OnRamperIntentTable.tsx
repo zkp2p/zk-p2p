@@ -24,9 +24,9 @@ import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
 
-// Wise
-import useWiseOnRamperIntents from '@hooks/wise/useOnRamperIntents';
-import useWiseLiquidity from '@hooks/wise/useLiquidity';
+// Revolut
+import useRevolutOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
+import useRevolutLiquidity from '@hooks/revolut/useLiquidity';
 
 
 interface OnRamperIntentTableProps {
@@ -73,14 +73,14 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   } = useGarantiLiquidity();
 
   const {
-    currentIntentHash: currentWiseIntentHash,
-    currentIntent: currentWiseIntent,
-    refetchIntentHash: refetchWiseIntentHash,
-    refetchIntentHashAsUint: refetchWiseIntentHashAsUint
-  } = useWiseOnRamperIntents();
+    currentIntentHash: currentRevolutIntentHash,
+    currentIntent: currentRevolutIntent,
+    refetchIntentHash: refetchRevolutIntentHash,
+    refetchIntentHashAsUint: refetchRevolutIntentHashAsUint
+  } = useRevolutOnRamperIntents();
   const {
-    depositStore: wiseDepositStore
-  } = useWiseLiquidity();
+    depositStore: revolutDepositStore
+  } = useRevolutLiquidity();
 
  const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
  
@@ -91,8 +91,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   hdfcRampAbi,
   garantiRampAddress,
   garantiRampAbi,
-  wiseRampAddress,
-  wiseRampAbi,
+  revolutRampAddress,
+  revolutRampAbi,
   } = useSmartContracts();
 
   /*
@@ -176,9 +176,9 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRampAbi(garantiRampAbi as any);
         break;
 
-      case PaymentPlatform.WISE:
-        setRampAddress(wiseRampAddress);
-        setRampAbi(wiseRampAbi as any);
+      case PaymentPlatform.REVOLUT:
+        setRampAddress(revolutRampAddress);
+        setRampAbi(revolutRampAbi as any);
         break;
 
       default:
@@ -186,7 +186,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress, wiseRampAddress]);
+  }, [paymentPlatform, venmoRampAddress, hdfcRampAddress, garantiRampAddress, revolutRampAddress]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -202,8 +202,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setCurrentIntentHash(currentGarantiIntentHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setCurrentIntentHash(currentWiseIntentHash);
+      case PaymentPlatform.REVOLUT:
+        setCurrentIntentHash(currentRevolutIntentHash);
         break;
 
       default:
@@ -216,7 +216,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     currentVenmoIntentHash,
     currentHdfcIntentHash,
     currentGarantiIntentHash,
-    currentWiseIntentHash
+    currentRevolutIntentHash
   ]);
 
   useEffect(() => {
@@ -233,8 +233,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setDepositStore(garantiDepositStore);
         break;
 
-      case PaymentPlatform.WISE:
-        setDepositStore(wiseDepositStore);
+      case PaymentPlatform.REVOLUT:
+        setDepositStore(revolutDepositStore);
         break;
 
       default:
@@ -247,7 +247,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     venmoDepositStore,
     hdfcDepositStore,
     garantiDepositStore,
-    wiseDepositStore
+    revolutDepositStore
   ]);
 
   useEffect(() => {
@@ -264,8 +264,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setCurrentIntent(currentGarantiIntent);
         break;
 
-      case PaymentPlatform.WISE:
-        setCurrentIntent(currentWiseIntent);
+      case PaymentPlatform.REVOLUT:
+        setCurrentIntent(currentRevolutIntent);
         break;
 
       default:
@@ -278,7 +278,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     currentVenmoIntent,
     currentHdfcIntent,
     currentGarantiIntent,
-    currentWiseIntent
+    currentRevolutIntent
   ]);
 
   useEffect(() => {
@@ -295,8 +295,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRefetchIntentHash(() => refetchGarantiIntentHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchIntentHash(() => refetchWiseIntentHash);
+      case PaymentPlatform.REVOLUT:
+        setRefetchIntentHash(() => refetchRevolutIntentHash);
         break;
 
       default:
@@ -309,7 +309,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     refetchVenmoIntentHash,
     refetchHdfcIntentHash,
     refetchGarantiIntentHash,
-    refetchWiseIntentHash
+    refetchRevolutIntentHash
   ]);
 
   useEffect(() => {
@@ -320,8 +320,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         setRefetchIntentHashAsUint(() => {});
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchIntentHashAsUint(() => refetchWiseIntentHashAsUint);
+      case PaymentPlatform.REVOLUT:
+        setRefetchIntentHashAsUint(() => refetchRevolutIntentHashAsUint);
         break;
 
       default:
@@ -329,7 +329,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchWiseIntentHashAsUint]);
+  }, [paymentPlatform, refetchRevolutIntentHashAsUint]);
  
   useEffect(() => {
     if (currentIntent && depositStore) {

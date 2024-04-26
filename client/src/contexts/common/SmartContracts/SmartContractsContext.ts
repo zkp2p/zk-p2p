@@ -32,13 +32,13 @@ interface SmartContractsValues {
   garantiSendProcessorAddress: string | null;
   garantiSendProcessorAbi: Abi | null;
 
-  // wise
-  wiseRampAddress: string | null;
-  wiseRampAbi: Abi | null;
-  wiseSendProcessorAddress: string | null;
-  wiseSendProcessorAbi: Abi | null;
-  wiseAccountRegistryAddress: string | null;
-  wiseAccountRegistryAbi: Abi | null;
+  // revolut
+  revolutRampAddress: string | null;
+  revolutRampAbi: Abi | null;
+  revolutSendProcessorAddress: string | null;
+  revolutSendProcessorAbi: Abi | null;
+  revolutAccountRegistryAddress: string | null;
+  revolutAccountRegistryAbi: Abi | null;
 
   // nft
   nftAbi: Abi | null;
@@ -82,13 +82,13 @@ const defaultValues: SmartContractsValues = {
   garantiSendProcessorAddress: null,
   garantiSendProcessorAbi: null,
 
-  // wise
-  wiseRampAddress: null,
-  wiseRampAbi: null,
-  wiseSendProcessorAddress: null,
-  wiseSendProcessorAbi: null,
-  wiseAccountRegistryAddress: null,
-  wiseAccountRegistryAbi: null,
+  // revolut
+  revolutRampAddress: null,
+  revolutRampAbi: null,
+  revolutSendProcessorAddress: null,
+  revolutSendProcessorAbi: null,
+  revolutAccountRegistryAddress: null,
+  revolutAccountRegistryAbi: null,
   
   // nft
   nftAbi: null,

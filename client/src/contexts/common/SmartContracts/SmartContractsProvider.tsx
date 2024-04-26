@@ -13,9 +13,9 @@ import { abi as hdfcSendProcessorAbi } from "@helpers/abi/hdfc/send.abi";
 import { abi as garantiRampAbi } from "@helpers/abi/garanti/ramp.abi";
 import { abi as garantiSendProcessorAbi } from "@helpers/abi/garanti/send.abi";
 
-import { abi as wiseRampAbi } from "@helpers/abi/wise/ramp.abi";
-import { abi as wiseSendProcessorAbi } from "@helpers/abi/wise/send.abi";
-import { abi as wiseAccountRegistryAbi } from "@helpers/abi/wise/accountRegistry.abi";
+import { abi as revolutRampAbi } from "@helpers/abi/revolut/ramp.abi";
+import { abi as revolutSendProcessorAbi } from "@helpers/abi/revolut/send.abi";
+import { abi as revolutAccountRegistryAbi } from "@helpers/abi/revolut/accountRegistry.abi";
 
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
@@ -60,10 +60,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [garantiRampAddress, setGarantiRampAddress] = useState<string | null>(null);
   const [garantiSendProcessorAddress, setGarantiSendProcessorAddress] = useState<string | null>(null);
 
-  // Wise
-  const [wiseRampAddress, setWiseRampAddress] = useState<string | null>(null);
-  const [wiseSendProcessorAddress, setWiseSendProcessorAddress] = useState<string | null>(null);
-  const [wiseAccountRegistryAddress, setWiseAccountRegistryAddress] = useState<string | null>(null);
+  // Revolut
+  const [revolutRampAddress, setRevolutRampAddress] = useState<string | null>(null);
+  const [revolutSendProcessorAddress, setRevolutSendProcessorAddress] = useState<string | null>(null);
+  const [revolutAccountRegistryAddress, setRevolutAccountRegistryAddress] = useState<string | null>(null);
 
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
@@ -154,10 +154,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setGarantiRampAddress(null); 
     setGarantiSendProcessorAddress(null);
 
-    // Wise
-    setWiseRampAddress(null); 
-    setWiseSendProcessorAddress(null);
-    setWiseAccountRegistryAddress(null);
+    // Revolut
+    setRevolutRampAddress(null); 
+    setRevolutSendProcessorAddress(null);
+    setRevolutAccountRegistryAddress(null);
     
     // NFT
     setVenmoNftAddress(null);
@@ -196,10 +196,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setGarantiRampAddress(contractsForNetwork.garantiRamp);
     setGarantiSendProcessorAddress(contractsForNetwork.garantiSendProcessor);
 
-    // Wise
-    setWiseRampAddress(contractsForNetwork.wiseRamp);
-    setWiseSendProcessorAddress(contractsForNetwork.wiseSendProcessor);
-    setWiseAccountRegistryAddress(contractsForNetwork.wiseAccountRegistry);
+    // Revolut
+    setRevolutRampAddress(contractsForNetwork.revolutRamp);
+    setRevolutSendProcessorAddress(contractsForNetwork.revolutSendProcessor);
+    setRevolutAccountRegistryAddress(contractsForNetwork.revolutAccountRegistry);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -244,13 +244,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         garantiSendProcessorAddress,
         garantiSendProcessorAbi: garantiSendProcessorAbi as Abi,
 
-        // Wise
-        wiseRampAddress,
-        wiseRampAbi: wiseRampAbi as Abi,
-        wiseSendProcessorAddress,
-        wiseSendProcessorAbi: wiseSendProcessorAbi as Abi,
-        wiseAccountRegistryAddress,
-        wiseAccountRegistryAbi: wiseAccountRegistryAbi as Abi,
+        // Revolut
+        revolutRampAddress,
+        revolutRampAbi: revolutRampAbi as Abi,
+        revolutSendProcessorAddress,
+        revolutSendProcessorAbi: revolutSendProcessorAbi as Abi,
+        revolutAccountRegistryAddress,
+        revolutAccountRegistryAbi: revolutAccountRegistryAbi as Abi,
 
         // NFT
         nftAbi: nftAbi as Abi,

@@ -6,7 +6,7 @@ import {
   MAX_USDC_TRANSFER_SIZE_GARANTI,
   MAX_USDC_TRANSFER_SIZE_HDFC,
   MAX_USDC_TRANSFER_SIZE_VENMO,
-  MAX_USDC_TRANSFER_SIZE_WISE,
+  MAX_USDC_TRANSFER_SIZE_REVOLUT,
   ZERO
 } from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -29,11 +29,11 @@ import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useGarantiRampState from "@hooks/garanti/useRampState";
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
 
-// Wise
-import useWiseLiquidity from '@hooks/wise/useLiquidity';
-import useWiseOnRamperIntents from '@hooks/wise/useOnRamperIntents';
-import useWiseRampState from "@hooks/wise/useRampState";
-import useWiseRegistration from '@hooks/wise/useRegistration';
+// Revolut
+import useRevolutLiquidity from '@hooks/revolut/useLiquidity';
+import useRevolutOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
+import useRevolutRampState from "@hooks/revolut/useRampState";
+import useRevolutRegistration from '@hooks/revolut/useRegistration';
 
 import SwapQuoteContext from './SwapQuoteContext';
 
@@ -121,30 +121,30 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     refetchLastOnRampTimestamp: refetchGarantiLastOnRampTimestamp
   } = useGarantiOnRamperIntents();
 
-  // Wise
+  // Revolut
   const {
-    isRegistered: isRegisteredOnWise,
-    accountId: wiseAccountId
-  } = useWiseRegistration();
+    isRegistered: isRegisteredOnRevolut,
+    registrationHash: revolutRegistrationHash
+  } = useRevolutRegistration();
   const {
-    refetchDeposits: refetchWiseDeposits,
-    getBestDepositForAmount: getBestWiseDepositForAmount,
-    getDepositForMaxAvailableTransferSize: getWiseDepositForMaxAvailableTransferSize,
-    shouldFetchDeposits: shouldFetchWiseDeposits
-  } = useWiseLiquidity();
+    refetchDeposits: refetchRevolutDeposits,
+    getBestDepositForAmount: getBestRevolutDepositForAmount,
+    getDepositForMaxAvailableTransferSize: getRevolutDepositForMaxAvailableTransferSize,
+    shouldFetchDeposits: shouldFetchRevolutDeposits
+  } = useRevolutLiquidity();
   const {
-    refetchDepositCounter: refetchWiseDepositCounter,
-    shouldFetchRampState: shouldFetchWiseRampState,
-    onRampCooldownPeriod: wiseOnRampCooldownPeriod
-  } = useWiseRampState();
+    refetchDepositCounter: refetchRevolutDepositCounter,
+    shouldFetchRampState: shouldFetchRevolutRampState,
+    onRampCooldownPeriod: revolutOnRampCooldownPeriod
+  } = useRevolutRampState();
   const {
-    currentIntentHash: currentWiseIntentHash,
-    refetchIntentHash: refetchWiseIntentHash,
-    refetchIntentHashAsUint: refetchWiseIntentHashAsUint,
-    shouldFetchIntentHash: shouldFetchWiseIntentHash,
-    lastOnRampTimestamp: lastWiseOnRampTimestamp,
-    refetchLastOnRampTimestamp: refetchWiseLastOnRampTimestamp
-  } = useWiseOnRamperIntents();
+    currentIntentHash: currentRevolutIntentHash,
+    refetchIntentHash: refetchRevolutIntentHash,
+    refetchIntentHashAsUint: refetchRevolutIntentHashAsUint,
+    shouldFetchIntentHash: shouldFetchRevolutIntentHash,
+    lastOnRampTimestamp: lastRevolutOnRampTimestamp,
+    refetchLastOnRampTimestamp: refetchRevolutLastOnRampTimestamp
+  } = useRevolutOnRamperIntents();
 
   /*
    * State
@@ -191,8 +191,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_GARANTI);
         break;
 
-      case PaymentPlatform.WISE:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_WISE);
+      case PaymentPlatform.REVOLUT:
+        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_REVOLUT);
         break;
 
       default:
@@ -210,7 +210,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('isRegisteredOnVenmo: ', isRegisteredOnVenmo);
     esl && console.log('isRegisteredOnHdfc: ', isRegisteredOnHdfc);
     esl && console.log('isRegisteredOnGaranti: ', isRegisteredOnGaranti);
-    esl && console.log('isRegisteredOnWise: ', isRegisteredOnWise);
+    esl && console.log('isRegisteredOnRevolut: ', isRegisteredOnRevolut);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -226,8 +226,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setIsRegistered(isRegisteredOnGaranti);
         break;
 
-      case PaymentPlatform.WISE:
-        setIsRegistered(isRegisteredOnWise);
+      case PaymentPlatform.REVOLUT:
+        setIsRegistered(isRegisteredOnRevolut);
         break;
 
       default:
@@ -235,13 +235,13 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, isRegisteredOnVenmo, isRegisteredOnHdfc, isRegisteredOnGaranti, isRegisteredOnWise]);
+  }, [paymentPlatform, isRegisteredOnVenmo, isRegisteredOnHdfc, isRegisteredOnGaranti, isRegisteredOnRevolut]);
 
   useEffect(() => {
     esl && console.log('venmoRegistrationHash: ', venmoRegistrationHash);
     esl && console.log('hdfcRegistrationHash: ', hdfcRegistrationHash);
     esl && console.log('garantiRegistrationHash: ', garantiRegistrationHash);
-    esl && console.log('wiseAccountId: ', wiseAccountId);
+    esl && console.log('revolutRegistrationHash: ', revolutRegistrationHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -257,8 +257,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRegistrationHash(garantiRegistrationHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setRegistrationHash(wiseAccountId);
+      case PaymentPlatform.REVOLUT:
+        setRegistrationHash(revolutRegistrationHash);
         break;
 
       default:
@@ -271,7 +271,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       hdfcRegistrationHash,
       venmoRegistrationHash,
       garantiRegistrationHash,
-      wiseAccountId
+      revolutRegistrationHash
     ]
   );
 
@@ -283,7 +283,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('refetchVenmoDeposits: ', refetchVenmoDeposits);
     esl && console.log('refetchHdfcDeposits: ', refetchHdfcDeposits);
     esl && console.log('refetchGarantiDeposits: ', refetchGarantiDeposits);
-    esl && console.log('refetchWiseDeposits: ', refetchWiseDeposits);
+    esl && console.log('refetchRevolutDeposits: ', refetchRevolutDeposits);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -298,8 +298,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchDeposits(() => refetchGarantiDeposits);
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchDeposits(() => refetchWiseDeposits);
+      case PaymentPlatform.REVOLUT:
+        setRefetchDeposits(() => refetchRevolutDeposits);
         break;
 
       default:
@@ -307,13 +307,13 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits, refetchGarantiDeposits, refetchWiseDeposits]);
+  }, [paymentPlatform, refetchVenmoDeposits, refetchHdfcDeposits, refetchGarantiDeposits, refetchRevolutDeposits]);
 
   useEffect(() => {
     esl && console.log('getBestVenmoDepositForAmount: ', getBestVenmoDepositForAmount);
     esl && console.log('getBestHdfcDepositForAmount: ', getBestHdfcDepositForAmount);
     esl && console.log('getBestGarantiDepositForAmount: ', getBestGarantiDepositForAmount);
-    esl && console.log('getBestWiseDepositForAmount: ', getBestWiseDepositForAmount);
+    esl && console.log('getBestRevolutDepositForAmount: ', getBestRevolutDepositForAmount);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -328,8 +328,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setGetBestDepositForAmount(() => getBestGarantiDepositForAmount as any);
         break;
 
-      case PaymentPlatform.WISE:
-        setGetBestDepositForAmount(() => getBestWiseDepositForAmount as any);
+      case PaymentPlatform.REVOLUT:
+        setGetBestDepositForAmount(() => getBestRevolutDepositForAmount as any);
         break;
 
       default:
@@ -342,7 +342,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       getBestVenmoDepositForAmount,
       getBestHdfcDepositForAmount,
       getBestGarantiDepositForAmount,
-      getBestWiseDepositForAmount
+      getBestRevolutDepositForAmount
     ]
   );
 
@@ -350,7 +350,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('getVenmoDepositForMaxAvailableTransferSize: ', getVenmoDepositForMaxAvailableTransferSize);
     esl && console.log('getHdfcDepositForMaxAvailableTransferSize: ', getHdfcDepositForMaxAvailableTransferSize);
     esl && console.log('getGarantiDepositForMaxAvailableTransferSize: ', getGarantiDepositForMaxAvailableTransferSize);
-    esl && console.log('getWiseDepositForMaxAvailableTransferSize: ', getWiseDepositForMaxAvailableTransferSize);
+    esl && console.log('getRevolutDepositForMaxAvailableTransferSize: ', getRevolutDepositForMaxAvailableTransferSize);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -365,8 +365,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setGetDepositForMaxAvailableTransferSize(() => getGarantiDepositForMaxAvailableTransferSize as any);
         break;
 
-      case PaymentPlatform.WISE:
-        setGetDepositForMaxAvailableTransferSize(() => getWiseDepositForMaxAvailableTransferSize as any);
+      case PaymentPlatform.REVOLUT:
+        setGetDepositForMaxAvailableTransferSize(() => getRevolutDepositForMaxAvailableTransferSize as any);
         break;
 
       default:
@@ -379,7 +379,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       getVenmoDepositForMaxAvailableTransferSize,
       getHdfcDepositForMaxAvailableTransferSize,
       getGarantiDepositForMaxAvailableTransferSize,
-      getWiseDepositForMaxAvailableTransferSize
+      getRevolutDepositForMaxAvailableTransferSize
     ]
   );
 
@@ -387,7 +387,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchVenmoDeposits: ', shouldFetchVenmoDeposits);
     esl && console.log('shouldFetchHdfcDeposits: ', shouldFetchHdfcDeposits);
     esl && console.log('shouldFetchGarantiDeposits: ', shouldFetchGarantiDeposits);
-    esl && console.log('shouldFetchWiseDeposits: ', shouldFetchWiseDeposits);
+    esl && console.log('shouldFetchRevolutDeposits: ', shouldFetchRevolutDeposits);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -402,8 +402,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchDeposits(shouldFetchGarantiDeposits);
         break;
 
-      case PaymentPlatform.WISE:
-        setShouldFetchDeposits(shouldFetchWiseDeposits);
+      case PaymentPlatform.REVOLUT:
+        setShouldFetchDeposits(shouldFetchRevolutDeposits);
         break;
 
       default:
@@ -416,7 +416,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       shouldFetchVenmoDeposits,
       shouldFetchHdfcDeposits,
       shouldFetchGarantiDeposits,
-      shouldFetchWiseDeposits
+      shouldFetchRevolutDeposits
     ]
   );
   
@@ -429,7 +429,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('currentVenmoIntentHash: ', currentVenmoIntentHash);
     esl && console.log('currentHdfcIntentHash: ', currentHdfcIntentHash);
     esl && console.log('currentGarantiIntentHash: ', currentGarantiIntentHash);
-    esl && console.log('currentWiseIntentHash: ', currentWiseIntentHash);
+    esl && console.log('currentRevolutIntentHash: ', currentRevolutIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -444,8 +444,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setCurrentIntentHash(currentGarantiIntentHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setCurrentIntentHash(currentWiseIntentHash);
+      case PaymentPlatform.REVOLUT:
+        setCurrentIntentHash(currentRevolutIntentHash);
         break;
 
       default:
@@ -458,7 +458,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       currentVenmoIntentHash,
       currentHdfcIntentHash,
       currentGarantiIntentHash,
-      currentWiseIntentHash
+      currentRevolutIntentHash
     ]
   );
 
@@ -466,7 +466,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('refetchVenmoIntentHash: ', refetchVenmoIntentHash);
     esl && console.log('refetchHdfcIntentHash: ', refetchHdfcIntentHash);
     esl && console.log('refetchGarantiIntentHash: ', refetchGarantiIntentHash);
-    esl && console.log('refetchWiseIntentHash: ', refetchWiseIntentHash);
+    esl && console.log('refetchRevolutIntentHash: ', refetchRevolutIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -481,8 +481,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchIntentHash(() =>  refetchGarantiIntentHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchIntentHash(() =>  refetchWiseIntentHash);
+      case PaymentPlatform.REVOLUT:
+        setRefetchIntentHash(() =>  refetchRevolutIntentHash);
         break;
 
       default:
@@ -495,12 +495,12 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       refetchVenmoIntentHash,
       refetchHdfcIntentHash,
       refetchGarantiIntentHash,
-      refetchWiseIntentHash
+      refetchRevolutIntentHash
     ]
   );
 
   useEffect(() => {
-    esl && console.log('refetchWiseIntentHashAsUint: ', refetchWiseIntentHashAsUint);
+    esl && console.log('refetchRevolutIntentHashAsUint: ', refetchRevolutIntentHashAsUint);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -509,8 +509,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchIntentHashAsUint(() => {});
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchIntentHashAsUint(() =>  refetchWiseIntentHashAsUint);
+      case PaymentPlatform.REVOLUT:
+        setRefetchIntentHashAsUint(() =>  refetchRevolutIntentHashAsUint);
         break;
 
       default:
@@ -520,7 +520,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
       paymentPlatform,
-      refetchWiseIntentHashAsUint
+      refetchRevolutIntentHashAsUint
     ]
   );
 
@@ -528,7 +528,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchVenmoIntentHash: ', shouldFetchVenmoIntentHash);
     esl && console.log('shouldFetchHdfcIntentHash: ', shouldFetchHdfcIntentHash);
     esl && console.log('shouldFetchGarantiIntentHash: ', shouldFetchGarantiIntentHash);
-    esl && console.log('shouldFetchWiseIntentHash: ', shouldFetchWiseIntentHash);
+    esl && console.log('shouldFetchRevolutIntentHash: ', shouldFetchRevolutIntentHash);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -543,8 +543,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchIntentHash(shouldFetchGarantiIntentHash);
         break;
 
-      case PaymentPlatform.WISE:
-        setShouldFetchIntentHash(shouldFetchWiseIntentHash);
+      case PaymentPlatform.REVOLUT:
+        setShouldFetchIntentHash(shouldFetchRevolutIntentHash);
         break;
 
       default:
@@ -557,7 +557,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       shouldFetchVenmoIntentHash,
       shouldFetchHdfcIntentHash,
       shouldFetchGarantiIntentHash,
-      shouldFetchWiseIntentHash
+      shouldFetchRevolutIntentHash
     ]
   );
 
@@ -565,7 +565,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('lastVenmoOnRampTimestamp: ', lastVenmoOnRampTimestamp);
     esl && console.log('lastHdfcOnRampTimestamp: ', lastHdfcOnRampTimestamp);
     esl && console.log('lastGarantiOnRampTimestamp: ', lastGarantiOnRampTimestamp);
-    esl && console.log('lastWiseOnRampTimestamp: ', lastWiseOnRampTimestamp);
+    esl && console.log('lastRevolutOnRampTimestamp: ', lastRevolutOnRampTimestamp);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -580,8 +580,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setLastOnRampTimestamp(lastGarantiOnRampTimestamp);
         break;
 
-      case PaymentPlatform.WISE:
-        setLastOnRampTimestamp(lastWiseOnRampTimestamp);
+      case PaymentPlatform.REVOLUT:
+        setLastOnRampTimestamp(lastRevolutOnRampTimestamp);
         break;
 
       default:
@@ -594,7 +594,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       lastVenmoOnRampTimestamp,
       lastHdfcOnRampTimestamp,
       lastGarantiOnRampTimestamp,
-      lastWiseOnRampTimestamp
+      lastRevolutOnRampTimestamp
     ]
   );
 
@@ -602,7 +602,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('refetchVenmoLastOnRampTimestamp: ', refetchVenmoLastOnRampTimestamp);
     esl && console.log('refetchHdfcLastOnRampTimestamp: ', refetchHdfcLastOnRampTimestamp);
     esl && console.log('refetchGarantiLastOnRampTimestamp: ', refetchGarantiLastOnRampTimestamp);
-    esl && console.log('refetchWiseLastOnRampTimestamp: ', refetchWiseLastOnRampTimestamp);
+    esl && console.log('refetchRevolutLastOnRampTimestamp: ', refetchRevolutLastOnRampTimestamp);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -617,8 +617,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchLastOnRampTimestamp(() => refetchGarantiLastOnRampTimestamp);
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchLastOnRampTimestamp(() => refetchWiseLastOnRampTimestamp);
+      case PaymentPlatform.REVOLUT:
+        setRefetchLastOnRampTimestamp(() => refetchRevolutLastOnRampTimestamp);
         break;
 
       default:
@@ -631,10 +631,9 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       refetchVenmoLastOnRampTimestamp,
       refetchHdfcLastOnRampTimestamp,
       refetchGarantiLastOnRampTimestamp,
-      refetchWiseLastOnRampTimestamp
+      refetchRevolutLastOnRampTimestamp
     ]
   );
-
 
   /*
    * Ramp State
@@ -644,7 +643,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('refetchVenmoDepositCounter: ', refetchVenmoDepositCounter);
     esl && console.log('refetchHdfcDepositCounter: ', refetchHdfcDepositCounter);
     esl && console.log('refetchGarantiDepositCounter: ', refetchGarantiDepositCounter);
-    esl && console.log('refetchWiseDepositCounter: ', refetchWiseDepositCounter);
+    esl && console.log('refetchRevolutDepositCounter: ', refetchRevolutDepositCounter);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -659,8 +658,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setRefetchDepositCounter(() => refetchGarantiDepositCounter);
         break;
 
-      case PaymentPlatform.WISE:
-        setRefetchDepositCounter(() => refetchWiseDepositCounter);
+      case PaymentPlatform.REVOLUT:
+        setRefetchDepositCounter(() => refetchRevolutDepositCounter);
         break;
 
       default:
@@ -673,7 +672,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       refetchVenmoDepositCounter,
       refetchHdfcDepositCounter,
       refetchGarantiDepositCounter,
-      refetchWiseDepositCounter
+      refetchRevolutDepositCounter
     ]
   );
 
@@ -681,7 +680,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('shouldFetchVenmoRampState: ', shouldFetchVenmoRampState);
     esl && console.log('shouldFetchHdfcRampState: ', shouldFetchHdfcRampState);
     esl && console.log('shouldFetchGarantiRampState: ', shouldFetchGarantiRampState);
-    esl && console.log('shouldFetchWiseRampState: ', shouldFetchWiseRampState);
+    esl && console.log('shouldFetchRevolutRampState: ', shouldFetchRevolutRampState);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -696,8 +695,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setShouldFetchRampState(shouldFetchGarantiRampState);
         break;
 
-      case PaymentPlatform.WISE:
-        setShouldFetchRampState(shouldFetchWiseRampState);
+      case PaymentPlatform.REVOLUT:
+        setShouldFetchRampState(shouldFetchRevolutRampState);
         break;
 
       default:
@@ -710,7 +709,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       shouldFetchVenmoRampState,
       shouldFetchHdfcRampState,
       shouldFetchGarantiRampState,
-      shouldFetchWiseRampState
+      shouldFetchRevolutRampState
     ]
   );
 
@@ -718,7 +717,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     esl && console.log('venmoOnRampCooldownPeriod: ', venmoOnRampCooldownPeriod);
     esl && console.log('hdfcOnRampCooldownPeriod: ', hdfcOnRampCooldownPeriod);
     esl && console.log('garantiOnRampCooldownPeriod: ', garantiOnRampCooldownPeriod);
-    esl && console.log('wiseOnRampCooldownPeriod: ', wiseOnRampCooldownPeriod);
+    esl && console.log('revolutOnRampCooldownPeriod: ', revolutOnRampCooldownPeriod);
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
@@ -733,8 +732,8 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         setOnRampCooldownPeriod(garantiOnRampCooldownPeriod);
         break;
 
-      case PaymentPlatform.WISE:
-        setOnRampCooldownPeriod(wiseOnRampCooldownPeriod);
+      case PaymentPlatform.REVOLUT:
+        setOnRampCooldownPeriod(revolutOnRampCooldownPeriod);
         break;
 
       default:
@@ -747,7 +746,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
       venmoOnRampCooldownPeriod,
       hdfcOnRampCooldownPeriod,
       garantiOnRampCooldownPeriod,
-      wiseOnRampCooldownPeriod
+      revolutOnRampCooldownPeriod
     ]
   );
 

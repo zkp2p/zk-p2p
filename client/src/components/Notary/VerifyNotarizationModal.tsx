@@ -157,10 +157,6 @@ export const VerifyNotarizationModal: React.FC<VerifyNotarizationModalProps> = (
             setCtaButtonTitle('Go to Registration');
             break;
 
-          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-            setCtaButtonTitle('Go to Deposit');
-            break;
-
           default:
             throw new Error(`Unknown circuit type: ${circuitType}`);
         };

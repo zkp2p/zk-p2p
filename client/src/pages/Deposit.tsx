@@ -5,12 +5,12 @@ import DepositTable from "@components/Deposit";
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
-import useWiseDeposits from '@hooks/wise/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 
 import useVenmoRegistration from '@hooks/venmo/useRegistration';
 import useHdfcRegistration from '@hooks/hdfc/useRegistration';
 import useGarantiRegistration from '@hooks/garanti/useRegistration';
-import useWiseRegistration from '@hooks/wise/useRegistration';
+import useRevolutRegistration from '@hooks/revolut/useRegistration';
 
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -34,8 +34,8 @@ export const Deposit: React.FC = () => {
   } = useGarantiRegistration();
 
   const {
-    isRegistered: isRegisteredOnWise
-  } = useWiseRegistration();
+    isRegistered: isRegisteredOnRevolut
+  } = useRevolutRegistration();
 
   const {
     refetchDeposits: refetchVenmoDeposits,
@@ -61,11 +61,11 @@ export const Deposit: React.FC = () => {
   } = useGarantiDeposits();
 
   const {
-    refetchDeposits: refetchWiseDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits,
-    refetchDepositIntents: refetchWiseDepositIntents,
-    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
-  } = useWiseDeposits();
+    refetchDeposits: refetchRevolutDeposits,
+    shouldFetchDeposits: shouldFetchRevolutDeposits,
+    refetchDepositIntents: refetchRevolutDepositIntents,
+    shouldFetchDepositIntents: shouldFetchRevolutDepositIntents,
+  } = useRevolutDeposits();
 
   const {
     PaymentPlatform,
@@ -120,16 +120,16 @@ export const Deposit: React.FC = () => {
         }
         break;
 
-      case PaymentPlatform.WISE:
-        if (shouldFetchWiseDeposits) {
-          refetchWiseDeposits?.();
+      case PaymentPlatform.REVOLUT:
+        if (shouldFetchRevolutDeposits) {
+          refetchRevolutDeposits?.();
         }
 
-        if (shouldFetchWiseDepositIntents) {
-          refetchWiseDepositIntents?.();
+        if (shouldFetchRevolutDepositIntents) {
+          refetchRevolutDepositIntents?.();
         }
 
-        if (shouldFetchUsdcBalance && isRegisteredOnWise) {
+        if (shouldFetchUsdcBalance && isRegisteredOnRevolut) {
           refetchUsdcBalance?.();
         }
         break;

@@ -29,9 +29,8 @@ const NOTARY_PROOF_FETCH_INTERVAL = 5000;
 // const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
 const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih';
 
-const USE_WISE_DEFAULT_DEPOSITOR = process.env.USE_WISE_DEFAULT_DEPOSITOR;
-const WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF;
-const WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF = process.env.WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF;
+const USE_REVOLUT_DEFAULT_DEPOSITOR = process.env.USE_REVOLUT_DEFAULT_DEPOSITOR;
+const REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF = process.env.REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF;
 
 type ExtensionNotaryProofRow = {
   proof: string;
@@ -145,28 +144,20 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const detectedNotarizationCopy = () => {
     if (selectedIndex !== null) {
-      const selectedRequest = paginatedData[selectedIndex];
+      const selectedRequest: ExtensionNotaryProofRow = paginatedData[selectedIndex];
       
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
           return {
-            detected_copy: 'The following username was detected from your Wise account',
+            detected_copy: 'The following username was detected from your Revolut account',
             metadata_copy: selectedRequest.metadata,
             metadata_type_copy: 'tag',
             transaction_type_copy: 'registration'
           };
   
-        case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-          return {
-            detected_copy: 'The following transaction receipt was detected from your Wise account',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
-            metadata_type_copy: 'previous transaction receipt',
-            transaction_type_copy: 'depositor registration'
-          };
-  
         case NotaryVerificationCircuit.TRANSFER:
           return {
-            detected_copy: 'The following transaction was detected from your Wise account history',
+            detected_copy: 'The following transaction was detected from your Revolut account history',
             metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
@@ -195,7 +186,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       case NotaryVerificationCircuit.REGISTRATION_TAG:
         return platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR');
 
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
       case NotaryVerificationCircuit.TRANSFER:
         return platformStrings.getForPlatform(paymentPlatform, 'NO_TRANSFER_NOTARIZATIONS_ERROR');
 
@@ -266,7 +256,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         refetchProfileRequests();
         break;
 
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
       case NotaryVerificationCircuit.TRANSFER:
         refetchTransferRequests();
         break;
@@ -315,7 +304,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         setupInterval(refetchProfileRequests);
         break;
   
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
       case NotaryVerificationCircuit.TRANSFER:
         setupInterval(refetchTransferRequests);
         break;
@@ -363,11 +351,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
         let defaultDepositorProof: (ExtensionNotaryProofRow | null) = null;
-        if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
+        if (USE_REVOLUT_DEFAULT_DEPOSITOR === 'true') {
           defaultDepositorProof = {
-            proof: WISE_DEFAULT_DEPOSITOR_REGISTRATION_PROOF,
-            subject: '[env] Request for @richardl3291',
-            metadata: 'richardl3291',
+            proof: REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF,
+            subject: '[env] Proof for Revtag: richar5gsl',
+            metadata: 'richar5gsl',
             date: 'N/A'
           } as ExtensionNotaryProofRow;
         }
@@ -375,13 +363,13 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         let allAccountProofRows = defaultDepositorProof ? [defaultDepositorProof] : [];
         if (profileProofs && profileProofs.length > 0) {
           const fetchedProfileProofRows = profileProofs.map((request: ExtensionNotaryProofRequest) => {
-            const wiseTag = request.metadata[1].split('@')[1];
-            const subject = `Request for @${wiseTag}`;
+            const revTag = request.metadata[1];
+            const subject = `Proof for Revtag: ${revTag}`;
 
             return {
               proof: JSON.stringify(request.proof),
               subject: subject,
-              metadata: wiseTag,
+              metadata: revTag,
               date: parseTimestamp(request.metadata[0])
             } as ExtensionNotaryProofRow;
           });
@@ -392,47 +380,18 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         }
         break;
 
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        let defaultDepositorTransferProof: (ExtensionNotaryProofRow | null) = null;
-        if (USE_WISE_DEFAULT_DEPOSITOR === 'true') {
-          defaultDepositorTransferProof = {
-            proof: WISE_DEFAULT_DEPOSITOR_MC_ID_PROOF,
-            subject: '[env] Sent €0.1 EUR',
-            metadata: '0.1',
-            date: 'N/A'
-          } as ExtensionNotaryProofRow;
-        }
-
-        let allTransferProofRows = defaultDepositorTransferProof ? [defaultDepositorTransferProof] : [];
-        if (transferProofs && transferProofs.length > 0) {
-          const fetchedTransferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
-            const [timestamp, amount, currency] = request.metadata;
-            const subject = `Sent €${amount} ${currency}`;
-
-            return {
-              proof: JSON.stringify(request.proof),
-              subject: subject,
-              metadata: amount,
-              date: parseTimestamp(timestamp)
-            } as ExtensionNotaryProofRow;
-          });
-    
-          setLoadedNotaryProofs(fetchedTransferProofRows.concat(allTransferProofRows));
-        } else {
-          setLoadedNotaryProofs(allTransferProofRows);
-        }
-        break;
-
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0) {
           const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
-            const subject = `Sent €${amount} ${currency}`;
+
+            const formattedAmount = (Math.abs(amount) / 100).toFixed(2);
+            const subject = `Proof for payment: €${formattedAmount} ${currency}`;
 
             return {
               proof: JSON.stringify(request.proof),
               subject: subject,
-              metadata: amount,
+              metadata: formattedAmount,
               date: parseTimestamp(timestamp)
             } as ExtensionNotaryProofRow;
           });
@@ -487,10 +446,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const defaultCTAForInputStatus = () => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
-        return 'Wise Tag';
-
-      case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
-        return 'Wise Depositor ID';
+        return 'Revtag';
 
       case NotaryVerificationCircuit.TRANSFER:
         return 'Transaction';
@@ -548,7 +504,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             <TitleAndTableContainer>
               <TitleAndOAuthContainer>
                 <NotarizationsTitleContainer>
-                  <TitleLabel>Loaded Wise Requests</TitleLabel>
+                  <TitleLabel>Loaded Revolut Proofs</TitleLabel>
                 </NotarizationsTitleContainer>
 
                 <AccessoryButton

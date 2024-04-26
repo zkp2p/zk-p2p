@@ -5,7 +5,7 @@ import { AutoColumn } from '@components/layouts/Column';
 import { NewPosition as VenmoNewPosition } from '@components/Deposit/venmo/NewPosition';
 import { NewPosition as HdfcNewPosition } from '@components/Deposit/hdfc/NewPosition';
 import { NewPosition as GarantiNewPosition } from '@components/Deposit/garanti/NewPosition';
-import { NewPosition as WiseNewPosition } from '@components/Deposit/wise/NewPosition';
+import { NewPosition as RevolutNewPosition } from '@components/Deposit/revolut/NewPosition';
 import { PositionTable } from '@components/Deposit/DepositTable';
 import { OffRamperIntentTable } from '@components/Deposit/OffRamperIntentTable';
 import { DepositIntent } from '@helpers/types';
@@ -14,7 +14,7 @@ import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
-import useWiseDeposits from '@hooks/wise/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -48,12 +48,12 @@ export default function Deposit() {
   } = useGarantiDeposits();
 
   const {
-    refetchDeposits: refetchWiseDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits,
-    depositIntents: wiseDepositIntents,
-    shouldFetchDepositIntents: shouldFetchWiseDepositIntents,
-    refetchDepositIntents: refetchWiseDepositIntents,
-  } = useWiseDeposits();
+    refetchDeposits: refetchRevolutDeposits,
+    shouldFetchDeposits: shouldFetchRevolutDeposits,
+    depositIntents: revolutDepositIntents,
+    shouldFetchDepositIntents: shouldFetchRevolutDepositIntents,
+    refetchDepositIntents: refetchRevolutDepositIntents,
+  } = useRevolutDeposits();
 
   const { PaymentPlatform, paymentPlatform } = usePlatformSettings();
 
@@ -106,16 +106,16 @@ export default function Deposit() {
   }, [shouldFetchGarantiDeposits]);
 
   useEffect(() => {
-    if (shouldFetchWiseDeposits) {
+    if (shouldFetchRevolutDeposits) {
       const intervalId = setInterval(() => {
-        refetchWiseDeposits?.();
+        refetchRevolutDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchWiseDeposits]);
+  }, [shouldFetchRevolutDeposits]);
 
   useEffect(() => {
     if (shouldFetchVenmoDepositIntents) {
@@ -154,16 +154,16 @@ export default function Deposit() {
   }, [shouldFetchGarantiDepositIntents]);
 
   useEffect(() => {
-    if (shouldFetchWiseDepositIntents) {
+    if (shouldFetchRevolutDepositIntents) {
       const intervalId = setInterval(() => {
-        refetchWiseDepositIntents?.();
+        refetchRevolutDepositIntents?.();
       }, DEPOSIT_REFETCH_INTERVAL);
   
       return () => clearInterval(intervalId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldFetchWiseDepositIntents]);
+  }, [shouldFetchRevolutDepositIntents]);
 
   useEffect(() => {
     switch (paymentPlatform) {
@@ -185,9 +185,9 @@ export default function Deposit() {
         }
         break;
 
-      case PaymentPlatform.WISE:
-        if (wiseDepositIntents) {
-          setDepositIntents(wiseDepositIntents);
+      case PaymentPlatform.REVOLUT:
+        if (revolutDepositIntents) {
+          setDepositIntents(revolutDepositIntents);
         }
         break;
 
@@ -201,7 +201,7 @@ export default function Deposit() {
       venmoDepositIntents,
       hdfcDepositIntents,
       garantiDepositIntents,
-      wiseDepositIntents
+      revolutDepositIntents
     ]
   );
 
@@ -245,9 +245,9 @@ export default function Deposit() {
             />
           );
 
-        case PaymentPlatform.WISE:
+        case PaymentPlatform.REVOLUT:
           return (
-            <WiseNewPosition
+            <RevolutNewPosition
               handleBackClick={handleBackClickOnNewDeposit}
             />
           );

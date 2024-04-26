@@ -13,7 +13,7 @@ import { colors } from '@theme/colors';
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
-import useWiseLiquidity from '@hooks/wise/useLiquidity';
+import useRevolutLiquidity from '@hooks/revolut/useLiquidity';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
@@ -46,8 +46,8 @@ export const DepositsTable: React.FC = () => {
   } = useGarantiLiquidity();
 
   const {
-    depositStore: wiseDepositStore,
-  } = useWiseLiquidity();
+    depositStore: revolutDepositStore,
+  } = useRevolutLiquidity();
 
   const {
     paymentPlatform
@@ -80,8 +80,8 @@ export const DepositsTable: React.FC = () => {
         depositStoreToDisplay = garantiDepositStore ?? [];
         break;
 
-      case PaymentPlatform.WISE:
-        depositStoreToDisplay = wiseDepositStore ?? [];
+      case PaymentPlatform.REVOLUT:
+        depositStoreToDisplay = revolutDepositStore ?? [];
         break;
 
       default:
@@ -118,7 +118,7 @@ export const DepositsTable: React.FC = () => {
     hdfcDepositStore,
     garantiDepositStore,
     paymentPlatform,
-    wiseDepositStore
+    revolutDepositStore
   ]);
 
   useEffect(() => {

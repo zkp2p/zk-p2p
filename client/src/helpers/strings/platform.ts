@@ -3,7 +3,7 @@ import { PaymentPlatform, PaymentPlatformType } from '@helpers/types';
 import venmoCopy from './venmo';
 import hdfcCopy from './hdfc';
 import garantiCopy from './garanti';
-import wiseCopy from './wise';
+import revolutCopy from './revolut';
 
 
 // Platform strings
@@ -57,8 +57,8 @@ export class PlatformStringProvider {
       this.strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       this.strings = garantiCopy;
-    } else if (platformType === PaymentPlatform.WISE) {
-      this.strings = wiseCopy;
+    } else if (platformType === PaymentPlatform.REVOLUT) {
+      this.strings = revolutCopy;
     } else {
       throw new Error('Invalid platform type');
     }
@@ -77,8 +77,8 @@ export class PlatformStringProvider {
       strings = hdfcCopy;
     } else if (platformType === PaymentPlatform.GARANTI) {
       strings = garantiCopy;
-    } else if (platformType === PaymentPlatform.WISE) {
-      strings = wiseCopy;
+    } else if (platformType === PaymentPlatform.REVOLUT) {
+      strings = revolutCopy;
     } else {
       throw new Error('Invalid platform type');
     }

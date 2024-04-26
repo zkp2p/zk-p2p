@@ -14,7 +14,7 @@ import {
   NotaryVerificationCircuitType,
 } from  "@helpers/types";
 import useLocalStorage from '@hooks/useLocalStorage';
-import useRegistration from '@hooks/wise/useRegistration';
+import useRegistration from '@hooks/revolut/useRegistration';
 import useAccount from '@hooks/useAccount';
 import useRemoteNotaryVerification from '@hooks/useRemoteNotaryVerification';
 import { colors } from '@theme/colors';
@@ -56,7 +56,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    * Context
    */
 
-  const { setExtractedWiseProfileId } = useRegistration();
+  const { setExtractedRevolutProfileId } = useRegistration();
   const { loggedInEthereumAddress } = useAccount();
 
   /*
@@ -106,7 +106,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
   useEffect(() => {
     switch (paymentPlatformType) {
-      case PaymentPlatform.WISE:
+      case PaymentPlatform.REVOLUT:
         if (storedProofValue && storedSignalsValue) {
           setProofGenStatus(NotaryVerificationStatus.TRANSACTION_CONFIGURED);
         }
@@ -171,8 +171,8 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
 
     const isCircuitTypeRegistration = circuitType === NotaryVerificationCircuit.REGISTRATION_TAG;
     if (isCircuitTypeRegistration) {
-      if (setExtractedWiseProfileId) {
-        setExtractedWiseProfileId(notarizationProofMetadata);
+      if (setExtractedRevolutProfileId) {
+        setExtractedRevolutProfileId(notarizationProofMetadata);
       };
     }
   };

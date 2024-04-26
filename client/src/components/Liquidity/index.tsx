@@ -10,8 +10,8 @@ import useHdfcRampState from '@hooks/hdfc/useRampState';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
 import useGarantiRampState from '@hooks/garanti/useRampState';
 import useGarantiLiquidity from '@hooks/garanti/useLiquidity';
-import useWiseRampState from '@hooks/wise/useRampState';
-import useWiseLiquidity from '@hooks/wise/useLiquidity';
+import useRevolutRampState from '@hooks/revolut/useRampState';
+import useRevolutLiquidity from '@hooks/revolut/useLiquidity';
 
 
 export default function Deposit() {
@@ -47,13 +47,13 @@ export default function Deposit() {
   } = useGarantiLiquidity();
 
   const {
-    refetchDepositCounter: refetchWiseDepositCounter,
-    shouldFetchRampState: shouldFetchWiseRampState
-  } = useWiseRampState();
+    refetchDepositCounter: refetchRevolutDepositCounter,
+    shouldFetchRampState: shouldFetchRevolutRampState
+  } = useRevolutRampState();
   const {
-    refetchDeposits: refetchWiseDeposits,
-    shouldFetchDeposits: shouldFetchWiseDeposits
-  } = useWiseLiquidity();
+    refetchDeposits: refetchRevolutDeposits,
+    shouldFetchDeposits: shouldFetchRevolutDeposits
+  } = useRevolutLiquidity();
 
   /*
    * Hooks
@@ -120,24 +120,24 @@ export default function Deposit() {
   }, [shouldFetchGarantiRampState, refetchGarantiDepositCounter]);
 
   useEffect(() => {
-    if (shouldFetchWiseDeposits) {
+    if (shouldFetchRevolutDeposits) {
       const intervalId = setInterval(() => {
-        refetchWiseDeposits?.();
+        refetchRevolutDeposits?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchWiseDeposits, refetchWiseDeposits]);
+  }, [shouldFetchRevolutDeposits, refetchRevolutDeposits]);
 
   useEffect(() => {
-    if (shouldFetchWiseRampState) {
+    if (shouldFetchRevolutRampState) {
       const intervalId = setInterval(() => {
-        refetchWiseDepositCounter?.();
+        refetchRevolutDepositCounter?.();
       }, DEPOSIT_REFETCH_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
-  }, [shouldFetchWiseRampState, refetchWiseDepositCounter]);
+  }, [shouldFetchRevolutRampState, refetchRevolutDepositCounter]);
 
   /*
    * Component

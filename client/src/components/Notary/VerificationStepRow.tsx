@@ -171,7 +171,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.PROVE:
         switch (circuitType) {
           case NotaryVerificationCircuit.REGISTRATION_TAG:
-          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_REGISTRATION_TITLE');
 
           case NotaryVerificationCircuit.TRANSFER:
@@ -182,7 +181,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
           case NotaryVerificationCircuit.REGISTRATION_TAG:
-          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_REGISTRATION_SUBMIT_TITLE');
 
           case NotaryVerificationCircuit.TRANSFER:
@@ -203,7 +201,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.PROVE:
         switch (circuitType) {
           case NotaryVerificationCircuit.REGISTRATION_TAG:
-          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST');
 
           case NotaryVerificationCircuit.TRANSFER:
@@ -214,7 +211,6 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
       case VerificationStepType.SUBMIT:
         switch (circuitType) {
           case NotaryVerificationCircuit.REGISTRATION_TAG:
-          case NotaryVerificationCircuit.REGISTRATION_MULTICURRENCY_ID:
             return commonStrings.get('VERIFICATION_MODAL_REGISTRATION_SUBMIT_SUBTITLE');
 
           case NotaryVerificationCircuit.TRANSFER:
