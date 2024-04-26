@@ -31,7 +31,7 @@ const expect = getWaffleExpect();
 
 const blockchain = new Blockchain(ethers.provider);
 
-describe("RevolutRamp", () => {
+describe.only("RevolutRamp", () => {
   let owner: Account;
   let verifier: Account;
   let offRamper: Account;
@@ -197,7 +197,7 @@ describe("RevolutRamp", () => {
       onRamperTwoProof.public_values.profileId = calculateRevolutIdHashBN("satonakegm");
       onRamperTwoProof.public_values.userAddress = onRamperTwo.address;
       maliciousOnRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
-      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHashBN("jondoe6kgm");
+      maliciousOnRamperProof.public_values.profileId = calculateRevolutIdHashBN("janedo8egm");
       maliciousOnRamperProof.public_values.userAddress = maliciousOnRamper.address;
 
       await accountRegistry.connect(offRamper.wallet).register(offRamperProof);
@@ -276,7 +276,7 @@ describe("RevolutRamp", () => {
 
         await expect(subject()).to.emit(ramp, "DepositReceived").withArgs(
           ZERO,
-          calculateRevolutIdHash("012345678"),
+          calculateRevolutIdHash("johndo8egm"),
           subjectReceiveCurrencyId,
           subjectDepositAmount,
           conversionRate
@@ -346,7 +346,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -631,7 +631,7 @@ describe("RevolutRamp", () => {
             host: "app.revolut.com",
             transferId: "736281573",
             senderId: onRamperProof.public_values.profileId,
-            recipientId: "jdoe1234",
+            recipientId: "johndo8egm",
             timestamp: currentTimestamp.toString(),
             currencyId: "EUR",
             amount: "46.00",
@@ -689,7 +689,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(101),
@@ -825,7 +825,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -844,7 +844,7 @@ describe("RevolutRamp", () => {
           endpoint: "GET https://app.revolut.com/api/retail/transaction/asdfsd-asdfasd-oidafda",
           host: "app.revolut.com",
           transferId: "asdfsd-asdfasd-oidafda",
-          recipientId: "jdoe1234",
+          recipientId: "johndo8egm",
           amount: "46.00",
           currencyId: "EUR",
           status: "outgoing_payment_sent",
@@ -1049,7 +1049,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -1223,7 +1223,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -1231,7 +1231,7 @@ describe("RevolutRamp", () => {
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(50),
           usdc(45),
@@ -1421,7 +1421,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {  
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -1455,7 +1455,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {  
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -1463,7 +1463,7 @@ describe("RevolutRamp", () => {
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
@@ -1487,8 +1487,8 @@ describe("RevolutRamp", () => {
 
         expect(deposits[0].deposit.depositor).to.eq(offRamper.address);
         expect(deposits[1].deposit.depositor).to.eq(offRamper.address);
-        expect(deposits[0].deposit.revolutTag).to.eq("jdoe1234");
-        expect(deposits[1].deposit.revolutTag).to.eq("jdoe1234");
+        expect(deposits[0].deposit.revolutTag).to.eq("johndo8egm");
+        expect(deposits[1].deposit.revolutTag).to.eq("johndo8egm");
         expect(deposits[0].deposit.depositAmount).to.eq(usdc(100));
         expect(deposits[1].deposit.depositAmount).to.eq(usdc(100));
         expect(deposits[0].deposit.remainingDeposits).to.eq(usdc(100));
@@ -1528,7 +1528,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
@@ -1536,7 +1536,7 @@ describe("RevolutRamp", () => {
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
@@ -1603,7 +1603,7 @@ describe("RevolutRamp", () => {
 
       beforeEach(async () => {
         await ramp.connect(offRamper.wallet).offRamp(
-          "jdoe1234",
+          "johndo8egm",
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
