@@ -7,6 +7,8 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { CLIENT_VERSION } from '@helpers/constants';
 import { ThemedText } from '@theme/text';
+import {CustomConnectButton} from "@components/common/ConnectButton";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 export const MenuDropdown = () => {
@@ -14,6 +16,7 @@ export const MenuDropdown = () => {
 
   const ref = useRef<HTMLDivElement>(null)
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
+  const currentDeviceSize = useMediaQuery();
 
   /*
    * Handler
@@ -36,6 +39,31 @@ export const MenuDropdown = () => {
       {isOpen && (
         <NavDropdown>
           <NavDropdownItemContainer>
+            {currentDeviceSize === 'mobile' && (
+              <>
+                <CustomConnectButton height={40} fullWidth/>
+                <NavDropdownItem as={Link} to="/swap" onClick={toggleOpen}>
+                  <ThemedText.LabelSmall textAlign="left">
+                    Swap
+                  </ThemedText.LabelSmall>
+                </NavDropdownItem>
+                <NavDropdownItem as={Link} to="/send" onClick={toggleOpen}>
+                  <ThemedText.LabelSmall textAlign="left">
+                    Send
+                  </ThemedText.LabelSmall>
+                </NavDropdownItem>
+                <NavDropdownItem as={Link} to="/liquidity" onClick={toggleOpen}>
+                  <ThemedText.LabelSmall textAlign="left">
+                    Liquidity
+                  </ThemedText.LabelSmall>
+                </NavDropdownItem>
+                <NavDropdownItem as={Link} to="/deposits" onClick={toggleOpen}>
+                  <ThemedText.LabelSmall textAlign="left">
+                    Deposits
+                  </ThemedText.LabelSmall>
+                </NavDropdownItem>
+              </>
+            )}
             <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
