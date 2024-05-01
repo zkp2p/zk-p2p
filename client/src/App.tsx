@@ -32,6 +32,7 @@ import SmartContractsProvider from './contexts/common/SmartContracts/SmartContra
 import SwapQuoteProvider from './contexts/common/SwapQuote/SwapQuoteProvider';
 import DenyListProvider from './contexts/common/DenyList/DenyListProvider';
 import ExtensionNotarizationsProvider from './contexts/common/ExtensionNotarizations/ExtensionNotarizationsProvider';
+import NotarySettingsProvider from './contexts/common/NotarySettings/NotarySettingsProvider';
 import { ModalSettingsProvider } from 'contexts/common/ModalSettings';
 
 // Legacy Contexts
@@ -160,6 +161,7 @@ const providersWithProps: ProvidersType[] = [
   [PlatformSettingsProvider, {}],
   [SendSettingsProvider, {}],
   [BalancesProvider, {}],
+  [NotarySettingsProvider, {}],
 
   [VenmoRampProvider, {}],
   [HdfcRampProvider, {}],
