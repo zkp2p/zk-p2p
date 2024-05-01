@@ -26,8 +26,8 @@ export type { ReceiveNetworkType } from './receiveNetworks';
 export { ReceiveToken, receiveTokens, receiveTokenData, networkSupportedTokens, baseUSDCTokenData } from './receiveTokens';
 export type { ReceiveTokenData, ReceiveTokenType } from './receiveTokens';
 
-export { NotaryConnectionStatus, NOTARY_CONFIGURATIONS } from './notarySettings';
-export type { NotaryConnectionStatusType } from './notarySettings';
+export { NotaryConnectionStatus, notaryConfigurations } from './notarySettings';
+export type { NotaryConnectionStatusType, NotaryConfiguration } from './notarySettings';
 
 export type { Abi, AbiEntry } from './smartContracts';
 
