@@ -11,7 +11,7 @@ import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { LoginStatus, NewRevolutDepositTransactionStatus } from '@helpers/types';
-import { toBigInt, toUsdcString } from '@helpers/units';
+import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { revolutStrings } from '@helpers/strings';
 import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
@@ -402,6 +402,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
+  const conversionRateLabel =  useMemo(() => {
+    if (isLoggedIn && depositAmountInput && receiveAmountInput) {
+      // Flipping conversion rate (i.e. relative to Venmo) b/c EUR/USD is quoted with USD as the base currency
+      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR/USDC`;
+    } else {
+      return '';
+    }
+  }, [depositAmountInput, receiveAmountInput, isLoggedIn]);
+
   /*
    * Handlers
    */
@@ -487,6 +496,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               type="number"
               inputLabel="EUR"
               placeholder="940"
+              accessoryLabel={conversionRateLabel}
               helperText={revolutStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
             />
 
