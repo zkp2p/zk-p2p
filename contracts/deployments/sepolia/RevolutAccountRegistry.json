@@ -1,0 +1,785 @@
+{
+  "address": "0x8BBd158CFb23C3a1952B23d92b0536e7Bad6B3d9",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "accountOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "accountId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AccountRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "listOwner",
+          "type": "bytes32"
+        }
+      ],
+      "name": "AllowlistEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "registrationProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "NewAccountRegistrationProcessorSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "listOwner",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "allowedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserAddedToAllowlist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "listOwner",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "deniedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserAddedToDenylist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "listOwner",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "allowedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserRemovedFromAllowlist",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "listOwner",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "approvedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "UserRemovedFromDenylist",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "accountRegistrationProcessor",
+      "outputs": [
+        {
+          "internalType": "contract IRevolutAccountRegistrationProcessor",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_deniedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "addAccountToDenylist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "_allowedUsers",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "addAccountsToAllowlist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "enableAllowlist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getAccountId",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getAllowedUsers",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getDeniedUsers",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IRevolutAccountRegistrationProcessor",
+          "name": "_accountRegistrationProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_allowedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isAllowedUser",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isAllowlistEnabled",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_deniedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "isDeniedUser",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isInitialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isRegisteredUser",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "endpoint",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "host",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "profileId",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "userAddress",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct IRevolutAccountRegistrationProcessor.RegistrationData",
+              "name": "public_values",
+              "type": "tuple"
+            },
+            {
+              "internalType": "bytes",
+              "name": "proof",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct IRevolutAccountRegistrationProcessor.RegistrationProof",
+          "name": "_proof",
+          "type": "tuple"
+        }
+      ],
+      "name": "register",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_approvedUser",
+          "type": "bytes32"
+        }
+      ],
+      "name": "removeAccountFromDenylist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "_disallowedUsers",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "removeAccountsFromAllowlist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IRevolutAccountRegistrationProcessor",
+          "name": "_registrationProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "setAccountRegistrationProcessor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x8c577ab7f78b87265509c96abdc92e5f3476e6cedba176777ccacf0ffec654c8",
+  "receipt": {
+    "to": null,
+    "from": "0x4e39cF8578698131c57404e8bc3eEC820EDa51d8",
+    "contractAddress": "0x8BBd158CFb23C3a1952B23d92b0536e7Bad6B3d9",
+    "transactionIndex": 31,
+    "gasUsed": "1200001",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000800000000000000000000000020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000200000000002000000000000000000000000000020000000000100000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x35deb4dfccc6fd52e8351543454dddac165405909f48bc6d393c5aea1c32372b",
+    "transactionHash": "0x8c577ab7f78b87265509c96abdc92e5f3476e6cedba176777ccacf0ffec654c8",
+    "logs": [
+      {
+        "transactionIndex": 31,
+        "blockNumber": 5783396,
+        "transactionHash": "0x8c577ab7f78b87265509c96abdc92e5f3476e6cedba176777ccacf0ffec654c8",
+        "address": "0x8BBd158CFb23C3a1952B23d92b0536e7Bad6B3d9",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000004e39cf8578698131c57404e8bc3eec820eda51d8"
+        ],
+        "data": "0x",
+        "logIndex": 61,
+        "blockHash": "0x35deb4dfccc6fd52e8351543454dddac165405909f48bc6d393c5aea1c32372b"
+      },
+      {
+        "transactionIndex": 31,
+        "blockNumber": 5783396,
+        "transactionHash": "0x8c577ab7f78b87265509c96abdc92e5f3476e6cedba176777ccacf0ffec654c8",
+        "address": "0x8BBd158CFb23C3a1952B23d92b0536e7Bad6B3d9",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000004e39cf8578698131c57404e8bc3eec820eda51d8",
+          "0x0000000000000000000000004e39cf8578698131c57404e8bc3eec820eda51d8"
+        ],
+        "data": "0x",
+        "logIndex": 62,
+        "blockHash": "0x35deb4dfccc6fd52e8351543454dddac165405909f48bc6d393c5aea1c32372b"
+      }
+    ],
+    "blockNumber": 5783396,
+    "cumulativeGasUsed": "4633083",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x4e39cF8578698131c57404e8bc3eEC820EDa51d8"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "8f4bf7f45c28925cb238117838cfd64c",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.18+commit.87f61d96\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"accountOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"accountId\",\"type\":\"bytes32\"}],\"name\":\"AccountRegistered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"listOwner\",\"type\":\"bytes32\"}],\"name\":\"AllowlistEnabled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"registrationProcessor\",\"type\":\"address\"}],\"name\":\"NewAccountRegistrationProcessorSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"listOwner\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"allowedUser\",\"type\":\"bytes32\"}],\"name\":\"UserAddedToAllowlist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"listOwner\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"deniedUser\",\"type\":\"bytes32\"}],\"name\":\"UserAddedToDenylist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"listOwner\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"allowedUser\",\"type\":\"bytes32\"}],\"name\":\"UserRemovedFromAllowlist\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"listOwner\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"approvedUser\",\"type\":\"bytes32\"}],\"name\":\"UserRemovedFromDenylist\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"accountRegistrationProcessor\",\"outputs\":[{\"internalType\":\"contract IRevolutAccountRegistrationProcessor\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_deniedUser\",\"type\":\"bytes32\"}],\"name\":\"addAccountToDenylist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"_allowedUsers\",\"type\":\"bytes32[]\"}],\"name\":\"addAccountsToAllowlist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"enableAllowlist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getAccountId\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getAllowedUsers\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getDeniedUsers\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IRevolutAccountRegistrationProcessor\",\"name\":\"_accountRegistrationProcessor\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_allowedUser\",\"type\":\"bytes32\"}],\"name\":\"isAllowedUser\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isAllowlistEnabled\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_deniedUser\",\"type\":\"bytes32\"}],\"name\":\"isDeniedUser\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isRegisteredUser\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"endpoint\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"host\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"profileId\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"userAddress\",\"type\":\"address\"}],\"internalType\":\"struct IRevolutAccountRegistrationProcessor.RegistrationData\",\"name\":\"public_values\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"proof\",\"type\":\"bytes\"}],\"internalType\":\"struct IRevolutAccountRegistrationProcessor.RegistrationProof\",\"name\":\"_proof\",\"type\":\"tuple\"}],\"name\":\"register\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_approvedUser\",\"type\":\"bytes32\"}],\"name\":\"removeAccountFromDenylist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"_disallowedUsers\",\"type\":\"bytes32[]\"}],\"name\":\"removeAccountsFromAllowlist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IRevolutAccountRegistrationProcessor\",\"name\":\"_registrationProcessor\",\"type\":\"address\"}],\"name\":\"setAccountRegistrationProcessor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addAccountToDenylist(bytes32)\":{\"params\":{\"_deniedUser\":\"accountId being banned\"}},\"addAccountsToAllowlist(bytes32[])\":{\"params\":{\"_allowedUsers\":\"List of accountIds allowed to signal intents on the user's deposit\"}},\"initialize(address)\":{\"params\":{\"_accountRegistrationProcessor\":\"Account Registration processor address\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"register(((string,string,string,address),bytes))\":{\"params\":{\"_proof\":\"Registration proof consisting of unredacted data being notarized and a signature\"}},\"removeAccountFromDenylist(bytes32)\":{\"params\":{\"_approvedUser\":\"accountId being approved\"}},\"removeAccountsFromAllowlist(bytes32[])\":{\"params\":{\"_disallowedUsers\":\"List of accountIds being approved\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"setAccountRegistrationProcessor(address)\":{\"params\":{\"_registrationProcessor\":\"New registration proccesor address\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addAccountToDenylist(bytes32)\":{\"notice\":\"Adds an accountId to a depositor's deny list. If an address associated with the banned accountId attempts to signal an intent on the user's deposit they will be denied.\"},\"addAccountsToAllowlist(bytes32[])\":{\"notice\":\"Adds passed accountIds to a depositor's allow list. All addresses associated with the allowed accountIds will be able to signal intents on the user's deposit.\"},\"enableAllowlist()\":{\"notice\":\"Enables allow list for user, only users on the allow list will be able to signal intents on the user's deposit.\"},\"initialize(address)\":{\"notice\":\"Initialize Ramp with the addresses of the Processors\"},\"register(((string,string,string,address),bytes))\":{\"notice\":\"Registers a new account by pulling the profileId from the proof and assigning the account owner to the sender of the transaction.\"},\"removeAccountFromDenylist(bytes32)\":{\"notice\":\"Removes an accountId from a depositor's deny list.\"},\"removeAccountsFromAllowlist(bytes32[])\":{\"notice\":\"Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be able to signal intents on the user's deposit.\"},\"setAccountRegistrationProcessor(address)\":{\"notice\":\"GOVERNANCE ONLY: Updates the account registration processor address used for validating and interpreting tls proofs.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/ramps/revolut/RevolutAccountRegistry.sol\":\"RevolutAccountRegistry\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"contracts/external/Bytes32ArrayUtils.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.17;\\n\\n/**\\n * @title Bytes32ArrayUtils\\n * @author ZKP2P\\n *\\n * Fork of Set Protocol's AddressArrayUtils library adapted for usage with bytes32 arrays.\\n */\\nlibrary Bytes32ArrayUtils {\\n\\n    uint256 constant internal MAX_INT = 2**256 - 1;\\n\\n    /**\\n     * Finds the index of the first occurrence of the given element.\\n     * @param A The input array to search\\n     * @param a The value to find\\n     * @return Returns (index and isIn) for the first occurrence starting from index 0\\n     */\\n    function indexOf(bytes32[] memory A, bytes32 a) internal pure returns (uint256, bool) {\\n        uint256 length = A.length;\\n        for (uint256 i = 0; i < length; i++) {\\n            if (A[i] == a) {\\n                return (i, true);\\n            }\\n        }\\n        return (MAX_INT, false);\\n    }\\n\\n    /**\\n    * Returns true if the value is present in the list. Uses indexOf internally.\\n    * @param A The input array to search\\n    * @param a The value to find\\n    * @return Returns isIn for the first occurrence starting from index 0\\n    */\\n    function contains(bytes32[] memory A, bytes32 a) internal pure returns (bool) {\\n        (, bool isIn) = indexOf(A, a);\\n        return isIn;\\n    }\\n\\n    /**\\n    * Returns true if there are 2 elements that are the same in an array\\n    * @param A The input array to search\\n    * @return Returns boolean for the first occurrence of a duplicate\\n    */\\n    function hasDuplicate(bytes32[] memory A) internal pure returns(bool) {\\n        require(A.length > 0, \\\"A is empty\\\");\\n\\n        for (uint256 i = 0; i < A.length - 1; i++) {\\n            bytes32 current = A[i];\\n            for (uint256 j = i + 1; j < A.length; j++) {\\n                if (current == A[j]) {\\n                    return true;\\n                }\\n            }\\n        }\\n        return false;\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     * @return Returns the array with the object removed.\\n     */\\n    function remove(bytes32[] memory A, bytes32 a)\\n        internal\\n        pure\\n        returns (bytes32[] memory)\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"bytes32 not in array.\\\");\\n        } else {\\n            (bytes32[] memory _A,) = pop(A, index);\\n            return _A;\\n        }\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     */\\n    function removeStorage(bytes32[] storage A, bytes32 a)\\n        internal\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"bytes32 not in array.\\\");\\n        } else {\\n            uint256 lastIndex = A.length - 1; // If the array would be empty, the previous line would throw, so no underflow here\\n            if (index != lastIndex) { A[index] = A[lastIndex]; }\\n            A.pop();\\n        }\\n    }\\n\\n    /**\\n    * Removes specified index from array\\n    * @param A The input array to search\\n    * @param index The index to remove\\n    * @return Returns the new array and the removed entry\\n    */\\n    function pop(bytes32[] memory A, uint256 index)\\n        internal\\n        pure\\n        returns (bytes32[] memory, bytes32)\\n    {\\n        uint256 length = A.length;\\n        require(index < A.length, \\\"Index must be < A length\\\");\\n        bytes32[] memory newBytes = new bytes32[](length - 1);\\n        for (uint256 i = 0; i < index; i++) {\\n            newBytes[i] = A[i];\\n        }\\n        for (uint256 j = index + 1; j < length; j++) {\\n            newBytes[j - 1] = A[j];\\n        }\\n        return (newBytes, A[index]);\\n    }\\n}\\n\",\"keccak256\":\"0x14d572deda126ff812eb5ab0eed33120e13cc568fd611a4a6bff652f3e8440a8\",\"license\":\"MIT\"},\"contracts/external/Uint256ArrayUtils.sol\":{\"content\":\"/*\\n    Copyright 2020 Set Labs Inc.\\n\\n    Licensed under the Apache License, Version 2.0 (the \\\"License\\\");\\n    you may not use this file except in compliance with the License.\\n    You may obtain a copy of the License at\\n\\n    http://www.apache.org/licenses/LICENSE-2.0\\n\\n    Unless required by applicable law or agreed to in writing, software\\n    distributed under the License is distributed on an \\\"AS IS\\\" BASIS,\\n    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n    See the License for the specific language governing permissions and\\n    limitations under the License.\\n\\n    SPDX-License-Identifier: Apache-2.0\\n*/\\n\\npragma solidity ^0.8.18;\\n\\n/**\\n * @title Uint256ArrayUtils\\n * @author Set Protocol\\n *\\n * Utility functions to handle Uint256 Arrays\\n */\\nlibrary Uint256ArrayUtils {\\n\\n    uint256 constant internal MAX_INT = 2**256 - 1;\\n\\n    /**\\n     * Finds the index of the first occurrence of the given element.\\n     * @param A The input array to search\\n     * @param a The value to find\\n     * @return Returns (index and isIn) for the first occurrence starting from index 0\\n     */\\n    function indexOf(uint256[] memory A, uint256 a) internal pure returns (uint256, bool) {\\n        uint256 length = A.length;\\n        for (uint256 i = 0; i < length; i++) {\\n            if (A[i] == a) {\\n                return (i, true);\\n            }\\n        }\\n        return (MAX_INT, false);\\n    }\\n\\n    /**\\n     * Returns the combination of the two arrays\\n     * @param A The first array\\n     * @param B The second array\\n     * @return Returns A extended by B\\n     */\\n    function extend(uint256[] memory A, uint256[] memory B) internal pure returns (uint256[] memory) {\\n        uint256 aLength = A.length;\\n        uint256 bLength = B.length;\\n        uint256[] memory newUints = new uint256[](aLength + bLength);\\n        for (uint256 i = 0; i < aLength; i++) {\\n            newUints[i] = A[i];\\n        }\\n        for (uint256 j = 0; j < bLength; j++) {\\n            newUints[aLength + j] = B[j];\\n        }\\n        return newUints;\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     */\\n    function removeStorage(uint256[] storage A, uint256 a)\\n        internal\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"uint256 not in array.\\\");\\n        } else {\\n            uint256 lastIndex = A.length - 1; // If the array would be empty, the previous line would throw, so no underflow here\\n            if (index != lastIndex) { A[index] = A[lastIndex]; }\\n            A.pop();\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x102021415f8444ff563fc6d0082f39296f47c09ce73fb4cd642e700ac489eefe\",\"license\":\"Apache-2.0\"},\"contracts/ramps/revolut/RevolutAccountRegistry.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\nimport { Ownable } from \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\nimport { Bytes32ArrayUtils } from \\\"../../external/Bytes32ArrayUtils.sol\\\";\\nimport { Uint256ArrayUtils } from \\\"../../external/Uint256ArrayUtils.sol\\\";\\n\\nimport { IRevolutAccountRegistrationProcessor } from \\\"./interfaces/IRevolutAccountRegistrationProcessor.sol\\\";\\nimport { IRevolutAccountRegistry } from \\\"./interfaces/IRevolutAccountRegistry.sol\\\";\\n\\npragma solidity ^0.8.18;\\n\\ncontract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {\\n    using Bytes32ArrayUtils for bytes32[];\\n    using Uint256ArrayUtils for uint256[];\\n\\n    /* ============ Events ============ */\\n    event AccountRegistered(address indexed accountOwner, bytes32 indexed accountId);\\n\\n    event UserAddedToDenylist(bytes32 listOwner, bytes32 deniedUser);\\n    event UserRemovedFromDenylist(bytes32 listOwner, bytes32 approvedUser);\\n\\n    event AllowlistEnabled(bytes32 listOwner);\\n    event UserAddedToAllowlist(bytes32 indexed listOwner, bytes32 allowedUser);\\n    event UserRemovedFromAllowlist(bytes32 indexed listOwner, bytes32 allowedUser);\\n\\n    event NewAccountRegistrationProcessorSet(address registrationProcessor);\\n\\n    /* ============ Structs ============ */\\n\\n    struct DenyList {\\n        bytes32[] deniedUsers;              // Array of accountIds that are denied from taking depositors liquidity\\n        mapping(bytes32 => bool) isDenied;  // Mapping of accountId to boolean indicating if the user is denied\\n    }\\n\\n    struct AllowList {\\n        bool isEnabled;                     // Boolean indicating if the allowlist is enabled\\n        bytes32[] allowedUsers;             // Array of accountIds that are allowed from taking depositors liquidity\\n        mapping(bytes32 => bool) isAllowed; // Mapping of accountId to boolean indicating if the user is allowed\\n    }\\n\\n    /* ============ Modifiers ============ */\\n    modifier onlyRegisteredUser() {\\n        require(isRegisteredUser(msg.sender), \\\"Caller must be registered user\\\");\\n        _;\\n    }\\n\\n    /* ============ State Variables ============ */\\n    IRevolutAccountRegistrationProcessor public accountRegistrationProcessor;   // Address of Account registration processor contract\\n\\n    bool public isInitialized;                                                  // Indicates if contract has been initialized\\n\\n    mapping(address => bytes32) internal accounts;                              // Mapping of Ethereum accounts to their Revolut accountId\\n    mapping(bytes32 => DenyList) internal denyList;                             // Mapping of accountId to denylist\\n    mapping(bytes32 => AllowList) internal allowList;                           // Mapping of accountId to allow list\\n\\n    /* ============ Constructor ============ */\\n    constructor(\\n        address _owner\\n    )\\n        Ownable()\\n    {\\n        transferOwnership(_owner);\\n    }\\n\\n    /* ============ External Functions ============ */\\n\\n    /**\\n     * @notice Initialize Ramp with the addresses of the Processors\\n     *\\n     * @param _accountRegistrationProcessor     Account Registration processor address\\n     */\\n    function initialize(\\n        IRevolutAccountRegistrationProcessor _accountRegistrationProcessor\\n    )\\n        external\\n        onlyOwner\\n    {\\n        require(!isInitialized, \\\"Already initialized\\\");\\n\\n        accountRegistrationProcessor = _accountRegistrationProcessor;\\n\\n        isInitialized = true;\\n    }\\n\\n    /**\\n     * @notice Registers a new account by pulling the profileId from the proof and assigning the account owner to the\\n     * sender of the transaction.\\n     *\\n     * @param _proof    Registration proof consisting of unredacted data being notarized and a signature\\n     */\\n    function register(\\n        IRevolutAccountRegistrationProcessor.RegistrationProof calldata _proof\\n    )\\n        external\\n    {\\n        require(msg.sender == _proof.public_values.userAddress, \\\"Caller must be address specified in proof\\\");\\n        require(accounts[msg.sender] == bytes32(0), \\\"Account already associated with accountId\\\");\\n        bytes32 accountId = _verifyRegistrationProof(_proof);\\n\\n        accounts[msg.sender] = accountId;\\n\\n        emit AccountRegistered(msg.sender, accountId);\\n    }\\n\\n    /**\\n     * @notice Adds an accountId to a depositor's deny list. If an address associated with the banned accountId attempts to\\n     * signal an intent on the user's deposit they will be denied.\\n     *\\n     * @param _deniedUser   accountId being banned\\n     */\\n    function addAccountToDenylist(bytes32 _deniedUser) external onlyRegisteredUser {\\n        bytes32 denyingUser = accounts[msg.sender];\\n\\n        require(!denyList[denyingUser].isDenied[_deniedUser], \\\"User already on denylist\\\");\\n\\n        denyList[denyingUser].isDenied[_deniedUser] = true;\\n        denyList[denyingUser].deniedUsers.push(_deniedUser);\\n\\n        emit UserAddedToDenylist(denyingUser, _deniedUser);\\n    }\\n\\n    /**\\n     * @notice Removes an accountId from a depositor's deny list.\\n     *\\n     * @param _approvedUser   accountId being approved\\n     */\\n    function removeAccountFromDenylist(bytes32 _approvedUser) external onlyRegisteredUser {\\n        bytes32 approvingUser = accounts[msg.sender];\\n\\n        require(denyList[approvingUser].isDenied[_approvedUser], \\\"User not on denylist\\\");\\n\\n        denyList[approvingUser].isDenied[_approvedUser] = false;\\n        denyList[approvingUser].deniedUsers.removeStorage(_approvedUser);\\n\\n        emit UserRemovedFromDenylist(approvingUser, _approvedUser);\\n    }\\n\\n    /**\\n     * @notice Enables allow list for user, only users on the allow list will be able to signal intents on the user's deposit.\\n     */\\n    function enableAllowlist() external onlyRegisteredUser {\\n        bytes32 allowingUser = accounts[msg.sender];\\n\\n        require(!allowList[allowingUser].isEnabled, \\\"Allow list already enabled\\\");\\n\\n        allowList[allowingUser].isEnabled = true;\\n\\n        emit AllowlistEnabled(allowingUser);\\n    }\\n\\n    /**\\n     * @notice Adds passed accountIds to a depositor's allow list. All addresses associated with the allowed accountIds will\\n     * be able to signal intents on the user's deposit.\\n     *\\n     * @param _allowedUsers   List of accountIds allowed to signal intents on the user's deposit\\n     */\\n    function addAccountsToAllowlist(bytes32[] memory _allowedUsers) external onlyRegisteredUser {\\n        bytes32 allowingUser = accounts[msg.sender];\\n\\n        for(uint256 i = 0; i < _allowedUsers.length; i++) {\\n            bytes32 allowedUser = _allowedUsers[i];\\n\\n            require(!allowList[allowingUser].isAllowed[allowedUser], \\\"User already on allowlist\\\");\\n\\n            allowList[allowingUser].isAllowed[allowedUser] = true;\\n            allowList[allowingUser].allowedUsers.push(allowedUser);\\n\\n            emit UserAddedToAllowlist(allowingUser, allowedUser);\\n        }\\n    }\\n\\n    /**\\n     * @notice Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be\\n     * able to signal intents on the user's deposit.\\n     *\\n     * @param _disallowedUsers   List of accountIds being approved\\n     */\\n    function removeAccountsFromAllowlist(bytes32[] memory _disallowedUsers) external onlyRegisteredUser {\\n        bytes32 disallowingUser = accounts[msg.sender];\\n\\n        for(uint256 i = 0; i < _disallowedUsers.length; i++) {\\n            bytes32 disallowedUser = _disallowedUsers[i];\\n\\n            require(allowList[disallowingUser].isAllowed[disallowedUser], \\\"User not on allowlist\\\");\\n\\n            allowList[disallowingUser].isAllowed[disallowedUser] = false;\\n            allowList[disallowingUser].allowedUsers.removeStorage(disallowedUser);\\n\\n            emit UserRemovedFromAllowlist(disallowingUser, disallowedUser);\\n        }\\n    }\\n\\n    /* ============ Governance Functions ============ */\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the account registration processor address used for validating and interpreting tls proofs.\\n     *\\n     * @param _registrationProcessor   New registration proccesor address\\n     */\\n    function setAccountRegistrationProcessor(IRevolutAccountRegistrationProcessor _registrationProcessor) external onlyOwner {\\n        accountRegistrationProcessor = _registrationProcessor;\\n        emit NewAccountRegistrationProcessorSet(address(_registrationProcessor));\\n    }\\n\\n    /* ============ External View Functions ============ */\\n\\n    function getAccountId(address _account) public view returns (bytes32) {\\n        return accounts[_account];\\n    }\\n\\n    function isRegisteredUser(address _account) public view returns (bool) {\\n        return getAccountId(_account) != bytes32(0);\\n    }\\n\\n    function getDeniedUsers(address _account) external view returns (bytes32[] memory) {\\n        return denyList[getAccountId(_account)].deniedUsers;\\n    }\\n\\n    function isDeniedUser(address _account, bytes32 _deniedUser) external view returns (bool) {\\n        return denyList[getAccountId(_account)].isDenied[_deniedUser];\\n    }\\n\\n    function isAllowlistEnabled(address _account) external view returns (bool) {\\n        return allowList[getAccountId(_account)].isEnabled;\\n    }\\n\\n    function getAllowedUsers(address _account) external view returns (bytes32[] memory) {\\n        return allowList[getAccountId(_account)].allowedUsers;\\n    }\\n\\n    function isAllowedUser(address _account, bytes32 _allowedUser) external view returns (bool) {\\n        bytes32 allowingUser = getAccountId(_account);\\n\\n        // Deny list overrides, if user on deny list then they are not allowed\\n        if(denyList[allowingUser].isDenied[_allowedUser]) { return false; }\\n\\n        // Check if allow list is enabled, if so return status of user, else return true\\n        return allowList[allowingUser].isEnabled ? allowList[allowingUser].isAllowed[_allowedUser] : true;\\n    }\\n    \\n    /* ============ Internal Functions ============ */\\n\\n    /**\\n     * @notice Validate the user has an Revolut account, we do not nullify this email since it can be reused to register under\\n     * different addresses.\\n     */\\n    function _verifyRegistrationProof(\\n        IRevolutAccountRegistrationProcessor.RegistrationProof calldata _proof\\n    )\\n        internal\\n        returns (bytes32 accountId)\\n    {\\n        accountId = accountRegistrationProcessor.processProof(_proof);\\n    }\\n}\\n\",\"keccak256\":\"0xe07e3967b80380d578a2a3843d1a924231bf14af66516b68290da56c770b441f\",\"license\":\"MIT\"},\"contracts/ramps/revolut/interfaces/IRevolutAccountRegistrationProcessor.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.18;\\n\\ninterface IRevolutAccountRegistrationProcessor {\\n\\n    struct RegistrationData {\\n        string endpoint;\\n        string host;\\n        string profileId;\\n        address userAddress;\\n    }\\n\\n    struct RegistrationProof {\\n        RegistrationData public_values;\\n        bytes proof;\\n    }\\n\\n    function processProof(\\n        RegistrationProof calldata _proof\\n    )\\n        external\\n    returns (bytes32);\\n}\\n\",\"keccak256\":\"0xd5c1bd03d68ca5b4a31b02acb81ddb01ad557d603ade81dd5cb5c8ec8c7f48de\",\"license\":\"MIT\"},\"contracts/ramps/revolut/interfaces/IRevolutAccountRegistry.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.18;\\n\\ninterface IRevolutAccountRegistry {\\n    function getAccountId(address _account) external view returns (bytes32);\\n    function isRegisteredUser(address _account) external view returns (bool);\\n    function isAllowedUser(address _account, bytes32 _deniedUser) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x5c58e8996f2d06f3d8bad7b3cef912c6370eecb2f3523ff8c1e15ec05dfb8e74\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b50604051620015ea380380620015ea833981016040819052620000349162000182565b6200003f3362000051565b6200004a81620000a1565b50620001b4565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b620000ab62000124565b6001600160a01b038116620001165760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084015b60405180910390fd5b620001218162000051565b50565b6000546001600160a01b03163314620001805760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064016200010d565b565b6000602082840312156200019557600080fd5b81516001600160a01b0381168114620001ad57600080fd5b9392505050565b61142680620001c46000396000f3fe608060405234801561001057600080fd5b506004361061012c5760003560e01c80638da5cb5b116100ad578063d884524511610071578063d884524514610273578063e0b490f714610286578063e39ca3b4146102a7578063f2fde38b146102ba578063fbf15b1f146102cd57600080fd5b80638da5cb5b146102215780639b357b5a14610232578063c4d66de814610245578063c57a1dce14610258578063c6a2aac81461026b57600080fd5b80633056eb28116100f45780633056eb28146101bf57806338e4bef6146101d2578063392e53cd146101e55780634595bba0146101f9578063715018a61461021957600080fd5b80630876dda314610131578063148172da146101615780631acd84d8146101765780631e48fe6b146101995780631f5bdf5d146101ac575b600080fd5b600154610144906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b61017461016f366004610fec565b6102e0565b005b61018961018436600461101a565b610407565b6040519015158152602001610158565b6101746101a736600461105c565b61048d565b6101896101ba36600461111a565b6105dc565b6101746101cd36600461111a565b6105f0565b6101896101e036600461111a565b61064d565b60015461018990600160a01b900460ff1681565b61020c61020736600461111a565b610676565b604051610158919061113e565b6101746106ec565b6000546001600160a01b0316610144565b610174610240366004610fec565b610700565b61017461025336600461111a565b6107ff565b610174610266366004611182565b61087e565b6101746109c6565b61017461028136600461105c565b610aa5565b61029961029436600461111a565b610c00565b604051908152602001610158565b61020c6102b536600461111a565b610c1b565b6101746102c836600461111a565b610c8f565b6101896102db36600461101a565b610d08565b6102e9336105dc565b61030e5760405162461bcd60e51b8152600401610305906111bd565b60405180910390fd5b33600090815260026020908152604080832054808452600383528184208585526001019092529091205460ff16156103885760405162461bcd60e51b815260206004820152601860248201527f5573657220616c7265616479206f6e2064656e796c69737400000000000000006044820152606401610305565b600081815260036020818152604080842086855260018181018452828620805460ff191682179055938352805493840181558452922001839055517f976c693d56f27ba17d902bda80c4fa0416b773fbf268bcb0ee71689234d769ee906103fb9083908590918252602082015260400190565b60405180910390a15050565b60008061041384610c00565b600081815260036020908152604080832087845260010190915290205490915060ff1615610445576000915050610487565b60008181526004602052604090205460ff16610462576001610483565b600081815260046020908152604080832086845260020190915290205460ff165b9150505b92915050565b610496336105dc565b6104b25760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020526040812054905b82518110156105d75760008382815181106104e1576104e16111f4565b6020908102919091018101516000858152600483526040808220838352600201909352919091205490915060ff166105535760405162461bcd60e51b8152602060048201526015602482015274155cd95c881b9bdd081bdb88185b1b1bdddb1a5cdd605a1b6044820152606401610305565b6000838152600460208181526040808420858552600281018352908420805460ff19169055928690525261058a9060010182610d43565b827fe87ba7050133e8b4c8b879f99b3276368eaca3b81f4ea415d9528843a15d8c63826040516105bc91815260200190565b60405180910390a250806105cf81611220565b9150506104c4565b505050565b6000806105e883610c00565b141592915050565b6105f8610e6b565b600180546001600160a01b0319166001600160a01b0383169081179091556040519081527ffd4e734c9a89ace3649766f5233487313285fe97ca577c2602beda889ef46dd3906020015b60405180910390a150565b60006004600061065c84610c00565b815260208101919091526040016000205460ff1692915050565b60606003600061068584610c00565b81526020019081526020016000206000018054806020026020016040519081016040528092919081815260200182805480156106e057602002820191906000526020600020905b8154815260200190600101908083116106cc575b50505050509050919050565b6106f4610e6b565b6106fe6000610ec5565b565b610709336105dc565b6107255760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020908152604080832054808452600383528184208585526001019092529091205460ff166107955760405162461bcd60e51b8152602060048201526014602482015273155cd95c881b9bdd081bdb8819195b9e5b1a5cdd60621b6044820152606401610305565b6000818152600360208181526040808420868552600181018352908420805460ff1916905592849052526107c99083610d43565b60408051828152602081018490527f8935205b1b382095d2d95efbb36f81a11a34c548d45af26adc1a02d2f2bb546f91016103fb565b610807610e6b565b600154600160a01b900460ff16156108575760405162461bcd60e51b8152602060048201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152606401610305565b600180546001600160a81b0319166001600160a01b0390921691909117600160a01b179055565b6108888180611239565b61089990608081019060600161111a565b6001600160a01b0316336001600160a01b03161461090b5760405162461bcd60e51b815260206004820152602960248201527f43616c6c6572206d7573742062652061646472657373207370656369666965646044820152681034b710383937b7b360b91b6064820152608401610305565b336000908152600260205260409020541561097a5760405162461bcd60e51b815260206004820152602960248201527f4163636f756e7420616c7265616479206173736f6369617465642077697468206044820152681858d8dbdd5b9d125960ba1b6064820152608401610305565b600061098582610f15565b336000818152600260205260408082208490555192935083927f672144042732f7b1cdbf0772464ae545aedd7f41d38b8487dafd9085496a5d519190a35050565b6109cf336105dc565b6109eb5760405162461bcd60e51b8152600401610305906111bd565b3360009081526002602090815260408083205480845260049092529091205460ff1615610a5a5760405162461bcd60e51b815260206004820152601a60248201527f416c6c6f77206c69737420616c726561647920656e61626c65640000000000006044820152606401610305565b60008181526004602052604090819020805460ff19166001179055517f08df0a71ea3e5565a2138936ed06eaba47996a3ccfde2dae1f3edd1164e299d7906106429083815260200190565b610aae336105dc565b610aca5760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020526040812054905b82518110156105d7576000838281518110610af957610af96111f4565b6020908102919091018101516000858152600483526040808220838352600201909352919091205490915060ff1615610b745760405162461bcd60e51b815260206004820152601960248201527f5573657220616c7265616479206f6e20616c6c6f776c697374000000000000006044820152606401610305565b6000838152600460208181526040808420858552600281018352818520805460ff1916600190811790915593835283018054938401815584529220018290555183907f857ce673abc5a303fa8303102f12b42079aa85b97bca15b56428764dd1dec4d290610be59084815260200190565b60405180910390a25080610bf881611220565b915050610adc565b6001600160a01b031660009081526002602052604090205490565b606060046000610c2a84610c00565b81526020019081526020016000206001018054806020026020016040519081016040528092919081815260200182805480156106e057602002820191906000526020600020908154815260200190600101908083116106cc5750505050509050919050565b610c97610e6b565b6001600160a01b038116610cfc5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610305565b610d0581610ec5565b50565b600060036000610d1785610c00565b81526020808201929092526040908101600090812085825260010190925290205460ff16905092915050565b600080610d9f84805480602002602001604051908101604052809291908181526020018280548015610d9457602002820191906000526020600020905b815481526020019060010190808311610d80575b505050505084610f89565b9150915080610de85760405162461bcd60e51b8152602060048201526015602482015274313cba32b99999103737ba1034b71030b93930bc9760591b6044820152606401610305565b8354600090610df990600190611259565b9050808314610e3e57848181548110610e1457610e146111f4565b9060005260206000200154858481548110610e3157610e316111f4565b6000918252602090912001555b84805480610e4e57610e4e61126c565b600190038181906000526020600020016000905590555050505050565b6000546001600160a01b031633146106fe5760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610305565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001546040516304f151ed60e31b81526000916001600160a01b03169063278a8f6890610f469085906004016112f1565b6020604051808303816000875af1158015610f65573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061048791906113d7565b81516000908190815b81811015610fd95784868281518110610fad57610fad6111f4565b602002602001015103610fc757925060019150610fe59050565b80610fd181611220565b915050610f92565b50600019600092509250505b9250929050565b600060208284031215610ffe57600080fd5b5035919050565b6001600160a01b0381168114610d0557600080fd5b6000806040838503121561102d57600080fd5b823561103881611005565b946020939093013593505050565b634e487b7160e01b600052604160045260246000fd5b6000602080838503121561106f57600080fd5b823567ffffffffffffffff8082111561108757600080fd5b818501915085601f83011261109b57600080fd5b8135818111156110ad576110ad611046565b8060051b604051601f19603f830116810181811085821117156110d2576110d2611046565b6040529182528482019250838101850191888311156110f057600080fd5b938501935b8285101561110e578435845293850193928501926110f5565b98975050505050505050565b60006020828403121561112c57600080fd5b813561113781611005565b9392505050565b6020808252825182820181905260009190848201906040850190845b818110156111765783518352928401929184019160010161115a565b50909695505050505050565b60006020828403121561119457600080fd5b813567ffffffffffffffff8111156111ab57600080fd5b82016040818503121561113757600080fd5b6020808252601e908201527f43616c6c6572206d757374206265207265676973746572656420757365720000604082015260600190565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b6000600182016112325761123261120a565b5060010190565b60008235607e1983360301811261124f57600080fd5b9190910192915050565b818103818111156104875761048761120a565b634e487b7160e01b600052603160045260246000fd5b6000808335601e1984360301811261129957600080fd5b830160208101925035905067ffffffffffffffff8111156112b957600080fd5b803603821315610fe557600080fd5b81835281816020850137506000828201602090810191909152601f909101601f19169091010190565b6020815260008235607e1984360301811261130b57600080fd5b60406020840152830161131e8180611282565b6080606086015261133360e0860182846112c8565b9150506113436020830183611282565b605f198087850301608088015261135b8483856112c8565b935061136a6040860186611282565b93509150808785030160a0880152506113848383836112c8565b925050506060820135915061139882611005565b6001600160a01b03821660c08501526113b46020860186611282565b858303601f1901604087015292506113cd8284836112c8565b9695505050505050565b6000602082840312156113e957600080fd5b505191905056fea2646970667358221220808338d2f4233f33fbf235e333c6e491e4f3b10b60f31cb87370db55bea8b04564736f6c63430008120033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061012c5760003560e01c80638da5cb5b116100ad578063d884524511610071578063d884524514610273578063e0b490f714610286578063e39ca3b4146102a7578063f2fde38b146102ba578063fbf15b1f146102cd57600080fd5b80638da5cb5b146102215780639b357b5a14610232578063c4d66de814610245578063c57a1dce14610258578063c6a2aac81461026b57600080fd5b80633056eb28116100f45780633056eb28146101bf57806338e4bef6146101d2578063392e53cd146101e55780634595bba0146101f9578063715018a61461021957600080fd5b80630876dda314610131578063148172da146101615780631acd84d8146101765780631e48fe6b146101995780631f5bdf5d146101ac575b600080fd5b600154610144906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b61017461016f366004610fec565b6102e0565b005b61018961018436600461101a565b610407565b6040519015158152602001610158565b6101746101a736600461105c565b61048d565b6101896101ba36600461111a565b6105dc565b6101746101cd36600461111a565b6105f0565b6101896101e036600461111a565b61064d565b60015461018990600160a01b900460ff1681565b61020c61020736600461111a565b610676565b604051610158919061113e565b6101746106ec565b6000546001600160a01b0316610144565b610174610240366004610fec565b610700565b61017461025336600461111a565b6107ff565b610174610266366004611182565b61087e565b6101746109c6565b61017461028136600461105c565b610aa5565b61029961029436600461111a565b610c00565b604051908152602001610158565b61020c6102b536600461111a565b610c1b565b6101746102c836600461111a565b610c8f565b6101896102db36600461101a565b610d08565b6102e9336105dc565b61030e5760405162461bcd60e51b8152600401610305906111bd565b60405180910390fd5b33600090815260026020908152604080832054808452600383528184208585526001019092529091205460ff16156103885760405162461bcd60e51b815260206004820152601860248201527f5573657220616c7265616479206f6e2064656e796c69737400000000000000006044820152606401610305565b600081815260036020818152604080842086855260018181018452828620805460ff191682179055938352805493840181558452922001839055517f976c693d56f27ba17d902bda80c4fa0416b773fbf268bcb0ee71689234d769ee906103fb9083908590918252602082015260400190565b60405180910390a15050565b60008061041384610c00565b600081815260036020908152604080832087845260010190915290205490915060ff1615610445576000915050610487565b60008181526004602052604090205460ff16610462576001610483565b600081815260046020908152604080832086845260020190915290205460ff165b9150505b92915050565b610496336105dc565b6104b25760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020526040812054905b82518110156105d75760008382815181106104e1576104e16111f4565b6020908102919091018101516000858152600483526040808220838352600201909352919091205490915060ff166105535760405162461bcd60e51b8152602060048201526015602482015274155cd95c881b9bdd081bdb88185b1b1bdddb1a5cdd605a1b6044820152606401610305565b6000838152600460208181526040808420858552600281018352908420805460ff19169055928690525261058a9060010182610d43565b827fe87ba7050133e8b4c8b879f99b3276368eaca3b81f4ea415d9528843a15d8c63826040516105bc91815260200190565b60405180910390a250806105cf81611220565b9150506104c4565b505050565b6000806105e883610c00565b141592915050565b6105f8610e6b565b600180546001600160a01b0319166001600160a01b0383169081179091556040519081527ffd4e734c9a89ace3649766f5233487313285fe97ca577c2602beda889ef46dd3906020015b60405180910390a150565b60006004600061065c84610c00565b815260208101919091526040016000205460ff1692915050565b60606003600061068584610c00565b81526020019081526020016000206000018054806020026020016040519081016040528092919081815260200182805480156106e057602002820191906000526020600020905b8154815260200190600101908083116106cc575b50505050509050919050565b6106f4610e6b565b6106fe6000610ec5565b565b610709336105dc565b6107255760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020908152604080832054808452600383528184208585526001019092529091205460ff166107955760405162461bcd60e51b8152602060048201526014602482015273155cd95c881b9bdd081bdb8819195b9e5b1a5cdd60621b6044820152606401610305565b6000818152600360208181526040808420868552600181018352908420805460ff1916905592849052526107c99083610d43565b60408051828152602081018490527f8935205b1b382095d2d95efbb36f81a11a34c548d45af26adc1a02d2f2bb546f91016103fb565b610807610e6b565b600154600160a01b900460ff16156108575760405162461bcd60e51b8152602060048201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152606401610305565b600180546001600160a81b0319166001600160a01b0390921691909117600160a01b179055565b6108888180611239565b61089990608081019060600161111a565b6001600160a01b0316336001600160a01b03161461090b5760405162461bcd60e51b815260206004820152602960248201527f43616c6c6572206d7573742062652061646472657373207370656369666965646044820152681034b710383937b7b360b91b6064820152608401610305565b336000908152600260205260409020541561097a5760405162461bcd60e51b815260206004820152602960248201527f4163636f756e7420616c7265616479206173736f6369617465642077697468206044820152681858d8dbdd5b9d125960ba1b6064820152608401610305565b600061098582610f15565b336000818152600260205260408082208490555192935083927f672144042732f7b1cdbf0772464ae545aedd7f41d38b8487dafd9085496a5d519190a35050565b6109cf336105dc565b6109eb5760405162461bcd60e51b8152600401610305906111bd565b3360009081526002602090815260408083205480845260049092529091205460ff1615610a5a5760405162461bcd60e51b815260206004820152601a60248201527f416c6c6f77206c69737420616c726561647920656e61626c65640000000000006044820152606401610305565b60008181526004602052604090819020805460ff19166001179055517f08df0a71ea3e5565a2138936ed06eaba47996a3ccfde2dae1f3edd1164e299d7906106429083815260200190565b610aae336105dc565b610aca5760405162461bcd60e51b8152600401610305906111bd565b33600090815260026020526040812054905b82518110156105d7576000838281518110610af957610af96111f4565b6020908102919091018101516000858152600483526040808220838352600201909352919091205490915060ff1615610b745760405162461bcd60e51b815260206004820152601960248201527f5573657220616c7265616479206f6e20616c6c6f776c697374000000000000006044820152606401610305565b6000838152600460208181526040808420858552600281018352818520805460ff1916600190811790915593835283018054938401815584529220018290555183907f857ce673abc5a303fa8303102f12b42079aa85b97bca15b56428764dd1dec4d290610be59084815260200190565b60405180910390a25080610bf881611220565b915050610adc565b6001600160a01b031660009081526002602052604090205490565b606060046000610c2a84610c00565b81526020019081526020016000206001018054806020026020016040519081016040528092919081815260200182805480156106e057602002820191906000526020600020908154815260200190600101908083116106cc5750505050509050919050565b610c97610e6b565b6001600160a01b038116610cfc5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610305565b610d0581610ec5565b50565b600060036000610d1785610c00565b81526020808201929092526040908101600090812085825260010190925290205460ff16905092915050565b600080610d9f84805480602002602001604051908101604052809291908181526020018280548015610d9457602002820191906000526020600020905b815481526020019060010190808311610d80575b505050505084610f89565b9150915080610de85760405162461bcd60e51b8152602060048201526015602482015274313cba32b99999103737ba1034b71030b93930bc9760591b6044820152606401610305565b8354600090610df990600190611259565b9050808314610e3e57848181548110610e1457610e146111f4565b9060005260206000200154858481548110610e3157610e316111f4565b6000918252602090912001555b84805480610e4e57610e4e61126c565b600190038181906000526020600020016000905590555050505050565b6000546001600160a01b031633146106fe5760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610305565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001546040516304f151ed60e31b81526000916001600160a01b03169063278a8f6890610f469085906004016112f1565b6020604051808303816000875af1158015610f65573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061048791906113d7565b81516000908190815b81811015610fd95784868281518110610fad57610fad6111f4565b602002602001015103610fc757925060019150610fe59050565b80610fd181611220565b915050610f92565b50600019600092509250505b9250929050565b600060208284031215610ffe57600080fd5b5035919050565b6001600160a01b0381168114610d0557600080fd5b6000806040838503121561102d57600080fd5b823561103881611005565b946020939093013593505050565b634e487b7160e01b600052604160045260246000fd5b6000602080838503121561106f57600080fd5b823567ffffffffffffffff8082111561108757600080fd5b818501915085601f83011261109b57600080fd5b8135818111156110ad576110ad611046565b8060051b604051601f19603f830116810181811085821117156110d2576110d2611046565b6040529182528482019250838101850191888311156110f057600080fd5b938501935b8285101561110e578435845293850193928501926110f5565b98975050505050505050565b60006020828403121561112c57600080fd5b813561113781611005565b9392505050565b6020808252825182820181905260009190848201906040850190845b818110156111765783518352928401929184019160010161115a565b50909695505050505050565b60006020828403121561119457600080fd5b813567ffffffffffffffff8111156111ab57600080fd5b82016040818503121561113757600080fd5b6020808252601e908201527f43616c6c6572206d757374206265207265676973746572656420757365720000604082015260600190565b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052601160045260246000fd5b6000600182016112325761123261120a565b5060010190565b60008235607e1983360301811261124f57600080fd5b9190910192915050565b818103818111156104875761048761120a565b634e487b7160e01b600052603160045260246000fd5b6000808335601e1984360301811261129957600080fd5b830160208101925035905067ffffffffffffffff8111156112b957600080fd5b803603821315610fe557600080fd5b81835281816020850137506000828201602090810191909152601f909101601f19169091010190565b6020815260008235607e1984360301811261130b57600080fd5b60406020840152830161131e8180611282565b6080606086015261133360e0860182846112c8565b9150506113436020830183611282565b605f198087850301608088015261135b8483856112c8565b935061136a6040860186611282565b93509150808785030160a0880152506113848383836112c8565b925050506060820135915061139882611005565b6001600160a01b03821660c08501526113b46020860186611282565b858303601f1901604087015292506113cd8284836112c8565b9695505050505050565b6000602082840312156113e957600080fd5b505191905056fea2646970667358221220808338d2f4233f33fbf235e333c6e491e4f3b10b60f31cb87370db55bea8b04564736f6c63430008120033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addAccountToDenylist(bytes32)": {
+        "params": {
+          "_deniedUser": "accountId being banned"
+        }
+      },
+      "addAccountsToAllowlist(bytes32[])": {
+        "params": {
+          "_allowedUsers": "List of accountIds allowed to signal intents on the user's deposit"
+        }
+      },
+      "initialize(address)": {
+        "params": {
+          "_accountRegistrationProcessor": "Account Registration processor address"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "register(((string,string,string,address),bytes))": {
+        "params": {
+          "_proof": "Registration proof consisting of unredacted data being notarized and a signature"
+        }
+      },
+      "removeAccountFromDenylist(bytes32)": {
+        "params": {
+          "_approvedUser": "accountId being approved"
+        }
+      },
+      "removeAccountsFromAllowlist(bytes32[])": {
+        "params": {
+          "_disallowedUsers": "List of accountIds being approved"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "setAccountRegistrationProcessor(address)": {
+        "params": {
+          "_registrationProcessor": "New registration proccesor address"
+        }
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "addAccountToDenylist(bytes32)": {
+        "notice": "Adds an accountId to a depositor's deny list. If an address associated with the banned accountId attempts to signal an intent on the user's deposit they will be denied."
+      },
+      "addAccountsToAllowlist(bytes32[])": {
+        "notice": "Adds passed accountIds to a depositor's allow list. All addresses associated with the allowed accountIds will be able to signal intents on the user's deposit."
+      },
+      "enableAllowlist()": {
+        "notice": "Enables allow list for user, only users on the allow list will be able to signal intents on the user's deposit."
+      },
+      "initialize(address)": {
+        "notice": "Initialize Ramp with the addresses of the Processors"
+      },
+      "register(((string,string,string,address),bytes))": {
+        "notice": "Registers a new account by pulling the profileId from the proof and assigning the account owner to the sender of the transaction."
+      },
+      "removeAccountFromDenylist(bytes32)": {
+        "notice": "Removes an accountId from a depositor's deny list."
+      },
+      "removeAccountsFromAllowlist(bytes32[])": {
+        "notice": "Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be able to signal intents on the user's deposit."
+      },
+      "setAccountRegistrationProcessor(address)": {
+        "notice": "GOVERNANCE ONLY: Updates the account registration processor address used for validating and interpreting tls proofs."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 7,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 12691,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "accountRegistrationProcessor",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_contract(IRevolutAccountRegistrationProcessor)15348"
+      },
+      {
+        "astId": 12693,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "isInitialized",
+        "offset": 20,
+        "slot": "1",
+        "type": "t_bool"
+      },
+      {
+        "astId": 12697,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "accounts",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_address,t_bytes32)"
+      },
+      {
+        "astId": 12702,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "denyList",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_struct(DenyList)12666_storage)"
+      },
+      {
+        "astId": 12707,
+        "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+        "label": "allowList",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_bytes32,t_struct(AllowList)12676_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IRevolutAccountRegistrationProcessor)15348": {
+        "encoding": "inplace",
+        "label": "contract IRevolutAccountRegistrationProcessor",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_bytes32)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bytes32)",
+        "numberOfBytes": "32",
+        "value": "t_bytes32"
+      },
+      "t_mapping(t_bytes32,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_bytes32,t_struct(AllowList)12676_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct RevolutAccountRegistry.AllowList)",
+        "numberOfBytes": "32",
+        "value": "t_struct(AllowList)12676_storage"
+      },
+      "t_mapping(t_bytes32,t_struct(DenyList)12666_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct RevolutAccountRegistry.DenyList)",
+        "numberOfBytes": "32",
+        "value": "t_struct(DenyList)12666_storage"
+      },
+      "t_struct(AllowList)12676_storage": {
+        "encoding": "inplace",
+        "label": "struct RevolutAccountRegistry.AllowList",
+        "members": [
+          {
+            "astId": 12668,
+            "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+            "label": "isEnabled",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool"
+          },
+          {
+            "astId": 12671,
+            "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+            "label": "allowedUsers",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_bytes32)dyn_storage"
+          },
+          {
+            "astId": 12675,
+            "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+            "label": "isAllowed",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_bytes32,t_bool)"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(DenyList)12666_storage": {
+        "encoding": "inplace",
+        "label": "struct RevolutAccountRegistry.DenyList",
+        "members": [
+          {
+            "astId": 12661,
+            "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+            "label": "deniedUsers",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_bytes32)dyn_storage"
+          },
+          {
+            "astId": 12665,
+            "contract": "contracts/ramps/revolut/RevolutAccountRegistry.sol:RevolutAccountRegistry",
+            "label": "isDenied",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_bytes32,t_bool)"
+          }
+        ],
+        "numberOfBytes": "64"
+      }
+    }
+  }
+}
