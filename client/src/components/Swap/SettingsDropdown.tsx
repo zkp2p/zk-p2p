@@ -83,7 +83,8 @@ const SettingsButton = styled.div`
 
 const Dropdown = styled.div`
   display: flex;
-  width: 392px;
+  width: 80vw;
+  max-width: 392px;
   flex-direction: column;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);

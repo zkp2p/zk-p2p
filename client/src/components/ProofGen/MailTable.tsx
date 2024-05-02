@@ -16,6 +16,7 @@ import { EmailInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers
 import { platformStrings } from "@helpers/strings";
 import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER, GARANTI_EMAIL_FULTER } from '@helpers/constants';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
+import {formatAddress} from "@helpers/addressFormat";
 
 
 interface MailTableProps {
@@ -343,7 +344,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               <EmailAddressTitle>
                 <EmailLabel>
                   <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
-                  <EmailLabelValue>{loggedInGmail}</EmailLabelValue>
+                  <EmailLabelValue>{formatAddress(loggedInGmail!)}</EmailLabelValue>
                 </EmailLabel>
               </EmailAddressTitle>
 

@@ -91,7 +91,7 @@ const ActionsContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  padding-right 1.5rem;
+  padding-right: 1.5rem;
   flex-grow: 1;
 `;
 

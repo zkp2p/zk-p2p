@@ -34,7 +34,10 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
                 </Logo>
               </LogoAndNavItems>
           )}
-          <MenuDropdown />
+          <LoginMenuContainer>
+              <CustomConnectButton height={40}/>
+              <MenuDropdown />
+          </LoginMenuContainer>
         </NavBar>
     );
   } else {
@@ -89,6 +92,12 @@ const Logo = styled(Link)<{ size?: number }>`
     height: ${({ size }) => size || 32}px;
     object-fit: cover;
   }
+`;
+
+const LoginMenuContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
 `;
 
 const LogoAndNavItems = styled.div`

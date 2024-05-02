@@ -7,6 +7,7 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
 import { PaymentPlatformType, paymentPlatformInfo } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface DepositsRowProps {
@@ -40,6 +41,8 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 
   const depositRemainingLabel = `${availableDepositAmount}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
+  const isMobile = useMediaQuery() === 'mobile'
+  const svgSize = isMobile ? '20' : '28'
 
   /*
    * Component
@@ -52,7 +55,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
       </div>
 
       <IconAndTokenNameContainer>
-        <SVGIconThemed icon={'usdc'} width={'28'} height={'28'} />
+        <SVGIconThemed icon={'usdc'} width={svgSize} height={svgSize} />
         USD Coin
       </IconAndTokenNameContainer>
 
@@ -118,6 +121,9 @@ const PercentageLabel = styled.div`
 const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
+  @media (max-width: 600px) {
+      font-size: 10px;
+  };
 `;
 
 const ENSNameWrapper = styled.div`

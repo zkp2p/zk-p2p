@@ -228,14 +228,13 @@ const Wrapper = styled.div`
 
 const NavDropdown = styled.div`
   display: flex;
-  min-width: 300px;
   flex-direction: column;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: #1B1B1B;
   position: absolute;
   top: calc(100% + 20px);
-  right: 0;
+  right: calc(100% - 45px);
   z-index: 20;
   color: #FFFFFF;
 `;

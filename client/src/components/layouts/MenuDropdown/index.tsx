@@ -7,7 +7,6 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { CLIENT_VERSION } from '@helpers/constants';
 import { ThemedText } from '@theme/text';
-import {CustomConnectButton} from "@components/common/ConnectButton";
 import useMediaQuery from "@hooks/useMediaQuery";
 
 
@@ -31,7 +30,7 @@ export const MenuDropdown = () => {
    */
 
   return (
-    <Wrapper ref={ref}>
+    <Wrapper isMobile={currentDeviceSize === 'mobile'} ref={ref}>
       <NavButton onClick={toggleOpen}>
         <StyledMoreHorizontal />
       </NavButton>
@@ -41,7 +40,6 @@ export const MenuDropdown = () => {
           <NavDropdownItemContainer>
             {currentDeviceSize === 'mobile' && (
               <>
-                <CustomConnectButton height={40} fullWidth/>
                 <NavDropdownItem as={Link} to="/swap" onClick={toggleOpen}>
                   <ThemedText.LabelSmall textAlign="left">
                     Swap
@@ -127,11 +125,13 @@ export const MenuDropdown = () => {
   )
 };
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{isMobile?: boolean}>`
   display: flex;
-  flex-direction: column;
+  ${({ isMobile }) => isMobile ? '' : 'flex-direction: column'};
+  //flex-direction: column;
   position: relative;
-  align-items: flex-start;
+    ${({ isMobile }) => isMobile ? '' : 'align-items: flex-start'};
+  //align-items: flex-start;
 `;
 
 const StyledMoreHorizontal = styled(MoreHorizontal)`
@@ -152,7 +152,7 @@ const NavButton = styled.div`
 const NavDropdown = styled.div`
   display: flex;
   flex-direction: column;
-  width: 172px;
+  width: 212px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;
