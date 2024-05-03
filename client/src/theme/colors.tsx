@@ -30,6 +30,9 @@ export const colors = {
 
   buttonRed: '#DF2E2D',
 
+  connectionStatusRed: '#DF2E2D',
+  connectionStatusGreen: '#4BB543',
+
   defaultBorderColor: '#98A1C03D',
   readOnlyBorderColor: '#98A1C03D',
 

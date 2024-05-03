@@ -54,6 +54,9 @@ export interface CommonStrings {
   // Extension Instructions
   EXTENSION_DOWNLOAD_INSTRUCTIONS: string,
 
+  // Notary Connection Tooltip
+  NOTARY_CONNECTION_TOOLTIP: string,
+
   // Notary Verification Modal Steps
   VERIFICATION_MODAL_UPLOAD_TITLE: string,
   VERIFICATION_MODAL_UPLOAD_SUBTITLE: string,
@@ -202,6 +205,12 @@ const strings: CommonStrings = {
   EXTENSION_DOWNLOAD_INSTRUCTIONS: `
     ZKP2P's browser side bar is your browsing assistant that allows
     you to prove ownership of your account and transactions.
+  `,
+
+  // Notary Connection Tooltip
+  NOTARY_CONNECTION_TOOLTIP: `
+    Your internet connection to the nearest notary is insufficient for verifying
+    your request information. Please check your connection and try again.
   `,
 
   // Notary Verification Modal Steps
