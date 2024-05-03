@@ -22,12 +22,12 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Revoluttag details found.
-    Please follow instructions in the browser assistant to prove ownership of an existing Revolut account.
+    No Revtag proofs found.
+    Please follow instructions in the browser assistant to generate proof of an existing Revtag.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
-    No Revolut transfer receipts detected.
-    Please follow instructions in the extension to prove receipt of a previous Revolut payment.
+    No Revolut transfer receipt detected.
+    Please follow instructions in the browser assistant to generate proof of payment on Revolut for the correct.
   `,
 
   // New Registration
