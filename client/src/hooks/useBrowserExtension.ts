@@ -40,7 +40,8 @@ export const ExtensionPostMessage = {
   FETCH_PROFILE_REQUEST_HISTORY: "fetch_profile_request_history",
   FETCH_TRANSFER_REQUEST_HISTORY: "fetch_transfer_request_history",
   POST_ONRAMPER_INTENT: "post_onramper_intent",
-  OPEN_SIDEBAR: "open_sidebar",
+  OPEN_SIDEBAR_REGISTRATION: "open_sidebar_registration",
+  OPEN_SIDEBAR_ONRAMP: "open_sidebar_onramp",
 };
 
 export const ExtensionReceiveMessage = {
