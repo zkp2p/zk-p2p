@@ -13,7 +13,7 @@ export default function useRemoteNotary({
   const [error, setError] = useState<string | null>(null);
 
   const generateDummyFile = (): Blob => {
-    const size = 1 * 1024 * 1024;
+    const size = 4 * 1024 * 1024;
     const bytes = new Uint8Array(size);
     for (let i = 0; i < size; i++) {
       bytes[i] = 0;
@@ -31,31 +31,22 @@ export default function useRemoteNotary({
     const startTime = performance.now();
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/upload', {
+      const response = await fetch('https://notary-ap-northeast-1.zkp2p.xyz/api/upload', {
           method: 'POST',
           body: formData
       });
 
-      const endTime = performance.now();
-
       if (response.ok) {
-        console.log('File uploaded successfully');
-
+        const endTime = performance.now();
         const durationSeconds = (endTime - startTime) / 1000;
         const fileSizeInBits = file.size * 8;
         const speedMbps = (fileSizeInBits / durationSeconds) / 1e6;
 
-        console.log('Upload speed:', speedMbps);
-
         setUploadSpeed(speedMbps);
       } else {
-        console.log('File uploaded unsuccessfully');
-
         setError(`Failed to upload file. Status: ${response.status}`);
       }
     } catch (err) {
-      console.log('Error caught');
-
       if (typeof err === 'string') {
         setError(err);
       } else if (err instanceof Error) {
