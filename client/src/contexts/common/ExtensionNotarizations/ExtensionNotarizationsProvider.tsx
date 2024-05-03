@@ -56,10 +56,16 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
     // console.log('Posted Message: ', ExtensionPostMessage.FETCH_TRANSFER_REQUEST_HISTORY);
   };
 
-  const openSidebar = () => {
-    window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR }, '*');
+  const openSidebarRegistration = () => {
+    window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR_REGISTRATION }, '*');
 
-    // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR);
+    // console.log('Posted Message: ', ExtensionPostMessage.OPEN_SIDEBAR_REGISTRATION);
+  };
+
+  const openSidebarOnramp = () => {
+    window.postMessage({ type: ExtensionPostMessage.OPEN_SIDEBAR_ONRAMP }, '*');
+
+    // console.log('Posted Message: ', ExtensionPostMessage.OPEN_OPEN_SIDEBAR_ONRAMP);
   };
 
   const postOnramperIntent = (platform: PaymentPlatformType, onramperIntent: string, fiatToSend: string) => {
@@ -152,7 +158,8 @@ const ExtensionNotarizationsProvider = ({ children }: ProvidersProps) => {
         isSidebarInstalled,
         sideBarVersion,
         postOnramperIntent,
-        openSidebar,
+        openSidebarRegistration,
+        openSidebarOnramp,
         refetchExtensionVersion,
         refetchProfileRequests,
         refetchTransferRequests,
