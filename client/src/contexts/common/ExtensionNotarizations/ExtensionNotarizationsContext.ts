@@ -7,7 +7,8 @@ interface ExtensionNotarizationsValues {
   isSidebarInstalled: boolean;
   sideBarVersion: string | null;
   postOnramperIntent: (paymentPlatform: string, onramperIntent: string, fiatToSend: string) => void;
-  openSidebar: () => void;
+  openSidebarRegistration: () => void;
+  openSidebarOnramp: () => void;
   refetchExtensionVersion: () => void;
   refetchProfileRequests: () => void;
   refetchTransferRequests: () => void;
@@ -19,7 +20,8 @@ const defaultValues: ExtensionNotarizationsValues = {
   isSidebarInstalled: false,
   sideBarVersion: null,
   postOnramperIntent: () => {},
-  openSidebar: () => {},
+  openSidebarRegistration: () => {},
+  openSidebarOnramp: () => {},
   refetchExtensionVersion: () => {},
   refetchProfileRequests: () => {},
   refetchTransferRequests: () => {},

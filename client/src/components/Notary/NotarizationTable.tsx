@@ -63,7 +63,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    */
 
   const {
-    openSidebar,
+    openSidebarRegistration,
+    openSidebarOnramp,
     refetchExtensionVersion,
     refetchProfileRequests,
     refetchTransferRequests,
@@ -93,6 +94,21 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   /*
    * Handlers
    */
+
+  const handleOpenSidebarPressed = () => {
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        openSidebarRegistration();
+        break;
+
+      case NotaryVerificationCircuit.TRANSFER:
+        openSidebarOnramp();
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const handleInstallExtensionClicked = () => {
     window.open(CHROME_EXTENSION_URL, '_blank');
@@ -584,7 +600,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             loadedNotaryProofs.length === 0 ? (
               <ButtonContainer>
                 <Button
-                  onClick={openSidebar}
+                  onClick={handleOpenSidebarPressed}
                 >
                   {'Open Sidebar'}
                 </Button>
