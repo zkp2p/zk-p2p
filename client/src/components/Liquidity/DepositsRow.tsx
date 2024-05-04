@@ -109,6 +109,9 @@ const IconAndTokenNameContainer = styled.div`
   align-items: center;
   gap: 12px;
   color: #FFFFFF;
+  @media (max-width: 600px) {
+    font-size: 13px;
+};
 `;
 
 const TitleAndValueContainer = styled.label`
@@ -126,7 +129,7 @@ const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
   @media (max-width: 600px) {
-      font-size: 10px;
+      font-size: 13px;
   };
 `;
 
