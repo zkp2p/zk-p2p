@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface PositionRowProps {
@@ -31,52 +32,67 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   const depositRemainingLabel = `${availableDepositAmount} USDC`;
   const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
   const originalAmountLabel = `${totalDepositAmount} USDC`
+  const isMobile = useMediaQuery() === 'mobile'
 
   return (
     <Container>
-      <PositionDetailsContainer>
-        <SummaryLabelsAndIconContainer>
-          <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
-          <SummaryLabelsContainer>
-            <SummaryLabel>
-              <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
-            </SummaryLabel>
-            
-            <SummaryLabel>
-              <SummaryLabelTitle>Outstanding Orders:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
-            </SummaryLabel>
+      <IntentDetailsContainer isMobile={isMobile}>
+        <PositionDetailsContainer>
+          <SummaryLabelsAndIconContainer>
+            {
+              !isMobile &&
+                <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+            }
+            <SummaryLabelsContainer>
+              <SummaryLabel>
+                <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
+              </SummaryLabel>
 
-            <PercentageLabel>
-              <Label>Conversion Rate:</Label>
-              <Value>{conversionRate}</Value>
-            </PercentageLabel>
+              <SummaryLabel>
+                <SummaryLabelTitle>Outstanding Orders:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
+              </SummaryLabel>
 
-            <SummaryLabel>
-              <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
-            </SummaryLabel>
-          </SummaryLabelsContainer>
-        </SummaryLabelsAndIconContainer>
-      </PositionDetailsContainer>
+              <PercentageLabel>
+                <Label>Conversion Rate:</Label>
+                <Value>{conversionRate}</Value>
+              </PercentageLabel>
 
-      <ActionsContainer>
-        <AccessoryButton
-          onClick={handleWithdrawClick}
-          height={36}
-          loading={isCancelDepositLoading}
-          title={'Withdraw'}
-          icon={'logout'}/>
-      </ActionsContainer>
+              <SummaryLabel>
+                <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
+              </SummaryLabel>
+            </SummaryLabelsContainer>
+          </SummaryLabelsAndIconContainer>
+        </PositionDetailsContainer>
+
+        <ActionsContainer>
+          <AccessoryButton
+            onClick={handleWithdrawClick}
+            height={36}
+            loading={isCancelDepositLoading}
+            title={'Withdraw'}
+            icon={'logout'}/>
+        </ActionsContainer>
+      </IntentDetailsContainer>
     </Container>
   );
 };
 
 const Container = styled.div`
+    display: flex;
+    flex-direction: row;
+`;
+
+const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
+  width: 100%; 
   display: flex;
-  flex-direction: row;
-  height: 100%;
+  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  gap: 1.25rem;
+  line-height: 24px;
 `;
 
 const PositionDetailsContainer = styled.div`
@@ -91,7 +107,6 @@ const ActionsContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  padding-right 1.5rem;
   flex-grow: 1;
 `;
 

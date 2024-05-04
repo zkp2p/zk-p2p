@@ -18,6 +18,7 @@ import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface OnRampProps {
@@ -43,6 +44,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
+  const isMobile = useMediaQuery() === 'mobile'
 
   /*
    * State
@@ -189,7 +191,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center', fontSize: isMobile ? '16px': ''}}>
             Complete On-Ramp
           </ThemedText.HeadlineSmall>
 

@@ -522,7 +522,6 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: ${colors.container};
 `;
 
 const InputsContainer = styled.div`
