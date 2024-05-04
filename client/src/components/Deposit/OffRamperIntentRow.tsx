@@ -92,7 +92,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
-      <IntentDetailsContainer>
+      <IntentDetailsContainer isMobile={isMobile}>
         {
           !isMobile && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
         }
@@ -141,10 +141,10 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-const IntentDetailsContainer = styled.div`
+const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
   width: 100%; 
   display: flex;
-  flex-direction: row;
+  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
   align-items: center;
   padding: 1.25rem 1.5rem;
   gap: 1.25rem;
