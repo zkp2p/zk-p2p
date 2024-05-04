@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface PositionRowProps {
@@ -31,12 +32,16 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   const depositRemainingLabel = `${availableDepositAmount} USDC`;
   const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
   const originalAmountLabel = `${totalDepositAmount} USDC`
+  const isMobile = useMediaQuery() === 'mobile'
 
   return (
     <Container>
       <PositionDetailsContainer>
         <SummaryLabelsAndIconContainer>
-          <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+          {
+            !isMobile &&
+            <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+          }
           <SummaryLabelsContainer>
             <SummaryLabel>
               <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>

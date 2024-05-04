@@ -54,10 +54,14 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
         {rowIndex + 1}
       </div>
 
-      <IconAndTokenNameContainer>
-        <SVGIconThemed icon={'usdc'} width={svgSize} height={svgSize} />
-        USD Coin
-      </IconAndTokenNameContainer>
+
+          <IconAndTokenNameContainer>
+            { !isMobile &&
+              <SVGIconThemed icon={'usdc'} width={svgSize} height={svgSize} />
+            }
+            USD Coin
+          </IconAndTokenNameContainer>
+
 
       <TitleAndValueContainer>
         <Value>{paymentPlatformInfo[paymentPlatform].platformName}</Value>

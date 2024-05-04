@@ -35,7 +35,6 @@ export const MailRow: React.FC<MailRowProps> = ({
       isLastRow={isLastRow}
       isPlatformTextLong={isPlatformTextLong}
     >
-      <PlatformLabel> {platformText} </PlatformLabel>
       <SubjectLabel> {subjectLabel} </SubjectLabel>
       <DateLabel> {dateLabel} </DateLabel>
     </Container>
@@ -64,10 +63,6 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatform
       box-shadow: none;
     }
   `}
-`;
-
-const PlatformLabel = styled.label`
-  text-align: left;
 `;
 
 const SubjectLabel = styled.label`
