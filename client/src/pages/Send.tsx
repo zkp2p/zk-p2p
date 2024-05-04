@@ -38,6 +38,8 @@ const PageWrapper = styled.div`
   flex-direction: column;
   padding: 12px 8px 0px;
   padding-bottom: 3rem;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Main = styled.div`

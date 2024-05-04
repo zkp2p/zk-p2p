@@ -7,6 +7,7 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
 import { PaymentPlatformType, paymentPlatformInfo } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface DepositsRowProps {
@@ -40,6 +41,8 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 
   const depositRemainingLabel = `${availableDepositAmount}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
+  const isMobile = useMediaQuery() === 'mobile'
+  const svgSize = isMobile ? '20' : '28'
 
   /*
    * Component
@@ -51,10 +54,14 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
         {rowIndex + 1}
       </div>
 
-      <IconAndTokenNameContainer>
-        <SVGIconThemed icon={'usdc'} width={'28'} height={'28'} />
-        USD Coin
-      </IconAndTokenNameContainer>
+
+          <IconAndTokenNameContainer>
+            { !isMobile &&
+              <SVGIconThemed icon={'usdc'} width={svgSize} height={svgSize} />
+            }
+            USD Coin
+          </IconAndTokenNameContainer>
+
 
       <TitleAndValueContainer>
         <Value>{paymentPlatformInfo[paymentPlatform].platformName}</Value>
@@ -102,6 +109,9 @@ const IconAndTokenNameContainer = styled.div`
   align-items: center;
   gap: 12px;
   color: #FFFFFF;
+  @media (max-width: 600px) {
+    font-size: 13px;
+};
 `;
 
 const TitleAndValueContainer = styled.label`
@@ -118,6 +128,9 @@ const PercentageLabel = styled.div`
 const Value = styled.span`
   color: #FFFFFF;
   font-size: 15px;
+  @media (max-width: 600px) {
+      font-size: 13px;
+  };
 `;
 
 const ENSNameWrapper = styled.div`

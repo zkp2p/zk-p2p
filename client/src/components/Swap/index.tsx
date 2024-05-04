@@ -601,7 +601,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
 };
 
 const Wrapper = styled.div`
-  width: 100%;
   max-width: 484px;
   padding-top: 32px;
   display: flex;

@@ -10,7 +10,7 @@ import { AccountDropdown } from "@components/Account/AccountDropdown";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useAccount from '@hooks/useAccount';
-import { formatAddress } from '@helpers/addressFormat';
+import {formatAddress, formatAddressShort} from '@helpers/addressFormat';
 import { alchemyMainnetEthersProvider } from "index";
 
 
@@ -153,7 +153,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                         <EthereumAvatar address={loggedInEthereumAddress || ''} />
                         <AccountDisplay>
                           {isLoggedIn ? (
-                            accountDisplay
+                              currentDeviceSize === 'mobile' ? formatAddressShort(accountDisplay!) : accountDisplay
                           ) : (
                             <ENSName
                               provider={alchemyMainnetEthersProvider}

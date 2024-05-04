@@ -16,6 +16,8 @@ import { EmailInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers
 import { platformStrings } from "@helpers/strings";
 import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER, GARANTI_EMAIL_FULTER } from '@helpers/constants';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
+import {formatAddress} from "@helpers/addressFormat";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface MailTableProps {
@@ -47,6 +49,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   } = useGoogleAuth();
 
   const { setIsEmailModeAuth } = useProofGenSettings();
+  const isMobile = useMediaQuery() == 'mobile'
 
   /*
    * State
@@ -316,11 +319,15 @@ export const MailTable: React.FC<MailTableProps> = ({
               Sign in with Google
             </Button>
 
-            <TextButton
-              onClick={() => handleEmailModeChanged(false)}
-              height={24}
-              title={'Or Upload'}
-            />
+            {
+              !isMobile &&
+              <TextButton
+                  onClick={() => handleEmailModeChanged(false)}
+                  height={24}
+                  title={'Or Upload'}
+              />
+            }
+
           </LoginOrUploadButtonContainer>
         </ErrorContainer>
       ) : (
@@ -343,7 +350,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               <EmailAddressTitle>
                 <EmailLabel>
                   <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
-                  <EmailLabelValue>{loggedInGmail}</EmailLabelValue>
+                  <EmailLabelValue>{formatAddress(loggedInGmail!)}</EmailLabelValue>
                 </EmailLabel>
               </EmailAddressTitle>
 
