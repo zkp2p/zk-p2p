@@ -9,6 +9,7 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { PaymentPlatformType } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface IntentRowProps {
@@ -37,6 +38,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const { blockscanUrl } = useSmartContracts();
+  const isMobile = useMediaQuery() == 'mobile'
 
   const {
     PaymentPlatform,
@@ -91,7 +93,9 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   return (
     <Container>
       <IntentDetailsContainer>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        {
+          !isMobile && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        }
         <AmountLabelsContainer>
           <AmountContainer>
             <Label>Requesting:&nbsp;</Label>
