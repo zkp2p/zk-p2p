@@ -11,6 +11,7 @@ import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
 import { PaymentPlatformType } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface IntentRowProps {
@@ -54,6 +55,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
     reviewedRequirementsForPlatform,
     markPlatformRequirementsAsReviewed
   } = usePlatformSettings();
+  const isMobile = useMediaQuery() == 'mobile'
 
   /*
    * State
@@ -188,7 +190,9 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       }
 
       <IntentDetailsContainer>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        {
+          !isMobile && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        }
         <DetailsContainer>
           <LabelContainer>
             <Label>Depositor:&nbsp;</Label>
