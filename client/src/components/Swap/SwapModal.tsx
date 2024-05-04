@@ -222,7 +222,8 @@ const StyledArrowLeft = styled(ArrowLeft)`
 `;
 
 const ModalContainer = styled.div<{$isVenmo?: boolean}>`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

@@ -1105,18 +1105,20 @@ export default function SendForm() {
           <MainContentWrapper>
             <NetworkContainer>
               <NetworkTransitionContainer>
-                <NetworkLogoAndNameContainer>
-                  <NetworkSvg src={networkSvg()} />
+                <NetworkWrapper>
+                  <NetworkLogoAndNameContainer>
+                    <NetworkSvg src={networkSvg()} />
 
-                  <NetworkNameContainer>
-                    <NetworkHeader>
-                      {'From'}
-                    </NetworkHeader>
-                    <NetworkNameLabel>
-                      {networkName()}
-                    </NetworkNameLabel>
-                  </NetworkNameContainer>
-                </NetworkLogoAndNameContainer>
+                    <NetworkNameContainer>
+                      <NetworkHeader>
+                        {'From'}
+                      </NetworkHeader>
+                      <NetworkNameLabel>
+                        {networkName()}
+                      </NetworkNameLabel>
+                    </NetworkNameContainer>
+                  </NetworkLogoAndNameContainer>
+                </NetworkWrapper>
 
                 <NetworkSelector
                   disabled={selectorsDisabled()}
@@ -1243,6 +1245,13 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
+const NetworkWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const SendFormContainer = styled(AutoColumn)`
   border-radius: 16px;
   padding: 1rem;
@@ -1275,7 +1284,7 @@ const NetworkContainer = styled.div`
 
 const NetworkTransitionContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
@@ -1284,7 +1293,7 @@ const NetworkTransitionContainer = styled.div`
 const NetworkLogoAndNameContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 188px;
+  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   gap: 1rem;

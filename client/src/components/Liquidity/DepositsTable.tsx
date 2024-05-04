@@ -293,6 +293,9 @@ const Table = styled.div`
   box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
   font-size: 16px;
   color: #616161;
+  @media (max-width: 600px) {
+      font-size: 10px;
+  };
 
   & > * {
     border-bottom: 1px solid ${colors.defaultBorderColor};
@@ -308,6 +311,9 @@ const ColumnHeader = styled.div`
   text-align: left;
   font-size: 14px;
   opacity: 0.7;
+  @media (max-width: 600px) {
+      font-size: 10px;
+  };
 `;
 
 const PaginationContainer = styled.div`

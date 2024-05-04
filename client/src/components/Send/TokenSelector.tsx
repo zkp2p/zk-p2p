@@ -209,7 +209,8 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

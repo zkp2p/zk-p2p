@@ -83,7 +83,8 @@ const SettingsButton = styled.div`
 
 const Dropdown = styled.div`
   display: flex;
-  width: 392px;
+  width: 70vw;
+  max-width: 392px;
   flex-direction: column;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -91,7 +92,7 @@ const Dropdown = styled.div`
   background-color: ${colors.container};
   position: absolute;
   top: calc(100% + 20px);
-  right: -12px;
+  right: -10px;
   z-index: 20;
   color: #CED4DA;
 `;
