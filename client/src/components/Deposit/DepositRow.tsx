@@ -35,7 +35,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   const isMobile = useMediaQuery() === 'mobile'
 
   return (
-    <Container>
+    <Container isMobile={isMobile}>
       <PositionDetailsContainer>
         <SummaryLabelsAndIconContainer>
           {
@@ -78,9 +78,9 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   );
 };
 
-const Container = styled.div`
+const Container = styled.div<{isMobile?: boolean}>`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
   height: 100%;
 `;
 
