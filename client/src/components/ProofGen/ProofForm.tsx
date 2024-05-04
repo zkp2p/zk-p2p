@@ -35,6 +35,7 @@ import useProofGenSettings from '@hooks/useProofGenSettings';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useRemoteProofGen from '@hooks/useRemoteProofGen';
 import { colors } from '@theme/colors';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface ProofGenerationFormProps {
@@ -91,6 +92,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
     isEmailModeAuth,
   } = useProofGenSettings();
   const { setExtractedVenmoId } = useRegistration();
+  const isMobile = useMediaQuery() == 'mobile'
 
   /*
    * State
@@ -205,7 +207,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             // validateAndSanitizeEmailSubject
             try {
               const { sanitizedEmail, didSanitize } = validateAndSanitizeEmailSubject(emailFull);
-    
+
               if (didSanitize) {
                 setEmailFull(sanitizedEmail);
                 return;
@@ -214,11 +216,11 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               setEmailInputStatus(EmailInputStatus.INVALID_SUBJECT);
               return;
             }
-    
+
             // validateEmailDomainKey
             try {
               const emailReceivedYear = validateEmailDomainKey(emailFull);
-    
+
               if (emailReceivedYear.emailRaw !== "2024" && emailReceivedYear.emailRaw !== "2023") {
                 setEmailInputStatus(EmailInputStatus.INVALID_DOMAIN_KEY);
                 return;
@@ -227,7 +229,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
               setEmailInputStatus(EmailInputStatus.INVALID_SIGNATURE);
               return;
             }
-    
+
             // validateVenmoDKIMSignature
             try {
               await validateVenmoDKIMSignature(emailFull);
@@ -241,7 +243,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
             // sanitizeAndProcessHdfcEmailSubject
             try {
               const { processedEmail, didSanitize } = sanitizeAndProcessHdfcEmailSubject(emailFull);
-    
+
               if (didSanitize) {
                 setEmailFull(processedEmail);
                 return;
@@ -284,7 +286,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           default:
             throw new Error(`Unknown payment platform: ${paymentPlatformType}`);
         }
-  
+
         const hash = crypto.createHash('sha256');
         hash.update(emailFull);
         const hashedEmail = hash.digest('hex');
@@ -296,7 +298,7 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
         setEmailInputStatus(EmailInputStatus.DEFAULT);
       }
     }
-  
+
     verifyEmail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emailFull]);
@@ -529,27 +531,29 @@ export const ProofGenerationForm: React.FC<ProofGenerationFormProps> = ({
           provingFailureErrorCode={provingFailureErrorCode}
         />
       )}
-
-      <VerticalDivider/>
-
-      {isEmailModeAuth ? (
-        <MailTable
-          paymentPlatform={paymentPlatformType}
-          setEmailFull={setEmailAndToggleInputMode}
-          handleVerifyEmailClicked={handleVerifyEmailClicked}
-          emailInputStatus={emailInputStatus}
-          isProofModalOpen={shouldShowVerificationModal}
-        />
-      ) : (
-        <UploadEmail
-          paymentPlatform={paymentPlatformType}
-          email={emailFull}
-          setEmail={setEmailFull}
-          handleVerifyEmailClicked={handleVerifyEmailClicked}
-          emailInputStatus={emailInputStatus}
-          isProofModalOpen={shouldShowVerificationModal}
-        />
-      )}
+      { !isMobile &&
+        <>
+          <VerticalDivider/>
+          {isEmailModeAuth ? (
+            <MailTable
+              paymentPlatform={paymentPlatformType}
+              setEmailFull={setEmailAndToggleInputMode}
+              handleVerifyEmailClicked={handleVerifyEmailClicked}
+              emailInputStatus={emailInputStatus}
+              isProofModalOpen={shouldShowVerificationModal}
+            />
+          ) : (
+            <UploadEmail
+              paymentPlatform={paymentPlatformType}
+              email={emailFull}
+              setEmail={setEmailFull}
+              handleVerifyEmailClicked={handleVerifyEmailClicked}
+              emailInputStatus={emailInputStatus}
+              isProofModalOpen={shouldShowVerificationModal}
+            />
+          )}
+        </>
+      }
     </Container>
   );
 };
