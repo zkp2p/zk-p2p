@@ -87,7 +87,7 @@ const Container = styled.div<{isMobile?: boolean}>`
 const PositionDetailsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   padding: 1.5rem;
 `;
 
