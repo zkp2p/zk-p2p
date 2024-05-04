@@ -81,6 +81,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 const Container = styled.div<{isMobile?: boolean}>`
   display: flex;
   flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
+  align-items: center;
   height: 100%;
 `;
 
