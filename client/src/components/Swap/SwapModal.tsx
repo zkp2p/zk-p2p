@@ -149,7 +149,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
                     <Button
                       onClick={() => {
                         setPaymentInitiated(true);
-                        window.open(troubleScanningQRCodeLink, '_blank', 'noopener,noreferrer');
+                        window.open(link, '_blank', 'noopener,noreferrer');
                       }}
                     >
                       {`Send ₹${amount} on ${paymentPlatformName} ↗`}
