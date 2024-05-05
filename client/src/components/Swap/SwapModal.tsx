@@ -12,6 +12,7 @@ import { PaymentPlatformType } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
+import useMediaQuery from "@hooks/useMediaQuery";
 import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from "@helpers/docUrls";
 
 
@@ -44,6 +45,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const {
     PaymentPlatform,
   } = usePlatformSettings();
+  const isMobile = useMediaQuery() == 'mobile';
 
   /*
    * Handlers
@@ -67,7 +69,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         return {
           troubleScanningQRCodeLink: link,
           paymentPlatformName: 'Venmo',
-          instructionsText: `Scan and send $${amount}`,
+          instructionsText: isMobile ? ``: `Scan and send $${amount}`,
+          mobilePaymentButtonText: `Send $${amount} on Venmo`
         };
 
       case PaymentPlatform.HDFC:
@@ -75,7 +78,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
           currencySymbol: '₹',
           paymentPlatformName: 'HDFC',
-          instructionsText: `Scan and send ₹${amount} <br />to ${venmoId}`,
+          instructionsText: isMobile ? `Click to send ₹${amount} <br />to ${venmoId} `: `Scan and send ₹${amount} <br />to ${venmoId}`, 
+          mobilePaymentButtonText: `Send ₹${amount} on UPI`
         };
 
       case PaymentPlatform.GARANTI:
@@ -96,7 +100,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         return {
           troubleScanningQRCodeLink: link,
           paymentPlatformName: 'Venmo',
-          instructionsText: `Scan and send $${amount}`,
+          instructionsText: !isMobile 
+          ? `Scan and send $${amount} <br />to ${venmoId}` 
+          : `Send $${amount} <br />to ${venmoId}`,
         };
     }
   };
@@ -135,16 +141,35 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         {paymentPlatform !== PaymentPlatform.GARANTI ? (
           <div>
-            <QRContainer>
-              <QRCode
-                value={link}
-                size={192}/>
-            </QRContainer>
-            <QRLabel>
-              <Link href={troubleScanningQRCodeLink} target="_blank">  
-                {paymentPlatform === PaymentPlatform.REVOLUT ? `Get the Revolut app ↗` : "Trouble scanning QR?"}
-              </Link>
-            </QRLabel>     
+            {
+              isMobile ? (
+                <div>
+                  <ButtonContainer>
+                    <Button
+                      onClick={() => {
+                        window.open(troubleScanningQRCodeLink, '_blank', 'noopener,noreferrer');
+                      }}
+                    >
+                      {`Send ₹${amount} on ${paymentPlatformName} ↗`}
+                    </Button> 
+                  </ButtonContainer>
+                </div>
+              ) :
+              (
+                <>
+                  <QRContainer>
+                    <QRCode
+                      value={link}
+                      size={192}/>
+                  </QRContainer>
+                  <QRLabel>
+                    <Link href={troubleScanningQRCodeLink} target="_blank">  
+                      {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
+                    </Link>
+                  </QRLabel>
+                </>
+              )
+            }
           </div>
         ) : (
           <GarantiInformationContainer>
@@ -252,6 +277,11 @@ const IBANTitle = styled.div`
 const InstructionsTitle = styled.div`
   line-height: 1.3;
   font-size: 18px;
+
+  // @media (max-width: 600px) {
+  //   font-size: 16px;
+  // };
+  
   font-weight: 700;
   text-align: center;
 `;
