@@ -9,6 +9,7 @@ interface ButtonProps {
   width?: number;
   height?: number;
   fontSize?: number;
+  bgColor?: string;
   disabled?: boolean;
   loading?: boolean;
   leftAccessorySvg?: string;
@@ -22,6 +23,7 @@ export const Button: React.FC<ButtonProps> = ({
   width,
   height = 48,
   fontSize = 16,
+  bgColor = "#df2e2d",
   disabled = false,
   loading = false,
   leftAccessorySvg,
@@ -37,6 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
       width={width}
       height={height}
       fontSize={fontSize}
+      bgColor={bgColor}
       disabled={disabled}
       $disabled={disabled}
       $loading={loading}
@@ -81,6 +84,7 @@ interface BaseButtonProps {
   width?: number;
   height?: number;
   fontSize?: number;
+  bgColor?: string;
   $disabled?: boolean;
   $loading?: boolean;
   onClick?: () => void;
@@ -90,7 +94,7 @@ interface BaseButtonProps {
 const BaseButton = styled.button<BaseButtonProps & { $svgLoaded: boolean }>`
   width: ${({ fullWidth, width }) => fullWidth ? '100%' : width ? `${width}px` : 'auto'};
   height: ${({ height }) => height}px;
-  background: #df2e2d;
+  background: ${({ bgColor }) => bgColor || '#df2e2d'};
   box-shadow: inset -3px -6px 4px rgba(0, 0, 0, 0.16);
   border-radius: 24px;
   padding: 8px ${({ fullWidth }) => (fullWidth ? '0' : '24px')};

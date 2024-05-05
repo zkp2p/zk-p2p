@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
@@ -59,6 +59,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
     onCompleteClick();
   };
 
+  // State to manage button activation and styles
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
+
   /*
    * Helpers
    */
@@ -70,7 +73,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           troubleScanningQRCodeLink: link,
           paymentPlatformName: 'Venmo',
           instructionsText: isMobile ? ``: `Scan and send $${amount}`,
-          mobilePaymentButtonText: `Send $${amount} on Venmo`
         };
 
       case PaymentPlatform.HDFC:
@@ -79,7 +81,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           currencySymbol: '₹',
           paymentPlatformName: 'HDFC',
           instructionsText: isMobile ? `Click to send ₹${amount} <br />to ${venmoId} `: `Scan and send ₹${amount} <br />to ${venmoId}`, 
-          mobilePaymentButtonText: `Send ₹${amount} on UPI`
         };
 
       case PaymentPlatform.GARANTI:
@@ -147,6 +148,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
                   <ButtonContainer>
                     <Button
                       onClick={() => {
+                        setPaymentInitiated(true);
                         window.open(troubleScanningQRCodeLink, '_blank', 'noopener,noreferrer');
                       }}
                     >
@@ -204,6 +206,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             onClick={async () => {
               handleCompleteClick();
             }}
+            bgColor={ paymentInitiated ? '#df2e2d' : '#ffcccc' }
           >
             I have completed payment
           </Button>
