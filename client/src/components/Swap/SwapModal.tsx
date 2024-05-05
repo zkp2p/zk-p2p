@@ -280,11 +280,6 @@ const IBANTitle = styled.div`
 const InstructionsTitle = styled.div`
   line-height: 1.3;
   font-size: 18px;
-
-  // @media (max-width: 600px) {
-  //   font-size: 16px;
-  // };
-  
   font-weight: 700;
   text-align: center;
 `;
