@@ -206,7 +206,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             onClick={async () => {
               handleCompleteClick();
             }}
-            bgColor={ paymentInitiated ? '#df2e2d' : '#ffcccc' }
+            bgColor={ isMobile ? (paymentInitiated ? '#df2e2d' : '#ffcccc') : '#df2e2d'
+           }
           >
             I have completed payment
           </Button>
