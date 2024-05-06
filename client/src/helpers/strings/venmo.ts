@@ -85,7 +85,7 @@ const strings: PlatformStrings = {
     Amount USD to send, which may not match your requested USDC amount, is double checked
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Do not add more than one emoji in the payment custom note
+    Do not add emojis in the payment note
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: `
     'Turn on for purchases' at the payment screen is toggled off
