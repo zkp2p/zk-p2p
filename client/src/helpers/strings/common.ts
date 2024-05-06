@@ -209,8 +209,8 @@ const strings: CommonStrings = {
 
   // Notary Connection Tooltip
   NOTARY_CONNECTION_TOOLTIP: `
-    Your internet connection to the nearest notary may be insufficient
-    for proving new information. Please check your connection and try again.
+    Your internet connection may be insufficient for verifying new information.
+    Please check your connection and try again or join our Telegram for support.
   `,
 
   // Notary Verification Modal Steps
