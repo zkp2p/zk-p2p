@@ -33,6 +33,13 @@ const NotarySettingsProvider = ({ children }: ProvidersProps) => {
   const [connectionStatus, setConnectionStatus] = useState<NotaryConnectionStatusType>(NotaryConnectionStatus.DEFAULT);
   const [configuration, setConfiguration] = useState<NotaryConfiguration | null>(null);
 
+  const {
+    uploadTime,
+    uploadFile
+  } = useRemoteNotaryUploadTest({
+    notaryUrl: configuration?.notary ?? '',
+  });
+
   /*
    * Hooks
    */
@@ -73,6 +80,20 @@ const NotarySettingsProvider = ({ children }: ProvidersProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (uploadTime) {
+      if (uploadTime < 3) {
+        setConnectionStatus(NotaryConnectionStatus.GREEN);
+      } else {
+        setConnectionStatus(NotaryConnectionStatus.RED);
+      }
+    } else {
+      setConnectionStatus(NotaryConnectionStatus.DEFAULT);
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadTime]);
+
   /*
    * Helpers
    */
@@ -100,29 +121,18 @@ const NotarySettingsProvider = ({ children }: ProvidersProps) => {
     );
 
     const bestIndex = latencies.reduce((lowestIdx, currentLatency, idx, array) => 
-      currentLatency !== Infinity && currentLatency < array[lowestIdx] ? idx : lowestIdx, 0);
+      currentLatency !== Infinity && currentLatency > array[lowestIdx] ? idx : lowestIdx, 0);
 
     const bestNotary = notaries[bestIndex];
 
     if (latencies[bestIndex] !== Infinity) {
       setConfiguration(bestNotary);
 
-      setConnectionStatus(NotaryConnectionStatus.GREEN);
-
       return bestNotary;
     } else {
-      setConnectionStatus(NotaryConnectionStatus.RED);
-
       return null;
     }
   };
-
-  const {
-    uploadTime,
-    uploadFile
-  } = useRemoteNotaryUploadTest({
-    notaryUrl: configuration?.notary ?? '',
-  });
 
   /*
    * Provider

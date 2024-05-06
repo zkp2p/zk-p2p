@@ -31,7 +31,6 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 const ROWS_PER_PAGE = 3;
 const NOTARY_PROOF_FETCH_INTERVAL = 5000;
-// const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
 const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih';
 
 const USE_REVOLUT_DEFAULT_DEPOSITOR = process.env.USE_REVOLUT_DEFAULT_DEPOSITOR;
@@ -81,10 +80,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const { currentIntent } = useOnramperIntents();
 
   const {
-    configuration,
-    connectionStatus,
-    determineFastestNotary,
-    uploadTimeForNotary
+    connectionStatus
   } = useNotarySettings();
 
   /*
@@ -246,8 +242,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const shouldShowConnectionWarning = () => {
     const isConnectionStatusPoor = connectionStatus !== NotaryConnectionStatus.GREEN;
     const userHasNotPressedProceed = !didPressProceed;
+    const userDoesNotHaveValidProof = selectedIndex === null;
 
-    return isConnectionStatusPoor && userHasNotPressedProceed;
+    return userDoesNotHaveValidProof && isConnectionStatusPoor && userHasNotPressedProceed;
   };
 
   async function getBrowser() {
