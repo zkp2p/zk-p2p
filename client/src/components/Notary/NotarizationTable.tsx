@@ -84,7 +84,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     configuration,
     connectionStatus,
     determineFastestNotary,
-    uploadSpeedForNotary
+    uploadTimeForNotary
   } = useNotarySettings();
 
   /*
@@ -334,19 +334,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     // Moot to run this on an interval because the content script needs to be injected
     refetchExtensionVersion();
 
-    async function determineNotaryConfiguration() {
-      await determineFastestNotary();
-    };
-    determineNotaryConfiguration();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    console.log('connectionStatus', connectionStatus);
-    console.log('configuration', configuration);
-    console.log('uploadSpeedForNotary', uploadSpeedForNotary);
-  }, [configuration, connectionStatus, uploadSpeedForNotary]);
 
   useEffect(() => {
     if (!isSidebarInstalled) {

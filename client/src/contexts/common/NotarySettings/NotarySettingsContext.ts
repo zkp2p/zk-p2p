@@ -10,15 +10,15 @@ import {
 interface NotarySettingsValues {
   configuration: NotaryConfiguration | null;
   connectionStatus: NotaryConnectionStatusType;
-  determineFastestNotary: () => Promise<NotaryConfiguration | null>;
-  uploadSpeedForNotary: number | null;
+  determineFastestNotary: (notaries: NotaryConfiguration[]) => Promise<NotaryConfiguration | null>;
+  uploadTimeForNotary: number | null;
 };
 
 const defaultValues: NotarySettingsValues = {
   configuration: null,
   connectionStatus: NotaryConnectionStatus.DEFAULT,
   determineFastestNotary: async () => null,
-  uploadSpeedForNotary: null,
+  uploadTimeForNotary: null,
 };
 
 const NotarySettingsContext = createContext<NotarySettingsValues>(defaultValues);
