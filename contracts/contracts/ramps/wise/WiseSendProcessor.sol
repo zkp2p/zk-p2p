@@ -99,7 +99,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        return _isValidVerifierSignature(encodedMessage, _proof, _verifierSigningKey);
+        return _isValidSignature(encodedMessage, _proof, _verifierSigningKey);
     }
 
     /* ============ Internal Functions ============ */
@@ -114,7 +114,7 @@ contract WiseSendProcessor is IWiseSendProcessor, TLSBaseProcessor {
     {   
         require(
             verifyProof(_verifierSigningKey, _publicValues, _proof),
-            "Invalid signature from verifier"
+            "Invalid proof"
         );
     }
 }

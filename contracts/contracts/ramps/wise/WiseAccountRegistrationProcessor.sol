@@ -88,7 +88,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
             _publicValues.wiseTagHash,
             _publicValues.userAddress
         );
-        return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+        return _isValidSignature(encodedMessage, _proof, verifierSigningKey);
     }
     
     /* ============ Internal Functions ============ */
@@ -102,7 +102,7 @@ contract WiseAccountRegistrationProcessor is IWiseAccountRegistrationProcessor, 
     {   
         require(
             verifyProof(_publicValues, _proof),
-            "Invalid signature from verifier"
+            "Invalid proof"
         );
     }
 }

@@ -91,10 +91,10 @@ contract TLSBaseProcessor is Ownable {
         nullifierRegistry.addNullifier(_nullifier);
     }
 
-    function _isValidVerifierSignature(
+    function _isValidSignature(
         bytes memory _message,
         bytes memory _signature,
-        address _verifier
+        address _signer
     )
         internal
         view
@@ -102,6 +102,6 @@ contract TLSBaseProcessor is Ownable {
     {
         bytes32 verifierPayload = keccak256(_message).toEthSignedMessageHash();
 
-        return _verifier.isValidSignatureNow(verifierPayload, _signature);
+        return _signer.isValidSignatureNow(verifierPayload, _signature);
     }
 }

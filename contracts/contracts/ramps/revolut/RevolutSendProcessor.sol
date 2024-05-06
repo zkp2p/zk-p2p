@@ -98,7 +98,7 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
             _publicValues.timestamp,
             _publicValues.intentHash
         );
-        return _isValidVerifierSignature(encodedMessage, _proof, _verifierSigningKey);
+        return _isValidSignature(encodedMessage, _proof, _verifierSigningKey);
     }
 
     /* ============ Internal Functions ============ */
@@ -113,11 +113,13 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
     {   
         require(
             verifyProof(_verifierSigningKey, _publicValues, _proof),
-            "Invalid signature from verifier"
+            "Invalid proof"
         );
     }
 
     function _parseAmount(string memory amount) internal pure returns(uint256) {
+        // For send transactions, the amount is prefixed with a '-' character, if the character doesn't exist then
+        // it would be a receive transaction
         require(bytes(amount)[0] == 0x2D, "Not a send transaction");   
         return amount.stringToUint(6);
     }

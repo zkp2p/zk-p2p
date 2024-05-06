@@ -76,7 +76,7 @@ contract RevolutRamp is Ownable {
 
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
-        bytes32 depositorId;                // Depositor's offRampId 
+        bytes32 depositorId;                // Depositor's accountId, this ID is a hash of the user's original Rev Tag 
         Deposit deposit;                    // Deposit struct
         uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
@@ -92,7 +92,7 @@ contract RevolutRamp is Ownable {
     struct IntentWithOnRamperId {
         bytes32 intentHash;                 // Intent hash
         Intent intent;                      // Intent struct
-        bytes32 onRamperId;                 // onRamper's onRamperId
+        bytes32 onRamperId;                 // onRamper's onRamperId, this ID is a hash of the user's original Rev Tag
     }
 
     // A Global Account is defined as an account represented by one accountId. This is used to enforce limitations on actions across
@@ -204,10 +204,10 @@ contract RevolutRamp is Ownable {
         external
         onlyRegisteredUser
     {
-        bytes32 account = accountRegistry.getAccountId(msg.sender);
-        GlobalAccountInfo storage globalAccountInfo = globalAccount[account];
+        bytes32 offRamperId = accountRegistry.getAccountId(msg.sender);
+        GlobalAccountInfo storage globalAccountInfo = globalAccount[offRamperId];
 
-        require(keccak256(abi.encode(_revolutTag)) == account, "Revolut tag must match id");
+        require(keccak256(abi.encode(_revolutTag)) == offRamperId, "Revolut tag must match id");
         require(globalAccountInfo.deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -231,7 +231,7 @@ contract RevolutRamp is Ownable {
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
 
-        emit DepositReceived(depositId, account, _receiveCurrencyId, _depositAmount, conversionRate);
+        emit DepositReceived(depositId, offRamperId, _receiveCurrencyId, _depositAmount, conversionRate);
     }
 
     /**
@@ -690,7 +690,7 @@ contract RevolutRamp is Ownable {
 
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Revolut tag does not match");
+        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Offramper id doesn’t match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
     }
 }

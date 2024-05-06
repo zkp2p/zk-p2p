@@ -108,7 +108,7 @@ describe("WiseOffRamperRegistrationProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
+        await expect(subject()).to.be.revertedWith("Invalid proof");
       });
     });
 

@@ -50,7 +50,8 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
 
     bool public isInitialized;                                                  // Indicates if contract has been initialized
 
-    mapping(address => bytes32) internal accounts;                              // Mapping of Ethereum accounts to their Revolut accountId
+    mapping(address => bytes32) internal accounts;                              // Mapping of Ethereum accounts to hash of original Rev Tag
+                                                                                // resulting hash is the accountId for our system
     mapping(bytes32 => DenyList) internal denyList;                             // Mapping of accountId to denylist
     mapping(bytes32 => AllowList) internal allowList;                           // Mapping of accountId to allow list
 
@@ -242,8 +243,8 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
     /* ============ Internal Functions ============ */
 
     /**
-     * @notice Validate the user has an Revolut account, we do not nullify this email since it can be reused to register under
-     * different addresses.
+     * @notice Validate the user has an Revolut account. We nullify this accountId along with the calling address so that
+     * it can't be used again.
      */
     function _verifyRegistrationProof(
         IRevolutAccountRegistrationProcessor.RegistrationProof calldata _proof

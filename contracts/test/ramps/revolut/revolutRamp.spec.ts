@@ -1036,7 +1036,7 @@ describe("RevolutRamp", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Revolut tag does not match");
+          await expect(subject()).to.be.revertedWith("Offramper id doesn’t match");
         });
       });
     });

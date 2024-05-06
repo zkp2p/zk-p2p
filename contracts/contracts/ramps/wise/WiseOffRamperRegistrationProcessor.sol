@@ -76,7 +76,7 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
         returns(bool)
     {   
         bytes memory encodedMessage = abi.encode(_publicValues.endpoint, _publicValues.host, _publicValues.profileId, _publicValues.mcAccountId);
-        return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+        return _isValidSignature(encodedMessage, _proof, verifierSigningKey);
     }
 
     /* ============ Internal Functions ============ */
@@ -90,7 +90,7 @@ contract WiseOffRamperRegistrationProcessor is IWiseOffRamperRegistrationProcess
     {   
         require(
             verifyProof(_publicValues, _proof),
-            "Invalid signature from verifier"
+            "Invalid proof"
         );
     }
 }
