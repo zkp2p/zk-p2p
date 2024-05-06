@@ -690,7 +690,7 @@ contract RevolutRamp is Ownable {
 
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Offramper id doesn’t match");
+        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Offramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
     }
 }
