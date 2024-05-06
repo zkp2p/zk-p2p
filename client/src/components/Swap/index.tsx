@@ -41,6 +41,7 @@ const QuoteState = {
   EXCEEDS_ORDER_COUNT: 'exceeds-order-count',
   EXCEEDS_MAX_SIZE: 'exceeds-max-size',
   INSUFFICIENT_LIQUIDITY: 'insufficient-liquidity',
+  AMOUNT_BELOW_TRANSFER_MIN: 'insufficient-transfer-amount',
   INVALID_RECIPIENT_ADDRESS: 'invalid-recipient-address',
   ORDER_COOLDOWN_PERIOD: 'order-cooldown-period',
   BLOCKED_BY_DEPOSITOR: 'blocked-by-depositor',
@@ -285,7 +286,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
         const depositId = indicativeQuote.depositId;
         const conversionRate = indicativeQuote.conversionRate;
 
-        const isAmountToSendValid = usdAmountToSend !== undefined;
+        const isAmountToSendValid = usdAmountToSend !== undefined; 
+        const isSendAmountAboveMin = paymentPlatform == PaymentPlatform.REVOLUT ? Number(usdAmountToSend) > 1 : true ;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
@@ -298,7 +300,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
           }));
 
           const doesNotHaveOpenIntent = currentIntentHash === null;
-          if (doesNotHaveOpenIntent) {
+          if (!isSendAmountAboveMin) { 
+            updateQuoteErrorState(QuoteState.AMOUNT_BELOW_TRANSFER_MIN);
+            return;
+          }
+          if (doesNotHaveOpenIntent ) {
             const lastOnRampTimestampLoaded = lastOnRampTimestamp !== null;
             const onRampCooldownPeriodLoaded = onRampCooldownPeriod !== null;
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
@@ -473,6 +479,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';
+
+      case QuoteState.AMOUNT_BELOW_TRANSFER_MIN:
+        return 'Send Amount Less Than Minimum';
 
       case QuoteState.DEFAULT:
         return 'Input USDC amount'

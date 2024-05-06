@@ -9,7 +9,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
-import { toBigInt, toUsdcString } from '@helpers/units';
+import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { ZERO } from '@helpers/constants';
 import { garantiStrings } from '@helpers/strings';
@@ -392,6 +392,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
+  const conversionRateLabel =  useMemo(() => {
+    if (isLoggedIn && depositAmountInput && receiveAmountInput) {
+      // Using USDC as the base currency
+      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} TRY/USDC`
+    } else {
+      return '';
+    }
+  }, [depositAmountInput, receiveAmountInput, isLoggedIn]);
+
   /*
    * Handlers
    */
@@ -484,6 +493,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="TRY"
             placeholder="31006"
+            accessoryLabel={conversionRateLabel}
             helperText={garantiStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 

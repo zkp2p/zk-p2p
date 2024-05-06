@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Sidebar, UserX, UserCheck } from 'react-feather';
+import { Sidebar, UserX, UserCheck, CheckCircle, Slash } from 'react-feather';
 import Link from '@mui/material/Link';
 import { isChrome, isFirefox, isChromium } from 'react-device-detect';
 
@@ -546,7 +546,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
               {loadedNotaryProofs.length === 0 ? (
                 <EmptyNotarizationsContainer>
-                  <StyledUserX />
+                  <StyledSlash />
 
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
                     { noNotarizationsErrorString() }
@@ -751,6 +751,18 @@ const StyledUserX = styled(UserX)`
 `;
 
 const StyledUserCheck = styled(UserCheck)`
+  color: #FFF;
+  width: 28px;
+  height: 28px;
+`;
+
+const StyledCheckCircle = styled(CheckCircle)`
+  color: #FFF;
+  width: 28px;
+  height: 28px;
+`;
+
+const StyledSlash = styled(Slash)`
   color: #FFF;
   width: 28px;
   height: 28px;

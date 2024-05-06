@@ -94,9 +94,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
     userAddress: loggedInEthereumAddress ?? ''
   });
 
-  useEffect(() => {
-    // console.log("remoteNotaryVerificationResponse: ", remoteNotaryVerificationResponse);
-    
+  useEffect(() => {    
     if (remoteNotaryVerificationResponse) {
       processRemoteProofGenerationResponse(remoteNotaryVerificationResponse);
     }
@@ -186,7 +184,9 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
    */
 
   const getModalCtaTitle = () => {
-    return 'Complete Order';
+    return circuitType === NotaryVerificationCircuit.REGISTRATION_TAG ?
+      'Complete Registration':
+      'Complete Order';
   };
 
   /*
