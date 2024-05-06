@@ -71,8 +71,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.VENMO:
         return {
           troubleScanningQRCodeLink: link,
+          currencySymbol: '$',
           paymentPlatformName: 'Venmo',
-          instructionsText: isMobile ? ``: `Scan and send $${amount}`,
+          instructionsText: isMobile ? `Click above to pay`: `Scan and send $${amount}`,
         };
 
       case PaymentPlatform.HDFC:
@@ -86,6 +87,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.GARANTI:
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
+          currencySymbol: 'TRY',
           paymentPlatformName: 'Garanti',
           instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name`,
         };
@@ -93,6 +95,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.REVOLUT:
         return {
           troubleScanningQRCodeLink: REVOLUT_DOWNLOAD_LINK,
+          currencySymbol: '€',
           paymentPlatformName: 'Revolut',
           instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
         };
@@ -100,6 +103,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       default:
         return {
           troubleScanningQRCodeLink: link,
+          currencySymbol: '$',
           paymentPlatformName: 'Venmo',
           instructionsText: !isMobile 
           ? `Scan and send $${amount} <br />to ${venmoId}` 
@@ -109,6 +113,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   };
 
   const {
+    currencySymbol,
     paymentPlatformName,
     troubleScanningQRCodeLink,
     instructionsText
@@ -152,7 +157,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
                         window.open(link, '_blank', 'noopener,noreferrer');
                       }}
                     >
-                      {`Send ₹${amount} on ${paymentPlatformName} ↗`}
+                      {`Send ${currencySymbol}${amount} on ${paymentPlatformName} ↗`}
                     </Button> 
                   </ButtonContainer>
                 </div>
