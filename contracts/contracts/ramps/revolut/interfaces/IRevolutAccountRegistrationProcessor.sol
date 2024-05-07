@@ -9,6 +9,7 @@ interface IRevolutAccountRegistrationProcessor {
         string host;
         string profileId;
         address userAddress;
+        uint256 notaryKeyHash;
     }
 
     struct RegistrationProof {

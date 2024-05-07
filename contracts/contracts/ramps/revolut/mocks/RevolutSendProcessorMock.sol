@@ -24,14 +24,16 @@ contract RevolutSendProcessorMock is IRevolutSendProcessor {
             uint256 amount,
             uint256 timestamp,
             bytes32 revolutTagHash,
-            bytes32 currencyId
+            bytes32 currencyId,
+            bytes32 notaryKeyHash
         )
     {
         return(
             _proof.public_values.amount.stringToUint(6),
             _proof.public_values.timestamp.stringToUint(0),
             keccak256(abi.encodePacked(_proof.public_values.recipientId)),
-            keccak256(abi.encodePacked(_proof.public_values.currencyId))
+            keccak256(abi.encodePacked(_proof.public_values.currencyId)),
+            bytes32(_proof.public_values.notaryKeyHash)
         );
     }
 }

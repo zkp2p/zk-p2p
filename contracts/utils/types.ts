@@ -73,6 +73,7 @@ export interface RevolutRegistrationData {
   host: string;
   profileId: string;
   userAddress: Address;
+  notaryKeyHash: BigNumber;
 }
 
 export interface RevolutRegistrationProof {
@@ -90,6 +91,7 @@ export interface RevolutSendData {
   status: string;
   timestamp: string;
   intentHash: BigNumber;
+  notaryKeyHash: BigNumber;
 }
 
 export interface RevolutSendProof {

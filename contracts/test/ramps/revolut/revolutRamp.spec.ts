@@ -184,7 +184,8 @@ describe("RevolutRamp", () => {
         endpoint: "GET https://app.revolut.com/api/retail/user/current",
         host: "app.revolut.com",
         profileId: "",
-        userAddress: ""
+        userAddress: "",
+        notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942")
       }
 
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
@@ -216,6 +217,7 @@ describe("RevolutRamp", () => {
       let subjectDepositAmount: BigNumber;
       let subjectReceiveAmount: BigNumber;
       let subjectVerifierSigningKey: Address;
+      let subjectNotaryKeyHash: string;
       let subjectCaller: Account;
 
       beforeEach(async () => {
@@ -224,7 +226,7 @@ describe("RevolutRamp", () => {
         subjectDepositAmount = usdc(100);
         subjectReceiveAmount = usdc(92);
         subjectVerifierSigningKey = verifier.address;
-
+        subjectNotaryKeyHash = ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"]);
         subjectCaller = offRamper;
       });
 
@@ -234,7 +236,8 @@ describe("RevolutRamp", () => {
           subjectReceiveCurrencyId,
           subjectDepositAmount,
           subjectReceiveAmount,
-          subjectVerifierSigningKey
+          subjectVerifierSigningKey,
+          subjectNotaryKeyHash
         );
       }
 
@@ -257,6 +260,7 @@ describe("RevolutRamp", () => {
         expect(deposit.depositor).to.eq(subjectCaller.address);
         expect(deposit.revolutTag).to.eq(subjectRevolutTag);
         expect(deposit.verifierSigningKey).to.eq(subjectVerifierSigningKey);
+        expect(deposit.notaryKeyHash).to.eq(subjectNotaryKeyHash);
         expect(deposit.depositAmount).to.eq(subjectDepositAmount);
         expect(deposit.remainingDeposits).to.eq(subjectDepositAmount);
         expect(deposit.outstandingIntentAmount).to.eq(ZERO);
@@ -295,11 +299,11 @@ describe("RevolutRamp", () => {
 
       describe("when the depositor has reached their max amount of deposits", async () => {
         beforeEach(async () => {
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(102), subjectVerifierSigningKey);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(103), subjectVerifierSigningKey);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(104), subjectVerifierSigningKey);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(105), subjectVerifierSigningKey);
-          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(106), subjectVerifierSigningKey);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(102), subjectVerifierSigningKey, subjectNotaryKeyHash);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(103), subjectVerifierSigningKey, subjectNotaryKeyHash);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(104), subjectVerifierSigningKey, subjectNotaryKeyHash);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(105), subjectVerifierSigningKey, subjectNotaryKeyHash);
+          await ramp.connect(subjectCaller.wallet).offRamp(subjectRevolutTag, subjectReceiveCurrencyId, subjectDepositAmount, usdc(106), subjectVerifierSigningKey, subjectNotaryKeyHash);
         });
 
         it("should revert", async () => {
@@ -350,7 +354,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         subjectDepositId = ZERO;
@@ -636,7 +641,8 @@ describe("RevolutRamp", () => {
             currencyId: "EUR",
             amount: "46.00",
             status: "outgoing_payment_sent",
-            intentHash: intentHash
+            intentHash: intentHash,
+            notaryKeyHash: ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
           }
           const verifierSignature = "0x";
 
@@ -693,7 +699,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(101),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         const idHash = onRamperProof.public_values.profileId;
@@ -829,7 +836,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         depositId = (await ramp.depositCounter()).sub(1);
@@ -849,7 +857,8 @@ describe("RevolutRamp", () => {
           currencyId: "EUR",
           status: "outgoing_payment_sent",
           timestamp: currentTimestamp.toString(),
-          intentHash: BigNumber.from(intentHash)
+          intentHash: BigNumber.from(intentHash),
+          notaryKeyHash: BigNumber.from(ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"]))
         }
         subjectNotarySignature = "0x";
         subjectCaller = onRamper;
@@ -1000,6 +1009,16 @@ describe("RevolutRamp", () => {
         });
       });
 
+      describe("when the incorrect notary was used", async () => {
+        beforeEach(async () => {
+          subjectSendData.notaryKeyHash = BigNumber.from(ethers.utils.solidityKeccak256(["string"], ["wrong_notary_signing_key"]));
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Incorrect notary used for notarization");
+        });
+      });
+
       describe("when the amount paid was not enough", async () => {
         beforeEach(async () => {
           subjectSendData.amount = "45.00";
@@ -1054,6 +1073,7 @@ describe("RevolutRamp", () => {
           usdc(100),
           usdc(92),
           verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         depositId = (await ramp.depositCounter()).sub(1);
@@ -1227,7 +1247,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
@@ -1235,7 +1256,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(50),
           usdc(45),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         const currentDepositCounter = await ramp.depositCounter();
@@ -1425,7 +1447,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);
@@ -1459,7 +1482,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
@@ -1467,7 +1491,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1532,7 +1557,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(offRamper.wallet).offRamp(
@@ -1540,7 +1566,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(93),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ONE, usdc(50), receiver.address);
@@ -1607,7 +1634,8 @@ describe("RevolutRamp", () => {
           ethers.utils.solidityKeccak256(["string"], ["EUR"]),
           usdc(100),
           usdc(92),
-          verifier.address
+          verifier.address,
+          ethers.utils.solidityKeccak256(["string"], ["notary_signing_key"])
         );
 
         await ramp.connect(onRamper.wallet).signalIntent(ZERO, usdc(50), receiver.address);

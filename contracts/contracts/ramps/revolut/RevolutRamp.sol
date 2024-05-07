@@ -66,6 +66,7 @@ contract RevolutRamp is Ownable {
         address depositor;
         string revolutTag;
         address verifierSigningKey;         // Public key of the verifier depositor wants to sign the TLS proof
+        bytes32 notaryKeyHash;              // Hash of notary's public key
         uint256 depositAmount;              // Amount of USDC deposited
         bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Revolut currency code))
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -193,13 +194,15 @@ contract RevolutRamp is Ownable {
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
      * @param _verifierSigningKey   Public key of the verifier depositor wants to sign the TLS proof
+     * @param _notaryKeyHash        Hash of the notary public key that is required to do notarization
      */
     function offRamp(
         string calldata _revolutTag,
         bytes32 _receiveCurrencyId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
-        address _verifierSigningKey
+        address _verifierSigningKey,
+        bytes32 _notaryKeyHash
     )
         external
         onlyRegisteredUser
@@ -226,7 +229,8 @@ contract RevolutRamp is Ownable {
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
             intentHashes: new bytes32[](0),
-            verifierSigningKey: _verifierSigningKey
+            verifierSigningKey: _verifierSigningKey,
+            notaryKeyHash: _notaryKeyHash
         });
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
@@ -679,7 +683,8 @@ contract RevolutRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            bytes32 currencyId
+            bytes32 currencyId,
+            bytes32 notaryKeyHash
         ) = sendProcessor.processProof(
             IRevolutSendProcessor.SendProof({
                 public_values: _data,
@@ -688,6 +693,7 @@ contract RevolutRamp is Ownable {
             deposit.verifierSigningKey
         );
 
+        require(notaryKeyHash == deposit.notaryKeyHash, "Incorrect notary used for notarization");
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
         require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Offramper id does not match");

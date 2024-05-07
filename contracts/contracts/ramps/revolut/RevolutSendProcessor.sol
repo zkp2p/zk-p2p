@@ -49,7 +49,8 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            bytes32 currencyId
+            bytes32 currencyId,
+            bytes32 notaryKeyHash
         )
     {
         _validateProof(_verifierSigningKey, _proof.public_values, _proof.proof);
@@ -74,6 +75,7 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
 
         offRamperId = keccak256(abi.encodePacked(_proof.public_values.recipientId));
         currencyId = keccak256(abi.encodePacked(_proof.public_values.currencyId));
+        notaryKeyHash = bytes32(_proof.public_values.notaryKeyHash);
     }
 
     /* ============ View Functions ============ */
@@ -96,7 +98,8 @@ contract RevolutSendProcessor is IRevolutSendProcessor, TLSBaseProcessor {
             _publicValues.currencyId,
             _publicValues.status,
             _publicValues.timestamp,
-            _publicValues.intentHash
+            _publicValues.intentHash,
+            _publicValues.notaryKeyHash
         );
         return _isValidSignature(encodedMessage, _proof, _verifierSigningKey);
     }
