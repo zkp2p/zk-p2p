@@ -146,6 +146,7 @@ describe("Revolut Deploy", () => {
       const actualAccountEndpoint = await wiseAccountRegistrationProcessor.endpoint();
       const actualAccountHost = await wiseAccountRegistrationProcessor.host();
       const actualAccountVerifierSigningKey = await wiseAccountRegistrationProcessor.verifierSigningKey();
+      const actualAccountNotaryKeyHash = await wiseAccountRegistrationProcessor.notaryKeyHash();
       const actualTimestampBuffer = await wiseAccountRegistrationProcessor.timestampBuffer();
 
       expect(actualRamp).to.eq(wiseAccountRegistry.address);
@@ -154,6 +155,7 @@ describe("Revolut Deploy", () => {
       expect(actualAccountEndpoint).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint);
       expect(actualAccountHost).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].host);
       expect(actualAccountVerifierSigningKey).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey);
+      expect(actualAccountNotaryKeyHash).to.eq(ACCOUNT_TLS_PARAMS[paymentProvider][network].notaryKeyHash);
       expect(actualTimestampBuffer).to.eq(0);
     });
   });

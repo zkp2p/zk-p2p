@@ -18,7 +18,8 @@ export enum PaymentProviders {
 }
 
 export interface TLSParams {
-  verifierSigningKey: Address
+  verifierSigningKey: Address;
+  notaryKeyHash: BigNumber;
   endpoint: string;
   host: string;
 }

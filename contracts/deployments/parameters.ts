@@ -37,6 +37,7 @@ export const ACCOUNT_TLS_PARAMS = {
   "wise": {
     "localhost": {
       verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942"),
       endpoint: "POST https://wise.com/gateway/v1/payments",
       host: "wise.com",
     } as TLSParams,
@@ -44,6 +45,7 @@ export const ACCOUNT_TLS_PARAMS = {
   "revolut": {
     "localhost": {
       verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942"),
       endpoint: "GET https://app.revolut.com/api/retail/user/current",
       host: "app.revolut.com",
     } as TLSParams,
@@ -59,6 +61,7 @@ export const OFFRAMPER_TLS_PARAMS = {
   "wise": {
     "localhost": {
       verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942"),
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     } as TLSParams,
@@ -70,6 +73,7 @@ export const SEND_TLS_PARAMS = {
   "wise": {
     "localhost": {
       verifierSigningKey: "",     // We don't pass this in for deploys
+      notaryKeyHash: ZERO,          // We don't pass this in for deploys
       endpoint: "GET https://wise.com/gateway/v3/profiles/*/transfers",
       host: "wise.com",
     } as TLSParams,
@@ -83,6 +87,7 @@ export const SEND_TLS_PARAMS = {
     } as TLSParams,
     "sepolia": {
       verifierSigningKey: "",     // We don't pass this in for deploys
+      notaryKeyHash: ZERO,          // We don't pass this in for deploys
       endpoint: "GET https://app.revolut.com/api/retail/transaction/*",
       host: "app.revolut.com",
     } as TLSParams,
