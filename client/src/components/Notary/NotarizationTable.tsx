@@ -401,19 +401,16 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         break;
 
       case NotaryVerificationCircuit.TRANSFER:
-        if (transferProofs && transferProofs.length > 0) {
+        if (transferProofs && transferProofs.length > 0 && currentIntent) {
           // First filter transfer proofs for payment timestamps after intent if intent exists
-          let filteredTransferProofs = transferProofs;
-          if (currentIntent) {
-            filteredTransferProofs = transferProofs.filter((request: ExtensionNotaryProofRequest) => {
-              const [ , , , , paymentTimestamp] = request.metadata;
+          const filteredTransferProofs = transferProofs.filter((request: ExtensionNotaryProofRequest) => {
+            const [ , , , , paymentTimestamp] = request.metadata;
 
-              const paymentTimestampAdjusted = BigInt(paymentTimestamp) / 1000n;
-              const intentTimestamp = BigInt(currentIntent.intent.timestamp);
-  
-              return paymentTimestampAdjusted >= intentTimestamp;
-            });
-          }
+            const paymentTimestampAdjusted = BigInt(paymentTimestamp) / 1000n;
+            const intentTimestamp = BigInt(currentIntent.intent.timestamp);
+
+            return paymentTimestampAdjusted >= intentTimestamp;
+          });
           const transferProofRows = filteredTransferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
 
