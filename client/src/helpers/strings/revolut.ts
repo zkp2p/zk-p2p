@@ -22,7 +22,7 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Revolut Tag details found.
+    No Revtag details found.
     Please follow instructions in the browser assistant to prove ownership of an existing Revolut account.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `

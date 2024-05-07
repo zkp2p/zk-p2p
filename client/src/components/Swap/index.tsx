@@ -481,7 +481,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         return 'Insufficient liquidity';
 
       case QuoteState.AMOUNT_BELOW_TRANSFER_MIN:
-        return 'Send Amount Less Than Minimum';
+        return 'Send amount less than minimum';
 
       case QuoteState.DEFAULT:
         return 'Input USDC amount'
