@@ -18,6 +18,8 @@ import {
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
+import useOnramperIntents from '@hooks/revolut/useOnRamperIntents';
+
 
 import chromeSvg from '../../assets/images/browsers/chrome.svg';
 import braveSvg from '../../assets/images/browsers/brave.svg';
@@ -72,6 +74,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     profileProofs,
     transferProofs
   } = useExtensionNotarizations();
+
+  const { currentIntent } = useOnramperIntents();
 
   /*
    * State
@@ -398,7 +402,19 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0) {
-          const transferProofRows = transferProofs.map((request: ExtensionNotaryProofRequest) => {
+          // First filter transfer proofs for payment timestamps after intent if intent exists
+          let filteredTransferProofs = transferProofs;
+          if (currentIntent) {
+            filteredTransferProofs = transferProofs.filter((request: ExtensionNotaryProofRequest) => {
+              const [ , , , , paymentTimestamp] = request.metadata;
+
+              const paymentTimestampAdjusted = BigInt(paymentTimestamp) / 1000n;
+              const intentTimestamp = BigInt(currentIntent.intent.timestamp);
+  
+              return paymentTimestampAdjusted >= intentTimestamp;
+            });
+          }
+          const transferProofRows = filteredTransferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
 
             const formattedAmount = (Math.abs(amount) / 100).toFixed(2);
