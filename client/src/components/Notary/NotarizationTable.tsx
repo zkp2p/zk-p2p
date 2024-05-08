@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
 import { Sidebar, UserX, UserCheck, CheckCircle, Slash, Circle, WifiOff } from 'react-feather';
 import Link from '@mui/material/Link';
@@ -97,11 +97,14 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const [isShowingTable, setIsShowingTable] = useState<boolean>(false);
 
+  const [didPressProceed, setDidPressProceed] = useState<boolean>(false);
+  
+  const [isInstallExtensionClicked, setIsInstallExtensionClicked] = useState<boolean>(false);
+  
   const [currentPage, setCurrentPage] = useState(0);
 
-  const [didPressProceed, setDidPressProceed] = useState<boolean>(false);
-
-  const [isInstallExtensionClicked, setIsInstallExtensionClicked] = useState<boolean>(false);
+  const totalPages = Math.ceil(loadedNotaryProofs.length / ROWS_PER_PAGE);
+  const paginatedData = loadedNotaryProofs.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
 
   /*
    * Handlers
@@ -187,7 +190,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     }
   };
 
-  const detectedNotarizationCopy = () => {
+  const detectedNotarizationCopy = useMemo(() => {
     if (selectedIndex !== null) {
       const selectedRequest: ExtensionNotaryProofRow = paginatedData[selectedIndex];
       
@@ -224,20 +227,32 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         transaction_type_copy: ''
       };
     }
-  };
+  }, [circuitType, paginatedData, selectedIndex]);
 
-  const noNotarizationsErrorString = () => {
+  const notarizationContainerSettings = useMemo(() => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
-        return platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR');
+        return {
+          proofFoundIcon: <StyledUserCheck />,
+          errorIcon: <StyledUserX />,
+          errorText: platformStrings.getForPlatform(paymentPlatform, 'NO_NOTARIZATIONS_ERROR')
+        };
 
       case NotaryVerificationCircuit.TRANSFER:
-        return platformStrings.getForPlatform(paymentPlatform, 'NO_TRANSFER_NOTARIZATIONS_ERROR');
+        return {
+          proofFoundIcon: <StyledCheckCircle />,
+          errorIcon: <StyledSlash />,
+          errorText: platformStrings.getForPlatform(paymentPlatform, 'NO_TRANSFER_NOTARIZATIONS_ERROR')
+        };
 
       default:
-        return '';
+        return {
+          proofFoundIcon: <StyledCheckCircle />,
+          errorIcon: <StyledSlash />,
+          errorText: ''
+        };
     }
-  };
+  }, [circuitType, paymentPlatform]);
 
   const shouldShowConnectionWarning = () => {
     const isConnectionStatusPoor = connectionStatus !== NotaryConnectionStatus.GREEN;
@@ -298,10 +313,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         return 'Add to browser';
     }
   };
-
-  const totalPages = Math.ceil(loadedNotaryProofs.length / ROWS_PER_PAGE);
-
-  const paginatedData = loadedNotaryProofs.slice(currentPage * ROWS_PER_PAGE, (currentPage + 1) * ROWS_PER_PAGE);
 
   async function fetchData() {
     switch (circuitType) {
@@ -521,8 +532,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * Component
    */
 
-  const notarizationCopy = detectedNotarizationCopy();
-
   return (
     <Container>
       {!isSidebarInstalled ? (
@@ -553,6 +562,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
           >
             { addToBrowserCopy() }
           </Button>
+
           { isInstallExtensionClicked && (
             <ThemedText.LabelSmall textAlign="left">
               Waiting for installation...
@@ -594,10 +604,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
               {loadedNotaryProofs.length === 0 ? (
                 <EmptyNotarizationsContainer>
-                  <StyledSlash />
+                  { notarizationContainerSettings.errorIcon }
 
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                    { noNotarizationsErrorString() }
+                    { notarizationContainerSettings.errorText }
                   </ThemedText.SubHeaderSmall>
                 </EmptyNotarizationsContainer>
               ) : (
@@ -636,11 +646,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             selectedIndex !== null ? (
               <IconAndMessageContainer>
                 <TagDetectionIconAndCopyContainer>
-                  <StyledUserCheck />
+                  { notarizationContainerSettings.proofFoundIcon }
 
                   <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                    {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong>. 
-                    Verify and submit this {notarizationCopy.metadata_type_copy} to complete {notarizationCopy.transaction_type_copy}
+                    {detectedNotarizationCopy.detected_copy}:&nbsp;<strong>{detectedNotarizationCopy.metadata_copy}</strong>. 
+                    Verify and submit this {detectedNotarizationCopy.metadata_type_copy} to complete {detectedNotarizationCopy.transaction_type_copy}
                   </ThemedText.SubHeaderSmall>
                 </TagDetectionIconAndCopyContainer>
               </IconAndMessageContainer>
@@ -658,10 +668,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               ) : (
                 <IconAndMessageContainer>
                   <TagDetectionIconAndCopyContainer>
-                    <StyledUserX />
+                    { notarizationContainerSettings.errorIcon }
     
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      { noNotarizationsErrorString() }
+                      { notarizationContainerSettings.errorText }
                     </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
                 </IconAndMessageContainer>
