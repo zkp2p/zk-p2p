@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 
-export const UPLOAD_TIME_THRESHOLD = 3;
 const UPLOAD_SIZE_BYTES = 4.9 * 1024 * 1024;
 
 type UploadParams = {
