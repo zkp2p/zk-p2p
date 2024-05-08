@@ -406,6 +406,11 @@ export const abi = [
         "type": "address"
       },
       {
+        "internalType": "bytes32",
+        "name": "notaryKeyHash",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
         "name": "depositAmount",
         "type": "uint256"
@@ -472,6 +477,11 @@ export const abi = [
                 "internalType": "address",
                 "name": "verifierSigningKey",
                 "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "notaryKeyHash",
+                "type": "bytes32"
               },
               {
                 "internalType": "uint256",
@@ -550,6 +560,11 @@ export const abi = [
             "type": "address"
           },
           {
+            "internalType": "bytes32",
+            "name": "notaryKeyHash",
+            "type": "bytes32"
+          },
+          {
             "internalType": "uint256",
             "name": "depositAmount",
             "type": "uint256"
@@ -626,6 +641,11 @@ export const abi = [
                 "internalType": "address",
                 "name": "verifierSigningKey",
                 "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "notaryKeyHash",
+                "type": "bytes32"
               },
               {
                 "internalType": "uint256",
@@ -931,6 +951,11 @@ export const abi = [
         "internalType": "address",
         "name": "_verifierSigningKey",
         "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_notaryKeyHash",
+        "type": "bytes32"
       }
     ],
     "name": "offRamp",
@@ -985,6 +1010,11 @@ export const abi = [
           {
             "internalType": "uint256",
             "name": "intentHash",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "notaryKeyHash",
             "type": "uint256"
           }
         ],
