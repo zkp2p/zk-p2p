@@ -287,7 +287,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         const conversionRate = indicativeQuote.conversionRate;
 
         const isAmountToSendValid = usdAmountToSend !== undefined; 
-        const isSendAmountAboveMin = paymentPlatform == PaymentPlatform.REVOLUT ? Number(usdAmountToSend) > 1 : true ;
+        const isSendAmountAboveMin = paymentPlatform === PaymentPlatform.REVOLUT ? Number(usdAmountToSend) >= 1 : true ;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
@@ -348,6 +348,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
     };
 
     fetchUsdAmountToSendAndVerifyOrder();
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
       currentQuote.requestedUSDC,
       getBestDepositForAmount,
@@ -358,7 +360,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
       registrationHash,
       isLoggedIn,
       isRegistered,
-      maxTransferSize
+      maxTransferSize,
+      paymentPlatform
     ]
   );
 
