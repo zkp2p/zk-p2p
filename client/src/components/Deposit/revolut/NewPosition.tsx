@@ -14,7 +14,7 @@ import { LoginStatus, NewRevolutDepositTransactionStatus } from '@helpers/types'
 import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { revolutStrings } from '@helpers/strings';
-import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
+import { keccak256, sha256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -86,7 +86,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY,
-      keccak256(NOTARY_PUBKEY)
+      sha256(NOTARY_PUBKEY)
     ],
     enabled: shouldConfigureNewDepositWrite
   });
