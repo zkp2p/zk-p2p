@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Sidebar, UserX, UserCheck, CheckCircle, Slash } from 'react-feather';
+import { Sidebar, UserX, UserCheck, CheckCircle, Slash, Circle, WifiOff } from 'react-feather';
 import Link from '@mui/material/Link';
 import { isChrome, isFirefox, isChromium } from 'react-device-detect';
 
@@ -9,17 +9,20 @@ import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { NotarizationRow } from '@components/Notary/NotarizationRow';
+import QuestionHelper from '@components/common/QuestionHelper';
 import { ExtensionNotaryProofRequest } from '@hooks/useBrowserExtension';
 import {
   NotaryProofInputStatus,
   NotaryVerificationCircuitType,
   NotaryVerificationCircuit,
-  PaymentPlatformType
+  PaymentPlatformType,
+  NotaryConnectionStatusType,
+  NotaryConnectionStatus
 } from '@helpers/types';
 import { commonStrings, platformStrings } from "@helpers/strings";
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 import useOnramperIntents from '@hooks/revolut/useOnRamperIntents';
-
+import useNotarySettings from '@hooks/useNotarySettings';
 
 import chromeSvg from '../../assets/images/browsers/chrome.svg';
 import braveSvg from '../../assets/images/browsers/brave.svg';
@@ -28,7 +31,6 @@ import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 const ROWS_PER_PAGE = 3;
 const NOTARY_PROOF_FETCH_INTERVAL = 5000;
-// const BROWSER_EXTENSION_ID = 'onkppmjkpbfbfbjoecignlobdpcbnkbg';
 const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih';
 
 const USE_REVOLUT_DEFAULT_DEPOSITOR = process.env.USE_REVOLUT_DEFAULT_DEPOSITOR;
@@ -77,6 +79,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const { currentIntent } = useOnramperIntents();
 
+  const {
+    connectionStatus
+  } = useNotarySettings();
+
   /*
    * State
    */
@@ -92,6 +98,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const [isShowingTable, setIsShowingTable] = useState<boolean>(false);
 
   const [currentPage, setCurrentPage] = useState(0);
+
+  const [didPressProceed, setDidPressProceed] = useState<boolean>(false);
 
   const [isInstallExtensionClicked, setIsInstallExtensionClicked] = useState<boolean>(false);
 
@@ -112,6 +120,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       default:
         break;
     }
+  }
+
+  const handleProceedPressed = () => {
+    setDidPressProceed(true);
   };
 
   const handleInstallExtensionClicked = () => {
@@ -139,6 +151,19 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   /*
    * Helpers
    */
+
+  const tableTitleLabelForCircuitType = () => {
+    switch (circuitType) {
+      case NotaryVerificationCircuit.REGISTRATION_TAG:
+        return 'Registration Proofs';
+
+      case NotaryVerificationCircuit.TRANSFER:
+        return 'Payment Proofs';
+
+      default:
+        return '';
+    }
+  };
 
   function parseTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
@@ -212,6 +237,14 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       default:
         return '';
     }
+  };
+
+  const shouldShowConnectionWarning = () => {
+    const isConnectionStatusPoor = connectionStatus !== NotaryConnectionStatus.GREEN;
+    const userHasNotPressedProceed = !didPressProceed;
+    const userDoesNotHaveValidProof = selectedIndex === null;
+
+    return userDoesNotHaveValidProof && isConnectionStatusPoor && userHasNotPressedProceed;
   };
 
   async function getBrowser() {
@@ -292,8 +325,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   useEffect(() => {
     async function detectBrowser() {
       setBrowser(await getBrowser());
-    }
-
+    };
     detectBrowser();
 
     // Moot to run this on an interval because the content script needs to be injected
@@ -529,6 +561,22 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         </InstallExtensionContainer>
       ) : (
         <ExtensionDetectedContainer>
+          <NotaryTableTitleContainer>
+            {tableTitleLabelForCircuitType()}
+            <ConnectionTitleContainer>
+              <ConnectionAndTooltip>
+                Connection
+                {connectionStatus !== NotaryConnectionStatus.GREEN ? (
+                  <QuestionHelper
+                    text={commonStrings.get('NOTARY_CONNECTION_TOOLTIP')}/>
+                  ) : null}
+              </ConnectionAndTooltip>
+
+              <StyledCircle
+                connection={connectionStatus}/>
+            </ConnectionTitleContainer>
+          </NotaryTableTitleContainer>
+
           {isShowingTable ? (
             <TitleAndTableContainer>
               <TitleAndOAuthContainer>
@@ -585,19 +633,30 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               )}
             </TitleAndTableContainer>
           ) : (
-              selectedIndex !== null ? (
-                <TagDetectionContainer>
-                  <TagDetectionIconAndCopyContainer>
-                    <StyledUserCheck />
+            selectedIndex !== null ? (
+              <IconAndMessageContainer>
+                <TagDetectionIconAndCopyContainer>
+                  <StyledUserCheck />
 
+                  <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                    {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong>. 
+                    Verify and submit this {notarizationCopy.metadata_type_copy} to complete {notarizationCopy.transaction_type_copy}
+                  </ThemedText.SubHeaderSmall>
+                </TagDetectionIconAndCopyContainer>
+              </IconAndMessageContainer>
+            ) : (
+              shouldShowConnectionWarning() ? (
+                <IconAndMessageContainer>
+                  <EmptyNotarizationsContainer>
+                    <StyledWifiOff />
+      
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      {notarizationCopy.detected_copy}:&nbsp;<strong>{notarizationCopy.metadata_copy}</strong>. 
-                      Verify and submit this {notarizationCopy.metadata_type_copy} to complete {notarizationCopy.transaction_type_copy}
+                      { "Your internet connection may be too slow to successfully complete the verification process." }
                     </ThemedText.SubHeaderSmall>
-                  </TagDetectionIconAndCopyContainer>
-                </TagDetectionContainer>
+                  </EmptyNotarizationsContainer>
+                </IconAndMessageContainer>
               ) : (
-                <TagDetectionContainer>
+                <IconAndMessageContainer>
                   <TagDetectionIconAndCopyContainer>
                     <StyledUserX />
     
@@ -605,11 +664,20 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                       { noNotarizationsErrorString() }
                     </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
-                </TagDetectionContainer>
+                </IconAndMessageContainer>
               )
+            )
           )}
 
-          {
+          {shouldShowConnectionWarning() ? (
+            <ButtonContainer>
+              <Button
+                onClick={handleProceedPressed}
+              >
+                {'Proceed Anyway'}
+              </Button>
+            </ButtonContainer>
+          ) : (
             loadedNotaryProofs.length === 0 ? (
               <ButtonContainer>
                 <Button
@@ -628,7 +696,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                 </Button>
               </ButtonContainer>
             )
-          }
+          )}
 
           {loadedNotaryProofs.length > 0 && (
             <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
@@ -693,6 +761,28 @@ const ExtensionDetectedContainer = styled.div`
   padding: 1.5rem;
 `;
 
+const NotaryTableTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+  font-weight: 700;
+`;
+
+const ConnectionTitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+`;
+
+const ConnectionAndTooltip = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+`;
+
 const EmptyNotarizationsContainer = styled.div`
   display: flex;
   width: 100%;
@@ -703,6 +793,33 @@ const EmptyNotarizationsContainer = styled.div`
   max-width: 75%;
   margin: auto;
   gap: 1rem;
+`;
+
+interface StyledCircleProps {
+  connection: NotaryConnectionStatusType | null;
+}
+
+const StyledCircle = styled(Circle)<StyledCircleProps>`
+  height: 8px;
+  width: 8px;
+
+  fill: ${({ connection }) => {
+    switch (connection) {
+      case NotaryConnectionStatus.GREEN:
+        return colors.connectionStatusGreen;
+      default:
+        return colors.connectionStatusRed;
+    }
+  }};
+
+  color: ${({ connection }) => {
+    switch (connection) {
+      case NotaryConnectionStatus.GREEN:
+        return colors.connectionStatusGreen;
+      default:
+        return colors.connectionStatusRed;
+    }
+  }};
 `;
 
 const TitleAndTableContainer = styled.div`
@@ -745,6 +862,12 @@ const ButtonContainer = styled.div`
 `;
 
 const StyledUserX = styled(UserX)`
+  color: #FFF;
+  width: 28px;
+  height: 28px;
+`;
+
+const StyledWifiOff = styled(WifiOff)`
   color: #FFF;
   width: 28px;
   height: 28px;
@@ -815,7 +938,7 @@ const PageInfo = styled.span`
   font-size: 16px;
 `;
 
-const TagDetectionContainer = styled.div`
+const IconAndMessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #0A0D14;
@@ -829,7 +952,7 @@ const TagDetectionIconAndCopyContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem 3rem;
+  padding: 1.9rem 4rem;
   gap: 1rem;
 
   border-radius: 8px;

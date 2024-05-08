@@ -335,7 +335,7 @@ const BalanceValue = styled.div`
 `;
 
 const BalanceLabel = styled.div`
-  color: #9ca3af;  
+  color: #9ca3af;
   font-size: 16px;
 `;
 
