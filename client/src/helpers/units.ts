@@ -100,6 +100,17 @@ export function conversionRateToMultiplierString(rate: bigint): string {
   return ratioString;
 };
 
+export function calculateConversionRate(depositAmount: string, receiveAmount: string): string {
+  const deposit = toBigInt(depositAmount);
+  const receive = toBigInt(receiveAmount);
+
+  if (deposit === 0n || receive === 0n) {
+    return '0';
+  }
+
+  return conversionRateToMultiplierString((PRECISION * deposit) / receive);
+}
+
 export function toEthString(value: bigint): string {
   if (typeof value !== 'bigint') {
     return '0';

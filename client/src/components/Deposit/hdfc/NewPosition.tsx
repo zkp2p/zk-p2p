@@ -10,7 +10,7 @@ import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedUPIId } from '@helpers/poseidonHash';
-import { toBigInt, toUsdcString } from '@helpers/units';
+import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { ZERO } from '@helpers/constants';
 import { hdfcStrings } from '@helpers/strings';
@@ -391,6 +391,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
+  const conversionRateLabel =  useMemo(() => {
+    if (isLoggedIn && depositAmountInput && receiveAmountInput) {
+      // Using USDC as the base currency
+      return `Rate: ${calculateConversionRate(depositAmountInput, receiveAmountInput)} USDC/INR`
+    } else {
+      return '';
+    }
+  }, [depositAmountInput, receiveAmountInput, isLoggedIn]);
+
   /*
    * Handlers
    */
@@ -470,6 +479,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="INR"
             placeholder="82800"
+            accessoryLabel={conversionRateLabel}
             helperText={hdfcStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 

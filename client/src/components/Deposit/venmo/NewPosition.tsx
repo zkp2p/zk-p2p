@@ -12,7 +12,7 @@ import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedVenmoId, isProvidedIdEqualToRegistration } from '@helpers/poseidonHash';
 import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
-import { toBigInt, toUsdcString } from '@helpers/units';
+import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
 import { MODALS } from '@helpers/types';
@@ -395,6 +395,15 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }, [usdcBalance, isLoggedIn]);
 
+  const conversionRateLabel =  useMemo(() => {
+    if (isLoggedIn && depositAmountInput && receiveAmountInput) {
+      // Using USD as the base currency
+      return `Rate: ${calculateConversionRate(depositAmountInput, receiveAmountInput)} USDC/USD`
+    } else {
+      return '';
+    }
+  }, [depositAmountInput, receiveAmountInput, isLoggedIn]);
+
   /*
    * Handlers
    */
@@ -474,6 +483,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
             type="number"
             inputLabel="USD"
             placeholder="1050"
+            accessoryLabel={conversionRateLabel}
             helperText={venmoStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}
           />
 
