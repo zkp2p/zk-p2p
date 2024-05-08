@@ -13,6 +13,8 @@ import useGithubClient from '@hooks/useFetchNotaryList';
 import NotarySettingsContext from './NotarySettingsContext';
 
 
+export const UPLOAD_TIME_THRESHOLD = 5;
+
 interface ProvidersProps {
   children: ReactNode;
 };
@@ -82,7 +84,7 @@ const NotarySettingsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     if (uploadTime) {
-      if (uploadTime < 3) {
+      if (uploadTime < UPLOAD_TIME_THRESHOLD) {
         setConnectionStatus(NotaryConnectionStatus.GREEN);
       } else {
         setConnectionStatus(NotaryConnectionStatus.RED);
