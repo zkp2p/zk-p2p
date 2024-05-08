@@ -26,6 +26,11 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 
 
+const NOTARY_PUBKEY = process.env.NOTARY_PUBKEY;
+if (!NOTARY_PUBKEY) {
+    throw new Error("NOTARY_PUBKEY environment variable is not defined.");
+};
+
 interface NewPositionProps {
   handleBackClick: () => void;
 }
@@ -80,7 +85,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       keccak256('EUR'),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
-      NOTARY_VERIFICATION_SIGNING_KEY
+      NOTARY_VERIFICATION_SIGNING_KEY,
+      keccak256(NOTARY_PUBKEY)
     ],
     enabled: shouldConfigureNewDepositWrite
   });
