@@ -405,7 +405,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const conversionRateLabel =  useMemo(() => {
     if (isLoggedIn && depositAmountInput && receiveAmountInput) {
       // Flipping conversion rate (i.e. relative to Venmo) b/c EUR/USD is quoted with USD as the base currency
-      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR/USDC`;
+      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR / USDC`;
     } else {
       return '';
     }
