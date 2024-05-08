@@ -44,7 +44,7 @@ export const ACCOUNT_TLS_PARAMS = {
   } as EnvironmentTLSParams,
   "revolut": {
     "localhost": {
-      verifierSigningKey: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      verifierSigningKey: "0x166338393593e85bfde8B65358Ec5801A3445D12",
       notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942"),
       endpoint: "GET https://app.revolut.com/api/retail/user/current",
       host: "app.revolut.com",
