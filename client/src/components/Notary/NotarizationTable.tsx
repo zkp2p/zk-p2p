@@ -137,11 +137,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const handleRowClick = (index: number) => {
     const globalIndex = index + currentPage * ROWS_PER_PAGE;
     setSelectedIndex(globalIndex);
-
-    const notarization = loadedNotaryProofs[globalIndex];
-    
-    setNotaryProof(notarization.proof);
-    setNotaryProofMetadata(notarization.metadata);
   };
 
   const handleToggleNotarizationTablePressed = () => {
@@ -335,6 +330,17 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    */
 
   useEffect(() => {
+    if (loadedNotaryProofs.length > 0 && selectedIndex !== null) {
+      const selectedNotarization = loadedNotaryProofs[selectedIndex];
+
+      setNotaryProof(selectedNotarization.proof);
+      setNotaryProofMetadata(selectedNotarization.metadata);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedNotaryProofs, selectedIndex]);
+
+  useEffect(() => {
     async function detectBrowser() {
       setBrowser(await getBrowser());
     };
@@ -484,15 +490,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       if (selectedIndex === null) {
 
         setSelectedIndex(0);
-
-        const selectedNotarization = loadedNotaryProofs[0];
-        setNotaryProof(selectedNotarization.proof);
-        setNotaryProofMetadata(selectedNotarization.metadata);
       }
     } else {
       setSelectedIndex(null);
-      setNotaryProof('');
-      setNotaryProofMetadata('');
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
