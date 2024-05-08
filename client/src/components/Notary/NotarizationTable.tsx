@@ -135,9 +135,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const handleRowClick = (index: number) => {
-    setSelectedIndex(index);
+    const globalIndex = index + currentPage * ROWS_PER_PAGE;
+    setSelectedIndex(globalIndex);
 
-    const notarization = loadedNotaryProofs[index];
+    const notarization = loadedNotaryProofs[globalIndex];
     
     setNotaryProof(notarization.proof);
     setNotaryProofMetadata(notarization.metadata);
@@ -192,7 +193,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const detectedNotarizationCopy = useMemo(() => {
     if (selectedIndex !== null) {
-      const selectedRequest: ExtensionNotaryProofRow = paginatedData[selectedIndex];
+      const selectedRequest: ExtensionNotaryProofRow = loadedNotaryProofs[selectedIndex];
       
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
@@ -227,7 +228,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         transaction_type_copy: ''
       };
     }
-  }, [circuitType, paginatedData, selectedIndex]);
+  }, [circuitType, loadedNotaryProofs, selectedIndex]);
 
   const notarizationContainerSettings = useMemo(() => {
     switch (circuitType) {
@@ -480,15 +481,18 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   useEffect(() => {
     if (loadedNotaryProofs.length > 0) {
-      const firstAccountNotarization = loadedNotaryProofs[0];
+      if (selectedIndex === null) {
 
-      if (selectedIndex == null) {
         setSelectedIndex(0);
-        setNotaryProof(firstAccountNotarization.proof);
+
+        const selectedNotarization = loadedNotaryProofs[0];
+        setNotaryProof(selectedNotarization.proof);
+        setNotaryProofMetadata(selectedNotarization.metadata);
       }
     } else {
       setSelectedIndex(null);
       setNotaryProof('');
+      setNotaryProofMetadata('');
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -617,10 +621,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                       key={index}
                       subjectText={notarization.subject}
                       dateText={notarization.date}
-                      isSelected={index === selectedIndex}
-                      isLastRow={index === loadedNotaryProofs.length - 1}
+                      isSelected={selectedIndex === (index + currentPage * ROWS_PER_PAGE)}
                       onRowClick={() => handleRowClick(index)}
-                      rowIndex={index + 1 + (currentPage) * ROWS_PER_PAGE}
+                      rowIndex={index + 1 + currentPage * ROWS_PER_PAGE}
                     />
                   ))}
                 </Table>
