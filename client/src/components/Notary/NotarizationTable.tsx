@@ -452,7 +452,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0 && currentIntent) {
-          // First filter transfer proofs for payment timestamps after intent if intent exists
+
+          // Filter transfer proofs for payment timestamps after intent if intent exists
           const filteredTransferProofs = transferProofs.filter((request: ExtensionNotaryProofRequest) => {
             const [ , , , , paymentTimestamp] = request.metadata;
 
@@ -461,6 +462,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
             return paymentTimestampAdjusted >= intentTimestamp;
           });
+
           const transferProofRows = filteredTransferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
 
@@ -483,7 +485,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [circuitType, profileProofs, transferProofs]);
+  }, [circuitType, profileProofs, transferProofs, currentIntent]);
 
   useEffect(() => {
     if (loadedNotaryProofs.length > 0) {
@@ -624,6 +626,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                       isSelected={selectedIndex === (index + currentPage * ROWS_PER_PAGE)}
                       onRowClick={() => handleRowClick(index)}
                       rowIndex={index + 1 + currentPage * ROWS_PER_PAGE}
+                      isLastRow={index === paginatedData.length - 1 && paginatedData.length < ROWS_PER_PAGE}
                     />
                   ))}
                 </Table>

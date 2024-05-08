@@ -286,8 +286,3 @@ const GarantiInformationContainer = styled.div`
   width: 100%;
   gap: 1.5rem;
 `;
-
-// const HorizontalDivider = styled.div`
-//   width: 100%;
-//   border-bottom: 1px solid ${colors.defaultBorderColor};
-// `;
