@@ -19,6 +19,7 @@ import {
   NotaryConnectionStatusType,
   NotaryConnectionStatus
 } from '@helpers/types';
+import { EXTENSION_DOCS_URL } from '@helpers/docUrls';
 import { commonStrings, platformStrings } from "@helpers/strings";
 import useExtensionNotarizations from '@hooks/useExtensionNotarizations';
 import useOnramperIntents from '@hooks/revolut/useOnRamperIntents';
@@ -202,7 +203,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Revolut account history',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`, // fix this from on to at
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
@@ -549,7 +550,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               <div>
                 { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
                 <Link
-                  href={CHROME_EXTENSION_URL}
+                  href={EXTENSION_DOCS_URL}
                   target="_blank"
                 >
                   Learn More ↗
