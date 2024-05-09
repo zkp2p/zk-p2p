@@ -48,7 +48,7 @@ export const contractAddresses: Contracts = {
     'revolutAccountRegistry': '0x44115b15Ff0Db10702DFC72Cb2fd3179215623df',
     'revolutSendProcessor': '0xC2039e46f59cAC1ddC9a045563946A08D58d6f6A',
     'revolutAccountRegistrationProcessor': '0x96fa6C854F35665c0B5C6365c64a9EECa5793411',
-    'revolutNft': '',
+    'revolutNft': '0x7f846bbf546dd56ed262969bc7b02254a0b15463',
     'socketBridge': '0x3a23f943181408eac424116af7b7790c94cb97a5',
     'lifiBridge': '0x1231DEB6f5749EF6cE6943a275A1D3E7486F4EaE'
   },
@@ -72,7 +72,7 @@ export const contractAddresses: Contracts = {
     'revolutAccountRegistry': '0x4b6db2939E09A642afb90cEd37126213aBbA0f4F',
     'revolutSendProcessor': '0xB3017240379888Ba2022351Ab6fd4fB0b8FF5e23',
     'revolutAccountRegistrationProcessor': '0x57068ef4f64734Ef4f84705E38A00176E53f0000',
-    'revolutNft': '',
+    'revolutNft': '0x3380881753f741FFf10833EeD3addaa859f81786',
     'socketBridge': '',
     'lifiBridge': '',
   },
