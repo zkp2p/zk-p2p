@@ -11,6 +11,7 @@ import { ConfirmRelease } from '@components/modals/ConfirmRelease';
 import useVenmoDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 import useLiquidity from '@hooks/venmo/useLiquidity';
 
 
@@ -38,6 +39,10 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
   const {
     depositIntents: garantiDepositIntents
   } = useGarantiDeposits();
+
+  const {
+    depositIntents: revolutDepositIntents
+  } = useRevolutDeposits();
 
   const { calculateUsdFromRequestedUSDC } = useLiquidity();
 
@@ -92,8 +97,12 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
       combinedDepositIntents = combinedDepositIntents.concat(garantiDepositIntents);
     }
 
+    if (revolutDepositIntents) {
+      combinedDepositIntents = combinedDepositIntents.concat(revolutDepositIntents);
+    }
+
     setDepositIntents(combinedDepositIntents);
-  }, [venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents]);
+  }, [venmoDepositIntents, hdfcDepositIntents, garantiDepositIntents, revolutDepositIntents]);
 
   useEffect(() => {
     if (depositIntents) {
