@@ -119,7 +119,8 @@ describe("RevolutAccountRegistry", () => {
         endpoint: "GET https://app.revolut.com/api/retail/user/current",
         host: "app.revolut.com",
         profileId: calculateRevolutIdHashBN("johndo8egm"),
-        userAddress: offRamper.address
+        userAddress: offRamper.address,
+        notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942")
       } as RevolutRegistrationData
 
       subjectProof = {
@@ -184,7 +185,8 @@ describe("RevolutAccountRegistry", () => {
         endpoint: "GET https://app.revolut.com/api/retail/user/current",
         host: "app.revolut.com",
         profileId: "",
-        userAddress: ""
+        userAddress: "",
+        notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942")
       }
       offRamperProof = { public_values: {...standardRegistrationData}, proof: "0x"};
       offRamperProof.public_values.profileId = calculateRevolutIdHashBN("012345678");

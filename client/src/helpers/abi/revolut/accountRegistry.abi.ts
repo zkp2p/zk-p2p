@@ -403,6 +403,11 @@ export const abi = [
                 "internalType": "address",
                 "name": "userAddress",
                 "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "notaryKeyHash",
+                "type": "uint256"
               }
             ],
             "internalType": "struct IRevolutAccountRegistrationProcessor.RegistrationData",

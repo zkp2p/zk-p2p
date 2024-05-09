@@ -398,7 +398,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const conversionRateLabel =  useMemo(() => {
     if (isLoggedIn && depositAmountInput && receiveAmountInput) {
       // Using USD as the base currency
-      return `Rate: ${calculateConversionRate(depositAmountInput, receiveAmountInput)} USDC/USD`
+      return `Rate: ${calculateConversionRate(depositAmountInput, receiveAmountInput)} USDC / USD`
     } else {
       return '';
     }

@@ -21,11 +21,13 @@ contract RevolutAccountRegistrationProcessor is IRevolutAccountRegistrationProce
     
     /* ============ Public Variables ============ */
     address public verifierSigningKey;
+    bytes32 public notaryKeyHash;
     
     /* ============ Constructor ============ */
     constructor(
         address _ramp,
         address _verifierSigningKey,
+        bytes32 _notaryKeyHash,
         INullifierRegistry _nullifierRegistry,
         uint256 _timestampBuffer,
         string memory _endpoint,
@@ -40,6 +42,7 @@ contract RevolutAccountRegistrationProcessor is IRevolutAccountRegistrationProce
         )
     {
         verifierSigningKey = _verifierSigningKey;
+        notaryKeyHash = _notaryKeyHash;
     }
 
     /* ============ External Functions ============ */
@@ -84,9 +87,13 @@ contract RevolutAccountRegistrationProcessor is IRevolutAccountRegistrationProce
             _publicValues.endpoint,
             _publicValues.host,
             _publicValues.profileId,
-            _publicValues.userAddress
+            _publicValues.userAddress,
+            _publicValues.notaryKeyHash
         );
-        return _isValidVerifierSignature(encodedMessage, _proof, verifierSigningKey);
+
+        require(bytes32(_publicValues.notaryKeyHash) == notaryKeyHash, "Invalid notary key hash");
+
+        return _isValidSignature(encodedMessage, _proof, verifierSigningKey);
     }
     
     /* ============ Internal Functions ============ */
@@ -100,7 +107,7 @@ contract RevolutAccountRegistrationProcessor is IRevolutAccountRegistrationProce
     {   
         require(
             verifyProof(_publicValues, _proof),
-            "Invalid signature from verifier"
+            "Invalid proof"
         );
     }
 }

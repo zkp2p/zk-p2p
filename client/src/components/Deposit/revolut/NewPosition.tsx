@@ -14,7 +14,7 @@ import { LoginStatus, NewRevolutDepositTransactionStatus } from '@helpers/types'
 import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { revolutStrings } from '@helpers/strings';
-import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
+import { keccak256, sha256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -25,6 +25,11 @@ import useRegistration from '@hooks/revolut/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 
+
+const NOTARY_PUBKEY = process.env.NOTARY_PUBKEY;
+if (!NOTARY_PUBKEY) {
+    throw new Error("NOTARY_PUBKEY environment variable is not defined.");
+};
 
 interface NewPositionProps {
   handleBackClick: () => void;
@@ -80,7 +85,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       keccak256('EUR'),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
-      NOTARY_VERIFICATION_SIGNING_KEY
+      NOTARY_VERIFICATION_SIGNING_KEY,
+      sha256(NOTARY_PUBKEY)
     ],
     enabled: shouldConfigureNewDepositWrite
   });
@@ -405,7 +411,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const conversionRateLabel =  useMemo(() => {
     if (isLoggedIn && depositAmountInput && receiveAmountInput) {
       // Flipping conversion rate (i.e. relative to Venmo) b/c EUR/USD is quoted with USD as the base currency
-      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR/USDC`;
+      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR / USDC`;
     } else {
       return '';
     }

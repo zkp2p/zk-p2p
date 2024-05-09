@@ -41,7 +41,8 @@ describe("RevolutAccountRegistrationProcessor", () => {
 
     registrationProcessor = await deployer.deployRevolutAccountRegistrationProcessor(
       ramp.address,
-      verifier.address,
+      "0x166338393593e85bfde8B65358Ec5801A3445D12",
+      BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942").toHexString(),
       nullifierRegistry.address,
       "GET https://app.revolut.com/api/retail/user/current",
       "app.revolut.com"
@@ -57,12 +58,13 @@ describe("RevolutAccountRegistrationProcessor", () => {
       const actualVerifier = await registrationProcessor.verifierSigningKey();
       const actualEndpoint = await registrationProcessor.endpoint();
       const actualHost = await registrationProcessor.host();
+      const actualNotaryKeyHash = await registrationProcessor.notaryKeyHash();
 
       expect(rampAddress).to.eq(ramp.address);
       expect(nullifierRegistryAddress).to.eq(nullifierRegistry.address);
-
+      expect(actualNotaryKeyHash).to.eq(BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942").toHexString(),);
       expect("GET https://app.revolut.com/api/retail/user/current").to.deep.equal(actualEndpoint);
-      expect(verifier.address).to.deep.equal(actualVerifier);
+      expect("0x166338393593e85bfde8B65358Ec5801A3445D12").to.deep.equal(actualVerifier);
       expect("app.revolut.com").to.deep.equal(actualHost);
     });
   });
@@ -77,9 +79,10 @@ describe("RevolutAccountRegistrationProcessor", () => {
           endpoint: "GET https://app.revolut.com/api/retail/user/current",
           host: "app.revolut.com",
           profileId: "21441300878620834626555326528464320548303703202526115662730864900894611908769",
-          userAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+          userAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+          notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942")
         } as RevolutRegistrationData,
-        proof: "0x876dfdafcd4fb59d791afda6cb536fb9d22560318f83b94c7f45b1c0a7e7bf6304e50778b1068140df9fb1b5333ffd6d76fc6639e23b961e3416722f26103c721b"
+        proof: "0x0517fbc6fc6738b6ad1c0c638f635f4ad4e01616b92bb87b102fe9000c5b58f27eda7bf373636af301fbfaaf3b6f267d82ca0ec8b089cbd4d42159e1a957cdc11b"
       } as RevolutRegistrationProof;
 
       subjectCaller = ramp;
@@ -130,7 +133,17 @@ describe("RevolutAccountRegistrationProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
+        await expect(subject()).to.be.revertedWith("Invalid proof");
+      });
+    });
+
+    describe("when the notary key hash doesn't match", async () => {
+      beforeEach(async () => {
+        subjectProof.public_values.notaryKeyHash = BigNumber.from("55990530848032332592411724135893856847123084097520685404734279999550883729893");
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid notary key hash");
       });
     });
 
@@ -139,15 +152,17 @@ describe("RevolutAccountRegistrationProcessor", () => {
         subjectProof.public_values.endpoint = "GET https://app.revolut.com/api/business/user/current";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "address"],
+          ["string", "string", "string", "address", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
             subjectProof.public_values.profileId,
-            subjectProof.public_values.userAddress
+            subjectProof.public_values.userAddress,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        await registrationProcessor.connect(owner.wallet).setVerifierSigningKey(verifier.address);
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
@@ -161,15 +176,17 @@ describe("RevolutAccountRegistrationProcessor", () => {
         subjectProof.public_values.host = "api.revolut.com";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "address"],
+          ["string", "string", "string", "address", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
             subjectProof.public_values.profileId,
-            subjectProof.public_values.userAddress
+            subjectProof.public_values.userAddress,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        await registrationProcessor.connect(owner.wallet).setVerifierSigningKey(verifier.address);
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
@@ -196,7 +213,7 @@ describe("RevolutAccountRegistrationProcessor", () => {
     beforeEach(async () => {
       subjectCaller = owner;
 
-      subjectVerifierSigningKey = verifier.address;
+      subjectVerifierSigningKey = "0x166338393593e85bfde8B65358Ec5801A3445D12";
     });
 
     async function subject(): Promise<any> {

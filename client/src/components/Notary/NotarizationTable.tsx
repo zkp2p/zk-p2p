@@ -135,12 +135,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const handleRowClick = (index: number) => {
-    setSelectedIndex(index);
-
-    const notarization = loadedNotaryProofs[index];
-    
-    setNotaryProof(notarization.proof);
-    setNotaryProofMetadata(notarization.metadata);
+    const globalIndex = index + currentPage * ROWS_PER_PAGE;
+    setSelectedIndex(globalIndex);
   };
 
   const handleToggleNotarizationTablePressed = () => {
@@ -192,7 +188,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   const detectedNotarizationCopy = useMemo(() => {
     if (selectedIndex !== null) {
-      const selectedRequest: ExtensionNotaryProofRow = paginatedData[selectedIndex];
+      const selectedRequest: ExtensionNotaryProofRow = loadedNotaryProofs[selectedIndex];
       
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
@@ -227,7 +223,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         transaction_type_copy: ''
       };
     }
-  }, [circuitType, paginatedData, selectedIndex]);
+  }, [circuitType, loadedNotaryProofs, selectedIndex]);
 
   const notarizationContainerSettings = useMemo(() => {
     switch (circuitType) {
@@ -332,6 +328,17 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   /*
    * Hooks
    */
+
+  useEffect(() => {
+    if (loadedNotaryProofs.length > 0 && selectedIndex !== null) {
+      const selectedNotarization = loadedNotaryProofs[selectedIndex];
+
+      setNotaryProof(selectedNotarization.proof);
+      setNotaryProofMetadata(selectedNotarization.metadata);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadedNotaryProofs, selectedIndex]);
 
   useEffect(() => {
     async function detectBrowser() {
@@ -445,7 +452,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
       case NotaryVerificationCircuit.TRANSFER:
         if (transferProofs && transferProofs.length > 0 && currentIntent) {
-          // First filter transfer proofs for payment timestamps after intent if intent exists
+
+          // Filter transfer proofs for payment timestamps after intent if intent exists
           const filteredTransferProofs = transferProofs.filter((request: ExtensionNotaryProofRequest) => {
             const [ , , , , paymentTimestamp] = request.metadata;
 
@@ -454,6 +462,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
             return paymentTimestampAdjusted >= intentTimestamp;
           });
+
           const transferProofRows = filteredTransferProofs.map((request: ExtensionNotaryProofRequest) => {
             const [timestamp, amount, currency] = request.metadata;
 
@@ -476,19 +485,16 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [circuitType, profileProofs, transferProofs]);
+  }, [circuitType, profileProofs, transferProofs, currentIntent]);
 
   useEffect(() => {
     if (loadedNotaryProofs.length > 0) {
-      const firstAccountNotarization = loadedNotaryProofs[0];
+      if (selectedIndex === null) {
 
-      if (selectedIndex == null) {
         setSelectedIndex(0);
-        setNotaryProof(firstAccountNotarization.proof);
       }
     } else {
       setSelectedIndex(null);
-      setNotaryProof('');
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -617,10 +623,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                       key={index}
                       subjectText={notarization.subject}
                       dateText={notarization.date}
-                      isSelected={index === selectedIndex}
-                      isLastRow={index === loadedNotaryProofs.length - 1}
+                      isSelected={selectedIndex === (index + currentPage * ROWS_PER_PAGE)}
                       onRowClick={() => handleRowClick(index)}
-                      rowIndex={index + 1 + (currentPage) * ROWS_PER_PAGE}
+                      rowIndex={index + 1 + currentPage * ROWS_PER_PAGE}
+                      isLastRow={index === paginatedData.length - 1 && paginatedData.length < ROWS_PER_PAGE}
                     />
                   ))}
                 </Table>

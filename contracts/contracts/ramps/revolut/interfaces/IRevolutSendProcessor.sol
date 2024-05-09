@@ -14,6 +14,7 @@ interface IRevolutSendProcessor {
         string status;
         string timestamp;
         uint256 intentHash;
+        uint256 notaryKeyHash;
     }
 
     struct SendProof {
@@ -26,5 +27,5 @@ interface IRevolutSendProcessor {
         address _verifierSigningKey
     )
         external
-    returns(uint256, uint256, bytes32, bytes32);
+    returns(uint256, uint256, bytes32, bytes32, bytes32);
 }

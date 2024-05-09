@@ -375,6 +375,7 @@ export default class DeployHelper {
   public async deployRevolutAccountRegistrationProcessor(
     ramp: Address,
     verifierSigningKey: Address,
+    notaryKeyHash: string,
     nullifierRegistry: Address,
     endpoint: string,
     host: string,
@@ -383,6 +384,7 @@ export default class DeployHelper {
     return await new RevolutAccountRegistrationProcessor__factory(this._deployerSigner).deploy(
       ramp,
       verifierSigningKey,
+      notaryKeyHash,
       nullifierRegistry,
       timestampBuffer,
       endpoint,

@@ -68,20 +68,21 @@ describe("RevolutSendProcessor", () => {
 
       subjectProof = {
         public_values: {
-          endpoint: 'GET https://app.revolut.com/api/retail/transaction/65fd0142-7155-a0b7-8136-86e1fcc5455e',
+          endpoint: 'GET https://app.revolut.com/api/retail/transaction/66335273-4566-ab95-ac86-e58884d04943',
           host: "app.revolut.com",
-          transferId: "65fd0142-7155-a0b7-8136-86e1fcc5455e",
+          transferId: "66335273-4566-ab95-ac86-e58884d04943",
           recipientId: "alexgx7gy",
           amount: "-100",
           currencyId: "EUR",
           status: "COMPLETED",
-          timestamp: "1711079746280",
+          timestamp: "1714639475235",
           intentHash: BigNumber.from("2109098755843864455034980037347310810989244226703714011137935097150268285982"),
+          notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942")
         } as RevolutSendData,
-        proof: "0x1a6db4989f793387da4045ea28c33cfa4e1cdc68f32637ff221f8c1dd785d4d559803367c00264de10b337f5c38db58cfb447e305ae5ec48a3ec3cd35943a0711b"
+        proof: "0xafd9888bfe6b5c00283d16cb63796822e0ee680159e6c237a0cfdafce2c693ef3ae64a5adf0cef74cba5d84207f12476d46dbe16a230349f60af6d702e9a3b331b"
       } as RevolutSendProof;
 
-      subjectVerifierSigningKey = verifier.address;
+      subjectVerifierSigningKey = "0x166338393593e85bfde8B65358Ec5801A3445D12";
 
       subjectCaller = ramp;
     });
@@ -99,13 +100,15 @@ describe("RevolutSendProcessor", () => {
         amount,
         timestamp,
         offRamperId,
-        currencyId
+        currencyId,
+        notaryKeyHash
       ] = await subjectCallStatic();
 
       expect(amount).to.eq(usdc(100));
       expect(timestamp).to.eq(BigNumber.from(subjectProof.public_values.timestamp).div(1000).add(30));
       expect(offRamperId).to.eq(ethers.utils.solidityKeccak256(["string"], [subjectProof.public_values.recipientId]));
       expect(currencyId).to.eq(ethers.utils.solidityKeccak256(["string"], [subjectProof.public_values.currencyId]));
+      expect(notaryKeyHash).to.eq(subjectProof.public_values.notaryKeyHash.toHexString());
     });
 
     it("should add the hash of the proof inputs to the nullifier registry", async () => {
@@ -137,7 +140,7 @@ describe("RevolutSendProcessor", () => {
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid signature from verifier");
+        await expect(subject()).to.be.revertedWith("Invalid proof");
       });
     });
 
@@ -146,7 +149,7 @@ describe("RevolutSendProcessor", () => {
         subjectProof.public_values.status = "PENDING";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -156,10 +159,12 @@ describe("RevolutSendProcessor", () => {
             subjectProof.public_values.currencyId,
             subjectProof.public_values.status,
             subjectProof.public_values.timestamp,
-            subjectProof.public_values.intentHash
+            subjectProof.public_values.intentHash,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        subjectVerifierSigningKey = verifier.address;
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
@@ -173,7 +178,7 @@ describe("RevolutSendProcessor", () => {
         subjectProof.public_values.amount = "100"
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -183,10 +188,12 @@ describe("RevolutSendProcessor", () => {
             subjectProof.public_values.currencyId,
             subjectProof.public_values.status,
             subjectProof.public_values.timestamp,
-            subjectProof.public_values.intentHash
+            subjectProof.public_values.intentHash,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        subjectVerifierSigningKey = verifier.address;
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
@@ -200,7 +207,7 @@ describe("RevolutSendProcessor", () => {
         subjectProof.public_values.endpoint = "GET https://wise.com/gateway/v4/profiles/41213881";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -210,10 +217,12 @@ describe("RevolutSendProcessor", () => {
             subjectProof.public_values.currencyId,
             subjectProof.public_values.status,
             subjectProof.public_values.timestamp,
-            subjectProof.public_values.intentHash
+            subjectProof.public_values.intentHash,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        subjectVerifierSigningKey = verifier.address;
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 
@@ -227,7 +236,7 @@ describe("RevolutSendProcessor", () => {
         subjectProof.public_values.host = "api.wise.com";
 
         const encodedMsg = abiCoder.encode(
-          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256"],
+          ["string", "string", "string", "string", "string", "string", "string", "string", "uint256", "uint256"],
           [
             subjectProof.public_values.endpoint,
             subjectProof.public_values.host,
@@ -237,10 +246,12 @@ describe("RevolutSendProcessor", () => {
             subjectProof.public_values.currencyId,
             subjectProof.public_values.status,
             subjectProof.public_values.timestamp,
-            subjectProof.public_values.intentHash
+            subjectProof.public_values.intentHash,
+            subjectProof.public_values.notaryKeyHash
           ]
         );
 
+        subjectVerifierSigningKey = verifier.address;
         subjectProof.proof = await verifier.wallet.signMessage(ethers.utils.arrayify(ethers.utils.keccak256(encodedMsg)));
       });
 

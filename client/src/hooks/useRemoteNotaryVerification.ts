@@ -4,6 +4,11 @@ import crypto from 'crypto';
 import { PaymentPlatformType, PaymentPlatform } from '@helpers/types';
 
 
+const NOTARY_PUBKEY = process.env.NOTARY_PUBKEY;
+if (!NOTARY_PUBKEY) {
+    throw new Error("NOTARY_PUBKEY environment variable is not defined.");
+};
+
 const REMOTE_NOTARY_VERIFICATION_URL = process.env.REMOTE_NOTARY_VERIFICATION_URL;
 if (!REMOTE_NOTARY_VERIFICATION_URL) {
     throw new Error("REMOTE_NOTARY_VERIFICATION_URL environment variable is not defined.");
@@ -55,6 +60,7 @@ export default function useRemoteNotaryVerification({
       default:
         throw new Error("Invalid payment type.");
     }
+
     if (!apiUrl) {
       throw new Error("Invalid verification url.");
     }
@@ -69,6 +75,7 @@ export default function useRemoteNotaryVerification({
           "payment_type": paymentType,
           "circuit_type": circuitType,
           "proof": notarization,
+          "notary_pubkey": NOTARY_PUBKEY,
           "intent_hash": intentHash,
           "user_address": userAddress,
           "nonce": nonce,

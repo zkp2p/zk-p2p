@@ -66,6 +66,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [
       revolutAccountRegistry.address,
       ACCOUNT_TLS_PARAMS[paymentProvider][network].verifierSigningKey,
+      ACCOUNT_TLS_PARAMS[paymentProvider][network].notaryKeyHash,
       nullifierRegistryContract.address,
       ZERO,
       ACCOUNT_TLS_PARAMS[paymentProvider][network].endpoint,

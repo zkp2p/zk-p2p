@@ -66,6 +66,7 @@ contract RevolutRamp is Ownable {
         address depositor;
         string revolutTag;
         address verifierSigningKey;         // Public key of the verifier depositor wants to sign the TLS proof
+        bytes32 notaryKeyHash;              // Hash of notary's public key
         uint256 depositAmount;              // Amount of USDC deposited
         bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Revolut currency code))
         uint256 remainingDeposits;          // Amount of remaining deposited liquidity
@@ -76,7 +77,7 @@ contract RevolutRamp is Ownable {
 
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
-        bytes32 depositorId;                // Depositor's offRampId 
+        bytes32 depositorId;                // Depositor's accountId, this ID is a hash of the user's original Rev Tag 
         Deposit deposit;                    // Deposit struct
         uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)
     }
@@ -92,7 +93,7 @@ contract RevolutRamp is Ownable {
     struct IntentWithOnRamperId {
         bytes32 intentHash;                 // Intent hash
         Intent intent;                      // Intent struct
-        bytes32 onRamperId;                 // onRamper's onRamperId
+        bytes32 onRamperId;                 // onRamper's onRamperId, this ID is a hash of the user's original Rev Tag
     }
 
     // A Global Account is defined as an account represented by one accountId. This is used to enforce limitations on actions across
@@ -193,21 +194,23 @@ contract RevolutRamp is Ownable {
      * @param _depositAmount        The amount of USDC to off-ramp
      * @param _receiveAmount        The amount of USD to receive
      * @param _verifierSigningKey   Public key of the verifier depositor wants to sign the TLS proof
+     * @param _notaryKeyHash        Hash of the notary public key that is required to do notarization
      */
     function offRamp(
         string calldata _revolutTag,
         bytes32 _receiveCurrencyId,
         uint256 _depositAmount,
         uint256 _receiveAmount,
-        address _verifierSigningKey
+        address _verifierSigningKey,
+        bytes32 _notaryKeyHash
     )
         external
         onlyRegisteredUser
     {
-        bytes32 account = accountRegistry.getAccountId(msg.sender);
-        GlobalAccountInfo storage globalAccountInfo = globalAccount[account];
+        bytes32 offRamperId = accountRegistry.getAccountId(msg.sender);
+        GlobalAccountInfo storage globalAccountInfo = globalAccount[offRamperId];
 
-        require(keccak256(abi.encode(_revolutTag)) == account, "Revolut tag must match id");
+        require(keccak256(abi.encode(_revolutTag)) == offRamperId, "Revolut tag must match id");
         require(globalAccountInfo.deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
         require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
         require(_receiveAmount > 0, "Receive amount must be greater than 0");
@@ -226,12 +229,13 @@ contract RevolutRamp is Ownable {
             outstandingIntentAmount: 0,
             conversionRate: conversionRate,
             intentHashes: new bytes32[](0),
-            verifierSigningKey: _verifierSigningKey
+            verifierSigningKey: _verifierSigningKey,
+            notaryKeyHash: _notaryKeyHash
         });
 
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
 
-        emit DepositReceived(depositId, account, _receiveCurrencyId, _depositAmount, conversionRate);
+        emit DepositReceived(depositId, offRamperId, _receiveCurrencyId, _depositAmount, conversionRate);
     }
 
     /**
@@ -679,7 +683,8 @@ contract RevolutRamp is Ownable {
             uint256 amount,
             uint256 timestamp,
             bytes32 offRamperId,
-            bytes32 currencyId
+            bytes32 currencyId,
+            bytes32 notaryKeyHash
         ) = sendProcessor.processProof(
             IRevolutSendProcessor.SendProof({
                 public_values: _data,
@@ -688,9 +693,10 @@ contract RevolutRamp is Ownable {
             deposit.verifierSigningKey
         );
 
+        require(notaryKeyHash == deposit.notaryKeyHash, "Incorrect notary used for notarization");
         require(currencyId == deposit.receiveCurrencyId, "Wrong currency sent");
         require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
-        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Revolut tag does not match");
+        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, "Offramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
     }
 }
