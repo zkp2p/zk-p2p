@@ -33,7 +33,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
 
   const { isLoggedIn } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
-  const { venmoNftAddress, nftAbi } = useSmartContracts();
+  const { revolutNftAddress, nftAbi } = useSmartContracts();
 
   const [shouldConfigureMintSbtWrite, setShouldConfigureMintSbtWrite] = useState<boolean>(false);
 
@@ -45,7 +45,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   // mintSBT()
   //
   const { config: writeSubmitSbtConfig } = usePrepareContractWrite({
-    address: venmoNftAddress,
+    address: revolutNftAddress,
     abi: nftAbi,
     functionName: 'mintSBT',
     enabled: shouldConfigureMintSbtWrite
@@ -85,7 +85,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
    */
 
   const openSeaNftLink = () => {
-    return "https://opensea.io/assets/base/" + venmoNftAddress + "/" + venmoNftId;
+    return "https://opensea.io/assets/base/" + revolutNftAddress + "/" + venmoNftId;
   };
 
   /*
