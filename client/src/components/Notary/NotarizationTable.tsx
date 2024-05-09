@@ -188,7 +188,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const detectedNotarizationCopy = useMemo(() => {
-    if (selectedIndex !== null) {
+    if (selectedIndex !== null && loadedNotaryProofs[selectedIndex]) {
       const selectedRequest: ExtensionNotaryProofRow = loadedNotaryProofs[selectedIndex];
       
       switch (circuitType) {
@@ -203,7 +203,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Revolut account history',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`, // fix this from on to at
+            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
