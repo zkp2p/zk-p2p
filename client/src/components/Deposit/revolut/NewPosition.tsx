@@ -14,7 +14,7 @@ import { LoginStatus, NewRevolutDepositTransactionStatus } from '@helpers/types'
 import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
 import { ZERO } from '@helpers/constants';
 import { revolutStrings } from '@helpers/strings';
-import { keccak256, sha256, calculateRevolutTagHash } from '@helpers/keccack';
+import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
 import useAccount from '@hooks/useAccount';
@@ -26,9 +26,9 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 
 
-const NOTARY_PUBKEY = process.env.NOTARY_PUBKEY;
-if (!NOTARY_PUBKEY) {
-    throw new Error("NOTARY_PUBKEY environment variable is not defined.");
+const NOTARY_PUBKEY_HASH = process.env.NOTARY_PUBKEY_HASH;
+if (!NOTARY_PUBKEY_HASH) {
+    throw new Error("NOTARY_PUBKEY_HASH environment variable is not defined.");
 };
 
 interface NewPositionProps {
@@ -86,7 +86,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY,
-      sha256(NOTARY_PUBKEY)
+      NOTARY_PUBKEY_HASH
     ],
     enabled: shouldConfigureNewDepositWrite
   });
