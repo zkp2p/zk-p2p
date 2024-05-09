@@ -69,6 +69,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
   const [garantiNftAddress, setGarantiNftAddress] = useState<string | null>(null);
+  const [revolutNftAddress, setRevolutNftAddress] = useState<string | null>(null);
 
   // Socket
   const [socketBridgeAddress, setSocketBridgeAddress] = useState<string | null>(null);
@@ -163,6 +164,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
     setGarantiNftAddress(null);
+    setRevolutNftAddress(null);
     
     // Socket
     setSocketBridgeAddress(null);
@@ -257,6 +259,7 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         venmoNftAddress,
         hdfcNftAddress,
         garantiNftAddress,
+        revolutNftAddress,
 
         // Socket
         socketBridgeAddress,

@@ -18,7 +18,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { revolutAccountRegistryAddress, revolutAccountRegistryAbi, venmoNftAddress, nftAbi } = useSmartContracts();
+  const { revolutAccountRegistryAddress, revolutAccountRegistryAbi, revolutNftAddress, nftAbi } = useSmartContracts();
 
   /*
    * State
@@ -82,7 +82,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
     data: venmoNftIdRaw,
     refetch: refetchVenmoNftId,
   } = useContractRead({
-    address: venmoNftAddress,
+    address: revolutNftAddress,
     abi: nftAbi,
     functionName: 'getTokenId',
     args: [
@@ -95,7 +95,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   const {
     data: venmoNftUriRaw,
   } = useContractRead({
-    address: venmoNftAddress,
+    address: revolutNftAddress,
     abi: nftAbi,
     functionName: 'tokenURI',
     args: [

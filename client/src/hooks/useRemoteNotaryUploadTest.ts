@@ -46,8 +46,6 @@ export default function useRemoteNotaryUploadTest({
         const endTime = performance.now();
         const durationSeconds = (endTime - startTime) / 1000;
 
-        console.log(`durationSeconds: ${durationSeconds} seconds`);
-
         setUploadTime(durationSeconds);
       } else {
         setError(`Failed to upload file. Status: ${response.status}`);

@@ -45,6 +45,7 @@ interface SmartContractsValues {
   venmoNftAddress: string | null;
   hdfcNftAddress: string | null;
   garantiNftAddress: string | null;
+  revolutNftAddress: string | null;
 
   // Socket
   socketBridgeAddress: string | null;
@@ -95,6 +96,7 @@ const defaultValues: SmartContractsValues = {
   venmoNftAddress: null,
   hdfcNftAddress: null,
   garantiNftAddress: null,
+  revolutNftAddress: null,
 
   // Socket
   socketBridgeAddress: null,
