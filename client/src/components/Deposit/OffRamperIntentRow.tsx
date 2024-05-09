@@ -57,6 +57,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           onRamperLinkLabel: ` on Venmo`,
           onRamperHashLabel: `$${amountUSDToReceive} from `
         };
+
       case PaymentPlatform.HDFC:
         return {
           onRamperLinkLabel: ` on HDFC`,
@@ -67,6 +68,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         return {
           onRamperLinkLabel: ` on Garanti`,
           onRamperHashLabel: `₺${amountUSDToReceive} from `
+        };
+
+      case PaymentPlatform.REVOLUT:
+        return {
+          onRamperLinkLabel: ` on Revolut`,
+          onRamperHashLabel: `€${amountUSDToReceive} from `
         };
 
       default:

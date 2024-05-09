@@ -12,6 +12,7 @@ import { colors } from '@theme/colors';
 import useDeposits from '@hooks/venmo/useDeposits';
 import useHdfcDeposits from '@hooks/hdfc/useDeposits';
 import useGarantiDeposits from '@hooks/garanti/useDeposits';
+import useRevolutDeposits from '@hooks/revolut/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
@@ -57,6 +58,10 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
   const {
     refetchDeposits: refetchGarantiDeposits
   } = useGarantiDeposits();
+
+  const {
+    refetchDeposits: refetchRevolutDeposits
+  } = useRevolutDeposits();
 
   /*
    * State
@@ -110,7 +115,7 @@ export const ConfirmRelease: React.FC<ConfirmReleaseProps> = ({
           break;
 
         case PaymentPlatform.REVOLUT:
-          refetchGarantiDeposits?.();
+          refetchRevolutDeposits?.();
           break;
 
         default:
