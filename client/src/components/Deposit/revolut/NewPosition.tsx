@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'react-feather';
 import styled from 'styled-components';
 import Link from '@mui/material/Link';
+import { ethers } from "ethers";
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from "@components/common/Button";
@@ -86,7 +87,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY,
-      NOTARY_PUBKEY_HASH
+      ethers.utils.hexZeroPad(ethers.utils.hexlify(BigInt(NOTARY_PUBKEY_HASH)), 32)
     ],
     enabled: shouldConfigureNewDepositWrite
   });
