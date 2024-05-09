@@ -879,7 +879,7 @@ const ButtonContainer = styled.div`
 `;
 
 const StyledUserX = styled(UserX)`
-  color: #FFF;
+  color: ${colors.connectionStatusRed};
   width: 28px;
   height: 28px;
 `;
@@ -891,19 +891,19 @@ const StyledWifiOff = styled(WifiOff)`
 `;
 
 const StyledUserCheck = styled(UserCheck)`
-  color: #FFF;
+  color: ${colors.connectionStatusGreen};
   width: 28px;
   height: 28px;
 `;
 
 const StyledCheckCircle = styled(CheckCircle)`
-  color: #FFF;
+  color: ${colors.connectionStatusGreen};
   width: 28px;
   height: 28px;
 `;
 
 const StyledSlash = styled(Slash)`
-  color: #FFF;
+  color: ${colors.connectionStatusRed};
   width: 28px;
   height: 28px;
 `;
