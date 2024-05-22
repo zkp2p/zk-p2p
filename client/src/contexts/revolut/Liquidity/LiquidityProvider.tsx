@@ -42,7 +42,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
-  const { depositCounter } = useRampState();
+  const { depositCounter, maximumOnRampAmount } = useRampState();
   const { fetchVenmoDepositorDenyList } = useDenyList();
 
   /*
@@ -244,9 +244,9 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [depositStore]);
 
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
-    if (depositStore) {
+    if (depositStore && maximumOnRampAmount) {
       return fetchDepositForMaxAvailableTransferSize(
-        MAX_USDC_TRANSFER_SIZE_REVOLUT,
+        maximumOnRampAmount,
         depositStore,
         onRamperRegistrationHash
       );

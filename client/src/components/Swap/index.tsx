@@ -313,7 +313,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
               if (!onRampCooldownElapsed) {
                 updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
-              } else if (toBigInt(requestedUsdcAmount) > maxTransferSize) {
+              } else if (maxTransferSize && (toBigInt(requestedUsdcAmount) > maxTransferSize)) {
                 updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
@@ -477,7 +477,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         return 'Invalid recipient address';
       
       case QuoteState.EXCEEDS_MAX_SIZE:
-        const maxTransferSizeString = toUsdcString(maxTransferSize, true);
+        const maxTransferSizeString = toUsdcString(maxTransferSize ? maxTransferSize : BigInt(0), true);
         return `Exceeded USD transfer limit of ${maxTransferSizeString}`;
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:

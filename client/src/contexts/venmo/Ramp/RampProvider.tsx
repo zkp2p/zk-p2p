@@ -23,6 +23,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
+  const [maximumOnRampAmount, setMaximumOnRampAmount] = useState<bigint | null>(null);
   const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
   const [onRampCooldownPeriod, setOnRampCooldownPeriod] = useState<bigint | null>(null);
 
@@ -42,6 +43,19 @@ const RampProvider = ({ children }: ProvidersProps) => {
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
   })
+
+  // uint256 public maxOnRampAmount;
+  const {
+    data: maximumOnRampAmountRaw,
+  } = useContractRead({
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
+    functionName: 'maxOnRampAmount',
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
+  })
+
+
 
   // uint256 public depositCounter;
   const {
@@ -106,6 +120,23 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
+    esl && console.log('revolut_maxOnRampAmountRaw_1');
+    esl && console.log('checking maximumOnRampAmountRaw: ', maximumOnRampAmountRaw);
+  
+    if (maximumOnRampAmountRaw) {
+      esl && console.log('revolut_maxOnRampAmountRaw_2');
+
+      const maximumOnRampAmountProcessed = (maximumOnRampAmountRaw as bigint);
+      
+      setMaximumOnRampAmount(maximumOnRampAmountProcessed);
+    } else {
+      esl && console.log('revolut_maxOnRampAmountRaw_3');
+
+      setMaximumOnRampAmount(null);
+    }
+  }, [maximumOnRampAmountRaw]);
+
+  useEffect(() => {
     esl && console.log('venmo_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
@@ -139,6 +170,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     <RampContext.Provider
       value={{
         minimumDepositAmount,
+        maximumOnRampAmount,
         depositCounter,
         onRampCooldownPeriod,
         refetchDepositCounter,

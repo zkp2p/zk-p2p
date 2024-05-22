@@ -23,6 +23,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
    */
 
   const [minimumDepositAmount, setMinimumDepositAmount] = useState<bigint | null>(null);
+  const [maximumOnRampAmount, setMaximumOnRampAmount] = useState<bigint | null>(null);
   const [depositCounter, setDepositCounter] = useState<bigint | null>(null);
   const [onRampCooldownPeriod, setOnRampCooldownPeriod] = useState<bigint | null>(null);
 
@@ -39,6 +40,17 @@ const RampProvider = ({ children }: ProvidersProps) => {
     address: revolutRampAddress,
     abi: revolutRampAbi,
     functionName: 'minDepositAmount',
+    enabled: shouldFetchRampState,
+    account: CALLER_ACCOUNT
+  })
+
+  // uint256 public maxOnRampAmount;
+  const {
+    data: maximumOnRampAmountRaw,
+  } = useContractRead({
+    address: revolutRampAddress,
+    abi: revolutRampAbi,
+    functionName: 'maxOnRampAmount',
     enabled: shouldFetchRampState,
     account: CALLER_ACCOUNT
   })
@@ -106,6 +118,23 @@ const RampProvider = ({ children }: ProvidersProps) => {
   }, [minimumDepositAmountRaw]);
 
   useEffect(() => {
+    esl && console.log('revolut_maxOnRampAmountRaw_1');
+    esl && console.log('checking maximumOnRampAmountRaw: ', maximumOnRampAmountRaw);
+  
+    if (maximumOnRampAmountRaw) {
+      esl && console.log('revolut_maxOnRampAmountRaw_2');
+
+      const maximumOnRampAmountProcessed = (maximumOnRampAmountRaw as bigint);
+      
+      setMaximumOnRampAmount(maximumOnRampAmountProcessed);
+    } else {
+      esl && console.log('revolut_maxOnRampAmountRaw_3');
+
+      setMaximumOnRampAmount(null);
+    }
+  }, [maximumOnRampAmountRaw]);
+
+  useEffect(() => {
     esl && console.log('revolut_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
@@ -139,6 +168,7 @@ const RampProvider = ({ children }: ProvidersProps) => {
     <RampContext.Provider
       value={{
         minimumDepositAmount,
+        maximumOnRampAmount,
         depositCounter,
         onRampCooldownPeriod,
         refetchDepositCounter,

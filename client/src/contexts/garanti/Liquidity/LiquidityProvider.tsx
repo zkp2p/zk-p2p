@@ -21,7 +21,7 @@ import {
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
  } from '../../venmo/Liquidity/helper';
-import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_HDFC } from '@helpers/constants';
+import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useGarantiRampState from '@hooks/garanti/useRampState';
 import useDenyList from '@hooks/useDenyList';
@@ -42,7 +42,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    */
 
   const { garantiRampAddress, garantiRampAbi } = useSmartContracts();
-  const { depositCounter } = useGarantiRampState();
+  const { depositCounter, maximumOnRampAmount } = useGarantiRampState();
   const { fetchGarantiDepositoryDenyList } = useDenyList();
 
   /*
@@ -244,9 +244,9 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [depositStore]);
 
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
-    if (depositStore) {
+    if (depositStore && maximumOnRampAmount) {
       return fetchDepositForMaxAvailableTransferSize(
-        MAX_USDC_TRANSFER_SIZE_HDFC,
+        maximumOnRampAmount,
         depositStore,
         onRamperRegistrationHash
       );

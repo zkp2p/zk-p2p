@@ -133,6 +133,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     shouldFetchDeposits: shouldFetchRevolutDeposits
   } = useRevolutLiquidity();
   const {
+    maximumOnRampAmount: maximumOnRampAmount,
     refetchDepositCounter: refetchRevolutDepositCounter,
     shouldFetchRampState: shouldFetchRevolutRampState,
     onRampCooldownPeriod: revolutOnRampCooldownPeriod
@@ -169,7 +170,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
   const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
 
-  const [maxTransferSize, setMaxTransferSize] = useState<bigint>(ZERO);
+  const [maxTransferSize, setMaxTransferSize] = useState<bigint | null>(null);
 
   /*
    * Miscellaneous
@@ -192,7 +193,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         break;
 
       case PaymentPlatform.REVOLUT:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_REVOLUT);
+        setMaxTransferSize(maximumOnRampAmount);
         break;
 
       default:
