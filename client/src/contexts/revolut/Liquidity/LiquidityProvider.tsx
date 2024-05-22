@@ -21,7 +21,7 @@ import {
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
  } from './helper';
-import { esl, CALLER_ACCOUNT, ZERO, MAX_USDC_TRANSFER_SIZE_REVOLUT } from '@helpers/constants';
+import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/revolut/useRampState';
 import useDenyList from '@hooks/useDenyList';

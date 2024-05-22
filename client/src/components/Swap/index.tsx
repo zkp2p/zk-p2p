@@ -91,7 +91,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     shouldFetchIntentHash,
     lastOnRampTimestamp,
     refetchLastOnRampTimestamp,
-    maxTransferSize
+    maximumOnRampAmount
   } = useSwapQuote();
 
   /*
@@ -310,10 +310,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
             if (lastOnRampTimestampLoaded && onRampCooldownPeriodLoaded) {
               const onRampCooldownEnd = (BigInt(lastOnRampTimestamp) + BigInt(onRampCooldownPeriod)) * 1000n;
               const onRampCooldownElapsed = Date.now() >= onRampCooldownEnd;
-
               if (!onRampCooldownElapsed) {
                 updateQuoteErrorState(QuoteState.ORDER_COOLDOWN_PERIOD);
-              } else if (maxTransferSize && (toBigInt(requestedUsdcAmount) > maxTransferSize)) {
+              } else if (maximumOnRampAmount && (toBigInt(requestedUsdcAmount) > maximumOnRampAmount)) {
                 updateQuoteErrorState(QuoteState.EXCEEDS_MAX_SIZE);
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
@@ -360,7 +359,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
       registrationHash,
       isLoggedIn,
       isRegistered,
-      maxTransferSize,
+      maximumOnRampAmount,
       paymentPlatform
     ]
   );
@@ -477,8 +476,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
         return 'Invalid recipient address';
       
       case QuoteState.EXCEEDS_MAX_SIZE:
-        const maxTransferSizeString = toUsdcString(maxTransferSize ? maxTransferSize : BigInt(0), true);
-        return `Exceeded USD transfer limit of ${maxTransferSizeString}`;
+        const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : BigInt(0), true);
+        return `Exceeded USD transfer limit of ${maximumOnRampAmountString}`;
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';

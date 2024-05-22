@@ -19,7 +19,7 @@ interface SwapQuoteValues {
   shouldFetchIntentHash: boolean;
   lastOnRampTimestamp: bigint | null;
   refetchLastOnRampTimestamp: (() => void) | null;
-  maxTransferSize: bigint | null;
+  maximumOnRampAmount: bigint | null;
 };
 
 const defaultValues: SwapQuoteValues = {
@@ -38,7 +38,7 @@ const defaultValues: SwapQuoteValues = {
   shouldFetchIntentHash: false,
   lastOnRampTimestamp: null,
   refetchLastOnRampTimestamp: null,
-  maxTransferSize: null,
+  maximumOnRampAmount: null,
 };
 
 const SwapQuoteContext = createContext<SwapQuoteValues>(defaultValues);
