@@ -1,14 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import { IndicativeQuote } from '@helpers/types';
-import {
-  esl,
-  MAX_USDC_TRANSFER_SIZE_GARANTI,
-  MAX_USDC_TRANSFER_SIZE_HDFC,
-  MAX_USDC_TRANSFER_SIZE_VENMO,
-  MAX_USDC_TRANSFER_SIZE_REVOLUT,
-  ZERO
-} from '@helpers/constants';
+import { esl } from '@helpers/constants';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 
 // Venmo
@@ -61,6 +54,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     shouldFetchDeposits: shouldFetchVenmoDeposits
   } = useLiquidity();
   const {
+    maximumOnRampAmount: venmoMaximumOnRampAmount,
     refetchDepositCounter: refetchVenmoDepositCounter,
     shouldFetchRampState: shouldFetchVenmoRampState,
     onRampCooldownPeriod: venmoOnRampCooldownPeriod
@@ -85,6 +79,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     shouldFetchDeposits: shouldFetchHdfcDeposits
   } = useHdfcLiquidity();
   const {
+    maximumOnRampAmount: hdfcMaximumOnRampAmount,
     refetchDepositCounter: refetchHdfcDepositCounter,
     shouldFetchRampState: shouldFetchHdfcRampState,
     onRampCooldownPeriod: hdfcOnRampCooldownPeriod
@@ -109,6 +104,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     shouldFetchDeposits: shouldFetchGarantiDeposits
   } = useGarantiLiquidity();
   const {
+    maximumOnRampAmount: garantiMaximumOnRampAmount,
     refetchDepositCounter: refetchGarantiDepositCounter,
     shouldFetchRampState: shouldFetchGarantiRampState,
     onRampCooldownPeriod: garantiOnRampCooldownPeriod
@@ -133,6 +129,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     shouldFetchDeposits: shouldFetchRevolutDeposits
   } = useRevolutLiquidity();
   const {
+    maximumOnRampAmount: revolutMaximumOnRampAmount,
     refetchDepositCounter: refetchRevolutDepositCounter,
     shouldFetchRampState: shouldFetchRevolutRampState,
     onRampCooldownPeriod: revolutOnRampCooldownPeriod
@@ -161,6 +158,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const [refetchDepositCounter, setRefetchDepositCounter] = useState<(() => void) | null>(null);
   const [shouldFetchRampState, setShouldFetchRampState] = useState<boolean>(false);
   const [onRampCooldownPeriod, setOnRampCooldownPeriod] = useState<bigint | null>(null);
+  const [maximumOnRampAmount, setMaximumOnRampAmount] = useState<bigint | null>(null);
   
   const [currentIntentHash, setCurrentIntentHash] = useState<string | null>(null);
   const [refetchIntentHash, setRefetchIntentHash] = useState<(() => void) | null>(null);
@@ -169,7 +167,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
   const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
 
-  const [maxTransferSize, setMaxTransferSize] = useState<bigint>(ZERO);
+  const [maxTransferSize, setMaxTransferSize] = useState<bigint | null>(null);
 
   /*
    * Miscellaneous
@@ -180,19 +178,19 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
 
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_VENMO);
+        setMaxTransferSize(venmoMaximumOnRampAmount);
         break;
 
       case PaymentPlatform.HDFC:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_HDFC);
+        setMaxTransferSize(hdfcMaximumOnRampAmount);
         break;
 
       case PaymentPlatform.GARANTI:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_GARANTI);
+        setMaxTransferSize(garantiMaximumOnRampAmount);
         break;
 
       case PaymentPlatform.REVOLUT:
-        setMaxTransferSize(MAX_USDC_TRANSFER_SIZE_REVOLUT);
+        setMaxTransferSize(revolutMaximumOnRampAmount);
         break;
 
       default:
@@ -750,6 +748,43 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
     ]
   );
 
+  useEffect(() => {
+    esl && console.log('venmoMaximumOnRampAmount: ', venmoMaximumOnRampAmount);
+    esl && console.log('hdfcMaximumOnRampAmount: ', hdfcMaximumOnRampAmount);
+    esl && console.log('garantiMaximumOnRampAmount: ', garantiMaximumOnRampAmount);
+    esl && console.log('revolutMaximumOnRampAmount: ', revolutMaximumOnRampAmount);
+
+    switch (paymentPlatform) {
+      case PaymentPlatform.VENMO:
+        setMaximumOnRampAmount(venmoMaximumOnRampAmount);
+        break;
+
+      case PaymentPlatform.HDFC:
+        setMaximumOnRampAmount(hdfcMaximumOnRampAmount);
+        break;
+      
+      case PaymentPlatform.GARANTI:
+        setMaximumOnRampAmount(garantiMaximumOnRampAmount);
+        break;
+
+      case PaymentPlatform.REVOLUT:
+        setMaximumOnRampAmount(revolutMaximumOnRampAmount);
+        break;
+
+      default:
+        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
+    }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+      paymentPlatform,
+      venmoMaximumOnRampAmount,
+      hdfcMaximumOnRampAmount,
+      garantiMaximumOnRampAmount,
+      revolutMaximumOnRampAmount
+    ]
+  );
+
   return (
     <SwapQuoteContext.Provider
       value={{
@@ -768,7 +803,7 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
         refetchDepositCounter,
         shouldFetchRampState,
         onRampCooldownPeriod,
-        maxTransferSize
+        maximumOnRampAmount
       }}
     >
       {children}
