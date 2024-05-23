@@ -476,7 +476,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         return 'Invalid recipient address';
       
       case QuoteState.EXCEEDS_MAX_SIZE:
-        const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : BigInt(0), true);
+        const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : ZERO, true);
         return `Exceeded USD transfer limit of ${maximumOnRampAmountString}`;
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
