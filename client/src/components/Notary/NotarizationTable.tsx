@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components/macro';
-import { Sidebar, UserX, UserCheck, CheckCircle, Slash, Circle, WifiOff } from 'react-feather';
+import { AlertTriangle, Sidebar, UserX, UserCheck, CheckCircle, Slash, Circle, WifiOff } from 'react-feather';
 import Link from '@mui/material/Link';
-import { isChrome, isFirefox, isChromium } from 'react-device-detect';
+import { browserName } from 'react-device-detect';
 
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -27,7 +27,6 @@ import useNotarySettings from '@hooks/useNotarySettings';
 
 import chromeSvg from '../../assets/images/browsers/chrome.svg';
 import braveSvg from '../../assets/images/browsers/brave.svg';
-import firefoxSvg from '../../assets/images/browsers/firefox.svg';
 
 
 const ROWS_PER_PAGE = 3;
@@ -88,7 +87,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * State
    */
 
-  const [browser, setBrowser] = useState<string>("");
+  const [isNotSupportedBrowser, setIsNotSupportedBrowser] = useState<boolean>(false);
 
   const [loadedNotaryProofs, setLoadedNotaryProofs] = useState<ExtensionNotaryProofRow[]>([]);
 
@@ -259,18 +258,6 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     return userDoesNotHaveValidProof && isConnectionStatusPoor && userHasNotPressedProceed;
   };
 
-  async function getBrowser() {
-    if (isFirefox) {
-      return "firefox";
-    } else if (isChrome) {
-      return "chrome";
-    } else if (isChromium) {
-      return "brave";
-    };
-
-    return "unknown";
-  };
-
   const notarizationToggleCta = () => {
     if (isShowingTable) {
       return 'Go back';
@@ -280,30 +267,22 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const browserSvg = () => {
-    switch (browser) {
-      case 'firefox':
-        return firefoxSvg;
-
-      case 'brave':
+    switch (browserName) {
+      case 'Brave':
         return braveSvg;
 
-      case 'chrome':
-        return chromeSvg;
-
+      case 'Chrome':
       default:
         return chromeSvg;
     }
   };
 
   const addToBrowserCopy = () => {
-    switch (browser) {
-      case 'firefox':
-        return 'Add to Firefox';
-
-      case 'brave':
+    switch (browserName) {
+      case 'Brave':
         return 'Add to Brave';
 
-      case 'chrome':
+      case 'Chrome':
         return 'Add to Chrome';
 
       default:
@@ -342,10 +321,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   }, [loadedNotaryProofs, selectedIndex]);
 
   useEffect(() => {
-    async function detectBrowser() {
-      setBrowser(await getBrowser());
-    };
-    detectBrowser();
+    const supportedBrowsers = ['Chrome', 'Brave'];
+    setIsNotSupportedBrowser(supportedBrowsers.indexOf(browserName) === -1);
 
     // Moot to run this on an interval because the content script needs to be injected
     refetchExtensionVersion();
@@ -541,14 +518,14 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
 
   return (
     <Container>
-      {!isSidebarInstalled ? (
-        <InstallExtensionContainer>
+      {isNotSupportedBrowser ? (
+        <UnsupportedBrowserContainer>
           <IconAndCopyContainer>
-            <SidebarIcon strokeWidth={1} style={{ marginTop: '2em' }} />
+            <StyledAlertTriangle />
 
             <ThemedText.DeprecatedBody textAlign="center">
               <div>
-                { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
+                { commonStrings.get('BROWSER_NOT_SUPPORTED_INSTRUCTIONS') }
                 <Link
                   href={EXTENSION_DOCS_URL}
                   target="_blank"
@@ -559,168 +536,189 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             </ThemedText.DeprecatedBody>
           </IconAndCopyContainer>
 
-          <Button
-            onClick={handleInstallExtensionClicked}
-            height={48}
-            width={216}
-            leftAccessorySvg={browserSvg()}
-            loading={isInstallExtensionClicked}
-            disabled={isInstallExtensionClicked}
-          >
-            { addToBrowserCopy() }
-          </Button>
-
-          { isInstallExtensionClicked && (
-            <ThemedText.LabelSmall textAlign="left">
-              Waiting for installation...
-            </ThemedText.LabelSmall>
-          )}
-        </InstallExtensionContainer>
+        </UnsupportedBrowserContainer>
       ) : (
-        <ExtensionDetectedContainer>
-          <NotaryTableTitleContainer>
-            {tableTitleLabelForCircuitType()}
-            <ConnectionTitleContainer>
-              <ConnectionAndTooltip>
-                Connection
-                {connectionStatus !== NotaryConnectionStatus.GREEN ? (
-                  <QuestionHelper
-                    text={commonStrings.get('NOTARY_CONNECTION_TOOLTIP')}/>
-                  ) : null}
-              </ConnectionAndTooltip>
+        !isSidebarInstalled ? (
+          <InstallExtensionContainer>
+            <IconAndCopyContainer>
+              <SidebarIcon strokeWidth={1} style={{ marginTop: '2em' }} />
 
-              <StyledCircle
-                connection={connectionStatus}/>
-            </ConnectionTitleContainer>
-          </NotaryTableTitleContainer>
+              <ThemedText.DeprecatedBody textAlign="center">
+                <div>
+                  { commonStrings.get('EXTENSION_DOWNLOAD_INSTRUCTIONS') }
+                  <Link
+                    href={EXTENSION_DOCS_URL}
+                    target="_blank"
+                  >
+                    Learn More ↗
+                  </Link>
+                </div>
+              </ThemedText.DeprecatedBody>
+            </IconAndCopyContainer>
 
-          {isShowingTable ? (
-            <TitleAndTableContainer>
-              <TitleAndOAuthContainer>
-                <NotarizationsTitleContainer>
-                  <TitleLabel>Loaded Revolut Proofs</TitleLabel>
-                </NotarizationsTitleContainer>
+            <Button
+              onClick={handleInstallExtensionClicked}
+              height={48}
+              width={216}
+              leftAccessorySvg={browserSvg()}
+              loading={isInstallExtensionClicked}
+              disabled={isInstallExtensionClicked}
+            >
+              { addToBrowserCopy() }
+            </Button>
 
-                <AccessoryButton
-                  onClick={fetchData}
-                  height={36}
-                  title={'Refresh'}
-                  icon={'refresh'}
-                />
-              </TitleAndOAuthContainer>
+            { isInstallExtensionClicked && (
+              <ThemedText.LabelSmall textAlign="left">
+                Waiting for installation...
+              </ThemedText.LabelSmall>
+            )}
+          </InstallExtensionContainer>
+        ) : (
+          <ExtensionDetectedContainer>
+            <NotaryTableTitleContainer>
+              {tableTitleLabelForCircuitType()}
+              <ConnectionTitleContainer>
+                <ConnectionAndTooltip>
+                  Connection
+                  {connectionStatus !== NotaryConnectionStatus.GREEN ? (
+                    <QuestionHelper
+                      text={commonStrings.get('NOTARY_CONNECTION_TOOLTIP')}/>
+                    ) : null}
+                </ConnectionAndTooltip>
 
-              {loadedNotaryProofs.length === 0 ? (
-                <EmptyNotarizationsContainer>
-                  { notarizationContainerSettings.errorIcon }
+                <StyledCircle
+                  connection={connectionStatus}/>
+              </ConnectionTitleContainer>
+            </NotaryTableTitleContainer>
 
-                  <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                    { notarizationContainerSettings.errorText }
-                  </ThemedText.SubHeaderSmall>
-                </EmptyNotarizationsContainer>
-              ) : (
-                <Table>
-                  {paginatedData.map((notarization, index) => (
-                    <NotarizationRow
-                      key={index}
-                      subjectText={notarization.subject}
-                      dateText={notarization.date}
-                      isSelected={selectedIndex === (index + currentPage * ROWS_PER_PAGE)}
-                      onRowClick={() => handleRowClick(index)}
-                      rowIndex={index + 1 + currentPage * ROWS_PER_PAGE}
-                      isLastRow={index === paginatedData.length - 1 && paginatedData.length < ROWS_PER_PAGE}
-                    />
-                  ))}
-                </Table>
-              )}
+            {isShowingTable ? (
+              <TitleAndTableContainer>
+                <TitleAndOAuthContainer>
+                  <NotarizationsTitleContainer>
+                    <TitleLabel>Loaded Revolut Proofs</TitleLabel>
+                  </NotarizationsTitleContainer>
 
-              {loadedNotaryProofs.length > ROWS_PER_PAGE && (
-                <PaginationContainer>
-                  <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
-                    &#8249;
-                  </PaginationButton>
-                  <PageInfo>
-                    {totalPages === 0 ? '0 of 0' : `${currentPage + 1} of ${totalPages}`}
-                  </PageInfo>
-                  <PaginationButton
-                    disabled={currentPage === totalPages - 1 || totalPages === 0}
-                    onClick={() => handleChangePage(currentPage + 1)}>  
-                    &#8250;
-                  </PaginationButton>
-                </PaginationContainer>
-              )}
-            </TitleAndTableContainer>
-          ) : (
-            selectedIndex !== null ? (
-              <IconAndMessageContainer>
-                <TagDetectionIconAndCopyContainer>
-                  { notarizationContainerSettings.proofFoundIcon }
+                  <AccessoryButton
+                    onClick={fetchData}
+                    height={36}
+                    title={'Refresh'}
+                    icon={'refresh'}
+                  />
+                </TitleAndOAuthContainer>
 
-                  <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                    {detectedNotarizationCopy.detected_copy}:&nbsp;<strong>{detectedNotarizationCopy.metadata_copy}</strong>. 
-                    Verify and submit this {detectedNotarizationCopy.metadata_type_copy} to complete {detectedNotarizationCopy.transaction_type_copy}
-                  </ThemedText.SubHeaderSmall>
-                </TagDetectionIconAndCopyContainer>
-              </IconAndMessageContainer>
-            ) : (
-              shouldShowConnectionWarning() ? (
-                <IconAndMessageContainer>
+                {loadedNotaryProofs.length === 0 ? (
                   <EmptyNotarizationsContainer>
-                    <StyledWifiOff />
-      
-                    <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
-                      { "Your internet connection may be too slow to successfully complete the verification process." }
-                    </ThemedText.SubHeaderSmall>
-                  </EmptyNotarizationsContainer>
-                </IconAndMessageContainer>
-              ) : (
-                <IconAndMessageContainer>
-                  <TagDetectionIconAndCopyContainer>
                     { notarizationContainerSettings.errorIcon }
-    
+
                     <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
                       { notarizationContainerSettings.errorText }
                     </ThemedText.SubHeaderSmall>
+                  </EmptyNotarizationsContainer>
+                ) : (
+                  <Table>
+                    {paginatedData.map((notarization, index) => (
+                      <NotarizationRow
+                        key={index}
+                        subjectText={notarization.subject}
+                        dateText={notarization.date}
+                        isSelected={selectedIndex === (index + currentPage * ROWS_PER_PAGE)}
+                        onRowClick={() => handleRowClick(index)}
+                        rowIndex={index + 1 + currentPage * ROWS_PER_PAGE}
+                        isLastRow={index === paginatedData.length - 1 && paginatedData.length < ROWS_PER_PAGE}
+                      />
+                    ))}
+                  </Table>
+                )}
+
+                {loadedNotaryProofs.length > ROWS_PER_PAGE && (
+                  <PaginationContainer>
+                    <PaginationButton disabled={currentPage === 0} onClick={() => handleChangePage(currentPage - 1)}>
+                      &#8249;
+                    </PaginationButton>
+                    <PageInfo>
+                      {totalPages === 0 ? '0 of 0' : `${currentPage + 1} of ${totalPages}`}
+                    </PageInfo>
+                    <PaginationButton
+                      disabled={currentPage === totalPages - 1 || totalPages === 0}
+                      onClick={() => handleChangePage(currentPage + 1)}>  
+                      &#8250;
+                    </PaginationButton>
+                  </PaginationContainer>
+                )}
+              </TitleAndTableContainer>
+            ) : (
+              selectedIndex !== null ? (
+                <IconAndMessageContainer>
+                  <TagDetectionIconAndCopyContainer>
+                    { notarizationContainerSettings.proofFoundIcon }
+
+                    <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                      {detectedNotarizationCopy.detected_copy}:&nbsp;<strong>{detectedNotarizationCopy.metadata_copy}</strong>. 
+                      Verify and submit this {detectedNotarizationCopy.metadata_type_copy} to complete {detectedNotarizationCopy.transaction_type_copy}
+                    </ThemedText.SubHeaderSmall>
                   </TagDetectionIconAndCopyContainer>
                 </IconAndMessageContainer>
+              ) : (
+                shouldShowConnectionWarning() ? (
+                  <IconAndMessageContainer>
+                    <EmptyNotarizationsContainer>
+                      <StyledWifiOff />
+        
+                      <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                        { "Your internet connection may be too slow to successfully complete the verification process." }
+                      </ThemedText.SubHeaderSmall>
+                    </EmptyNotarizationsContainer>
+                  </IconAndMessageContainer>
+                ) : (
+                  <IconAndMessageContainer>
+                    <TagDetectionIconAndCopyContainer>
+                      { notarizationContainerSettings.errorIcon }
+      
+                      <ThemedText.SubHeaderSmall textAlign="center" lineHeight={1.3}>
+                        { notarizationContainerSettings.errorText }
+                      </ThemedText.SubHeaderSmall>
+                    </TagDetectionIconAndCopyContainer>
+                  </IconAndMessageContainer>
+                )
               )
-            )
-          )}
+            )}
 
-          {shouldShowConnectionWarning() ? (
-            <ButtonContainer>
-              <Button
-                onClick={handleProceedPressed}
-              >
-                {'Proceed Anyway'}
-              </Button>
-            </ButtonContainer>
-          ) : (
-            loadedNotaryProofs.length === 0 ? (
+            {shouldShowConnectionWarning() ? (
               <ButtonContainer>
                 <Button
-                  onClick={handleOpenSidebarPressed}
+                  onClick={handleProceedPressed}
                 >
-                  {'Open Sidebar'}
+                  {'Proceed Anyway'}
                 </Button>
               </ButtonContainer>
             ) : (
-              <ButtonContainer>
-                <Button
-                  disabled={notaryProofSelectionStatus === NotaryProofInputStatus.DEFAULT || isProofModalOpen}
-                  onClick={handleVerifyNotaryProofClicked}
-                >
-                  {ctaButtonTitle}
-                </Button>
-              </ButtonContainer>
-            )
-          )}
+              loadedNotaryProofs.length === 0 ? (
+                <ButtonContainer>
+                  <Button
+                    onClick={handleOpenSidebarPressed}
+                  >
+                    {'Open Sidebar'}
+                  </Button>
+                </ButtonContainer>
+              ) : (
+                <ButtonContainer>
+                  <Button
+                    disabled={notaryProofSelectionStatus === NotaryProofInputStatus.DEFAULT || isProofModalOpen}
+                    onClick={handleVerifyNotaryProofClicked}
+                  >
+                    {ctaButtonTitle}
+                  </Button>
+                </ButtonContainer>
+              )
+            )}
 
-          {loadedNotaryProofs.length > 0 && (
-            <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
-              {notarizationToggleCta()}
-            </TableToggleLink>
-          )}
-        </ExtensionDetectedContainer>
+            {loadedNotaryProofs.length > 0 && (
+              <TableToggleLink onClick={handleToggleNotarizationTablePressed}>
+                {notarizationToggleCta()}
+              </TableToggleLink>
+            )}
+          </ExtensionDetectedContainer>
+        )
       )}
     </Container>
   )
@@ -737,6 +735,25 @@ const Container = styled.div`
   border: 1px solid ${colors.defaultBorderColor};
   border-radius: 16px;
   overflow: hidden;
+`;
+
+const UnsupportedBrowserContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  padding: 36px;
+  max-width: 50vh;
+  min-height: 25vh;
+  line-height: 1.3;
+  gap: 36px;
+`;
+
+const StyledAlertTriangle = styled(AlertTriangle)`
+  color: #FFF;
+  width: 48px;
+  height: 48px;
 `;
 
 const InstallExtensionContainer = styled.div`
