@@ -52,6 +52,7 @@ export interface CommonStrings {
   PROOF_MODAL_REGISTRATION_SUBMIT_SUBTITLE: string,
 
   // Extension Instructions
+  BROWSER_NOT_SUPPORTED_INSTRUCTIONS: string,
   EXTENSION_DOWNLOAD_INSTRUCTIONS: string,
 
   // Notary Connection Tooltip
@@ -202,9 +203,13 @@ const strings: CommonStrings = {
   `,
 
   // Extension Instructions
+  BROWSER_NOT_SUPPORTED_INSTRUCTIONS: `
+    Your browser is not currently supported. Switch to a browser with Sidebar support and
+    join our Telegram for updates on supported browsers.
+  `,
   EXTENSION_DOWNLOAD_INSTRUCTIONS: `
-    ZKP2P's browser side bar is your browsing assistant that allows
-    you to prove ownership of your account and transactions.
+    ZKP2P's browser sidebar is your browsing assistant that allows
+    you to prove ownership of your Revolut account and transactions.
   `,
 
   // Notary Connection Tooltip

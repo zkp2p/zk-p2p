@@ -255,7 +255,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore]);
+  }, [depositStore, maximumOnRampAmount]);
 
   /*
    * Helpers
