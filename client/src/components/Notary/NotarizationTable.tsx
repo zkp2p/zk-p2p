@@ -110,6 +110,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
    * Handlers
    */
 
+  const handleJoinTelegramClicked = () => {
+    window.open('https://t.me/+XDj9FNnW-xs5ODNl', '_blank');
+  };
+
   const handleOpenSidebarPressed = () => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
@@ -536,6 +540,12 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             </ThemedText.DeprecatedBody>
           </IconAndCopyContainer>
 
+          <Button
+            onClick={handleJoinTelegramClicked}
+            width={216}
+          >
+            Join our Telegram
+          </Button>
         </UnsupportedBrowserContainer>
       ) : (
         !isSidebarInstalled ? (
