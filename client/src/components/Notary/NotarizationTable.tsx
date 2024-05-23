@@ -177,13 +177,13 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
                     date.getFullYear() === now.getFullYear();
 
     if (isToday) {
-      return date.toLocaleTimeString('en-US', {
+      return 'at ' + date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       });
     } else {
-      return date.toLocaleDateString('en-US', {
+      return 'on ' + date.toLocaleDateString('en-US', {
         month: 'numeric',
         day: 'numeric'
       });
@@ -206,7 +206,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'The following transaction was detected from your Revolut account history',
-            metadata_copy: `€${selectedRequest.metadata} EUR on ${selectedRequest.date}`,
+            metadata_copy: `€${selectedRequest.metadata} EUR ${selectedRequest.date}`, // Hacky, timestamp parsing handles article in front of date "at" or "on"
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
