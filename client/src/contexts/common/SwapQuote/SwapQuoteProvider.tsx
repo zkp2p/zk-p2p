@@ -167,39 +167,6 @@ const SwapQuoteProvider = ({ children }: ProvidersProps) => {
   const [lastOnRampTimestamp, setLastOnRampTimestamp] = useState<bigint | null>(null);
   const [refetchLastOnRampTimestamp, setRefetchLastOnRampTimestamp] = useState<(() => void) | null>(null);
 
-  const [maxTransferSize, setMaxTransferSize] = useState<bigint | null>(null);
-
-  /*
-   * Miscellaneous
-   */
-
-  useEffect(() => {
-    esl && console.log('paymentPlatform: ', paymentPlatform);
-
-    switch (paymentPlatform) {
-      case PaymentPlatform.VENMO:
-        setMaxTransferSize(venmoMaximumOnRampAmount);
-        break;
-
-      case PaymentPlatform.HDFC:
-        setMaxTransferSize(hdfcMaximumOnRampAmount);
-        break;
-
-      case PaymentPlatform.GARANTI:
-        setMaxTransferSize(garantiMaximumOnRampAmount);
-        break;
-
-      case PaymentPlatform.REVOLUT:
-        setMaxTransferSize(revolutMaximumOnRampAmount);
-        break;
-
-      default:
-        throw new Error(`Unknown payment platform: ${paymentPlatform}`);
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentPlatform]);
-
   /*
    * Registration
    */
