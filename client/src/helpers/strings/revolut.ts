@@ -23,11 +23,11 @@ const strings: PlatformStrings = {
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
     No Revtag proofs found.
-    Please follow instructions in the browser assistant to generate proof of an existing Revtag.
+    Please follow instructions in the browser sidebar to generate proof of an existing Revtag.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
     No Revolut transfer proofs detected.
-    Please follow instructions in the browser assistant to generate proof of payment on Revolut for the correct.
+    Please follow instructions in the browser sidebar to generate proof of payment from Revolut for the correct transaction.
   `,
 
   // New Registration
