@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from 'react';
 import { readContract } from '@wagmi/core';
+import { ethers } from "ethers";
 
 import {
   Abi,
@@ -20,7 +21,7 @@ import {
   createDepositsStore,
   fetchBestDepositForAmount,
   fetchDepositForMaxAvailableTransferSize
- } from './helper';
+} from './helper';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/revolut/useRampState';
@@ -31,6 +32,11 @@ import LiquidityContext from './LiquidityContext';
 
 const BATCH_SIZE = 30;
 const PRUNED_DEPOSITS_PREFIX = 'prunedRevolutDepositIds_';
+
+const NOTARY_PUBKEY_HASH = process.env.NOTARY_PUBKEY_HASH;
+if (!NOTARY_PUBKEY_HASH) {
+    throw new Error("NOTARY_PUBKEY_HASH environment variable is not defined.");
+};
 
 interface ProvidersProps {
   children: ReactNode;
@@ -78,14 +84,20 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       for (let j = 0; j < deposits.length; j++) {
         const deposit = deposits[j];
 
-        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
-        const orderHasNoOustandingIntent = deposit.deposit.outstandingIntentAmount === ZERO;
-        const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
-
-        if (orderIsFilled) {
+        const pubkeyHashHex = ethers.utils.hexZeroPad(ethers.utils.hexlify(BigInt(NOTARY_PUBKEY_HASH)), 32);
+        const isInvalidNotaryKeyHash = deposit.deposit.notaryKeyHash !== pubkeyHashHex;
+        if (isInvalidNotaryKeyHash) {
           depositIdsToPrune.push(deposit.depositId);
         } else {
-          batchedDeposits.push(deposit);
+          const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
+          const orderHasNoOustandingIntent = deposit.deposit.outstandingIntentAmount === ZERO;
+          const isOrderFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
+  
+          if (isOrderFilled) {
+            depositIdsToPrune.push(deposit.depositId);
+          } else {
+            batchedDeposits.push(deposit);
+          }
         }
       }
     }
@@ -153,6 +165,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         outstandingIntentAmount: depositData.outstandingIntentAmount,
         conversionRate: depositData.conversionRate,
         intentHashes: depositData.intentHashes,
+        notaryKeyHash: depositData.notaryKeyHash,
       };
 
       const depositWithLiquidity: DepositWithAvailableLiquidity = {
