@@ -57,7 +57,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
     reviewedRequirementsForPlatform,
     markPlatformRequirementsAsReviewed
   } = usePlatformSettings();
-  const isMobile = useMediaQuery() == 'mobile'
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State

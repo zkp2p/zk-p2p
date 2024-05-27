@@ -36,7 +36,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
   const { refetchIntentHash, refetchIntentHashAsUint } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
-  const isMobile = useMediaQuery() === 'mobile'
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State

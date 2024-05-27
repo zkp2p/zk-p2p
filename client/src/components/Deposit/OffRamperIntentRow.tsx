@@ -38,7 +38,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const { blockscanUrl } = useSmartContracts();
-  const isMobile = useMediaQuery() == 'mobile'
+  const isMobile = useMediaQuery() === 'mobile';
 
   const {
     PaymentPlatform,
