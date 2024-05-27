@@ -5,12 +5,32 @@ import europeFlagSvg from '../../assets/images/europe-flag.svg';
 
 const USE_GARANTI = process.env.USE_GARANTI === 'true';
 const USE_REVOLUT = process.env.USE_REVOLUT === 'true';
+const USE_REVOLUT_MULTICURRENCY = process.env.USE_REVOLUT_MULTICURRENCY === 'true'; 
 
 export const PaymentPlatform = {
   VENMO: "venmo",
   HDFC: "hdfc",
   GARANTI: "garanti",
   REVOLUT: "revolut"
+};
+
+export const CurrencyCode = {
+  USD: "USD",
+  INR: "INR",
+  TRY: "TRY",
+  EUR: "EUR",
+  GBP: "GBP",
+  SGD: "SGD"
+};
+
+export const CurrencyIndex = {
+  DEFAULT: 0,
+  USD: 0,
+  INR: 0,
+  TRY: 0,
+  EUR: 0,
+  GBP: 1,
+  SGD: 2
 };
 
 function getPaymentPlatforms(USE_GARANTI: boolean, USE_REVOLUT: boolean): string[] {
@@ -27,40 +47,52 @@ function getPaymentPlatforms(USE_GARANTI: boolean, USE_REVOLUT: boolean): string
   return platforms;
 };
 
-export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_REVOLUT);
+function getRevolutPlatformCurrencies(USE_WISE_MULTICURRENCY: boolean): CurrencyCodeType[] {
+  let currencies = [CurrencyCode.EUR];
 
+  if (USE_REVOLUT_MULTICURRENCY) {
+    currencies.push(CurrencyCode.GBP);
+    currencies.push(CurrencyCode.SGD);
+  };
+
+  return currencies;
+};
+
+export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_REVOLUT);
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
+export type CurrencyCodeType = typeof CurrencyCode[keyof typeof CurrencyCode];
+export type CurrencyIndexType = typeof CurrencyIndex[keyof typeof CurrencyIndex];
 
 interface PaymentPlatformData {
   platformId: PaymentPlatformType;
   platformName: string;
-  platformCurrency: string;
-  flagSvg: string;
+  platformCurrencies: CurrencyCodeType[];
+  flagSvgs: string[];
 }
 
 export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformData> = {
   [PaymentPlatform.VENMO]: {
     platformId: PaymentPlatform.VENMO,
     platformName: 'Venmo',
-    platformCurrency: 'USD',
-    flagSvg: americaFlagSvg
+    platformCurrencies: [CurrencyCode.USD],
+    flagSvgs: [americaFlagSvg],
   },
   [PaymentPlatform.HDFC]: {
     platformId: PaymentPlatform.HDFC,
     platformName: 'HDFC',
-    platformCurrency: 'INR',
-    flagSvg: indiaFlagSvg
+    platformCurrencies: [CurrencyCode.INR],
+    flagSvgs: [indiaFlagSvg],
   },
   [PaymentPlatform.GARANTI]: {
     platformId: PaymentPlatform.GARANTI,
     platformName: 'Garanti',
-    platformCurrency: 'TRY',
-    flagSvg: turkeyFlagSvg
+    platformCurrencies: [CurrencyCode.TRY],
+    flagSvgs: [turkeyFlagSvg]
   },
   [PaymentPlatform.REVOLUT]: {
     platformId: PaymentPlatform.REVOLUT,
     platformName: 'Revolut',
-    platformCurrency: 'EUR',
-    flagSvg: europeFlagSvg
+    platformCurrencies: getRevolutPlatformCurrencies(USE_REVOLUT_MULTICURRENCY),
+    flagSvgs: [europeFlagSvg, americaFlagSvg, turkeyFlagSvg],
   }
 };

@@ -17,8 +17,8 @@ export type { LoginStatusType } from './loginStatus';
 
 export type { RawEmailResponse } from './googleMailApi';
 
-export { PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
-export type { PaymentPlatformType  } from './paymentPlatform';
+export { CurrencyCode, CurrencyIndex, PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
+export type { CurrencyCodeType, CurrencyIndexType, PaymentPlatformType  } from './paymentPlatform';
 
 export { ReceiveNetwork, receiveNetworks, networksInfo } from './receiveNetworks';
 export type { ReceiveNetworkType } from './receiveNetworks';
@@ -31,6 +31,7 @@ export type { NotaryConnectionStatusType, NotaryConfiguration } from './notarySe
 
 export type { Abi, AbiEntry } from './smartContracts';
 
+export { ReceiveCurrencyId } from './deposit';
 export type {
   Deposit,
   DepositWithAvailableLiquidity,
@@ -38,7 +39,8 @@ export type {
   IndicativeQuote,
   Intent,
   DepositIntent,
-  OnRamperIntent
+  OnRamperIntent,
+  ReceiveCurrencyIdType,
 } from './deposit';
 
 export type {

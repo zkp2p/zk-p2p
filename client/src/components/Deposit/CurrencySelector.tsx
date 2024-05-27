@@ -6,14 +6,14 @@ import Link from '@mui/material/Link';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
-import { PlatformRow } from '@components/modals/PlatformRow';
-import { CurrencyIndex, paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { CurrencyRow } from '@components/modals/CurrencyRow';
+import { CurrencyIndexType, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
-export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePillSelector }) => {
+export const CurrencySelector: React.FC = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -23,7 +23,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
    * Contexts
    */
 
-  const { paymentPlatform, setPaymentPlatform, setCurrencyIndex } = usePlatformSettings();
+  const { paymentPlatform, currencyIndex, setCurrencyIndex } = usePlatformSettings();
 
   /*
    * Handlers
@@ -33,10 +33,9 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
     toggleOpen();
   };
 
-  const handleSelectPlatform = (platform: PaymentPlatformType) => {
-    if (setPaymentPlatform && setCurrencyIndex) {
-      setPaymentPlatform(platform);
-      setCurrencyIndex(CurrencyIndex.DEFAULT);
+  const handleSelectCurrency = (currencyIndex: CurrencyIndexType) => {
+    if (setCurrencyIndex) {
+      setCurrencyIndex(currencyIndex);
 
       toggleOpen();
     }
@@ -48,29 +47,13 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 
   return (
     <Wrapper ref={ref}>
-      { usePillSelector ? (
-        <PlatformNameAndChevronContainer onClick={toggleOpen}>
-          <PlatformLabel>
-            {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-          </PlatformLabel>
-          <StyledChevronDown/>
-        </PlatformNameAndChevronContainer>
-        ) : (
-          <CurrencyContainer onClick={toggleOpen}>
-            <CurrencyLogoAndNameContainer>
-              <CurrencyNameContainer>
-                <CurrencyHeader>
-                  {'Platform'}
-                </CurrencyHeader>
-                <CurrencyNameLabel>
-                  {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-                </CurrencyNameLabel>
-              </CurrencyNameContainer>
-            </CurrencyLogoAndNameContainer>
-            <StyledChevronDown/>
-          </CurrencyContainer>
-        )
-      }
+      <CurrencyAndChevronContainer onClick={toggleOpen}>
+        <CurrencySvg src={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currencyIndex]} />
+        <CurrencyLabel>
+          {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]}
+        </CurrencyLabel>
+        <StyledChevronDown/>
+      </CurrencyAndChevronContainer>
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -79,7 +62,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
           <ModalContainer>
             <TableHeader>
               <ThemedText.SubHeader style={{ textAlign: 'left' }}>
-                Select a platform
+                Select a currency
               </ThemedText.SubHeader>
 
               <button
@@ -93,12 +76,13 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
             <HorizontalDivider/>
 
             <Table>
-              {paymentPlatforms.map((platform, index) => (
-                <PlatformRow
-                  key={index}
-                  platformName={paymentPlatformInfo[platform].platformName}
-                  isSelected={paymentPlatform === platform}
-                  onRowClick={() => handleSelectPlatform(platform)}
+              { paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies.map((currency, currIndex) => (
+                <CurrencyRow
+                  key={currIndex}
+                  platformCurrency={currency}
+                  flagSvg={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].flagSvgs[currIndex]}
+                  isSelected={currencyIndex === currIndex}
+                  onRowClick={() => handleSelectCurrency(currIndex)}
                 />
               ))}
             </Table>
@@ -106,7 +90,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
             <HorizontalDivider/>
 
             <TableFooter>
-              Let us know which platforms you are interested in seeing ZKP2P add support
+              Let us know which currencies you are interested in seeing ZKP2P add support
               for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
                 Give feedback ↗
               </Link>
@@ -124,15 +108,15 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-const PlatformNameAndChevronContainer = styled.div`
+const CurrencyAndChevronContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   border-radius: 24px;
   background: ${colors.selectorColor};
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 6px 8px 6px 14px;
-  gap: 4px;
+  padding: 4px 8px 4px 4px;
+  gap: 6px;
   cursor: pointer;
 
   &:hover {
@@ -141,54 +125,17 @@ const PlatformNameAndChevronContainer = styled.div`
   }
 `;
 
-const PlatformLabel = styled.div`
+const CurrencyLabel = styled.div`
   color: #FFF;
   font-weight: 700;
   letter-spacing: 0.02em;
   padding: 1px 5px 0px 5px;
 `;
 
-const CurrencyContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 188px;
-  border-radius: 16px;
-  border: 1px solid ${colors.defaultBorderColor};
-  justify-content: space-between;
-  align-items: center;
-  background: ${colors.selectorColor};
-  padding: 1.1rem 1rem;
-  cursor: pointer;
-  &:hover {
-    background-color: ${colors.selectorHover};
-    border: 1px solid ${colors.selectorHoverBorder};
-  }
-`;
-
-const CurrencyLogoAndNameContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  justify-content: flex-start;
-`;
-
-const CurrencyNameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  justify-content: center;
-  text-align: left;
-`;
-
-const CurrencyHeader = styled.div`
-  font-size: 14px;
-  color: #CED4DA;
-`;
-
-const CurrencyNameLabel = styled.div`
-  font-size: 16px;
-  color: #FFF;
+const CurrencySvg = styled.img`
+  border-radius: 18px;
+  width: 24px;
+  height: 24px;
 `;
 
 const StyledChevronDown = styled(ChevronDown)`
@@ -248,6 +195,7 @@ const Table = styled.div`
   width: 100%;
   color: #616161;
   height: 284px;
+
   overflow-y: auto;
   scrollbar-width: thin;
 `;

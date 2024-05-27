@@ -15,6 +15,7 @@ import {
   IndicativeQuote,
   PaymentPlatform,
   StoredDeposit,
+  paymentPlatformInfo
 } from '@helpers/types';
 import {
   calculateUsdFromRequestedUSDC,
@@ -23,9 +24,11 @@ import {
   fetchDepositForMaxAvailableTransferSize
 } from './helper';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
+import { keccak256 } from '@helpers/keccack';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRampState from '@hooks/revolut/useRampState';
 import useDenyList from '@hooks/useDenyList';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 import LiquidityContext from './LiquidityContext';
 
@@ -47,6 +50,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
+  const { currencyIndex } = usePlatformSettings();
   const { revolutRampAddress, revolutRampAbi } = useSmartContracts();
   const { depositCounter, maximumOnRampAmount } = useRampState();
   const { fetchVenmoDepositorDenyList } = useDenyList();
@@ -166,6 +170,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         conversionRate: depositData.conversionRate,
         intentHashes: depositData.intentHashes,
         notaryKeyHash: depositData.notaryKeyHash,
+        receiveCurrencyId: depositData.receiveCurrencyId,
       };
 
       const depositWithLiquidity: DepositWithAvailableLiquidity = {
@@ -247,14 +252,15 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       return fetchBestDepositForAmount(
         requestedOnRampInputAmount,
         depositStore,
-        onRamperRegistrationHash
+        onRamperRegistrationHash,
+        keccak256(paymentPlatformInfo[PaymentPlatform.REVOLUT].platformCurrencies[currencyIndex])
       );
     } else {
       return {
         error: 'No deposits available'
       } as IndicativeQuote;
     }
-  }, [depositStore]);
+  }, [depositStore, currencyIndex]);
 
   const getDepositForMaxAvailableTransferSize = useCallback((onRamperRegistrationHash: string): IndicativeQuote => {
     if (depositStore && maximumOnRampAmount) {

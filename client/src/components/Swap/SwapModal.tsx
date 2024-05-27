@@ -8,7 +8,7 @@ import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
 import { commonStrings } from '@helpers/strings';
 import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
-import { PaymentPlatformType } from '@helpers/types';
+import { PaymentPlatformType, ReceiveCurrencyId } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
@@ -23,7 +23,8 @@ interface SwapModalProps {
   amount: string;
   onBackClick: () => void
   onCompleteClick: () => void
-  paymentPlatform: PaymentPlatformType
+  paymentPlatform: PaymentPlatformType;
+  receiveCurrencyId?: string;
 }
 
 export const SwapModal: React.FC<SwapModalProps> = ({
@@ -34,7 +35,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   amount,
   onBackClick,
   onCompleteClick,
-  paymentPlatform
+  paymentPlatform,
+  receiveCurrencyId
 }) => {
 
   /*
@@ -86,10 +88,22 @@ export const SwapModal: React.FC<SwapModalProps> = ({
         };
 
       case PaymentPlatform.REVOLUT:
+        let currencySymbol = '';
+        switch (receiveCurrencyId) {
+          case ReceiveCurrencyId.EUR:
+            currencySymbol = '€';
+            break;
+          case ReceiveCurrencyId.GBP:
+            currencySymbol = '£';
+            break;
+          case ReceiveCurrencyId.SGD:
+            currencySymbol = 'SGD$';
+            break;
+        }
         return {
           troubleScanningQRCodeLink: REVOLUT_DOWNLOAD_LINK,
           paymentPlatformName: 'Revolut',
-          instructionsText: `Scan and send €${amount} <br />to ${venmoId}`,
+          instructionsText: `Scan and send ${currencySymbol}${amount} <br />to ${venmoId}`,
         };
 
       default:

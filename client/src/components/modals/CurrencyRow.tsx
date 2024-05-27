@@ -2,18 +2,20 @@ import React from "react";
 import styled from 'styled-components';
 
 
-interface PlatformRowProps {
-  platformName: string;
+interface CurrencyRowProps {
+  platformCurrency: string;
   isSelected: boolean;
+  flagSvg: string;
   onRowClick: () => void;
 }
 
-export const PlatformRow: React.FC<PlatformRowProps> = ({
-  platformName,
+export const CurrencyRow: React.FC<CurrencyRowProps> = ({
+  platformCurrency,
   isSelected,
+  flagSvg,
   onRowClick,
-}: PlatformRowProps) => {
-  PlatformRow.displayName = "PlatformRow";
+}: CurrencyRowProps) => {
+  CurrencyRow.displayName = "CurrencyRow";
 
   return (
     <Container
@@ -21,8 +23,9 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
       selected={isSelected}
     >
       <DetailsContainer>
+        <FlagSvg src={flagSvg} />
         <PlatformAndCurrencyLabel>
-          <PlatformLabel>{platformName}</PlatformLabel>
+          <PlatformLabel>{platformCurrency}</PlatformLabel>
         </PlatformAndCurrencyLabel>
       </DetailsContainer>
     </Container>
@@ -67,4 +70,9 @@ const PlatformLabel = styled.div`
   flex-direction: row;
   padding-top: 2px;
   color: #FFFFFF;
+`;
+
+const FlagSvg = styled.img`
+  width: 36px;
+  height: 36px;
 `;

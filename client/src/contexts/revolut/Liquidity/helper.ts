@@ -1,6 +1,7 @@
 import {
   DepositWithAvailableLiquidity,
   IndicativeQuote,
+  ReceiveCurrencyIdType,
   StoredDeposit
 } from '@helpers/types';
 import { PENNY_IN_USDC_UNITS, PRECISION } from "@helpers/constants";
@@ -45,7 +46,8 @@ export const calculateUsdFromRequestedUSDC = (requestedOnRampInputAmount: bigint
 export const fetchBestDepositForAmount = (
   requestedOnRampInputAmount: string,
   depositStore: StoredDeposit[],
-  userCurrentIdHash: string = ''
+  userCurrentIdHash: string = '',
+  receiveCurrencyId: ReceiveCurrencyIdType
 ): IndicativeQuote => {
   const requestedAmountBI = toBigInt(requestedOnRampInputAmount);
 
@@ -54,8 +56,9 @@ export const fetchBestDepositForAmount = (
     const isUserDepositor = deposit.depositorIdHash === userCurrentIdHash;
 
     const isSufficientLiquidity = deposit.availableLiquidity >= requestedAmountBI;
+    const isCurrencyMatch = deposit.deposit.receiveCurrencyId === receiveCurrencyId;
 
-    if (isSufficientLiquidity && !isUserDepositor) {
+    if (isSufficientLiquidity && !isUserDepositor && isCurrencyMatch) {
       const conversionRate = deposit.deposit.conversionRate;
       
       const usdToSend = calculateUsdFromRequestedUSDC(requestedAmountBI, conversionRate);
