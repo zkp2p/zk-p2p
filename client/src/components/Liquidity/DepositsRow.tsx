@@ -41,8 +41,8 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 
   const depositRemainingLabel = `${availableDepositAmount}`;
   const depositorEtherscanLink = `${blockscanUrl}/address/${depositorAddress}`;
-  const isMobile = useMediaQuery() === 'mobile'
-  const svgSize = isMobile ? '20' : '28'
+  const isMobile = useMediaQuery() === 'mobile';
+  const svgSize = isMobile ? '20' : '28';
 
   /*
    * Component

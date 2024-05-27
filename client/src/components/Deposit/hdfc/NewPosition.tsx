@@ -6,7 +6,6 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedUPIId } from '@helpers/poseidonHash';

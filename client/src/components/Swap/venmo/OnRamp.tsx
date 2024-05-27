@@ -44,7 +44,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
-  const isMobile = useMediaQuery() === 'mobile'
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
