@@ -2,6 +2,8 @@ import americaFlagSvg from '../../assets/images/america-flag.svg';
 import indiaFlagSvg from '../../assets/images/india-flag.svg';
 import turkeyFlagSvg from '../../assets/images/turkey-flag.svg';
 import europeFlagSvg from '../../assets/images/europe-flag.svg';
+import ukFlagSvg from '../../assets/images/uk-flag.svg';
+import singaporeFlagSvg from '../../assets/images/singapore-flag.svg';
 
 const USE_GARANTI = process.env.USE_GARANTI === 'true';
 const USE_REVOLUT = process.env.USE_REVOLUT === 'true';
@@ -93,6 +95,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.REVOLUT,
     platformName: 'Revolut',
     platformCurrencies: getRevolutPlatformCurrencies(USE_REVOLUT_MULTICURRENCY),
-    flagSvgs: [europeFlagSvg, americaFlagSvg, turkeyFlagSvg],
+    flagSvgs: [europeFlagSvg, ukFlagSvg, singaporeFlagSvg]
   }
 };
