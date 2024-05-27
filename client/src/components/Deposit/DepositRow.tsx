@@ -31,8 +31,8 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 
   const depositRemainingLabel = `${availableDepositAmount} USDC`;
   const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
-  const originalAmountLabel = `${totalDepositAmount} USDC`
-  const isMobile = useMediaQuery() === 'mobile'
+  const originalAmountLabel = `${totalDepositAmount} USDC`;
+  const isMobile = useMediaQuery() === 'mobile';
 
   return (
     <Container>

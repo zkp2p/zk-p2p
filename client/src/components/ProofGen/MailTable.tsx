@@ -49,7 +49,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   } = useGoogleAuth();
 
   const { setIsEmailModeAuth } = useProofGenSettings();
-  const isMobile = useMediaQuery() == 'mobile'
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
