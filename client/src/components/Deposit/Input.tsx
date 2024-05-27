@@ -77,12 +77,6 @@ export const Input: React.FC<InputProps> = ({
             />
           </InputWrapper>
         </LabelAndInputContainer>
-
-        {hasSelector ? (
-          <SelectorAccessory>
-            <CurrencySelector/>
-          </SelectorAccessory>
-        ) : (
           <AccessoryAndInputLabelWrapper>
             <AccessoryLabelAndMax>
               <AccessoryLabel>
@@ -101,8 +95,13 @@ export const Input: React.FC<InputProps> = ({
                 <span>{inputLabel}</span>
               </InputLabel>
             ) : null}
+
+            {hasSelector && (
+              <SelectorAccessory>
+                <CurrencySelector/>
+              </SelectorAccessory>
+            )}
           </AccessoryAndInputLabelWrapper>
-        )}
       </Container>
   );
 };
@@ -197,8 +196,10 @@ const SelectorAccessory = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-end;
   color: #CED4DA;
   padding-top: 8px;
+  padding-right: -8px;
 `;
 
 const AccessoryAndInputLabelWrapper = styled.div`
