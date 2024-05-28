@@ -16,7 +16,7 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Revtag proofs found.
+    No Revolut account proofs found.
     Please follow instructions in the browser sidebar to generate proof of an existing Revtag.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
@@ -31,7 +31,7 @@ const strings: PlatformStrings = {
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Prove a receipt of a payment using the ZKP2P browser assistant to complete the order.
+    Prove a successful Revolut payment using the browser assistant to complete the order and receive EUR.
   `,
 
   // New Deposit
