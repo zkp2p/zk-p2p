@@ -36,8 +36,9 @@ const strings: PlatformStrings = {
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Revolut depositor ID. Provide the USDC liquidity to deposit and
-    desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
+    Creating a new deposit requires you to submit a valid Revolut Revtag, the USDC liquidity to deposit, and
+    desired EUR conversion rate. Your Revtag must match the registered Revtag. You will receive EUR payments
+    from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
     This is a second registration step required only for depositors to connect a Revolut depositor ID
