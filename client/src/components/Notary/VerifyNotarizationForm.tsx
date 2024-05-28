@@ -235,7 +235,7 @@ export const VerifyNotarizationForm: React.FC<VerifyNotarizationFormProps> = ({
     <Container>
       {shouldShowVerificationModal && (
         <VerifyNotarizationModal
-          title={"Verify Request"}
+          title={"Verify Proof"}
           verifierProof={verifierProof}
           publicSignals={publicSignals}
           onBackClick={handleModalBackClicked}

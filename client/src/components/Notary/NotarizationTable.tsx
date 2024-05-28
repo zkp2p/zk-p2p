@@ -197,7 +197,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
       switch (circuitType) {
         case NotaryVerificationCircuit.REGISTRATION_TAG:
           return {
-            detected_copy: 'The following username was detected from your Revolut account',
+            detected_copy: 'Proof detected from your browser assistant for account with Revtag',
             metadata_copy: selectedRequest.metadata,
             metadata_type_copy: 'tag',
             transaction_type_copy: 'registration'
@@ -205,7 +205,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   
         case NotaryVerificationCircuit.TRANSFER:
           return {
-            detected_copy: 'The following transaction was detected from your Revolut account history',
+            detected_copy: 'Proof detected from your browser assistant for the following payment',
             metadata_copy: `€${selectedRequest.metadata} EUR ${selectedRequest.date}`, // Hacky, timestamp parsing handles article in front of date "at" or "on"
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
@@ -266,7 +266,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
     if (isShowingTable) {
       return 'Go back';
     } else {
-      return 'See all tags';
+      return 'See all proofs';
     }
   };
 
@@ -506,10 +506,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const defaultCTAForInputStatus = () => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
-        return 'Revtag';
+        return 'Account';
 
       case NotaryVerificationCircuit.TRANSFER:
-        return 'Transaction';
+        return 'Payment';
 
       default:
         throw new Error('Invalid circuit type');
@@ -605,7 +605,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               <TitleAndTableContainer>
                 <TitleAndOAuthContainer>
                   <NotarizationsTitleContainer>
-                    <TitleLabel>Loaded Revolut Proofs</TitleLabel>
+                    <TitleLabel>Browser Assistant</TitleLabel>
                   </NotarizationsTitleContainer>
 
                   <AccessoryButton

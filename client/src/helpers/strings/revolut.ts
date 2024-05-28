@@ -3,13 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P browser assistant to prove ownership of your Revolut account. Provide the proof to complete registration. Base ETH is required to
-    submit a registration transaction.
-  `,
-
-  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P browser assistant to generate proof of valid depositor ID. Provide details of a past transaction to
-    prove a valid depositor ID and complete registration.
+    Use the ZKP2P browser assistant to generate proof a valid Revolut account. Submit the proof to complete registration.
   `,
 
   // Mail Instructions
@@ -22,7 +16,7 @@ const strings: PlatformStrings = {
 
   // Notarizations Instructions
   NO_NOTARIZATIONS_ERROR: `
-    No Revtag proofs found.
+    No Revolut account proofs found.
     Please follow instructions in the browser sidebar to generate proof of an existing Revtag.
   `,
   NO_TRANSFER_NOTARIZATIONS_ERROR: `
@@ -32,19 +26,19 @@ const strings: PlatformStrings = {
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration involves proving access
-    to a Revolut account. Your Revolut details are hashed to conceal your identity.
+    You must register with a valid Revolut account to use ZKP2P. Your account details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Prove a receipt of a payment using the ZKP2P browser assistant to complete the order.
+    Prove a successful Revolut payment using the browser assistant to complete the order and receive EUR.
   `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
-    Depositing requires registering a valid Revolut depositor ID. Provide the USDC liquidity to deposit and
-    desired USDC/EUR conversion rate. You will receive EUR payments from users who claim your deposit.
+    Creating a new deposit requires you to submit a valid Revolut Revtag, the USDC liquidity to deposit, and
+    desired EUR conversion rate. Your Revtag must match the registered Revtag. You will receive EUR payments
+    from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
     This is a second registration step required only for depositors to connect a Revolut depositor ID
@@ -68,16 +62,16 @@ const strings: PlatformStrings = {
 
   // Instruction Drawer
   INSTRUCTION_DRAWER_STEP_ONE: `
-    Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+    Enter USDC amount to receive to get a quote. You are assigned the best available rate for the requested amount
   `,
   INSTRUCTION_DRAWER_STEP_TWO: `
-    Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+    Submit transaction to start your order. Optionally, provide a recipient address below to receive funds in another wallet
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment from your Revolut account. Ensure you have access to a desktop to prove the payment later
+    Click 'Send' and complete the payment on Revolut. Ensure you have access to a desktop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
-    Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
+    Continue through to generate and validate proof of payment. Submit proof to receive the requested USDC
   `,
 
   // Payment Requirements

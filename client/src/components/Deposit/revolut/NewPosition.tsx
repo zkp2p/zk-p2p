@@ -460,7 +460,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
           <InstructionsAndTogglesContainer>
             <NumberedStep>
               { revolutStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-              <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/wise-deposit-id-verification" target="_blank">
+              <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-revtag" target="_blank">
                 Fetch your Revtag ↗
               </Link>
             </NumberedStep>
@@ -472,7 +472,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               value={revTagInput}
               onChange={(e) => {setRevolutTagInput(e.currentTarget.value)}}
               type="string"
-              placeholder="alexanders6341"
+              placeholder="zkp2p7gy"
               helperText={revolutStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
               valueFontSize="20px"
             />

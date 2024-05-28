@@ -84,17 +84,17 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
             { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_ONE') }
           </RequirementStepRow>
 
-          <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
-            <RequirementStepRow step={2}>
+          <RequirementStepRow step={2}>
+            <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
               { platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_TWO') }
-            </RequirementStepRow>
-          </span>
+            </span>
+          </RequirementStepRow>
 
-          <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
-            <RequirementStepRow step={3}>
+          <RequirementStepRow step={3}>
+            <span style={paymentPlatform === "garanti" ? { textDecoration: 'underline', fontWeight: 'bold' } : undefined}>
               {platformStrings.getForPlatform(paymentPlatform, 'PAYMENT_REQUIREMENT_STEP_THREE')}
-            </RequirementStepRow>
-          </span>
+            </span>
+          </RequirementStepRow>
 
           {optionalPlatformRequirement()}
         </RequirementListContainer>

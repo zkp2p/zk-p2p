@@ -11,11 +11,12 @@ import { colors } from '@theme/colors';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { REGISTRATION_KEY_FILE_NAME, RemoteProofGenEmailTypes } from "@helpers/constants";
-import { venmoStrings } from "@helpers/strings";
+import { venmoStrings, commonStrings } from "@helpers/strings";
 import { reformatProofForChain } from "@helpers/submitProof";
-import { PaymentPlatform } from '@helpers/types';
+import { PaymentPlatform, LoginStatus } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useRegistration from '@hooks/venmo/useRegistration';
+import useAccount from '@hooks/useAccount';
 
 
 interface NewRegistrationProps {
@@ -31,6 +32,7 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
   const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { refetchRampAccount } = useRegistration();
+  const { loginStatus } = useAccount();
 
   // ----- transaction state -----
   const [proof, setProof] = useState<string>('');
@@ -151,12 +153,17 @@ export const NewRegistration: React.FC<NewRegistrationProps> = ({
 
         <InstructionsAndTogglesContainer>
           <NumberedStep>
-            { venmoStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS') }
-            <Link
-              href={"https://bridge.base.org/deposit"}
-              target="_blank">
-                Base Bridge ↗
-            </Link>
+            {venmoStrings.get('PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS')}
+            {loginStatus === LoginStatus.EOA && (
+              <>
+                {commonStrings.get('NEW_REGISTRATION_ETH_REQUIRED')}
+                <Link
+                  href={"https://bridge.base.org/deposit"}
+                  target="_blank">
+                    Base Bridge ↗
+                </Link>
+              </>
+            )}
           </NumberedStep>
         </InstructionsAndTogglesContainer>
       </TitleContainer>

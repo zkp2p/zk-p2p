@@ -10,7 +10,6 @@ import revolutCopy from './revolut';
 export interface PlatformStrings {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: string,
-  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS?: string,
 
   // Mail Instructions
   SIGN_IN_WITH_GOOGLE_INSTRUCTIONS: string,
