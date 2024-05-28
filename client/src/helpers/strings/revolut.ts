@@ -62,16 +62,16 @@ const strings: PlatformStrings = {
 
   // Instruction Drawer
   INSTRUCTION_DRAWER_STEP_ONE: `
-    Enter an amount to receive a quote. You are assigned the best available rate for the requested amount
+    Enter USDC amount to receive to get a quote. You are assigned the best available rate for the requested amount
   `,
   INSTRUCTION_DRAWER_STEP_TWO: `
-    Optionally, provide a recipient address below to receive funds in another wallet. Submit transaction to start your order
+    Submit transaction to start your order. Optionally, provide a recipient address below to receive funds in another wallet
   `,
   INSTRUCTION_DRAWER_STEP_THREE: `
-    Click 'Send' and complete the payment from your Revolut account. Ensure you have access to a desktop to prove the payment later
+    Click 'Send' and complete the payment on Revolut. Ensure you have access to a desktop to prove the payment later
   `,
   INSTRUCTION_DRAWER_STEP_FOUR: `
-    Continue through to generate and validate proof of payment. Submit transaction containing proof to receive the requested USDC
+    Continue through to generate and validate proof of payment. Submit proof to receive the requested USDC
   `,
 
   // Payment Requirements
