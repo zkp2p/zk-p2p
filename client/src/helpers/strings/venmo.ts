@@ -4,7 +4,7 @@ const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
     Provide a historical transaction email sent from Venmo containing "You paid" in the subject received after
-    January 10th, 2024 to complete registration. Base ETH is required to submit a registration transaction.
+    January 10th, 2024 to complete registration.
   `,
 
   // Mail Instructions

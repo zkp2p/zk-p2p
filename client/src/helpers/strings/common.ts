@@ -17,6 +17,9 @@ export interface CommonStrings {
   PROOF_FORM_UPLOAD_EMAIL_INSTRUCTIONS: string,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: string,
 
+  // Registraiton ETH Required
+  NEW_REGISTRATION_ETH_REQUIRED: string,
+
   // Release Funds Modal
   RELEASE_FUNDS_WARNING_ONE: string,
   RELEASE_FUNDS_WARNING_TWO: string,
@@ -120,6 +123,11 @@ const strings: CommonStrings = {
   `,
   PROOF_FORM_PASTE_EMAIL_INSTRUCTIONS: `
     Follow this guide to copy and paste the email.
+  `,
+
+  // Registration ETH Required
+  NEW_REGISTRATION_ETH_REQUIRED: `
+    Base ETH is required to submit a registration transaction.
   `,
 
   // Release Funds Modal

@@ -3,13 +3,7 @@ import { PlatformStrings } from './platform';
 const strings: PlatformStrings = {
   // Proof Form
   PROOF_FORM_TITLE_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P browser assistant to prove ownership of your Revolut account. Provide the proof to complete registration. Base ETH is required to
-    submit a registration transaction.
-  `,
-
-  PROOF_FORM_TITLE_DEPOSITOR_ID_REGISTRATION_INSTRUCTIONS: `
-    Use the ZKP2P browser assistant to generate proof of valid depositor ID. Provide details of a past transaction to
-    prove a valid depositor ID and complete registration.
+    Use the ZKP2P browser assistant to generate proof a valid Revolut account. Submit the proof to complete registration.
   `,
 
   // Mail Instructions
@@ -32,8 +26,7 @@ const strings: PlatformStrings = {
 
   // New Registration
   REGISTRATION_INSTRUCTIONS: `
-    You must register in order to use ZKP2P. Registration involves proving access
-    to a Revolut account. Your Revolut details are hashed to conceal your identity.
+    You must register with a valid Revolut account to use ZKP2P. Your account details are hashed to conceal your identity.
   `,
 
   // On Ramp Instructions
