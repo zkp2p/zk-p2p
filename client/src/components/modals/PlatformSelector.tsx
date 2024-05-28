@@ -97,6 +97,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
                 <PlatformRow
                   key={index}
                   platformName={paymentPlatformInfo[platform].platformName}
+                  platformCurrencies={paymentPlatformInfo[platform].platformCurrencies}
                   isSelected={paymentPlatform === platform}
                   onRowClick={() => handleSelectPlatform(platform)}
                 />

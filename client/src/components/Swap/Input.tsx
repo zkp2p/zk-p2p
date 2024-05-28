@@ -15,10 +15,9 @@ interface InputProps {
   placeholder?: string;
   inputLabel?: string;
   readOnly?: boolean;
-  accessoryButtonLabel?: string;
-  onAccessoryButtonClick?: () => void;
   accessoryLabel?: string;
-  accessoryLabelAlignment?: 'left' | 'right';
+  enableMax?: boolean
+  maxButtonOnClick?: () => void;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -32,56 +31,54 @@ export const Input: React.FC<InputProps> = ({
   inputLabel,
   type = "text",
   readOnly = false,
-  accessoryButtonLabel = "",
-  onAccessoryButtonClick = () => {},
   accessoryLabel="",
-  accessoryLabelAlignment = "right",
+  enableMax = false,
+  maxButtonOnClick = () => {},
 }: InputProps) => {
   Input.displayName = "Input";
 
-  const hasAccessoryLabel = accessoryLabel !== "" || accessoryButtonLabel !== "";
-
   return (
     <Container readOnly={readOnly}>
-      <LabelInputAndAccessoryContainer hasAccessoryLabel={hasAccessoryLabel}>
-        <LabelAndInputContainer>
+      <LabelAndInputContainer>
+        <LabelAndTooltipContainer>
           <Label htmlFor={name}>
-            {label}
+              {label}
           </Label>
+        </LabelAndTooltipContainer>
+        <InputWrapper>
+          <StyledInput
+            type={type}
+            name={name}
+            id={name}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            onFocus={onFocus}
+            onKeyDown={onKeyDown}
+            readOnly={readOnly}
+          />
+        </InputWrapper>
+      </LabelAndInputContainer>
 
-          <InputWrapper>
-            <StyledInput
-              type={type}
-              name={name}
-              id={name}
-              placeholder={placeholder}
-              value={value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onKeyDown={onKeyDown}
-              readOnly={readOnly}
-            />
-          </InputWrapper>
-        </LabelAndInputContainer>
+      <AccessoryAndInputLabelWrapper>
+        <AccessoryLabelAndMax>
+          <AccessoryLabel>
+            {accessoryLabel}
+          </AccessoryLabel>
 
-        <SelectorAccessory hasAccessoryLabel={accessoryLabel !== ""}>
+          {enableMax && accessoryLabel && (
+            <MaxButton onClick={maxButtonOnClick}>
+              Max
+            </MaxButton>
+          )}
+        </AccessoryLabelAndMax>
+
         {inputLabel ? (
           <InputLabel>
             <span>{inputLabel}</span>
           </InputLabel>
         ) : null}
-        </SelectorAccessory>
-      </LabelInputAndAccessoryContainer>
-      
-      <AccessoryContainer alignment={accessoryLabelAlignment}>
-        <AccessoryTextButton onClick={onAccessoryButtonClick}>
-          {accessoryButtonLabel}
-        </AccessoryTextButton>
-
-        <AccessoryLabel>
-          {accessoryLabel}
-        </AccessoryLabel>
-      </AccessoryContainer>
+      </AccessoryAndInputLabelWrapper>
     </Container>
   );
 };
@@ -92,12 +89,12 @@ interface ContainerProps {
 
 const Container = styled.div<ContainerProps>`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   padding: 16px;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   background-color: ${colors.defaultInputColor};
-  gap: 8px;
 
   &:focus-within {
     border-color: #CED4DA;
@@ -112,22 +109,27 @@ const Container = styled.div<ContainerProps>`
   }
 `;
 
-const LabelInputAndAccessoryContainer = styled.div<{ hasAccessoryLabel: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: ${({ hasAccessoryLabel }) => hasAccessoryLabel ? 'flex-end' : 'center'};
-`;
-
 const LabelAndInputContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+`;
+
+const LabelAndTooltipContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  margin-top: 4px;
+  align-items: center;
+  color: #CED4DA;
 `;
 
 const Label = styled.label`
   display: flex;
   font-size: 14px;
   font-weight: 550;
-  color: #CED4DA;
 `;
 
 const InputWrapper = styled.div`
@@ -136,21 +138,22 @@ const InputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: stretch;
-  padding-top: 8px;
+  margin-top: 8px;
 `;
 
 interface StyledInputProps {
   readOnly?: boolean;
 }
 
-const StyledInput = styled.input<StyledInputProps>`
+const StyledInput = styled.input<StyledInputProps & { fontSize?: number }>`
   width: 100%;
-  flex-grow: 1;
+  height: 27.5px;
   border: 0;
   padding: 0;
   color: #FFFFFF;
   background-color: #131A2A;
-  font-size: 28px;
+  font-size: ${({ fontSize }) => fontSize || '28'}px;
+
 
   &:focus {
     box-shadow: none;
@@ -173,39 +176,38 @@ const StyledInput = styled.input<StyledInputProps>`
   ${({ readOnly }) => 
     readOnly && `
       pointer-events: none;
+      color: #6C757D;
     `
   }
 `;
 
-interface SelectorAccessoryProps {
-  hasAccessoryLabel: boolean;
-}
-
-const SelectorAccessory = styled.div<SelectorAccessoryProps>`
+const AccessoryAndInputLabelWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   color: #CED4DA;
-  padding-top: 8px;
+  margin: 9px 0px 2px 0px;
 `;
 
-const AccessoryContainer = styled.div<{ alignment?: string, accessoryButtonLabel?: string, onAccessoryButtonClick?: () => void }>`
+const AccessoryLabelAndMax = styled.div`
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  gap: 6px;
+`;
+
+const MaxButton = styled.div`
+  color: #FFFFFF;
   font-size: 14px;
-  justify-content: ${({ alignment }) => alignment === 'right' ? 'space-between' : 'flex-start'};
+  font-weight: 600;
+  padding-bottom: 1px;
+  cursor: pointer;
 `;
 
 const AccessoryLabel = styled.div`
-  font-weight: 500;
-  padding-right: 6px;
-  color: #6C757D;
-`;
-
-const AccessoryTextButton = styled.div`
-  cursor: pointer;
-  color: #FFFFFF;
+  font-size: 14px;
+  text-align: right;
+  font-weight: 550;
 `;
 
 const InputLabel = styled.div`

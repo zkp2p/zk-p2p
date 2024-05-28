@@ -1,15 +1,17 @@
 import React from "react";
 import styled from 'styled-components';
-
+import { colors } from "@theme/colors";
 
 interface PlatformRowProps {
   platformName: string;
+  platformCurrencies: string[];
   isSelected: boolean;
   onRowClick: () => void;
 }
 
 export const PlatformRow: React.FC<PlatformRowProps> = ({
   platformName,
+  platformCurrencies,
   isSelected,
   onRowClick,
 }: PlatformRowProps) => {
@@ -23,6 +25,7 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
       <DetailsContainer>
         <PlatformAndCurrencyLabel>
           <PlatformLabel>{platformName}</PlatformLabel>
+          <CurrencyLabel>{platformCurrencies.map((currency) => currency).join(', ')}</CurrencyLabel>
         </PlatformAndCurrencyLabel>
       </DetailsContainer>
     </Container>
@@ -67,4 +70,9 @@ const PlatformLabel = styled.div`
   flex-direction: row;
   padding-top: 2px;
   color: #FFFFFF;
+`;
+
+const CurrencyLabel = styled.div`
+  padding-top: 4px;
+  color: ${colors.offWhite};
 `;

@@ -479,13 +479,13 @@ const SwapForm: React.FC<SwapFormProps> = ({
       
       case QuoteState.EXCEEDS_MAX_SIZE:
         const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : ZERO, true);
-        return `Exceeded USD transfer limit of ${maximumOnRampAmountString}`;
+        return `Exceeded USDC transfer limit of ${maximumOnRampAmountString}`;
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';
 
       case QuoteState.AMOUNT_BELOW_TRANSFER_MIN:
-        return 'Send amount less than minimum: €1.00';
+        return `Send amount less than minimum: 1.00 ${paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]}`;
 
       case QuoteState.DEFAULT:
         return 'Input USDC amount'
@@ -530,8 +530,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
             type="number"
             inputLabel="USDC"
             accessoryLabel={usdcBalanceLabel}
-            accessoryButtonLabel="Max"
-            onAccessoryButtonClick={setInputToMax}
+            enableMax={true}
+            maxButtonOnClick={setInputToMax}
             placeholder="0"
           />
           <Input
@@ -542,7 +542,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
             onKeyDown={handleEnterPress}
             type="number"
             accessoryLabel={bestAvailableRateLabel}
-            accessoryLabelAlignment="left"
             inputLabel={paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]}
             placeholder="0.00"
             readOnly={true}
