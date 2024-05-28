@@ -472,7 +472,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               value={revTagInput}
               onChange={(e) => {setRevolutTagInput(e.currentTarget.value)}}
               type="string"
-              placeholder="alexanders6341"
+              placeholder="zkp2p7gy"
               helperText={revolutStrings.get('NEW_DEPOSIT_ID_TOOLTIP')}
               valueFontSize="20px"
             />
