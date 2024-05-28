@@ -506,10 +506,10 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const defaultCTAForInputStatus = () => {
     switch (circuitType) {
       case NotaryVerificationCircuit.REGISTRATION_TAG:
-        return 'Revtag';
+        return 'Account';
 
       case NotaryVerificationCircuit.TRANSFER:
-        return 'Transaction';
+        return 'Payment';
 
       default:
         throw new Error('Invalid circuit type');
@@ -605,7 +605,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
               <TitleAndTableContainer>
                 <TitleAndOAuthContainer>
                   <NotarizationsTitleContainer>
-                    <TitleLabel>Loaded Revolut Proofs</TitleLabel>
+                    <TitleLabel>Browser Assistant</TitleLabel>
                   </NotarizationsTitleContainer>
 
                   <AccessoryButton

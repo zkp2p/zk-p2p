@@ -240,7 +240,7 @@ const strings: CommonStrings = {
   `,
 
   VERIFICATION_MODAL_PROVE_REGISTRATION_TITLE: `
-    Validating Credentials
+    Validating Account
   `,
 
   VERIFICATION_MODAL_PROVE_SUBTITLE_FAST: `
@@ -248,7 +248,7 @@ const strings: CommonStrings = {
   `,
 
   VERIFICATION_MODAL_PROVE_REGISTRATION_SUBTITLE_FAST: `
-    Credential validation will take up to 10 seconds
+    Account proof validation will take up to 10 seconds
   `,
 
   VERIFICATION_MODAL_VERIFY_TITLE: `
