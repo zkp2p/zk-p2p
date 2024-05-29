@@ -56,13 +56,22 @@ export const MenuDropdown = () => {
           </NavDropdownItemContainer>
 
           <NavDropdownItem
-              href="https://docs.zkp2p.xyz/zkp2p/"
-              target="_blank"
-              rel="noopener noreferrer">
-                <ThemedText.LabelSmall textAlign="left">
-                  Documentation ↗
-                </ThemedText.LabelSmall>
-            </NavDropdownItem>
+            href="https://docs.zkp2p.xyz/zkp2p/"
+            target="_blank"
+            rel="noopener noreferrer">
+              <ThemedText.LabelSmall textAlign="left">
+                Documentation ↗
+              </ThemedText.LabelSmall>
+          </NavDropdownItem>
+
+          <NavDropdownItem
+            href="https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih"
+            target="_blank"
+            rel="noopener noreferrer">
+              <ThemedText.LabelSmall textAlign="left">
+                Browser Extension ↗
+              </ThemedText.LabelSmall>
+          </NavDropdownItem>
 
           <NavDropdownItem
               href="https://v1.zkp2p.xyz/"
