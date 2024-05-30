@@ -4,6 +4,7 @@ import { ArrowLeft, Unlock } from 'react-feather';
 
 import { Button } from '@components/common/Button';
 import { Overlay } from '@components/modals/Overlay';
+import { RequirementStepRow } from "@components/modals/RequirementStepRow";
 import { ThemedText } from '@theme/text'
 import { colors } from '@theme/colors';
 
@@ -34,6 +35,9 @@ export const ExtensionDataPolicy: React.FC<ExtensionDataPolicyProps> = ({
     onBackClick();
   }
 
+  const handleCodeReviewClicked = () => {
+    window.open("https://github.com/zkp2p/zk-p2p-extension", '_blank');
+  }
 
   /*
    * Component
@@ -65,15 +69,18 @@ export const ExtensionDataPolicy: React.FC<ExtensionDataPolicyProps> = ({
         <StyledUnlock />
 
         <PolicyContainer>
-          <PolicyIntro>
-            The ZKP2P extension has the following policy:
-          </PolicyIntro>
-          <PolicyPoints>
-            - Storage: None of the data is stored by ZKP2P
-          </PolicyPoints>
-          <PolicyPoints>
-            - Sharing: On integrated websites data is shared with the notary network. All sensitive data is redacted.
-          </PolicyPoints>
+          <RequirementStepRow>
+            The ZKP2P extension stores or shares data in the following ways:
+          </RequirementStepRow>
+          <RequirementStepRow step={1}>
+            <b>Storage</b>: <u>No data</u> accessible by the extension is stored by ZKP2P
+          </RequirementStepRow>
+          <RequirementStepRow step={2}>
+            <b>Sharing</b>: On integrated websites public data is shared with the notary network. <u>All sensitive data is redacted.</u>
+          </RequirementStepRow>
+          <RequirementStepRow>
+            All code for this extension is open source and can be reviewed <Link href="https://github.com/zkp2p/zk-p2p-extension" target = "_blank" rel = "noopener noreferrer">here</Link>.
+          </RequirementStepRow>
         </PolicyContainer>
 
         <Button
@@ -140,24 +147,10 @@ const StyledUnlock = styled(Unlock)`
 `;
 
 const PolicyContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0 1.75rem;
-  color: #FFF;
-`;
-
-const PolicyIntro = styled.div`
-  font-size: 16px;
-  text-align: center;
-  line-height: 1.5;
-`;
-
-const PolicyPoints = styled.div`
-  font-size: 16px;
-  text-align: left;
-  line-height: 1.5;
+  gap: 12px;
 `;
 
 const Link = styled.a`
