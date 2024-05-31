@@ -102,6 +102,10 @@ ReactDOM.render(
                 createOnLogin: 'users-without-wallets',
                 noPromptOnSignature: true
               },
+              loginMethodsAndOrder: {
+                primary: ['email', 'google'],
+                overflow: ['metamask', 'coinbase_wallet', 'rainbow', 'wallet_connect', 'detected_wallets'] 
+              },
               appearance: {
                 theme: "#0E111C",
                 accentColor: "#df2e2d",
