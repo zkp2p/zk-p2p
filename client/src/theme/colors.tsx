@@ -25,6 +25,7 @@ export function opacify(amount: number, hexColor: string): string {
 export const colors = {
   white: '#FFFFFF',
   black: '#000000',
+  offWhite: '#9CA3AA',
 
   container: '#0D111C',
 

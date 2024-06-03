@@ -8,7 +8,7 @@ import useSmartContracts from "@hooks/useSmartContracts";
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
 import { AccessoryButton } from '@components/common/AccessoryButton';
-import { PaymentPlatformType } from "@helpers/types";
+import { PaymentPlatformType, paymentPlatformInfo } from "@helpers/types";
 
 
 interface IntentRowProps {
@@ -40,6 +40,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   const {
     PaymentPlatform,
+    currencyIndex
   } = usePlatformSettings();
 
   /*
@@ -73,7 +74,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
       case PaymentPlatform.REVOLUT:
         return {
           onRamperLinkLabel: ` on Revolut`,
-          onRamperHashLabel: `€${amountUSDToReceive} from `
+          onRamperHashLabel: `${amountUSDToReceive} ${paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex]} from `
         };
 
       default:

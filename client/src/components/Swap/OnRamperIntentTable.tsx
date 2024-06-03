@@ -349,6 +349,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
         const venmoIdString = currentIntent.depositorVenmoId.toString();
         const depositorAddress = storedDeposit.deposit.depositor;
         const recipientAddress = currentIntent.intent.to;
+        const receiveCurrencyId = storedDeposit.deposit.receiveCurrencyId;
 
         const sanitizedIntent: IntentRowData = {
           paymentPlatform,
@@ -359,6 +360,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
           depositorVenmoId: venmoIdString,
           depositorAddress,
           recipientAddress,
+          receiveCurrencyId,
           handleCompleteOrderClick: () => {
             if (onIntentRowClick) {
               onIntentRowClick();
@@ -454,6 +456,7 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
               depositorAddress={intentsRow.depositorAddress}
               depositorName={intentsRow.depositorName}
               recipientAddress={intentsRow.recipientAddress}
+              receiveCurrencyId={intentsRow.receiveCurrencyId}
               handleCompleteOrderClick={intentsRow.handleCompleteOrderClick}
               shouldAutoSelectIntent={intentsRow.shouldAutoSelectIntent}
               resetShouldAutoSelectIntent={intentsRow.resetShouldAutoSelectIntent}

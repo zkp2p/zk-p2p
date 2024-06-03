@@ -9,8 +9,8 @@ import { RowBetween } from '@components/layouts/Row';
 import { PositionRow } from "@components/Deposit/DepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
-import { DepositWithAvailableLiquidity } from "../../helpers/types/deposit";
-import { Abi } from '@helpers/types';
+import { keccak256 } from '@helpers/keccack';
+import { Abi, CurrencyCode, ReceiveCurrencyId, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -38,6 +38,7 @@ export interface DepositPrime {
   outstandingIntentAmount: string;
   intentCount: string;
   conversionRate: string;
+  conversionCurrency: string;
 }
 
 interface PositionTableProps {
@@ -212,22 +213,32 @@ export const PositionTable: React.FC<PositionTableProps> = ({
 
   useEffect(() => {
     let depositsToDisplay: DepositWithAvailableLiquidity[] | null = [];
+    let conversionCurrenciesToDisplay: string[] = [];
     if (paymentPlatform) {
       switch (paymentPlatform) {
         case PaymentPlatform.VENMO:
-          depositsToDisplay = venmoDeposits;
+          depositsToDisplay = venmoDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.USD)
           break;
 
         case PaymentPlatform.HDFC:
-          depositsToDisplay = hdfcDeposits;
+          depositsToDisplay = hdfcDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.INR)
           break;
 
         case PaymentPlatform.GARANTI:
-          depositsToDisplay = garantiDeposits;
+          depositsToDisplay = garantiDeposits ?? [];
+          conversionCurrenciesToDisplay = depositsToDisplay.map(() => CurrencyCode.TRY)
           break;
 
         case PaymentPlatform.REVOLUT:
-          depositsToDisplay = revolutDeposits;
+          depositsToDisplay = revolutDeposits ?? [];
+
+          conversionCurrenciesToDisplay = depositsToDisplay.map(depositToDisplay => (
+            paymentPlatformInfo[PaymentPlatform.REVOLUT].platformCurrencies.find(
+              currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
+            ) ?? ReceiveCurrencyId.EUR
+          ))
           break;
 
         default:
@@ -239,7 +250,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
       setPositionsRowData([]);  
     } else {
       var sanitizedPositions: DepositPrime[] = [];
-      sanitizedPositions = depositsToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedPositions = depositsToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity, index: number) => {
         const deposit = depositWithLiquidity.deposit
 
         const depositor = deposit.depositor;
@@ -248,6 +259,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         const intentCount = deposit.intentHashes.length.toString();
         const outstandingIntentAmount = toUsdcString(deposit.outstandingIntentAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
+        const conversionCurrency = conversionCurrenciesToDisplay[index];
 
         return {
           depositor,
@@ -255,7 +267,8 @@ export const PositionTable: React.FC<PositionTableProps> = ({
           totalDepositAmount,
           outstandingIntentAmount,
           intentCount,
-          conversionRate
+          conversionRate,
+          conversionCurrency
         };
       });
 
@@ -389,7 +402,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : !isRegistered ? (
           <ErrorContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector />
+              <PlatformSelector usePillSelector={true} />
             </PlatformSelectorContainer>
 
             <ThemedText.DeprecatedBody textAlign="center">
@@ -407,7 +420,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : positionsRowData.length === 0 ? (
             <ErrorContainer>
               <PlatformSelectorContainer>
-                <PlatformSelector />
+                <PlatformSelector usePillSelector={true}/>
               </PlatformSelectorContainer>
 
               <ThemedText.DeprecatedBody textAlign="center">
@@ -420,7 +433,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
         ) : (
           <PositionsContainer>
             <PlatformSelectorContainer>
-              <PlatformSelector />
+              <PlatformSelector usePillSelector={true}/>
             </PlatformSelectorContainer>
             
             <PositionCountTitle>
@@ -429,7 +442,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
               </ThemedText.LabelSmall>
 
               <PlatformSelectorContainer>
-                <PlatformSelector />
+                <PlatformSelector usePillSelector={true}/>
               </PlatformSelectorContainer>
             </PositionCountTitle>
 
@@ -442,6 +455,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
                     outstandingIntentAmount={positionRow.outstandingIntentAmount}
                     intentCount={positionRow.intentCount}
                     conversionRate={positionRow.conversionRate}
+                    conversionCurrency={positionRow.conversionCurrency}
                     rowIndex={rowIndex}
                     isCancelDepositLoading={rowIndex === selectedRowIndexToWithdraw && (isSubmitWithdrawLoading || isSubmitWithdrawMining)}
                     handleWithdrawClick={() => {

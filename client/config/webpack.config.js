@@ -674,6 +674,7 @@ module.exports = function (webpackEnv) {
         'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
 
         'process.env.USE_REVOLUT': JSON.stringify(process.env.USE_REVOLUT),
+        'process.env.USE_REVOLUT_MULTICURRENCY': JSON.stringify(process.env.USE_REVOLUT_MULTICURRENCY),
         'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
         'process.env.NOTARY_VERIFICATION_SIGNING_KEY': JSON.stringify(process.env.NOTARY_VERIFICATION_SIGNING_KEY),
         'process.env.NOTARY_PUBKEY': JSON.stringify(process.env.NOTARY_PUBKEY),

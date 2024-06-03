@@ -37,7 +37,7 @@ const strings: PlatformStrings = {
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
     Creating a new deposit requires you to submit a valid Revolut Revtag, the USDC liquidity to deposit, and
-    desired EUR conversion rate. Your Revtag must match the registered Revtag. You will receive EUR payments
+    desired fiat conversion rate. Your Revtag must match the registered Revtag. You will receive EUR payments
     from users who claim your deposit.
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
@@ -57,7 +57,7 @@ const strings: PlatformStrings = {
     You can withdraw unclaimed USDC or USDC not locked for orders at any time.
   `,
   NEW_DEPOSIT_RECEIVE_TOOLTIP: `
-    This is the amount of EUR you will receive if your entire deposit is claimed.
+    This is the amount of fiat currency you will receive if your entire deposit is claimed.
   `,
 
   // Instruction Drawer

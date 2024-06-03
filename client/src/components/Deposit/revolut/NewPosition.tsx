@@ -18,9 +18,11 @@ import { revolutStrings } from '@helpers/strings';
 import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
+import { PaymentPlatform, paymentPlatformInfo } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/revolut/useDeposits';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 import useRampState from '@hooks/revolut/useRampState';
 import useRegistration from '@hooks/revolut/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
@@ -48,6 +50,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
+  const { currencyIndex } = usePlatformSettings();
   const {
     extractedRevolutProfileId,
     registrationHash,
@@ -83,7 +86,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     functionName: 'offRamp',
     args: [
       revTagInput,
-      keccak256('EUR'),
+      keccak256(paymentPlatformInfo[PaymentPlatform.REVOLUT].platformCurrencies[currencyIndex]),
       toBigInt(depositAmountInput.toString()),
       toBigInt(receiveAmountInput.toString()),
       NOTARY_VERIFICATION_SIGNING_KEY,
@@ -412,7 +415,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const conversionRateLabel =  useMemo(() => {
     if (isLoggedIn && depositAmountInput && receiveAmountInput) {
       // Flipping conversion rate (i.e. relative to Venmo) b/c EUR/USD is quoted with USD as the base currency
-      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} EUR / USDC`;
+      return `Rate: ${calculateConversionRate(receiveAmountInput, depositAmountInput)} ${paymentPlatformInfo[PaymentPlatform.REVOLUT].platformCurrencies[currencyIndex]} / USDC`;
     } else {
       return '';
     }
@@ -501,7 +504,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               value={receiveAmountInput}
               onChange={(e) => handleInputChange(e.currentTarget.value, setReceiveAmountInput)}
               type="number"
-              inputLabel="EUR"
+              hasSelector={true}
               placeholder="940"
               accessoryLabel={conversionRateLabel}
               helperText={revolutStrings.get('NEW_DEPOSIT_RECEIVE_TOOLTIP')}

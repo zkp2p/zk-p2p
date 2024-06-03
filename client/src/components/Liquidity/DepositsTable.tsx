@@ -5,7 +5,8 @@ import styled, { css } from 'styled-components/macro';
 import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
-import { PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
+import { keccak256 } from '@helpers/keccack';
+import { CurrencyCode, PaymentPlatformType, PaymentPlatform, DepositWithAvailableLiquidity, paymentPlatformInfo } from '@helpers/types';
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
@@ -50,7 +51,8 @@ export const DepositsTable: React.FC = () => {
   } = useRevolutLiquidity();
 
   const {
-    paymentPlatform
+    paymentPlatform,
+    currencyIndex
   } = usePlatformSettings();
 
   /*
@@ -67,21 +69,30 @@ export const DepositsTable: React.FC = () => {
 
   useEffect(() => {
     let depositStoreToDisplay: DepositWithAvailableLiquidity[] = [];
+    let conversionCurrenciesToDisplay: string[] = [];
     switch (paymentPlatform) {
       case PaymentPlatform.VENMO:
         depositStoreToDisplay = venmoDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.USD)
         break;
 
       case PaymentPlatform.HDFC:
         depositStoreToDisplay = hdfcDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.INR)
         break;
 
       case PaymentPlatform.GARANTI:
         depositStoreToDisplay = garantiDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(() => CurrencyCode.TRY)
         break;
 
       case PaymentPlatform.REVOLUT:
         depositStoreToDisplay = revolutDepositStore ?? [];
+        conversionCurrenciesToDisplay = depositStoreToDisplay.map(depositToDisplay => (
+          paymentPlatformInfo[PaymentPlatform.REVOLUT].platformCurrencies.find(
+            currency => keccak256(currency) === depositToDisplay.deposit.receiveCurrencyId
+          ) ?? CurrencyCode.EUR
+        ))
         break;
 
       default:
@@ -92,14 +103,14 @@ export const DepositsTable: React.FC = () => {
       setPositionsRowData([]);  
     } else {
       var sanitizedDeposits: DepositPrime[] = [];
-      sanitizedDeposits = depositStoreToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity) => {
+      sanitizedDeposits = depositStoreToDisplay.map((depositWithLiquidity: DepositWithAvailableLiquidity, index: number) => {
         const deposit = depositWithLiquidity.deposit
         const platformType = deposit.platformType
         const depositor = deposit.depositor;
         const availableDepositAmount = toUsdcString(depositWithLiquidity.availableLiquidity, true);
         const totalDepositAmount = toUsdcString(deposit.depositAmount, true);
         const conversionRate = conversionRateToMultiplierString(deposit.conversionRate);
-        const conversionCurrency = paymentPlatformInfo[deposit.platformType].platformCurrency;
+        const conversionCurrency = conversionCurrenciesToDisplay[index];
 
         return {
           depositor,
@@ -107,7 +118,7 @@ export const DepositsTable: React.FC = () => {
           availableDepositAmount,
           totalDepositAmount,
           conversionRate,
-          conversionCurrency
+          conversionCurrency,
         };
       });
 
@@ -118,6 +129,7 @@ export const DepositsTable: React.FC = () => {
     hdfcDepositStore,
     garantiDepositStore,
     paymentPlatform,
+    currencyIndex,
     revolutDepositStore
   ]);
 
@@ -151,7 +163,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
-        <PlatformSelector />
+        <PlatformSelector usePillSelector={true}/>
       </TitleRow>
 
       <Content>

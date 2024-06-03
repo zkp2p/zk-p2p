@@ -206,7 +206,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
         case NotaryVerificationCircuit.TRANSFER:
           return {
             detected_copy: 'Proof detected from your browser assistant for the following payment',
-            metadata_copy: `€${selectedRequest.metadata} EUR ${selectedRequest.date}`, // Hacky, timestamp parsing handles article in front of date "at" or "on"
+            metadata_copy: `${selectedRequest.subject} ${selectedRequest.date}`, // Hacky, timestamp parsing handles article in front of date "at" or "on"
             metadata_type_copy: 'transaction',
             transaction_type_copy: 'order'
           };
@@ -449,7 +449,7 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             const [timestamp, amount, currency] = request.metadata;
 
             const formattedAmount = (Math.abs(amount) / 100).toFixed(2);
-            const subject = `Proof for payment: €${formattedAmount} ${currency}`;
+            const subject = `Proof for payment: ${formattedAmount} ${currency}`;
 
             return {
               proof: JSON.stringify(request.proof),

@@ -10,8 +10,7 @@ import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
-import { PaymentPlatformType } from "@helpers/types";
-
+import { PaymentPlatformType, ReceiveCurrencyId, ReceiveCurrencyIdType } from "@helpers/types";
 
 interface IntentRowProps {
   paymentPlatform: PaymentPlatformType | undefined;
@@ -22,6 +21,7 @@ interface IntentRowProps {
   depositorName?: string;
   depositorAddress: string;
   recipientAddress: string;
+  receiveCurrencyId?: ReceiveCurrencyIdType;
   handleCompleteOrderClick: () => void;
   shouldAutoSelectIntent: boolean;
   resetShouldAutoSelectIntent: () => void;
@@ -38,6 +38,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
   depositorAddress,
   depositorName,
   recipientAddress,
+  receiveCurrencyId,
   handleCompleteOrderClick,
   shouldAutoSelectIntent,
   resetShouldAutoSelectIntent,
@@ -95,9 +96,21 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         };
 
       case PaymentPlatform.REVOLUT:
+        let currencySymbol = '';
+        switch (receiveCurrencyId) {
+          case ReceiveCurrencyId.EUR:
+            currencySymbol = '€';
+            break;
+          case ReceiveCurrencyId.GBP:
+            currencySymbol = '£';
+            break;
+          case ReceiveCurrencyId.SGD:
+            currencySymbol = 'SGD$';
+            break;
+        }
         return {
           qrLink: `https://revolut.me/${depositorVenmoId}`,
-          currencySymbol: '€',
+          currencySymbol,
           paymentPlatformName: 'Revolut',
         };
 
@@ -183,6 +196,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             onBackClick={handleModalBackClicked}
             onCompleteClick={handleCompleteOrderClick}
             paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
+            receiveCurrencyId={receiveCurrencyId}
           />
         )
       }

@@ -1,21 +1,21 @@
 import React from "react";
 import styled from 'styled-components';
-import { colors } from "@theme/colors";
 
-interface PlatformRowProps {
-  platformName: string;
-  platformCurrencies: string[];
+
+interface CurrencyRowProps {
+  platformCurrency: string;
   isSelected: boolean;
+  flagSvg: string;
   onRowClick: () => void;
 }
 
-export const PlatformRow: React.FC<PlatformRowProps> = ({
-  platformName,
-  platformCurrencies,
+export const CurrencyRow: React.FC<CurrencyRowProps> = ({
+  platformCurrency,
   isSelected,
+  flagSvg,
   onRowClick,
-}: PlatformRowProps) => {
-  PlatformRow.displayName = "PlatformRow";
+}: CurrencyRowProps) => {
+  CurrencyRow.displayName = "CurrencyRow";
 
   return (
     <Container
@@ -23,9 +23,9 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
       selected={isSelected}
     >
       <DetailsContainer>
+        <FlagSvg src={flagSvg} />
         <PlatformAndCurrencyLabel>
-          <PlatformLabel>{platformName}</PlatformLabel>
-          <CurrencyLabel>{platformCurrencies.map((currency) => currency).join(', ')}</CurrencyLabel>
+          <PlatformLabel>{platformCurrency}</PlatformLabel>
         </PlatformAndCurrencyLabel>
       </DetailsContainer>
     </Container>
@@ -72,7 +72,8 @@ const PlatformLabel = styled.div`
   color: #FFFFFF;
 `;
 
-const CurrencyLabel = styled.div`
-  padding-top: 4px;
-  color: ${colors.offWhite};
+const FlagSvg = styled.img`
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
 `;

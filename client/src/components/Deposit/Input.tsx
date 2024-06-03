@@ -2,6 +2,7 @@ import React, { ChangeEvent } from "react";
 import styled from 'styled-components';
 
 import QuestionHelper from '@components/common/QuestionHelper';
+import { CurrencySelector } from "@components/Deposit/CurrencySelector";
 import { colors } from '@theme/colors';
 
 
@@ -17,6 +18,7 @@ interface InputProps {
   inputLabel?: string;
   readOnly?: boolean;
   accessoryLabel?: string;
+  hasSelector?: boolean;
   helperText?: string;
   enableMax?: boolean
   valueFontSize?: string;
@@ -35,6 +37,7 @@ export const Input: React.FC<InputProps> = ({
   type = "text",
   readOnly = false,
   accessoryLabel="",
+  hasSelector = false,
   helperText="",
   valueFontSize="24px",
   enableMax=false,
@@ -74,26 +77,31 @@ export const Input: React.FC<InputProps> = ({
             />
           </InputWrapper>
         </LabelAndInputContainer>
+          <AccessoryAndInputLabelWrapper>
+            <AccessoryLabelAndMax>
+              <AccessoryLabel>
+                {accessoryLabel}
+              </AccessoryLabel>
 
-        <AccessoryAndInputLabelWrapper>
-          <AccessoryLabelAndMax>
-            <AccessoryLabel>
-              {accessoryLabel}
-            </AccessoryLabel>
+              {enableMax && accessoryLabel && (
+                <MaxButton onClick={maxButtonOnClick}>
+                  Max
+                </MaxButton>
+              )}
+            </AccessoryLabelAndMax>
 
-            {enableMax && accessoryLabel && (
-              <MaxButton onClick={maxButtonOnClick}>
-                Max
-              </MaxButton>
+            {inputLabel ? (
+              <InputLabel>
+                <span>{inputLabel}</span>
+              </InputLabel>
+            ) : null}
+
+            {hasSelector && (
+              <SelectorAccessory>
+                <CurrencySelector/>
+              </SelectorAccessory>
             )}
-          </AccessoryLabelAndMax>
-
-          {inputLabel ? (
-            <InputLabel>
-              <span>{inputLabel}</span>
-            </InputLabel>
-          ) : null}
-        </AccessoryAndInputLabelWrapper>
+          </AccessoryAndInputLabelWrapper>
       </Container>
   );
 };
@@ -182,6 +190,16 @@ const StyledInput = styled.input<StyledInputProps>`
       pointer-events: none;
     `
   }
+`;
+
+const SelectorAccessory = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  color: #CED4DA;
+  padding-top: 8px;
+  padding-right: -8px;
 `;
 
 const AccessoryAndInputLabelWrapper = styled.div`

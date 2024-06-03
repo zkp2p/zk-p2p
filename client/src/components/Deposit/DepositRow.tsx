@@ -11,6 +11,7 @@ interface PositionRowProps {
   outstandingIntentAmount: string;
   intentCount: string;
   conversionRate: string;
+  conversionCurrency: string;
   rowIndex: number;
   isCancelDepositLoading: boolean;
   handleWithdrawClick: () => void;
@@ -22,6 +23,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
   outstandingIntentAmount,
   intentCount,
   conversionRate,
+  conversionCurrency,
   rowIndex,
   isCancelDepositLoading,
   handleWithdrawClick
@@ -50,7 +52,7 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 
             <PercentageLabel>
               <Label>Conversion Rate:</Label>
-              <Value>{conversionRate}</Value>
+              <Value>{conversionRate} {conversionCurrency}</Value>
             </PercentageLabel>
 
             <SummaryLabel>
