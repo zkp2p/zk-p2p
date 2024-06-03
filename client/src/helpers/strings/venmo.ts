@@ -52,7 +52,7 @@ const strings: PlatformStrings = {
     This connects your Venmo account to your wallet address on chain.
     This must match the Venmo account you used to register.
   `,
-  NEW_DEPOSIT_NAME_TOOLTIP:`
+  NEW_DEPOSIT_NAME_TOOLTIP: `
     no-op
   `,
   NEW_DEPOSIT_AMOUNT_TOOLTIP: `
@@ -85,7 +85,7 @@ const strings: PlatformStrings = {
     Amount USD to send, which may not match your requested USDC amount, is double checked
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Custom messages for Venmo payment consists of text only
+    Do not add emojis in the payment note
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: `
     'Turn on for purchases' at the payment screen is toggled off
