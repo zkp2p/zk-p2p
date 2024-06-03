@@ -45,7 +45,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const {
     PaymentPlatform,
   } = usePlatformSettings();
-  const isMobile = useMediaQuery() == 'mobile';
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * Handlers
@@ -147,36 +147,33 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         {paymentPlatform !== PaymentPlatform.GARANTI ? (
           <div>
-            {
-              isMobile ? (
-                <div>
-                  <ButtonContainer>
-                    <Button
-                      onClick={() => {
-                        setPaymentInitiated(true);
-                        window.open(link, '_blank', 'noopener,noreferrer');
-                      }}
-                    >
-                      {`Send ${currencySymbol}${amount} on ${paymentPlatformName} ↗`}
-                    </Button> 
-                  </ButtonContainer>
-                </div>
-              ) :
-              (
-                <>
-                  <QRContainer>
-                    <QRCode
-                      value={link}
-                      size={192}/>
-                  </QRContainer>
-                  <QRLabel>
-                    <Link href={troubleScanningQRCodeLink} target="_blank">  
-                      {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
-                    </Link>
-                  </QRLabel>
-                </>
-              )
-            }
+            {isMobile ? (
+              <div>
+                <ButtonContainer>
+                  <Button
+                    onClick={() => {
+                      setPaymentInitiated(true);
+                      window.open(link, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    {`Send ${currencySymbol}${amount} on ${paymentPlatformName} ↗`}
+                  </Button> 
+                </ButtonContainer>
+              </div>
+            ) : (
+              <>
+                <QRContainer>
+                  <QRCode
+                    value={link}
+                    size={192}/>
+                </QRContainer>
+                <QRLabel>
+                  <Link href={troubleScanningQRCodeLink} target="_blank">  
+                    {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
+                  </Link>
+                </QRLabel>
+              </>
+            )}
           </div>
         ) : (
           <GarantiInformationContainer>
