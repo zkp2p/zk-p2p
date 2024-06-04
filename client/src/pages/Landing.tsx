@@ -17,6 +17,10 @@ import { ThemedText } from '@theme/text';
 const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR'];
 
 export const Landing: React.FC = () => {
+  /*
+   * Contexts
+   */
+  
   const currentDeviceSize = useMediaQuery();
 
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -53,7 +57,7 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
         <HeroContainer style={{ width: currentDeviceSize === 'mobile' ? '90%' : '50%' }}>
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
@@ -160,12 +164,14 @@ export const Landing: React.FC = () => {
   )
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
+  
+  padding: 12px 8px 0px;
+  padding-bottom: ${props => props.$isMobile ? '4rem' : '0rem'};
 `;
 
 const Container = styled.div`

@@ -5,66 +5,83 @@ import styled from "styled-components";
 import { NavItem } from "@components/layouts/TopNav/NavItem";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import useMediaQuery from "@hooks/useMediaQuery";
-import {MenuDropdown} from "@components/layouts/MenuDropdown";
+
 
 export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
+  /*
+   * Context
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
+  /*
+   * State
+   */
+
   const location = useLocation();
   const [selectedItem, setSelectedItem] = useState<string>('Landing');
+
+  /*
+   * Hooks
+   */
 
   useEffect(() => {
     const routeName = location.pathname.split('/')[1];
     setSelectedItem(routeName || 'Landing');
   }, [location]);
 
-  const currentDeviceSize = useMediaQuery();
+  /*
+   * Component
+   */
 
   if (currentDeviceSize === 'mobile') {
     return (
-        <NavBar>
-          {withoutLinks ? (
-              <NavBarCentered>
-                <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
-                  <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
-                </Logo>
-              </NavBarCentered>
-          ) : (
-              <LogoAndNavItems>
-                <Logo to="/" onClick={() => setSelectedItem('Landing')}>
-                  <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
-                </Logo>
-              </LogoAndNavItems>
-          )}
-          <LoginMenuContainer>
-              <CustomConnectButton height={40}/>
-              <MenuDropdown />
-          </LoginMenuContainer>
-        </NavBar>
+      <NavBar>
+        {withoutLinks ? (
+          <NavBarCentered>
+            <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
+              <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+            </Logo>
+          </NavBarCentered>
+        ) : (
+          <LogoAndNavItems>
+            <Logo to="/" onClick={() => setSelectedItem('Landing')}>
+              <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+            </Logo>
+          </LogoAndNavItems>
+        )}
+        
+        <LoginMenuContainer>
+          <CustomConnectButton height={40}/>
+        </LoginMenuContainer>
+      </NavBar>
     );
   } else {
     return (
-        <NavBar>
-          {withoutLinks ? (
-              <NavBarCentered>
-                <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
-                  <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
-                </Logo>
-              </NavBarCentered>
-          ) : (
-              <LogoAndNavItems>
-                <Logo to="/" onClick={() => setSelectedItem('Landing')}>
-                  <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
-                </Logo>
+      <NavBar>
+        {withoutLinks ? (
+          <NavBarCentered>
+            <Logo size={48} to="/" onClick={() => setSelectedItem('Landing')}>
+              <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+            </Logo>
+          </NavBarCentered>
+        ) : (
+          <LogoAndNavItems>
+            <Logo to="/" onClick={() => setSelectedItem('Landing')}>
+              <img src={`${process.env.PUBLIC_URL}/logo512.png`} alt="logo" />
+            </Logo>
 
-                <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
-              </LogoAndNavItems>
-          )}
+            { currentDeviceSize === 'laptop' && (
+              <NavItem selectedItem={selectedItem} setSelectedItem={setSelectedItem} />
+            )}
+          </LogoAndNavItems>
+        )}
 
-          {!withoutLinks && <CustomConnectButton height={40} />}
-        </NavBar>
+        {!withoutLinks && <CustomConnectButton height={40} />}
+      </NavBar>
     );
   }
-}
-
+};
 
 const NavBarCentered = styled.div`
   display: flex;
@@ -77,7 +94,7 @@ const NavBar = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30px;
+  padding: 28px;
 `;
 
 const Logo = styled(Link)<{ size?: number }>`

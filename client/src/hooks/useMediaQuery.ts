@@ -9,17 +9,14 @@ const useMediaQuery = () => {
       const sizesInDescending = Object.keys(MEDIA_SIZE).reverse();
       const newSize = sizesInDescending.find(size =>
         window.matchMedia(`(min-width: ${MEDIA_SIZE[size as MediaSizeKey]})`
-      ).matches) as string || 'mobile'; // Default to mobile if smaller than smallest size
+      ).matches) as string || 'mobile';
       setDeviceSize(newSize);
     };
 
-    // Initial check on mount
     handleResize();
 
-    // Listen for window resize events
     window.addEventListener('resize', handleResize);
 
-    // Clean up event listener on unmount
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -28,4 +25,4 @@ const useMediaQuery = () => {
   return deviceSize;
 };
 
-export default useMediaQuery
+export default useMediaQuery;

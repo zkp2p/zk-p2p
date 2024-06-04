@@ -36,32 +36,8 @@ export const MenuDropdown = () => {
       </NavButton>
 
       {isOpen && (
-        <NavDropdown>
+        <NavDropdown isMobile={currentDeviceSize === 'mobile'}>
           <NavDropdownItemContainer>
-            {currentDeviceSize === 'mobile' && (
-              <>
-                <NavDropdownItem as={Link} to="/swap" onClick={toggleOpen}>
-                  <ThemedText.LabelSmall textAlign="left">
-                    Swap
-                  </ThemedText.LabelSmall>
-                </NavDropdownItem>
-                <NavDropdownItem as={Link} to="/send" onClick={toggleOpen}>
-                  <ThemedText.LabelSmall textAlign="left">
-                    Send
-                  </ThemedText.LabelSmall>
-                </NavDropdownItem>
-                <NavDropdownItem as={Link} to="/liquidity" onClick={toggleOpen}>
-                  <ThemedText.LabelSmall textAlign="left">
-                    Liquidity
-                  </ThemedText.LabelSmall>
-                </NavDropdownItem>
-                <NavDropdownItem as={Link} to="/deposits" onClick={toggleOpen}>
-                  <ThemedText.LabelSmall textAlign="left">
-                    Deposits
-                  </ThemedText.LabelSmall>
-                </NavDropdownItem>
-              </>
-            )}
             <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
@@ -146,10 +122,8 @@ export const MenuDropdown = () => {
 const Wrapper = styled.div<{isMobile?: boolean}>`
   display: flex;
   ${({ isMobile }) => isMobile ? '' : 'flex-direction: column'};
-  //flex-direction: column;
+  ${({ isMobile }) => isMobile ? '' : 'align-items: flex-start'};
   position: relative;
-    ${({ isMobile }) => isMobile ? '' : 'align-items: flex-start'};
-  //align-items: flex-start;
 `;
 
 const StyledMoreHorizontal = styled(MoreHorizontal)`
@@ -167,7 +141,7 @@ const NavButton = styled.div`
   padding-right: 8px;
 `;
 
-const NavDropdown = styled.div`
+const NavDropdown = styled.div<{isMobile?: boolean}>`
   display: flex;
   flex-direction: column;
   width: 212px;
@@ -175,12 +149,19 @@ const NavDropdown = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;
   background: #1B1B1B;
-  position: absolute;
-  top: calc(100% + 20px);
-  right: 0;
   z-index: 20;
   gap: 0.75rem;
   color: #FFFFFF;
+
+  position: absolute;
+  ${({ isMobile }) => isMobile ? `
+    bottom: calc(100% + 28px);
+    top: auto;
+    right: 0;
+  ` : `
+    top: calc(100% + 20px);
+    right: 0;
+  `}
 `;
 
 const NavDropdownItemContainer = styled.div`

@@ -233,11 +233,10 @@ const NavDropdown = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: #1B1B1B;
   position: absolute;
+
   top: calc(100% + 20px);
   right: 0;
-  @media (max-width: 600px) {
-      right: calc(100% - 45px);
-  }
+
   z-index: 20;
   color: #FFFFFF;
 `;

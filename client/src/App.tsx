@@ -6,6 +6,12 @@ import {
 } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import useMediaQuery from '@hooks/useMediaQuery';
+
+import { TopNav } from "@components/layouts/TopNav";
+import { BottomNav } from "@components/layouts/BottomNav";
+import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
+
 import { Landing } from "./pages/Landing";
 import { Permissions } from "./pages/Permissions";
 import { Withdraw } from "./pages/Withdraw";
@@ -17,8 +23,6 @@ import { Send } from "./pages/Send";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
 import Modals from "./pages/Modals";
-import { TopNav } from "@components/layouts/TopNav";
-import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
 // Common Contexts
 import AccountProvider from "./contexts/common/Account/AccountProvider";
@@ -70,6 +74,16 @@ import "./App.css";
 import "./styles.css";
 
 const App = () => {
+  /*
+   * Context
+   */
+
+  const currentDeviceSize = useMediaQuery();
+
+  /*
+   * Component
+   */
+
   return (
     <Router>
       <Providers>
@@ -92,6 +106,10 @@ const App = () => {
               <Route element={<>Not found</>} />
             </Routes>
           </div>
+
+          {( currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile') &&
+            <BottomNav />
+          }
         </div>
       </Providers>
     </Router>
