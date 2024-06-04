@@ -246,5 +246,5 @@ const LoggedInButton = styled.button`
 `;
 
 const AccountDisplay = styled.div`
-  padding-top: 3px;
+  padding-top: 2px;
 `;
