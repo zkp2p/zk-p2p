@@ -144,7 +144,7 @@ const NavButton = styled.div`
 const NavDropdown = styled.div<{isMobile?: boolean}>`
   display: flex;
   flex-direction: column;
-  width: 212px;
+  width: 164px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;
