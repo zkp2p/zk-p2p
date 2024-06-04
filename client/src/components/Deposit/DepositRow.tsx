@@ -51,12 +51,12 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 
             <SummaryLabelsContainer>
               <SummaryLabel>
-                <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelTitle>{!isMobile ? 'Available USDC' : 'Available'}:&nbsp;</SummaryLabelTitle>
                 <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
               </SummaryLabel>
 
               <SummaryLabel>
-                <SummaryLabelTitle>Outstanding Orders:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelTitle>{!isMobile ? 'Outstanding Orders' : 'Orders'}:&nbsp;</SummaryLabelTitle>
                 <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
               </SummaryLabel>
 
@@ -88,17 +88,16 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 };
 
 const Container = styled.div`
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 `;
 
 const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
   width: 100%; 
   display: flex;
-  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
   align-items: center;
-  padding: 1.25rem 1.5rem;
   gap: 1.25rem;
+  padding: 1.5rem;
   line-height: 24px;
 `;
 
@@ -106,7 +105,6 @@ const PositionDetailsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1.5rem;
 `;
 
 const ActionsContainer = styled.div`

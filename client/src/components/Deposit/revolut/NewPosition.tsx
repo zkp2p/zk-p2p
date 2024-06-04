@@ -542,14 +542,18 @@ const NewPositionContainer = styled.div`
   display: grid;
   padding: 1.5rem;
   background-color: ${colors.container};
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  @media (min-width: 425px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  background-color: ${colors.container};
 `;
 
 const InputsContainer = styled.div`

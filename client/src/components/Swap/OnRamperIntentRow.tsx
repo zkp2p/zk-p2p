@@ -260,7 +260,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           onClick={handleSendClick}
           height={36}
           title={'Complete'}
-          icon={'send'}/>
+          icon={isMobile ? undefined : 'send'}
+        />
       </ActionsContainer>
     </Container>
   );

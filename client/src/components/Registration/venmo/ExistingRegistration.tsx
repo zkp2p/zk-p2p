@@ -18,6 +18,7 @@ import { venmoStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 interface ExistingRegistrationProps {
@@ -30,6 +31,9 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
+  const isMobile = useMediaQuery() === 'mobile';
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();
@@ -190,7 +194,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
               <InputsContainer>
                 <ReadOnlyInput
                   label="Status"
-                  name={`depositAmount`}
+                  name={`registrationStatus`}
                   value={isRegistered ? "Registered" : "Not Registered"}
                 />
                 
@@ -246,12 +250,15 @@ const TitleRow = styled(RowBetween)`
 const Content = styled.main`
   display: flex;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   flex-direction: column;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
   overflow: hidden;
+
+  @media (min-width: 425px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const ErrorContainer = styled.div`
@@ -284,9 +291,13 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1.5rem;
+  padding: 1.5rem 1.25rem;
   background-color: ${colors.container};
   border-radius: 16px;
+
+  @media (min-width: 425px) {
+    padding: 1.5rem;
+  }
 `;
 
 const PlatformSelectorContainer = styled.div`

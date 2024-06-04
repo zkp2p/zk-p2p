@@ -121,7 +121,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 const Wrapper = styled.div`
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 `;
 

@@ -343,8 +343,8 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   align-items: flex-start;
   justify-content: center;
 
-  @media (min-width: 425px) {
-    padding: 12px 32px 0xpx;
+  @media (max-width: 600px) { 
+    padding: 12px 32px 0px;
   }
   padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
 

@@ -15,6 +15,7 @@ import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
 import { MODALS } from '@helpers/types';
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/venmo/useDeposits';
@@ -504,7 +505,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 };
 
 const Container = styled.div`
-  width: 100%;
+  background-color: ${colors.container};
+  padding: 1.5rem;
+
+  @media (min-width: 425px) {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const Body = styled.div`

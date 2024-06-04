@@ -2,6 +2,7 @@ import React from "react";
 import styled from 'styled-components/macro';
 
 import { colors } from '@theme/colors';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface MailRowProps {
@@ -21,6 +22,8 @@ export const MailRow: React.FC<MailRowProps> = ({
   isLastRow,
   onRowClick,
 }: MailRowProps) => {
+  const isMobile = useMediaQuery() === 'mobile';
+
   MailRow.displayName = "MailRow";
 
   const subjectLabel = `${subjectText}`;
@@ -33,17 +36,23 @@ export const MailRow: React.FC<MailRowProps> = ({
       onClick={onRowClick}
       selected={isSelected}
       isLastRow={isLastRow}
+      isMobile={isMobile}
       isPlatformTextLong={isPlatformTextLong}
     >
+      {!isMobile && <PlatformLabel> {platformText} </PlatformLabel>}
+
       <SubjectLabel> {subjectLabel} </SubjectLabel>
+
       <DateLabel> {dateLabel} </DateLabel>
     </Container>
   );
 };
 
-const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatformTextLong: boolean}>`
+const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatformTextLong: boolean, isMobile: boolean}>`
   display: grid;
-  grid-template-columns: ${({ isPlatformTextLong }) => isPlatformTextLong ? '1.5fr 7fr 1.25fr' : '1.5fr 3fr 1fr'};
+  grid-template-columns: ${({ isMobile, isPlatformTextLong }) => 
+    isMobile ?  (isPlatformTextLong ? '7fr 1.25fr' : '3fr 1fr') : (isPlatformTextLong ? '1.5fr 7fr 1.25fr' : '1.5fr 3fr 1fr')
+  };
   grid-gap: 1px;
   padding: 0.99rem 1.49rem;
   font-size: 14px;
@@ -63,6 +72,10 @@ const Container = styled.div<{ selected: boolean; isLastRow: boolean, isPlatform
       box-shadow: none;
     }
   `}
+`;
+
+const PlatformLabel = styled.label`
+  text-align: left;
 `;
 
 const SubjectLabel = styled.label`

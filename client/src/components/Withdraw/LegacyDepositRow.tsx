@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface LegacyDepositRowProps {
@@ -27,6 +28,8 @@ export const LegacyDepositRow: React.FC<LegacyDepositRowProps> = ({
   handleWithdrawClick
 }: LegacyDepositRowProps) => {
   LegacyDepositRow.displayName = "LegacyDepositRow";
+
+  const isMobile = useMediaQuery() === 'mobile';
 
   const depositRemainingLabel = `${availableDepositAmount} USDC`;
   const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
@@ -67,7 +70,8 @@ export const LegacyDepositRow: React.FC<LegacyDepositRowProps> = ({
           height={36}
           loading={isWithdrawDepositLoading}
           title={'Withdraw'}
-          icon={'logout'}/>
+          icon={isMobile ? undefined : 'logout'}
+        />
       </ActionsContainer>
     </Container>
   );

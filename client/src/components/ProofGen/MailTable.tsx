@@ -322,9 +322,9 @@ export const MailTable: React.FC<MailTableProps> = ({
             {
               !isMobile &&
               <TextButton
-                  onClick={() => handleEmailModeChanged(false)}
-                  height={24}
-                  title={'Or Upload'}
+                onClick={() => handleEmailModeChanged(false)}
+                height={24}
+                title={'Or Upload'}
               />
             }
 
@@ -341,7 +341,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               onClick={handleLogoutPressed}
               height={36}
               title={'Logout'}
-              icon={'logout'}
+              icon={isMobile ? undefined : 'logout'}
             />
           </TitleContainer>
 
@@ -349,17 +349,19 @@ export const MailTable: React.FC<MailTableProps> = ({
             <TitleAndOAuthContainer>
               <EmailAddressTitle>
                 <EmailLabel>
-                  <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
-                  <EmailLabelValue>{formatAddress(loggedInGmail!)}</EmailLabelValue>
+                  {!isMobile && (
+                    <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
+                  )}
+
+                  <EmailLabelValue>{loggedInGmail}</EmailLabelValue>
                 </EmailLabel>
               </EmailAddressTitle>
-
 
               <AccessoryButton
                 onClick={fetchData}
                 height={36}
                 title={'Refresh'}
-                icon={'refresh'}
+                icon={isMobile ? undefined : 'refresh'}
               />
             </TitleAndOAuthContainer>
 
@@ -421,9 +423,12 @@ const Container = styled.div`
   justify-content: center;
 
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   overflow: hidden;
+
+  @media (min-width: 425px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const ErrorContainer = styled.div`

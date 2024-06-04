@@ -11,6 +11,7 @@ import { SECONDS_IN_DAY  } from '@helpers/constants';
 import { OnRamperIntent, StoredDeposit } from '@helpers/types';
 import useSmartContracts from '@hooks/useSmartContracts';
 import usePlatformSettings from '@hooks/usePlatformSettings';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 // Venmo
 import useVenmoOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
@@ -43,6 +44,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
   /*
    * Contexts
    */
+
+  const isMobile = useMediaQuery() === 'mobile';
 
  const {
     currentIntentHash: currentVenmoIntentHash,
@@ -441,7 +444,8 @@ export const OnRamperIntentTable: React.FC<OnRamperIntentTableProps> = ({
             height={36}
             loading={isSubmitCancelIntentLoading || isSubmitCancelIntentMining}
             title={'Cancel'}
-            icon={'trash'}/>
+            icon={isMobile ? undefined : 'trash'}
+          />
         </IntentCountTitle>
         
         <Table>
@@ -478,9 +482,12 @@ const Container = styled.div`
   
   border-radius: 16px;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   overflow: hidden;
+
+  @media (min-width: 425px) {
+    border: 1px solid ${colors.defaultBorderColor};
+    border-radius: 16px;
+  }
 `;
 
 const TitleAndTableContainer = styled.div`

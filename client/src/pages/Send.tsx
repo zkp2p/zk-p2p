@@ -43,7 +43,7 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   justify-content: center;
 
   @media (min-width: 425px) {
-    padding: 12px 8px 0xpx;
+    padding: 12px 8px 0px;
   }
   
   padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};

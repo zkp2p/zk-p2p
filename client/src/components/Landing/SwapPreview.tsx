@@ -57,7 +57,6 @@ const SwapPreview: React.FC = () => {
 
 const Wrapper = styled.div`
   width: 100%;
-  max-width: 484px;
   margin-top: 50px;
   display: flex;
   flex-direction: column;

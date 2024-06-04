@@ -1241,17 +1241,23 @@ export default function SendForm() {
 const Wrapper = styled.div`
   width: 100%;
   max-width: 484px;
-  padding-top: 32px;
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 425px) {
+    padding-top: 32px;
+  }
 `;
 
 const SendFormContainer = styled(AutoColumn)`
-  border-radius: 16px;
   padding: 1rem;
   gap: 1rem;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
+
+  @media (min-width: 425px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const TitleContainer = styled.div`

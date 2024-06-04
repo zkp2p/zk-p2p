@@ -137,7 +137,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             height={36}
             loading={false}
             title={'Release'}
-            icon={'unlock'}/>
+            icon={isMobile ? undefined : 'unlock'}
+          />
         </ActionsContainer>
       </IntentDetailsContainer>
     </Container>
