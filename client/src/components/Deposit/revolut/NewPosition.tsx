@@ -419,7 +419,12 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     } else {
       return '';
     }
-  }, [depositAmountInput, receiveAmountInput, isLoggedIn]);
+  }, [
+    depositAmountInput,
+    receiveAmountInput,
+    isLoggedIn,
+    currencyIndex
+  ]);
 
   /*
    * Handlers
