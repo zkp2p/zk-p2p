@@ -3,6 +3,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { MenuDropdown } from "@components/layouts/MenuDropdown";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface NavItemProps {
@@ -16,7 +17,9 @@ export const NavItem: React.FC<NavItemProps> = ({
   selectedItem,
   setSelectedItem
 }) => {
-  const navigationItems = [
+  const currentDeviceSize = useMediaQuery();
+
+  const mobileNavigationItems = [
     {
       name: 'Swap',
       routeName: 'swap',
@@ -32,6 +35,10 @@ export const NavItem: React.FC<NavItemProps> = ({
       routeName: 'liquidity',
       href: '/liquidity',
     },
+  ];
+
+  const desktopNavigationItems = [
+    ...mobileNavigationItems,
     {
       name: 'Deposit',
       routeName: 'deposits',
@@ -39,9 +46,11 @@ export const NavItem: React.FC<NavItemProps> = ({
     },
   ];
 
+  const navigationItems = currentDeviceSize === 'mobile' ? mobileNavigationItems : desktopNavigationItems;
+
   return (
     <HeaderLinksBox vertical={vertical}>
-      {navigationItems.map((item, idx) => (
+      {navigationItems.map((item) => (
         <StyledLink
           key={item.name}
           to={item.href}

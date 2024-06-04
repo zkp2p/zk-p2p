@@ -45,5 +45,5 @@ const NavItemWrapper = styled.div`
   background: #0D111C;
   border-radius: 16px;
   border: 1px solid #98a1c03d;
-  padding: 16px 20px;
+  padding: 16px 24px;
 `;

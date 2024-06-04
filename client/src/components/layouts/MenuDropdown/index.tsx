@@ -38,6 +38,12 @@ export const MenuDropdown = () => {
       {isOpen && (
         <NavDropdown isMobile={currentDeviceSize === 'mobile'}>
           <NavDropdownItemContainer>
+            <NavDropdownItem as={Link} to="/deposit" onClick={toggleOpen}>
+              <ThemedText.LabelSmall textAlign="left">
+                Deposit
+              </ThemedText.LabelSmall>
+            </NavDropdownItem>
+
             <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
@@ -144,7 +150,7 @@ const NavButton = styled.div`
 const NavDropdown = styled.div<{isMobile?: boolean}>`
   display: flex;
   flex-direction: column;
-  width: 164px;
+  width: 172px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;
@@ -157,7 +163,7 @@ const NavDropdown = styled.div<{isMobile?: boolean}>`
   ${({ isMobile }) => isMobile ? `
     bottom: calc(100% + 28px);
     top: auto;
-    right: 0;
+    right: -20px;
   ` : `
     top: calc(100% + 20px);
     right: 0;
