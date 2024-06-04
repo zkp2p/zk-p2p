@@ -51,9 +51,9 @@ export const TopNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) =
             </Logo>
           </LogoAndNavItems>
         )}
+        
         <LoginMenuContainer>
           <CustomConnectButton height={40}/>
-          <MenuDropdown />
         </LoginMenuContainer>
       </NavBar>
     );
