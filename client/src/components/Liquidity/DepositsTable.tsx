@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-feather';
 import styled, { css } from 'styled-components/macro';
 
-import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { keccak256 } from '@helpers/keccack';

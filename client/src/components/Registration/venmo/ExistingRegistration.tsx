@@ -18,7 +18,6 @@ import { venmoStrings, commonStrings } from '@helpers/strings';
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/venmo/useRegistration';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useMediaQuery from '@hooks/useMediaQuery';
 
 
 interface ExistingRegistrationProps {
@@ -31,9 +30,6 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
   /*
    * Contexts
    */
-
-  const currentDeviceSize = useMediaQuery();
-  const isMobile = useMediaQuery() === 'mobile';
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
   const { registrationHash, isRegistered, venmoNftUri, venmoNftId, refetchVenmoNftId } = useRegistration();

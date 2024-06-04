@@ -10,7 +10,7 @@ import { AccountDropdown } from "@components/Account/AccountDropdown";
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useMediaQuery from '@hooks/useMediaQuery';
 import useAccount from '@hooks/useAccount';
-import {formatAddress, formatAddressShort} from '@helpers/addressFormat';
+import { formatAddress } from '@helpers/addressFormat';
 import { alchemyMainnetEthersProvider } from "index";
 
 
@@ -30,6 +30,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
+  const isMobile = currentDeviceSize === 'mobile';
 
   const {
     accountDisplay,
@@ -103,7 +104,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                     onClick={onAccountLoginClick}
                     height={height}
                   >
-                    {currentDeviceSize === 'mobile' ? 'Log In' : 'Log In'}
+                    {isMobile ? 'Log In' : 'Log In'}
                   </Button>
                 );
               }
@@ -121,33 +122,35 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
               }
 
               return (
-                <div style={{ display: 'flex' }}>
+                <div style={{ display: 'flex', height: '36px' }}>
                   <AccountContainer>
-                    <NetworkAndBridgeContainer>
-                      <NetworkSelector
-                        style={{ display: 'flex', alignItems: 'center' }}
-                      >
-                        {chain && chain.hasIcon && (
-                          <div
-                            style={{
-                              background: chain.iconBackground,
-                              width: 24,
-                              height: 24,
-                              borderRadius: 999,
-                              overflow: 'hidden',
-                            }}
-                          >
-                            {chain.iconUrl && (
-                              <img
-                                alt={chain.name ?? 'Chain icon'}
-                                src={chain.iconUrl}
-                                style={{ width: 24, height: 24 }}
-                              />
-                            )}
-                          </div>
-                        )}
-                      </NetworkSelector>
-                    </NetworkAndBridgeContainer>
+                    {!isMobile && (
+                      <NetworkAndBridgeContainer>
+                        <NetworkSelector
+                          style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          {chain && chain.hasIcon && (
+                            <div
+                              style={{
+                                background: chain.iconBackground,
+                                width: 24,
+                                height: 24,
+                                borderRadius: 999,
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {chain.iconUrl && (
+                                <img
+                                  alt={chain.name ?? 'Chain icon'}
+                                  src={chain.iconUrl}
+                                  style={{ width: 24, height: 24 }}
+                                />
+                              )}
+                            </div>
+                          )}
+                        </NetworkSelector>
+                      </NetworkAndBridgeContainer>
+                    )}
 
                     <LoggedInBalanceAndAccount onClick={toggleDropdown}>
                       <LoggedInButton>
