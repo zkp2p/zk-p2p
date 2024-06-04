@@ -60,6 +60,7 @@ const Wrapper = styled.div`
   margin-top: 50px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 
   &::after {
@@ -75,6 +76,7 @@ const Wrapper = styled.div`
 `;
 
 const SwapModalContainer = styled(AutoColumn)`
+  width: 100%;
   border-radius: 16px;
   border: 1px solid #DEE2E6;
   padding: 1rem;
