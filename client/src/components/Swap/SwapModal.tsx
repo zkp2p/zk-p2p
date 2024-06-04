@@ -99,6 +99,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
+          case ReceiveCurrencyId.USD:
+            currencySymbol = '$';
+            break;
         }
         return {
           troubleScanningQRCodeLink: REVOLUT_DOWNLOAD_LINK,

@@ -4,6 +4,7 @@ export const ReceiveCurrencyId = {
   EUR: "0xfff16d60be267153303bbfa66e593fb8d06e24ea5ef24b6acca5224c2ca6b907", // keccak256("EUR")
   GBP: "0x90832e2dc3221e4d56977c1aa8f6a6706b9ad6542fbbdaac13097d0fa5e42e67", // keccak256("GBP")
   SGD: "0xc241cc1f9752d2d53d1ab67189223a3f330e48b75f73ebf86f50b2c78fe8df88", // keccak256("SGD")
+  USD: "0xc4ae21aac0c6549d71dd96035b7e0bdb6c79ebdba8891b666115bc976d16a29e", // keccak256("USD")
 };
 export type ReceiveCurrencyIdType = typeof ReceiveCurrencyId[keyof typeof ReceiveCurrencyId];
 
