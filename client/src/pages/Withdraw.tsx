@@ -4,6 +4,7 @@ import styled from "styled-components";
 import DepositTable from "@components/Withdraw"
 import useBalances from '@hooks/useBalance';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Withdraw: React.FC = () => {

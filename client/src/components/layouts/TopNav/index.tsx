@@ -4,7 +4,6 @@ import styled from "styled-components";
 
 import { NavItem } from "@components/layouts/TopNav/NavItem";
 import { CustomConnectButton } from "@components/common/ConnectButton";
-import { MenuDropdown } from "@components/layouts/MenuDropdown";
 import useMediaQuery from "@hooks/useMediaQuery";
 
 
