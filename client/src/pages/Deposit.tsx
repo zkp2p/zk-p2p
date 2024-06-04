@@ -157,7 +157,10 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
   
-  padding: 12px 8px;
+  @media (min-width: 425px) {
+    padding: 12px 8px;
+  }
+  
   padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
 `;
 

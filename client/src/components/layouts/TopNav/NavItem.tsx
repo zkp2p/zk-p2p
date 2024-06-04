@@ -91,7 +91,7 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
     }
   `}
 
-  @media (max-width: 768px) {
+  @media (max-width: 425px) {
     &.nav-item-sub {
       position: relative;
       display: inline-flex;

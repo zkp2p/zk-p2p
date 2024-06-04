@@ -71,7 +71,7 @@ export const Landing: React.FC = () => {
                 springConfig={presets.stiff}
                 direction={'down'}
                 inline={true}
-                style={{ minWidth: '128px'}}
+                style={{ minWidth: currentDeviceSize === 'mobile' ? 88 : 128}} 
               >
                 {CURRENCIES[index % CURRENCIES.length]}
               </TextTransition>
@@ -170,7 +170,10 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   align-items: center;
   justify-content: center;
   
-  padding: 12px 8px 0px;
+  @media (min-width: 425px) {
+    padding: 12px 8px 0px;
+  }
+  
   padding-bottom: ${props => props.$isMobile ? '4rem' : '0rem'};
 `;
 
