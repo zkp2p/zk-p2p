@@ -522,6 +522,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             <PlatformSelector usePillSelector={false} />
             <CurrencySelector />
           </PlatformCurrencyContainer>
+
           <Input
             label="Requesting"
             name={`requestedUSDC`}
@@ -534,6 +535,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             maxButtonOnClick={setInputToMax}
             placeholder="0"
           />
+
           <Input
             label="You send"
             name={`fiatToSend`}
@@ -546,6 +548,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             placeholder="0.00"
             readOnly={true}
           />
+
           {!isLoggedIn ? (
             <CustomConnectButton
               fullWidth={true}
@@ -584,23 +587,22 @@ const SwapForm: React.FC<SwapFormProps> = ({
         />
       </>
 
-      {
-        currentIntentHash && (
-          <>
-            <VerticalDivider />
-            <OnRamperIntentTable
-              onIntentRowClick={onIntentTableRowClick}
-              shouldAutoSelectIntent={shouldAutoSelectIntent}
-              resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
-            />
-          </>
-        )
-      }
+      {currentIntentHash && (
+        <>
+          <VerticalDivider />
+          <OnRamperIntentTable
+            onIntentRowClick={onIntentTableRowClick}
+            shouldAutoSelectIntent={shouldAutoSelectIntent}
+            resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
+          />
+        </>
+      )}
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
+  width: 100%;
   max-width: 484px;
   padding-top: 32px;
   display: flex;
@@ -634,10 +636,14 @@ const MainContentWrapper = styled.div`
 
 const PlatformCurrencyContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const CTAButton = styled(Button)`

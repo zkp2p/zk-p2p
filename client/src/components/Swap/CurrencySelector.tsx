@@ -111,6 +111,7 @@ export const CurrencySelector: React.FC = () => {
 };
 
 const Wrapper = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,7 +120,7 @@ const Wrapper = styled.div`
 const CurrencyContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 188px;
+  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   justify-content: space-between;
@@ -185,7 +186,8 @@ const ModalAndOverlayContainer = styled.div`
 `;
 
 const ModalContainer = styled.div`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

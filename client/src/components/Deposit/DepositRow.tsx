@@ -41,10 +41,14 @@ export const PositionRow: React.FC<PositionRowProps> = ({
       <IntentDetailsContainer isMobile={isMobile}>
         <PositionDetailsContainer>
           <SummaryLabelsAndIconContainer>
-            {
-              !isMobile &&
-                <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+            {!isMobile &&
+              <SVGIconThemed
+                icon={'usdc'}
+                width={'24'}
+                height={'24'}
+              />
             }
+
             <SummaryLabelsContainer>
               <SummaryLabel>
                 <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
@@ -75,7 +79,8 @@ export const PositionRow: React.FC<PositionRowProps> = ({
             height={36}
             loading={isCancelDepositLoading}
             title={'Withdraw'}
-            icon={'logout'}/>
+            icon={isMobile ? undefined : 'logout'}
+          />
         </ActionsContainer>
       </IntentDetailsContainer>
     </Container>

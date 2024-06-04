@@ -1103,9 +1103,9 @@ export default function SendForm() {
           </TitleContainer>
 
           <MainContentWrapper>
-            <NetworkContainer>
-              <NetworkTransitionContainer>
-                <NetworkWrapper>
+            <NetworkFromAndToContainer>
+              <NetworkFromAndToInnerContainer>
+                <FromNetworkContainer>
                   <NetworkLogoAndNameContainer>
                     <NetworkSvg src={networkSvg()} />
 
@@ -1113,18 +1113,19 @@ export default function SendForm() {
                       <NetworkHeader>
                         {'From'}
                       </NetworkHeader>
+
                       <NetworkNameLabel>
                         {networkName()}
                       </NetworkNameLabel>
                     </NetworkNameContainer>
                   </NetworkLogoAndNameContainer>
-                </NetworkWrapper>
+                </FromNetworkContainer>
 
                 <NetworkSelector
                   disabled={selectorsDisabled()}
                 />
-              </NetworkTransitionContainer>
-            </NetworkContainer>
+              </NetworkFromAndToInnerContainer>
+            </NetworkFromAndToContainer>
 
             <Input
               label="Amount"
@@ -1245,13 +1246,6 @@ const Wrapper = styled.div`
   flex-direction: column;
 `;
 
-const NetworkWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const SendFormContainer = styled(AutoColumn)`
   border-radius: 16px;
   padding: 1rem;
@@ -1276,24 +1270,35 @@ const MainContentWrapper = styled.div`
   justify-content: center;
 `;
 
-const NetworkContainer = styled.div`
+const NetworkFromAndToContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const NetworkTransitionContainer = styled.div`
+const NetworkFromAndToInnerContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+`;
+
+const FromNetworkContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const NetworkLogoAndNameContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
-  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   gap: 1rem;

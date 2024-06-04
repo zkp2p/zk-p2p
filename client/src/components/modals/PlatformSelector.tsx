@@ -48,29 +48,28 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 
   return (
     <Wrapper ref={ref}>
-      { usePillSelector ? (
+      {usePillSelector ? (
         <PlatformNameAndChevronContainer onClick={toggleOpen}>
           <PlatformLabel>
             {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
           </PlatformLabel>
           <StyledChevronDown/>
         </PlatformNameAndChevronContainer>
-        ) : (
-          <CurrencyContainer onClick={toggleOpen}>
-            <CurrencyLogoAndNameContainer>
-              <CurrencyNameContainer>
-                <CurrencyHeader>
-                  {'Platform'}
-                </CurrencyHeader>
-                <CurrencyNameLabel>
-                  {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-                </CurrencyNameLabel>
-              </CurrencyNameContainer>
-            </CurrencyLogoAndNameContainer>
-            <StyledChevronDown/>
-          </CurrencyContainer>
-        )
-      }
+      ) : (
+        <CurrencyContainer onClick={toggleOpen}>
+          <CurrencyLogoAndNameContainer>
+            <CurrencyNameContainer>
+              <CurrencyHeader>
+                {'Platform'}
+              </CurrencyHeader>
+              <CurrencyNameLabel>
+                {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+              </CurrencyNameLabel>
+            </CurrencyNameContainer>
+          </CurrencyLogoAndNameContainer>
+          <StyledChevronDown/>
+        </CurrencyContainer>
+      )}
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -120,6 +119,7 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 };
 
 const Wrapper = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -152,7 +152,7 @@ const PlatformLabel = styled.div`
 const CurrencyContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 188px;
+  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   justify-content: space-between;
@@ -160,6 +160,7 @@ const CurrencyContainer = styled.div`
   background: ${colors.selectorColor};
   padding: 1.1rem 1rem;
   cursor: pointer;
+
   &:hover {
     background-color: ${colors.selectorHover};
     border: 1px solid ${colors.selectorHoverBorder};
