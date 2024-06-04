@@ -30,6 +30,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
    */
 
   const currentDeviceSize = useMediaQuery();
+
   const {
     accountDisplay,
     authenticatedLogin,
@@ -153,7 +154,7 @@ export const CustomConnectButton: React.FC<CustomConnectButtonProps> = ({
                         <EthereumAvatar address={loggedInEthereumAddress || ''} />
                         <AccountDisplay>
                           {isLoggedIn ? (
-                              currentDeviceSize === 'mobile' ? formatAddressShort(accountDisplay!) : accountDisplay
+                            accountDisplay
                           ) : (
                             <ENSName
                               provider={alchemyMainnetEthersProvider}
