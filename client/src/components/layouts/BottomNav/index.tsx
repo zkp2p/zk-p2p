@@ -36,7 +36,7 @@ const Wrapper = styled.div`
   width: 100%;
   justify-content: center;
   z-index: 1000;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
   position: fixed;
   bottom: 0;
 `;
@@ -45,5 +45,5 @@ const NavItemWrapper = styled.div`
   background: #0D111C;
   border-radius: 16px;
   border: 1px solid #98a1c03d;
-  padding: 20px;
+  padding: 16px 20px;
 `;
