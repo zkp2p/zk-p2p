@@ -612,11 +612,11 @@ const PageWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 12px 8px 0px;
+  padding: 12px 32px 0px;
   padding-bottom: 3rem;
+
   margin: auto;
   max-width: 660px;
-  width: 100%;
 `;
 
 const TermsHeader = styled.div`
