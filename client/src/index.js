@@ -110,6 +110,11 @@ ReactDOM.render(
                 theme: "#0E111C",
                 accentColor: "#df2e2d",
               },
+              externalWallets: { 
+                coinbaseWallet: {
+                  connectionOptions: 'all', 
+                }, 
+              }, 
               defaultChain: getDefaultChain(env),
               supportedChains: [sepolia, base]
             }}
