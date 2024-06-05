@@ -480,7 +480,6 @@ const Container = styled.div`
   justify-content: center;
   gap: 1rem;
   
-  border-radius: 16px;
   background-color: ${colors.container};
   overflow: hidden;
 
