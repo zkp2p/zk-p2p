@@ -79,7 +79,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       for (let j = 0; j < deposits.length; j++) {
         const deposit = deposits[j];
 
-        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
+        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1000000;
         if (orderHasNoAvailableLiquidity) {
           depositIdsToPrune.push(deposit.depositId);
         } else {

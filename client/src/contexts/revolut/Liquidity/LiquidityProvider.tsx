@@ -93,7 +93,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         if (isInvalidNotaryKeyHash) {
           depositIdsToPrune.push(deposit.depositId);
         } else {
-          const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
+          const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1000000;
           if (orderHasNoAvailableLiquidity) {
             depositIdsToPrune.push(deposit.depositId);
           } else {
