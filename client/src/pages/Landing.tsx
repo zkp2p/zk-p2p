@@ -65,17 +65,18 @@ export const Landing: React.FC = () => {
           </SwapPreviewContainer>
 
           <HeroTextContainer>
-            <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
-              <span>Onramp </span>
-              <TextTransition 
-                springConfig={presets.stiff}
-                direction={'down'}
-                inline={true}
-                style={{ minWidth: currentDeviceSize === 'mobile' ? 88 : 128}} 
-              >
-                {CURRENCIES[index % CURRENCIES.length]}
-              </TextTransition>
-              <div style={{ display: 'block' }}>in 90 seconds</div>
+            <ThemedText.Hero>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
+                <span>Onramp&nbsp;</span>
+                <TextTransition 
+                  springConfig={presets.stiff}
+                  direction="down"
+                  style={{ display: 'inline-block', minWidth: currentDeviceSize === 'mobile' ? '92px' : '128px' }}
+                >
+                  {CURRENCIES[index % CURRENCIES.length]}
+                </TextTransition>
+              </div>
+              <div style={{ width: '100%', textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>in 90 seconds</div>
             </ThemedText.Hero>
           </HeroTextContainer>
 
@@ -201,9 +202,13 @@ const HeroContainer = styled.div`
 
 const SwapPreviewContainer = styled.div`
   position: absolute;
-  margin-bottom: 520px;
+  margin-bottom: 524px;
   cursor: pointer;
   padding: 0px 48px;
+
+  @media (min-width: 600px) {
+    width: 450px;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -229,11 +234,14 @@ const StyledLink = styled.a`
 `;
 
 const HeroTextContainer = styled.div`
-  display: grid;
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding-top: 2rem;
-  padding-left: 12px;
-  gap: 1rem;
+  gap: 0.5rem;
+  width: 100%;
   z-index: ${Z_INDEX.landing_hero};
 `;
 
