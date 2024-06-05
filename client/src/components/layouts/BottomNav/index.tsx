@@ -35,7 +35,7 @@ const Wrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: center;
-  z-index: 15;
+  z-index: 5;
   padding-bottom: 1rem;
   position: fixed;
   bottom: 0;
