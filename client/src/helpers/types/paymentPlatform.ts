@@ -22,7 +22,7 @@ export const CurrencyCode = {
   TRY: "TRY",
   EUR: "EUR",
   GBP: "GBP",
-  SGD: "SGD"
+  SGD: "SGD",
 };
 
 export const CurrencyIndex = {
@@ -32,7 +32,8 @@ export const CurrencyIndex = {
   TRY: 0,
   EUR: 0,
   GBP: 1,
-  SGD: 2
+  SGD: 2,
+  USD_REVOLUT: 3
 };
 
 function getPaymentPlatforms(USE_GARANTI: boolean, USE_REVOLUT: boolean): string[] {
@@ -55,6 +56,7 @@ function getRevolutPlatformCurrencies(USE_WISE_MULTICURRENCY: boolean): Currency
   if (USE_REVOLUT_MULTICURRENCY) {
     currencies.push(CurrencyCode.GBP);
     currencies.push(CurrencyCode.SGD);
+    currencies.push(CurrencyCode.USD);
   };
 
   return currencies;
@@ -95,6 +97,6 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
     platformId: PaymentPlatform.REVOLUT,
     platformName: 'Revolut',
     platformCurrencies: getRevolutPlatformCurrencies(USE_REVOLUT_MULTICURRENCY),
-    flagSvgs: [europeFlagSvg, ukFlagSvg, singaporeFlagSvg]
+    flagSvgs: [europeFlagSvg, ukFlagSvg, singaporeFlagSvg, americaFlagSvg]
   }
 };

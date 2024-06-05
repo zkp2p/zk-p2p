@@ -107,6 +107,9 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
+          case ReceiveCurrencyId.USD:
+            currencySymbol = '$';
+            break;
         }
         return {
           qrLink: `https://revolut.me/${depositorVenmoId}`,

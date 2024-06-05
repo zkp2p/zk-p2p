@@ -113,7 +113,7 @@ export const OffRamperIntentTable: React.FC<OffRamperIntentTableProps> = ({
         const intentHash = depositIntent.intentHash;
 
         const amountUSDC = intent.amount
-        const usdToSend = calculateUsdFromRequestedUSDC(amountUSDC, deposit.conversionRate);
+        const usdToSend = calculateUsdFromRequestedUSDC(BigInt(amountUSDC), BigInt(deposit.conversionRate));
         const onRamper = intent.onRamper;
         const amountUSDToReceive = toUsdString(usdToSend);
         const amountUSDCToSend = toUsdcString(amountUSDC, true);
