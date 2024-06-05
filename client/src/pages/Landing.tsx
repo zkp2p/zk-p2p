@@ -66,12 +66,18 @@ export const Landing: React.FC = () => {
 
           <HeroTextContainer>
             <ThemedText.Hero>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
                 <span>Onramp&nbsp;</span>
                 <TextTransition 
                   springConfig={presets.stiff}
                   direction="down"
-                  style={{ display: 'inline-block', minWidth: currentDeviceSize === 'mobile' ? '92px' : '128px' }}
+                  inline={true}
+                  style={{
+                    width: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                    height: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                    minWidth: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                    maxHeight: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                  }} 
                 >
                   {CURRENCIES[index % CURRENCIES.length]}
                 </TextTransition>
