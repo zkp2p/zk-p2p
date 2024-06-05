@@ -1244,7 +1244,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     padding-top: 32px;
   }
 `;
@@ -1254,7 +1254,7 @@ const SendFormContainer = styled(AutoColumn)`
   gap: 1rem;
   background-color: ${colors.container};
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border-radius: 16px;
     border: 1px solid ${colors.defaultBorderColor};
   }
@@ -1289,7 +1289,7 @@ const NetworkFromAndToInnerContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     flex-direction: row;
   }
 `;

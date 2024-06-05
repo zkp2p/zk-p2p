@@ -500,7 +500,7 @@ const Content = styled.main`
   overflow: hidden;
   position: relative;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border-radius: 16px;
     border: 1px solid ${colors.defaultBorderColor};
   }

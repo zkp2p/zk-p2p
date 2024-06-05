@@ -170,7 +170,7 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   align-items: center;
   justify-content: center;
   
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     padding: 12px 8px 0px;
   }
   

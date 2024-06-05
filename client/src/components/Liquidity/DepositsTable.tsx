@@ -250,7 +250,7 @@ const Content = styled.main`
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border: 1px solid ${colors.defaultBorderColor};
     border-radius: 16px;
   }
@@ -290,7 +290,7 @@ const TableHeaderRow = styled.div`
   text-align: left;
   border-bottom: 1px solid ${colors.defaultBorderColor};
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     grid-template-columns: .2fr .9fr .6fr 1.1fr repeat(2, minmax(0,1fr));
     padding: 1.3rem 1.75rem 1rem 1.75rem;
   }

@@ -607,7 +607,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     padding-top: 32px;
   }
 `;
@@ -618,7 +618,7 @@ const SwapFormContainer = styled(AutoColumn)`
   background-color: ${colors.container};
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border-radius: 16px;
     border: 1px solid ${colors.defaultBorderColor};
   }
@@ -647,7 +647,7 @@ const PlatformCurrencyContainer = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     flex-direction: row;
   }
 `;

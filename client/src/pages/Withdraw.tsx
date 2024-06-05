@@ -46,7 +46,7 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     padding: 12px 8px;
   }
 

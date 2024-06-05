@@ -103,7 +103,7 @@ const Container = styled.div`
   justify-content: space-between;
   text-align: left;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     grid-template-columns: .2fr .9fr .6fr 1.1fr repeat(2, minmax(0,1fr));
     padding: 1.25rem 1.75rem;
   }

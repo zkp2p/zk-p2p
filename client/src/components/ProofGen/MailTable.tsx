@@ -424,7 +424,7 @@ const Container = styled.div`
   background-color: ${colors.container};
   overflow: hidden;
 
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border-radius: 16px;
     border: 1px solid ${colors.defaultBorderColor};
   }

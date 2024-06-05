@@ -252,7 +252,7 @@ const TitleContainer = styled.div`
   padding: 1.5rem;
   background-color: ${colors.container};
   
-  @media (min-width: 425px) {
+  @media (min-width: 600px) {
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
