@@ -103,8 +103,8 @@ ReactDOM.render(
                 noPromptOnSignature: true
               },
               loginMethodsAndOrder: {
-                primary: ['email', 'google'],
-                overflow: ['metamask', 'coinbase_wallet', 'rainbow', 'wallet_connect', 'detected_wallets'] 
+                primary: ['email', 'google', 'coinbase_wallet'],
+                overflow: ['metamask', 'rainbow', 'wallet_connect', 'detected_wallets'] 
               },
               appearance: {
                 theme: "#0E111C",
@@ -112,7 +112,7 @@ ReactDOM.render(
               },
               externalWallets: { 
                 coinbaseWallet: {
-                  connectionOptions: 'all', 
+                  connectionOptions: 'smartWalletOnly', 
                 }, 
               }, 
               defaultChain: getDefaultChain(env),
