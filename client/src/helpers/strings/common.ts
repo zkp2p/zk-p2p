@@ -8,6 +8,10 @@ export interface CommonStrings {
   // Registration NFT Tooltip
   REGISTRATION_NFT_TOOLTIP: string,
 
+  // Platform Selector Tooltips
+  PLATFORM_INSTRUCTIONS_MAIL_TOOLTIP: string,
+  PLATFORM_INSTRUCTIONS_BROWSER_TOOLTIP: string,
+
   // Mail Input
   INPUT_MODE_TOOLTIP: string,
   EMAIL_TOOLTIP: string,
@@ -95,6 +99,15 @@ const strings: CommonStrings = {
   REGISTRATION_NFT_TOOLTIP: `
     Mint a Soulbound NFT that proves you successfully registered passing the on chain verifier. The
     NFT has no value and cannot be transferred. This is optional and does not affect protocol usage.
+  `,
+
+  // Platform Selector Tooltips
+  PLATFORM_INSTRUCTIONS_MAIL_TOOLTIP: `
+    This platform requires an email address receiving receipts from the platform to complete.
+  `,
+
+  PLATFORM_INSTRUCTIONS_BROWSER_TOOLTIP: `
+    This platform requires a browser with access to your Revolut account to complete.
   `,
 
   // Mail Input

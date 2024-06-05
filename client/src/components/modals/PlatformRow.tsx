@@ -1,6 +1,9 @@
 import React from "react";
 import styled from 'styled-components';
+
 import { colors } from "@theme/colors";
+import PlatformIconHelper from '@components/modals/PlatformIconHelper';
+
 
 interface PlatformRowProps {
   platformName: string;
@@ -17,12 +20,24 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
 }: PlatformRowProps) => {
   PlatformRow.displayName = "PlatformRow";
 
+  const platformIconHelperToRender = (platformName: string) => {
+    switch (platformName) {
+      case 'Revolut':
+        return <PlatformIconHelper keyType={'browser'} />;
+
+      case 'mail':
+      default:
+        return <PlatformIconHelper keyType={'mail'} />;
+    }
+  };
+
   return (
     <Container
       onClick={onRowClick}
       selected={isSelected}
     >
       <DetailsContainer>
+        {platformIconHelperToRender(platformName)}
         <PlatformAndCurrencyLabel>
           <PlatformLabel>{platformName}</PlatformLabel>
           <CurrencyLabel>{platformCurrencies.map((currency) => currency).join(', ')}</CurrencyLabel>
