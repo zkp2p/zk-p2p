@@ -79,10 +79,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
         const deposit = deposits[j];
 
         const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1;
-        const orderHasNoOustandingIntent = deposit.deposit.outstandingIntentAmount === ZERO;
-        const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
-
-        if (orderIsFilled) {
+        if (orderHasNoAvailableLiquidity) {
           depositIdsToPrune.push(deposit.depositId);
         } else {
           batchedDeposits.push(deposit);
