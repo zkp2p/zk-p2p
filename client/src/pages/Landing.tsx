@@ -210,7 +210,7 @@ const SwapPreviewContainer = styled.div`
   position: absolute;
   margin-bottom: 524px;
   cursor: pointer;
-  padding: 0px 48px;
+  padding: 0 24px;
 
   @media (min-width: 600px) {
     width: 450px;

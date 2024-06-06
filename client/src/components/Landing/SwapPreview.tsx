@@ -56,9 +56,7 @@ const SwapPreview: React.FC = () => {
 };
 
 const Wrapper = styled.div`
-  width: 100%;
   margin-top: 50px;
-  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
@@ -76,7 +74,6 @@ const Wrapper = styled.div`
 `;
 
 const SwapModalContainer = styled(AutoColumn)`
-  width: 100%;
   border-radius: 16px;
   border: 1px solid #DEE2E6;
   padding: 1rem;
