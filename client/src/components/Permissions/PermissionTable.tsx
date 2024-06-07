@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, FileText } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
 import styled, { css } from 'styled-components/macro';
 
 import { Button } from '@components/common/Button';
@@ -12,6 +11,7 @@ import { CustomConnectButton } from "@components/common/ConnectButton";
 import useAccount from '@hooks/useAccount';
 import useRegistration from '@hooks/venmo/useRegistration';
 import usePermissions from '@hooks/usePermissions';
+import useQuery from '@hooks/useQuery';
 
 
 interface Permission {
@@ -25,7 +25,7 @@ interface PermissionTableProps {
 export const PermissionTable: React.FC<PermissionTableProps> = ({
   handleNewPositionClick
 }) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
   
   /*
    * Contexts
@@ -60,7 +60,7 @@ export const PermissionTable: React.FC<PermissionTableProps> = ({
   */
 
   const navigateToRegistrationHandler = () => {
-    navigate('/register');
+    navigateWithQuery('/register');
   };
 
   return (

@@ -39,6 +39,7 @@ import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLifiBridge from '@hooks/useLifiBridge';
 import useSendSettings from '@hooks/useSendSettings';
+import useQuery from '@hooks/useQuery';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -91,6 +92,10 @@ export default function SendForm() {
   const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
   const { getLifiQuote, getLifiTransactionStatus } = useLifiBridge();
   const { receiveNetwork, receiveToken } = useSendSettings();
+  const { getQuery } = useQuery();
+
+  const amountFromQuery = getQuery('amountUsdc');
+  const recipientAddressFromQuery = getQuery('recipientAddress');
 
   /*
    * State
@@ -672,7 +677,7 @@ export default function SendForm() {
       setAmountToApprove(ZERO);
     } else {
       const sendAmountBI = toBigInt(sendAmountInput.toString());
-      const approvalDifference = sendAmountBI - usdcApprovalToLifiBridge;
+      const approvalDifference = BigInt(sendAmountBI) - BigInt(usdcApprovalToLifiBridge);
 
       if (approvalDifference > ZERO) {
         setAmountToApprove(sendAmountBI);
@@ -692,10 +697,27 @@ export default function SendForm() {
       setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
     };
 
+    if (recipientAddressFromQuery) {
+      setRecipientAddressInput(prevRecipientAddressInput => ({
+        ...prevRecipientAddressInput,
+        input: recipientAddressFromQuery,
+        displayAddress: recipientAddressFromQuery,
+      }));
+    }
+
     updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressForUpdatedQuote);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiveNetwork, receiveToken, usdcApprovalToLifiBridge]);
+  }, [receiveNetwork, receiveToken, usdcApprovalToLifiBridge, recipientAddressFromQuery]);
+
+  useEffect(() => {
+    if (amountFromQuery && isValidSendAmountInput(amountFromQuery)) {
+      setCurrentQuote(prevQuote => ({
+        ...prevQuote,
+        sendAmountInput: amountFromQuery
+      }));
+    }
+  }, [amountFromQuery]);
   
   /*
    * Helpers

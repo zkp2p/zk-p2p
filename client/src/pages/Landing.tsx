@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import TextTransition, { presets } from 'react-text-transition';
@@ -11,6 +10,7 @@ import SwapPreview from '@components/Landing/SwapPreview';
 import { MAIN_CARDS, SECONDARY_CARDS } from '@helpers/cards';
 import { Z_INDEX } from '@theme/zIndex';
 import useMediaQuery from '@hooks/useMediaQuery';
+import useQuery from '@hooks/useQuery';
 import { ThemedText } from '@theme/text';
 
 
@@ -24,7 +24,7 @@ export const Landing: React.FC = () => {
   const currentDeviceSize = useMediaQuery();
 
   const cardsRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * State
@@ -49,7 +49,7 @@ export const Landing: React.FC = () => {
    */
 
   const navigateToSwapHandler = () => {
-    navigate('/swap');
+    navigateWithQuery('/swap');
   };
 
   const jumpToMedia = (url: string) => {
@@ -60,7 +60,7 @@ export const Landing: React.FC = () => {
     <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
         <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '0 1.6rem' : '0', width: currentDeviceSize === 'mobile' ? 'auto' : '50%' }}> 
-          <SwapPreviewContainer onClick={() => navigate('/swap')}>
+          <SwapPreviewContainer onClick={() => navigateWithQuery('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
 

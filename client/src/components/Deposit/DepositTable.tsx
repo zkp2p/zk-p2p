@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Inbox, FileText } from 'react-feather';
 import styled, { css } from 'styled-components/macro';
-import { useNavigate } from 'react-router-dom';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { Button } from '@components/common/Button';
@@ -18,6 +17,7 @@ import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
+import useQuery from '@hooks/useQuery';
 import useSmartContracts from '@hooks/useSmartContracts';
 
 import useDeposits from '@hooks/venmo/useDeposits';
@@ -48,7 +48,7 @@ interface PositionTableProps {
 export const PositionTable: React.FC<PositionTableProps> = ({
   handleNewPositionClick
 }) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * Contexts
@@ -305,7 +305,7 @@ export const PositionTable: React.FC<PositionTableProps> = ({
    */
 
   const navigateToRegistrationHandler = () => {
-    navigate('/register');
+    navigateWithQuery('/register');
   };
 
   const handleWithdrawClick = async (rowIndex: number) => {

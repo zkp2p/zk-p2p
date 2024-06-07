@@ -18,6 +18,7 @@ interface InputProps {
   accessoryLabel?: string;
   enableMax?: boolean
   maxButtonOnClick?: () => void;
+  fontSize?: number;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -34,8 +35,16 @@ export const Input: React.FC<InputProps> = ({
   accessoryLabel="",
   enableMax = false,
   maxButtonOnClick = () => {},
+  fontSize = 28
 }: InputProps) => {
   Input.displayName = "Input";
+
+  /*
+   * Helper
+   */
+  const dynamicFontSize = value && value.length > 0 
+      ? Math.max(fontSize - Math.floor(value.length / 18) * 4.5, 12)
+      : fontSize;
 
   return (
     <Container readOnly={readOnly}>
@@ -50,6 +59,7 @@ export const Input: React.FC<InputProps> = ({
             type={type}
             name={name}
             id={name}
+            fontSize={dynamicFontSize}
             placeholder={placeholder}
             value={value}
             onChange={onChange}

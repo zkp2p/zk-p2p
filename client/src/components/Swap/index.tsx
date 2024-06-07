@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
-import { useNavigate } from 'react-router-dom';
 
 import { Input } from "@components/Swap/Input";
 import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
@@ -22,7 +21,7 @@ import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useSwapQuote from '@hooks/useSwapQuote';
 import usePlatformSettings from "@hooks/usePlatformSettings";
-
+import useQuery from '@hooks/useQuery';
 
 export type SwapQuote = {
   requestedUSDC: string;
@@ -57,7 +56,10 @@ interface SwapFormProps {
 const SwapForm: React.FC<SwapFormProps> = ({
   onIntentTableRowClick,
 }: SwapFormProps) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery, getQuery } = useQuery();
+
+  const amountFromQuery = getQuery('amountUsdc');
+  const recipientAddressFromQuery = getQuery('recipientAddress');
 
   /*
    * Contexts
@@ -395,19 +397,30 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [lastOnRampTimestamp, onRampCooldownPeriod]);
 
   useEffect(() => {
-    if (loggedInEthereumAddress) {
+    if (recipientAddressFromQuery) {
+      setRecipientAddress(recipientAddressFromQuery);
+    } else if (loggedInEthereumAddress) {
       setRecipientAddress(loggedInEthereumAddress);
     } else {
       setRecipientAddress('');
     }
-  }, [loggedInEthereumAddress]);
+  }, [loggedInEthereumAddress, recipientAddressFromQuery]);
+
+  useEffect(() => {
+    if (amountFromQuery && isValidInput(amountFromQuery)) {
+      setCurrentQuote(prevQuote => ({
+        ...prevQuote,
+        requestedUSDC: amountFromQuery
+      }));
+    }
+  }, [amountFromQuery]);
 
   /*
    * Handlers
    */
 
   const navigateToRegistrationHandler = () => {
-    navigate('/register');
+    navigateWithQuery('/register');
   };
 
   const setInputToMax = () => {

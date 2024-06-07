@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { colors } from '@theme/colors';
+import useQuery from '@hooks/useQuery';
 
 
 const StyledCard = styled.div<{ cursor: string }>`
@@ -77,14 +77,14 @@ const Card = ({
   cta?: string
   navigateTo?: string
 }) => {
-  const navigate = useNavigate()
+  const { navigateWithQuery } = useQuery()
 
   return (
 		<StyledCard
       cursor={navigateTo ? 'pointer' : 'normal'}
       onClick={() =>
         navigateTo
-          ? (navigateTo.startsWith('http') ? window.open(navigateTo, '_blank') : navigate(navigateTo))
+          ? (navigateTo.startsWith('http') ? window.open(navigateTo, '_blank') : navigateWithQuery(navigateTo))
           : null
       }
     >

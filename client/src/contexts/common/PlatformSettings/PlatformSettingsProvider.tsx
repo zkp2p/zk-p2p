@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import { CurrencyIndex, PaymentPlatform, PaymentPlatformType, paymentPlatforms } from '@helpers/types';
+import useQuery from '@hooks/useQuery';
 
 import PlatformSettingsContext from './PlatformSettingsContext'
 
@@ -10,6 +11,11 @@ interface ProvidersProps {
 };
 
 const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
+  const { getQuery } = useQuery();
+
+  const platformFromQuery = getQuery('platform');
+  const currencyIndexFromQuery = getQuery('currencyIndex');
+
   /*
    * State
    */
@@ -30,7 +36,17 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
       setPaymentPlatform(JSON.parse(storedSelectedPaymentPlatform));
       setCurrencyIndex(Number(0));
     }
-  }, []);
+
+    if (platformFromQuery && currencyIndexFromQuery) {
+      const isValidPlatformFromQuery = Object.values(PaymentPlatform).includes(platformFromQuery);
+      const isValidCurrencyIndexFromQuery = Object.values(CurrencyIndex).includes(parseInt(currencyIndexFromQuery));
+
+      if (isValidPlatformFromQuery && isValidCurrencyIndexFromQuery) {
+        setPaymentPlatform(platformFromQuery as PaymentPlatformType);
+        setCurrencyIndex(parseInt(currencyIndexFromQuery));
+      }
+    }
+  }, [platformFromQuery, currencyIndexFromQuery]);
 
   useEffect(() => {
     if (paymentPlatform) {

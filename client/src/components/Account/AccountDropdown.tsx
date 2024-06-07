@@ -1,7 +1,6 @@
 import React, { useEffect, forwardRef } from 'react';
 import { ArrowDownCircle, ArrowUpCircle, Repeat, LogOut, Key, UserCheck, Zap } from 'react-feather';
 import styled from "styled-components";
-import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import { ENSName } from 'react-ens-name';
 
@@ -12,6 +11,7 @@ import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from "@hooks/useSmartContracts";
 import useModal from '@hooks/useModal';
+import useQuery from '@hooks/useQuery';
 import { formatAddress } from '@helpers/addressFormat';
 import { CALLER_ACCOUNT } from '@helpers/constants';
 import { toUsdcString, toEthString } from "@helpers/units";
@@ -28,7 +28,7 @@ interface AccountDropdownProps {
 }
 
 export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(({ onOptionSelect }, ref) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * Contexts
@@ -64,13 +64,13 @@ export const AccountDropdown = forwardRef<HTMLDivElement, AccountDropdownProps>(
   };
 
   const handleSendClick = () => {
-    navigate('/send');
+    navigateWithQuery('/send');
 
     onOptionSelect();
   };
 
   const handleRegistrationClick = () => {
-    navigate('/register');
+    navigateWithQuery('/register');
 
     onOptionSelect();
   };

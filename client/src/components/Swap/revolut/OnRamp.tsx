@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'react-feather';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
@@ -17,6 +16,7 @@ import useOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useMediaQuery from "@hooks/useMediaQuery";
 
+import useQuery from '@hooks/useQuery';
 
 interface OnRampProps {
   handleBackClick: () => void;
@@ -27,7 +27,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
   selectedUIntIntentHash
 }) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * Context
@@ -130,7 +130,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   };
 
   const handleVerificationCompleteClick = () => {
-    navigate('/send');
+    navigateWithQuery('/send');
   };
 
   /*

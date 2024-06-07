@@ -1,6 +1,6 @@
 import { useRef, useReducer } from 'react';
 import { MoreHorizontal } from 'react-feather';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled from "styled-components";
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
@@ -14,6 +14,7 @@ export const MenuDropdown = () => {
   const [isOpen, toggleOpen] = useReducer((s) => !s, false)
 
   const ref = useRef<HTMLDivElement>(null)
+  const location = useLocation();
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
   const isMobile = useMediaQuery() === 'mobile';
 
@@ -46,19 +47,19 @@ export const MenuDropdown = () => {
               </NavDropdownItem>
             )}
 
-            <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
+            <NavDropdownItem as={Link} to={"/withdraw" + location.search} onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem as={Link} to="/tos" onClick={toggleOpen}>
+            <NavDropdownItem as={Link} to={"/tos" + location.search} onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Terms of Service
               </ThemedText.LabelSmall>
             </NavDropdownItem>
 
-            <NavDropdownItem as={Link} to="/pp" onClick={toggleOpen}>
+            <NavDropdownItem as={Link} to={"/pp" + location.search} onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Privacy Policy
               </ThemedText.LabelSmall>
