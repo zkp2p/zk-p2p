@@ -300,79 +300,7 @@ export default function SendForm() {
   };
 
   const handleRecipientInputChange = async (value: string) => {
-    resetStateOnInputChanges();
-
-    let rawAddress = '';
-    let ensName = '';
-    let displayAddress = '';
-    let isValidAddress = false;
-
-    const isNetworkSolana = receiveNetwork === ReceiveNetwork.SOLANA;
-
-    setRecipientAddressInput({
-      input: value,
-      ensName,
-      rawAddress,
-      displayAddress,
-      addressType: isNetworkSolana ? 'sol' : 'eth'
-    });
-  
-    if (isNetworkSolana) {
-      if (value.endsWith('.sol')) {
-        const { pubkey: recordKey } = getDomainKeySync(value);
-        const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
-        const { owner } = registry;
-
-        if (owner) {
-          rawAddress = owner.toString();
-          displayAddress = value;
-    
-          updateQuoteOnInputChange(currentQuote.sendAmountInput, owner.toString());
-          isValidAddress = true;
-        }
-      } else if (value.length >= 32 && value.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(value)) {
-        try {
-          const publicKey = new PublicKey(value);
-          const validSolanaAddress = await PublicKey.isOnCurve(publicKey);
-          if (validSolanaAddress) {
-            rawAddress = value;
-            displayAddress = value;
-      
-            updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
-            isValidAddress = true;
-          }
-        } catch {
-          console.log('Invalid Solana address provided');
-        }
-      }
-    } else {
-      if (value.endsWith('.eth') || value.endsWith('.xyz')) {
-        ensName = value;
-        const resolvedAddress = await resolveEnsName(value);
-        if (resolvedAddress) {
-          rawAddress = resolvedAddress;
-          displayAddress = resolvedAddress;
-  
-          updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
-          isValidAddress = true;
-        }
-      } else if (value.startsWith('0x') && value.length === 42) {
-        rawAddress = value;
-        displayAddress = value;
-  
-        updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
-        isValidAddress = true;
-      };
-    }
-
-    setRecipientAddressInput(prevState => ({
-      ...prevState,
-      ensName: ensName,
-      rawAddress: rawAddress,
-      displayAddress: displayAddress,
-    }));
-
-    setIsValidRecipientAddress(isValidAddress);
+    validateAndSetAddress(value);
   };
 
   /*
@@ -697,14 +625,6 @@ export default function SendForm() {
       setRecipientAddressInput(EMPTY_RECIPIENT_ADDRESS);
     };
 
-    if (recipientAddressFromQuery) {
-      setRecipientAddressInput(prevRecipientAddressInput => ({
-        ...prevRecipientAddressInput,
-        input: recipientAddressFromQuery,
-        displayAddress: recipientAddressFromQuery,
-      }));
-    }
-
     updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressForUpdatedQuote);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -713,11 +633,17 @@ export default function SendForm() {
   useEffect(() => {
     if (amountFromQuery && isValidSendAmountInput(amountFromQuery)) {
       setCurrentQuote(prevQuote => ({
-        ...prevQuote,
+        ...ZERO_QUOTE,
         sendAmountInput: amountFromQuery
       }));
     }
   }, [amountFromQuery]);
+
+  useEffect(() => {
+    if (recipientAddressFromQuery) {
+      validateAndSetAddress(recipientAddressFromQuery);
+    }
+  }, [recipientAddressFromQuery]);
   
   /*
    * Helpers
@@ -915,6 +841,82 @@ export default function SendForm() {
 
     refetchUsdcApprovalToLifiBridge?.();
   };
+
+  const validateAndSetAddress = async (recipientAddressFromQuery: string) => {
+    resetStateOnInputChanges();
+
+    let rawAddress = '';
+    let ensName = '';
+    let displayAddress = '';
+    let isValidAddress = false;
+
+    const isNetworkSolana = receiveNetwork === ReceiveNetwork.SOLANA;
+
+    setRecipientAddressInput({
+      input: recipientAddressFromQuery,
+      ensName,
+      rawAddress,
+      displayAddress,
+      addressType: isNetworkSolana ? 'sol' : 'eth'
+    });
+  
+    if (isNetworkSolana) {
+      if (recipientAddressFromQuery.endsWith('.sol')) {
+        const { pubkey: recordKey } = getDomainKeySync(recipientAddressFromQuery);
+        const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
+        const { owner } = registry;
+
+        if (owner) {
+          rawAddress = owner.toString();
+          displayAddress = recipientAddressFromQuery;
+    
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, owner.toString());
+          isValidAddress = true;
+        }
+      } else if (recipientAddressFromQuery.length >= 32 && recipientAddressFromQuery.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipientAddressFromQuery)) {
+        try {
+          const publicKey = new PublicKey(recipientAddressFromQuery);
+          const validSolanaAddress = await PublicKey.isOnCurve(publicKey);
+          if (validSolanaAddress) {
+            rawAddress = recipientAddressFromQuery;
+            displayAddress = recipientAddressFromQuery;
+      
+            updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressFromQuery);
+            isValidAddress = true;
+          }
+        } catch {
+          console.log('Invalid Solana address provided');
+        }
+      }
+    } else {
+      if (recipientAddressFromQuery.endsWith('.eth') || recipientAddressFromQuery.endsWith('.xyz')) {
+        ensName = recipientAddressFromQuery;
+        const resolvedAddress = await resolveEnsName(recipientAddressFromQuery);
+        if (resolvedAddress) {
+          rawAddress = resolvedAddress;
+          displayAddress = resolvedAddress;
+  
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
+          isValidAddress = true;
+        }
+      } else if (recipientAddressFromQuery.startsWith('0x') && recipientAddressFromQuery.length === 42) {
+        rawAddress = recipientAddressFromQuery;
+        displayAddress = recipientAddressFromQuery;
+  
+        updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressFromQuery);
+        isValidAddress = true;
+      };
+    }
+
+    setRecipientAddressInput(prevState => ({
+      ...prevState,
+      ensName: ensName,
+      rawAddress: rawAddress,
+      displayAddress: displayAddress,
+    }));
+
+    setIsValidRecipientAddress(isValidAddress);
+  }
 
   /*
    * Other Helpers

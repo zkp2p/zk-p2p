@@ -13,6 +13,7 @@ import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType } from '@help
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { CurrencySelector } from '@components/Swap/CurrencySelector';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
+import { Integration } from '@components/modals/Integration';
 import { SettingsDropdown } from './SettingsDropdown';
 import { DEPOSIT_REFETCH_INTERVAL, EMPTY_STRING, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
@@ -60,6 +61,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   const amountFromQuery = getQuery('amountUsdc');
   const recipientAddressFromQuery = getQuery('recipientAddress');
+  const appIdFromQuery = getQuery('appId');
 
   /*
    * Contexts
@@ -114,6 +116,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
   const [onRampTimeRemainingLabel, setOnRampTimeRemainingLabel] = useState('');
 
   const [shouldAutoSelectIntent, setShouldAutoSelectIntent] = useState<boolean>(false);
+
+  const [shouldShowIntegrationModal, setShouldShowIntegrationModal] = useState<boolean>(false);
 
   /*
    * Event Handlers
@@ -415,6 +419,14 @@ const SwapForm: React.FC<SwapFormProps> = ({
     }
   }, [amountFromQuery]);
 
+  useEffect(() => {
+    if (appIdFromQuery) {
+      setShouldShowIntegrationModal(true);
+    } else {
+      setShouldShowIntegrationModal(false);
+    }
+  }, [appIdFromQuery]);
+
   /*
    * Handlers
    */
@@ -600,6 +612,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         />
       </>
 
+<<<<<<< HEAD
       {currentIntentHash && (
         <>
           <VerticalDivider />
@@ -609,6 +622,25 @@ const SwapForm: React.FC<SwapFormProps> = ({
             resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
           />
         </>
+=======
+      {
+        currentIntentHash && (
+          <>
+            <VerticalDivider />
+            <OnRamperIntentTable
+              onIntentRowClick={onIntentTableRowClick}
+              shouldAutoSelectIntent={shouldAutoSelectIntent}
+              resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
+            />
+          </>
+        )
+      }
+
+      { shouldShowIntegrationModal && (
+        <Integration
+          onBackClick={() => setShouldShowIntegrationModal(false)}
+        />
+>>>>>>> dcd93948 (wip modal)
       )}
     </Wrapper>
   );
