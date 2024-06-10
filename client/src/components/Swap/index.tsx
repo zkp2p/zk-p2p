@@ -9,7 +9,7 @@ import { Button } from '@components/common/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType, ReceiveNetwork, ReceiveToken } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { CurrencySelector } from '@components/Swap/CurrencySelector';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
@@ -61,6 +61,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   const amountFromQuery = getQuery('amountUsdc');
   const recipientAddressFromQuery = getQuery('recipientAddress');
+  const networkFromQuery = getQuery('network');
+  const tokenFromQuery = getQuery('toToken');
   const appIdFromQuery = getQuery('appId');
 
   /*
@@ -401,7 +403,14 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [lastOnRampTimestamp, onRampCooldownPeriod]);
 
   useEffect(() => {
-    if (recipientAddressFromQuery) {
+    // Onramp directly to custom recipient address if user is specifically requesting USDC on Base using redirect flow
+    if (
+      recipientAddressFromQuery &&
+      networkFromQuery &&
+      networkFromQuery === ReceiveNetwork.BASE &&
+      tokenFromQuery &&
+      tokenFromQuery === ReceiveToken.USDC
+    ) {
       setRecipientAddress(recipientAddressFromQuery);
     } else if (loggedInEthereumAddress) {
       setRecipientAddress(loggedInEthereumAddress);
