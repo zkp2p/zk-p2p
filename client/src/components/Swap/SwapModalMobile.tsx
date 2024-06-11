@@ -133,7 +133,7 @@ export const SwapModalMobile: React.FC<SwapModalMobileProps> = ({
                   window.open(link, '_blank', 'noopener,noreferrer');
                 }}
               >
-                {`Open ${paymentPlatformName} ↗`}
+                {`Open ${paymentPlatformName}`}
               </Button> 
             </ButtonContainer>
           ) : (
