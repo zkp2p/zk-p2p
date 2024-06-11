@@ -59,7 +59,7 @@ export const Landing: React.FC = () => {
   return (
     <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
-        <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '1.6rem' : '0', width: currentDeviceSize === 'mobile' ? 'auto' : '50%' }}> 
+        <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '0 1.6rem' : '0', width: currentDeviceSize === 'mobile' ? 'auto' : '50%' }}> 
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
@@ -82,6 +82,7 @@ export const Landing: React.FC = () => {
                   {CURRENCIES[index % CURRENCIES.length]}
                 </TextTransition>
               </div>
+              
               <div style={{ width: '100%', textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>in 90 seconds</div>
             </ThemedText.Hero>
           </HeroTextContainer>
