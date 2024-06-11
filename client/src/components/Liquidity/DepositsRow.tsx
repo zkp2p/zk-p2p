@@ -95,7 +95,7 @@ export const DepositsRow: React.FC<DepositsRowProps> = ({
 const Container = styled.div`
   height: 100%;
   display: grid;
-  grid-template-columns: .2fr 0.8fr 1.1fr 0.9fr;
+  grid-template-columns: .1fr 0.75fr 1.1fr 1fr;
   gap: 8px;
   flex-direction: row;
   align-items: center;

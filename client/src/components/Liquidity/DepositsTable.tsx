@@ -288,7 +288,7 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr 0.8fr 1.1fr 0.9fr;
+  grid-template-columns: .1fr 0.75fr 1.1fr 1fr;
   padding: 1.3rem 1.5rem 1rem 1.5rem;
   gap: 8px;
   text-align: left;
