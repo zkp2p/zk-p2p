@@ -11,6 +11,7 @@ import { CurrencyIndex, paymentPlatforms, paymentPlatformInfo, PaymentPlatformTy
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePillSelector }) => {
@@ -48,29 +49,28 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 
   return (
     <Wrapper ref={ref}>
-      { usePillSelector ? (
+      {usePillSelector ? (
         <PlatformNameAndChevronContainer onClick={toggleOpen}>
           <PlatformLabel>
             {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
           </PlatformLabel>
           <StyledChevronDown/>
         </PlatformNameAndChevronContainer>
-        ) : (
-          <CurrencyContainer onClick={toggleOpen}>
-            <CurrencyLogoAndNameContainer>
-              <CurrencyNameContainer>
-                <CurrencyHeader>
-                  {'Platform'}
-                </CurrencyHeader>
-                <CurrencyNameLabel>
-                  {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
-                </CurrencyNameLabel>
-              </CurrencyNameContainer>
-            </CurrencyLogoAndNameContainer>
-            <StyledChevronDown/>
-          </CurrencyContainer>
-        )
-      }
+      ) : (
+        <CurrencyContainer onClick={toggleOpen}>
+          <CurrencyLogoAndNameContainer>
+            <CurrencyNameContainer>
+              <CurrencyHeader>
+                {'Platform'}
+              </CurrencyHeader>
+              <CurrencyNameLabel>
+                {paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformName}
+              </CurrencyNameLabel>
+            </CurrencyNameContainer>
+          </CurrencyLogoAndNameContainer>
+          <StyledChevronDown/>
+        </CurrencyContainer>
+      )}
 
       {isOpen && (
         <ModalAndOverlayContainer>
@@ -120,8 +120,9 @@ export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePi
 };
 
 const Wrapper = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 `;
 
@@ -152,7 +153,7 @@ const PlatformLabel = styled.div`
 const CurrencyContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 188px;
+  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   justify-content: space-between;
@@ -160,6 +161,7 @@ const CurrencyContainer = styled.div`
   background: ${colors.selectorColor};
   padding: 1.1rem 1rem;
   cursor: pointer;
+
   &:hover {
     background-color: ${colors.selectorHover};
     border: 1px solid ${colors.selectorHoverBorder};
@@ -207,11 +209,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

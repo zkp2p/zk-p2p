@@ -18,6 +18,8 @@ import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
+import useMediaQuery from "@hooks/useMediaQuery";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface ValidateEmailProps {
@@ -63,6 +65,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
   const { isProvingTypeFast } = useProofGenSettings();
   const size = useWindowSize();
   const { blockscanUrl } = useSmartContracts();
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
@@ -366,16 +369,23 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
             <StyledArrowLeft/>
           </button>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {title}
-          </ThemedText.HeadlineSmall>
+          <Title>
+            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+              {!isMobile ? title : 'Verify'}
+            </ThemedText.HeadlineSmall>
+          </Title>
 
-          <LabeledSwitch
-            switchChecked={shouldShowProofAndSignals}
-            checkedLabel={"Hide"}
-            uncheckedLabel={"Show"}
-            helperText={commonStrings.get('PROOF_TOOLTIP')}
-            onSwitchChange={(checked: boolean) => setShouldShowProofAndSignals(checked)}/>
+          {!isMobile ? (
+            <LabeledSwitch
+              switchChecked={shouldShowProofAndSignals}
+              checkedLabel={"Hide"}
+              uncheckedLabel={"Show"}
+              helperText={commonStrings.get('PROOF_TOOLTIP')}
+              onSwitchChange={(checked: boolean) => setShouldShowProofAndSignals(checked)}
+            />
+          ) : (
+            <div></div> // Leave empty div in so title remains centered
+          )}
         </TitleCenteredRow>
 
         <VerificationStepsContainer>
@@ -433,11 +443,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 80vw;
+  max-width: 472px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -457,6 +468,12 @@ const ModalContainer = styled.div`
 
 const StyledArrowLeft = styled(ArrowLeft)`
   color: #FFF;
+`;
+
+const Title = styled.div`
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const VerificationStepsContainer = styled.div`

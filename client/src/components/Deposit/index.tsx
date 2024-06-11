@@ -282,7 +282,7 @@ export default function Deposit() {
 const Wrapper = styled(AutoColumn)`
   max-width: 660px;
   width: 100%;
-`
+`;
 
 const DepositAndIntentContainer = styled.div`
   display: grid;

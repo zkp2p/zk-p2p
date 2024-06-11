@@ -102,10 +102,13 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0px 20px;
-  border-radius: 16px;
-  border: 1px solid ${colors.defaultBorderColor};
   background-color: ${colors.container};
   overflow: hidden;
+
+  @media (min-width: 600px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const TitleLabelAndDropdownIconContainer = styled.div`

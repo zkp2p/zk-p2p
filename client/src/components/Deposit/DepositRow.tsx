@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface PositionRowProps {
@@ -32,45 +33,56 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 
   const depositRemainingLabel = `${availableDepositAmount} USDC`;
   const intentAmountLabel = `${intentCount} (${outstandingIntentAmount} USDC)`;
-  const originalAmountLabel = `${totalDepositAmount} USDC`
+  const originalAmountLabel = `${totalDepositAmount} USDC`;
+  const isMobile = useMediaQuery() === 'mobile';
 
   return (
     <Container>
-      <PositionDetailsContainer>
-        <SummaryLabelsAndIconContainer>
-          <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
-          <SummaryLabelsContainer>
-            <SummaryLabel>
-              <SummaryLabelTitle>Available USDC:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
-            </SummaryLabel>
-            
-            <SummaryLabel>
-              <SummaryLabelTitle>Outstanding Orders:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
-            </SummaryLabel>
+      <IntentDetailsContainer isMobile={isMobile}>
+        <PositionDetailsContainer>
+          <SummaryLabelsAndIconContainer>
+            {!isMobile &&
+              <SVGIconThemed
+                icon={'usdc'}
+                width={'24'}
+                height={'24'}
+              />
+            }
 
-            <PercentageLabel>
-              <Label>Conversion Rate:</Label>
-              <Value>{conversionRate} {conversionCurrency}</Value>
-            </PercentageLabel>
+            <SummaryLabelsContainer>
+              <SummaryLabel>
+                <SummaryLabelTitle>{!isMobile ? 'Available USDC' : 'Available'}:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{depositRemainingLabel}</SummaryLabelValue>
+              </SummaryLabel>
 
-            <SummaryLabel>
-              <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
-              <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
-            </SummaryLabel>
-          </SummaryLabelsContainer>
-        </SummaryLabelsAndIconContainer>
-      </PositionDetailsContainer>
+              <SummaryLabel>
+                <SummaryLabelTitle>{!isMobile ? 'Outstanding Orders' : 'Orders'}:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{intentAmountLabel}</SummaryLabelValue>
+              </SummaryLabel>
 
-      <ActionsContainer>
-        <AccessoryButton
-          onClick={handleWithdrawClick}
-          height={36}
-          loading={isCancelDepositLoading}
-          title={'Withdraw'}
-          icon={'logout'}/>
-      </ActionsContainer>
+              <PercentageLabel>
+                <Label>Conversion Rate:</Label>
+                <Value>{conversionRate}</Value>
+              </PercentageLabel>
+
+              <SummaryLabel>
+                <SummaryLabelTitle>Deposit Amount:&nbsp;</SummaryLabelTitle>
+                <SummaryLabelValue>{originalAmountLabel}</SummaryLabelValue>
+              </SummaryLabel>
+            </SummaryLabelsContainer>
+          </SummaryLabelsAndIconContainer>
+        </PositionDetailsContainer>
+
+        <ActionsContainer>
+          <AccessoryButton
+            onClick={handleWithdrawClick}
+            height={36}
+            loading={isCancelDepositLoading}
+            title={'Withdraw'}
+            icon={isMobile ? undefined : 'logout'}
+          />
+        </ActionsContainer>
+      </IntentDetailsContainer>
     </Container>
   );
 };
@@ -78,14 +90,21 @@ export const PositionRow: React.FC<PositionRowProps> = ({
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: 100%;
+`;
+
+const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
+  width: 100%; 
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  line-height: 24px;
 `;
 
 const PositionDetailsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 1.5rem;
 `;
 
 const ActionsContainer = styled.div`
@@ -93,7 +112,6 @@ const ActionsContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  padding-right 1.5rem;
   flex-grow: 1;
 `;
 

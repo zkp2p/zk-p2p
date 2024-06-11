@@ -1,14 +1,15 @@
-import React, { useReducer, useRef } from "react";
+import React, { useReducer, useRef } from 'react';
 import styled from 'styled-components';
 import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
-import { ThemedText } from '@theme/text'
 import { Overlay } from '@components/modals/Overlay';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
-import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
+import { ZKP2P_SURVEY_FORM_LINK } from '@helpers/docUrls';
 import { colors } from '@theme/colors';
+import { ThemedText } from '@theme/text'
+import { Z_INDEX } from '@theme/zIndex';
 
 
 export const TokenSelector: React.FC = () => {
@@ -61,7 +62,7 @@ export const TokenSelector: React.FC = () => {
 
             <InstructionsLabel>
               We currently only support USDC, but will be adding support for other tokens. Please let us know which tokens
-              you are interested in seeing ZKP2P add support for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
+              you are interested in seeing ZKP2P add support for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target='_blank'>
                 Give feedback ↗
               </Link>
             </InstructionsLabel>
@@ -123,11 +124,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

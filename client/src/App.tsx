@@ -6,6 +6,12 @@ import {
 } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import useMediaQuery from '@hooks/useMediaQuery';
+
+import { TopNav } from "@components/layouts/TopNav";
+import { BottomNav } from "@components/layouts/BottomNav";
+import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
+
 import { Landing } from "./pages/Landing";
 import { Permissions } from "./pages/Permissions";
 import { Withdraw } from "./pages/Withdraw";
@@ -17,9 +23,6 @@ import { Send } from "./pages/Send";
 import { Privacy } from "./pages/Privacy";
 import { Tos } from "./pages/Tos";
 import Modals from "./pages/Modals";
-import { TopNav } from "@components/layouts/TopNav";
-import { MobileLandingPage } from "@components/MobileLandingPage";
-import { EnvironmentBanner } from '@components/layouts/EnvironmentBanner';
 
 // Common Contexts
 import AccountProvider from "./contexts/common/Account/AccountProvider";
@@ -69,64 +72,48 @@ import RevolutRegistrationProvider from './contexts/revolut/Registration/Registr
 
 import "./App.css";
 import "./styles.css";
-import useMediaQuery from '@hooks/useMediaQuery';
-
 
 const App = () => {
+  /*
+   * Context
+   */
+
   const currentDeviceSize = useMediaQuery();
 
-  if (currentDeviceSize === 'mobile') {
-    return (
-      <Router>
-        <Providers>
-          <div className="app-container">
-            <TopNav withoutLinks />
-            <div className="app-content">
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/swap" element={<MobileLandingPage />} />
-                <Route path="/liquidity" element={<MobileLandingPage />} />
-                <Route path="/deposits" element={<MobileLandingPage />} />
-                <Route path="/register" element={<MobileLandingPage />} />
-                <Route path="/permissions" element={<MobileLandingPage />} />
-                <Route path="/withdraw" element={<MobileLandingPage />} />
-                <Route path="/send" element={<MobileLandingPage />} />
-                <Route path="/pp" element={<Privacy />} />
-                <Route path="/tos" element={<Tos />} />
-              </Routes>
-            </div>
+  /*
+   * Component
+   */
+
+  return (
+    <Router>
+      <Providers>
+        <div className="app-container">
+          <EnvironmentBanner />
+          <TopNav />
+          <Modals />
+          <div className="app-content">
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/swap" element={<Swap />} />
+              <Route path="/liquidity" element={<Liquidity />} />
+              <Route path="/deposits" element={<Deposit />} />
+              <Route path="/register" element={<Registration />} />
+              <Route path="/permissions" element={<Permissions />} />
+              <Route path="/withdraw" element={<Withdraw />} />
+              <Route path="/send" element={<Send />} />
+              <Route path="/pp" element={<Privacy />} />
+              <Route path="/tos" element={<Tos />} />
+              <Route element={<>Not found</>} />
+            </Routes>
           </div>
-        </Providers>
-      </Router>
-    )
-  } else {
-    return (
-      <Router>
-        <Providers>
-          <div className="app-container">
-            <EnvironmentBanner />
-            <TopNav />
-            <Modals />
-            <div className="app-content">
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/swap" element={<Swap />} />
-                <Route path="/liquidity" element={<Liquidity />} />
-                <Route path="/deposits" element={<Deposit />} />
-                <Route path="/register" element={<Registration />} />
-                <Route path="/permissions" element={<Permissions />} />
-                <Route path="/withdraw" element={<Withdraw />} />
-                <Route path="/send" element={<Send />} />
-                <Route path="/pp" element={<Privacy />} />
-                <Route path="/tos" element={<Tos />} />
-                <Route element={<>Not found</>} />
-              </Routes>
-            </div>
-          </div>
-        </Providers>
-      </Router>
-    );
-  }
+
+          {( currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile') &&
+            <BottomNav />
+          }
+        </div>
+      </Providers>
+    </Router>
+  );
 };
 
 type ProvidersType = [React.ElementType, Record<string, unknown>];

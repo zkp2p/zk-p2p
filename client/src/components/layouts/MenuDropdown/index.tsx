@@ -7,6 +7,7 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { CLIENT_VERSION } from '@helpers/constants';
 import { ThemedText } from '@theme/text';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 export const MenuDropdown = () => {
@@ -14,6 +15,7 @@ export const MenuDropdown = () => {
 
   const ref = useRef<HTMLDivElement>(null)
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
+  const currentDeviceSize = useMediaQuery();
 
   /*
    * Handler
@@ -28,14 +30,20 @@ export const MenuDropdown = () => {
    */
 
   return (
-    <Wrapper ref={ref}>
+    <Wrapper isMobile={currentDeviceSize === 'mobile'} ref={ref}>
       <NavButton onClick={toggleOpen}>
         <StyledMoreHorizontal />
       </NavButton>
 
       {isOpen && (
-        <NavDropdown>
+        <NavDropdown isMobile={currentDeviceSize === 'mobile'}>
           <NavDropdownItemContainer>
+            <NavDropdownItem as={Link} to="/deposits" onClick={toggleOpen}>
+              <ThemedText.LabelSmall textAlign="left">
+                Deposit
+              </ThemedText.LabelSmall>
+            </NavDropdownItem>
+
             <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
                 Withdraw
@@ -117,11 +125,11 @@ export const MenuDropdown = () => {
   )
 };
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{isMobile?: boolean}>`
   display: flex;
-  flex-direction: column;
+  ${({ isMobile }) => isMobile ? '' : 'flex-direction: column'};
+  ${({ isMobile }) => isMobile ? '' : 'align-items: flex-start'};
   position: relative;
-  align-items: flex-start;
 `;
 
 const StyledMoreHorizontal = styled(MoreHorizontal)`
@@ -139,20 +147,27 @@ const NavButton = styled.div`
   padding-right: 8px;
 `;
 
-const NavDropdown = styled.div`
+const NavDropdown = styled.div<{isMobile?: boolean}>`
   display: flex;
   flex-direction: column;
-  width: 172px;
+  width: 176px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 1.75rem 1.5rem;
   background: #1B1B1B;
-  position: absolute;
-  top: calc(100% + 20px);
-  right: 0;
   z-index: 20;
   gap: 0.75rem;
   color: #FFFFFF;
+
+  position: absolute;
+  ${({ isMobile }) => isMobile ? `
+    bottom: calc(100% + 28px);
+    top: auto;
+    right: -20px;
+  ` : `
+    top: calc(100% + 20px);
+    right: 0;
+  `}
 `;
 
 const NavDropdownItemContainer = styled.div`

@@ -10,6 +10,8 @@ import { Button } from "@components/common/Button";
 import { RequirementStepRow } from "@components/modals/RequirementStepRow";
 import { CustomCheckbox } from "@components/common/Checkbox";
 import { PaymentPlatformType } from '@helpers/types';
+import useMediaQuery from "@hooks/useMediaQuery";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface ReviewRequirementsProps {
@@ -23,6 +25,8 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
   paymentPlatform,
   onCtaClick
 }) => {
+  const isMobile = useMediaQuery() === 'mobile';
+  
   /*
    * State
    */
@@ -71,7 +75,7 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Review Requirements'}
+            {isMobile ? 'Requirements' : 'Review Requirements'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
@@ -134,11 +138,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 80vw;
+  max-width: 472px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

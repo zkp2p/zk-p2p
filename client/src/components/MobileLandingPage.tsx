@@ -1,18 +1,30 @@
 import React from 'react';
 import styled from "styled-components";
 
+import { Overlay } from '@components/modals/Overlay';
 import { Button } from '@components/common/Button';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
+import { Z_INDEX } from '@theme/zIndex';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 export const MobileLandingPage: React.FC = () => {
   /*
+   * Context
+   */
+
+  const {
+    PaymentPlatform,
+    setPaymentPlatform,
+  } = usePlatformSettings();
+
+  /*
    * Helpers
    */
 
-  const handleJoinTelegramClicked = () => {
-    window.open('https://t.me/+XDj9FNnW-xs5ODNl', '_blank');
+  const handleResetPlatform = () => {
+    setPaymentPlatform?.(PaymentPlatform.VENMO);
   };
 
   /*
@@ -21,20 +33,22 @@ export const MobileLandingPage: React.FC = () => {
 
   return (
     <Container>
+      <Overlay onClick={() => {}} />
+
       <ModalContainer>
         <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
           Sorry!
         </ThemedText.HeadlineSmall>
 
         <ThemedText.SubHeader style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-          ZKP2P is not yet optimized for mobile devices. Please use a desktop for the best experience and join our Telegram for updates on mobile support.
+          ZKP2P does not support Revolut on mobile. Please proceed on desktop to create or complete an order on Revolut.
         </ThemedText.SubHeader>
 
         <Button
-          onClick={handleJoinTelegramClicked}
+          onClick={handleResetPlatform}
           fullWidth={true}
         >
-          Join our Telegram
+          Go back
         </Button>
       </ModalContainer>
     </Container>
@@ -52,6 +66,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
@@ -68,4 +83,5 @@ const ModalContainer = styled.div`
   justify-content: center;
   position: absolute;
   top: 200px;
+  z-index: ${Z_INDEX.mobile_landing_page};
 `;

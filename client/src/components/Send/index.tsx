@@ -1097,32 +1097,35 @@ export default function SendForm() {
       <Wrapper>
         <SendFormContainer>
           <TitleContainer>
-            <ThemedText.HeadlineSmall>
+            <ThemedText.HeadlineMedium>
               Send
-            </ThemedText.HeadlineSmall>
+            </ThemedText.HeadlineMedium>
           </TitleContainer>
 
           <MainContentWrapper>
-            <NetworkContainer>
-              <NetworkTransitionContainer>
-                <NetworkLogoAndNameContainer>
-                  <NetworkSvg src={networkSvg()} />
+            <NetworkFromAndToContainer>
+              <NetworkFromAndToInnerContainer>
+                <FromNetworkContainer>
+                  <NetworkLogoAndNameContainer>
+                    <NetworkSvg src={networkSvg()} />
 
-                  <NetworkNameContainer>
-                    <NetworkHeader>
-                      {'From'}
-                    </NetworkHeader>
-                    <NetworkNameLabel>
-                      {networkName()}
-                    </NetworkNameLabel>
-                  </NetworkNameContainer>
-                </NetworkLogoAndNameContainer>
+                    <NetworkNameContainer>
+                      <NetworkHeader>
+                        {'From'}
+                      </NetworkHeader>
+
+                      <NetworkNameLabel>
+                        {networkName()}
+                      </NetworkNameLabel>
+                    </NetworkNameContainer>
+                  </NetworkLogoAndNameContainer>
+                </FromNetworkContainer>
 
                 <NetworkSelector
                   disabled={selectorsDisabled()}
                 />
-              </NetworkTransitionContainer>
-            </NetworkContainer>
+              </NetworkFromAndToInnerContainer>
+            </NetworkFromAndToContainer>
 
             <Input
               label="Amount"
@@ -1238,17 +1241,23 @@ export default function SendForm() {
 const Wrapper = styled.div`
   width: 100%;
   max-width: 484px;
-  padding-top: 32px;
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 600px) {
+    padding-top: 32px;
+  }
 `;
 
 const SendFormContainer = styled(AutoColumn)`
-  border-radius: 16px;
   padding: 1rem;
   gap: 1rem;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
+
+  @media (min-width: 600px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const TitleContainer = styled.div`
@@ -1267,24 +1276,35 @@ const MainContentWrapper = styled.div`
   justify-content: center;
 `;
 
-const NetworkContainer = styled.div`
+const NetworkFromAndToContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
 `;
 
-const NetworkTransitionContainer = styled.div`
+const NetworkFromAndToInnerContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+  }
+`;
+
+const FromNetworkContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const NetworkLogoAndNameContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
-  width: 188px;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   gap: 1rem;

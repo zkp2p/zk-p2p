@@ -504,9 +504,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
     <Wrapper>
       <SwapFormContainer>
         <TitleContainer>
-          <ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineMedium>
             Swap
-          </ThemedText.HeadlineSmall>
+          </ThemedText.HeadlineMedium>
 
           {isLoggedIn && (
             <SettingsDropdown
@@ -522,6 +522,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             <PlatformSelector usePillSelector={false} />
             <CurrencySelector />
           </PlatformCurrencyContainer>
+
           <Input
             label="Requesting"
             name={`requestedUSDC`}
@@ -534,6 +535,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             maxButtonOnClick={setInputToMax}
             placeholder="0"
           />
+
           <Input
             label="You send"
             name={`fiatToSend`}
@@ -546,6 +548,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
             placeholder="0.00"
             readOnly={true}
           />
+
           {!isLoggedIn ? (
             <CustomConnectButton
               fullWidth={true}
@@ -584,18 +587,16 @@ const SwapForm: React.FC<SwapFormProps> = ({
         />
       </>
 
-      {
-        currentIntentHash && (
-          <>
-            <VerticalDivider />
-            <OnRamperIntentTable
-              onIntentRowClick={onIntentTableRowClick}
-              shouldAutoSelectIntent={shouldAutoSelectIntent}
-              resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
-            />
-          </>
-        )
-      }
+      {currentIntentHash && (
+        <>
+          <VerticalDivider />
+          <OnRamperIntentTable
+            onIntentRowClick={onIntentTableRowClick}
+            shouldAutoSelectIntent={shouldAutoSelectIntent}
+            resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
+          />
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -603,18 +604,24 @@ const SwapForm: React.FC<SwapFormProps> = ({
 const Wrapper = styled.div`
   width: 100%;
   max-width: 484px;
-  padding-top: 32px;
   display: flex;
   flex-direction: column;
+
+  @media (min-width: 600px) {
+    padding-top: 32px;
+  }
 `;
 
 const SwapFormContainer = styled(AutoColumn)`
-  border-radius: 16px;
   padding: 1rem;
   gap: 1rem;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.25);
+
+  @media (min-width: 600px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const TitleContainer = styled.div`
@@ -635,10 +642,14 @@ const MainContentWrapper = styled.div`
 
 const PlatformCurrencyContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+  }
 `;
 
 const CTAButton = styled(Button)`

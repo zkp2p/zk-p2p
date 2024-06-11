@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-feather';
 import styled, { css } from 'styled-components/macro';
 
-import { RowBetween } from '@components/layouts/Row';
 import { DepositsRow } from "@components/Liquidity/DepositsRow";
 import { PlatformSelector } from '@components/modals/PlatformSelector';
 import { keccak256 } from '@helpers/keccack';
@@ -10,6 +9,7 @@ import { CurrencyCode, PaymentPlatformType, PaymentPlatform, DepositWithAvailabl
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 import useVenmoLiquidity from '@hooks/venmo/useLiquidity';
 import useHdfcLiquidity from '@hooks/hdfc/useLiquidity';
@@ -33,6 +33,8 @@ export const DepositsTable: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const {
     depositStore: venmoDepositStore,
@@ -163,6 +165,7 @@ export const DepositsTable: React.FC = () => {
         <ThemedText.HeadlineMedium>
           Liquidity
         </ThemedText.HeadlineMedium>
+        
         <PlatformSelector usePillSelector={true}/>
       </TitleRow>
 
@@ -181,9 +184,13 @@ export const DepositsTable: React.FC = () => {
             <TableHeaderRow>
               <ColumnHeader>#</ColumnHeader>
 
-              <ColumnHeader>Token</ColumnHeader>
+              {currentDeviceSize === 'tablet' || currentDeviceSize === 'laptop' ? (
+                <ColumnHeader>Token</ColumnHeader>
+              ) : null}
 
-              <ColumnHeader>Platform</ColumnHeader>
+              {currentDeviceSize === 'tablet' || currentDeviceSize === 'laptop' ? (
+                <ColumnHeader>Platform</ColumnHeader>
+              ) : null}
 
               <ColumnHeader>Depositor</ColumnHeader>
 
@@ -228,26 +235,29 @@ export const DepositsTable: React.FC = () => {
   )
 };
 
-const TitleRow = styled(RowBetween)`
+const TitleRow = styled.div`
+  display: flex;
   margin-bottom: 20px;
   height: 50px;
   align-items: flex-end;
+  justify-content: space-between;
   color: #FFF;
   padding: 0 1rem;
 
   @media (max-width: 600px) {
-    flex-wrap: wrap;
-    gap: 12px;
-    width: 100%;
-  };
+    padding: 0 1.75rem;
+  }
 `;
 
 const Content = styled.main`
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
+
+  @media (min-width: 600px) {
+    border: 1px solid ${colors.defaultBorderColor};
+    border-radius: 16px;
+  }
 `;
 
 const ErrorContainer = styled.div`
@@ -278,11 +288,16 @@ const TableContainer = styled.div`
 
 const TableHeaderRow = styled.div`
   display: grid;
-  grid-template-columns: .2fr .9fr .6fr 1.1fr repeat(2, minmax(0,1fr));
+  grid-template-columns: .2fr 0.8fr 1.1fr 0.9fr;
+  padding: 1.3rem 1.5rem 1rem 1.5rem;
   gap: 8px;
   text-align: left;
-  padding: 1.3rem 1.75rem 1rem 1.75rem;
   border-bottom: 1px solid ${colors.defaultBorderColor};
+
+  @media (min-width: 600px) {
+    grid-template-columns: .2fr .9fr .6fr 1.1fr repeat(2, minmax(0,1fr));
+    padding: 1.3rem 1.75rem 1rem 1.75rem;
+  }
 `;
 
 const Table = styled.div`
@@ -293,6 +308,10 @@ const Table = styled.div`
   box-shadow: 0px 2px 12px 0px rgba(0, 0, 0, 0.25);
   font-size: 16px;
   color: #616161;
+
+  @media (max-width: 600px) {
+    font-size: 12px;
+  };
 
   & > * {
     border-bottom: 1px solid ${colors.defaultBorderColor};
@@ -308,6 +327,10 @@ const ColumnHeader = styled.div`
   text-align: left;
   font-size: 14px;
   opacity: 0.7;
+  
+  @media (max-width: 600px) {
+    font-size: 13px;
+  };
 `;
 
 const PaginationContainer = styled.div`

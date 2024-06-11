@@ -9,6 +9,7 @@ import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { alchemyMainnetEthersProvider } from "index";
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { PaymentPlatformType, paymentPlatformInfo } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface IntentRowProps {
@@ -37,6 +38,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
    */
 
   const { blockscanUrl } = useSmartContracts();
+  const isMobile = useMediaQuery() === 'mobile';
 
   const {
     PaymentPlatform,
@@ -98,8 +100,10 @@ export const IntentRow: React.FC<IntentRowProps> = ({
 
   return (
     <Container>
-      <IntentDetailsContainer>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+      <IntentDetailsContainer isMobile={isMobile}>
+        {
+          !isMobile && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        }
         <AmountLabelsContainer>
           <AmountContainer>
             <Label>Requesting:&nbsp;</Label>
@@ -133,7 +137,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             height={36}
             loading={false}
             title={'Release'}
-            icon={'unlock'}/>
+            icon={isMobile ? undefined : 'unlock'}
+          />
         </ActionsContainer>
       </IntentDetailsContainer>
     </Container>
@@ -145,10 +150,10 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-const IntentDetailsContainer = styled.div`
+const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
   width: 100%; 
   display: flex;
-  flex-direction: row;
+  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
   align-items: center;
   padding: 1.25rem 1.5rem;
   gap: 1.25rem;

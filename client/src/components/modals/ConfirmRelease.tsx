@@ -16,6 +16,7 @@ import useRevolutDeposits from '@hooks/revolut/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useBalances from '@hooks/useBalance';
 import usePlatformSettings from '@hooks/usePlatformSettings';
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface ConfirmReleaseProps {
@@ -274,11 +275,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 472px;
+  width: 80vw;
+  max-width: 472px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

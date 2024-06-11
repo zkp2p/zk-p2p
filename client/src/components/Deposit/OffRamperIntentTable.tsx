@@ -211,11 +211,13 @@ const Container = styled.div`
   justify-content: center;
   gap: 1rem;
 
-  border-radius: 16px;
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   overflow: hidden;
+
+  @media (min-width: 600px) {
+    border: 1px solid ${colors.defaultBorderColor};
+    border-radius: 16px;
+  }
 `;
 
 const TitleAndTableContainer = styled.div`

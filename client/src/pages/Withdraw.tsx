@@ -4,12 +4,15 @@ import styled from "styled-components";
 import DepositTable from "@components/Withdraw"
 import useBalances from '@hooks/useBalance';
 import useLegacyDeposits from '@hooks/useLegacyDeposits';
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Withdraw: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const { refetchDeposits, shouldFetchDeposits } = useLegacyDeposits();
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
@@ -31,7 +34,7 @@ export const Withdraw: React.FC = () => {
   }, []);
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Main>
         <DepositTable />
       </Main>
@@ -39,11 +42,15 @@ export const Withdraw: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px;
-  padding-bottom: 3rem;
+
+  @media (min-width: 600px) {
+    padding: 12px 8px;
+  }
+
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
 `;
 
 const Main = styled.div`
@@ -52,4 +59,3 @@ const Main = styled.div`
   align-items: center;
   justify-content: center;
 `;
-

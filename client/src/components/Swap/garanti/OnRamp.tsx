@@ -18,6 +18,7 @@ import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface OnRampProps {
@@ -43,6 +44,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   } = useSmartContracts();
   const { refetchIntentHash } = useOnRamperIntents();
   const { refetchUsdcBalance } = useBalances();
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
@@ -197,7 +199,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
             </button>
           </div>
 
-          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+          <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center', fontSize: isMobile ? '16px': '' }}>
             Complete On-Ramp
           </ThemedText.HeadlineSmall>
 
@@ -249,8 +251,11 @@ const Container = styled.div`
 const TitleContainer = styled.div`
   padding: 1.5rem;
   background-color: ${colors.container};
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  @media (min-width: 600px) {
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
 `;
 
 const InstructionsAndTogglesContainer = styled.div`

@@ -23,9 +23,9 @@ const SwapPreview: React.FC = () => {
     <Wrapper>
       <SwapModalContainer>
         <TitleContainer>
-          <ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineMedium>
             Swap
-          </ThemedText.HeadlineSmall>
+          </ThemedText.HeadlineMedium>
         </TitleContainer>
 
         <MainContentWrapper>
@@ -56,11 +56,9 @@ const SwapPreview: React.FC = () => {
 };
 
 const Wrapper = styled.div`
-  width: 100%;
-  max-width: 484px;
   margin-top: 50px;
-  display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1rem;
 
   &::after {

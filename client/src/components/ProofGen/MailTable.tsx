@@ -16,6 +16,7 @@ import { EmailInputStatus, PaymentPlatformType, PaymentPlatform } from '@helpers
 import { platformStrings } from "@helpers/strings";
 import { VENMO_EMAIL_FILTER, HDFC_EMAIL_FULTER, GARANTI_EMAIL_FULTER } from '@helpers/constants';
 import googleButtonSvg from '../../assets/images/google_dark_button.svg';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface MailTableProps {
@@ -47,6 +48,7 @@ export const MailTable: React.FC<MailTableProps> = ({
   } = useGoogleAuth();
 
   const { setIsEmailModeAuth } = useProofGenSettings();
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
@@ -316,11 +318,15 @@ export const MailTable: React.FC<MailTableProps> = ({
               Sign in with Google
             </Button>
 
-            <TextButton
-              onClick={() => handleEmailModeChanged(false)}
-              height={24}
-              title={'Or Upload'}
-            />
+            {
+              !isMobile &&
+              <TextButton
+                onClick={() => handleEmailModeChanged(false)}
+                height={24}
+                title={'Or Upload'}
+              />
+            }
+
           </LoginOrUploadButtonContainer>
         </ErrorContainer>
       ) : (
@@ -334,7 +340,7 @@ export const MailTable: React.FC<MailTableProps> = ({
               onClick={handleLogoutPressed}
               height={36}
               title={'Logout'}
-              icon={'logout'}
+              icon={isMobile ? undefined : 'logout'}
             />
           </TitleContainer>
 
@@ -342,17 +348,19 @@ export const MailTable: React.FC<MailTableProps> = ({
             <TitleAndOAuthContainer>
               <EmailAddressTitle>
                 <EmailLabel>
-                  <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
+                  {!isMobile && (
+                    <EmailLabelTitle>Logged in as:&nbsp;</EmailLabelTitle>
+                  )}
+
                   <EmailLabelValue>{loggedInGmail}</EmailLabelValue>
                 </EmailLabel>
               </EmailAddressTitle>
-
 
               <AccessoryButton
                 onClick={fetchData}
                 height={36}
                 title={'Refresh'}
-                icon={'refresh'}
+                icon={isMobile ? undefined : 'refresh'}
               />
             </TitleAndOAuthContainer>
 
@@ -414,9 +422,12 @@ const Container = styled.div`
   justify-content: center;
 
   background-color: ${colors.container};
-  border: 1px solid ${colors.defaultBorderColor};
-  border-radius: 16px;
   overflow: hidden;
+
+  @media (min-width: 600px) {
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const ErrorContainer = styled.div`

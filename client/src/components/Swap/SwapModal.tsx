@@ -1,18 +1,19 @@
-import React from "react";
+import React from 'react';
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
-import QRCode from "react-qr-code";
+import QRCode from 'react-qr-code';
 import Link from '@mui/material/Link';
 
-import { Button } from "@components/common/Button";
+import { Button } from '@components/common/Button';
 import { Overlay } from '@components/modals/Overlay';
-import { commonStrings } from '@helpers/strings';
-import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
+import { PaymentRequirementDrawer } from '@components/Swap/PaymentRequirementDrawer';
 import { PaymentPlatformType, ReceiveCurrencyId } from '@helpers/types';
+import { commonStrings } from '@helpers/strings';
+import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from '@helpers/docUrls';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import usePlatformSettings from "@hooks/usePlatformSettings";
-import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from "@helpers/docUrls";
+import { Z_INDEX } from '@theme/zIndex';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 interface SwapModalProps {
@@ -68,6 +69,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.VENMO:
         return {
           troubleScanningQRCodeLink: link,
+          currencySymbol: '$',
           paymentPlatformName: 'Venmo',
           instructionsText: `Scan and send $${amount}`,
         };
@@ -83,6 +85,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       case PaymentPlatform.GARANTI:
         return {
           troubleScanningQRCodeLink: ZKP2P_TG_TURKEY_CHAT_LINK,
+          currencySymbol: 'TRY',
           paymentPlatformName: 'Garanti',
           instructionsText: `Using your Garanti app, send ₺${amount} <br />to the above IBAN account number and name`,
         };
@@ -93,18 +96,23 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           case ReceiveCurrencyId.EUR:
             currencySymbol = '€';
             break;
+
           case ReceiveCurrencyId.GBP:
             currencySymbol = '£';
             break;
+
           case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
+
           case ReceiveCurrencyId.USD:
             currencySymbol = '$';
             break;
         }
+
         return {
           troubleScanningQRCodeLink: REVOLUT_DOWNLOAD_LINK,
+          currencySymbol: '€',
           paymentPlatformName: 'Revolut',
           instructionsText: `Scan and send ${currencySymbol}${amount} <br />to ${venmoId}`,
         };
@@ -112,8 +120,9 @@ export const SwapModal: React.FC<SwapModalProps> = ({
       default:
         return {
           troubleScanningQRCodeLink: link,
+          currencySymbol: '$',
           paymentPlatformName: 'Venmo',
-          instructionsText: `Scan and send $${amount}`,
+          instructionsText: `Scan and send $${amount} <br />to ${venmoId}`
         };
     }
   };
@@ -152,16 +161,18 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         {paymentPlatform !== PaymentPlatform.GARANTI ? (
           <div>
-            <QRContainer>
-              <QRCode
-                value={link}
-                size={192}/>
-            </QRContainer>
-            <QRLabel>
-              <Link href={troubleScanningQRCodeLink} target="_blank">  
-                {paymentPlatform === PaymentPlatform.REVOLUT ? `Get the Revolut app ↗` : "Trouble scanning QR?"}
-              </Link>
-            </QRLabel>     
+            <>
+              <QRContainer>
+                <QRCode
+                  value={link}
+                  size={192}/>
+              </QRContainer>
+              <QRLabel>
+                <Link href={troubleScanningQRCodeLink} target='_blank'>  
+                  {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : 'Trouble scanning QR?'}
+                </Link>
+              </QRLabel>
+            </>
           </div>
         ) : (
           <GarantiInformationContainer>
@@ -181,7 +192,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <InstructionsLabel>
             { commonStrings.get('PAY_MODAL_INSTRUCTIONS') }
-            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
+            <Link href='https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping' target='_blank'>
               Learn more ↗
             </Link>
           </InstructionsLabel>
@@ -196,6 +207,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             onClick={async () => {
               handleCompleteClick();
             }}
+            bgColor={'#df2e2d'}
           >
             I have completed payment
           </Button>
@@ -214,7 +226,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const StyledArrowLeft = styled(ArrowLeft)`
@@ -222,7 +234,8 @@ const StyledArrowLeft = styled(ArrowLeft)`
 `;
 
 const ModalContainer = styled.div<{$isVenmo?: boolean}>`
-  width: 400px;
+  width: 80vw;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

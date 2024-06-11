@@ -1,17 +1,18 @@
-import React, { useReducer, useRef } from "react";
+import React, { useReducer, useRef } from 'react';
 import styled from 'styled-components';
 import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
-import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { NetworkRow } from '@components/Send/NetworkRow';
 import { networksInfo, ReceiveNetworkType } from '@helpers/types';
-import { ZKP2P_SURVEY_FORM_LINK } from "@helpers/docUrls";
+import { ZKP2P_SURVEY_FORM_LINK } from '@helpers/docUrls';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import useAccount from '@hooks/useAccount';
 import useSendSettings from '@hooks/useSendSettings';
+import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
+import { Z_INDEX } from '@theme/zIndex';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -145,7 +146,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 
             <TableFooter>
               Let us know which networks you are interested in seeing ZKP2P add support
-              for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
+              for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target='_blank'>
                 Give feedback ↗
               </Link>
             </TableFooter>
@@ -157,6 +158,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 };
 
 const Wrapper = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -165,7 +167,7 @@ const Wrapper = styled.div`
 const NetworkContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 188px;
+  width: 100%;
   border-radius: 16px;
   border: 1px solid ${colors.defaultBorderColor};
   justify-content: space-between;
@@ -227,11 +229,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 400px;
+  width: 80%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

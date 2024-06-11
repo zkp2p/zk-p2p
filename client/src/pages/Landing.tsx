@@ -14,9 +14,13 @@ import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
 
 
-const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR'];
+const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR', 'GBP', 'SGD'];
 
 export const Landing: React.FC = () => {
+  /*
+   * Contexts
+   */
+  
   const currentDeviceSize = useMediaQuery();
 
   const cardsRef = useRef<HTMLDivElement>(null);
@@ -53,25 +57,35 @@ export const Landing: React.FC = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
-        <HeroContainer style={{ width: currentDeviceSize === 'mobile' ? '90%' : '50%' }}>
+        <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '0 1.6rem' : '0', width: currentDeviceSize === 'mobile' ? 'auto' : '50%' }}> 
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
 
           <HeroTextContainer>
-            <ThemedText.Hero style={{ textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
-              <span>Onramp </span>
-              <TextTransition 
-                springConfig={presets.stiff}
-                direction={'down'}
-                inline={true}
-                style={{ minWidth: '128px'}}
-              >
-                {CURRENCIES[index % CURRENCIES.length]}
-              </TextTransition>
-              <div style={{ display: 'block' }}>in 90 seconds</div>
+            <ThemedText.Hero>
+              <div style={{ display: 'flex', justifyContent: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
+                <span>Onramp&nbsp;</span>
+                <TextTransitionContainer>
+                  <TextTransition 
+                    springConfig={presets.stiff}
+                    direction="down"
+                    inline={true}
+                    style={{
+                      width: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                      height: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                      minWidth: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                      maxHeight: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                    }} 
+                  >
+                    {CURRENCIES[index % CURRENCIES.length]}
+                  </TextTransition>
+                </TextTransitionContainer>
+              </div>
+              
+              <div style={{ width: '100%', textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>in 90 seconds</div>
             </ThemedText.Hero>
           </HeroTextContainer>
 
@@ -160,12 +174,17 @@ export const Landing: React.FC = () => {
   )
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
+  
+  @media (min-width: 600px) {
+    padding: 12px 8px 0px;
+  }
+  
+  padding-bottom: ${props => props.$isMobile ? '4rem' : '0rem'};
 `;
 
 const Container = styled.div`
@@ -192,9 +211,14 @@ const HeroContainer = styled.div`
 
 const SwapPreviewContainer = styled.div`
   position: absolute;
-  margin-bottom: 520px;
   cursor: pointer;
-  padding: 0px 48px;
+  padding: 0 24px;
+  margin-bottom: calc(360px + 32vw); 
+
+  @media (min-width: 600px) {
+    width: 450px;
+    margin-bottom: 542px;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -220,12 +244,28 @@ const StyledLink = styled.a`
 `;
 
 const HeroTextContainer = styled.div`
-  display: grid;
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding-top: 2rem;
-  padding-left: 12px;
-  gap: 1rem;
+  gap: 0.5rem;
+  width: 100%;
   z-index: ${Z_INDEX.landing_hero};
+`;
+
+const TextTransitionContainer = styled.div`
+  width: 88px;
+  height: 48.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 600px) {
+    width: 128px;
+    height: 70.5px;
+  }
 `;
 
 const HeartIcon = styled.span`

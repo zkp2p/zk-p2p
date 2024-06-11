@@ -14,6 +14,7 @@ import useSmartContracts from '@hooks/useSmartContracts';
 import useModal from '@hooks/useModal';
 import { commonStrings } from '@helpers/strings';
 import { alchemyMainnetEthersProvider } from "index";
+import { Z_INDEX } from '@theme/zIndex';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -136,11 +137,12 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`
-  width: 440px;
+  width: 80vw;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -149,7 +151,7 @@ const ModalContainer = styled.div`
   background-color: ${colors.container};
   justify-content: space-between;
   align-items: center;
-  z-index: 20;
+  z-index: ${Z_INDEX.receive_modal};
   gap: 1.5rem;
   
   position: fixed;

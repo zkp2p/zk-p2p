@@ -6,11 +6,14 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
+import { SwapModalMobile } from '@components/Swap/SwapModalMobile';
 import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import { alchemyMainnetEthersProvider } from "index";
 import { PaymentPlatformType, ReceiveCurrencyId, ReceiveCurrencyIdType } from "@helpers/types";
+import useMediaQuery from "@hooks/useMediaQuery";
+
 
 interface IntentRowProps {
   paymentPlatform: PaymentPlatformType | undefined;
@@ -55,6 +58,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
     reviewedRequirementsForPlatform,
     markPlatformRequirementsAsReviewed
   } = usePlatformSettings();
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * State
@@ -188,8 +192,19 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         )
       }
 
-      {
-        shouldShowSwapModal && (
+      {shouldShowSwapModal && (
+        isMobile ? (
+          <SwapModalMobile
+            isVenmo={paymentPlatform === PaymentPlatform.VENMO}
+            venmoId={depositorVenmoId}
+            depositorName={depositorName}
+            link={qrLink}
+            amount={amountUSDToSend}
+            onBackClick={handleModalBackClicked}
+            onCompleteClick={handleCompleteOrderClick}
+            paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
+          />
+        ) : (
           <SwapModal
             isVenmo={paymentPlatform === PaymentPlatform.VENMO}
             venmoId={depositorVenmoId}
@@ -202,10 +217,12 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             receiveCurrencyId={receiveCurrencyId}
           />
         )
-      }
+      )}
 
-      <IntentDetailsContainer>
-        <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+      <IntentDetailsContainer isMobile={isMobile}>
+        {
+          !isMobile && <SVGIconThemed icon={'usdc'} width={'24'} height={'24'}/>
+        }
         <DetailsContainer>
           <LabelContainer>
             <Label>Depositor:&nbsp;</Label>
@@ -255,7 +272,8 @@ export const IntentRow: React.FC<IntentRowProps> = ({
           onClick={handleSendClick}
           height={36}
           title={'Complete'}
-          icon={'send'}/>
+          icon={isMobile ? undefined : 'send'}
+        />
       </ActionsContainer>
     </Container>
   );
@@ -266,10 +284,10 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-const IntentDetailsContainer = styled.div`
+const IntentDetailsContainer = styled.div<{isMobile?: boolean}>`
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: ${({ isMobile }) => isMobile ? 'column' : 'row'};
   align-items: center;
   padding: 1.25rem 1.5rem;
   gap: 1.25rem;

@@ -16,13 +16,15 @@ import useGarantiOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useGarantiRampState from '@hooks/garanti/useRampState';
 import useRevolutOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
 import useRevolutRampState from '@hooks/revolut/useRampState';
-
+import useMediaQuery from '@hooks/useMediaQuery';
 
 
 export const Swap: React.FC = () => {
   /*
    * Contexts
    */
+
+  const currentDeviceSize = useMediaQuery();
 
   const { refetchUsdcBalance, shouldFetchUsdcBalance } = useBalances();
   
@@ -205,7 +207,7 @@ export const Swap: React.FC = () => {
   };
 
   return (
-    <PageWrapper>
+    <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       {!selectedIntentHash ? (
         <SwapForm
           onIntentTableRowClick={handleIntentClick}
@@ -219,13 +221,17 @@ export const Swap: React.FC = () => {
   );
 };
 
-const PageWrapper = styled.div`
+const PageWrapper = styled.div<{ $isMobile: boolean }>`
   display: flex;
   flex-direction: column;
-  padding: 12px 8px 0px;
   align-items: center;
   justify-content: center;
-  padding-bottom: 3rem;
+  
+  @media (min-width: 600px) {
+    padding: 12px 8px 0px;
+  }
+  
+  padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
 `;
 
 const OnRampContainer = styled.div`

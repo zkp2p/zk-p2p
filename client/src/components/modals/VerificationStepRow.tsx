@@ -8,6 +8,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import Spinner from "@components/common/Spinner";
 import { commonStrings } from "@helpers/strings";
 import useProofGenSettings from "@hooks/useProofGenSettings";
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 export const VerificationStepType = {
@@ -41,6 +42,8 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   /*
    * Context
    */
+
+  const isMobile = useMediaQuery() === 'mobile';
 
   const { isProvingTypeFast } = useProofGenSettings();
 
@@ -252,7 +255,7 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
    */
 
   return (
-    <Container>
+    <Container isMobile={isMobile}>
       {getLeftIcon()}
 
       <TitleAndSubtitleContainer>
@@ -272,13 +275,14 @@ export const VerificationStepRow: React.FC<VerificationStepRowProps> = ({
   );
 };
 
-const Container = styled.div`
+const Container = styled.div<{ isMobile?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 1rem;
   margin-top: 4px;
   gap: 1.25rem;
+
+  padding: ${({ isMobile }) => isMobile ? '0.5rem' : '1rem'};
 `;
 
 const ActionsContainer = styled.div`

@@ -7,7 +7,6 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculatePackedVenmoId, isProvidedIdEqualToRegistration } from '@helpers/poseidonHash';
@@ -16,6 +15,7 @@ import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units'
 import { ZERO } from '@helpers/constants';
 import { venmoStrings } from '@helpers/strings';
 import { MODALS } from '@helpers/types';
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/venmo/useDeposits';
@@ -94,6 +94,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       refetchDeposits?.();
 
       refetchUsdcApprovalToRamp?.();
+
+      refetchUsdcBalance?.();
 
       setDepositState(NewDepositTransactionStatus.TRANSACTION_SUCCEEDED);
     },
@@ -505,14 +507,20 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 };
 
 const Container = styled.div`
-  width: 100%;
+  background-color: ${colors.container};
+  padding: 1.5rem;
+
+  @media (min-width: 600px) {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: ${colors.container};
 `;
 
 const InputsContainer = styled.div`

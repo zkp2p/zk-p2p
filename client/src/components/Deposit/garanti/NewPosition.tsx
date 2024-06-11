@@ -6,7 +6,6 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { Button } from "@components/common/Button";
 import { RowBetween } from '@components/layouts/Row';
 import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import { Input } from "@components/Deposit/Input";
 import { NumberedStep } from "@components/common/NumberedStep";
 import { calculateConversionRate, toBigInt, toUsdcString } from '@helpers/units';
@@ -14,6 +13,7 @@ import { LoginStatus, NewDepositTransactionStatus } from '@helpers/types';
 import { ZERO } from '@helpers/constants';
 import { garantiStrings } from '@helpers/strings';
 import { MODALS } from '@helpers/types';
+import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useGarantiRampState from '@hooks/garanti/useRampState';
@@ -94,6 +94,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       console.log('writeSubmitDepositAsync successful: ', data);
       
       refetchDeposits?.();
+
+      refetchUsdcBalance?.();
 
       refetchUsdcApprovalToGarantiRamp?.();
     },
@@ -515,7 +517,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 };
 
 const Container = styled.div`
-  width: 100%;
+  background-color: ${colors.container};
+  padding: 1.5rem;
+
+  @media (min-width: 600px) {
+    width: 100%;
+    border-radius: 16px;
+    border: 1px solid ${colors.defaultBorderColor};
+  }
 `;
 
 const Body = styled.div`
