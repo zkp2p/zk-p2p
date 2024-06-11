@@ -19,6 +19,7 @@ import useAccount from '@hooks/useAccount';
 import useProofGenSettings from "@hooks/useProofGenSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
 import useMediaQuery from "@hooks/useMediaQuery";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface ValidateEmailProps {
@@ -442,7 +443,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`

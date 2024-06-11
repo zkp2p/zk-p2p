@@ -1,12 +1,13 @@
-import React, { useReducer, useRef } from "react";
+import React, { useReducer, useRef } from 'react';
 import styled from 'styled-components';
 import { X, ChevronDown } from 'react-feather';
 import Link from '@mui/material/Link';
 
-import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import { Overlay } from '@components/modals/Overlay';
 import { TokenRow } from '@components/Send/TokenRow';
+import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
+import { Z_INDEX } from '@theme/zIndex';
 import {
   baseUSDCTokenData,
   receiveTokenData,
@@ -14,9 +15,9 @@ import {
   ReceiveTokenType,
   ReceiveTokenData,
 } from '@helpers/types';
+import { ZKP2P_SURVEY_FORM_LINK } from '@helpers/docUrls';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
-import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
-import useSendSettings from "@hooks/useSendSettings";
+import useSendSettings from '@hooks/useSendSettings';
 
 
 interface TokenSelectorProps {
@@ -139,7 +140,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
 
             <TableFooter>
               Let us know which platforms you are interested in seeing ZKP2P add support
-              for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target="_blank">
+              for. <Link href={ ZKP2P_SURVEY_FORM_LINK } target='_blank'>
                 Give feedback ↗
               </Link>
             </TableFooter>
@@ -205,7 +206,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`

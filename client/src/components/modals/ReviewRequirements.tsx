@@ -11,6 +11,7 @@ import { RequirementStepRow } from "@components/modals/RequirementStepRow";
 import { CustomCheckbox } from "@components/common/Checkbox";
 import { PaymentPlatformType } from '@helpers/types';
 import useMediaQuery from "@hooks/useMediaQuery";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface ReviewRequirementsProps {
@@ -137,7 +138,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`

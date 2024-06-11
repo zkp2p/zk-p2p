@@ -16,6 +16,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useAccount from '@hooks/useAccount';
 import useSmartContracts from "@hooks/useSmartContracts";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface VerifyNotarizationModalProps {
@@ -376,7 +377,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`

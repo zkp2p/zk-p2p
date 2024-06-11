@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { colors } from '@theme/colors';
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface OverlayProps {
@@ -43,5 +44,5 @@ const OverlayContainer = styled.div`
   background-color: ${colors.container};
   opacity: 0.75;
   overflow: hidden;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;

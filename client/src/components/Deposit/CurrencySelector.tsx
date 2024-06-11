@@ -11,6 +11,7 @@ import { CurrencyIndexType, paymentPlatformInfo, PaymentPlatformType } from '@he
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
 import usePlatformSettings from "@hooks/usePlatformSettings";
+import { Z_INDEX } from '@theme/zIndex';
 
 
 export const CurrencySelector: React.FC = () => {
@@ -153,7 +154,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const ModalContainer = styled.div`

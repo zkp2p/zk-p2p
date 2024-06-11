@@ -6,10 +6,11 @@ import { Button } from '@components/common/Button';
 import { Overlay } from '@components/modals/Overlay';
 import { PaymentRequirementDrawer } from '@components/Swap/PaymentRequirementDrawer';
 import { InstructionTitle } from '@components/Swap/SwapInstructionTitle';
-import { ThemedText } from '@theme/text';
-import { colors } from '@theme/colors';
 import usePlatformSettings from '@hooks/usePlatformSettings';
 import { PaymentPlatformType } from '@helpers/types';
+import { ThemedText } from '@theme/text';
+import { colors } from '@theme/colors';
+import { Z_INDEX } from '@theme/zIndex';
 
 
 interface SwapModalMobileProps {
@@ -189,7 +190,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const StyledArrowLeft = styled(ArrowLeft)`

@@ -1,18 +1,19 @@
-import React from "react";
+import React from 'react';
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
-import QRCode from "react-qr-code";
+import QRCode from 'react-qr-code';
 import Link from '@mui/material/Link';
 
-import { Button } from "@components/common/Button";
+import { Button } from '@components/common/Button';
 import { Overlay } from '@components/modals/Overlay';
-import { commonStrings } from '@helpers/strings';
-import { PaymentRequirementDrawer } from "@components/Swap/PaymentRequirementDrawer";
+import { PaymentRequirementDrawer } from '@components/Swap/PaymentRequirementDrawer';
 import { PaymentPlatformType, ReceiveCurrencyId } from '@helpers/types';
+import { commonStrings } from '@helpers/strings';
+import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from '@helpers/docUrls';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import usePlatformSettings from "@hooks/usePlatformSettings";
-import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from "@helpers/docUrls";
+import { Z_INDEX } from '@theme/zIndex';
+import usePlatformSettings from '@hooks/usePlatformSettings';
 
 
 interface SwapModalProps {
@@ -167,8 +168,8 @@ export const SwapModal: React.FC<SwapModalProps> = ({
                   size={192}/>
               </QRContainer>
               <QRLabel>
-                <Link href={troubleScanningQRCodeLink} target="_blank">  
-                  {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
+                <Link href={troubleScanningQRCodeLink} target='_blank'>  
+                  {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : 'Trouble scanning QR?'}
                 </Link>
               </QRLabel>
             </>
@@ -191,7 +192,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <InstructionsLabel>
             { commonStrings.get('PAY_MODAL_INSTRUCTIONS') }
-            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping" target="_blank">
+            <Link href='https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping' target='_blank'>
               Learn more ↗
             </Link>
           </InstructionsLabel>
@@ -225,7 +226,7 @@ const ModalAndOverlayContainer = styled.div`
   align-items: flex-start;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: ${Z_INDEX.overlay};
 `;
 
 const StyledArrowLeft = styled(ArrowLeft)`
