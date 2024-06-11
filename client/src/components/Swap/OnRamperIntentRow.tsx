@@ -6,6 +6,7 @@ import { ENSName, AddressDisplayEnum } from 'react-ens-name';
 import { SVGIconThemed } from '@components/SVGIcon/SVGIconThemed';
 import { AccessoryButton } from '@components/common/AccessoryButton';
 import { SwapModal } from '@components/Swap/SwapModal';
+import { SwapModalMobile } from '@components/Swap/SwapModalMobile';
 import { ReviewRequirements } from '@components/modals/ReviewRequirements';
 import usePlatformSettings from "@hooks/usePlatformSettings";
 import useSmartContracts from "@hooks/useSmartContracts";
@@ -191,8 +192,19 @@ export const IntentRow: React.FC<IntentRowProps> = ({
         )
       }
 
-      {
-        shouldShowSwapModal && (
+      {shouldShowSwapModal && (
+        isMobile ? (
+          <SwapModalMobile
+            isVenmo={paymentPlatform === PaymentPlatform.VENMO}
+            venmoId={depositorVenmoId}
+            depositorName={depositorName}
+            link={qrLink}
+            amount={amountUSDToSend}
+            onBackClick={handleModalBackClicked}
+            onCompleteClick={handleCompleteOrderClick}
+            paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
+          />
+        ) : (
           <SwapModal
             isVenmo={paymentPlatform === PaymentPlatform.VENMO}
             venmoId={depositorVenmoId}
@@ -205,7 +217,7 @@ export const IntentRow: React.FC<IntentRowProps> = ({
             receiveCurrencyId={receiveCurrencyId}
           />
         )
-      }
+      )}
 
       <IntentDetailsContainer isMobile={isMobile}>
         {

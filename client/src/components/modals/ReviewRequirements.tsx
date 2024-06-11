@@ -10,6 +10,7 @@ import { Button } from "@components/common/Button";
 import { RequirementStepRow } from "@components/modals/RequirementStepRow";
 import { CustomCheckbox } from "@components/common/Checkbox";
 import { PaymentPlatformType } from '@helpers/types';
+import useMediaQuery from "@hooks/useMediaQuery";
 
 
 interface ReviewRequirementsProps {
@@ -23,6 +24,8 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
   paymentPlatform,
   onCtaClick
 }) => {
+  const isMobile = useMediaQuery() === 'mobile';
+  
   /*
    * State
    */
@@ -71,7 +74,7 @@ export const ReviewRequirements: React.FC<ReviewRequirementsProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            {'Review Requirements'}
+            {isMobile ? 'Requirements' : 'Review Requirements'}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>

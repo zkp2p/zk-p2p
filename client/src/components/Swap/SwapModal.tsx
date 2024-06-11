@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft } from 'react-feather';
 import QRCode from "react-qr-code";
@@ -12,7 +12,6 @@ import { PaymentPlatformType, ReceiveCurrencyId } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import usePlatformSettings from "@hooks/usePlatformSettings";
-import useMediaQuery from "@hooks/useMediaQuery";
 import { ZKP2P_TG_INDIA_CHAT_LINK, ZKP2P_TG_TURKEY_CHAT_LINK, REVOLUT_DOWNLOAD_LINK } from "@helpers/docUrls";
 
 
@@ -47,7 +46,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
   const {
     PaymentPlatform,
   } = usePlatformSettings();
-  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * Handlers
@@ -61,9 +59,6 @@ export const SwapModal: React.FC<SwapModalProps> = ({
     onCompleteClick();
   };
 
-  // State to manage button activation and styles
-  const [paymentInitiated, setPaymentInitiated] = useState(false);
-
   /*
    * Helpers
    */
@@ -75,7 +70,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           troubleScanningQRCodeLink: link,
           currencySymbol: '$',
           paymentPlatformName: 'Venmo',
-          instructionsText: isMobile ? `Click above to pay`: `Scan and send $${amount}`,
+          instructionsText: `Scan and send $${amount}`,
         };
 
       case PaymentPlatform.HDFC:
@@ -83,7 +78,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           troubleScanningQRCodeLink: ZKP2P_TG_INDIA_CHAT_LINK,
           currencySymbol: '₹',
           paymentPlatformName: 'HDFC',
-          instructionsText: isMobile ? `Click to send ₹${amount} <br />to ${venmoId} `: `Scan and send ₹${amount} <br />to ${venmoId}`, 
+          instructionsText: `Scan and send ₹${amount} <br />to ${venmoId}`,
         };
 
       case PaymentPlatform.GARANTI:
@@ -100,16 +95,20 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           case ReceiveCurrencyId.EUR:
             currencySymbol = '€';
             break;
+
           case ReceiveCurrencyId.GBP:
             currencySymbol = '£';
             break;
+
           case ReceiveCurrencyId.SGD:
             currencySymbol = 'SGD$';
             break;
+
           case ReceiveCurrencyId.USD:
             currencySymbol = '$';
             break;
         }
+
         return {
           troubleScanningQRCodeLink: REVOLUT_DOWNLOAD_LINK,
           currencySymbol: '€',
@@ -122,15 +121,12 @@ export const SwapModal: React.FC<SwapModalProps> = ({
           troubleScanningQRCodeLink: link,
           currencySymbol: '$',
           paymentPlatformName: 'Venmo',
-          instructionsText: !isMobile 
-          ? `Scan and send $${amount} <br />to ${venmoId}` 
-          : `Send $${amount} <br />to ${venmoId}`,
+          instructionsText: `Scan and send $${amount} <br />to ${venmoId}`
         };
     }
   };
 
   const {
-    currencySymbol,
     paymentPlatformName,
     troubleScanningQRCodeLink,
     instructionsText
@@ -164,33 +160,18 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
         {paymentPlatform !== PaymentPlatform.GARANTI ? (
           <div>
-            {isMobile ? (
-              <div>
-                <ButtonContainer>
-                  <Button
-                    onClick={() => {
-                      setPaymentInitiated(true);
-                      window.open(link, '_blank', 'noopener,noreferrer');
-                    }}
-                  >
-                    {`Send ${currencySymbol}${amount} on ${paymentPlatformName} ↗`}
-                  </Button> 
-                </ButtonContainer>
-              </div>
-            ) : (
-              <>
-                <QRContainer>
-                  <QRCode
-                    value={link}
-                    size={192}/>
-                </QRContainer>
-                <QRLabel>
-                  <Link href={troubleScanningQRCodeLink} target="_blank">  
-                    {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
-                  </Link>
-                </QRLabel>
-              </>
-            )}
+            <>
+              <QRContainer>
+                <QRCode
+                  value={link}
+                  size={192}/>
+              </QRContainer>
+              <QRLabel>
+                <Link href={troubleScanningQRCodeLink} target="_blank">  
+                  {paymentPlatform === PaymentPlatform.REVOLUT ? `Send via Revolut.com ↗` : "Trouble scanning QR?"}
+                </Link>
+              </QRLabel>
+            </>
           </div>
         ) : (
           <GarantiInformationContainer>
@@ -225,8 +206,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
             onClick={async () => {
               handleCompleteClick();
             }}
-            bgColor={ isMobile ? (paymentInitiated ? '#df2e2d' : '#ffcccc') : '#df2e2d'
-           }
+            bgColor={'#df2e2d'}
           >
             I have completed payment
           </Button>

@@ -40,6 +40,7 @@ export interface CommonStrings {
 
   // Pay Modal
   PAY_MODAL_INSTRUCTIONS: string,
+  PAY_MODAL_MOBILE_INSTRUCTIONS: string,
 
   // Proof Modal Steps
   PROOF_MODAL_DOWNLOAD_TITLE: string,
@@ -174,6 +175,9 @@ const strings: CommonStrings = {
   PAY_MODAL_INSTRUCTIONS: `
     All transactions are peer-to-peer. Review all of the requirements below before sending a payment
     to prevent loss of funds.
+  `,
+  PAY_MODAL_MOBILE_INSTRUCTIONS: `
+    Review requirements to prevent loss of funds.
   `,
 
   // Proof Modal

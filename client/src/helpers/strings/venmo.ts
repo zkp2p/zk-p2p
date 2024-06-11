@@ -82,10 +82,10 @@ const strings: PlatformStrings = {
     Email notifications are enabled in your Venmo notifications settings
   `,
   PAYMENT_REQUIREMENT_STEP_TWO: `
-    Amount USD to send, which may not match your requested USDC amount, is double checked
+    Amount USD sent, which may differ from the requested USDC amount, is correct
   `,
   PAYMENT_REQUIREMENT_STEP_THREE: `
-    Do not add emojis in the payment note
+    Payment note does not contain emojis
   `,
   PAYMENT_REQUIREMENT_STEP_FOUR: `
     'Turn on for purchases' at the payment screen is toggled off
