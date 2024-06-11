@@ -504,9 +504,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
     <Wrapper>
       <SwapFormContainer>
         <TitleContainer>
-          <ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineMedium>
             Swap
-          </ThemedText.HeadlineSmall>
+          </ThemedText.HeadlineMedium>
 
           {isLoggedIn && (
             <SettingsDropdown

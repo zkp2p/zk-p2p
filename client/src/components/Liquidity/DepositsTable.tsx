@@ -243,6 +243,10 @@ const TitleRow = styled.div`
   justify-content: space-between;
   color: #FFF;
   padding: 0 1rem;
+
+  @media (max-width: 600px) {
+    padding: 0 1.75rem;
+  }
 `;
 
 const Content = styled.main`

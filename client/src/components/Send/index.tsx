@@ -1097,9 +1097,9 @@ export default function SendForm() {
       <Wrapper>
         <SendFormContainer>
           <TitleContainer>
-            <ThemedText.HeadlineSmall>
+            <ThemedText.HeadlineMedium>
               Send
-            </ThemedText.HeadlineSmall>
+            </ThemedText.HeadlineMedium>
           </TitleContainer>
 
           <MainContentWrapper>
