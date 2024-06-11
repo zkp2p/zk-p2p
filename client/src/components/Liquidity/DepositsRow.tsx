@@ -136,7 +136,7 @@ const Value = styled.span`
   font-size: 15px;
 
   @media (max-width: 600px) {
-    font-size: 13px;
+    font-size: 14px;
   };
 `;
 

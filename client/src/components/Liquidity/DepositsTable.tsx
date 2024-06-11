@@ -310,7 +310,7 @@ const Table = styled.div`
   color: #616161;
 
   @media (max-width: 600px) {
-    font-size: 10px;
+    font-size: 12px;
   };
 
   & > * {
@@ -329,7 +329,7 @@ const ColumnHeader = styled.div`
   opacity: 0.7;
   
   @media (max-width: 600px) {
-    font-size: 12px;
+    font-size: 13px;
   };
 `;
 
