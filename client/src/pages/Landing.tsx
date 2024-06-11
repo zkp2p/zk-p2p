@@ -59,7 +59,7 @@ export const Landing: React.FC = () => {
   return (
     <PageWrapper $isMobile={currentDeviceSize === 'tablet' || currentDeviceSize === 'mobile'}>
       <Container>
-        <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '1.75rem' : '0', width: currentDeviceSize === 'mobile' ? '75%' : '50%' }}> 
+        <HeroContainer style={{ padding: currentDeviceSize === 'mobile' ? '1.6rem' : '0', width: currentDeviceSize === 'mobile' ? 'auto' : '50%' }}> 
           <SwapPreviewContainer onClick={() => navigate('/swap')}>
             <SwapPreview />
           </SwapPreviewContainer>
