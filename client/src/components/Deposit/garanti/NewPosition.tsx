@@ -95,6 +95,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       
       refetchDeposits?.();
 
+      refetchUsdcBalance?.();
+
       refetchUsdcApprovalToGarantiRamp?.();
     },
   });

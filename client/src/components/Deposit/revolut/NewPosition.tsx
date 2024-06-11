@@ -112,6 +112,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 
       refetchUsdcApprovalToRamp?.();
 
+      refetchUsdcBalance?.();
+
       setDepositState(NewRevolutDepositTransactionStatus.TRANSACTION_SUCCEEDED);
     },
   });
