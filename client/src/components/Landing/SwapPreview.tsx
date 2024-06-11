@@ -23,9 +23,9 @@ const SwapPreview: React.FC = () => {
     <Wrapper>
       <SwapModalContainer>
         <TitleContainer>
-          <ThemedText.HeadlineSmall>
+          <ThemedText.HeadlineMedium>
             Swap
-          </ThemedText.HeadlineSmall>
+          </ThemedText.HeadlineMedium>
         </TitleContainer>
 
         <MainContentWrapper>

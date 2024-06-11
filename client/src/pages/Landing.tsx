@@ -14,7 +14,7 @@ import useMediaQuery from '@hooks/useMediaQuery';
 import { ThemedText } from '@theme/text';
 
 
-const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR'];
+const CURRENCIES = ['USD', 'INR', 'TRY', 'EUR', 'GBP', 'SGD'];
 
 export const Landing: React.FC = () => {
   /*
@@ -68,19 +68,21 @@ export const Landing: React.FC = () => {
             <ThemedText.Hero>
               <div style={{ display: 'flex', justifyContent: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>
                 <span>Onramp&nbsp;</span>
-                <TextTransition 
-                  springConfig={presets.stiff}
-                  direction="down"
-                  inline={true}
-                  style={{
-                    width: currentDeviceSize === 'mobile' ? '88px' : '128px',
-                    height: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
-                    minWidth: currentDeviceSize === 'mobile' ? '88px' : '128px',
-                    maxHeight: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
-                  }} 
-                >
-                  {CURRENCIES[index % CURRENCIES.length]}
-                </TextTransition>
+                <TextTransitionContainer>
+                  <TextTransition 
+                    springConfig={presets.stiff}
+                    direction="down"
+                    inline={true}
+                    style={{
+                      width: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                      height: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                      minWidth: currentDeviceSize === 'mobile' ? '88px' : '128px',
+                      maxHeight: currentDeviceSize === 'mobile' ? '48.5px' : '70.5px',
+                    }} 
+                  >
+                    {CURRENCIES[index % CURRENCIES.length]}
+                  </TextTransition>
+                </TextTransitionContainer>
               </div>
               
               <div style={{ width: '100%', textAlign: 'center', fontSize: currentDeviceSize === 'mobile' ? 44 : 60, fontWeight: 600 }}>in 90 seconds</div>
@@ -209,12 +211,13 @@ const HeroContainer = styled.div`
 
 const SwapPreviewContainer = styled.div`
   position: absolute;
-  margin-bottom: 524px;
   cursor: pointer;
   padding: 0 24px;
+  margin-bottom: calc(360px + 32vw); 
 
   @media (min-width: 600px) {
     width: 450px;
+    margin-bottom: 542px;
   }
 `;
 
@@ -250,6 +253,19 @@ const HeroTextContainer = styled.div`
   gap: 0.5rem;
   width: 100%;
   z-index: ${Z_INDEX.landing_hero};
+`;
+
+const TextTransitionContainer = styled.div`
+  width: 88px;
+  height: 48.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media (min-width: 600px) {
+    width: 128px;
+    height: 70.5px;
+  }
 `;
 
 const HeartIcon = styled.span`
