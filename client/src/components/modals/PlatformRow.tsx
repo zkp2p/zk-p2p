@@ -50,7 +50,7 @@ export const PlatformRow: React.FC<PlatformRowProps> = ({
 const Container = styled.div<{ selected: boolean }>`
   display: flex;
   flex-direction: row;
-  height: 54px;
+  min-height: 54px;
   padding: 12px 24px 12px 20px;
 
   ${({ selected }) => selected && `
@@ -78,6 +78,7 @@ const PlatformAndCurrencyLabel = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-grow: 1;
+  flex-wrap: wrap;
 `;
 
 const PlatformLabel = styled.div`
@@ -90,4 +91,13 @@ const PlatformLabel = styled.div`
 const CurrencyLabel = styled.div`
   padding-top: 4px;
   color: ${colors.offWhite};
+
+  @media (max-width: 600px) {
+    white-space: normal;
+    overflow: hidden;
+    text-align: right;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: 100px;
+  }
 `;
