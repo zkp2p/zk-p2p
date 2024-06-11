@@ -229,6 +229,7 @@ const TitleRow = styled(RowBetween)`
     flex-wrap: wrap;
     gap: 12px;
     width: 100%;
+    padding: 0 1.75rem;
   };
 `;
 
