@@ -1,9 +1,9 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ZKP2P",
+  "name": "Trustless fiat-to-crypto P2P onramp powered by ZK proofs",
   "icons": [
     {
-      "src": "/static/app192.png",
+      "src": "/static/logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     }
