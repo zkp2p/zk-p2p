@@ -226,12 +226,12 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-bottom: 7rem;
   
   @media (min-width: 600px) {
-    padding: 12px 8px 0px;
+    padding: 12px 8px;
+    padding-bottom: 3rem;
   }
-  
-  padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
 `;
 
 const OnRampContainer = styled.div`

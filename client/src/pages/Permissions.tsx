@@ -36,12 +36,12 @@ export const Permissions: React.FC = () => {
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-
-  @media (min-width: 600px) {
-    padding: 12px 8px 0px;
-  }
+  padding-bottom: 7rem;
   
-  padding-bottom: 3rem;
+  @media (min-width: 600px) {
+    padding: 12px 8px;
+    padding-bottom: 3rem;
+  }
 `;
 
 const Main = styled.div`

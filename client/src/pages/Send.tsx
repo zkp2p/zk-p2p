@@ -41,12 +41,12 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  @media (min-width: 600px) {
-    padding: 12px 8px 0px;
-  }
+  padding-bottom: 7rem;
   
-  padding-bottom: ${props => props.$isMobile ? '7rem' : '3rem'};
+  @media (min-width: 600px) {
+    padding: 12px 8px;
+    padding-bottom: 3rem;
+  }
 `;
 
 const Main = styled.div`
