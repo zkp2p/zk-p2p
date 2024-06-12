@@ -94,7 +94,11 @@ const NavBar = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px;
+  padding: 1.5rem 1.75rem 1.75rem 1.5rem; 
+
+  @media (min-width: 600px) {
+    padding: 28px;
+  }
 `;
 
 const Logo = styled(Link)<{ size?: number }>`

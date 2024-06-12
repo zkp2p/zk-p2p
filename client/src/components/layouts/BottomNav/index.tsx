@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from "react-router-dom";
-import styled from "styled-components";
+import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
 
-import { NavItem } from "../TopNav/NavItem";
+import { NavItem } from '../TopNav/NavItem';
+import { Z_INDEX } from '@theme/zIndex';
 
 
 export const BottomNav: React.FC<{ withoutLinks?: boolean }> = ({ withoutLinks }) => {
@@ -35,7 +36,7 @@ const Wrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: center;
-  z-index: 5;
+  z-index: ${Z_INDEX.bottom_nav};
   padding-bottom: 1rem;
   position: fixed;
   bottom: 0;

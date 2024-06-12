@@ -179,11 +179,11 @@ const PageWrapper = styled.div<{ $isMobile: boolean }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-bottom: 0rem;
+  padding-bottom: 4rem;
   
   @media (min-width: 600px) {
     padding: 12px 8px;
-    padding-bottom: 4rem;
+    padding-bottom: 0rem;
   }
 `;
 
