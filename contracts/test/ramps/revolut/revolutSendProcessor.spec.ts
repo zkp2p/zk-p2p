@@ -173,7 +173,7 @@ describe("RevolutSendProcessor", () => {
       });
     });
 
-    describe("when the amount is not preceeded by a -", async () => {
+    describe("when the amount is not preceded by a -", async () => {
       beforeEach(async () => {
         subjectProof.public_values.amount = "100"
 
