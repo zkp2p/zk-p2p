@@ -537,7 +537,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
 };
 
 const NewPositionOrAccountRegistrationContainer = styled.div`
-  width: 100%;
+  max-width: 552px;
 `;
 
 const NewPositionContainer = styled.div`

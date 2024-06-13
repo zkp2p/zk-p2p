@@ -507,7 +507,7 @@ const Container = styled.div`
   padding: 1.5rem;
   
   @media (min-width: 600px) {
-    width: 100%;
+    max-width: 552px;
     border-radius: 16px;
     border: 1px solid ${colors.defaultBorderColor};
   }

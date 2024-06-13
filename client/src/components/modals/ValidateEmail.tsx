@@ -360,7 +360,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
         </ConfettiContainer>
       ) : null}
       <ModalContainer>
-        <TitleCenteredRow>
+        <TitleRowContainer>
           <button
             onClick={handleOverlayClick}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
@@ -370,7 +370,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
           </button>
 
           <Title>
-            <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
+            <ThemedText.HeadlineSmall style={{ flex: '0', textAlign: 'right' }}>
               {!isMobile ? title : 'Verify'}
             </ThemedText.HeadlineSmall>
           </Title>
@@ -386,7 +386,7 @@ export const ValidateEmail: React.FC<ValidateEmailProps> = ({
           ) : (
             <div></div> // Leave empty div in so title remains centered
           )}
-        </TitleCenteredRow>
+        </TitleRowContainer>
 
         <VerificationStepsContainer>
           {renderVerificationSteps()}
@@ -448,7 +448,7 @@ const ModalAndOverlayContainer = styled.div`
 
 const ModalContainer = styled.div`
   width: 80vw;
-  max-width: 472px;
+  max-width: 412px;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
@@ -464,6 +464,14 @@ const ModalContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+`;
+
+const TitleRowContainer = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 0.3fr 1.1fr 0.85fr;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const StyledArrowLeft = styled(ArrowLeft)`

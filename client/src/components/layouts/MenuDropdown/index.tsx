@@ -15,7 +15,7 @@ export const MenuDropdown = () => {
 
   const ref = useRef<HTMLDivElement>(null)
   useOnClickOutside(ref, isOpen ? toggleOpen : undefined)
-  const currentDeviceSize = useMediaQuery();
+  const isMobile = useMediaQuery() === 'mobile';
 
   /*
    * Handler
@@ -30,19 +30,21 @@ export const MenuDropdown = () => {
    */
 
   return (
-    <Wrapper isMobile={currentDeviceSize === 'mobile'} ref={ref}>
+    <Wrapper isMobile={isMobile} ref={ref}>
       <NavButton onClick={toggleOpen}>
         <StyledMoreHorizontal />
       </NavButton>
 
       {isOpen && (
-        <NavDropdown isMobile={currentDeviceSize === 'mobile'}>
+        <NavDropdown isMobile={isMobile}>
           <NavDropdownItemContainer>
-            <NavDropdownItem as={Link} to="/deposits" onClick={toggleOpen}>
-              <ThemedText.LabelSmall textAlign="left">
-                Deposit
-              </ThemedText.LabelSmall>
-            </NavDropdownItem>
+            {isMobile && (
+              <NavDropdownItem as={Link} to="/deposits" onClick={toggleOpen}>
+                <ThemedText.LabelSmall textAlign="left">
+                  Deposit
+                </ThemedText.LabelSmall>
+              </NavDropdownItem>
+            )}
 
             <NavDropdownItem as={Link} to="/withdraw" onClick={toggleOpen}>
               <ThemedText.LabelSmall textAlign="left">
