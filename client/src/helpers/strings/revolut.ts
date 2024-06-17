@@ -31,14 +31,13 @@ const strings: PlatformStrings = {
 
   // On Ramp Instructions
   PROOF_FORM_TITLE_SEND_INSTRUCTIONS: `
-    Prove a successful Revolut payment using the browser assistant to complete the order and receive EUR.
+    Prove a successful Revolut payment using the browser assistant to complete the order and receive USDC.
   `,
 
   // New Deposit
   NEW_DEPOSIT_INSTRUCTIONS: `
     Creating a new deposit requires you to submit a valid Revolut Revtag, the USDC liquidity to deposit, and
-    desired fiat conversion rate. Your Revtag must match the registered Revtag. You will receive EUR payments
-    from users who claim your deposit.
+    desired fiat conversion rate. Your Revtag must match the registered Revtag. 
   `,
   NEW_DEPOSIT_ADDITIONAL_REGISTRATION_TOOLTIP: `
     This is a second registration step required only for depositors to connect a Revolut depositor ID

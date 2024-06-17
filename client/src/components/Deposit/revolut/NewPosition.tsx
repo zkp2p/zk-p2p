@@ -18,7 +18,7 @@ import { revolutStrings } from '@helpers/strings';
 import { keccak256, calculateRevolutTagHash } from '@helpers/keccack';
 import { MODALS } from '@helpers/types';
 import { NOTARY_VERIFICATION_SIGNING_KEY } from '@helpers/notary';
-import { PaymentPlatform, paymentPlatformInfo } from '@helpers/types';
+import { PaymentPlatform, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useDeposits from '@hooks/revolut/useDeposits';
@@ -50,7 +50,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { minimumDepositAmount } = useRampState();
   const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
-  const { currencyIndex } = usePlatformSettings();
+  const { paymentPlatform, currencyIndex } = usePlatformSettings();
   const {
     extractedRevolutProfileId,
     registrationHash,
@@ -423,6 +423,11 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     }
   }, [depositAmountInput, receiveAmountInput, isLoggedIn, currencyIndex]);
 
+  const selectedCurrency = useMemo(() => {
+    const currentSelectedCurrency = paymentPlatformInfo[paymentPlatform as PaymentPlatformType].platformCurrencies[currencyIndex];
+    return `You will receive ${currentSelectedCurrency} from users who claim your deposit. `;
+  }, [paymentPlatform, currencyIndex]);
+
   /*
    * Handlers
    */
@@ -464,7 +469,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         <Body>
           <InstructionsAndTogglesContainer>
             <NumberedStep>
-              { revolutStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
+              {`${revolutStrings.get('PROOF_FORM_TITLE_SEND_INSTRUCTIONS')} ${selectedCurrency}`}
               <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-revtag" target="_blank">
                 Fetch your Revtag ↗
               </Link>
