@@ -7,16 +7,16 @@ import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from
 import { RowBetween } from '@components/layouts/Row';
 import { VerifyNotarizationForm } from '@components/Notary/VerifyNotarizationForm';
 import { NumberedStep } from "@components/common/NumberedStep";
-import { revolutStrings } from "@helpers/strings";
+import { revolutStrings } from '@helpers/strings';
 import { PaymentPlatform, NotaryVerificationCircuit } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/revolut/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useMediaQuery from "@hooks/useMediaQuery";
-
+import useMediaQuery from '@hooks/useMediaQuery';
 import useQuery from '@hooks/useQuery';
+
 
 interface OnRampProps {
   handleBackClick: () => void;

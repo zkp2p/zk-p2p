@@ -92,10 +92,10 @@ export default function SendForm() {
   const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
   const { getLifiQuote, getLifiTransactionStatus } = useLifiBridge();
   const { receiveNetwork, receiveToken } = useSendSettings();
-  const { getQuery } = useQuery();
 
-  const amountFromQuery = getQuery('amountUsdc');
-  const recipientAddressFromQuery = getQuery('recipientAddress');
+  const { queryParams } = useQuery();
+  const amountFromQuery = queryParams.AMOUNT_USDC;
+  const recipientAddressFromQuery = queryParams.RECIPIENT_ADDRESS;
 
   /*
    * State
@@ -602,6 +602,8 @@ export default function SendForm() {
       validateAndSetQuote(amountFromQuery, recipientAddressFromQuery);
       validateAndSetAddress(recipientAddressFromQuery);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipientAddressFromQuery, amountFromQuery]);
   
   /*

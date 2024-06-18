@@ -18,11 +18,9 @@ interface ProvidersProps {
 };
 
 const SendSettingsProvider = ({ children }: ProvidersProps) => {
-  
-  const { getQuery } = useQuery();
-
-  const networkFromQuery = getQuery('network');
-  const tokenFromQuery = getQuery('toToken');
+  const { queryParams } = useQuery();
+  const networkFromQuery = queryParams.NETWORK;
+  const tokenFromQuery = queryParams.TO_TOKEN;
 
   /*
    * State

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from 'styled-components';
 import { ArrowLeft, Mail } from 'react-feather';
 
 import { Button } from "@components/common/Button";
 import { Overlay } from '@components/modals/Overlay';
-import { commonStrings } from '@helpers/strings';
 import useQuery from '@hooks/useQuery';
 import { ThemedText } from '@theme/text'
 import { colors } from '@theme/colors';
@@ -20,18 +19,7 @@ export const Integration: React.FC<IntegrationProps> = ({
    * Contexts
    */
 
-  const { getQuery } = useQuery();
-
-  const appIdFromQuery = getQuery('appId');
-  const recipientAddressFromQuery = getQuery('recipientAddress');
-
-  
-
-  /*
-   * State
-   */
-
-  const [transactionAddress, setTransactionAddress] = useState<string>("");
+  const { queryParams } = useQuery();
 
   /*
    * Handlers
@@ -40,16 +28,6 @@ export const Integration: React.FC<IntegrationProps> = ({
   const handleOverlayClick = () => {
     onBackClick();
   }
-
-  /*
-   * Hooks
-   */
-
-
-  /*
-   * Helpers
-   */
-
   
   /*
    * Component
@@ -72,7 +50,7 @@ export const Integration: React.FC<IntegrationProps> = ({
           </div>
 
           <ThemedText.HeadlineSmall style={{ flex: '1', margin: 'auto', textAlign: 'center' }}>
-            Onramp to {appIdFromQuery}
+            Onramp to {queryParams.APP_ID}
           </ThemedText.HeadlineSmall>
 
           <div style={{ flex: 0.25 }}/>
@@ -84,9 +62,9 @@ export const Integration: React.FC<IntegrationProps> = ({
           <InstructionsLabel>
             Powered by ZKP2P
           </InstructionsLabel>
-          {recipientAddressFromQuery && (
+          {queryParams.RECIPIENT_ADDRESS && (
             <InstructionsLabel>
-              You are onramping to {recipientAddressFromQuery} on {appIdFromQuery}
+              You are onramping to {queryParams.RECIPIENT_ADDRESS} on {queryParams.APP_ID}
             </InstructionsLabel>
           )}
         </InstructionsContainer>
@@ -166,15 +144,4 @@ const InstructionsLabel = styled.div`
   font-size: 16px;
   text-align: center;
   line-height: 1.5;
-`;
-
-const Link = styled.a`
-  white-space: pre;
-  display: inline-block;
-  color: #1F95E2;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
 `;

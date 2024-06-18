@@ -18,8 +18,8 @@ import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/garanti/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useMediaQuery from "@hooks/useMediaQuery";
-
 import useQuery from '@hooks/useQuery';
+
 
 interface OnRampProps {
   handleBackClick: () => void;

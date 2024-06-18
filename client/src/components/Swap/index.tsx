@@ -57,13 +57,12 @@ interface SwapFormProps {
 const SwapForm: React.FC<SwapFormProps> = ({
   onIntentTableRowClick,
 }: SwapFormProps) => {
-  const { navigateWithQuery, getQuery } = useQuery();
-
-  const amountFromQuery = getQuery('amountUsdc');
-  const recipientAddressFromQuery = getQuery('recipientAddress');
-  const networkFromQuery = getQuery('network');
-  const tokenFromQuery = getQuery('toToken');
-  const appIdFromQuery = getQuery('appId');
+  const { navigateWithQuery, queryParams } = useQuery();
+  const amountFromQuery = queryParams.AMOUNT_USDC;
+  const recipientAddressFromQuery = queryParams.RECIPIENT_ADDRESS;
+  const networkFromQuery = queryParams.NETWORK;
+  const tokenFromQuery = queryParams.TO_TOKEN;
+  const appIdFromQuery = queryParams.APP_ID;
 
   /*
    * Contexts
@@ -417,7 +416,12 @@ const SwapForm: React.FC<SwapFormProps> = ({
     } else {
       setRecipientAddress('');
     }
-  }, [loggedInEthereumAddress, recipientAddressFromQuery]);
+  }, [
+    loggedInEthereumAddress,
+    recipientAddressFromQuery,
+    networkFromQuery,
+    tokenFromQuery
+  ]);
 
   useEffect(() => {
     if (amountFromQuery && isValidInput(amountFromQuery)) {

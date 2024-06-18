@@ -11,10 +11,9 @@ interface ProvidersProps {
 };
 
 const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
-  const { getQuery } = useQuery();
-
-  const platformFromQuery = getQuery('platform');
-  const currencyIndexFromQuery = getQuery('currencyIndex');
+  const { queryParams } = useQuery();
+  const platformFromQuery = queryParams.PLATFORM;
+  const currencyIndexFromQuery = queryParams.CURRENCY_INDEX;
 
   /*
    * State

@@ -6,20 +6,20 @@ import { CircuitType } from '@zkp2p/circuits-circom-helpers/generate_input';
 import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
-import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
-import { NumberedStep } from "@components/common/NumberedStep";
-import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
-import { venmoStrings } from "@helpers/strings";
-import { reformatProofForChain } from "@helpers/submitProof";
+import { ProofGenerationForm } from '@components/ProofGen/ProofForm';
+import { NumberedStep } from '@components/common/NumberedStep';
+import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from '@helpers/constants';
+import { venmoStrings } from '@helpers/strings';
+import { reformatProofForChain } from '@helpers/submitProof';
 import { PaymentPlatform } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/venmo/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useMediaQuery from "@hooks/useMediaQuery";
-
+import useMediaQuery from '@hooks/useMediaQuery';
 import useQuery from '@hooks/useQuery';
+
 
 interface OnRampProps {
   handleBackClick: () => void;
