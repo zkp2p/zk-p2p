@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import React from 'react';
 import styled, { css } from 'styled-components';
 
@@ -18,6 +18,8 @@ export const NavItem: React.FC<NavItemProps> = ({
   setSelectedItem
 }) => {
   const currentDeviceSize = useMediaQuery();
+  const location = useLocation();
+  const searchParams = location.search;
 
   const mobileNavigationItems = [
     {
@@ -53,7 +55,7 @@ export const NavItem: React.FC<NavItemProps> = ({
       {navigationItems.map((item) => (
         <StyledLink
           key={item.name}
-          to={item.href}
+          to={item.href + searchParams}
           onClick={() => setSelectedItem(item.name)}
           selected={selectedItem === item.routeName}
         >

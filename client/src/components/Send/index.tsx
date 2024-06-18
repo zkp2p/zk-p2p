@@ -39,6 +39,7 @@ import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useLifiBridge from '@hooks/useLifiBridge';
 import useSendSettings from '@hooks/useSendSettings';
+import useQuery from '@hooks/useQuery';
 
 import baseSvg from '../../assets/images/base.svg';
 import sepoliaSvg from '../../assets/images/sepolia.svg';
@@ -91,6 +92,10 @@ export default function SendForm() {
   const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
   const { getLifiQuote, getLifiTransactionStatus } = useLifiBridge();
   const { receiveNetwork, receiveToken } = useSendSettings();
+
+  const { queryParams } = useQuery();
+  const amountFromQuery = queryParams.AMOUNT_USDC;
+  const recipientAddressFromQuery = queryParams.RECIPIENT_ADDRESS;
 
   /*
    * State
@@ -258,116 +263,11 @@ export default function SendForm() {
    */
 
   const handleSendAmountInputChange = async (event: ChangeEvent<HTMLInputElement>, field: keyof SendQuote) => {
-    resetStateOnInputChanges();
-    
-    const value = event.target.value;
-    if (value === "") {
-      cancelDebounceFetchIndicativeQuote();
-
-      cancelDebounceFetchFirmQuote();
-
-      setCurrentQuote(ZERO_QUOTE);
-    } else if (value === "0") {
-      setCurrentQuote({
-        ...ZERO_QUOTE,
-        [field]: "0"
-      });
-    } else if (value === ".") {
-      setCurrentQuote({
-        ...ZERO_QUOTE,
-        [field]: "0."
-      });
-    } else if (isValidSendAmountInput(value)) {
-      updateQuoteOnInputChange(value, recipientAddressInput.rawAddress);
-    } else {
-      cancelDebounceFetchIndicativeQuote();
-
-      cancelDebounceFetchFirmQuote();
-
-      setCurrentQuote({
-        sendAmountInput: value,
-        receiveAmountQuote: {
-          toAmount: ZERO,
-          decimals: 6
-        }
-      });
-    }
+    validateAndSetQuote(event.target.value, recipientAddressInput.rawAddress);
   };
 
   const handleRecipientInputChange = async (value: string) => {
-    resetStateOnInputChanges();
-
-    let rawAddress = '';
-    let ensName = '';
-    let displayAddress = '';
-    let isValidAddress = false;
-
-    const isNetworkSolana = receiveNetwork === ReceiveNetwork.SOLANA;
-
-    setRecipientAddressInput({
-      input: value,
-      ensName,
-      rawAddress,
-      displayAddress,
-      addressType: isNetworkSolana ? 'sol' : 'eth'
-    });
-  
-    if (isNetworkSolana) {
-      if (value.endsWith('.sol')) {
-        const { pubkey: recordKey } = getDomainKeySync(value);
-        const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
-        const { owner } = registry;
-
-        if (owner) {
-          rawAddress = owner.toString();
-          displayAddress = value;
-    
-          updateQuoteOnInputChange(currentQuote.sendAmountInput, owner.toString());
-          isValidAddress = true;
-        }
-      } else if (value.length >= 32 && value.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(value)) {
-        try {
-          const publicKey = new PublicKey(value);
-          const validSolanaAddress = await PublicKey.isOnCurve(publicKey);
-          if (validSolanaAddress) {
-            rawAddress = value;
-            displayAddress = value;
-      
-            updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
-            isValidAddress = true;
-          }
-        } catch {
-          console.log('Invalid Solana address provided');
-        }
-      }
-    } else {
-      if (value.endsWith('.eth') || value.endsWith('.xyz')) {
-        ensName = value;
-        const resolvedAddress = await resolveEnsName(value);
-        if (resolvedAddress) {
-          rawAddress = resolvedAddress;
-          displayAddress = resolvedAddress;
-  
-          updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
-          isValidAddress = true;
-        }
-      } else if (value.startsWith('0x') && value.length === 42) {
-        rawAddress = value;
-        displayAddress = value;
-  
-        updateQuoteOnInputChange(currentQuote.sendAmountInput, value);
-        isValidAddress = true;
-      };
-    }
-
-    setRecipientAddressInput(prevState => ({
-      ...prevState,
-      ensName: ensName,
-      rawAddress: rawAddress,
-      displayAddress: displayAddress,
-    }));
-
-    setIsValidRecipientAddress(isValidAddress);
+    validateAndSetAddress(value);
   };
 
   /*
@@ -672,7 +572,7 @@ export default function SendForm() {
       setAmountToApprove(ZERO);
     } else {
       const sendAmountBI = toBigInt(sendAmountInput.toString());
-      const approvalDifference = sendAmountBI - usdcApprovalToLifiBridge;
+      const approvalDifference = BigInt(sendAmountBI) - BigInt(usdcApprovalToLifiBridge);
 
       if (approvalDifference > ZERO) {
         setAmountToApprove(sendAmountBI);
@@ -696,6 +596,15 @@ export default function SendForm() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receiveNetwork, receiveToken, usdcApprovalToLifiBridge]);
+
+  useEffect(() => {
+    if (recipientAddressFromQuery && amountFromQuery) {
+      validateAndSetQuote(amountFromQuery, recipientAddressFromQuery);
+      validateAndSetAddress(recipientAddressFromQuery);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recipientAddressFromQuery, amountFromQuery]);
   
   /*
    * Helpers
@@ -893,6 +802,118 @@ export default function SendForm() {
 
     refetchUsdcApprovalToLifiBridge?.();
   };
+
+  const validateAndSetQuote = async (value: string, recipientAddress: string) => {
+    resetStateOnInputChanges();
+    
+    if (value === "") {
+      cancelDebounceFetchIndicativeQuote();
+
+      cancelDebounceFetchFirmQuote();
+
+      setCurrentQuote(ZERO_QUOTE);
+    } else if (value === "0") {
+      setCurrentQuote({
+        ...ZERO_QUOTE,
+        sendAmountInput: "0"
+      });
+    } else if (value === ".") {
+      setCurrentQuote({
+        ...ZERO_QUOTE,
+        sendAmountInput: "0."
+      });
+    } else if (isValidSendAmountInput(value)) {
+      updateQuoteOnInputChange(value, recipientAddress);
+    } else {
+      cancelDebounceFetchIndicativeQuote();
+
+      cancelDebounceFetchFirmQuote();
+
+      setCurrentQuote({
+        sendAmountInput: value,
+        receiveAmountQuote: {
+          toAmount: ZERO,
+          decimals: 6
+        }
+      });
+    }
+  }
+
+  const validateAndSetAddress = async (recipientAddress: string) => {
+    resetStateOnInputChanges();
+
+    let rawAddress = '';
+    let ensName = '';
+    let displayAddress = '';
+    let isValidAddress = false;
+
+    const isNetworkSolana = receiveNetwork === ReceiveNetwork.SOLANA;
+
+    setRecipientAddressInput({
+      input: recipientAddress,
+      ensName,
+      rawAddress,
+      displayAddress,
+      addressType: isNetworkSolana ? 'sol' : 'eth'
+    });
+  
+    if (isNetworkSolana) {
+      if (recipientAddress.endsWith('.sol')) {
+        const { pubkey: recordKey } = getDomainKeySync(recipientAddress);
+        const { registry } = await NameRegistryState.retrieve(alchemySolanaConnection, recordKey);
+        const { owner } = registry;
+
+        if (owner) {
+          rawAddress = owner.toString();
+          displayAddress = recipientAddress;
+    
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, owner.toString());
+          isValidAddress = true;
+        }
+      } else if (recipientAddress.length >= 32 && recipientAddress.length <= 44 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipientAddress)) {
+        try {
+          const publicKey = new PublicKey(recipientAddress);
+          const validSolanaAddress = await PublicKey.isOnCurve(publicKey);
+          if (validSolanaAddress) {
+            rawAddress = recipientAddress;
+            displayAddress = recipientAddress;
+      
+            updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddress);
+            isValidAddress = true;
+          }
+        } catch {
+          console.log('Invalid Solana address provided');
+        }
+      }
+    } else {
+      if (recipientAddress.endsWith('.eth') || recipientAddress.endsWith('.xyz')) {
+        ensName = recipientAddress;
+        const resolvedAddress = await resolveEnsName(recipientAddress);
+        if (resolvedAddress) {
+          rawAddress = resolvedAddress;
+          displayAddress = resolvedAddress;
+  
+          updateQuoteOnInputChange(currentQuote.sendAmountInput, resolvedAddress);
+          isValidAddress = true;
+        }
+      } else if (recipientAddress.startsWith('0x') && recipientAddress.length === 42) {
+        rawAddress = recipientAddress;
+        displayAddress = recipientAddress;
+  
+        updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddress);
+        isValidAddress = true;
+      };
+    }
+
+    setRecipientAddressInput(prevState => ({
+      ...prevState,
+      ensName: ensName,
+      rawAddress: rawAddress,
+      displayAddress: displayAddress,
+    }));
+
+    setIsValidRecipientAddress(isValidAddress);
+  }
 
   /*
    * Other Helpers

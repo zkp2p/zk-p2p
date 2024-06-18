@@ -10,8 +10,8 @@ import { PlatformRow } from '@components/modals/PlatformRow';
 import { CurrencyIndex, paymentPlatforms, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
 import { useOnClickOutside } from '@hooks/useOnClickOutside';
 import { ZKP2P_SURVEY_FORM_LINK } from "../../helpers/docUrls";
-import usePlatformSettings from "@hooks/usePlatformSettings";
 import { Z_INDEX } from '@theme/zIndex';
+import usePlatformSettings from "@hooks/usePlatformSettings";
 
 
 export const PlatformSelector: React.FC<{ usePillSelector: boolean }> = ({ usePillSelector }) => {

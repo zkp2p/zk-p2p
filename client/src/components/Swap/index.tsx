@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 import styled from 'styled-components';
 import { useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
-import { useNavigate } from 'react-router-dom';
 
 import { Input } from "@components/Swap/Input";
 import { OnRamperIntentTable } from '@components/Swap/OnRamperIntentTable';
@@ -10,10 +9,11 @@ import { Button } from '@components/common/Button';
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
-import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType } from '@helpers/types';
+import { IndicativeQuote, paymentPlatformInfo, PaymentPlatformType, ReceiveNetwork, ReceiveToken } from '@helpers/types';
 import { InstructionDrawer } from '@components/Swap/InstructionDrawer';
 import { CurrencySelector } from '@components/Swap/CurrencySelector';
 import { PlatformSelector } from '@components/modals/PlatformSelector';
+import { Integration } from '@components/modals/Integration';
 import { SettingsDropdown } from './SettingsDropdown';
 import { DEPOSIT_REFETCH_INTERVAL, EMPTY_STRING, ZERO } from "@helpers/constants";
 import { toBigInt, toUsdcString, conversionRateToMultiplierString } from '@helpers/units'
@@ -22,7 +22,7 @@ import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useSwapQuote from '@hooks/useSwapQuote';
 import usePlatformSettings from "@hooks/usePlatformSettings";
-
+import useQuery from '@hooks/useQuery';
 
 export type SwapQuote = {
   requestedUSDC: string;
@@ -57,7 +57,12 @@ interface SwapFormProps {
 const SwapForm: React.FC<SwapFormProps> = ({
   onIntentTableRowClick,
 }: SwapFormProps) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery, queryParams } = useQuery();
+  const appIdFromQuery = queryParams.APP_ID;
+  const recipientAddressFromQuery = queryParams.RECIPIENT_ADDRESS;
+  const amountFromQuery = queryParams.AMOUNT_USDC;
+  const networkFromQuery = queryParams.NETWORK;
+  const tokenFromQuery = queryParams.TO_TOKEN;
 
   /*
    * Contexts
@@ -112,6 +117,8 @@ const SwapForm: React.FC<SwapFormProps> = ({
   const [onRampTimeRemainingLabel, setOnRampTimeRemainingLabel] = useState('');
 
   const [shouldAutoSelectIntent, setShouldAutoSelectIntent] = useState<boolean>(false);
+
+  const [shouldShowIntegrationModal, setShouldShowIntegrationModal] = useState<boolean>(false);
 
   /*
    * Event Handlers
@@ -395,19 +402,48 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [lastOnRampTimestamp, onRampCooldownPeriod]);
 
   useEffect(() => {
-    if (loggedInEthereumAddress) {
+    // Onramp directly to custom recipient address if user is specifically requesting USDC on Base using redirect flow
+    if (recipientAddressFromQuery &&
+        networkFromQuery &&
+        networkFromQuery === ReceiveNetwork.BASE &&
+        tokenFromQuery &&
+        tokenFromQuery === ReceiveToken.USDC) {
+      setRecipientAddress(recipientAddressFromQuery);
+    } else if (loggedInEthereumAddress) {
       setRecipientAddress(loggedInEthereumAddress);
     } else {
       setRecipientAddress('');
     }
-  }, [loggedInEthereumAddress]);
+  }, [
+    loggedInEthereumAddress,
+    recipientAddressFromQuery,
+    networkFromQuery,
+    tokenFromQuery
+  ]);
+
+  useEffect(() => {
+    if (amountFromQuery && isValidInput(amountFromQuery)) {
+      setCurrentQuote(prevQuote => ({
+        ...prevQuote,
+        requestedUSDC: amountFromQuery
+      }));
+    }
+  }, [amountFromQuery]);
+
+  useEffect(() => {
+    if (appIdFromQuery || recipientAddressFromQuery) {
+      setShouldShowIntegrationModal(true);
+    } else {
+      setShouldShowIntegrationModal(false);
+    }
+  }, [appIdFromQuery, recipientAddressFromQuery]);
 
   /*
    * Handlers
    */
 
   const navigateToRegistrationHandler = () => {
-    navigate('/register');
+    navigateWithQuery('/register');
   };
 
   const setInputToMax = () => {
@@ -579,6 +615,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
       <>
         <VerticalDivider />
+        
         <InstructionDrawer
           paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
           recipientAddress={recipientAddress}
@@ -596,6 +633,12 @@ const SwapForm: React.FC<SwapFormProps> = ({
             resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
           />
         </>
+      )}
+
+      { shouldShowIntegrationModal && (
+        <Integration
+          onBackClick={() => setShouldShowIntegrationModal(false)}
+        />
       )}
     </Wrapper>
   );

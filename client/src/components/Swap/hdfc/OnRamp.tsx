@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/macro';
 import Link from '@mui/material/Link';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'react-feather';
 import { CircuitType } from '@zkp2p/circuits-circom-helpers/generate_input';
 import { useContractRead, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from 'wagmi';
 
 import { RowBetween } from '@components/layouts/Row';
 import { ProofGenerationForm } from "@components/ProofGen/ProofForm";
-import { NumberedStep } from "@components/common/NumberedStep";
-import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from "@helpers/constants";
-import { hdfcStrings } from "@helpers/strings";
-import { reformatProofForChain } from "@helpers/submitProof";
+import { NumberedStep } from '@components/common/NumberedStep';
+import { SEND_KEY_FILE_NAME, RemoteProofGenEmailTypes  } from '@helpers/constants';
+import { hdfcStrings } from '@helpers/strings';
+import { reformatProofForChain } from '@helpers/submitProof';
 import { PaymentPlatform } from '@helpers/types';
 import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import useBalances from '@hooks/useBalance';
 import useOnRamperIntents from '@hooks/hdfc/useOnRamperIntents';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useMediaQuery from "@hooks/useMediaQuery";
+import useMediaQuery from '@hooks/useMediaQuery';
+import useQuery from '@hooks/useQuery';
 
 
 interface OnRampProps {
@@ -30,7 +30,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   handleBackClick,
   selectedIntentHash
 }) => {
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * Context
@@ -171,7 +171,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
   };
 
   const handleVerificationCompleteClick = () => {
-    navigate('/send');
+    navigateWithQuery('/send');
   };
 
   /*

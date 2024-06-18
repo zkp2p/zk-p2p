@@ -1,11 +1,11 @@
 import React, { useReducer, useRef } from "react";
 import styled from 'styled-components';
 import { ChevronDown } from 'react-feather';
-import { useNavigate } from 'react-router-dom';
 
 import { InstructionStep } from "@components/Swap/InstructionStep";
 import { Input } from "@components/common/Input";
 import { platformStrings } from "@helpers/strings";
+import useQuery from '@hooks/useQuery';
 import { PaymentPlatformType } from '@helpers/types';
 import { colors } from '@theme/colors';
 
@@ -24,7 +24,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
   paymentPlatform,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
+  const { navigateWithQuery } = useQuery();
 
   /*
    * State
@@ -37,7 +37,7 @@ export const InstructionDrawer: React.FC<InstructionDrawerProps> = ({
    */
 
   const navigateToDepositsHandler = () => {
-    navigate('/deposits');
+    navigateWithQuery('/deposits');
   };
 
   /*

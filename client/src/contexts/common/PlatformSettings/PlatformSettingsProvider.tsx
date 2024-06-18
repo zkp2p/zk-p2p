@@ -1,6 +1,7 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 
 import { CurrencyIndex, PaymentPlatform, PaymentPlatformType, paymentPlatforms } from '@helpers/types';
+import useQuery from '@hooks/useQuery';
 
 import PlatformSettingsContext from './PlatformSettingsContext'
 
@@ -10,6 +11,10 @@ interface ProvidersProps {
 };
 
 const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
+  const { queryParams } = useQuery();
+  const platformFromQuery = queryParams.PLATFORM;
+  const currencyIndexFromQuery = queryParams.CURRENCY_INDEX;
+
   /*
    * State
    */
@@ -25,12 +30,22 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const storedSelectedPaymentPlatform = localStorage.getItem('storedSelectedPaymentPlatform');
-    
+
     if (storedSelectedPaymentPlatform) {
       setPaymentPlatform(JSON.parse(storedSelectedPaymentPlatform));
       setCurrencyIndex(Number(0));
     }
-  }, []);
+
+    if (platformFromQuery && currencyIndexFromQuery) {
+      const isValidPlatformFromQuery = Object.values(PaymentPlatform).includes(platformFromQuery);
+      const isValidCurrencyIndexFromQuery = Object.values(CurrencyIndex).includes(parseInt(currencyIndexFromQuery));
+
+      if (isValidPlatformFromQuery && isValidCurrencyIndexFromQuery) {
+        setPaymentPlatform(platformFromQuery as PaymentPlatformType);
+        setCurrencyIndex(parseInt(currencyIndexFromQuery));
+      }
+    }
+  }, [platformFromQuery, currencyIndexFromQuery]);
 
   useEffect(() => {
     if (paymentPlatform) {
@@ -41,7 +56,6 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const reviewStatusKey = getReviewStatusKey(paymentPlatform);
-
     const storedReviewStatus = localStorage.getItem(reviewStatusKey);
     
     if (storedReviewStatus) {
