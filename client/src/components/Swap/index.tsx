@@ -621,7 +621,6 @@ const SwapForm: React.FC<SwapFormProps> = ({
         />
       </>
 
-<<<<<<< HEAD
       {currentIntentHash && (
         <>
           <VerticalDivider />
@@ -631,25 +630,12 @@ const SwapForm: React.FC<SwapFormProps> = ({
             resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
           />
         </>
-=======
-      {
-        currentIntentHash && (
-          <>
-            <VerticalDivider />
-            <OnRamperIntentTable
-              onIntentRowClick={onIntentTableRowClick}
-              shouldAutoSelectIntent={shouldAutoSelectIntent}
-              resetShouldAutoSelectIntent={() => setShouldAutoSelectIntent(false)}
-            />
-          </>
-        )
-      }
+      )}
 
       { shouldShowIntegrationModal && (
         <Integration
           onBackClick={() => setShouldShowIntegrationModal(false)}
         />
->>>>>>> dcd93948 (wip modal)
       )}
     </Wrapper>
   );
