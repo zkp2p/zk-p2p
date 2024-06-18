@@ -243,7 +243,7 @@ export async function getCircuitInputs(
   const [messagePadded, messagePaddedLen] = await sha256Pad(prehashBytesUnpadded, MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE);
   const [bodyPadded, bodyPaddedLen] = await sha256Pad(body, Math.max(MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE, calc_length));
 
-  // Convet messagePadded to string to print the specific header data that is signed
+  // Convert messagePadded to string to print the specific header data that is signed
   // console.log(JSON.stringify(message).toString());
 
   // Ensure SHA manual unpadded is running the correct function

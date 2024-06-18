@@ -999,7 +999,7 @@ describe("RevolutRamp", () => {
         });
       });
 
-      describe("when the payment was in the incorrect currecy", async () => {
+      describe("when the payment was in the incorrect currency", async () => {
         beforeEach(async () => {
           subjectSendData.currencyId = "SGD";
         });

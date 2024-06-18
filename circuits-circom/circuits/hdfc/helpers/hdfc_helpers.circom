@@ -47,7 +47,7 @@ template HdfcOnramperId(
     assert(max_total_id_packed_bytes == 8);
 
     // Feed first 6 bytes into the first hash
-    // Feed outupt of first hash + last 2 bytes into the second hash
+    // Feed output of first hash + last 2 bytes into the second hash
     component hash1 = Poseidon(6);
     for (var i = 0; i < 6; i++) {
         hash1.inputs[i] <== reveal_email_to_packed[i];
@@ -79,7 +79,7 @@ template HdfcOfframperId(max_body_bytes, pack_size) {
 
     // HASH PAYEE ID
     // Feed first 6 bytes into the first hash
-    // Feed outupt of first hash + last 2 bytes into the second hash
+    // Feed output of first hash + last 2 bytes into the second hash
     component hash1 = Poseidon(6);
     for (var i = 0; i < 6; i++) {
         hash1.inputs[i] <== reveal_payee_packed[i];
