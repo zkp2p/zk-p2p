@@ -403,13 +403,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
   useEffect(() => {
     // Onramp directly to custom recipient address if user is specifically requesting USDC on Base using redirect flow
-    if (
-      recipientAddressFromQuery &&
-      networkFromQuery &&
-      networkFromQuery === ReceiveNetwork.BASE &&
-      tokenFromQuery &&
-      tokenFromQuery === ReceiveToken.USDC
-    ) {
+    if (recipientAddressFromQuery &&
+        networkFromQuery &&
+        networkFromQuery === ReceiveNetwork.BASE &&
+        tokenFromQuery &&
+        tokenFromQuery === ReceiveToken.USDC) {
       setRecipientAddress(recipientAddressFromQuery);
     } else if (loggedInEthereumAddress) {
       setRecipientAddress(loggedInEthereumAddress);
@@ -617,6 +615,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
 
       <>
         <VerticalDivider />
+        
         <InstructionDrawer
           paymentPlatform={paymentPlatform || PaymentPlatform.VENMO}
           recipientAddress={recipientAddress}

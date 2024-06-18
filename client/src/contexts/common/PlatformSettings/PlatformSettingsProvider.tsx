@@ -30,7 +30,7 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const storedSelectedPaymentPlatform = localStorage.getItem('storedSelectedPaymentPlatform');
-    
+
     if (storedSelectedPaymentPlatform) {
       setPaymentPlatform(JSON.parse(storedSelectedPaymentPlatform));
       setCurrencyIndex(Number(0));
@@ -56,7 +56,6 @@ const PlatformSettingsProvider = ({ children }: ProvidersProps) => {
 
   useEffect(() => {
     const reviewStatusKey = getReviewStatusKey(paymentPlatform);
-
     const storedReviewStatus = localStorage.getItem(reviewStatusKey);
     
     if (storedReviewStatus) {

@@ -37,7 +37,7 @@ export default function useQuery() {
   }, [location.search]);
 
   return {
-    navigateWithQuery,
+    navigateWithQuery,  
     queryParams
   }
 }
