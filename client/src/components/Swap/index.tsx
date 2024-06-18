@@ -58,11 +58,11 @@ const SwapForm: React.FC<SwapFormProps> = ({
   onIntentTableRowClick,
 }: SwapFormProps) => {
   const { navigateWithQuery, queryParams } = useQuery();
-  const amountFromQuery = queryParams.AMOUNT_USDC;
+  const appIdFromQuery = queryParams.APP_ID;
   const recipientAddressFromQuery = queryParams.RECIPIENT_ADDRESS;
+  const amountFromQuery = queryParams.AMOUNT_USDC;
   const networkFromQuery = queryParams.NETWORK;
   const tokenFromQuery = queryParams.TO_TOKEN;
-  const appIdFromQuery = queryParams.APP_ID;
 
   /*
    * Contexts
@@ -433,12 +433,12 @@ const SwapForm: React.FC<SwapFormProps> = ({
   }, [amountFromQuery]);
 
   useEffect(() => {
-    if (appIdFromQuery) {
+    if (appIdFromQuery || recipientAddressFromQuery) {
       setShouldShowIntegrationModal(true);
     } else {
       setShouldShowIntegrationModal(false);
     }
-  }, [appIdFromQuery]);
+  }, [appIdFromQuery, recipientAddressFromQuery]);
 
   /*
    * Handlers
