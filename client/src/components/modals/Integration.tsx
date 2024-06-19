@@ -52,7 +52,7 @@ export const Integration: React.FC<IntegrationProps> = ({
 
   const instructionCopy = (): string => {
     const appIdFromQuery = queryParams.APP_ID;
-    const appCopy = appIdFromQuery ? `You've arrived from ${appIdFromQuery}` : '';
+    const appCopy = appIdFromQuery ? `You've arrived from ${appIdFromQuery}. ` : '';
 
     const toTokenFromQuery = queryParams.TO_TOKEN;
     const networkFromQuery = queryParams.NETWORK;
@@ -66,7 +66,7 @@ export const Integration: React.FC<IntegrationProps> = ({
       amountCopy = `${amountUsdcFromQuery} ${toTokenFromQuery}`;
     }
 
-    return `${appCopy}. Complete the ${flowCopy} to receive ${amountCopy} directly to the following wallet address:`
+    return `${appCopy}Complete the ${flowCopy} to receive ${amountCopy} directly to the following wallet address:`
   };
   
   /*
