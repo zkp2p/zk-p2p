@@ -18,7 +18,15 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
    */
 
   const { isLoggedIn, loggedInEthereumAddress } = useAccount();
-  const { venmoRampAddress, hdfcRampAddress, garantiRampAddress, usdcAddress, socketBridgeAddress, lifiBridgeAddress } = useSmartContracts();
+  const {
+    venmoRampAddress,
+    hdfcRampAddress,
+    garantiRampAddress,
+    revolutRampAddress,
+    usdcAddress,
+    socketBridgeAddress,
+    lifiBridgeAddress
+  } = useSmartContracts();
 
   /*
    * State
@@ -29,6 +37,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   const [usdcApprovalToRamp, setUsdcApprovalToRamp] = useState<bigint | null>(null);
   const [usdcApprovalToHdfcRamp, setUsdcApprovalToHdfcRamp] = useState<bigint | null>(null);
   const [usdcApprovalToGarantiRamp, setUsdcApprovalToGarantiRamp] = useState<bigint | null>(null);
+  const [usdcApprovalToRevolutRamp, setUsdcApprovalToRevolutRamp] = useState<bigint | null>(null);
+
   const [usdcApprovalToSocketBridge, setUsdcApprovalToSocketBridge] = useState<bigint | null>(null);
   const [usdcApprovalToLifiBridge, setUsdcApprovalToLifiBridge] = useState<bigint | null>(null);
 
@@ -97,6 +107,20 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
     args: [
       loggedInEthereumAddress ?? ZERO_ADDRESS,
       garantiRampAddress
+    ],
+    enabled: shouldFetchUsdcApprovalToRamp,
+  });
+
+  const {
+    data: usdcApprovalToRevolutRampRaw,
+    refetch: refetchUsdcApprovalToRevolutRamp,
+  } = useContractRead({
+    address: usdcAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
+    args: [
+      loggedInEthereumAddress ?? ZERO_ADDRESS,
+      revolutRampAddress
     ],
     enabled: shouldFetchUsdcApprovalToRamp,
   });
@@ -261,6 +285,21 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
   }, [usdcApprovalToGarantiRampRaw]);
 
   useEffect(() => {
+    esl && console.log('usdcApprovalToRevolutRampRaw_1');
+    esl && console.log('checking usdcApprovalToRevolutRampRaw: ', usdcApprovalToRevolutRampRaw);
+  
+    if (usdcApprovalToRevolutRampRaw || usdcApprovalToRevolutRampRaw === ZERO) { // BigInt(0) is falsy
+      esl && console.log('usdcApprovalToRevolutRampRaw_2');
+
+      setUsdcApprovalToRevolutRamp(usdcApprovalToRevolutRampRaw);
+    } else {
+      esl && console.log('usdcApprovalToRevolutRampRaw_3');
+      
+      setUsdcApprovalToRevolutRamp(null);
+    }
+  }, [usdcApprovalToRevolutRampRaw]);
+
+  useEffect(() => {
     esl && console.log('usdcApprovalToSocketBridgeRaw_1');
     esl && console.log('checking usdcApprovalToSocketBridgeRaw: ', usdcApprovalToSocketBridgeRaw);
   
@@ -305,6 +344,8 @@ const BalancesProvider = ({ children }: ProvidersProps) => {
         refetchUsdcApprovalToHdfcRamp,
         usdcApprovalToGarantiRamp,
         refetchUsdcApprovalToGarantiRamp,
+        usdcApprovalToRevolutRamp,
+        refetchUsdcApprovalToRevolutRamp,
         usdcApprovalToSocketBridge,
         refetchUsdcApprovalToSocketBridge,
         usdcApprovalToLifiBridge,

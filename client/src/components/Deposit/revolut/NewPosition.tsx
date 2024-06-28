@@ -48,7 +48,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   const { isLoggedIn, loginStatus } = useAccount();
   const { revolutRampAddress, revolutRampAbi, usdcAddress, usdcAbi } = useSmartContracts();
   const { minimumDepositAmount } = useRampState();
-  const { usdcApprovalToRamp, usdcBalance, refetchUsdcApprovalToRamp, refetchUsdcBalance } = useBalances();
+  const { usdcApprovalToRevolutRamp, usdcBalance, refetchUsdcApprovalToRevolutRamp, refetchUsdcBalance } = useBalances();
   const { refetchDeposits } = useDeposits();
   const { paymentPlatform, currencyIndex } = usePlatformSettings();
   const {
@@ -110,7 +110,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       
       refetchDeposits?.();
 
-      refetchUsdcApprovalToRamp?.();
+      refetchUsdcApprovalToRevolutRamp?.();
 
       refetchUsdcBalance?.();
 
@@ -145,7 +145,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
     onSuccess(data: any) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
-      refetchUsdcApprovalToRamp?.();
+      refetchUsdcApprovalToRevolutRamp?.();
 
       refetchUsdcBalance?.();
     },
@@ -172,14 +172,14 @@ export const NewPosition: React.FC<NewPositionProps> = ({
               setDepositState(NewRevolutDepositTransactionStatus.INVALID_DEPOSITOR_ID);
             } else {
               const usdcBalanceLoaded = usdcBalance !== null;
-              const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null;
+              const usdcApprovalToRevolutRampLoaded = usdcApprovalToRevolutRamp !== null;
               const minimumDepositAmountLoaded = minimumDepositAmount !== null;
   
-              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRampLoaded && minimumDepositAmountLoaded) {
+              if (depositAmountInput && usdcBalanceLoaded && usdcApprovalToRevolutRampLoaded && minimumDepositAmountLoaded) {
                 const depositAmountBI = toBigInt(depositAmountInput);
                 const isDepositAmountGreaterThanBalance = depositAmountBI > usdcBalance;
                 const isDepositAmountLessThanMinDepositSize = depositAmountBI < minimumDepositAmount;
-                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRamp;
+                const isDepositAmountGreaterThanApprovedBalance = depositAmountBI > usdcApprovalToRevolutRamp;
           
                 const signingApproveTransaction = signApproveTransactionStatus === 'loading';
                 const miningApproveTransaction = mineApproveTransactionStatus === 'loading';
@@ -230,7 +230,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       receiveAmountInput,
       minimumDepositAmount,
       usdcBalance,
-      usdcApprovalToRamp,
+      usdcApprovalToRevolutRamp,
       isRevolutTagInputValid,
       signApproveTransactionStatus,
       mineApproveTransactionStatus,
@@ -247,13 +247,13 @@ export const NewPosition: React.FC<NewPositionProps> = ({
   }, [depositState]);
 
   useEffect(() => {
-    const usdcApprovalToRampLoaded = usdcApprovalToRamp !== null && usdcApprovalToRamp !== undefined;
+    const usdcApprovalToRevolutRampLoaded = usdcApprovalToRevolutRamp !== null && usdcApprovalToRevolutRamp !== undefined;
 
-    if (!depositAmountInput || !usdcApprovalToRampLoaded) {
+    if (!depositAmountInput || !usdcApprovalToRevolutRampLoaded) {
       setAmountToApprove(ZERO);
     } else {
       const depositAmountBI = toBigInt(depositAmountInput.toString());
-      const approvalDifference = depositAmountBI - usdcApprovalToRamp;
+      const approvalDifference = depositAmountBI - usdcApprovalToRevolutRamp;
       if (approvalDifference > ZERO) {
         setAmountToApprove(depositAmountBI);
       } else {
@@ -261,7 +261,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
       }
     }
     
-  }, [depositAmountInput, usdcApprovalToRamp]);
+  }, [depositAmountInput, usdcApprovalToRevolutRamp]);
 
   useEffect(() => {
     if (extractedRevolutProfileId) {
@@ -360,8 +360,8 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         return 'Mining Transaction';
 
       case NewRevolutDepositTransactionStatus.APPROVAL_REQUIRED:
-        const usdcApprovalToRampString = usdcApprovalToRamp ? toUsdcString(usdcApprovalToRamp, true) : '0';
-        return `Insufficient USDC transfer approval: ${usdcApprovalToRampString}`;
+        const usdcApprovalToRevolutRampString = usdcApprovalToRevolutRamp ? toUsdcString(usdcApprovalToRevolutRamp, true) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToRevolutRampString}`;
 
       case NewRevolutDepositTransactionStatus.VALID:
         return 'Create Deposit';

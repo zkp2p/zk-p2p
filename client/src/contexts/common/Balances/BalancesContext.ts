@@ -13,6 +13,8 @@ interface BalancesValues {
   refetchUsdcApprovalToHdfcRamp: (() => void) | null
   usdcApprovalToGarantiRamp: bigint | null
   refetchUsdcApprovalToGarantiRamp: (() => void) | null
+  usdcApprovalToRevolutRamp: bigint | null
+  refetchUsdcApprovalToRevolutRamp: (() => void) | null
   usdcApprovalToSocketBridge: bigint | null
   refetchUsdcApprovalToSocketBridge: (() => void) | null
   usdcApprovalToLifiBridge: bigint | null
@@ -32,6 +34,8 @@ const defaultValues: BalancesValues = {
   refetchUsdcApprovalToHdfcRamp: null,
   usdcApprovalToGarantiRamp: null,
   refetchUsdcApprovalToGarantiRamp: null,
+  usdcApprovalToRevolutRamp: null,
+  refetchUsdcApprovalToRevolutRamp: null,
   usdcApprovalToSocketBridge: null,
   refetchUsdcApprovalToSocketBridge: null,
   usdcApprovalToLifiBridge: null,
