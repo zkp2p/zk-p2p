@@ -47,6 +47,7 @@ const QuoteState = {
   INVALID_RECIPIENT_ADDRESS: 'invalid-recipient-address',
   ORDER_COOLDOWN_PERIOD: 'order-cooldown-period',
   BLOCKED_BY_DEPOSITOR: 'blocked-by-depositor',
+  MAINTENANCE: 'maintenance',
   SUCCESS: 'success',
 }
 
@@ -296,7 +297,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         const conversionRate = indicativeQuote.conversionRate;
 
         const isAmountToSendValid = usdAmountToSend !== undefined; 
-        const isSendAmountAboveMin = paymentPlatform === PaymentPlatform.REVOLUT ? Number(usdAmountToSend) >= 1 : true ;
+        const isSendAmountAboveMin = paymentPlatform === PaymentPlatform.REVOLUT ? Number(usdAmountToSend) >= 1 : true;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
@@ -326,9 +327,14 @@ const SwapForm: React.FC<SwapFormProps> = ({
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
                 if (isValidRecipientAddress) {
-                  setQuoteState(QuoteState.SUCCESS);
+                  const isVenmoMaintenance = paymentPlatform === PaymentPlatform.VENMO;
+                  if (isVenmoMaintenance) {
+                    updateQuoteErrorState(QuoteState.MAINTENANCE);
+                  } else {
+                    setQuoteState(QuoteState.SUCCESS);
 
-                  setShouldConfigureSignalIntentWrite(true);
+                    setShouldConfigureSignalIntentWrite(true);
+                  }
                 } else {
                   updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);
                 }
@@ -516,6 +522,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
       case QuoteState.EXCEEDS_MAX_SIZE:
         const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : ZERO, true);
         return `Exceeded USDC transfer limit of ${maximumOnRampAmountString}`;
+
+      case QuoteState.MAINTENANCE:
+        return 'Under maintenance';
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';
