@@ -142,13 +142,13 @@ template VenmoSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     signal intent_hash_squared;
     intent_hash_squared <== intent_hash * intent_hash;
 
-    // TOTAL CONSTRAINTS: 8160368
+    // TOTAL CONSTRAINTS: 8879008
 }
 
 // Args:
 // * max_header_bytes = 768 is the max number of bytes in the header
-// * max_body_bytes = 6272 is the max number of bytes in the body after precomputed slice (Need to leave room for >280 char custom message)
+// * max_body_bytes = 6912 is the max number of bytes in the body after precomputed slice (Need to leave room for >280 char custom message)
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
 // * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
-component main { public [ intent_hash ] } = VenmoSendEmail(768, 6272, 121, 17, 7);
+component main { public [ intent_hash ] } = VenmoSendEmail(768, 6912, 121, 17, 7);
