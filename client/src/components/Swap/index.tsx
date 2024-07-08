@@ -47,6 +47,7 @@ const QuoteState = {
   INVALID_RECIPIENT_ADDRESS: 'invalid-recipient-address',
   ORDER_COOLDOWN_PERIOD: 'order-cooldown-period',
   BLOCKED_BY_DEPOSITOR: 'blocked-by-depositor',
+  MAINTENANCE: 'maintenance',
   SUCCESS: 'success',
 }
 
@@ -328,7 +329,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
                 if (isValidRecipientAddress) {
                   const isVenmoMaintenance = paymentPlatform === PaymentPlatform.VENMO;
                   if (isVenmoMaintenance) {
-                    updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
+                    updateQuoteErrorState(QuoteState.MAINTENANCE);
                   } else {
                     setQuoteState(QuoteState.SUCCESS);
 
@@ -521,6 +522,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
       case QuoteState.EXCEEDS_MAX_SIZE:
         const maximumOnRampAmountString = toUsdcString(maximumOnRampAmount ? maximumOnRampAmount : ZERO, true);
         return `Exceeded USDC transfer limit of ${maximumOnRampAmountString}`;
+
+      case QuoteState.MAINTENANCE:
+        return 'Under maintenance';
 
       case QuoteState.INSUFFICIENT_LIQUIDITY:
         return 'Insufficient liquidity';
