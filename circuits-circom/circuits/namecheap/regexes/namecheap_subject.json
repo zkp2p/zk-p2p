@@ -1,0 +1,9 @@
+{
+    "parts": [
+        {
+            "is_public": false,
+            "regex_def": "Subject: PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n"
+        }
+    ]
+}
+  
