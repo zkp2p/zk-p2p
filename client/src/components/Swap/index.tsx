@@ -328,7 +328,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
                 if (isValidRecipientAddress) {
                   const isVenmoMaintenance = paymentPlatform === PaymentPlatform.VENMO;
                   if (isVenmoMaintenance) {
-                    setQuoteState(QuoteState.INSUFFICIENT_LIQUIDITY);
+                    updateQuoteErrorState(QuoteState.INSUFFICIENT_LIQUIDITY);
                   } else {
                     setQuoteState(QuoteState.SUCCESS);
 
