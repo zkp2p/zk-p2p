@@ -63,7 +63,6 @@ describe("Namecheap Transfer Details", function () {
             true
         );
 
-        console.log(witness);
         assert(Fr.eq(Fr.e(witness[1]), Fr.e(1)));
     });
 

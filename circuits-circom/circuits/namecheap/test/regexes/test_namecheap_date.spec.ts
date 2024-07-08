@@ -64,7 +64,7 @@ describe("Namecheap date", function () {
         );
         const expected = Array(textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: ").length).fill("0")
             .concat(textToAsciiArray("07/02/2024"))
-            .concat(Array(textToAsciiArray("\r\n")).length).fill("0")
+            .concat(Array(textToAsciiArray("\r\n").length).fill("0"))
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
