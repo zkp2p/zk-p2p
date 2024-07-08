@@ -42,7 +42,9 @@
         "genwitness:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
         "genwitness:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
         "genproof:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
-        "genproof:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd .."
+        "genproof:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
+        "setup:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./ceremony/1_setup_ceremony.sh && cd ..",
+        "setup:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./ceremony/1_setup_ceremony.sh && cd .."
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.2",
