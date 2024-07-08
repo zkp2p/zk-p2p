@@ -34,7 +34,7 @@ describe("Namecheap date", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024")
+            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -45,7 +45,7 @@ describe("Namecheap date", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024")
+            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -56,7 +56,7 @@ describe("Namecheap date", function () {
 
     it("Should reveal regex correctly", async () => {
         const input = {
-            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024")
+            "msg": textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -64,6 +64,7 @@ describe("Namecheap date", function () {
         );
         const expected = Array(textToAsciiArray("Namecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: ").length).fill("0")
             .concat(textToAsciiArray("07/02/2024"))
+            .concat(Array(textToAsciiArray("\r\n")).length).fill("0")
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -71,7 +72,7 @@ describe("Namecheap date", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("Famecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024")     // replace Namecheap with Famecheap
+            "msg": textToAsciiArray("Famecheap.com\r\nDomain Ownership Accepted Notification\r\nDate: 07/02/2024\r\n")     // replace Namecheap with Famecheap
         };
         const witness = await cir.calculateWitness(
             input,
