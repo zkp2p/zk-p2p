@@ -34,7 +34,7 @@ describe("Namecheap Subject", function () {
 
     it("Should generate witnesses", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\nSubject: PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")
+            "msg": textToAsciiArray("\r\nsubject:PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -45,7 +45,7 @@ describe("Namecheap Subject", function () {
 
     it("Should match regex once", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\nSubject: PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")
+            "msg": textToAsciiArray("\r\nsubject:PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")
         };
         const witness = await cir.calculateWitness(
             input,
@@ -56,7 +56,7 @@ describe("Namecheap Subject", function () {
 
     it("Should fail to match regex", async () => {
         const input = {
-            "msg": textToAsciiArray("\r\nsubject: PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")   // subject is lowercase
+            "msg": textToAsciiArray("\r\nSubject:PUSH DOMAIN CONFIRMATION EMAIL - Namecheap.com\r\n")   // subject is upercase
         };
         const witness = await cir.calculateWitness(
             input,

@@ -77,7 +77,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     var maxEmailFromLen = 21; // Length of support@namecheap.com
     var maxEmailToLen = 49;  // RFC 2821: requires length to be 254, but 49 is safe max length of email to field (https://atdata.com/long-email-addresses/)
     var maxDateLen = 10;
-    var maxBuyerIdLen = 7;      // todo
+    var maxBuyerIdLen = 30;      // todo
     var maxDomainNameLen = 42;  // todo
     
     //-------REGEXES----------//
@@ -92,8 +92,8 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // TODO: Write To V3 Regex.
     // To V2 regex. 
-    signal (toEmailFound, toEmailReveal[maxHeadersLength]) <== ToRegexV2(maxHeadersLength)(emailHeader);
-    toEmailFound === 1;
+    // signal (toEmailFound, toEmailReveal[maxHeadersLength]) <== ToRegexV2(maxHeadersLength)(emailHeader);
+    // toEmailFound === 1;
 
     // Namecheap date regex
     signal (dateRegexFound, dateReveal[maxBodyLength]) <== NamecheapDateRegex(maxBodyLength)(emailBody);
@@ -116,7 +116,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // Packed to (Not an output. Used to compute seller id)
     signal input toEmailIndex;
-    signal toEmailAddrPacked[2] <== PackRegexReveal(maxHeadersLength, maxEmailToLen)(toEmailReveal, toEmailIndex);
+    // signal toEmailAddrPacked[2] <== PackRegexReveal(maxHeadersLength, maxEmailToLen)(toEmailReveal, toEmailIndex);
 
     // Output packed date
     signal input namecheapDateIndex;
@@ -132,11 +132,11 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     
     //-------POSEIDON HASHING----------//
 
-    component sellerIdHasher = Poseidon(2);
-    for (var i = 0; i < 2; i++) {
-        sellerIdHasher.inputs[i] <== toEmailAddrPacked[i];
-    }
-    signal output sellerIdHash <== sellerIdHasher.out;
+    // component sellerIdHasher = Poseidon(2);
+    // for (var i = 0; i < 2; i++) {
+    //     sellerIdHasher.inputs[i] <== toEmailAddrPacked[i];
+    // }
+    // signal output sellerIdHash <== sellerIdHasher.out;
 
     // NULLIFIER
     signal output emailNullifier;
@@ -149,14 +149,13 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal intentHashSquared;
     intentHashSquared <== intentHash * intentHash;
 
-    // TOTAL CONSTRAINTS: 3170205
+    // TOTAL CONSTRAINTS: 3444937
 }
 
 
 // Args:
-// * maxHeadersLength = 512 is the max number of bytes in the header
-// * maxBodyLength = 2688 is the max number of bytes in the body after precomputed slice
+// * maxHeadersLength = 768 is the max number of bytes in the header
+// * maxBodyLength = 768 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
-// * pack_size = 7 is the number of bytes that can fit into a 255ish bit signal (can increase later)
 component main { public [ intentHash ] } = NamecheapPushDomainVerifier(768, 768, 121, 17);

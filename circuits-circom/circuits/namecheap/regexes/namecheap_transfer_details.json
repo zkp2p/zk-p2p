@@ -6,7 +6,7 @@
         },
         {
             "is_public": false,
-            "regex_def": "Push to Login ID:  "
+            "regex_def": "Push to Login ID: "
         },
         {
             "is_public": true,
@@ -22,7 +22,7 @@
         },
         {
             "is_public": false,
-            "regex_def": "\r\nPlease contact our support team if you have any questions."
+            "regex_def": "\r\n\r\nPlease contact our support team if you have any questions."
         }
     ]
 }

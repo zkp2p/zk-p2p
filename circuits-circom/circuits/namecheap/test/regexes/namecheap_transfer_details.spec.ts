@@ -36,9 +36,9 @@ describe("Namecheap Transfer Details", function () {
         const input = {
             "msg": textToAsciiArray(
                 "The request to push the domain has been fulfilled.\r\n" +
-                "Push to Login ID:  richard2015" +
+                "Push to Login ID: richard2015" +
                 "\r\nThese changes apply to the following domain(s):\r\n" +
-                "0xsachink.xyz\r\nPlease contact our support team if you have any questions."
+                "0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions."
             )
 
         };
@@ -53,9 +53,9 @@ describe("Namecheap Transfer Details", function () {
         const input = {
             "msg": textToAsciiArray(
                 "The request to push the domain has been fulfilled.\r\n" +
-                "Push to Login ID:  richard2015" +
+                "Push to Login ID: richard2015" +
                 "\r\nThese changes apply to the following domain(s):\r\n" +
-                "0xsachink.xyz\r\nPlease contact our support team if you have any questions."
+                "0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions."
             )
         };
         const witness = await cir.calculateWitness(
@@ -70,18 +70,18 @@ describe("Namecheap Transfer Details", function () {
         const input = {
             "msg": textToAsciiArray(
                 "The request to push the domain has been fulfilled.\r\n" +
-                "Push to Login ID:  richard2015" +
+                "Push to Login ID: richard2015" +
                 "\r\nThese changes apply to the following domain(s):\r\n" +
-                "0xsachink.xyz\r\nPlease contact our support team if you have any questions."
+                "0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions."
             )
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray("The request to push the domain has been fulfilled.\r\nPush to Login ID:  ").length).fill("0")
+        const expected = Array(textToAsciiArray("The request to push the domain has been fulfilled.\r\nPush to Login ID: ").length).fill("0")
             .concat(textToAsciiArray("richard2015"))
-            .concat(Array(textToAsciiArray("\r\nThese changes apply to the following domain(s):\r\n0xsachink.xyz\r\nPlease contact our support team if you have any questions.").length).fill("0"))
+            .concat(Array(textToAsciiArray("\r\nThese changes apply to the following domain(s):\r\n0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions.").length).fill("0"))
         const result = witness.slice(2, input.msg.length + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -91,18 +91,18 @@ describe("Namecheap Transfer Details", function () {
         const input = {
             "msg": textToAsciiArray(
                 "The request to push the domain has been fulfilled.\r\n" +
-                "Push to Login ID:  richard2015" +
+                "Push to Login ID: richard2015" +
                 "\r\nThese changes apply to the following domain(s):\r\n" +
-                "0xsachink.xyz\r\nPlease contact our support team if you have any questions."
+                "0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions."
             )
         };
         const witness = await cir.calculateWitness(
             input,
             true
         );
-        const expected = Array(textToAsciiArray("The request to push the domain has been fulfilled.\r\nPush to Login ID:  richard2015\r\nThese changes apply to the following domain(s):\r\n").length).fill("0")
+        const expected = Array(textToAsciiArray("The request to push the domain has been fulfilled.\r\nPush to Login ID: richard2015\r\nThese changes apply to the following domain(s):\r\n").length).fill("0")
             .concat(textToAsciiArray("0xsachink.xyz"))
-            .concat(Array(textToAsciiArray("\r\nPlease contact our support team if you have any questions.").length).fill("0"))
+            .concat(Array(textToAsciiArray("\r\n\r\nPlease contact our support team if you have any questions.").length).fill("0"))
         const result = witness.slice(input.msg.length + 2, input.msg.length * 2 + 2);
 
         assert.equal(JSON.stringify(result), JSON.stringify(expected), true);
@@ -112,9 +112,9 @@ describe("Namecheap Transfer Details", function () {
         const input = {
             "msg": textToAsciiArray(
                 "The request to pull the domain has been fulfilled.\r\n" +          // pull instead of push
-                "Push to Login ID:  richard2015" +
+                "Push to Login ID: richard2015" +
                 "\r\nThese changes apply to the following domain(s):\r\n" +
-                "0xsachink.xyz\r\nPlease contact our support team if you have any questions."
+                "0xsachink.xyz\r\n\r\nPlease contact our support team if you have any questions."
             )
         };
         const witness = await cir.calculateWitness(
