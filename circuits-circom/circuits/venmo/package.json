@@ -45,8 +45,8 @@
         "genproof:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
         "setup:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send && cd ../../scripts && ./ceremony/1_setup_ceremony.sh && cd ..",
         "setup:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration && cd ../../scripts && ./ceremony/1_setup_ceremony.sh && cd ..",
-        "contribute:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send PREV_VERSION=${0:-0} CURR_VERSION=${1:-1} ENTROPY=${2:12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
-        "contribute:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${0:-1} CURR_VERSION=${1:-1} ENTROPY=${2:12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
+        "contribute:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send PREV_VERSION=${0:-0} CURR_VERSION=${1:-1} ENTROPY=${2:-12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
+        "contribute:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${0:-1} CURR_VERSION=${1:-1} ENTROPY=${2:-12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
         "finalize:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send PREV_VERSION=${0:-0} && cd ../../scripts && ./ceremony/3_finalize_ceremony.sh && cd ..",
         "finalize:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${1:-0} && cd ../../scripts && ./ceremony/3_finalize_ceremony.sh && cd .."
     },
