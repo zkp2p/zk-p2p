@@ -34,8 +34,8 @@ include "../common-v2/regexes/to_regex_v2.circom";      // todo: should we write
 
 /// @input fromEmailIndex
 /// @input toEmailIndex
-/// @input buyerIdIndex
-/// @input domainNameIndex
+/// @input namecheapBuyerIdIndex
+/// @input namecheapDomainNameIndex
 /// @input intentHash or address ETH address as identity commitment (to make it as part of the proof).
 
 /// @output fromEmailAddPacked
@@ -118,13 +118,17 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal input toEmailIndex;
     signal toEmailAddrPacked[2] <== PackRegexReveal(maxHeadersLength, maxEmailToLen)(toEmailReveal, toEmailIndex);
 
+    // Output packed date
+    signal input namecheapDateIndex;
+    signal output datePacked[1] <== PackRegexReveal(maxBodyLength, maxDateLen)(dateReveal, namecheapDateIndex);
+    
     // Output packed buyer id
-    signal input buyerIdIndex;
-    signal output buyerIdPacked[1] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, buyerIdIndex);
+    signal input namecheapBuyerIdIndex;
+    signal output buyerIdPacked[1] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, namecheapBuyerIdIndex);
 
     // Output packed domain name
-    signal input domainNameIndex;
-    signal output domainNamePacked[2] <== PackRegexReveal(maxBodyLength, maxDomainNameLen)(domainNameReveal, domainNameIndex);
+    signal input namecheapDomainNameIndex;
+    signal output domainNamePacked[2] <== PackRegexReveal(maxBodyLength, maxDomainNameLen)(domainNameReveal, namecheapDomainNameIndex);
     
     //-------POSEIDON HASHING----------//
 
