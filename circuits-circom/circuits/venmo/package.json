@@ -48,7 +48,7 @@
         "contribute:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send PREV_VERSION=${0:-0} CURR_VERSION=${1:-1} ENTROPY=${2:-12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
         "contribute:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${0:-1} CURR_VERSION=${1:-1} ENTROPY=${2:-12345abcd} && cd ../../scripts && ./ceremony/2_contribute_ceremony.sh && cd ..",
         "finalize:venmo:send": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_send PREV_VERSION=${0:-0} && cd ../../scripts && ./ceremony/3_finalize_ceremony.sh && cd ..",
-        "finalize:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${1:-0} && cd ../../scripts && ./ceremony/3_finalize_ceremony.sh && cd .."
+        "finalize:venmo:registration": "CIRCUIT_DIR=venmo CIRCUIT_NAME=venmo_registration PREV_VERSION=${0:-0} && cd ../../scripts && ./ceremony/3_finalize_ceremony.sh && cd .."
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.2",
