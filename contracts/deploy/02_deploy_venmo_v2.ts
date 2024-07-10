@@ -32,37 +32,40 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const usdcAddress = USDC[network] ? USDC[network] : getDeployedContractAddress(network, "USDCMock");
 
-  const ramp = await deploy("VenmoRampV2", {
-    from: deployer,
-    args: [
-      deployer,
-      getDeployedContractAddress(network, "Ramp"),
-      usdcAddress,
-      getDeployedContractAddress(network, "Poseidon3"),
-      MIN_DEPOSIT_AMOUNT[paymentProvider][network],
-      MAX_ONRAMP_AMOUNT[paymentProvider][network],
-      INTENT_EXPIRATION_PERIOD[paymentProvider][network],
-      ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
-      SUSTAINABILITY_FEE[paymentProvider][network],
-      SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
-        ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] 
-        : deployer,
-    ],
-  });
-  console.log("VenmoRampV2 deployed at", ramp.address);
+  // const ramp = await deploy("VenmoRampV2", {
+  //   from: deployer,
+  //   args: [
+  //     deployer,
+  //     getDeployedContractAddress(network, "Ramp"),
+  //     usdcAddress,
+  //     getDeployedContractAddress(network, "Poseidon3"),
+  //     MIN_DEPOSIT_AMOUNT[paymentProvider][network],
+  //     MAX_ONRAMP_AMOUNT[paymentProvider][network],
+  //     INTENT_EXPIRATION_PERIOD[paymentProvider][network],
+  //     ONRAMP_COOL_DOWN_PERIOD[paymentProvider][network],
+  //     SUSTAINABILITY_FEE[paymentProvider][network],
+  //     SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] != ""
+  //       ? SUSTAINABILITY_FEE_RECIPIENT[paymentProvider][network] 
+  //       : deployer,
+  //   ],
+  // });
+  // console.log("VenmoRampV2 deployed at", ramp.address);
 
-  const keyHashAdapterDeploy = await deploy("VenmoManagedKeyHashAdapterV2", {
-    contract: "ManagedKeyHashAdapterV2",
-    from: deployer,
-    args: [SERVER_KEY_HASH[paymentProvider]],
-  });
-  console.log("VenmoV2KeyHashAdapter deployed at", keyHashAdapterDeploy.address);
+  // const keyHashAdapterDeploy = await deploy("VenmoManagedKeyHashAdapterV2", {
+  //   contract: "ManagedKeyHashAdapterV2",
+  //   from: deployer,
+  //   args: [SERVER_KEY_HASH[paymentProvider]],
+  // });
+  // console.log("VenmoV2KeyHashAdapter deployed at", keyHashAdapterDeploy.address);
 
-  const nullifierRegistryContract = await ethers.getContractAt(
-    "NullifierRegistry",
-    getDeployedContractAddress(network, "NullifierRegistry")
-  );
+  // const nullifierRegistryContract = await ethers.getContractAt(
+  //   "NullifierRegistry",
+  //   getDeployedContractAddress(network, "NullifierRegistry")
+  // );
 
+  const ramp = await ethers.getContractAt("VenmoRampV2", getDeployedContractAddress(network, "VenmoRampV2"));
+  const keyHashAdapterDeploy = await ethers.getContractAt("ManagedKeyHashAdapterV2", getDeployedContractAddress(network, "VenmoManagedKeyHashAdapterV2"));
+  const nullifierRegistryContract = await ethers.getContractAt("NullifierRegistry", getDeployedContractAddress(network, "NullifierRegistry"));
   const registrationProcessor = await deploy("VenmoRegistrationProcessorV2", {
     from: deployer,
     args: [
@@ -88,23 +91,23 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log("SendProcessorV2 deployed at", sendProcessor.address);
   console.log("Processors deployed...");
 
-  const rampContract = await ethers.getContractAt("VenmoRampV2", ramp.address);
-  if (!(await rampContract.isInitialized())) {
-    await rampContract.initialize(
-      registrationProcessor.address,
-      sendProcessor.address
-    );
+  // const rampContract = await ethers.getContractAt("VenmoRampV2", ramp.address);
+  // if (!(await rampContract.isInitialized())) {
+  //   await rampContract.initialize(
+  //     registrationProcessor.address,
+  //     sendProcessor.address
+  //   );
   
-    console.log("VenmoRampV2 initialized...");
-  }
+  //   console.log("VenmoRampV2 initialized...");
+  // }
 
   await addWritePermission(hre, nullifierRegistryContract, registrationProcessor.address);
   await addWritePermission(hre, nullifierRegistryContract, sendProcessor.address);
 
-  console.log("NullifierRegistry permissions added...");
+  // console.log("NullifierRegistry permissions added...");
 
-  console.log("Transferring ownership of contracts...");
-  await setNewOwner(hre, rampContract, multiSig);
+  // console.log("Transferring ownership of contracts...");
+  // await setNewOwner(hre, rampContract, multiSig);
   await setNewOwner(
     hre,
     await ethers.getContractAt("VenmoRegistrationProcessorV2", registrationProcessor.address),
@@ -115,21 +118,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await ethers.getContractAt("VenmoSendProcessorV2", sendProcessor.address),
     multiSig
   );
-  await setNewOwner(
-    hre,
-    await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapterDeploy.address),
-    multiSig
-  );
+  // await setNewOwner(
+  //   hre,
+  //   await ethers.getContractAt("ManagedKeyHashAdapterV2", keyHashAdapterDeploy.address),
+  //   multiSig
+  // );
 
   console.log("Deploy finished...");
 };
 
 func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
-  const network = hre.network.name;
-  if (network != "localhost") {
-    try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
-    return true;
-  }
+  // const network = hre.network.name;
+  // if (network != "localhost") {
+  //   try { getDeployedContractAddress(hre.network.name, "VenmoRampV2") } catch (e) {return false;}
+  //   return true;
+  // }
   return false;
 };
 
