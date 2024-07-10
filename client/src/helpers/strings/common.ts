@@ -93,7 +93,7 @@ const strings: CommonStrings = {
     You are currently viewing the staging application
   `,
   PRODUCTION_ENV_BANNER: `
-    Venmo onramping is currently under maintenance | ZKP2P's Alpha Launch —
+    ZKP2P's Alpha Launch —
   `,
 
   // Registration NFT Tooltip

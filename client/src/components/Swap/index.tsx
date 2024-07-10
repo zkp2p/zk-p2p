@@ -297,7 +297,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
         const conversionRate = indicativeQuote.conversionRate;
 
         const isAmountToSendValid = usdAmountToSend !== undefined; 
-        const isSendAmountAboveMin = paymentPlatform === PaymentPlatform.REVOLUT ? Number(usdAmountToSend) >= 1 : true;
+        const isSendAmountAboveMin = paymentPlatform === PaymentPlatform.REVOLUT ? Number(usdAmountToSend) >= 1 : true ;
         const isDepositIdValid = depositId !== undefined;
         const isConversionRateValid = conversionRate !== undefined;
 
@@ -327,14 +327,9 @@ const SwapForm: React.FC<SwapFormProps> = ({
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
                 if (isValidRecipientAddress) {
-                  const isVenmoMaintenance = paymentPlatform === PaymentPlatform.VENMO;
-                  if (isVenmoMaintenance) {
-                    updateQuoteErrorState(QuoteState.MAINTENANCE);
-                  } else {
-                    setQuoteState(QuoteState.SUCCESS);
+                  setQuoteState(QuoteState.SUCCESS);
 
-                    setShouldConfigureSignalIntentWrite(true);
-                  }
+                  setShouldConfigureSignalIntentWrite(true);
                 } else {
                   updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);
                 }
