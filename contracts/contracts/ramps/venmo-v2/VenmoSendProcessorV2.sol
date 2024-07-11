@@ -3,7 +3,7 @@
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
 import { BaseProcessorV2 } from "../../processors/BaseProcessorV2.sol";
-import { Groth16Verifier } from "../../verifiers/venmo_send_verifier_v2.sol";
+import { Groth16Verifier } from "../../verifiers/venmo_send_verifier.sol";
 import { IKeyHashAdapterV2 } from "../../processors/keyHashAdapters/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "../../processors/nullifierRegistries/INullifierRegistry.sol";
 import { ISendProcessor } from "../venmo-v1/interfaces/ISendProcessor.sol";

@@ -10588,7 +10588,7 @@ export default {
       ]
     },
     "VenmoRegistrationProcessorV2": {
-      "address": "0x358fDD11e573fEE0a92B93AE7362D2B531B7Bc63",
+      "address": "0x050F07A4E7C0F4Ee6Cc8E8EdC5B694F9Fdd1e769",
       "abi": [
         {
           "inputs": [
@@ -11195,7 +11195,7 @@ export default {
       ]
     },
     "VenmoSendProcessorV2": {
-      "address": "0xABB08332794969f5CBE790930E96c80CFaA35119",
+      "address": "0xd654400e33c54E4E811b979b8D14F9fc9543683C",
       "abi": [
         {
           "inputs": [
