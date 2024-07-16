@@ -37,7 +37,7 @@ const Wrapper = styled.div`
   width: 100%;
   justify-content: center;
   z-index: ${Z_INDEX.bottom_nav};
-  padding-bottom: 1rem;
+  padding-bottom: 1.25rem;
   position: fixed;
   bottom: 0;
 `;
