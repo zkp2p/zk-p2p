@@ -172,7 +172,7 @@ describe("Namecheap Push Domain Circuit", function () {
     });
 
 
-    it.skip("Should return the correct hashed packed buyer id", async () => {
+    it("Should return the correct hashed packed buyer id", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -182,7 +182,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned packed buyer id
-        const buyerIdHash = witness.slice(9);
+        const buyerIdHash = witness[9];
 
         // Get expected packed buyer id
         const regex_start = Number(input["namecheapBuyerIdIndex"]);

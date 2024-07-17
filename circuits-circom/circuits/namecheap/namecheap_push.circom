@@ -73,7 +73,6 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     //---------------CONSTANTS------------------//
 
     var maxEmailFromLen = 21;   // Length of support@namecheap.com
-    var maxEmailToLen = 49;     // RFC 2821: requires length to be 254, but 49 is safe max length of email to field (https://atdata.com/long-email-addresses/)
     var maxDateLen = 10;        // dd/mm/yyyy format
     var maxBuyerIdLen = 31;     // same as pack size; should be good enough
     var maxDomainNameLen = 127; // Second-Level Domain (63) + "." (1) + Top-Level Domain (63)
@@ -121,8 +120,9 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     
     //---------------POSEIDON HASHING------------------//
 
-    component buyerIdHasher = Poseidon(1);      // Is this safe?
-    buyerIdHasher.inputs[i] <== buyerIdPacked[i];
+    // TODO: IS THIS SECURE? <------!!!
+    component buyerIdHasher = Poseidon(1);
+    buyerIdHasher.inputs[0] <== buyerIdPacked[0];
     signal output buyerIdHash <== buyerIdHasher.out;
 
     // NULLIFIER
