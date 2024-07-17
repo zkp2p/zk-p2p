@@ -32,10 +32,10 @@ include "./regexes/namecheap_transfer_details.circom";
 /// @input namecheapDateIndex Index of date in the namecheap email body
 /// @input namecheapBuyerIdIndex Index of buyer id in the namecheap email body
 /// @input namecheapDomainNameIndex Index of domain name in the namecheap email body
-/// @input intentHash or address ETH address as identity commitment (to make it as part of the proof).
+/// @input orderId On-chain order id as identity commitment (to make it as part of the proof).
 /// @output pubkeyHash Poseidon hash of the pubkey - Poseidon(n/2)(n/2 chunks of pubkey with k*2 bits per chunk).
-/// @output fromEmailAddPacked Packed from email address extracted from the email header (Default packing size is 31)
-/// @output buyerIdPacked Packed buyer id extracted from the email body
+/// @output fromEmailAddrPacked Packed from email address extracted from the email header (Default packing size is 31)
+/// @output datePacked Packed date extracted from the email body (Default packing size is 10)
 /// @output domainNamePacked Packed domain name extracted from the email body (array of length 5)
 /// @output buyerIdHash Hash of packed buyer Id (new domain registrant) extracted from the email body
 /// @output emailNullifier Nullifier generated from email by hashing the header and randomness generated from signature
@@ -72,10 +72,14 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     //---------------CONSTANTS------------------//
 
-    var maxEmailFromLen = 21;   // Length of support@namecheap.com
-    var maxDateLen = 10;        // dd/mm/yyyy format
-    var maxBuyerIdLen = 31;     // same as pack size; should be good enough
-    var maxDomainNameLen = 127; // Second-Level Domain (63) + "." (1) + Top-Level Domain (63)
+    var maxEmailFromLen = 21;           // Length of support@namecheap.com
+    var maxDateLen = 10;                // dd/mm/yyyy format
+    var maxBuyerIdLen = 31;             // same as pack size; should be good enough
+    var maxDomainNameLen = 127;         // Second-Level Domain (63) + "." (1) + Top-Level Domain (63)
+    var maxEmailPackedChunks = 1;       // Max number of chunks for email address
+    var maxBuyerIdPackedChunks = 1;     // Max number of chunks for buyer id
+    var maxDatePackedChunks = 1;        // Max number of chunks for date
+    var maxDomainNamePackedChunks = 5;  // Max number of chunks for domain name
     
     //---------------REGEXES------------------//
 
@@ -104,26 +108,24 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // Output packed email from
     signal input fromEmailIndex;
-    signal output fromEmailAddrPacked[1] <== PackRegexReveal(maxHeadersLength, maxEmailFromLen)(fromEmailReveal, fromEmailIndex);
+    signal output fromEmailAddrPacked[maxEmailPackedChunks] <== PackRegexReveal(maxHeadersLength, maxEmailFromLen)(fromEmailReveal, fromEmailIndex);
 
     // Output packed date
     signal input namecheapDateIndex;
-    signal output datePacked[1] <== PackRegexReveal(maxBodyLength, maxDateLen)(dateReveal, namecheapDateIndex);
+    signal output datePacked[maxDatePackedChunks] <== PackRegexReveal(maxBodyLength, maxDateLen)(dateReveal, namecheapDateIndex);
     
     // Packed buyer id (Hashed before making public output)
     signal input namecheapBuyerIdIndex;
-    signal buyerIdPacked[1] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, namecheapBuyerIdIndex);
+    signal buyerIdPacked[maxBuyerIdPackedChunks] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, namecheapBuyerIdIndex);
 
     // Output packed domain name
     signal input namecheapDomainNameIndex;
-    signal output domainNamePacked[5] <== PackRegexReveal(maxBodyLength, maxDomainNameLen)(domainNameReveal, namecheapDomainNameIndex);
+    signal output domainNamePacked[maxDomainNamePackedChunks] <== PackRegexReveal(maxBodyLength, maxDomainNameLen)(domainNameReveal, namecheapDomainNameIndex);
     
     //---------------POSEIDON HASHING------------------//
 
-    // TODO: IS THIS SECURE? <------!!!
-    component buyerIdHasher = Poseidon(1);
-    buyerIdHasher.inputs[0] <== buyerIdPacked[0];
-    signal output buyerIdHash <== buyerIdHasher.out;
+    // Hash(buyerIdPacked)
+    signal output buyerIdHash <== Poseidon(maxBuyerIdPackedChunks)(buyerIdPacked);
 
     // NULLIFIER
     signal output emailNullifier;
@@ -136,7 +138,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal orderIdSquared;
     orderIdSquared <== orderId * orderId;
 
-    // TOTAL CONSTRAINTS: 3444937
+    // TOTAL CONSTRAINTS: 3296837
 }
 
 

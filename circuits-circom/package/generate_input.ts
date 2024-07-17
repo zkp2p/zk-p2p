@@ -94,7 +94,6 @@ export interface ICircuitInputs {
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
-  intentHash?: string;
   orderId?: string;
   namecheapDateIndex?: string;
   namecheapBuyerIdIndex?: string;

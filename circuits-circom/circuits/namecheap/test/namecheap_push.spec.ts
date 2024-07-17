@@ -99,7 +99,7 @@ describe("Namecheap Push Domain Circuit", function () {
         const regex_end = regex_start_sub_array.indexOf("62"); // Look for `>` to end the from which is 62 in ascii. e.g. `from:<venmo@venmo.com>`
         const from_email_array = regex_start_sub_array.slice(0, regex_end);
 
-        // Chunk bytes into 7 and pack
+        // Chunk bytes into 31 and pack
         let chunkedArrays = chunkArray(from_email_array, 31, 21);
 
         chunkedArrays.map((arr, i) => {
@@ -129,7 +129,7 @@ describe("Namecheap Push Domain Circuit", function () {
         const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the date which is 13 in ASCII
         const date_array = regex_start_sub_array.slice(0, regex_end);
 
-        // Chunk bytes into 7 and pack
+        // Chunk bytes into 31 and pack
         let chunkedArrays = chunkArray(date_array, 31, 10);
 
         chunkedArrays.map((arr, i) => {
