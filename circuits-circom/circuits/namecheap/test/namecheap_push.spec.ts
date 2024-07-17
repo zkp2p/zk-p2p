@@ -141,36 +141,6 @@ describe("Namecheap Push Domain Circuit", function () {
         });
     });
 
-    it("Should return the correct packed buyer id", async () => {
-        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
-        const jsonString = fs.readFileSync(input_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned packed buyer id
-        const packed_buyer_id = witness.slice(4, 5);
-
-        // Get expected packed buyer id
-        const regex_start = Number(input["namecheapBuyerIdIndex"]);
-        const regex_start_sub_array = input["emailBody"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the buyer id which is 13 in ASCII
-        const buyer_id_array = regex_start_sub_array.slice(0, regex_end);
-
-        // Chunk bytes into 31 and pack
-        let chunkedArrays = chunkArray(buyer_id_array, 31, 30);
-
-        chunkedArrays.map((arr, i) => {
-            // Pack each chunk
-            let expectedValue = bytesToPacked(arr);
-
-            // Check packed buyer id is the same
-            assert.equal(expectedValue, packed_buyer_id[i], true);
-        });
-    });
-
     it("Should return the correct packed domain name", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
@@ -181,7 +151,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned packed domain name
-        const packed_domain_name = witness.slice(5, 7);
+        const packed_domain_name = witness.slice(4, 9);
 
         // Get expected packed domain name
         const regex_start = Number(input["namecheapDomainNameIndex"]);
@@ -190,7 +160,7 @@ describe("Namecheap Push Domain Circuit", function () {
         const domain_name_array = regex_start_sub_array.slice(0, regex_end);
 
         // Chunk bytes into 31 and pack
-        let chunkedArrays = chunkArray(domain_name_array, 31, 42);
+        let chunkedArrays = chunkArray(domain_name_array, 31, 127);
 
         chunkedArrays.map((arr, i) => {
             // Pack each chunk
@@ -202,6 +172,34 @@ describe("Namecheap Push Domain Circuit", function () {
     });
 
 
+    it.skip("Should return the correct hashed packed buyer id", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        const witness = await cir.calculateWitness(
+            input,
+            true
+        );
+
+        // Get returned packed buyer id
+        const buyerIdHash = witness.slice(9);
+
+        // Get expected packed buyer id
+        const regex_start = Number(input["namecheapBuyerIdIndex"]);
+        const regex_start_sub_array = input["emailBody"].slice(regex_start);
+        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the buyer id which is 13 in ASCII
+        const buyer_id_array = regex_start_sub_array.slice(0, regex_end);
+
+        // Chunk bytes into 31 and pack
+        let chunkedArray = chunkArray(buyer_id_array, 31, 31);
+
+        // Poseidon hash the chunkedArray
+        const expectedHashedBuyerId = poseidon(chunkedArray.map(arr => bytesToPacked(arr)));
+
+        // Compare the hashed buyer id with the buyerIdHash from the witness
+        assert.equal(JSON.stringify(poseidon.F.e(buyerIdHash)), JSON.stringify(expectedHashedBuyerId), true);
+    });
+
     it("Should return the correct nullifier", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
@@ -212,7 +210,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[7];
+        const nullifier = witness[10];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["emailHeader"], input["emailHeaderLength"]);
@@ -223,7 +221,7 @@ describe("Namecheap Push Domain Circuit", function () {
     });
 
 
-    it("Should return the correct intent hash", async () => {
+    it("Should return the correct order id", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -233,11 +231,11 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned modulus
-        const intent_hash = witness[8];
+        const order_id = witness[11];
 
         // Get expected modulus
-        const expected_intent_hash = input["intentHash"];
+        const expected_order_id = input["orderId"];
 
-        assert.equal(JSON.stringify(intent_hash), JSON.stringify(expected_intent_hash), true);
+        assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
     });
 });

@@ -95,6 +95,7 @@ export interface ICircuitInputs {
   in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
   intentHash?: string;
+  orderId?: string;
   namecheapDateIndex?: string;
   namecheapBuyerIdIndex?: string;
   namecheapDomainNameIndex?: string;
@@ -632,12 +633,11 @@ export async function getCircuitInputs(
       bodyHashIndex: body_hash_idx,
       // namecheap specific indices
       fromEmailIndex: email_from_idx,
-      toEmailIndex,
       namecheapDateIndex,
       namecheapBuyerIdIndex,
       namecheapDomainNameIndex,
       // IDs
-      intentHash: intent_hash,
+      orderId: intent_hash,
     };
   }
   else {
