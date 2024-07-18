@@ -14,7 +14,7 @@ echo
 echo "****VERIFYING PROOF FOR SAMPLE INPUT****"
 start=$(date +%s)
 set -x
-NODE_OPTIONS='--max-old-space-size=644000' ../circuits/$CIRCUIT_DIR/node_modules/.bin/snarkjs groth16 verify "$BUILD_DIR"/vkey.json "$BUILD_DIR"/public.json "$BUILD_DIR"/proof.json
+NODE_OPTIONS='--max-old-space-size=644000' ../circuits/$CIRCUIT_DIR/node_modules/.bin/snarkjs groth16 verify "$BUILD_DIR"/"$CIRCUIT_NAME"_vkey.json "$BUILD_DIR"/public.json "$BUILD_DIR"/proof.json
 end=$(date +%s)
 { set +x; } 2>/dev/null
 echo "DONE ($((end - start))s)"

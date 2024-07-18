@@ -30,7 +30,8 @@
         "genverifier:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./8_gen_sol_verifier.sh && cd ..",
         "gencalldata:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./9_gen_sol_calldata.sh && cd ..",
         "genwitness:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./2_gen_wtns.sh && cd ..",
-        "genproof:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd .."
+        "genproof:rapidsnark:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./6_gen_proof_rapidsnark.sh && cd ..",
+        "genproof:wasm:namecheap:push": "CIRCUIT_DIR=namecheap CIRCUIT_NAME=namecheap_push && cd ../../scripts && ./5_gen_proof.sh && cd .."
     },
     "devDependencies": {
         "@babel/preset-env": "^7.22.2",
