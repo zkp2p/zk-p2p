@@ -50,19 +50,28 @@ async function getArgs() {
 
 export interface ICircuitInputs {
   modulus?: string[];
+  pubkey?: string[];      // v6 names
   signature?: string[];
   base_message?: string[];
   in_padded?: string[];
+  emailHeader?: string[];   // v6 names
   in_body_padded?: string[];
+  emailBody?: string[];   // v6 names
   in_body_len_padded_bytes?: string;
+  emailBodyLength?: string;   // v6 names
   in_padded_n_bytes?: string[];
   in_len_padded_bytes?: string;
+  emailHeaderLength?: string;   // v6 names
   expected_sha?: string[];
   precomputed_sha?: string[];
+  precomputedSHA?: string[];    // v6 names
   body_hash_idx?: string;
+  bodyHashIndex?: string;   // v6 names
   venmo_payer_id_idx?: string;
   email_from_idx?: string | number;
+  fromEmailIndex?: string | number;   // v6 names
   email_to_idx?: string | number;
+  toEmailIndex?: string | number;   // v6 names
   email_timestamp_idx?: string;
   venmo_payee_id_idx?: string;
   venmo_amount_idx?: string;
@@ -85,6 +94,10 @@ export interface ICircuitInputs {
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
+  orderId?: string;
+  namecheapDateIndex?: string;
+  namecheapBuyerIdIndex?: string;
+  namecheapDomainNameIndex?: string;
 
   // subject commands only
   command_idx?: string;
@@ -111,6 +124,7 @@ export enum CircuitType {
   EMAIL_GARANTI_REGISTRATION = "garanti_registration",
   EMAIL_GARANTI_BODY_SUFFIX_HASHER = "garanti_body_suffix_hasher",
   EMAIL_GARANTI_SEND = "garanti_send",
+  EMAIL_NAMECHEAP_PUSH_DOMAIN = "namecheap_push"
 }
 
 async function findSelector(a: Uint8Array, selector: number[]): Promise<number> {
@@ -221,6 +235,10 @@ export async function getCircuitInputs(
   } else if (circuit == CircuitType.EMAIL_GARANTI_BODY_SUFFIX_HASHER) {
     STRING_PRESELECTOR_FOR_EMAIL_TYPE = "Para transferleri bilgilendirmeleri";
     MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 10752;  // 10752 is estimated length plus padding from intermediate cutoff to end
+  } else if (circuit == CircuitType.EMAIL_NAMECHEAP_PUSH_DOMAIN) {
+    MAX_HEADER_PADDED_BYTES_FOR_EMAIL_TYPE = 768;
+    STRING_PRESELECTOR_FOR_EMAIL_TYPE = "----------------------------------------------------------------------";
+    MAX_BODY_PADDED_BYTES_FOR_EMAIL_TYPE = 768;   // Todo: Finalize this later
   }
 
   // Derive modulus from signature
@@ -593,6 +611,33 @@ export async function getCircuitInputs(
       in_body_suffix_padded,
       in_body_suffix_len_padded_bytes,
     }
+  } else if (circuit == CircuitType.EMAIL_NAMECHEAP_PUSH_DOMAIN) {
+    const dateSelector = Buffer.from("Date: ");
+    const namecheapDateIndex = (Buffer.from(bodyRemaining).indexOf(dateSelector) + dateSelector.length).toString();
+    const buyerIdSelector = Buffer.from("Login ID: ");
+    const namecheapBuyerIdIndex = (Buffer.from(bodyRemaining).indexOf(buyerIdSelector) + buyerIdSelector.length).toString();
+    const domainNameSelector = Buffer.from("domain(s):\r\n");
+    const namecheapDomainNameIndex = (Buffer.from(bodyRemaining).indexOf(domainNameSelector) + domainNameSelector.length).toString();
+
+    const toEmailIndex = raw_header.length - trimStrByStr(trimStrByStr(raw_header, "to:"), "<").length;
+
+    circuitInputs = {
+      emailHeader: in_padded,
+      pubkey: modulus,
+      signature,
+      emailHeaderLength: in_len_padded_bytes,
+      precomputedSHA: precomputed_sha,
+      emailBody: in_body_padded,
+      emailBodyLength: in_body_len_padded_bytes,
+      bodyHashIndex: body_hash_idx,
+      // namecheap specific indices
+      fromEmailIndex: email_from_idx,
+      namecheapDateIndex,
+      namecheapBuyerIdIndex,
+      namecheapDomainNameIndex,
+      // IDs
+      orderId: intent_hash,
+    };
   }
   else {
     assert(circuit === CircuitType.SHA, "Invalid circuit type");
