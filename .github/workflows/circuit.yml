@@ -57,3 +57,6 @@ jobs:
       - name: Testing Garanti regexes...
         run: yarn test test/regexes
         working-directory: ./circuits-circom/circuits/garanti
+      - name: Testing Namecheap regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/namecheap
