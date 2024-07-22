@@ -111,36 +111,6 @@ describe("Namecheap Push Domain Circuit", function () {
         });
     });
 
-    it("Should return the correct packed date", async () => {
-        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
-        const jsonString = fs.readFileSync(input_path, "utf8");
-        const input = JSON.parse(jsonString);
-        const witness = await cir.calculateWitness(
-            input,
-            true
-        );
-
-        // Get returned packed amount
-        const packed_amount = witness.slice(3, 4);
-
-        // Get expected packed date
-        const regex_start = Number(input["namecheapDateIndex"]);
-        const regex_start_sub_array = input["emailBody"].slice(regex_start);
-        const regex_end = regex_start_sub_array.indexOf("13"); // Look for `\r` to end the date which is 13 in ASCII
-        const date_array = regex_start_sub_array.slice(0, regex_end);
-
-        // Chunk bytes into 31 and pack
-        let chunkedArrays = chunkArray(date_array, 31, 10);
-
-        chunkedArrays.map((arr, i) => {
-            // Pack each chunk
-            let expectedValue = bytesToPacked(arr);
-
-            // Check packed amount is the same
-            assert.equal(expectedValue, packed_amount[i], true);
-        });
-    });
-
     it("Should return the correct packed domain name", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
@@ -151,7 +121,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned packed domain name
-        const packed_domain_name = witness.slice(4, 9);
+        const packed_domain_name = witness.slice(3, 8);
 
         // Get expected packed domain name
         const regex_start = Number(input["namecheapDomainNameIndex"]);
@@ -182,7 +152,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned packed buyer id
-        const buyerIdHash = witness[9];
+        const buyerIdHash = witness[8];
 
         // Get expected packed buyer id
         const regex_start = Number(input["namecheapBuyerIdIndex"]);
@@ -210,7 +180,7 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned nullifier
-        const nullifier = witness[10];
+        const nullifier = witness[9];
 
         // Get expected nullifier
         const sha_out = await partialSha(input["emailHeader"], input["emailHeaderLength"]);
@@ -221,7 +191,7 @@ describe("Namecheap Push Domain Circuit", function () {
     });
 
 
-    it("Should return the correct order id", async () => {
+    it("Should return the correct bid id", async () => {
         const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
         const jsonString = fs.readFileSync(input_path, "utf8");
         const input = JSON.parse(jsonString);
@@ -231,11 +201,11 @@ describe("Namecheap Push Domain Circuit", function () {
         );
 
         // Get returned modulus
-        const order_id = witness[11];
+        const bid_id = witness[10];
 
         // Get expected modulus
-        const expected_order_id = input["orderId"];
+        const expected_bid_id = input["bidId"];
 
-        assert.equal(JSON.stringify(order_id), JSON.stringify(expected_order_id), true);
+        assert.equal(JSON.stringify(bid_id), JSON.stringify(expected_bid_id), true);
     });
 });
