@@ -125,7 +125,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal bidIdSquared;
     bidIdSquared <== bidId * bidId;
 
-    // TOTAL CONSTRAINTS: 3296837
+    // TOTAL CONSTRAINTS: 2980073
 }
 
 
