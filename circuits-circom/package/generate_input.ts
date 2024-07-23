@@ -94,8 +94,7 @@ export interface ICircuitInputs {
   in_body_suffix_padded?: string[];
   in_body_suffix_len_padded_bytes?: string;
   intent_hash?: string;
-  orderId?: string;
-  namecheapDateIndex?: string;
+  bidId?: string;
   namecheapBuyerIdIndex?: string;
   namecheapDomainNameIndex?: string;
 
@@ -612,8 +611,6 @@ export async function getCircuitInputs(
       in_body_suffix_len_padded_bytes,
     }
   } else if (circuit == CircuitType.EMAIL_NAMECHEAP_PUSH_DOMAIN) {
-    const dateSelector = Buffer.from("Date: ");
-    const namecheapDateIndex = (Buffer.from(bodyRemaining).indexOf(dateSelector) + dateSelector.length).toString();
     const buyerIdSelector = Buffer.from("Login ID: ");
     const namecheapBuyerIdIndex = (Buffer.from(bodyRemaining).indexOf(buyerIdSelector) + buyerIdSelector.length).toString();
     const domainNameSelector = Buffer.from("domain(s):\r\n");
@@ -632,11 +629,10 @@ export async function getCircuitInputs(
       bodyHashIndex: body_hash_idx,
       // namecheap specific indices
       fromEmailIndex: email_from_idx,
-      namecheapDateIndex,
       namecheapBuyerIdIndex,
       namecheapDomainNameIndex,
       // IDs
-      orderId: intent_hash,
+      bidId: intent_hash,
     };
   }
   else {

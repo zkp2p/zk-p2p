@@ -57,3 +57,9 @@ jobs:
       - name: Testing Garanti regexes...
         run: yarn test test/regexes
         working-directory: ./circuits-circom/circuits/garanti
+      - name: Installing Namecheap Dependencies
+        run: yarn install
+        working-directory: ./circuits-circom/circuits/namecheap
+      - name: Testing Namecheap regexes...
+        run: yarn test test/regexes
+        working-directory: ./circuits-circom/circuits/namecheap

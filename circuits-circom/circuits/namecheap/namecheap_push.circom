@@ -10,7 +10,6 @@ include "../utils/email_nullifier.circom";
 include "../utils/hash_sign_gen_rand.circom";
 
 include "./regexes/namecheap_subject.circom";
-include "./regexes/namecheap_date.circom";
 include "./regexes/namecheap_transfer_details.circom";
 
 
@@ -29,17 +28,15 @@ include "./regexes/namecheap_transfer_details.circom";
 /// @input bodyHashIndex Index of the body hash `bh` in the emailHeader.
 /// @input precomputedSHA Precomputed SHA-256 hash of the email body till the bodyHashIndex.
 /// @input fromEmailIndex Index of from email address in the email header
-/// @input namecheapDateIndex Index of date in the namecheap email body
 /// @input namecheapBuyerIdIndex Index of buyer id in the namecheap email body
 /// @input namecheapDomainNameIndex Index of domain name in the namecheap email body
-/// @input orderId On-chain order id as identity commitment (to make it as part of the proof).
+/// @input bidId On-chain bid id as identity commitment (to make it as part of the proof).
 /// @output pubkeyHash Poseidon hash of the pubkey - Poseidon(n/2)(n/2 chunks of pubkey with k*2 bits per chunk).
 /// @output fromEmailAddrPacked Packed from email address extracted from the email header (Default packing size is 31)
-/// @output datePacked Packed date extracted from the email body (Default packing size is 10)
 /// @output domainNamePacked Packed domain name extracted from the email body (array of length 5)
 /// @output buyerIdHash Hash of packed buyer Id (new domain registrant) extracted from the email body
 /// @output emailNullifier Nullifier generated from email by hashing the header and randomness generated from signature
-/// @output orderId On-chain order id input during proof gen and is tied to this proof
+/// @output bidId On-chain bid id input during proof gen and is tied to this proof
 template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     assert(n * k > 2048); // constraints for 2048 bit RSA
 
@@ -73,12 +70,10 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     //---------------CONSTANTS------------------//
 
     var maxEmailFromLen = 21;           // Length of support@namecheap.com
-    var maxDateLen = 10;                // dd/mm/yyyy format
     var maxBuyerIdLen = 31;             // same as pack size; should be good enough
     var maxDomainNameLen = 127;         // Second-Level Domain (63) + "." (1) + Top-Level Domain (63)
     var maxEmailPackedChunks = 1;       // Max number of chunks for email address
     var maxBuyerIdPackedChunks = 1;     // Max number of chunks for buyer id
-    var maxDatePackedChunks = 1;        // Max number of chunks for date
     var maxDomainNamePackedChunks = 5;  // Max number of chunks for domain name
     
     //---------------REGEXES------------------//
@@ -90,10 +85,6 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     // From header regex
     signal (fromEmailFound, fromEmailReveal[maxHeadersLength]) <== FromAddrRegex(maxHeadersLength)(emailHeader);
     fromEmailFound === 1;
-
-    // Namecheap date regex
-    signal (dateRegexFound, dateReveal[maxBodyLength]) <== NamecheapDateRegex(maxBodyLength)(emailBody);
-    dateRegexFound === 1;
 
     // Namecheap transfer details regex
     signal (
@@ -110,10 +101,6 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal input fromEmailIndex;
     signal output fromEmailAddrPacked[maxEmailPackedChunks] <== PackRegexReveal(maxHeadersLength, maxEmailFromLen)(fromEmailReveal, fromEmailIndex);
 
-    // Output packed date
-    signal input namecheapDateIndex;
-    signal output datePacked[maxDatePackedChunks] <== PackRegexReveal(maxBodyLength, maxDateLen)(dateReveal, namecheapDateIndex);
-    
     // Packed buyer id (Hashed before making public output)
     signal input namecheapBuyerIdIndex;
     signal buyerIdPacked[maxBuyerIdPackedChunks] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, namecheapBuyerIdIndex);
@@ -134,11 +121,11 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // The following signals do not take part in any computation, but tie the proof to a specific intentHash to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
-    signal input orderId;
-    signal orderIdSquared;
-    orderIdSquared <== orderId * orderId;
+    signal input bidId;
+    signal bidIdSquared;
+    bidIdSquared <== bidId * bidId;
 
-    // TOTAL CONSTRAINTS: 3296837
+    // TOTAL CONSTRAINTS: 2980073
 }
 
 
@@ -147,4 +134,4 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 // * maxBodyLength = 768 is the max number of bytes in the body after precomputed slice
 // * n = 121 is the number of bits in each chunk of the modulus (RSA parameter)
 // * k = 17 is the number of chunks in the modulus (RSA parameter)
-component main { public [ orderId ] } = NamecheapPushDomainVerifier(768, 768, 121, 17);
+component main { public [ bidId ] } = NamecheapPushDomainVerifier(768, 768, 121, 17);
