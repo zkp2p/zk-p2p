@@ -37,7 +37,7 @@ import { alchemySolanaConnection } from "index";
 import useAccount from '@hooks/useAccount';
 import useBalances from '@hooks/useBalance';
 import useSmartContracts from '@hooks/useSmartContracts';
-import useLifiBridge from '@hooks/useLifiBridge';
+import useSocketBridge from '@hooks/useSocketBridge';
 import useSendSettings from '@hooks/useSendSettings';
 import useQuery from '@hooks/useQuery';
 
@@ -63,7 +63,7 @@ const EMPTY_RECIPIENT_ADDRESS: RecipientAddress = {
 
 export type SendQuote = {
   sendAmountInput: string;
-  receiveAmountQuote: LifiReceiveQuote | null;
+  receiveAmountQuote: SocketReceiveQuote | null;
 };
 
 const ZERO_QUOTE: SendQuote = {
@@ -71,7 +71,7 @@ const ZERO_QUOTE: SendQuote = {
   receiveAmountQuote: null
 };
 
-export type LifiReceiveQuote = {
+export type SocketReceiveQuote = {
   fromAmount?: bigint;
   toAmount: bigint;
   totalGasFeesInUsd?: string;
@@ -79,7 +79,7 @@ export type LifiReceiveQuote = {
   bridgeName?: string;
   decimals?: number;
   totalGasFeesWei?: bigint;
-  txData?: any;
+  routeData?: any;
 };
 
 export default function SendForm() {
@@ -88,9 +88,9 @@ export default function SendForm() {
    */
 
   const { isLoggedIn, network, loginStatus, loggedInEthereumAddress } = useAccount();
-  const { usdcBalance, refetchUsdcBalance, usdcApprovalToLifiBridge, refetchUsdcApprovalToLifiBridge } = useBalances();
-  const { blockscanUrl, usdcAddress, usdcAbi, lifiBridgeAddress } = useSmartContracts();
-  const { getLifiQuote, getLifiTransactionStatus } = useLifiBridge();
+  const { usdcBalance, refetchUsdcBalance, usdcApprovalToSocketBridge, refetchUsdcApprovalToSocketBridge } = useBalances();
+  const { blockscanUrl, usdcAddress, usdcAbi, socketBridgeAddress } = useSmartContracts();
+  const { getSocketQuote, getSocketTransactionData, getSocketTransactionStatus } = useSocketBridge();
   const { receiveNetwork, receiveToken } = useSendSettings();
 
   const { queryParams } = useQuery();
@@ -116,7 +116,7 @@ export default function SendForm() {
   const [isValidRecipientAddress, setIsValidRecipientAddress] = useState<boolean>(false);
   const [amountToApprove, setAmountToApprove] = useState<bigint>(ZERO);
 
-  const [lifiSendTransactionData, setLifiSendTransactionData] = useState<string>('');
+  const [socketSendTransactionData, setSocketSendTransactionData] = useState<string>('');
 
   const [shouldConfigureApprovalWrite, setShouldConfigureApprovalWrite] = useState<boolean>(false);
   const [shouldConfigureTransferWrite, setShouldConfigureTransferWrite] = useState<boolean>(false);
@@ -134,13 +134,13 @@ export default function SendForm() {
         abi: usdcAbi,
         functionName: "approve",
         args: [
-          lifiBridgeAddress,
+          socketBridgeAddress,
           amountToApprove
         ]
       },
       {
-        to: lifiBridgeAddress as `0x${string}`,
-        data: lifiSendTransactionData as `0x${string}`,
+        to: socketBridgeAddress as `0x${string}`,
+        data: socketSendTransactionData as `0x${string}`,
       }
     ],
     enabled: shouldConfigureBatchBridgeWrite
@@ -202,7 +202,7 @@ export default function SendForm() {
     abi: usdcAbi,
     functionName: "approve",
     args: [
-      lifiBridgeAddress,
+      socketBridgeAddress,
       amountToApprove
     ],
     enabled: shouldConfigureApprovalWrite
@@ -221,7 +221,7 @@ export default function SendForm() {
     onSuccess(data: any) {
       console.log('writeSubmitApproveAsync successful: ', data);
       
-      refetchUsdcApprovalToLifiBridge?.();
+      refetchUsdcApprovalToSocketBridge?.();
 
       refetchUsdcBalance?.();
     },
@@ -232,8 +232,8 @@ export default function SendForm() {
   //
 
   const { config: writeBridgeConfig } = usePrepareSendTransaction({
-    to: lifiBridgeAddress,
-    data: lifiSendTransactionData,
+    to: socketBridgeAddress,
+    data: socketSendTransactionData,
     value: ZERO,
     onError: (error: { message: any }) => {
       console.error(error.message);
@@ -343,11 +343,11 @@ export default function SendForm() {
                 }
               } else {
                 // Approval Potentially Required
-                const usdcApprovalToLifiBridgeLoaded = usdcApprovalToLifiBridge !== null;
+                const usdcApprovalToSocketBridgeLoaded = usdcApprovalToSocketBridge !== null;
 
-                if (usdcApprovalToLifiBridgeLoaded) {
+                if (usdcApprovalToSocketBridgeLoaded) {
                   const sendAmountBi = toBigInt(currentQuote.sendAmountInput);
-                  const isSendAmountGreaterThanApprovedBalance = sendAmountBi > usdcApprovalToLifiBridge;
+                  const isSendAmountGreaterThanApprovedBalance = sendAmountBi > usdcApprovalToSocketBridge;
                   const loginStatusRequiresApproval = loginStatus === LoginStatus.EOA;
 
                   const signingApproveTransaction = signApproveTransactionStatus === 'loading';
@@ -439,7 +439,7 @@ export default function SendForm() {
       mineApproveTransactionStatus,
       signTransferTransactionStatus,
       mineTransferTransactionStatus,
-      usdcApprovalToLifiBridge,
+      usdcApprovalToSocketBridge,
       signBridgeTransactionStatus,
       mineBridgeTransactionStatus,
       shouldConfigureBridgeWrite,
@@ -451,7 +451,7 @@ export default function SendForm() {
   );
 
   useEffect(() => {
-    if (lifiSendTransactionData) {
+    if (socketSendTransactionData) {
       if (amountToApprove > ZERO) {
         setShouldConfigureBatchBridgeWrite(true);
       } else {
@@ -465,7 +465,7 @@ export default function SendForm() {
       setShouldConfigureBatchBridgeWrite(false);
     };
 
-  }, [lifiSendTransactionData, amountToApprove]);
+  }, [socketSendTransactionData, amountToApprove]);
 
   useEffect(() => {
     if (loginStatus === LoginStatus.LOGGED_OUT) {
@@ -502,10 +502,11 @@ export default function SendForm() {
     };
 
     let intervalId: any;
-    const fetchLifiTransactionStatus = async () => {
+    const fetchSocketTransactionStatus = async () => {
       if (receiveNetwork && submitBridgeResult) {
         const transferOutTxnHash = submitBridgeResult.hash;
-        const response = await getLifiTransactionStatus(transferOutTxnHash)
+        const networkChainId = networksInfo[receiveNetwork].networkChainId;
+        const response = await getSocketTransactionStatus(transferOutTxnHash, networkChainId)
 
         if (response.result?.destinationTransactionHash) {
           const destinationTransactionHash = response.result.destinationTransactionHash;
@@ -518,7 +519,7 @@ export default function SendForm() {
     };
 
     if (submitBridgeResult?.hash) {
-      intervalId = setInterval(fetchLifiTransactionStatus, 5000);
+      intervalId = setInterval(fetchSocketTransactionStatus, 5000);
     }
   
     return () => {
@@ -536,13 +537,14 @@ export default function SendForm() {
     };
 
     let intervalId: any;
-    const fetchLifiTransactionStatus = async () => {
+    const fetchSocketTransactionStatus = async () => {
       if (receiveNetwork && batchWriteApproveAndBridgeResult) {
         const transferOutTxnHash = batchWriteApproveAndBridgeResult.hash;
-        const response = await getLifiTransactionStatus(transferOutTxnHash)
+        const networkChainId = networksInfo[receiveNetwork].networkChainId;
+        const response = await getSocketTransactionStatus(transferOutTxnHash, networkChainId)
 
-        if (response?.receiving.txHash) {
-          const destinationTransactionHash = response.receiving.txHash;
+        if (response.result?.destinationTransactionHash) {
+          const destinationTransactionHash = response.result.destinationTransactionHash;
           const link = `${networksInfo[receiveNetwork].blockExplorer}/tx/${destinationTransactionHash}`;
           setReceiveBridgeTransactionLink(link);
 
@@ -552,7 +554,7 @@ export default function SendForm() {
     };
 
     if (batchWriteApproveAndBridgeResult?.hash) {
-      intervalId = setInterval(fetchLifiTransactionStatus, 5000);
+      intervalId = setInterval(fetchSocketTransactionStatus, 5000);
     }
   
     return () => {
@@ -565,14 +567,14 @@ export default function SendForm() {
   }, [batchWriteApproveAndBridgeResult])
 
   useEffect(() => {
-    const usdcApprovalToLifiBridgeLoaded = usdcApprovalToLifiBridge !== null && usdcApprovalToLifiBridge !== undefined;
+    const usdcApprovalToSocketBridgeLoaded = usdcApprovalToSocketBridge !== null && usdcApprovalToSocketBridge !== undefined;
     const sendAmountInput = currentQuote.sendAmountInput;
 
-    if (!sendAmountInput || !usdcApprovalToLifiBridgeLoaded) {
+    if (!sendAmountInput || !usdcApprovalToSocketBridgeLoaded) {
       setAmountToApprove(ZERO);
     } else {
       const sendAmountBI = toBigInt(sendAmountInput.toString());
-      const approvalDifference = BigInt(sendAmountBI) - BigInt(usdcApprovalToLifiBridge);
+      const approvalDifference = BigInt(sendAmountBI) - BigInt(usdcApprovalToSocketBridge);
 
       if (approvalDifference > ZERO) {
         setAmountToApprove(sendAmountBI);
@@ -580,7 +582,7 @@ export default function SendForm() {
         setAmountToApprove(ZERO);
       }
     }
-  }, [currentQuote.sendAmountInput, usdcApprovalToLifiBridge]);
+  }, [currentQuote.sendAmountInput, usdcApprovalToSocketBridge]);
 
   useEffect(() => {
     let recipientAddressForUpdatedQuote = recipientAddressInput.rawAddress;
@@ -595,7 +597,7 @@ export default function SendForm() {
     updateQuoteOnInputChange(currentQuote.sendAmountInput, recipientAddressForUpdatedQuote);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiveNetwork, receiveToken, usdcApprovalToLifiBridge]);
+  }, [receiveNetwork, receiveToken, usdcApprovalToSocketBridge]);
 
   useEffect(() => {
     if (recipientAddressFromQuery && amountFromQuery) {
@@ -611,7 +613,7 @@ export default function SendForm() {
    */
 
   const updateQuoteOnInputChange = async (inputAmount?: string, recipientAddress?: string) => {
-    setLifiSendTransactionData('');
+    setSocketSendTransactionData('');
 
     const sendInputValue = inputAmount;
     if (!sendInputValue) {
@@ -639,7 +641,7 @@ export default function SendForm() {
       const baseUsdcToBaseUsdcQuote = {
         toAmount: toBigInt(sendInputValue),
         decimals: 6
-      } as LifiReceiveQuote;
+      } as SocketReceiveQuote;
 
       setCurrentQuote({
         sendAmountInput: sendInputValue,
@@ -659,7 +661,7 @@ export default function SendForm() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchIndicativeQuote = useCallback(
     debounce(async (sendAmount, recipient?) => {
-      const receiveAmountQuote = await fetchLifiQuote(sendAmount, recipient);
+      const receiveAmountQuote = await fetchSocketQuote(sendAmount, recipient);
       
       console.log('fetchedIndicativeQuote:', receiveAmountQuote);
 
@@ -691,7 +693,7 @@ export default function SendForm() {
     debouncedFetchIndicativeQuote.cancel();
   };
 
-  const fetchLifiQuote = async (sendAmount: string, toAddress?: string): Promise<LifiReceiveQuote | null> => {
+  const fetchSocketQuote = async (sendAmount: string, recipient?: string): Promise<SocketReceiveQuote | null> => {
     if (!receiveNetwork || !receiveToken || !receiveTokenData) {
       return null;
     };
@@ -702,33 +704,39 @@ export default function SendForm() {
     };
 
     const defaultAddressForQuote = receiveNetwork === ReceiveNetwork.SOLANA ? SOCKET_DEFAULT_SOL_ADDRESS : SOCKET_QUOTE_DEFAULT_ADDRESS;
-    const getLifiQuoteParams = {
+    const getSocketQuoteParams = {
       fromAmount: toBigInt(sendAmount).toString(),
-      fromAddress: loggedInEthereumAddress ?? defaultAddressForQuote,
-      toChain: networksInfo[receiveNetwork].networkChainId,
-      toToken: selectedReceiveTokenData.address,
-      toAddress: toAddress ?? defaultAddressForQuote
+      userAddress: loggedInEthereumAddress ?? defaultAddressForQuote,
+      toChainId: networksInfo[receiveNetwork].networkChainId,
+      toTokenAddress: selectedReceiveTokenData.address,
+      recipient: recipient ?? defaultAddressForQuote
     };
 
-    console.log('getLifiQuote params: ', getLifiQuoteParams);
+    console.log('getSocketQuote params: ', getSocketQuoteParams);
 
-    const quote = await getLifiQuote(getLifiQuoteParams);
-    if (!quote) {
+    const quote = await getSocketQuote(getSocketQuoteParams);
+    if (!quote.success || quote.result?.routes?.length === 0) {
       setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
       return null;
     };
 
-    console.log('getLifiQuote response:', quote);
+    console.log('getSocketQuote response:', quote);
 
-    const fromAmount = BigInt(quote.estimate.fromAmount);
-    const toAmount = BigInt(quote.estimate.toAmount);
-    const totalGasFeesInUsd = quote.estimate.gasCosts[0].amountUSD;
-    const serviceTimeSeconds = Math.floor(quote.estimate.executionDuration as number);
-    const bridgeName = quote.toolDetails.name;
+    const bestRoute = quote.result.routes[0];
+    const fromAmount = BigInt(bestRoute.fromAmount);
+    const toAmount = BigInt(bestRoute.toAmount);
+    const totalGasFeesInUsd = bestRoute.totalGasFeesInUsd;
+    const serviceTimeSeconds = bestRoute.serviceTime as number;
 
-    const gasCosts = quote.estimate.gasCosts[0];
-    const totalGasFees = BigInt(gasCosts.price) * BigInt(gasCosts.estimate);
+    const usedBridgeNames = bestRoute.usedBridgeNames;
+    const usedDexName = bestRoute.usedDexName;
+    const bridgeName = usedBridgeNames ? usedBridgeNames[0] : usedDexName;
+
+    const userTxns = bestRoute.userTxs;
+    const totalGasFees = userTxns.reduce((cumulativeFees: bigint, txn: any) => {
+      return cumulativeFees + BigInt(txn.gasFees.gasAmount)
+    }, ZERO);
     
     return {
       fromAmount: fromAmount,
@@ -738,8 +746,8 @@ export default function SendForm() {
       decimals: selectedReceiveTokenData.decimals,
       bridgeName: bridgeName,
       totalGasFeesWei: totalGasFees,
-      txData: quote.transactionRequest.data
-    } as LifiReceiveQuote;
+      routeData: bestRoute
+    } as SocketReceiveQuote;
   };
 
   /*
@@ -753,12 +761,17 @@ export default function SendForm() {
   };
 
   const fetchFirmQuoteAndTxnData = async (inputAmount: string, recipientAddress: string) => {
-    const updatedQuote = await fetchLifiQuote(inputAmount, recipientAddress);
+    const updatedQuote = await fetchSocketQuote(inputAmount, recipientAddress);
 
     console.log('fetchedFirmQuote:', updatedQuote);
 
     // todo: perform check if updated quote price range moved too much
     if (!updatedQuote) {
+      return;
+    };
+
+    const socketTransactionData = await getSocketTransactionData(updatedQuote.routeData);
+    if (!socketTransactionData) {
       return;
     };
 
@@ -769,7 +782,7 @@ export default function SendForm() {
 
     setQuoteFetchingStatus(FetchQuoteStatus.LOADED)
 
-    setLifiSendTransactionData(updatedQuote.txData);
+    setSocketSendTransactionData(socketTransactionData.result.txData);
   };
 
   function resetStateOnInputChanges() {
@@ -781,8 +794,8 @@ export default function SendForm() {
       setReceiveBridgeTransactionLink('');
     };
 
-    if (lifiSendTransactionData) {
-      setLifiSendTransactionData('');
+    if (socketSendTransactionData) {
+      setSocketSendTransactionData('');
     };
 
     if (sendState === SendTransactionStatus.TRANSACTION_SUCCEEDED) {
@@ -791,7 +804,7 @@ export default function SendForm() {
   };
 
   function resetStateOnSuccessfulTransaction() {
-    setLifiSendTransactionData('');
+    setSocketSendTransactionData('');
 
     setQuoteFetchingStatus(FetchQuoteStatus.DEFAULT);
 
@@ -800,7 +813,7 @@ export default function SendForm() {
 
     refetchUsdcBalance?.();
 
-    refetchUsdcApprovalToLifiBridge?.();
+    refetchUsdcApprovalToSocketBridge?.();
   };
 
   const validateAndSetQuote = async (value: string, recipientAddress: string) => {
@@ -1049,8 +1062,8 @@ export default function SendForm() {
         return 'Send';
 
       case SendTransactionStatus.APPROVAL_REQUIRED:
-        const usdcApprovalToLifiBridgeString = usdcApprovalToLifiBridge ? toUsdcString(usdcApprovalToLifiBridge) : '0';
-        return `Insufficient USDC transfer approval: ${usdcApprovalToLifiBridgeString}`;
+        const usdcApprovalToSocketBridgeString = usdcApprovalToSocketBridge ? toUsdcString(usdcApprovalToSocketBridge) : '0';
+        return `Insufficient USDC transfer approval: ${usdcApprovalToSocketBridgeString}`;
 
       case SendTransactionStatus.DEFAULT:
       default:
