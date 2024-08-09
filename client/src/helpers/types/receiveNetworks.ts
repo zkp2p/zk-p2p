@@ -23,9 +23,9 @@ export const ReceiveNetwork = {
 } as const;
 
 export const receiveNetworks = [
-  ReceiveNetwork.ZKSYNC,
   ReceiveNetwork.BASE,
-  ReceiveNetwork.SOLANA,
+  ReceiveNetwork.ZKSYNC,
+  // ReceiveNetwork.SOLANA, // not supported by socket
   ReceiveNetwork.POLYGON,
   ReceiveNetwork.ARBITRUM,
   ReceiveNetwork.AVALANCHE,
