@@ -301,7 +301,7 @@ export const MailTable: React.FC<MailTableProps> = ({
             <div>
              { platformStrings.getForPlatform(paymentPlatform, 'SIGN_IN_WITH_GOOGLE_INSTRUCTIONS') }
               <Link
-                href="https://docs.zkp2p.xyz/zkp2p/user-guides/on-ramping/privacy-and-safety"
+                href="https://docs.zkp2p.xyz/user-guides/on-ramping/privacy-and-safety"
                 target="_blank"
               >
                 Privacy and Safety ↗
