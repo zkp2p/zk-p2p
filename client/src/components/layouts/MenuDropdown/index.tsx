@@ -76,7 +76,7 @@ export const MenuDropdown = () => {
           </NavDropdownItem>
 
           <NavDropdownItem
-            href="https://docs.zkp2p.xyz/zkp2p/"
+            href="https://docs.zkp2p.xyz/"
             target="_blank"
             rel="noopener noreferrer">
               <ThemedText.LabelSmall textAlign="left">

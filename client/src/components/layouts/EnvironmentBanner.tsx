@@ -66,7 +66,7 @@ export const EnvironmentBanner: React.FC = () => {
       <StyledLabel style={{ flex: '1', margin: 'auto'}}>
         {bannerCopyForEnv(env)}
         {isEnvProduction && (
-          <Link href="https://docs.zkp2p.xyz/zkp2p/developer/security#risks" color="inherit" target="_blank">
+          <Link href="https://docs.zkp2p.xyz/developer/security#risks" color="inherit" target="_blank">
             Review Risks
           </Link>
         )}

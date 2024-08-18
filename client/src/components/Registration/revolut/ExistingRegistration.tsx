@@ -141,7 +141,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                   <NumberedStep>
                     { revolutStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
-                      href="https://docs.zkp2p.xyz/zkp2p/user-guides/registration"
+                      href="https://docs.zkp2p.xyz/user-guides/registration"
                       target="_blank"
                     >
                       Learn more ↗

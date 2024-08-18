@@ -9,7 +9,7 @@ export const MAIN_CARDS = [
 		title: 'Documentation',
 		description: 'Interested in learning more about how the protocol works?',
 		cta: 'Go to Docs',
-		navigateTo: 'https://docs.zkp2p.xyz/zkp2p/',
+		navigateTo: 'https://docs.zkp2p.xyz/',
 	},
 ];
 

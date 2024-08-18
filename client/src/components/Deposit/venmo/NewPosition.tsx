@@ -443,7 +443,7 @@ export const NewPosition: React.FC<NewPositionProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             { venmoStrings.get('NEW_DEPOSIT_INSTRUCTIONS') }
-            <Link href="https://docs.zkp2p.xyz/zkp2p/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
+            <Link href="https://docs.zkp2p.xyz/user-guides/off-ramping/fetch-your-venmo-id" target="_blank">
               Fetch your Venmo ID ↗
             </Link>
           </NumberedStep>
