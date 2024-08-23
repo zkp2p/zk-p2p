@@ -142,4 +142,6 @@ func.skip = async (hre: HardhatRuntimeEnvironment): Promise<boolean> => {
   return false;
 };
 
+func.tags = ["HDFCDeployment"];
+
 export default func;

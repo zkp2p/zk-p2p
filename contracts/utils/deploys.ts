@@ -5,6 +5,8 @@ import { Address, TLSParams } from "@utils/types";
 const circom = require("circomlibjs");
 
 import {
+  EncryptedERC20,
+  EncryptedERC20__factory,
   GarantiBodyHashVerifier,
   GarantiRamp,
   GarantiRegistrationProcessor,
@@ -105,6 +107,10 @@ export default class DeployHelper {
 
   public async deployUSDCMock(mintAmount: BigNumber, name: string, symbol: string): Promise<USDCMock> {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
+  }
+
+  public async deployEncryptedERC20(name: string, symbol: string): Promise<EncryptedERC20> {
+    return await new EncryptedERC20__factory(this._deployerSigner).deploy(name, symbol)
   }
 
   // Venmo-V1 Contracts

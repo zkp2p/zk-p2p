@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.24;
 
+import "fhevm/lib/TFHE.sol";
+
 interface IeERC20 {
     event Transfer(address indexed from, address indexed to);
     event Approval(address indexed owner, address indexed spender);

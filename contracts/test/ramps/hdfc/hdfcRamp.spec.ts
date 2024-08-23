@@ -9,6 +9,7 @@ import { Account } from "@utils/test/types";
 import {
   HDFCRamp,
   USDCMock,
+  EncryptedERC20,
   HDFCRegistrationProcessorMock,
   HDFCSendProcessorMock
 } from "@utils/contracts";
@@ -42,6 +43,7 @@ describe("HDFCRamp", () => {
 
   let ramp: HDFCRamp;
   let usdcToken: USDCMock;
+  let encryptedERC20Token: EncryptedERC20; 
   let registrationProcessor: HDFCRegistrationProcessorMock;
   let sendProcessor: HDFCSendProcessorMock;
 
@@ -67,10 +69,14 @@ describe("HDFCRamp", () => {
     const poseidonContract6 = await deployer.deployPoseidon6();
 
     usdcToken = await deployer.deployUSDCMock(usdc(1000000000), "USDC", "USDC");
+    encryptedERC20Token = await deployer.deployEncryptedERC20("ET", "EncryptedToken");
     registrationProcessor = await deployer.deployHDFCRegistrationProcessorMock();
     sendProcessor = await deployer.deployHDFCSendProcessorMock();
 
     await usdcToken.transfer(offRamper.address, usdc(10000));
+    // amount will be minted corresponding to 1000 encrypted token
+    await encryptedERC20Token.mint(usdc(10000)); 
+    // await encryptedERC20Token["transfer(address,bytes32,by
 
     ramp = await deployer.deployHDFCRamp(
       owner.address,

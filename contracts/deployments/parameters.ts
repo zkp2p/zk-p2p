@@ -135,6 +135,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
+    "encifher": usdc(10),
   },
   "hdfc": {
     "localhost": usdc(21),
@@ -142,6 +143,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
+    "encifher": usdc(10),
   },
   "garanti": {
     "localhost": usdc(21),
@@ -149,6 +151,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
+    "encifher": usdc(10),
   },
   "wise": {
     "localhost": usdc(21),
@@ -156,6 +159,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
+    "encifher": usdc(10),
   },
   "revolut": {
     "localhost": usdc(22),
@@ -163,6 +167,7 @@ export const MIN_DEPOSIT_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(20),
     "base_staging": usdc(10),
+    "encifher": usdc(10),
   },
 };
 export const MAX_ONRAMP_AMOUNT: any = {
@@ -172,6 +177,7 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "sepolia": usdc(999),
     "base": usdc(500),
     "base_staging": usdc(999),
+    "encifher": usdc(999),
   },
   "hdfc": {
     "localhost": usdc(998),
@@ -179,6 +185,7 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "sepolia": usdc(999),
     "base": usdc(100),
     "base_staging": usdc(100),
+    "encifher": usdc(999),
   },
   "garanti": {
     "localhost": usdc(998),
@@ -186,6 +193,7 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "sepolia": usdc(999),
     "base": usdc(100),
     "base_staging": usdc(100),
+    "encifher": usdc(999),
   },
   "wise": {
     "localhost": usdc(998),
@@ -193,6 +201,7 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "sepolia": usdc(999),
     "base": usdc(200),
     "base_staging": usdc(200),
+    "encifher": usdc(999),
   },
   "revolut": {
     "localhost": usdc(22),
@@ -200,6 +209,7 @@ export const MAX_ONRAMP_AMOUNT: any = {
     "sepolia": usdc(20),
     "base": usdc(250),
     "base_staging": usdc(10),
+    "encifher": usdc(999),
   },
 };
 export const INTENT_EXPIRATION_PERIOD: any = {
@@ -209,6 +219,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": ONE_DAY_IN_SECONDS.sub(1),
@@ -216,6 +227,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "garanti": {
     "localhost": ONE_DAY_IN_SECONDS.sub(2),
@@ -223,6 +235,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "wise": {
     "localhost": ONE_DAY_IN_SECONDS.sub(2),
@@ -230,6 +243,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "revolut": {
     "localhost": ONE_DAY_IN_SECONDS.sub(3),
@@ -237,6 +251,7 @@ export const INTENT_EXPIRATION_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS,
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
 };
 export const ONRAMP_COOL_DOWN_PERIOD: any = {
@@ -246,6 +261,7 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "hdfc": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(1),
@@ -253,6 +269,7 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "garanti": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(2),
@@ -260,6 +277,7 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "wise": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(2),
@@ -267,6 +285,7 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
   "revolut": {
     "localhost": THREE_MINUTES_IN_SECONDS.sub(3),
@@ -274,6 +293,7 @@ export const ONRAMP_COOL_DOWN_PERIOD: any = {
     "sepolia": THREE_MINUTES_IN_SECONDS,
     "base": ONE_DAY_IN_SECONDS.div(2),
     "base_staging": THREE_MINUTES_IN_SECONDS,
+    "encifher": THREE_MINUTES_IN_SECONDS,
   },
 };
 export const SUSTAINABILITY_FEE: any = {
@@ -283,6 +303,7 @@ export const SUSTAINABILITY_FEE: any = {
     "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
+    "encifher": ether(.001),
   },
   "hdfc": {
     "localhost": ether(.002),
@@ -290,6 +311,7 @@ export const SUSTAINABILITY_FEE: any = {
     "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
+    "encifher": ether(.001),
   },
   "garanti": {
     "localhost": ether(.002),
@@ -297,6 +319,7 @@ export const SUSTAINABILITY_FEE: any = {
     "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
+    "encifher": ether(.001),
   },
   "wise": {
     "localhost": ether(.002),
@@ -304,6 +327,7 @@ export const SUSTAINABILITY_FEE: any = {
     "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
+    "encifher": ether(.001),
   },
   "revolut": {
     "localhost": ether(.003),
@@ -311,6 +335,7 @@ export const SUSTAINABILITY_FEE: any = {
     "sepolia": ether(.001),
     "base": ZERO,
     "base_staging": ZERO,
+    "encifher": ether(.001),
   },
 };
 export const SUSTAINABILITY_FEE_RECIPIENT: any = {
@@ -320,6 +345,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "encifher": "",
   },
   "hdfc": {
     "localhost": "",
@@ -327,6 +353,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "encifher": "",
   },
   "garanti": {
     "localhost": "",
@@ -334,6 +361,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "encifher": "",
   },
   "wise": {
     "localhost": "",
@@ -341,6 +369,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "encifher": "",
   },
   "revolut": {
     "localhost": "",
@@ -348,6 +377,7 @@ export const SUSTAINABILITY_FEE_RECIPIENT: any = {
     "sepolia": "",
     "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
     "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+    "encifher": "",
   },
 };
 
@@ -358,6 +388,7 @@ export const MULTI_SIG: any = {
   "sepolia": "",
   "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
   "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
+  "encifher": "",
 };
 
 // USDC

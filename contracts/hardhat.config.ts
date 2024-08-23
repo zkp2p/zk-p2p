@@ -23,6 +23,15 @@ const config: HardhatUserConfig = {
           },
         },
       },
+      {
+        version: "0.8.24",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
     ],
   },
   networks: {
@@ -68,6 +77,12 @@ const config: HardhatUserConfig = {
           apiKey: process.env.ETHERSCAN_KEY
         }
       },
+    },
+    encifher: {
+      url: "http://localhost:8545",
+      accounts: [
+        `0x${process.env.ENCIFHER_DEPLOY_PRIVATE_KEY}`,
+      ]
     },
     base: {
       url: "https://developer-access-mainnet.base.org",
