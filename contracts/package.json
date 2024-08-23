@@ -56,7 +56,8 @@
     "@zk-email/contracts": "^3.2.0",
     "circomlibjs": "^0.1.7",
     "dotenv": "^16.3.1",
-    "ethereum-waffle": "^4.0.10"
+    "ethereum-waffle": "^4.0.10",
+    "fhevm": "^0.5.8"
   },
   "_moduleAliases": {
     "@utils": "utils",
