@@ -35,6 +35,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowBlocksWithSameTimestamp: true,
+      gas: 1000000000
     },
     localhost: {
       allowBlocksWithSameTimestamp: true,

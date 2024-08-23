@@ -6,38 +6,14 @@ interface OnchainStruct {
   [key: string]: string;
 }
 
-export interface TicketRaw extends OnchainStruct {
-  isTransferrable: string;
-  rawId: string;
-  section: string;
-  row: string;
-  seat: string;
+export type Groth16Proof = {
+  a: [BigNumber, BigNumber],
+  b: [[BigNumber, BigNumber], [BigNumber, BigNumber]],
+  c: [BigNumber, BigNumber],
+  signals: BigNumber[]
 }
 
-export interface EventRaw extends OnchainStruct {
-  rawId: string;
-  eventName: string;
-  venue: string;
-  startTime: string;
-  eventUrl: string;
-}
-
-export interface Event {
-  rawId: string;
-  eventName: string;
-  venue: string;
-  startTime: BigNumber;
-  eventUrl: string;
-}
-
-export interface GroupRaw extends OnchainStruct {
-  tickets: string;
-  email: string;
-  status: string;
-  role: string;
-}
-
-export interface Proof {
+export interface ReclaimProof {
   claimInfo: ClaimInfo;
   signedClaim: SignedClaim;
 }
@@ -58,4 +34,9 @@ export interface CompleteClaimData {
 export interface SignedClaim {
   claim: CompleteClaimData;
   signatures: string[];
+}
+
+export interface Domain {
+  name: string;
+  expiryTimestamp: string;
 }

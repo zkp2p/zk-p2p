@@ -1,15 +1,18 @@
 export {
-  AddressAllowListMock,
-  ClaimVerifier,
-  EventRegistry,
-  EventRegistryMock,
+  DomainExchange,
   NullifierRegistry,
-  SwapTicketExchange,
-  TMTimestampParsingMock,
-  TransferTicketProcessorMock,
+  TransferDomainProcessorMock,
   USDCMock,
-  VerifyTicketProcessorMock,
-  VerifiedTicketRegistry,
-  VerifyTicketProcessor,
-  TransferTicketProcessor,
+  VerifyDomainProcessorMock,
+  VerifyDomainProcessor,
+  TransferDomainProcessor,
+  ClaimVerifier,
+  IVerifyDomainProcessor,
+  ITransferDomainProcessor,
+  ManagedKeyHashAdapterV2,
+  VerifiedDomainRegistry,
 } from "../typechain";
+
+export {
+  IProxyBaseProcessor
+} from "../typechain/contracts/interfaces/IVerifyDomainProcessor"

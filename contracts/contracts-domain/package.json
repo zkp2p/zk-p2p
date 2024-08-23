@@ -21,7 +21,7 @@
     "etherscan:sepolia": "yarn hardhat --network sepolia etherscan-verify",
     "etherscan:base": "yarn hardhat --network base etherscan-verify",
     "etherscan:base_staging": "yarn hardhat --network base_staging etherscan-verify",
-    "test": "npx hardhat test test/*.ts test/lib/*.ts",
+    "test": "npx hardhat test test/*.ts",
     "test:clean": "yarn build && yarn test",
     "test:fast": "NO_COMPILE=true TS_NODE_TRANSPILE_ONLY=1 yarn test --no-compile",
     "test:deploy": "npx hardhat test test/deploy/*.ts",
@@ -53,6 +53,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.2",
     "@reclaimprotocol/verifier-solidity-sdk": "^1.0.2",
+    "@zk-email/contracts": "^6.1.3",
     "canonicalize": "^2.0.0",
     "dotenv": "^16.3.1",
     "ethereum-waffle": "^4.0.10"

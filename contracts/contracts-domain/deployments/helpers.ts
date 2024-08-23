@@ -11,7 +11,7 @@ export async function setNewOwner(
   contractAddress: Address,
   newOwner: Address
 ): Promise<void> {
-  const contract  = await ethers.getContractAt("Ownable", contractAddress);
+  const contract = await ethers.getContractAt("Ownable", contractAddress);
   const currentOwner = await contract.owner();
 
   if (currentOwner != newOwner) {
@@ -33,17 +33,68 @@ export async function addWritePermission(
   const currentOwner = await contract.owner();
   if (!(await contract.isWriter(newPermission))) {
     if ((await hre.getUnnamedAccounts()).includes(currentOwner)) {
-        const data = contract.interface.encodeFunctionData("addWritePermission", [newPermission]);
+      const data = contract.interface.encodeFunctionData("addWritePermission", [newPermission]);
 
-        await hre.deployments.rawTx({
-          from: currentOwner,
-          to: contract.address,
-          data
-        });
+      await hre.deployments.rawTx({
+        from: currentOwner,
+        to: contract.address,
+        data
+      });
     } else {
       console.log(
         `Contract owner is not in the list of accounts, must be manually added with the following calldata:
         ${contract.interface.encodeFunctionData("addWritePermission", [newPermission])}
+        `
+      );
+    }
+  }
+}
+
+
+export async function addWitness(
+  hre: HardhatRuntimeEnvironment,
+  contract: any,
+  newWitness: Address
+): Promise<void> {
+  const currentOwner = await contract.owner();
+  if (!(await contract.isWitness(newWitness))) {
+    if ((await hre.getUnnamedAccounts()).includes(currentOwner)) {
+      const data = contract.interface.encodeFunctionData("addWitness", [newWitness]);
+
+      await hre.deployments.rawTx({
+        from: currentOwner,
+        to: contract.address,
+        data
+      });
+    } else {
+      console.log(
+        `Contract owner is not in the list of accounts, must be manually added with the following calldata:
+        ${contract.interface.encodeFunctionData("addWitness", [newWitness])}
+        `
+      );
+    }
+  }
+}
+
+export async function addProviderHash(
+  hre: HardhatRuntimeEnvironment,
+  contract: any,
+  newProviderHash: string
+): Promise<void> {
+  const currentOwner = await contract.owner();
+  if (!(await contract.isProviderHash(newProviderHash))) {
+    if ((await hre.getUnnamedAccounts()).includes(currentOwner)) {
+      const data = contract.interface.encodeFunctionData("addProviderHash", [newProviderHash]);
+
+      await hre.deployments.rawTx({
+        from: currentOwner,
+        to: contract.address,
+        data
+      });
+    } else {
+      console.log(
+        `Contract owner is not in the list of accounts, must be manually added with the following calldata:
+        ${contract.interface.encodeFunctionData("addProviderHash", [newProviderHash])}
         `
       );
     }

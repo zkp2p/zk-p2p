@@ -3,43 +3,35 @@ import { BigNumber, Signer, ethers } from "ethers";
 import { Address } from "@utils/types";
 
 import {
-  AddressAllowListMock,
   ClaimVerifier,
-  EventRegistry,
-  EventRegistryMock,
   NullifierRegistry,
-  SwapTicketExchange,
-  TMTimestampParsingMock,
-  TransferTicketProcessor,
-  TransferTicketProcessorMock,
+  DomainExchange,
+  TransferDomainProcessor,
+  TransferDomainProcessorMock,
   USDCMock,
-  VerifyTicketProcessorMock,
-  VerifiedTicketRegistry,
-  VerifyTicketProcessor,
+  VerifyDomainProcessorMock,
+  VerifyDomainProcessor,
+  VerifiedDomainRegistry,
+  ManagedKeyHashAdapterV2
 } from "./contracts";
 
 import {
-  EventRegistry__factory,
-  SwapTicketExchange__factory,
-  VerifiedTicketRegistry__factory,
-  VerifyTicketProcessor__factory,
-  TransferTicketProcessor__factory
+  DomainExchange__factory,
+  VerifyDomainProcessor__factory,
+  TransferDomainProcessor__factory,
+  VerifiedDomainRegistry__factory
 } from "../typechain/factories/contracts/";
 import {
-  EventRegistryMock__factory,
-  TransferTicketProcessorMock__factory,
+  TransferDomainProcessorMock__factory,
   USDCMock__factory,
-  VerifyTicketProcessorMock__factory,
+  VerifyDomainProcessorMock__factory,
 } from "../typechain/factories/contracts/mocks";
 import {
-  AddressAllowListMock__factory,
-  TMTimestampParsingMock__factory,
-} from "../typechain/factories/contracts/mocks/lib";
-import {
   ClaimVerifier__factory,
-} from "../typechain/factories/contracts/lib/processors";
+} from "../typechain/factories/contracts/external";
 import {
   NullifierRegistry__factory,
+  ManagedKeyHashAdapterV2__factory
 } from "../typechain/factories/contracts/external";
 import { ONE_DAY_IN_SECONDS } from "./constants";
 
@@ -51,64 +43,70 @@ export default class DeployHelper {
   }
 
   // System Contracts
-  public async deployVerifiedTicketRegistry(owner: Address): Promise<VerifiedTicketRegistry> {
-    return await new VerifiedTicketRegistry__factory(this._deployerSigner).deploy(owner);
-  }
-
-  public async deploySwapTicketExchange(
+  public async deployDomainExchange(
     owner: Address,
-    feeRecipient: Address,
-    usdc: Address,
-    ticketRegistry: Address,
-    eventRegistry: Address,
     fee: BigNumber,
-    allowedUsers: Address[] = [],
-    orderSettlementPeriod: BigNumber = ONE_DAY_IN_SECONDS,
-    refundSettlementPeriod: BigNumber = ONE_DAY_IN_SECONDS,
-  ): Promise<SwapTicketExchange> {
-    return await new SwapTicketExchange__factory(this._deployerSigner).deploy(
+    feeRecipient: Address,
+    minBidActivePeriod: BigNumber,
+    bidRefundPeriod: BigNumber,
+    allowedAddresses: Address[]
+  ): Promise<DomainExchange> {
+    return await new DomainExchange__factory(this._deployerSigner).deploy(
       owner,
-      feeRecipient,
-      usdc,
-      ticketRegistry,
-      eventRegistry,
       fee,
-      orderSettlementPeriod,
-      refundSettlementPeriod,
-      allowedUsers,
+      feeRecipient,
+      minBidActivePeriod,
+      bidRefundPeriod,
+      allowedAddresses
     );
   }
 
-  public async deployClaimVerifier(): Promise<ClaimVerifier> {
-    return await new ClaimVerifier__factory(this._deployerSigner).deploy();
-  }
-
-  public async deployVerifyTicketProcessor(
-    ticketRegistry: Address,
-    nullifierRegistry: Address
-  ): Promise<VerifyTicketProcessor> {
-    return await new VerifyTicketProcessor__factory(this._deployerSigner).deploy(
-      ticketRegistry,
-      nullifierRegistry
+  public async deployVerifyDomainProcessor(
+    exchange: Address,
+    nullifierRegistry: Address,
+    providerHashes: string[],
+    claimVerifierLibraryName: string,
+    claimVerifierLibraryAddress: Address
+  ): Promise<VerifyDomainProcessor> {
+    return await new VerifyDomainProcessor__factory(
+      // @ts-ignore
+      {
+        [claimVerifierLibraryName]: claimVerifierLibraryAddress,
+      },
+      this._deployerSigner
+    ).deploy(
+      exchange,
+      nullifierRegistry,
+      providerHashes
     );
   }
 
-  public async deployTransferTicketProcessor(
-    ticketRegistry: Address,
-    nullifierRegistry: Address
-  ): Promise<TransferTicketProcessor> {
-    return await new TransferTicketProcessor__factory(this._deployerSigner).deploy(
-      ticketRegistry,
-      nullifierRegistry
+  public async deployTransferDomainProcessor(
+    exchange: Address,
+    mailserverKeyHashAdapter: Address,
+    nullifierRegistry: Address,
+    emailFromAddress: string,
+    timestampBuffer: BigNumber = BigNumber.from(30)
+  ): Promise<TransferDomainProcessor> {
+    return await new TransferDomainProcessor__factory(this._deployerSigner).deploy(
+      exchange,
+      mailserverKeyHashAdapter,
+      nullifierRegistry,
+      emailFromAddress,
+      timestampBuffer
     );
   }
 
-  public async deployEventRegistry(ticketRegistry: Address): Promise<EventRegistry> {
-    return await new EventRegistry__factory(this._deployerSigner).deploy(ticketRegistry);
+  public async deployVerifiedDomainRegistry(domainExpiryBuffer: BigNumber): Promise<VerifiedDomainRegistry> {
+    return await new VerifiedDomainRegistry__factory(this._deployerSigner).deploy(domainExpiryBuffer);
   }
 
   public async deployNullifierRegistry(): Promise<NullifierRegistry> {
     return await new NullifierRegistry__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployManagedKeyHashAdapterV2(keyHashes: string[]): Promise<ManagedKeyHashAdapterV2> {
+    return await new ManagedKeyHashAdapterV2__factory(this._deployerSigner).deploy(keyHashes);
   }
 
   // Mocks
@@ -116,23 +114,16 @@ export default class DeployHelper {
     return await new USDCMock__factory(this._deployerSigner).deploy(mintAmount.toString(), name, symbol);
   }
 
-  public async deployTMTimestampParsingMock(): Promise<TMTimestampParsingMock> {
-    return await new TMTimestampParsingMock__factory(this._deployerSigner).deploy();
+  public async deployVerifyDomainProcessorMock(): Promise<VerifyDomainProcessorMock> {
+    return await new VerifyDomainProcessorMock__factory(this._deployerSigner).deploy();
   }
 
-  public async deployVerifyTicketProcessorMock(): Promise<VerifyTicketProcessorMock> {
-    return await new VerifyTicketProcessorMock__factory(this._deployerSigner).deploy();
+  public async deployTransferDomainProcessorMock(): Promise<TransferDomainProcessorMock> {
+    return await new TransferDomainProcessorMock__factory(this._deployerSigner).deploy();
   }
 
-  public async deployTransferTicketProcessorMock(): Promise<TransferTicketProcessorMock> {
-    return await new TransferTicketProcessorMock__factory(this._deployerSigner).deploy();
-  }
-
-  public async deployEventRegistryMock(): Promise<EventRegistryMock> {
-    return await new EventRegistryMock__factory(this._deployerSigner).deploy();
-  }
-
-  public async deployAddressAllowListMock(allowedUsers: Address[]): Promise<AddressAllowListMock> {
-    return await new AddressAllowListMock__factory(this._deployerSigner).deploy(allowedUsers);
+  //Libraries
+  public async deployClaimVerifier(): Promise<ClaimVerifier> {
+    return await new ClaimVerifier__factory(this._deployerSigner).deploy();
   }
 }
