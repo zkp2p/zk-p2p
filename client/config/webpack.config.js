@@ -672,15 +672,10 @@ module.exports = function (webpackEnv) {
         'process.env.GARANTI_DENY_LIST_URL': JSON.stringify(process.env.GARANTI_DENY_LIST_URL),
         'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
 
-        'process.env.USE_REVOLUT': JSON.stringify(process.env.USE_REVOLUT),
-        'process.env.USE_REVOLUT_MULTICURRENCY': JSON.stringify(process.env.USE_REVOLUT_MULTICURRENCY),
         'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
         'process.env.NOTARY_VERIFICATION_SIGNING_KEY': JSON.stringify(process.env.NOTARY_VERIFICATION_SIGNING_KEY),
         'process.env.NOTARY_PUBKEY': JSON.stringify(process.env.NOTARY_PUBKEY),
         'process.env.NOTARY_PUBKEY_HASH': JSON.stringify(process.env.NOTARY_PUBKEY_HASH),
-
-        'process.env.USE_REVOLUT_DEFAULT_DEPOSITOR': JSON.stringify(process.env.USE_REVOLUT_DEFAULT_DEPOSITOR),
-        'process.env.REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF': JSON.stringify(process.env.REVOLUT_DEFAULT_DEPOSITOR_REGISTRATION_PROOF),
       }),
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/main/packages/react-refresh

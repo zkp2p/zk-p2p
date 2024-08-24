@@ -5,9 +5,6 @@ import europeFlagSvg from '../../assets/images/europe-flag.svg';
 import ukFlagSvg from '../../assets/images/uk-flag.svg';
 import singaporeFlagSvg from '../../assets/images/singapore-flag.svg';
 
-const USE_GARANTI = process.env.USE_GARANTI === 'true';
-const USE_REVOLUT = process.env.USE_REVOLUT === 'true';
-const USE_REVOLUT_MULTICURRENCY = process.env.USE_REVOLUT_MULTICURRENCY === 'true'; 
 
 export const PaymentPlatform = {
   VENMO: "venmo",
@@ -36,33 +33,29 @@ export const CurrencyIndex = {
   USD_REVOLUT: 3
 };
 
-function getPaymentPlatforms(USE_GARANTI: boolean, USE_REVOLUT: boolean): string[] {
-  let platforms = [PaymentPlatform.VENMO, PaymentPlatform.HDFC];
-  
-  if (USE_GARANTI) {
-    platforms.push(PaymentPlatform.GARANTI);
-  };
-
-  if (USE_REVOLUT) {
-    platforms.push(PaymentPlatform.REVOLUT);
-  };
+function getPaymentPlatforms(): string[] {
+  let platforms = [
+    PaymentPlatform.VENMO,
+    PaymentPlatform.HDFC,
+    PaymentPlatform.GARANTI,
+    PaymentPlatform.REVOLUT
+  ];
 
   return platforms;
 };
 
-function getRevolutPlatformCurrencies(USE_WISE_MULTICURRENCY: boolean): CurrencyCodeType[] {
-  let currencies = [CurrencyCode.EUR];
-
-  if (USE_REVOLUT_MULTICURRENCY) {
-    currencies.push(CurrencyCode.GBP);
-    currencies.push(CurrencyCode.SGD);
-    currencies.push(CurrencyCode.USD);
-  };
+function getRevolutPlatformCurrencies(): CurrencyCodeType[] {
+  let currencies = [
+    CurrencyCode.EUR,
+    CurrencyCode.GBP,
+    CurrencyCode.SGD,
+    CurrencyCode.USD
+  ];
 
   return currencies;
 };
 
-export const paymentPlatforms = getPaymentPlatforms(USE_GARANTI, USE_REVOLUT);
+export const paymentPlatforms = getPaymentPlatforms();
 export type PaymentPlatformType = typeof PaymentPlatform[keyof typeof PaymentPlatform];
 export type CurrencyCodeType = typeof CurrencyCode[keyof typeof CurrencyCode];
 export type CurrencyIndexType = typeof CurrencyIndex[keyof typeof CurrencyIndex];
@@ -96,7 +89,7 @@ export const paymentPlatformInfo: Record<PaymentPlatformType, PaymentPlatformDat
   [PaymentPlatform.REVOLUT]: {
     platformId: PaymentPlatform.REVOLUT,
     platformName: 'Revolut',
-    platformCurrencies: getRevolutPlatformCurrencies(USE_REVOLUT_MULTICURRENCY),
+    platformCurrencies: getRevolutPlatformCurrencies(),
     flagSvgs: [europeFlagSvg, ukFlagSvg, singaporeFlagSvg, americaFlagSvg]
   }
 };
