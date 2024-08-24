@@ -11,8 +11,10 @@ import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
 
-pragma solidity ^0.8.18;
+import { IeERC20 } from "../../interfaces/IEERC20.sol";
+import "fhevm/lib/TFHE.sol";
 
+pragma solidity ^0.8.18;
 contract HDFCRamp is Ownable {
 
     using Bytes32ArrayUtils for bytes32[];
@@ -26,6 +28,14 @@ contract HDFCRamp is Ownable {
         uint256 amount,
         uint256 conversionRate
     );
+
+    event EncryptedDepositReceived(
+        uint256 indexed depositId,
+        bytes32 indexed idHash,
+        euint32 amount,
+        euint32 conversionRate
+    );
+
     event IntentSignaled(
         bytes32 indexed intentHash,
         uint256 indexed depositId,
@@ -86,6 +96,16 @@ contract HDFCRamp is Ownable {
         bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
     }
 
+    struct EncryptedDeposit {
+        address despositor;
+        uint256[8] upiId;
+        euint32 depositAmount;
+        euint32 remainingDeposits;
+        euint32 outstandingIntentAmount;
+        euint32 conversionRate;
+        bytes32[] intentHashes;
+    }
+
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
         bytes32 depositorIdHash;            // Depositor's idHash 
@@ -135,6 +155,7 @@ contract HDFCRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
+    IeERC20 public immutable eusdc;                                 // Encrypted USDC token contract (just named is encrypted usdc lol)
     IPoseidon3 public immutable poseidon3;                           // Poseidon hashing contract
     IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
@@ -145,6 +166,7 @@ contract HDFCRamp is Ownable {
     mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
     mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)
     mapping(uint256 => Deposit) public deposits;                    // Mapping of depositIds to deposit structs
+    mapping(uint256 => EncryptedDeposit) public encryptedDeposits;  // Mapping of depositIds to deposit structs
     mapping(bytes32 => Intent) public intents;                      // Mapping of intentHashes to intent structs
 
     uint256 public minDepositAmount;                                // Minimum amount of USDC that can be deposited
@@ -160,6 +182,7 @@ contract HDFCRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
+        IeERC20 _eusdc,
         IPoseidon3 _poseidon3,
         IPoseidon6 _poseidon6,
         uint256 _minDepositAmount,
@@ -172,6 +195,7 @@ contract HDFCRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
+        eusdc = _eusdc;
         poseidon3 = _poseidon3;
         poseidon6 = _poseidon6;
         minDepositAmount = _minDepositAmount;
@@ -272,6 +296,68 @@ contract HDFCRamp is Ownable {
         usdc.transferFrom(msg.sender, address(this), _depositAmount);
 
         emit DepositReceived(depositId, account.idHash, _depositAmount, conversionRate);
+    }
+
+    // for simplicity considering uint32 only
+    // this method doesn't implements requires and assumes parameters are valid for simplicity
+    function privateOffRamp(
+        uint256[8] memory _upiId,
+        einput _encryptedDepositAmount, 
+        einput _encryptedReceiveAmount,
+        bytes calldata _inputProof,
+        uint256 _depositAmount,
+        uint256 _receiveAmount
+    )
+        external
+        onlyRegisteredUser
+    {
+        // require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
+        euint32 encryptedDepositAmount = TFHE.asEuint32(_encryptedDepositAmount, _inputProof);
+        euint32 encryptedReceiveAmount = TFHE.asEuint32(_encryptedReceiveAmount, _inputProof);
+
+        // ebool depositAmountGreaterThanMinDeposit = TFHE.gt(encryptedDepositAmount, TFHE.asEuint32(minDepositAmount));
+        // ebool receivedAmountGreaterThanZero = TFHE.gt(encryptedReceiveAmount, TFHE.asEuint32(0));
+
+        // require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
+        // require(_receiveAmount > 0, "Receive amount must be greater than 0");
+
+        // uint256 conversionRate = (_depositAmount * PRECISE_UNIT) / _receiveAmount;
+
+        // since 1e18 can't fit into 2^64
+        uint32 ENC_PRECISE_UINT = 1e9;
+        // for now let's keep the conversion uint as 1 since division between two encrypted values is not supported
+        euint32 encryptedConversionRate = TFHE.asEuint32(1);
+        // TFHE.div(TFHE.mul(encryptedDepositAmount, TFHE.asEuint32(ENC_PRECISE_UINT)), encryptedReceiveAmount);
+        uint256 depositId = depositCounter++;
+
+        AccountInfo storage account = accounts[msg.sender];
+        account.deposits.push(depositId);
+
+        encryptedDeposits[depositId] = EncryptedDeposit({
+            despositor: msg.sender,
+            upiId: _upiId,
+            depositAmount: encryptedDepositAmount,
+            remainingDeposits: encryptedDepositAmount,
+            outstandingIntentAmount: TFHE.asEuint32(0),
+            conversionRate: encryptedConversionRate,
+            intentHashes: new bytes32[](0)
+        });
+
+        // deposits[depositId] = Deposit({
+        //     depositor: msg.sender,
+        //     upiId: _upiId,
+        //     depositAmount: _depositAmount,
+        //     remainingDeposits: _depositAmount,
+        //     outstandingIntentAmount: 0,
+        //     conversionRate: conversionRate,
+        //     intentHashes: new bytes32[](0)
+        // });
+
+        // usdc.transferFrom(msg.sender, address(this), _depositAmount);
+        // transferFrom will implicitly convert euint32 to euint64
+        eusdc.transferFrom(msg.sender, address(this), _encryptedDepositAmount, _inputProof);
+        emit EncryptedDepositReceived(depositId, account.idHash, encryptedDepositAmount, encryptedConversionRate);
+        // emit DepositReceived(depositId, account.idHash, _depositAmount, conversionRate);
     }
 
     /**
