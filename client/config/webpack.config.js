@@ -654,7 +654,6 @@ module.exports = function (webpackEnv) {
         'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL),
         'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
         'process.env.DEPLOYMENT_ENVIRONMENT': JSON.stringify(process.env.DEPLOYMENT_ENVIRONMENT),
-        'process.env.SHOW_CONFETTI': JSON.stringify(process.env.SHOW_CONFETTI),
         'process.env.PRIVY_APP_ID': JSON.stringify(process.env.PRIVY_APP_ID),
         'process.env.ZERODEV_APP_ID': JSON.stringify(process.env.ZERODEV_APP_ID),
         'process.env.SOCKET_API_KEY': JSON.stringify(process.env.SOCKET_API_KEY),

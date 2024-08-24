@@ -112,12 +112,11 @@ export const VerifyNotarizationModal: React.FC<VerifyNotarizationModalProps> = (
 
   useEffect(() => {
     if (isSubmitSuccessful && setProofGenStatus) {
-      if (process.env.SHOW_CONFETTI === 'true') {
-        setShowConfetti(true);
-        setTimeout(() => {
-          setShowConfetti(false);
-        }, 5000);
-      }
+      setShowConfetti(true);
+      
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
       setProofGenStatus(NotaryVerificationStatus.DONE);
     }
   }, [isSubmitSuccessful, setProofGenStatus])
