@@ -50,11 +50,11 @@ import VenmoRegistrationProvider from './contexts/venmo/Registration/Registratio
 import VenmoRampProvider  from './contexts/venmo/Ramp/RampProvider';
 
 // HDFC Contexts
-import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
-import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
-import HdfcOnRamperIntentsProvider  from './contexts/hdfc/OnRamperIntents/OnRamperIntentsProvider';
-import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
-import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
+// import HdfcDepositsProvider from './contexts/hdfc/Deposits/DepositsProvider';
+// import HdfcLiquidityProvider from './contexts/hdfc/Liquidity/LiquidityProvider';
+// import HdfcOnRamperIntentsProvider  from './contexts/hdfc/OnRamperIntents/OnRamperIntentsProvider';
+// import HdfcRegistrationProvider from './contexts/hdfc/Registration/RegistrationProvider';
+// import HdfcRampProvider  from './contexts/hdfc/Ramp/RampProvider';
 
 // Garanti Contexts
 import GarantiDepositsProvider  from './contexts/garanti/Deposits/DepositsProvider';
@@ -151,18 +151,18 @@ const providersWithProps: ProvidersType[] = [
   [NotarySettingsProvider, {}],
 
   [VenmoRampProvider, {}],
-  [HdfcRampProvider, {}],
+  // [HdfcRampProvider, {}],
   [GarantiRampProvider, {}],
   [RevolutRampProvider, {}],
 
   [VenmoRegistrationProvider, {}],
-  [HdfcRegistrationProvider, {}],
+  // [HdfcRegistrationProvider, {}],
   [GarantiRegistrationProvider, {}],
   [RevolutRegistrationProvider, {}],
 
   [VenmoDepositsProvider, {}],
   [LegacyDepositsProvider, {}],
-  [HdfcDepositsProvider, {}],
+  // [HdfcDepositsProvider, {}],
   [GarantiDepositsProvider, {}],
   [RevolutDepositsProvider, {}],
 
@@ -172,12 +172,12 @@ const providersWithProps: ProvidersType[] = [
   [DenyListProvider, {}],
 
   [VenmoLiquidityProvider, {}],
-  [HdfcLiquidityProvider, {}],
+  // [HdfcLiquidityProvider, {}],
   [GarantiLiquidityProvider, {}],
   [RevolutLiquidityProvider, {}],
 
   [VenmoOnRamperIntentsProvider, {}],
-  [HdfcOnRamperIntentsProvider, {}],
+  // [HdfcOnRamperIntentsProvider, {}],
   [GarantiOnRamperIntentsProvider, {}],
   [RevolutOnRamperIntentsProvider, {}],
 
