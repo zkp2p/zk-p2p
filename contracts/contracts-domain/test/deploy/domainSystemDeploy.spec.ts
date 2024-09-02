@@ -40,7 +40,6 @@ import {
   BID_REFUND_PERIOD,
   USDC,
   SERVER_KEY_HASH,
-  DOMAIN_EXPIRY_BUFFER,
   VERIFY_DOMAIN_PROVIDER_HASHES,
 } from "../../deployments/parameters";
 
@@ -106,8 +105,8 @@ describe("Domain System Deploy", () => {
       const actualBidSettlementPeriod = await domainExchange.bidSettlementPeriod();
       const actualBidRefundPeriod = await domainExchange.bidRefundPeriod();
       const actualTransferDomainProcessor = await domainExchange.transferDomainProcessor();
-      const actualVerifyDomainProcessor = await domainExchange.verifyDomainProcessor();
       const actualVerifiedDomainRegistry = await domainExchange.verifiedDomainRegistry();
+      const actualMailServerKeyHashAdapter = await domainExchange.mailServerKeyHashAdapter();
       const isInitialized = await domainExchange.isInitialized();
       const isEnabled = await domainExchange.isEnabled();
 
@@ -117,8 +116,8 @@ describe("Domain System Deploy", () => {
       expect(actualBidSettlementPeriod).to.eq(BID_SETTLEMENT_PERIOD[network]);
       expect(actualBidRefundPeriod).to.eq(BID_REFUND_PERIOD[network]);
       expect(actualTransferDomainProcessor).to.eq(transferDomainProcessor.address);
-      expect(actualVerifyDomainProcessor).to.eq(verifyDomainProcessor.address);
       expect(actualVerifiedDomainRegistry).to.eq(verifiedDomainRegistry.address);
+      expect(actualMailServerKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(isInitialized).to.be.true;
       expect(isEnabled).to.be.false;
     });
@@ -128,12 +127,10 @@ describe("Domain System Deploy", () => {
     it("should have the correct parameters set", async () => {
       const actualOwner = await transferDomainProcessor.owner();
       const actualExchange = await transferDomainProcessor.exchange();
-      const actualMailServerKeyHashAdapter = await transferDomainProcessor.mailServerKeyHashAdapter();
       const actualNullifierRegistry = await transferDomainProcessor.nullifierRegistry();
 
       expect(actualOwner).to.eq(multiSig);
       expect(actualExchange).to.eq(domainExchange.address);
-      expect(actualMailServerKeyHashAdapter).to.eq(keyHashAdapter.address);
       expect(actualNullifierRegistry).to.eq(nullifierRegistry.address);
     });
   });
@@ -160,10 +157,10 @@ describe("Domain System Deploy", () => {
   describe("VerifiedDomainRegistry", async () => {
     it("should have the correct parameters set", async () => {
       const actualOwner = await verifiedDomainRegistry.owner();
-      const actualDomainExpiryBuffer = await verifiedDomainRegistry.domainExpiryBuffer();
+      const actualVerifyDomainProcessor = await verifiedDomainRegistry.verifyDomainProcessor();
 
       expect(actualOwner).to.eq(multiSig);
-      expect(actualDomainExpiryBuffer).to.eq(DOMAIN_EXPIRY_BUFFER[network]);
+      expect(actualVerifyDomainProcessor).to.eq(verifyDomainProcessor.address);
     });
   });
 

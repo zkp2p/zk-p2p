@@ -17,7 +17,6 @@ contract EmailBaseProcessor is Ownable {
 
     /* ============ State Variables ============ */
     address public immutable exchange;
-    IKeyHashAdapterV2 public mailServerKeyHashAdapter;
     INullifierRegistry public nullifierRegistry;
     bytes public emailFromAddress;
     uint256 public timestampBuffer;
@@ -25,7 +24,6 @@ contract EmailBaseProcessor is Ownable {
     /* ============ Constructor ============ */
     constructor(
         address _exchange,
-        IKeyHashAdapterV2 _mailServerKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress,
         uint256 _timestampBuffer
@@ -33,17 +31,12 @@ contract EmailBaseProcessor is Ownable {
         Ownable()
     {
         exchange = _exchange;
-        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
         nullifierRegistry = _nullifierRegistry;
         emailFromAddress = bytes(_emailFromAddress);
         timestampBuffer = _timestampBuffer;
     }
 
     /* ============ External Functions ============ */
-
-    function setMailserverKeyHashAdapter(IKeyHashAdapterV2 _mailServerKeyHashAdapter) external onlyOwner {
-        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
-    }
 
     /**
      * @notice ONLY OWNER: Sets the from email address for validated emails. Check that email address is properly
@@ -72,9 +65,6 @@ contract EmailBaseProcessor is Ownable {
         return emailFromAddress;
     }
 
-    function isMailServerKeyHash(bytes32 _keyHash) public view returns (bool) {
-        return IKeyHashAdapterV2(mailServerKeyHashAdapter).isMailServerKeyHash(_keyHash);
-    }
 
     /* ============ Internal Functions ============ */
 

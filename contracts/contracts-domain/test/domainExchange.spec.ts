@@ -28,7 +28,8 @@ import {
   ITransferDomainProcessor,
   IProxyBaseProcessor,
   IVerifyDomainProcessor,
-  VerifiedDomainRegistry
+  VerifiedDomainRegistry,
+  ManagedKeyHashAdapterV2
 } from "@utils/contracts";
 import { Blockchain, ether } from "@utils/common";
 
@@ -42,20 +43,24 @@ describe("DomainExchange", () => {
   let notOwner: Account;
   let feeRecipient: Account;
   let seller: Account;
+  let sellerSaleEthRecipient: Account;
   let otherSeller: Account;
   let notAllowedSeller: Account;
   let buyer: Account;
   let otherBuyer: Account;
+  let dkimKeyHash: BytesLike;
+  let newMailServerKeyHashAdapter: Account;
+  let newTransferDomainProcessor: Account;
 
   let verifyDomainProcessor: VerifyDomainProcessorMock;
   let xferDomainProcessor: TransferDomainProcessorMock;
   let verifiedDomainRegistry: VerifiedDomainRegistry;
   let exchange: DomainExchange;
+  let mailServerKeyHashAdapter: ManagedKeyHashAdapterV2;
 
   let swapFee: BigNumber;
   let bidSettlementPeriod: BigNumber;
   let bidRefundPeriod: BigNumber;
-  let domainExpiryBuffer: BigNumber;
 
   let deployer: DeployHelper;
   let snapshotId: string;
@@ -66,10 +71,13 @@ describe("DomainExchange", () => {
       notOwner,
       feeRecipient,
       seller,
+      sellerSaleEthRecipient,
       otherSeller,
       buyer,
       otherBuyer,
-      notAllowedSeller
+      notAllowedSeller,
+      newTransferDomainProcessor,
+      newMailServerKeyHashAdapter
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -77,11 +85,12 @@ describe("DomainExchange", () => {
     swapFee = ether(0.01)     // 1% fee
     bidSettlementPeriod = ONE_DAY_IN_SECONDS;    // 1 day
     bidRefundPeriod = ONE_DAY_IN_SECONDS;   // 1 day
-    domainExpiryBuffer = ONE_DAY_IN_SECONDS.mul(7);   // 7 days
+    dkimKeyHash = ethers.utils.hexlify(ethers.utils.randomBytes(32));
 
     verifyDomainProcessor = await deployer.deployVerifyDomainProcessorMock();
-    verifiedDomainRegistry = await deployer.deployVerifiedDomainRegistry(domainExpiryBuffer);
+    verifiedDomainRegistry = await deployer.deployVerifiedDomainRegistry();
     xferDomainProcessor = await deployer.deployTransferDomainProcessorMock();
+    mailServerKeyHashAdapter = await deployer.deployManagedKeyHashAdapterV2([dkimKeyHash]);
 
     await verifiedDomainRegistry.initialize(
       verifyDomainProcessor.address
@@ -119,22 +128,22 @@ describe("DomainExchange", () => {
 
   describe("#initialize", async () => {
     let subjectTransferDomainProcessor: Address;
-    let subjectVerifyDomainProcessor: Address;
     let subjectVerifiedDomainRegistry: Address;
+    let subjectMailServerKeyHashAdapter: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
       subjectTransferDomainProcessor = xferDomainProcessor.address;
-      subjectVerifyDomainProcessor = verifyDomainProcessor.address;
       subjectVerifiedDomainRegistry = verifiedDomainRegistry.address;
+      subjectMailServerKeyHashAdapter = mailServerKeyHashAdapter.address;
       subjectCaller = owner;
     });
 
     async function subject(): Promise<any> {
       return exchange.connect(subjectCaller.wallet).initialize(
-        subjectVerifyDomainProcessor,
         subjectTransferDomainProcessor,
-        subjectVerifiedDomainRegistry
+        subjectVerifiedDomainRegistry,
+        subjectMailServerKeyHashAdapter
       );
     }
 
@@ -143,14 +152,15 @@ describe("DomainExchange", () => {
       expect(await exchange.transferDomainProcessor()).to.equal(subjectTransferDomainProcessor);
     });
 
-    it("should set the verify domain processor", async () => {
-      await subject();
-      expect(await exchange.verifyDomainProcessor()).to.equal(subjectVerifyDomainProcessor);
-    });
 
     it("should set the verified domain registry", async () => {
       await subject();
       expect(await exchange.verifiedDomainRegistry()).to.equal(subjectVerifiedDomainRegistry);
+    });
+
+    it("should set the mail server key hash adapter", async () => {
+      await subject();
+      expect(await exchange.mailServerKeyHashAdapter()).to.equal(subjectMailServerKeyHashAdapter);
     });
 
     it("should set isInitialized to true", async () => {
@@ -191,13 +201,15 @@ describe("DomainExchange", () => {
     let encryptedBuyerId: string;
 
     beforeEach(async () => {
+      domainName1 = '0xsachink.xyz';
+      domainName2 = 'groth16.xyz';
       let domains = [
         {
-          name: '0xsachink.xyz',
+          name: domainName1,
           expiryTimestamp: '2025-07-08T07:01:00',
         } as Domain,
         {
-          name: 'groth16.xyz',
+          name: domainName2,
           expiryTimestamp: '2025-07-08T18:22:00',
         } as Domain
       ];
@@ -211,9 +223,9 @@ describe("DomainExchange", () => {
 
       if (shouldInitialize) {
         await exchange.initialize(
-          verifyDomainProcessor.address,
           xferDomainProcessor.address,
-          verifiedDomainRegistry.address
+          verifiedDomainRegistry.address,
+          mailServerKeyHashAdapter.address
         );
       }
       snapshotIdTwo = await blockchain.saveSnapshotAsync();
@@ -232,22 +244,31 @@ describe("DomainExchange", () => {
 
     describe("#createListing", async () => {
       let subjectDomainId: BytesLike;
+      let subjectSaleEthRecipient: Address;
       let subjectAskPrice: BigNumber;
+      let subjectMinBidPrice: BigNumber;
       let subjectCaller: Account;
       let subjectEncryptionKey: string;
+      let subjectDkimKeyHash: BytesLike;
 
       beforeEach(async () => {
         subjectDomainId = domainId1;
+        subjectSaleEthRecipient = seller.address;
         subjectAskPrice = ether(1);
+        subjectMinBidPrice = ether(0.5);
         subjectCaller = seller;
         subjectEncryptionKey = sellerEncryptionKey;
+        subjectDkimKeyHash = ethers.utils.hexlify(ethers.utils.randomBytes(32));
       });
 
       async function subject(): Promise<any> {
         return exchange.connect(subjectCaller.wallet).createListing(
           subjectDomainId,
           subjectAskPrice,
-          subjectEncryptionKey
+          subjectMinBidPrice,
+          subjectSaleEthRecipient,
+          subjectEncryptionKey,
+          subjectDkimKeyHash
         );
       }
 
@@ -260,9 +281,11 @@ describe("DomainExchange", () => {
         expect(listing.seller).to.equal(subjectCaller.address);
         expect(listing.encryptionKey).to.equal(subjectEncryptionKey);
         expect(listing.askPrice).to.equal(subjectAskPrice);
+        expect(listing.minBidPrice).to.equal(subjectMinBidPrice);
         expect(listing.createdAt).to.equal(await blockchain.getCurrentTimestamp());
         expect(listing.domainId).to.equal(domainId1);
         expect(listing.isActive).to.be.true;
+        expect(listing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
       });
 
       it("should update userListings", async () => {
@@ -274,7 +297,9 @@ describe("DomainExchange", () => {
         expect(userListings[0].listingId).to.equal(listingId);
         expect(userListings[0].listing.seller).to.equal(subjectCaller.address);
         expect(userListings[0].listing.askPrice).to.equal(subjectAskPrice);
+        expect(userListings[0].listing.minBidPrice).to.equal(subjectMinBidPrice);
         expect(userListings[0].listing.isActive).to.be.true;
+        expect(userListings[0].listing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
       });
 
       it("should update domainListing", async () => {
@@ -297,7 +322,11 @@ describe("DomainExchange", () => {
         await expect(subject()).to.emit(exchange, "ListingCreated").withArgs(
           listingId,
           subjectCaller.address,
-          subjectAskPrice
+          subjectDomainId,
+          subjectDkimKeyHash,
+          subjectAskPrice,
+          subjectMinBidPrice,
+          subjectSaleEthRecipient
         );
       });
 
@@ -320,6 +349,7 @@ describe("DomainExchange", () => {
 
           subjectCaller = otherSeller;
           subjectAskPrice = ether(6);
+          subjectSaleEthRecipient = otherSeller.address;
         });
 
         it("should add a new listing", async () => {
@@ -333,6 +363,7 @@ describe("DomainExchange", () => {
           expect(updatedListing.createdAt).to.equal(await blockchain.getCurrentTimestamp());
           expect(updatedListing.domainId).to.equal(domainId1);
           expect(updatedListing.isActive).to.be.true;
+          expect(updatedListing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
         });
 
         it("should delete the old listing", async () => {
@@ -378,7 +409,11 @@ describe("DomainExchange", () => {
           await expect(subject()).to.emit(exchange, "ListingCreated").withArgs(
             listingId,
             subjectCaller.address,
-            subjectAskPrice
+            subjectDomainId,
+            subjectDkimKeyHash,
+            subjectAskPrice,
+            subjectMinBidPrice,
+            subjectSaleEthRecipient
           );
         });
 
@@ -430,13 +465,44 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when the price is zero", async () => {
+      describe("when the min bid price is zero", async () => {
         beforeEach(async () => {
-          subjectAskPrice = ZERO;
+          subjectMinBidPrice = ZERO;
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Ask price is zero");
+          await expect(subject()).to.be.revertedWith("Minimum bid price is zero");
+        });
+      });
+
+      describe("when the dkim key hash is the zero hash", async () => {
+        beforeEach(async () => {
+          subjectDkimKeyHash = ethers.constants.HashZero;
+        });
+
+        it("should NOT revert", async () => {
+          await expect(subject()).to.not.be.reverted;
+        });
+      });
+
+      describe("when the sale eth recipient is the zero address", async () => {
+        beforeEach(async () => {
+          subjectSaleEthRecipient = ADDRESS_ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Invalid sale ETH recipient");
+        });
+      });
+
+      describe("when the ask price is less than min bid price", async () => {
+        beforeEach(async () => {
+          subjectAskPrice = ether(1);
+          subjectMinBidPrice = ether(1.01);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ask price is less than min bid price");
         });
       });
 
@@ -453,48 +519,78 @@ describe("DomainExchange", () => {
           await expect(subject()).to.be.revertedWith("Contract must be initialized");
         });
       });
+
+      describe("when the exchange is paused", async () => {
+        beforeEach(async () => {
+          await exchange.connect(owner.wallet).pauseMarketplace();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Pausable: paused");
+        });
+
+        describe("when the exchange is unpaused", async () => {
+          beforeEach(async () => {
+            await exchange.connect(owner.wallet).unpauseMarketplace();
+          });
+
+          it("should not revert", async () => {
+            await expect(subject()).to.not.be.reverted;
+          });
+        });
+      });
     });
 
     describe("#updateListing", async () => {
       let subjectListingId: BigNumber;
       let subjectNewPrice: BigNumber;
+      let subjectSaleEthRecipient: Address;
       let subjectCaller: Account;
 
       let listingId: BigNumber;
+      let minBidPrice: BigNumber;
 
       beforeEach(async () => {
+        minBidPrice = ether(0.5);
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          minBidPrice,
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
         subjectListingId = listingId;
         subjectNewPrice = ether(6);
+        subjectSaleEthRecipient = sellerSaleEthRecipient.address;
         subjectCaller = seller;
       });
 
       async function subject(): Promise<any> {
         return exchange.connect(subjectCaller.wallet).updateListing(
           subjectListingId,
-          subjectNewPrice
+          subjectNewPrice,
+          subjectSaleEthRecipient
         );
       }
 
-      it("should update listing price", async () => {
+      it("should update listing", async () => {
         await subject();
 
         const listing = await exchange.listings(subjectListingId);
         expect(listing.askPrice).to.equal(subjectNewPrice);
         expect(listing.isActive).to.be.true;
+        expect(listing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
       });
 
       it("should emit ListingUpdated event", async () => {
         await expect(subject()).to.emit(exchange, "ListingUpdated").withArgs(
           subjectListingId,
           subjectCaller.address,
-          subjectNewPrice
+          subjectNewPrice,
+          subjectSaleEthRecipient
         );
       });
 
@@ -508,7 +604,27 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when the listing is expired", async () => {
+      describe("when the new ask price is less than min bid price", async () => {
+        beforeEach(async () => {
+          subjectNewPrice = minBidPrice.sub(1);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Ask price is less than min bid price");
+        });
+      });
+
+      describe("when the sale eth recipient is the zero address", async () => {
+        beforeEach(async () => {
+          subjectSaleEthRecipient = ADDRESS_ZERO;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Invalid sale ETH recipient");
+        });
+      });
+
+      describe("when the listing is not active", async () => {
         beforeEach(async () => {
           // Create bids against the listing so that it is only expired and not deleted
           await exchange.connect(buyer.wallet).createBid(
@@ -525,7 +641,27 @@ describe("DomainExchange", () => {
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
+        });
+      });
+
+      describe("when the exchange is paused", async () => {
+        beforeEach(async () => {
+          await exchange.connect(owner.wallet).pauseMarketplace();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Pausable: paused");
+        });
+
+        describe("when the exchange is unpaused", async () => {
+          beforeEach(async () => {
+            await exchange.connect(owner.wallet).unpauseMarketplace();
+          });
+
+          it("should not revert", async () => {
+            await expect(subject()).to.not.be.reverted;
+          });
         });
       });
     });
@@ -543,7 +679,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           askPrice,
-          sellerEncryptionKey
+          askPrice.sub(1),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -622,12 +761,20 @@ describe("DomainExchange", () => {
       let subjectCaller: Account;
       let subjectEncryptedBuyerId: string;
 
+      let askPrice: BigNumber;
+      let minBidPrice: BigNumber;
+
       beforeEach(async () => {
         // Create a listing
+        askPrice = ether(5);
+        minBidPrice = ether(0.5);
         await exchange.connect(seller.wallet).createListing(
           domainId1,
-          ether(5),
-          sellerEncryptionKey
+          askPrice,
+          minBidPrice,
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         const listingId = (await exchange.listingCounter()).sub(1);
 
@@ -717,8 +864,7 @@ describe("DomainExchange", () => {
 
       describe("when the bid price is lower than the asking price", async () => {
         beforeEach(async () => {
-          const listing = await exchange.listings(subjectListingId);
-          subjectPrice = listing.askPrice.sub(1);
+          subjectPrice = askPrice.sub(1);
         });
 
         it("should create a new bid", async () => {
@@ -730,13 +876,13 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when the bid price is zero", async () => {
+      describe("when the bid price is lower than the min bid price", async () => {
         beforeEach(async () => {
-          subjectPrice = ZERO;
+          subjectPrice = minBidPrice.sub(1);
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Bid price must be greater than 0");
+          await expect(subject()).to.be.revertedWith("Bid price is less than min bid price");
         });
       });
 
@@ -760,19 +906,39 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when the listing is expired, i.e. sold or withdrawn", async () => {
+      describe("when the listing is not active, i.e. sold or withdrawn", async () => {
         beforeEach(async () => {
           await subject();    // Create a bid against the listing
           await exchange.connect(seller.wallet).deleteListing(subjectListingId);    // Delete the listing
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
+        });
+      });
+
+      describe("when the exchange is paused", async () => {
+        beforeEach(async () => {
+          await exchange.connect(owner.wallet).pauseMarketplace();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Pausable: paused");
+        });
+
+        describe("when the exchange is unpaused", async () => {
+          beforeEach(async () => {
+            await exchange.connect(owner.wallet).unpauseMarketplace();
+          });
+
+          it("should not revert", async () => {
+            await expect(subject()).to.not.be.reverted;
+          });
         });
       });
     });
 
-    describe("#updateBidPrice", async () => {
+    describe("#increaseBidPrice", async () => {
       let subjectBidId: BigNumber;
       let subjectNewPrice: BigNumber;
       let subjectCaller: Account;
@@ -786,12 +952,15 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
         // create a bid
-        bidPrice = ether(6);
+        bidPrice = ether(4);
         await exchange.connect(buyer.wallet).createBid(
           listingId,
           getHashedBuyerId("richardliang2015"),
@@ -806,15 +975,15 @@ describe("DomainExchange", () => {
       });
 
       async function subject(): Promise<any> {
-        return exchange.connect(subjectCaller.wallet).updateBidPrice(subjectBidId, subjectNewPrice, {
+        return exchange.connect(subjectCaller.wallet).increaseBidPrice(subjectBidId, subjectNewPrice, {
           value: subjectValue
         });
       }
 
       describe("when bidding higher", async () => {
         beforeEach(async () => {
-          subjectNewPrice = ether(7);
-          subjectValue = ether(1);
+          subjectNewPrice = ether(6);
+          subjectValue = ether(2);
         });
 
         it("should transfer ETH from buyer to contract", async () => {
@@ -839,54 +1008,18 @@ describe("DomainExchange", () => {
           expect(bid.price).to.equal(subjectNewPrice);
         });
 
-        it("should emit BidUpdated event", async () => {
-          await expect(subject()).to.emit(exchange, "BidPriceUpdated").withArgs(
-            subjectBidId,
-            subjectCaller.address,
-            subjectNewPrice
-          );
-        });
-      });
-
-      describe("when bidding lower", async () => {
-        beforeEach(async () => {
-          subjectNewPrice = ether(5);
-          subjectValue = ether(0);
-        });
-
-        it("should transfer ETH from contract to buyer", async () => {
-          const initialContractBalance = await provider.getBalance(exchange.address);
-          const initialBuyerBalance = await provider.getBalance(subjectCaller.address);
-
-          const tx = await subject();
-          const receipt = await tx.wait();
-
-          const finalContractBalance = await provider.getBalance(exchange.address);
-          const finalBuyerBalance = await provider.getBalance(subjectCaller.address);
-          const expectedTransferAmount = bidPrice.sub(subjectNewPrice);
-
-          expect(finalContractBalance).to.equal(initialContractBalance.sub(expectedTransferAmount));
-          expect(finalBuyerBalance).to.equal(initialBuyerBalance.add(expectedTransferAmount).sub(receipt.effectiveGasPrice.mul(receipt.gasUsed)));
-        });
-
-        it("should update bid price", async () => {
-          await subject();
-
-          const bid = await exchange.bids(subjectBidId);
-          expect(bid.price).to.equal(subjectNewPrice);
-        });
-
-        it("should emit BidUpdated event", async () => {
-          await expect(subject()).to.emit(exchange, "BidPriceUpdated").withArgs(
+        it("should emit BidPriceIncreased event", async () => {
+          await expect(subject()).to.emit(exchange, "BidPriceIncreased").withArgs(
             subjectBidId,
             subjectCaller.address,
             subjectNewPrice
           );
         });
 
-        describe("when new price is lower than the asking price", async () => {
+        describe("when new price is lower than the asking price but higher than old price", async () => {
           beforeEach(async () => {
-            subjectNewPrice = ether(5).sub(1);
+            subjectNewPrice = ether(4.5);
+            subjectValue = ether(0.5);
           });
 
           it("should NOT revert", async () => {
@@ -895,13 +1028,33 @@ describe("DomainExchange", () => {
         });
       });
 
+      describe("when bidding lower", async () => {
+        beforeEach(async () => {
+          subjectNewPrice = bidPrice.sub(1);
+          subjectValue = ether(0);
+        });
+
+        afterEach(async () => {
+          subjectNewPrice = ether(6);
+          subjectValue = ether(2);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("New price not greater than old price");
+        });
+      });
+
       describe("when bid price is zero", async () => {
         beforeEach(async () => {
           subjectNewPrice = ZERO;
         });
 
+        afterEach(async () => {
+          subjectNewPrice = ether(6);
+        });
+
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("New price must be greater than 0");
+          await expect(subject()).to.be.revertedWith("New price not greater than old price");
         });
       });
 
@@ -910,8 +1063,12 @@ describe("DomainExchange", () => {
           subjectNewPrice = bidPrice;
         });
 
+        afterEach(async () => {
+          subjectNewPrice = ether(6);
+        });
+
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("New price equals bid price");
+          await expect(subject()).to.be.revertedWith("New price not greater than old price");
         });
       });
 
@@ -946,13 +1103,33 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when listing is expired", async () => {
+      describe("when listing is not active", async () => {
         beforeEach(async () => {
           await exchange.connect(seller.wallet).deleteListing(listingId);
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
+        });
+      });
+
+      describe("when the exchange is paused", async () => {
+        beforeEach(async () => {
+          await exchange.connect(owner.wallet).pauseMarketplace();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Pausable: paused");
+        });
+
+        describe("when the exchange is unpaused", async () => {
+          beforeEach(async () => {
+            await exchange.connect(owner.wallet).unpauseMarketplace();
+          });
+
+          it("should not revert", async () => {
+            await expect(subject()).to.not.be.reverted;
+          });
         });
       });
     });
@@ -968,7 +1145,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -1075,7 +1255,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -1184,7 +1367,7 @@ describe("DomainExchange", () => {
 
           // Seller finalizes the sale
           await xferDomainProcessor.setDomainName("groth16.xyz");   // Set domain name in mock
-          const proof = generateTransferProof(hashedBuyerId, bidId);  // bidId was selected
+          const proof = generateTransferProof(dkimKeyHash, hashedBuyerId, bidId);  // bidId was selected
           await exchange.connect(seller.wallet).finalizeSale(proof);
 
           subjectCaller = otherBuyer;
@@ -1304,7 +1487,10 @@ describe("DomainExchange", () => {
           await exchange.connect(seller.wallet).createListing(
             domainId2,
             ether(5),
-            sellerEncryptionKey
+            ether(0.5),
+            seller.address,
+            sellerEncryptionKey,
+            ethers.constants.HashZero
           );
           listingId = (await exchange.listingCounter()).sub(1);
 
@@ -1322,7 +1508,7 @@ describe("DomainExchange", () => {
           bidId = (await exchange.bidCounter()).sub(1);
 
           await xferDomainProcessor.setDomainName("groth16.xyz");   // Set domain name in mock
-          proof = generateTransferProof(hashedBuyerId, bidId);
+          proof = generateTransferProof(dkimKeyHash, hashedBuyerId, bidId);
         }
 
         subjectProof = proof;
@@ -1389,9 +1575,37 @@ describe("DomainExchange", () => {
         const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
         await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
           bidId,
+          listingId,
           bidPrice.sub(fees),
           fees
         );
+      });
+
+      describe("when the sale eth recipient is not the seller address", async () => {
+        beforeEach(async () => {
+          await exchange.connect(seller.wallet).updateListing(listingId, ether(5), sellerSaleEthRecipient.address);
+        });
+
+        it("should transfer funds to the seller and fee recipient", async () => {
+          const initialSellerBalance = await provider.getBalance(seller.address);
+          const initialSellerEthRecipientBalance = await provider.getBalance(sellerSaleEthRecipient.address);
+          const initialFeeRecipientBalance = await provider.getBalance(feeRecipient.address);
+
+          const tx = await subject();
+          const receipt = await tx.wait();
+
+          const finalSellerBalance = await provider.getBalance(seller.address);
+          const finalSellerEthRecipientBalance = await provider.getBalance(sellerSaleEthRecipient.address);
+          const finalFeeRecipientBalance = await provider.getBalance(feeRecipient.address);
+
+          const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
+          const expectedFundsToTransfer = bidPrice.sub(fees);
+          const expectedGasFeePaid = receipt.effectiveGasPrice.mul(receipt.gasUsed);
+
+          expect(initialSellerBalance).to.equal(finalSellerBalance.add(expectedGasFeePaid));
+          expect(finalFeeRecipientBalance).to.equal(initialFeeRecipientBalance.add(fees));
+          expect(finalSellerEthRecipientBalance).to.equal(initialSellerEthRecipientBalance.add(expectedFundsToTransfer));
+        });
       });
 
       describe("when there are multiple bids against the listing", async () => {
@@ -1428,7 +1642,7 @@ describe("DomainExchange", () => {
           await blockchain.increaseTimeAsync(bidRefundPeriod.add(1).toNumber());
           await exchange.connect(buyer.wallet).initiateRefund(bidId);
 
-          subjectProof = generateTransferProof(hashedBuyerId, bidId);
+          subjectProof = generateTransferProof(dkimKeyHash, hashedBuyerId, bidId);
         });
 
         it("should still finalize the sale", async () => {
@@ -1439,6 +1653,7 @@ describe("DomainExchange", () => {
           const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
           await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
             bidId,
+            listingId,
             bidPrice.sub(fees),
             fees
           );
@@ -1453,11 +1668,118 @@ describe("DomainExchange", () => {
           await blockchain.increaseTimeAsync(bidRefundPeriod.add(1).toNumber());
           await exchange.connect(buyer.wallet).withdrawBid(bidId);
 
-          subjectProof = generateTransferProof(hashedBuyerId, bidId);
+          subjectProof = generateTransferProof(dkimKeyHash, hashedBuyerId, bidId);
         });
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Bid does not exist");
+        });
+      });
+
+      describe("when owner has set a custom DKIM key hash", async () => {
+        let customDkimKeyHash: BytesLike;
+
+        beforeEach(async () => {
+          if (shouldInitialize) {
+            customDkimKeyHash = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+            await exchange.connect(seller.wallet).createListing(
+              domainId1,
+              ether(1),
+              ether(0.5),
+              seller.address,
+              sellerEncryptionKey,
+              customDkimKeyHash
+            );
+            listingId = (await exchange.listingCounter()).sub(1);
+
+            // Create a bid against groth16.xyz
+            bidPrice = ether(2);
+            hashedBuyerId = getHashedBuyerId("buyerId");
+            await exchange.connect(buyer.wallet).createBid(
+              listingId,
+              hashedBuyerId,
+              encryptedBuyerId,
+              {
+                value: bidPrice
+              }
+            );
+            bidId = (await exchange.bidCounter()).sub(1);
+
+            await xferDomainProcessor.setDomainName("0xsachink.xyz");   // Set domain name in mock
+            proof = generateTransferProof(customDkimKeyHash, hashedBuyerId, bidId);
+          }
+
+          subjectProof = generateTransferProof(customDkimKeyHash, hashedBuyerId, bidId);
+        });
+
+        it("should finalize the sale", async () => {
+          await expect(subject()).to.not.be.reverted;
+        });
+
+        it("should emit a SaleFinalized event", async () => {
+          const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
+          await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
+            bidId,
+            listingId,
+            bidPrice.sub(fees),
+            fees
+          );
+        });
+
+        describe("when the dkim key hash is incorrect", async () => {
+          beforeEach(async () => {
+            const incorrectDkimKeyHash = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+            subjectProof = generateTransferProof(incorrectDkimKeyHash, hashedBuyerId, bidId);
+          });
+
+          it("should revert", async () => {
+            await expect(subject()).to.be.revertedWith("Invalid custom DKIM key hash");
+          });
+        });
+      });
+
+      describe("when the dkim key hash is incorrect", async () => {
+        beforeEach(async () => {
+          const incorrectDkimKeyHash = ethers.utils.hexlify(ethers.utils.randomBytes(32));
+          subjectProof = generateTransferProof(incorrectDkimKeyHash, hashedBuyerId, bidId);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Invalid managed DKIM key hash");
+        });
+      });
+
+      describe("when the owner updates the domain after creating a listing", async () => {
+        let newExpiryTimestamp: string;
+        beforeEach(async () => {
+          newExpiryTimestamp = '2035-07-08T18:22:00';
+          if (shouldInitialize) {
+            let proofs = generateProofsFromDomains([
+              {
+                name: domainName2,
+                expiryTimestamp: newExpiryTimestamp,
+              }
+            ]);
+            await verifiedDomainRegistry.connect(seller.wallet).verifyDomains(proofs);
+          }
+        });
+
+        it("should still finalize the sale", async () => {
+          // assert domain info has been updated
+          const domainInfo = await verifiedDomainRegistry.getDomains([domainId2]);
+          expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(newExpiryTimestamp));
+
+          await expect(subject()).to.not.be.reverted;
+        });
+
+        it("should emit SaleFinalized event with the correct domain id", async () => {
+          const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
+          await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
+            bidId,
+            listingId,
+            bidPrice.sub(fees),
+            fees
+          );
         });
       });
 
@@ -1471,20 +1793,20 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when listing is expired", async () => {
+      describe("when listing is not active", async () => {
         beforeEach(async () => {
           await exchange.connect(seller.wallet).deleteListing(listingId);
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
         });
       });
 
       describe("hashed receiver ID is invalid", async () => {
         beforeEach(async () => {
           let invalidBuyerId = getHashedBuyerId("invalidBuyerId");
-          subjectProof = generateTransferProof(invalidBuyerId, bidId);
+          subjectProof = generateTransferProof(dkimKeyHash, invalidBuyerId, bidId);
         });
 
         it("should revert", async () => {
@@ -1495,7 +1817,7 @@ describe("DomainExchange", () => {
       describe("domain name doesn't match the listing", async () => {
         beforeEach(async () => {
           await xferDomainProcessor.setDomainName("invalid.domain");
-          subjectProof = generateTransferProof(hashedBuyerId, bidId);
+          subjectProof = generateTransferProof(dkimKeyHash, hashedBuyerId, bidId);
         });
 
         it("should revert", async () => {
@@ -1522,14 +1844,34 @@ describe("DomainExchange", () => {
           // Buyer colludes with the seller and transfers the domain back to the seller
 
           // Generates a transfer proof
-          let proof = generateTransferProof(hashedBuyerId, otherBidId);
+          let proof = generateTransferProof(dkimKeyHash, hashedBuyerId, otherBidId);
 
           subjectCaller = seller;
           subjectProof = proof;
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
+        });
+      });
+
+      describe("when the exchange is paused", async () => {
+        beforeEach(async () => {
+          await exchange.connect(owner.wallet).pauseMarketplace();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Pausable: paused");
+        });
+
+        describe("when the exchange is unpaused", async () => {
+          beforeEach(async () => {
+            await exchange.connect(owner.wallet).unpauseMarketplace();
+          });
+
+          it("should not revert", async () => {
+            await expect(subject()).to.not.be.reverted;
+          });
         });
       });
 
@@ -1562,7 +1904,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -1646,9 +1991,35 @@ describe("DomainExchange", () => {
         const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
         await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
           bidId,
+          listingId,
           bidPrice.sub(fees),
           fees
         );
+      });
+
+      describe("when the sale eth recipient is not the seller address", async () => {
+        beforeEach(async () => {
+          await exchange.connect(seller.wallet).updateListing(listingId, ether(5), sellerSaleEthRecipient.address);
+        });
+
+        it("should transfer funds to the seller and fee recipient", async () => {
+          const initialSellerBalance = await provider.getBalance(seller.address);
+          const initialSellerEthRecipientBalance = await provider.getBalance(sellerSaleEthRecipient.address);
+          const initialFeeRecipientBalance = await provider.getBalance(feeRecipient.address);
+
+          await subject();
+
+          const finalSellerBalance = await provider.getBalance(seller.address);
+          const finalSellerEthRecipientBalance = await provider.getBalance(sellerSaleEthRecipient.address);
+          const finalFeeRecipientBalance = await provider.getBalance(feeRecipient.address);
+
+          const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
+          const expectedFundsToTransfer = bidPrice.sub(fees);
+
+          expect(initialSellerBalance).to.equal(finalSellerBalance);    // Transaction was initiated by buyer
+          expect(finalFeeRecipientBalance).to.equal(initialFeeRecipientBalance.add(fees));
+          expect(finalSellerEthRecipientBalance).to.equal(initialSellerEthRecipientBalance.add(expectedFundsToTransfer));
+        });
       });
 
       describe("when the caller is not the buyer", async () => {
@@ -1661,13 +2032,13 @@ describe("DomainExchange", () => {
         });
       });
 
-      describe("when the listing is expired", async () => {
+      describe("when the listing is not active", async () => {
         beforeEach(async () => {
           await exchange.connect(seller.wallet).deleteListing(listingId);
         });
 
         it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Listing is expired");
+          await expect(subject()).to.be.revertedWith("Listing not active");
         });
       });
 
@@ -1685,6 +2056,7 @@ describe("DomainExchange", () => {
           const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
           await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
             subjectBidId,
+            listingId,
             bidPrice.sub(fees),
             fees
           );
@@ -1888,12 +2260,18 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId1,
           ether(1),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         await exchange.connect(seller.wallet).createListing(
           domainId2,
           ether(5),
-          sellerEncryptionKey
+          ether(0.6),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
 
         subjectUser = seller.address;
@@ -1913,11 +2291,13 @@ describe("DomainExchange", () => {
         expect(userListings.length).to.equal(2);
         expect(userListings[0].listingId).to.equal(listingCounter.sub(2));
         expect(userListings[0].listing.askPrice).to.equal(ether(1));
+        expect(userListings[0].listing.minBidPrice).to.equal(ether(0.5));
         expect(userListings[0].listing.seller).to.equal(seller.address);
         expect(userListings[0].listing.createdAt).to.approximately(currentTimestamp, 1);
 
         expect(userListings[1].listingId).to.equal(listingCounter.sub(1));
         expect(userListings[1].listing.askPrice).to.equal(ether(5));
+        expect(userListings[1].listing.minBidPrice).to.equal(ether(0.6));
         expect(userListings[1].listing.seller).to.equal(seller.address);
         expect(userListings[1].listing.createdAt).to.equal(currentTimestamp);
       });
@@ -1946,7 +2326,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId1,
           ether(1),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -2005,7 +2388,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId1,
           ether(1),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -2060,7 +2446,10 @@ describe("DomainExchange", () => {
           await exchange.connect(seller.wallet).createListing(
             domainId2,
             ether(5),
-            sellerEncryptionKey
+            ether(0.5),
+            seller.address,
+            sellerEncryptionKey,
+            ethers.constants.HashZero
           );
           listingId = (await exchange.listingCounter()).sub(1);
 
@@ -2096,7 +2485,10 @@ describe("DomainExchange", () => {
         await exchange.connect(seller.wallet).createListing(
           domainId1,
           ether(5),
-          sellerEncryptionKey
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
         );
         listingId = (await exchange.listingCounter()).sub(1);
 
@@ -2150,6 +2542,96 @@ describe("DomainExchange", () => {
           expect(listing.listing.createdAt).to.equal(0);
           expect(listing.listing.isActive).to.be.false;
         });
+      });
+    });
+  });
+
+  describe("#updateTransferDomainProcessor", async () => {
+    let subjectNewTransferDomainProcessor: string;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectNewTransferDomainProcessor = newTransferDomainProcessor.address;
+      subjectCaller = owner;
+    });
+
+    async function subject(): Promise<any> {
+      return await exchange.connect(subjectCaller.wallet).updateTransferDomainProcessor(subjectNewTransferDomainProcessor);
+    }
+
+    it("should update the transfer domain processor", async () => {
+      await subject();
+
+      const newProcessor = await exchange.transferDomainProcessor();
+      expect(newProcessor).to.equal(subjectNewTransferDomainProcessor);
+    });
+
+    it("should emit a TransferDomainProcessorUpdated event", async () => {
+      await expect(subject()).to.emit(exchange, "TransferDomainProcessorUpdated").withArgs(subjectNewTransferDomainProcessor);
+    });
+
+    describe("when the caller is not the owner", () => {
+      beforeEach(async () => {
+        subjectCaller = seller;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+
+    describe("when the new processor address is zero", () => {
+      beforeEach(async () => {
+        subjectNewTransferDomainProcessor = ADDRESS_ZERO;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid address");
+      });
+    });
+  });
+
+  describe("#updateMailServerKeyHashAdapter", async () => {
+    let subjectNewMailServerKeyHashAdapter: Address;
+    let subjectCaller: Account;
+
+    beforeEach(async () => {
+      subjectCaller = owner;
+      subjectNewMailServerKeyHashAdapter = newMailServerKeyHashAdapter.address;
+    });
+
+    async function subject(): Promise<any> {
+      return await exchange.connect(subjectCaller.wallet).updateMailServerKeyHashAdapter(subjectNewMailServerKeyHashAdapter);
+    }
+
+    it("should update the mail server key hash adapter", async () => {
+      await subject();
+
+      const newAdapter = await exchange.mailServerKeyHashAdapter();
+      expect(newAdapter).to.equal(subjectNewMailServerKeyHashAdapter);
+    });
+
+    it("should emit a MailServerKeyHashAdapterUpdated event", async () => {
+      await expect(subject()).to.emit(exchange, "MailServerKeyHashAdapterUpdated").withArgs(subjectNewMailServerKeyHashAdapter);
+    });
+
+    describe("when the caller is not the owner", () => {
+      beforeEach(async () => {
+        subjectCaller = seller;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+
+    describe("when the new adapter address is zero", () => {
+      beforeEach(async () => {
+        subjectNewMailServerKeyHashAdapter = ADDRESS_ZERO;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Invalid address");
       });
     });
   });

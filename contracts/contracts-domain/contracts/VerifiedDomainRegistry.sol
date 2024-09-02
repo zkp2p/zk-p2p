@@ -17,11 +17,12 @@ contract VerifiedDomainRegistry is IVerifiedDomainRegistry, Ownable {
     event DomainVerified(
         bytes32 indexed domainId,
         address indexed owner,
-        string domainName
+        string domainName,
+        uint256 expiryTime
     );
 
-    event DomainExpiryBufferUpdated(
-        uint256 newDomainExpiryBuffer
+    event VerifyDomainProcessorUpdated(
+        IVerifyDomainProcessor indexed newVerifyDomainProcessor
     );
 
     /* ============ Modifiers ============ */
@@ -34,27 +35,21 @@ contract VerifiedDomainRegistry is IVerifiedDomainRegistry, Ownable {
     IVerifyDomainProcessor public verifyDomainProcessor;
 
     bool public isInitialized;
-    uint256 public domainExpiryBuffer;
 
     mapping(bytes32 => Domain) public domains;
     mapping(address => bytes32[]) public userDomains;
 
     /* ============ Constructor ============ */
     
-    constructor(
-        uint256 _domainExpiryBuffer
-    ) Ownable() {
-        domainExpiryBuffer = _domainExpiryBuffer;
-    }
+    constructor() Ownable() {}
 
     /* ============ Public Functions ============ */
 
     /**
-     * @notice Verify domains and add them to the registry. We check that the domains are not close to expiration,
-     * if not then we revert. If domain is transferred off-chain to another party then they can re-verify the domain
-     * and claim ownership of the domain. Previous ownership is removed.
-     * Function reverts if:
-     * - Domains are close to expiry
+     * @notice Verify domains and add them to the registry. If domain is transferred off-chain to another party 
+     * then they can re-verify the domain and claim ownership of the domain and previous ownership is removed.
+     * The existing owner can re-verify the domain, say after the domain has expired to update the expiry time on
+     * the domain. Function reverts if:
      * - Domain ownership TLS proofs are invalid
      * 
      * @param _proofs           Array of domain ownership TLS proofs
@@ -68,18 +63,22 @@ contract VerifiedDomainRegistry is IVerifiedDomainRegistry, Ownable {
 
         for (uint256 i = 0; i < rawDomains.length; i++) {
             IVerifyDomainProcessor.DomainRaw memory rawDomain = rawDomains[i];
-            
-            require(
-                rawDomain.expiryTime > block.timestamp + domainExpiryBuffer, 
-                "Domain about to be expired"
-            );
-            
             bytes32 domainId = getDomainId(rawDomain.name);
 
-            // Delete domain ownership if it already exists
             Domain storage domain = domains[domainId];
-            if (domain.owner != address(0)) {
-                userDomains[domain.owner].removeStorage(domainId);
+            if (domain.owner == address(0)) {
+                // Case 1.1: Domain has no owner
+                // Add caller as owner
+                userDomains[msg.sender].push(domainId);
+            } else {
+                // Case 2: Domain has owner
+                // Case 2.1: Caller is owner; skip
+                // Case 2.2: Caller is NOT owner
+                if (domain.owner != msg.sender) {
+                    // Remove ownership from old owner and add caller as new owner
+                    userDomains[domain.owner].removeStorage(domainId);
+                    userDomains[msg.sender].push(domainId);
+                }
             }
 
             domains[domainId] = Domain({
@@ -87,9 +86,8 @@ contract VerifiedDomainRegistry is IVerifiedDomainRegistry, Ownable {
                 name: rawDomain.name,
                 expiryTime: rawDomain.expiryTime
             });
-            userDomains[msg.sender].push(domainId);
-
-            emit DomainVerified(domainId, msg.sender, rawDomain.name);
+            
+            emit DomainVerified(domainId, msg.sender, rawDomain.name, rawDomain.expiryTime);
         }
     }
 
@@ -112,19 +110,21 @@ contract VerifiedDomainRegistry is IVerifiedDomainRegistry, Ownable {
         verifyDomainProcessor = _verifyDomainProcessor;
 
         isInitialized = true;
+
+        emit VerifyDomainProcessorUpdated(_verifyDomainProcessor);
     }
 
     /**
-     * @notice ONLY OWNER: Updates the domain expiry buffer
+     * @notice ONLY OWNER: Update the verify domain processor
      *
-     * @param _newDomainExpiryBuffer The new domain expiry buffer in seconds
+     * @param _verifyDomainProcessor    Address of the new VerifyDomainProcessor contract
      */
-    function updateDomainExpiryBuffer(uint256 _newDomainExpiryBuffer) external onlyOwner {
-        require(_newDomainExpiryBuffer > 0, "Domain expiry buffer must be greater than 0");
-        domainExpiryBuffer = _newDomainExpiryBuffer;
-        emit DomainExpiryBufferUpdated(_newDomainExpiryBuffer);
-    }
+    function updateVerifyDomainProcessor(IVerifyDomainProcessor _verifyDomainProcessor) external onlyOwner {
+        require(address(_verifyDomainProcessor) != address(0), "Invalid address");
 
+        verifyDomainProcessor = _verifyDomainProcessor;
+        emit VerifyDomainProcessorUpdated(_verifyDomainProcessor);
+    }
 
     /* ============ View Functions ============ */
 

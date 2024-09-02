@@ -83,22 +83,20 @@ export default class DeployHelper {
 
   public async deployTransferDomainProcessor(
     exchange: Address,
-    mailserverKeyHashAdapter: Address,
     nullifierRegistry: Address,
     emailFromAddress: string,
     timestampBuffer: BigNumber = BigNumber.from(30)
   ): Promise<TransferDomainProcessor> {
     return await new TransferDomainProcessor__factory(this._deployerSigner).deploy(
       exchange,
-      mailserverKeyHashAdapter,
       nullifierRegistry,
       emailFromAddress,
       timestampBuffer
     );
   }
 
-  public async deployVerifiedDomainRegistry(domainExpiryBuffer: BigNumber): Promise<VerifiedDomainRegistry> {
-    return await new VerifiedDomainRegistry__factory(this._deployerSigner).deploy(domainExpiryBuffer);
+  public async deployVerifiedDomainRegistry(): Promise<VerifiedDomainRegistry> {
+    return await new VerifiedDomainRegistry__factory(this._deployerSigner).deploy();
   }
 
   public async deployNullifierRegistry(): Promise<NullifierRegistry> {

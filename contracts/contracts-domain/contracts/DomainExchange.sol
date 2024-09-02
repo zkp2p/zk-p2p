@@ -3,18 +3,19 @@
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { ReentrancyGuard } from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import { Pausable } from "@openzeppelin/contracts/security/Pausable.sol";
 
 import { AddressAllowList } from "./external/AddressAllowList.sol";
 import { Bytes32ArrayUtils } from "./external/lib/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "./external/lib/Uint256ArrayUtils.sol";
+import { IKeyHashAdapterV2 } from "./external/interfaces/IKeyHashAdapterV2.sol";
 
 import { ITransferDomainProcessor } from "./interfaces/ITransferDomainProcessor.sol";
 import { IVerifiedDomainRegistry } from "./interfaces/IVerifiedDomainRegistry.sol";
-import { IVerifyDomainProcessor } from "./interfaces/IVerifyDomainProcessor.sol";
 
 pragma solidity ^0.8.18;
 
-contract DomainExchange is AddressAllowList, ReentrancyGuard {
+contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
 
     using Address for address payable;
     using Bytes32ArrayUtils for bytes32[];
@@ -22,29 +23,42 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
 
     /* ============ Events ============ */
     
-    event ListingCreated(uint256 indexed listingId, address indexed seller, uint256 askPrice);
-    event ListingUpdated(uint256 indexed listingId, address indexed seller, uint256 newAskPrice);
+    event ListingCreated(
+        uint256 indexed listingId, 
+        address indexed seller, 
+        bytes32 indexed domainId, 
+        bytes32 dkimKeyHash,
+        uint256 askPrice,
+        uint256 minBidPrice,
+        address saleEthRecipient
+    );
+    event ListingUpdated(uint256 indexed listingId, address indexed seller, uint256 newAskPrice, address saleEthRecipient);
     event ListingDeleted(uint256 indexed listingId, address indexed seller);
     
     event BidCreated(uint256 indexed bidId, uint256 indexed listingId, address indexed buyer, uint256 price);
-    event BidPriceUpdated(uint256 indexed bidId, address indexed buyer, uint256 newPrice);
+    event BidPriceIncreased(uint256 indexed bidId, address indexed buyer, uint256 newPrice);
     event RefundInitiated(uint256 indexed bidId, address indexed buyer);
     event BidWithdrawn(uint256 indexed bidId, address indexed buyer, uint256 amount);
     
-    event SaleFinalized(uint256 indexed bidId, uint256 priceNetFees, uint256 fees);
+    event SaleFinalized(uint256 indexed bidId, uint256 indexed listingId, uint256 priceNetFees, uint256 fees);
     
     event FeeUpdated(uint256 newFee);
     event FeeRecipientUpdated(address indexed newFeeRecipient);
     event BidSettlementPeriodUpdated(uint256 newBidSettlementPeriod);
     event BidRefundPeriodUpdated(uint256 newBidRefundPeriod);
+    event TransferDomainProcessorUpdated(ITransferDomainProcessor indexed newTransferDomainProcessor);
+    event MailServerKeyHashAdapterUpdated(IKeyHashAdapterV2 indexed newMailServerKeyHashAdapter);
 
     /* ============ Structs ============ */
     struct Listing {
         address seller;
+        address payable saleEthRecipient;       // Must be a contract that can receive ETH or an EOA
+        bytes32 dkimKeyHash;            // Allow for custom DKIM key hash
         bytes encryptionKey;
         bytes32 domainId;
         uint256 createdAt;
         uint256 askPrice;
+        uint256 minBidPrice;
         bool isActive;          // false by default, set to true when the listing is created
         uint256[] bids;
     }
@@ -85,7 +99,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     mapping(bytes32 => uint256) public domainListing;
 
     uint256 public fee;
-    address public feeRecipient;
+    address payable public feeRecipient;
     uint256 public bidCounter;
     uint256 public listingCounter;
     uint256 public bidSettlementPeriod;
@@ -93,9 +107,9 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     
     bool public isInitialized;
     
-    IVerifyDomainProcessor public verifyDomainProcessor;
     ITransferDomainProcessor public transferDomainProcessor;
     IVerifiedDomainRegistry public verifiedDomainRegistry;
+    IKeyHashAdapterV2 public mailServerKeyHashAdapter;
 
     /* ============ Constants ============ */
     uint256 internal constant PRECISE_UNIT = 1e18;
@@ -105,7 +119,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     constructor(
         address _owner,
         uint256 _fee,
-        address _feeRecipient,
+        address payable _feeRecipient,
         uint256 _bidSettlementPeriod,
         uint256 _bidRefundPeriod,
         address[] memory _allowedAddresses
@@ -128,28 +142,49 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
      * @notice Creates listing for a domain. If ownership of domain changes offchain, the new owner
      * will have to first register the domain on the domain registry contract. Then the new owner
      * can create a listing for the domain. The old listing will be deleted from the old owner's 
-     * listings and the old listing is marked as withdrawn, which prevents any new bids from being
-     * created on it and makes the old bids immediately withdrawable.
+     * listings and the old listing is marked as NOT active, which prevents any new bids from being
+     * created on it and makes the old bids immediately withdrawable. We also allow the seller to
+     * specify a custom DKIM key hash for Namecheap if they want to opt out of using the managed DKIM
+     * key hash set in the transferDomainProcessor contract. The managed DKIM key hash *can* be 
+     * updated by us whenever Namecheap rotates their DKIM key.
+     *
      * Function reverts if:
      * - Caller is not domain owner on the domain registry contract
-     * - Ask price is 0
+     * - Ask price is less than min bid price
+     * - Sale ETH recipient is the zero address
      *
      * @param _domainId         The unique identifier of the domain
      * @param _askPrice         An asking price for the domain
+     * @param _minBidPrice      The minimum bid price for the domain
+     * @param _saleEthRecipient The address to receive the ETH from the sale; must be a contract that can
+     *                          receive ETH or an EOA
      * @param _encryptionKey    The encryption key for buyers to encrypt the buyerId to
+     * @param _dkimKeyHash      The custom DKIM key hash. If empty, the managed DKIM key hash will be used
      */
-    function createListing(bytes32 _domainId, uint256 _askPrice, bytes memory _encryptionKey) 
+    function createListing(
+        bytes32 _domainId, 
+        uint256 _askPrice, 
+        uint256 _minBidPrice, 
+        address payable _saleEthRecipient, 
+        bytes memory _encryptionKey,
+        bytes32 _dkimKeyHash
+    ) 
         external
         onlyAllowed
         onlyInitialized 
+        whenNotPaused
     {
         address domainOwner = verifiedDomainRegistry.getDomainOwner(_domainId);
         require(domainOwner == msg.sender, "Caller is not domain owner");
-        require(_askPrice > 0, "Ask price is zero");
-        
-        uint256 listingId = _updateCreateListingState(_domainId, _askPrice, _encryptionKey);
+        require(_minBidPrice > 0, "Minimum bid price is zero");
+        require(_askPrice >= _minBidPrice, "Ask price is less than min bid price");
+        require(_saleEthRecipient != address(0), "Invalid sale ETH recipient");
 
-        emit ListingCreated(listingId, msg.sender, _askPrice);
+        uint256 listingId = _updateCreateListingState(
+            _domainId, _askPrice, _minBidPrice, _saleEthRecipient, _encryptionKey, _dkimKeyHash
+        );
+
+        emit ListingCreated(listingId, msg.sender, _domainId, _dkimKeyHash, _askPrice, _minBidPrice, _saleEthRecipient);
     }
 
     /**
@@ -171,6 +206,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         external 
         payable
         nonReentrant
+        whenNotPaused
     {
         uint256 price = msg.value;
         Listing storage listing = listings[_listingId];
@@ -193,27 +229,31 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         external
         onlyInitialized
         nonReentrant
+        whenNotPaused
     {
         // Check
         (
+            bytes32 dkimKeyHash,
             bytes32 hashedReceiverId, 
             string memory domainName, 
             uint256 bidId
-        ) = transferDomainProcessor.processProof(_proof);        
+        ) = transferDomainProcessor.processProof(_proof);
 
         Bid storage bid = bids[bidId];
         Listing storage listing = listings[bid.listingId];
         
-        _validateFinalizeSale(bid, listing, hashedReceiverId, domainName);
+        _validateFinalizeSale(bid, listing, dkimKeyHash, hashedReceiverId, domainName);
         
         // Effect
         uint256 transferValue = bid.price;
+        address payable recipient = listing.saleEthRecipient;
+        uint256 listingId = bid.listingId;
         _updateFinalizeSaleState(bid, bidId, listing);
 
         // Interaction
-        uint256 feeAmount = _settleSale(msg.sender, transferValue);
+        uint256 feeAmount = _settleSale(recipient, transferValue);
         
-        emit SaleFinalized(bidId, transferValue - feeAmount, feeAmount);
+        emit SaleFinalized(bidId, listingId, transferValue - feeAmount, feeAmount);
     }
 
     /**
@@ -223,7 +263,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
      * the seller and fees will be taken by the protocol. The listing and the bid will be deleted. The function will
      * revert if:
      * - The bid is not owned by the caller
-     * - The listing is expired (sold or withdrawn)
+     * - The listing is not active (sold or withdrawn)
      *
      * @param _bidId The unique identifier of the bid to release funds for
      */
@@ -236,40 +276,51 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         Listing storage listing = listings[bid.listingId];
 
         require(bid.buyer == msg.sender, "Caller is not bid owner");
-        require(listing.isActive, "Listing is expired");
+        require(listing.isActive, "Listing not active");
 
         // Effect
         uint256 transferValue = bid.price;
-        address recipient = listing.seller;
+        address payable recipient = listing.saleEthRecipient;
+        uint256 listingId = bid.listingId;
+        
         _updateFinalizeSaleState(bid, _bidId, listing);
 
         // Interaction
         uint256 feeAmount = _settleSale(recipient, transferValue);
 
-        emit SaleFinalized(_bidId, transferValue - feeAmount, feeAmount);
+        emit SaleFinalized(_bidId, listingId, transferValue - feeAmount, feeAmount);
     }
 
     /**
      * @notice ONLY SELLER: Updates the asking price of an existing listing. We don't update
-     * the existing bids against the listing because the newAskPrice is an indicative value. 
-     * We do prevent new bids from being created with a price less than the newAskPrice.
+     * the existing bids against the listing because the newAskPrice is an indicative value.
+     * The new ask price must be greater than or equal to the existing min bid price. If seller
+     * wants to update the min bid price, they should delete the listing and create a new one with
+     * the new min bid price.
      *
-     * @param _listingId The unique identifier of the listing to update
-     * @param _newAskPrice The new asking price for the listing
+     * @param _listingId        The unique identifier of the listing to update
+     * @param _newAskPrice      The new asking price for the listing
+     * @param _saleEthRecipient The new address to receive the ETH from the sale; must be a contract that can
+     *                          receive ETH or an EOA
      */
-    function updateListing(uint256 _listingId, uint256 _newAskPrice) external {
+    function updateListing(uint256 _listingId, uint256 _newAskPrice, address payable _saleEthRecipient) external whenNotPaused {
         Listing storage listing = listings[_listingId];
         
         require(listing.seller == msg.sender, "Caller is not listing owner");
-        require(listing.isActive, "Listing is expired");
+        require(listing.isActive, "Listing not active");
+        require(_newAskPrice >= listing.minBidPrice, "Ask price is less than min bid price");
+        require(_saleEthRecipient != address(0), "Invalid sale ETH recipient");
         
         listing.askPrice = _newAskPrice;
+        listing.saleEthRecipient = _saleEthRecipient;
 
-        emit ListingUpdated(_listingId, msg.sender, _newAskPrice);
+        emit ListingUpdated(_listingId, msg.sender, _newAskPrice, _saleEthRecipient);
     }
 
     /**
-     * @notice ONLY SELLER: Deletes an existing listing. Prunes all bids against the listing. 
+     * @notice ONLY SELLER: Marks a listing as NOT active. Removes the listing from the seller's listings array
+     * and domain listing. If the listing has no bids, it is deleted from the exchange. Bids against the listing
+     * are left as is to allow the buyer to withdraw the bid.
      *
      * @param _listingId The unique identifier of the listing to delete
      */
@@ -277,7 +328,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         Listing storage listing = listings[_listingId];
         
         require(listing.seller == msg.sender, "Caller is not listing owner");
-        require(listing.isActive, "Listing is expired");
+        require(listing.isActive, "Listing not active");
         
         _pruneListing(listing, _listingId);
 
@@ -285,41 +336,31 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     }
 
     /**
-     * @notice ONLY BUYER: Updates the price of an existing bid. Handles ETH transfers for price
-     * changes. The new price can be higher or lower than the old price. If the new price is
-     * higher, the buyer must send the additional amount of ETH. If the new price is lower, the
-     * buyer will receive a refund for the difference. But the new price must be at least the ask
-     * price of the listing.
+     * @notice ONLY BUYER: Increases the price of an existing bid. The new price can ONLY be higher 
+     * than the old price. The buyer must send the additional amount of ETH. The function reverts if
+     * - bid has initiated refund, caller is not bid owner or listing is not active
+     * - the new price is less than old price
+     * - msg.value is NOT STRICTLY EQUAL to than new price - old price
      *
-     * @param _bidId The unique identifier of the bid to update
+     * @param _bidId The unique identifier of the bid to increase the price for
      * @param _newPrice The new price for the bid
      */
-    function updateBidPrice(uint256 _bidId, uint256 _newPrice) 
+    function increaseBidPrice(uint256 _bidId, uint256 _newPrice) 
         external
         payable
         nonReentrant
+        whenNotPaused
     {
         Bid storage bid = bids[_bidId];
         Listing storage listing = listings[bid.listingId];
 
         // Check
-        _validateUpdateBidPrice(bid, listing, _newPrice);
-        if (_newPrice > bid.price) {
-            uint256 additionalAmount = _newPrice - bid.price;
-            require(msg.value >= additionalAmount, "Incorrect amount of ETH sent");
-        }
+        _validateIncreaseBidPrice(bid, listing, _newPrice);        
         
         // Effect
-        uint256 _oldPrice = bid.price;
         bid.price = _newPrice;
 
-        // Interaction
-        if (_oldPrice > _newPrice) {
-            uint256 refundAmount = _oldPrice - _newPrice;
-            payable(msg.sender).sendValue(refundAmount);
-        }
-
-        emit BidPriceUpdated(_bidId, msg.sender, _newPrice);
+        emit BidPriceIncreased(_bidId, msg.sender, _newPrice);
     }
 
 
@@ -369,23 +410,68 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
      * @notice Initializes the contract with domain verification and transfer processors. Can 
      * only be called once by the contract owner
      * 
-     * @param _verifyDomainProcessor The address of the domain verification processor contract
      * @param _transferDomainProcessor The address of the domain transfer processor contract
      * @param _verifiedDomainRegistry The address of the verified domain registry contract
+     * @param _mailServerKeyHashAdapter The address of the mail server key hash adapter contract
      */
     function initialize(
-        IVerifyDomainProcessor _verifyDomainProcessor,
         ITransferDomainProcessor _transferDomainProcessor,
-        IVerifiedDomainRegistry _verifiedDomainRegistry
+        IVerifiedDomainRegistry _verifiedDomainRegistry,
+        IKeyHashAdapterV2 _mailServerKeyHashAdapter
     ) external onlyOwner {
         require(!isInitialized, "Already initialized");
-        verifyDomainProcessor = _verifyDomainProcessor;
         transferDomainProcessor = _transferDomainProcessor;
         verifiedDomainRegistry = _verifiedDomainRegistry;
+        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
         isInitialized = true;
     }
 
-    // Add admin functions to update processors
+    /**
+     * @notice ONLY OWNER: Pauses listing and proof submission functionality for the marketplace. 
+     * Functionalites that are paused:
+     * - Listing creation and update
+     * - Bid creation and update
+     * - Sale finalization
+     * 
+     * Functinonalites that remain unpaused to allow users to retrieve funds in contract:
+     * - Bid refund initiation and withdrawal
+     * - Listing deletion
+     * - Manual settlement between buyer and seller
+     */
+    function pauseMarketplace() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     * @notice ONLY OWNER: Restarts paused functionality for the marketplace.
+     */
+    function unpauseMarketplace() external onlyOwner {
+        _unpause();
+    }
+
+    /**
+     * @notice ONLY OWNER: Update the transfer domain processor
+     *
+     * @param _transferDomainProcessor The new transfer domain processor
+     */
+    function updateTransferDomainProcessor(ITransferDomainProcessor _transferDomainProcessor) external onlyOwner {
+        require(address(_transferDomainProcessor) != address(0), "Invalid address");
+        
+        transferDomainProcessor = _transferDomainProcessor;
+        emit TransferDomainProcessorUpdated(_transferDomainProcessor);
+    }
+
+    /**
+     * @notice ONLY OWNER: Update the managed mail server key hash adapter
+     *
+     * @param _mailServerKeyHashAdapter The new mail server key hash adapter
+     */
+    function updateMailServerKeyHashAdapter(IKeyHashAdapterV2 _mailServerKeyHashAdapter) external onlyOwner {
+        require(address(_mailServerKeyHashAdapter) != address(0), "Invalid address");
+        
+        mailServerKeyHashAdapter = _mailServerKeyHashAdapter;
+        emit MailServerKeyHashAdapterUpdated(_mailServerKeyHashAdapter);
+    }
 
     /**
      * @notice ONLY OWNER: Updates the fee percentage for the marketplace
@@ -402,7 +488,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
      *
      * @param _newFeeRecipient The new address to receive fees
      */
-    function updateFeeRecipient(address _newFeeRecipient) external onlyOwner {
+    function updateFeeRecipient(address payable _newFeeRecipient) external onlyOwner {
         require(_newFeeRecipient != address(0), "Invalid address");
         feeRecipient = _newFeeRecipient;
         emit FeeRecipientUpdated(_newFeeRecipient);
@@ -526,7 +612,10 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     function _updateCreateListingState(
         bytes32 _domainId, 
         uint256 _askPrice, 
-        bytes memory _encryptionKey
+        uint256 _minBidPrice,
+        address payable _saleEthRecipient,
+        bytes memory _encryptionKey,
+        bytes32 _dkimKeyHash
     ) internal returns (uint256 listingId) {
         
         // If listing already exists, delete the old listing
@@ -540,8 +629,11 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         listingId = listingCounter;
         listings[listingId] = Listing({
             seller: msg.sender,
+            saleEthRecipient: _saleEthRecipient,
             encryptionKey: _encryptionKey,
+            dkimKeyHash: _dkimKeyHash,
             askPrice: _askPrice,
+            minBidPrice: _minBidPrice,
             domainId: _domainId,
             createdAt: block.timestamp,
             isActive: true,
@@ -556,10 +648,10 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
 
     function _validateCreateBid(Listing storage _listing, uint256 _price, bytes32 _buyerIdHash) internal view {
         require(_listing.seller != address(0), "Listing does not exist");
-        require(_listing.isActive, "Listing is expired");
+        require(_listing.isActive, "Listing not active");
         
         // Validate inputs
-        require(_price > 0, "Bid price must be greater than 0");
+        require(_price >= _listing.minBidPrice, "Bid price is less than min bid price");
         require(_buyerIdHash != bytes32(0), "Buyer ID hash cannot be empty");
     }
 
@@ -591,13 +683,25 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
     function _validateFinalizeSale(
         Bid storage _bid, 
         Listing storage _listing,
+        bytes32 _dkimKeyHash,
         bytes32 _hashedReceiverId, 
         string memory _transferredDomainName
     ) internal view {
         require(_bid.buyer != address(0), "Bid does not exist");
         require(_listing.seller == msg.sender, "Caller is not listing owner");
-        require(_listing.isActive, "Listing is expired");
+        require(_listing.isActive, "Listing not active");
 
+        // Validate namecheap DKIM key
+        if (_listing.dkimKeyHash != bytes32(0)) {
+            require(_dkimKeyHash == _listing.dkimKeyHash, "Invalid custom DKIM key hash");
+        } else {
+            require(
+                mailServerKeyHashAdapter.isMailServerKeyHash(_dkimKeyHash), 
+                "Invalid managed DKIM key hash"
+            );
+        }
+
+        // Validate domain and receiver
         bytes32 transferredDomainId = keccak256(abi.encodePacked(_transferredDomainName));
         require(_bid.buyerIdHash == _hashedReceiverId, "Invalid receiver");
         require(_listing.domainId == transferredDomainId, "Invalid domain");
@@ -610,18 +714,18 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         _pruneListing(_listing, listingId);
     }
 
-    function _validateUpdateBidPrice(
+    function _validateIncreaseBidPrice(
         Bid storage _bid, 
         Listing storage _listing, 
         uint256 _newPrice
     ) internal view {
         require(_bid.buyer == msg.sender, "Caller is not bid owner");
         require(!_bid.refundInitiated, "Refund already initiated");
-        require(_listing.isActive, "Listing is expired");
+        require(_listing.isActive, "Listing not active");
 
         // Validate new price
-        require(_newPrice > 0, "New price must be greater than 0");
-        require(_newPrice != _bid.price, "New price equals bid price");
+        require(_newPrice > _bid.price, "New price not greater than old price");
+        require(msg.value == _newPrice - _bid.price, "Incorrect amount of ETH sent");
     }
 
     function _validateInitiateRefund(Bid storage _bid, Listing storage _listing) internal view {
@@ -639,12 +743,12 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard {
         }
     }
 
-    function _settleSale(address _recipient, uint256 _amount) internal returns (uint256 feeAmount) {
+    function _settleSale(address payable _recipient, uint256 _amount) internal returns (uint256 feeAmount) {
         feeAmount = (_amount * fee) / PRECISE_UNIT;
-        payable(_recipient).sendValue(_amount - feeAmount);
+        _recipient.sendValue(_amount - feeAmount);
 
         if (feeAmount > 0) {
-            payable(feeRecipient).sendValue(feeAmount);
+            feeRecipient.sendValue(feeAmount);
         }
     }
 

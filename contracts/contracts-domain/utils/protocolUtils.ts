@@ -71,6 +71,7 @@ export const generateProofsFromDomains = (
 
 
 export const generateTransferProof = (
+  dkimKeyHash: BytesLike,
   hashedBuyerId: BytesLike,
   bidId: BigNumber
 ) => {
@@ -79,7 +80,7 @@ export const generateTransferProof = (
     b: [[ZERO, ZERO], [ZERO, ZERO]],
     c: [ZERO, ZERO],
     signals: [
-      ZERO,     // Modulus
+      dkimKeyHash,     // Modulus
       BigNumber.from(hashedBuyerId),    // hashedReceiverId
       ZERO,     // domain Name already set in mock
       bidId,   // bidId

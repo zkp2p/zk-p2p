@@ -17,8 +17,7 @@ import {
   USDC_MINT_AMOUNT,
   USDC_RECIPIENT,
   VERIFY_DOMAIN_PROVIDER_HASHES,
-  VERIFY_DOMAIN_WITNESS,
-  DOMAIN_EXPIRY_BUFFER
+  VERIFY_DOMAIN_WITNESS
 } from "../deployments/parameters";
 import {
   addWitness,
@@ -85,7 +84,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [
       domainExchange.address,
-      keyHashAdapter.address,
       nullifierRegistry.address,
       FROM_EMAIL["namecheap"],
       ZERO
@@ -104,7 +102,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // Deploy VerifiedDomainRegistry
   const verifiedDomainRegistry = await deploy("VerifiedDomainRegistry", {
     from: deployer,
-    args: [DOMAIN_EXPIRY_BUFFER[network]],
+    args: [],
   }, { log: true });
   console.log("VerifiedDomainRegistry deployed at", verifiedDomainRegistry.address);
 
@@ -151,9 +149,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         data: exchangeContract.interface.encodeFunctionData(
           "initialize",
           [
-            verifyDomainProcessor.address,
             transferDomainProcessor.address,
-            verifiedDomainRegistry.address
+            verifiedDomainRegistry.address,
+            keyHashAdapter.address
           ]
         )
       }

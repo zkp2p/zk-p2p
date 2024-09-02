@@ -15,5 +15,10 @@ interface ITransferDomainProcessor {
         TransferProof calldata _proof
     ) 
         external 
-        returns (bytes32 hashedReceiverId, string memory domainName, uint256 bidId);
+        returns (
+            bytes32 dkimKeyHash, 
+            bytes32 hashedReceiverId, 
+            string memory domainName, 
+            uint256 bidId
+        );
 }

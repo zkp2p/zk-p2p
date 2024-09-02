@@ -43,7 +43,6 @@ describe("TransferDomainProcessor", () => {
   let owner: Account;
   let exchange: Account;
 
-  let keyHashAdapter: ManagedKeyHashAdapterV2;
   let nullifierRegistry: NullifierRegistry;
   let xferDomainProcessor: TransferDomainProcessor;
 
@@ -57,11 +56,9 @@ describe("TransferDomainProcessor", () => {
 
     deployer = new DeployHelper(owner.wallet);
 
-    keyHashAdapter = await deployer.deployManagedKeyHashAdapterV2(["0x0db7730bdd90c823601ed32395c8b2f3307fd4adc477ca22bf3ed406c1b3ae4a"]);
     nullifierRegistry = await deployer.deployNullifierRegistry();
     xferDomainProcessor = await deployer.deployTransferDomainProcessor(
       exchange.address,
-      keyHashAdapter.address,
       nullifierRegistry.address,
       "support@namecheap.com"
     );
@@ -74,7 +71,6 @@ describe("TransferDomainProcessor", () => {
       const emailFromAddress = await xferDomainProcessor.getEmailFromAddress();
 
       expect(await xferDomainProcessor.exchange()).to.equal(exchange.address);
-      expect(await xferDomainProcessor.mailServerKeyHashAdapter()).to.equal(keyHashAdapter.address);
       expect(await xferDomainProcessor.nullifierRegistry()).to.equal(nullifierRegistry.address);
       expect(ethers.utils.arrayify(emailFromAddress)).to.deep.equal(ethers.utils.toUtf8Bytes("support@namecheap.com"));
     });
@@ -99,12 +95,13 @@ describe("TransferDomainProcessor", () => {
 
     it("should process the proof", async () => {
       const {
-        date,
+        dkimKeyHash,
         hashedReceiverId,
         domainName,
         bidId
       } = await subjectCallStatic();
 
+      expect(dkimKeyHash).to.eq(PROOF.signals[0]);
       expect(domainName).to.eq('0xsachink.xyz');
       expect(hashedReceiverId).to.eq(PROOF.signals[7]);
       expect(bidId).to.eq("12345");
@@ -127,15 +124,6 @@ describe("TransferDomainProcessor", () => {
       });
     });
 
-    describe("when the mailserver key hash is invalid", () => {
-      beforeEach(async () => {
-        await keyHashAdapter.removeMailServerKeyHash(PROOF.signals[0]);
-      });
-
-      it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Invalid mailserver key hash");
-      });
-    });
 
     describe("when the from email address is invalid", () => {
       beforeEach(async () => {

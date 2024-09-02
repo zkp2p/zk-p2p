@@ -3,7 +3,6 @@
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
 import { EmailBaseProcessor } from "./external/processors/EmailBaseProcessor.sol";
-import { IKeyHashAdapterV2 } from "./external/interfaces/IKeyHashAdapterV2.sol";
 import { INullifierRegistry } from "./external/interfaces/INullifierRegistry.sol";
 import { StringConversionUtils } from "./external/lib/StringConversionUtils.sol";
 
@@ -23,7 +22,6 @@ contract TransferDomainProcessor is Groth16Verifier, ITransferDomainProcessor, E
     /* ============ Constructor ============ */
     constructor(
         address _exchange,
-        IKeyHashAdapterV2 _mailserverKeyHashAdapter,
         INullifierRegistry _nullifierRegistry,
         string memory _emailFromAddress,
         uint256 _timestampBuffer
@@ -31,7 +29,6 @@ contract TransferDomainProcessor is Groth16Verifier, ITransferDomainProcessor, E
         Groth16Verifier()
         EmailBaseProcessor(
             _exchange,
-            _mailserverKeyHashAdapter,
             _nullifierRegistry,
             _emailFromAddress,
             _timestampBuffer
@@ -47,6 +44,7 @@ contract TransferDomainProcessor is Groth16Verifier, ITransferDomainProcessor, E
         override
         onlyExchange
         returns (
+            bytes32 dkimKeyHash,
             bytes32 hashedReceiverId,
             string memory domainName, 
             uint256 bidId
@@ -54,7 +52,8 @@ contract TransferDomainProcessor is Groth16Verifier, ITransferDomainProcessor, E
     {
         require(this.verifyProof(_proof.a, _proof.b, _proof.c, _proof.signals), "Invalid Proof");
 
-        require(isMailServerKeyHash(bytes32(_proof.signals[0])), "Invalid mailserver key hash");
+        // Signal [0] is the DKIM key hash
+        dkimKeyHash = bytes32(_proof.signals[0]);
 
         // Signals [1:2] are the packed from email address
         string memory fromEmail = _parseSignalArray(_proof.signals, 1, 2);

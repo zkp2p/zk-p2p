@@ -71,12 +71,6 @@ export const VERIFY_DOMAIN_WITNESS: any = {
   "base_staging": "",
 };
 
-export const DOMAIN_EXPIRY_BUFFER: any = {
-  "localhost": ONE_DAY_IN_SECONDS.mul(7),
-  "sepolia": ONE_DAY_IN_SECONDS.mul(7),
-  "base": ONE_DAY_IN_SECONDS.mul(7),
-  "base_staging": ONE_DAY_IN_SECONDS.mul(7)
-};
 
 export const ALLOWED_ADDRESSES_ENABLED: any = {
   "localhost": false,

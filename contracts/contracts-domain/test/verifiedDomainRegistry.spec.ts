@@ -37,9 +37,9 @@ describe("VerifiedDomainRegistry", () => {
 
   let verifiedDomainRegistry: VerifiedDomainRegistry;
   let verifyDomainProcessor: VerifyDomainProcessorMock;
+  let newVerifyDomainProcessor: VerifyDomainProcessorMock;
 
   let snapshotId: string;
-  let domainExpiryBuffer: BigNumber;
   let deployer: DeployHelper;
 
   before(async () => {
@@ -50,10 +50,10 @@ describe("VerifiedDomainRegistry", () => {
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
-    domainExpiryBuffer = ONE_DAY_IN_SECONDS.mul(7);
 
     verifyDomainProcessor = await deployer.deployVerifyDomainProcessorMock();
-    verifiedDomainRegistry = await deployer.deployVerifiedDomainRegistry(domainExpiryBuffer);
+    newVerifyDomainProcessor = await deployer.deployVerifyDomainProcessorMock();
+    verifiedDomainRegistry = await deployer.deployVerifiedDomainRegistry();
   });
 
   beforeEach(async () => {
@@ -67,7 +67,6 @@ describe("VerifiedDomainRegistry", () => {
   describe("#constructor", async () => {
     it("should set the correct parameters", async () => {
       expect(await verifiedDomainRegistry.owner()).to.equal(owner.address);
-      expect(await verifiedDomainRegistry.domainExpiryBuffer()).to.equal(domainExpiryBuffer);
       expect(await verifiedDomainRegistry.isInitialized()).to.equal(false);
     });
   });
@@ -80,7 +79,7 @@ describe("VerifiedDomainRegistry", () => {
     });
 
     async function subject(): Promise<any> {
-      await verifiedDomainRegistry.initialize(subjectVerifyDomainProcessor);
+      return verifiedDomainRegistry.initialize(subjectVerifyDomainProcessor);
     }
 
     it("should set the correct parameters", async () => {
@@ -93,6 +92,12 @@ describe("VerifiedDomainRegistry", () => {
       await subject();
 
       expect(await verifiedDomainRegistry.isInitialized()).to.equal(true);
+    });
+
+    it("should emit VerifyDomainProcessorUpdated event", async () => {
+      await expect(subject()).to.emit(verifiedDomainRegistry, "VerifyDomainProcessorUpdated").withArgs(
+        subjectVerifyDomainProcessor
+      );
     });
 
     describe("if already initialized", () => {
@@ -171,7 +176,8 @@ describe("VerifiedDomainRegistry", () => {
         await expect(subject()).to.emit(verifiedDomainRegistry, "DomainVerified").withArgs(
           domainId,
           seller.address,
-          domainName
+          domainName,
+          convertToUnixTimestamp(expiryTimestamp)
         );
       });
 
@@ -231,62 +237,115 @@ describe("VerifiedDomainRegistry", () => {
         it("should emit DomainVerified events for both domains", async () => {
           await expect(subject())
             .to.emit(verifiedDomainRegistry, "DomainVerified")
-            .withArgs(domainId, seller.address, domainName)
+            .withArgs(domainId, seller.address, domainName, convertToUnixTimestamp(expiryTimestamp))
             .and.to.emit(verifiedDomainRegistry, "DomainVerified")
-            .withArgs(secondDomainId, seller.address, secondDomainName);
+            .withArgs(secondDomainId, seller.address, secondDomainName, convertToUnixTimestamp(secondExpiryTimestamp));
         });
       });
 
-      describe("when domain is already owned by someone else", () => {
-        beforeEach(async () => {
-          // seller clams ownership of domain
-          await subject();
+      describe("when domain is already owned", () => {
 
-          subjectCaller = otherSeller;
-          subjectProofs = generateProofsFromDomains([
-            {
-              name: domainName,
-              expiryTimestamp: expiryTimestamp,
-            }
-          ]);
+        describe("and the owner is same as the caller", () => {
+          let newExpiryTimestamp: string;
+
+          beforeEach(async () => {
+            // seller claims ownership of domain
+            await subject();
+
+            newExpiryTimestamp = '2035-07-08T18:22:00';
+
+            subjectCaller = seller;
+            subjectProofs = generateProofsFromDomains([
+              {
+                name: domainName,
+                expiryTimestamp: newExpiryTimestamp,
+              }
+            ]);
+          });
+
+          it("should update domainInfo", async () => {
+            await subject();
+
+            const domainInfo = await verifiedDomainRegistry.getDomains([domainId]);
+
+            expect(domainInfo.length).to.equal(1);
+            expect(domainInfo[0].domainId).to.equal(domainId);
+            expect(domainInfo[0].domain.owner).to.equal(seller.address);
+            expect(domainInfo[0].domain.name).to.equal(domainName);
+            expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(newExpiryTimestamp));
+          });
+
+          it("should NOT update userDomains", async () => {
+            await subject();
+
+            const sellerDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
+            expect(sellerDomains.length).to.equal(1);
+            expect(sellerDomains[0].domainId).to.equal(domainId);
+          });
+
+          it("should emit DomainVerified event", async () => {
+            await expect(subject()).to.emit(verifiedDomainRegistry, "DomainVerified").withArgs(
+              domainId,
+              seller.address,
+              domainName,
+              convertToUnixTimestamp(newExpiryTimestamp)
+            );
+          });
         });
 
-        it("should update ownership", async () => {
-          await subject();
 
-          const domainInfo = await verifiedDomainRegistry.getDomains([domainId]);
+        describe("and the owner is different from the caller", () => {
+          beforeEach(async () => {
+            // seller claims ownership of domain
+            await subject();
 
-          expect(domainInfo.length).to.equal(1);
-          expect(domainInfo[0].domainId).to.equal(domainId);
-          expect(domainInfo[0].domain.owner).to.equal(otherSeller.address);
-          expect(domainInfo[0].domain.name).to.equal(domainName);
-          expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(expiryTimestamp));
-        });
+            subjectCaller = otherSeller;
+            subjectProofs = generateProofsFromDomains([
+              {
+                name: domainName,
+                expiryTimestamp: expiryTimestamp,
+              }
+            ]);
+          });
 
-        it("should update userDomains", async () => {
-          await subject();
+          it("should update domain info", async () => {
+            await subject();
 
-          const prevSellerDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
-          expect(prevSellerDomains.length).to.equal(0);
+            const domainInfo = await verifiedDomainRegistry.getDomains([domainId]);
 
-          const otherSellerDomains = await verifiedDomainRegistry.getUserDomains(otherSeller.address);
-          expect(otherSellerDomains.length).to.equal(1);
-          expect(otherSellerDomains[0].domainId).to.equal(domainId);
-        });
+            expect(domainInfo.length).to.equal(1);
+            expect(domainInfo[0].domainId).to.equal(domainId);
+            expect(domainInfo[0].domain.owner).to.equal(otherSeller.address);
+            expect(domainInfo[0].domain.name).to.equal(domainName);
+            expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(expiryTimestamp));
+          });
 
-        it("should emit DomainVerified event", async () => {
-          await expect(subject()).to.emit(verifiedDomainRegistry, "DomainVerified").withArgs(
-            domainId,
-            otherSeller.address,
-            domainName
-          );
+          it("should update userDomains", async () => {
+            await subject();
+
+            const prevSellerDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
+            expect(prevSellerDomains.length).to.equal(0);
+
+            const otherSellerDomains = await verifiedDomainRegistry.getUserDomains(otherSeller.address);
+            expect(otherSellerDomains.length).to.equal(1);
+            expect(otherSellerDomains[0].domainId).to.equal(domainId);
+          });
+
+          it("should emit DomainVerified event", async () => {
+            await expect(subject()).to.emit(verifiedDomainRegistry, "DomainVerified").withArgs(
+              domainId,
+              otherSeller.address,
+              domainName,
+              convertToUnixTimestamp(expiryTimestamp)
+            );
+          });
         });
       });
 
-      describe("when domain is about to be expired", async () => {
+      describe("when domain is expired", async () => {
         beforeEach(async () => {
           const blockTimestamp = await blockchain.getCurrentTimestamp();
-          expiryTimestamp = convertUnixTimestampToDateString(blockTimestamp.add(domainExpiryBuffer).sub(ONE_DAY_IN_SECONDS));
+          expiryTimestamp = convertUnixTimestampToDateString(blockTimestamp.sub(ONE_DAY_IN_SECONDS));
 
           subjectProofs = generateProofsFromDomains([
             {
@@ -296,8 +355,8 @@ describe("VerifiedDomainRegistry", () => {
           ]);
         });
 
-        it("should revert", async () => {
-          await expect(subject()).to.be.revertedWith("Domain about to be expired");
+        it("should NOT revert", async () => {
+          await expect(subject()).to.not.be.reverted;
         });
       });
 
@@ -319,41 +378,43 @@ describe("VerifiedDomainRegistry", () => {
 
   /* ============ Admin functions ============ */
 
-  describe("#updateDomainExpiryBuffer", async () => {
-    let subjectNewDomainExpiryBuffer: BigNumber;
+  describe("#setVerifyDomainProcessor", async () => {
+    let subjectNewVerifyDomainProcessor: Address;
     let subjectCaller: Account;
 
     beforeEach(async () => {
-      subjectNewDomainExpiryBuffer = ONE_DAY_IN_SECONDS.mul(7);
+      subjectNewVerifyDomainProcessor = newVerifyDomainProcessor.address;
       subjectCaller = owner;
     });
 
     async function subject(): Promise<any> {
-      return verifiedDomainRegistry.connect(subjectCaller.wallet).updateDomainExpiryBuffer(subjectNewDomainExpiryBuffer);
+      return verifiedDomainRegistry.connect(subjectCaller.wallet).updateVerifyDomainProcessor(subjectNewVerifyDomainProcessor);
     }
 
-    it("should update the domain expiry buffer period", async () => {
+    it("should update the verify domain processor", async () => {
       await subject();
 
-      const newDomainExpiryBuffer = await verifiedDomainRegistry.domainExpiryBuffer();
-      expect(newDomainExpiryBuffer).to.equal(subjectNewDomainExpiryBuffer);
+      const newVerifyDomainProcessor = await verifiedDomainRegistry.verifyDomainProcessor();
+      expect(newVerifyDomainProcessor).to.equal(subjectNewVerifyDomainProcessor);
     });
 
-    it("should emit a DomainExpiryBufferUpdated event", async () => {
-      await expect(subject()).to.emit(verifiedDomainRegistry, "DomainExpiryBufferUpdated").withArgs(subjectNewDomainExpiryBuffer);
+    it("should emit a VerifyDomainProcessorUpdated event", async () => {
+      await expect(subject()).to.emit(verifiedDomainRegistry, "VerifyDomainProcessorUpdated").withArgs(
+        subjectNewVerifyDomainProcessor
+      );
     });
 
-    describe("when new domain expiry buffer period is zero", async () => {
+    describe("when new verify domain processor is zero address", async () => {
       beforeEach(async () => {
-        subjectNewDomainExpiryBuffer = ZERO;
+        subjectNewVerifyDomainProcessor = ethers.constants.AddressZero;
       });
 
       it("should revert", async () => {
-        await expect(subject()).to.be.revertedWith("Domain expiry buffer must be greater than 0");
+        await expect(subject()).to.be.revertedWith("Invalid address");
       });
     });
 
-    describe("when caller is not admin", async () => {
+    describe("when caller is not owner", async () => {
       beforeEach(async () => {
         subjectCaller = seller;
       });

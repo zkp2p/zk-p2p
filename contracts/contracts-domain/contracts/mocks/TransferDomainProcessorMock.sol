@@ -3,7 +3,6 @@
 import { ITransferDomainProcessor } from "../interfaces/ITransferDomainProcessor.sol";
 import { StringUtils } from "@zk-email/contracts/utils/StringUtils.sol";
 
-import "hardhat/console.sol";
 
 pragma solidity ^0.8.18;
 
@@ -27,8 +26,9 @@ contract TransferDomainProcessorMock is ITransferDomainProcessor {
         external
         view
         override
-        returns (bytes32 hashedReceiverId, string memory domainName, uint256 bidId)
+        returns (bytes32 dkimKeyHash, bytes32 hashedReceiverId, string memory domainName, uint256 bidId)
     {
+        dkimKeyHash = bytes32(_proof.signals[0]);
         hashedReceiverId = bytes32(_proof.signals[1]);
         domainName = storedDomainName;
         bidId = _proof.signals[3];
