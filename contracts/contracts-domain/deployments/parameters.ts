@@ -7,7 +7,7 @@ import { ether, usdc } from "@utils/common/units";
 
 // Global Parameters
 export const MULTI_SIG: any = {
-  "localhost": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "localhost": "",
   "sepolia": "",
   "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
   "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
@@ -15,28 +15,28 @@ export const MULTI_SIG: any = {
 
 export const FEE_RECIPIENT: any = {
   "localhost": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-  "sepolia": "",
+  "sepolia": "0x84e113087C97Cd80eA9D78983D4B8Ff61ECa1929",
   "base": "0x0bC26FF515411396DD588Abd6Ef6846E04470227",
   "base_staging": "0xdd93E0f5fC32c86A568d87Cb4f08598f55E980F3",
 };
 
 export const FEE_PERCENTAGE: any = {
   "localhost": ether(0.01),   // 1%
-  "sepolia": ether(0.01),    // 1%
+  "sepolia": ether(0.025),    // 2.5%
   "base": ether(0.01),       // 1%
   "base_staging": ether(0.01), // 1%
 };
 
 export const BID_SETTLEMENT_PERIOD: any = {
   "localhost": ONE_DAY_IN_SECONDS,
-  "sepolia": ONE_DAY_IN_SECONDS,
+  "sepolia": THREE_MINUTES_IN_SECONDS,    // 3 minutes
   "base": ONE_DAY_IN_SECONDS,
   "base_staging": ONE_DAY_IN_SECONDS,
 };
 
 export const BID_REFUND_PERIOD: any = {
   "localhost": ONE_DAY_IN_SECONDS,
-  "sepolia": ONE_DAY_IN_SECONDS,
+  "sepolia": THREE_MINUTES_IN_SECONDS,    // 3 minutes  
   "base": ONE_DAY_IN_SECONDS,
   "base_staging": ONE_DAY_IN_SECONDS,
 };
@@ -65,8 +65,8 @@ export const VERIFY_DOMAIN_PROVIDER_HASHES: any = [
 ];
 
 export const VERIFY_DOMAIN_WITNESS: any = {
-  "localhost": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "sepolia": "",
+  "localhost": "0x0636c417755E3ae25C6c166D181c0607F4C572A3",
+  "sepolia": "0x0636c417755E3ae25C6c166D181c0607F4C572A3",
   "base": "",
   "base_staging": "",
 };
