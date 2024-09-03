@@ -162,7 +162,7 @@ function padWithZero(arr: Uint8Array, length: number) {
   return arr;
 }
 
-function base64ToByteArray(base64Array) {
+function base64ToByteArray(base64Array: string[]): string[] {
   const base64String = base64Array.map(base64Val => String.fromCharCode(parseInt(base64Val, 10))).join('');
   let binaryString = atob(base64String);
   let stringArray = new Array(binaryString.length);
