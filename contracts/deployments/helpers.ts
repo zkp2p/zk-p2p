@@ -36,7 +36,8 @@ export async function addWritePermission(
         await hre.deployments.rawTx({
           from: currentOwner,
           to: contract.address,
-          data
+          data,
+          nonce: await hre.ethers.provider.getTransactionCount(currentOwner, 'latest')
         });
     } else {
       console.log(

@@ -1,4 +1,6 @@
 export {
+  EncryptedERC20,
+  EncryptedERC20__factory,
   GarantiRamp,
   GarantiRegistrationProcessor,
   GarantiRegistrationProcessorMock,

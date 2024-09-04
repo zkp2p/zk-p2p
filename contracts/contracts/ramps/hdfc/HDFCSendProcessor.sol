@@ -63,6 +63,7 @@ contract HDFCSendProcessor is Groth16Verifier, IHDFCSendProcessor, BaseProcessor
 
         // Signals [4:6] is the packed amount, since this is a USDC amount we want to make sure the returned number is
         // properly padded to 6 decimals. If the parsed has more than 6 figures to the right of the decimal it will revert
+        // TODO: Need to change this parsing to parse a handle and call data instead of just an amount
         amount = _parseSignalArray(_proof.signals, 4, 6).stringToUint(6);
 
         // Signals [6:11] are the packed timestamp, the timestamp is returned as a string in the format, that we need to

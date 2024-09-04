@@ -11,8 +11,10 @@ import { IPoseidon6 } from "../../interfaces/IPoseidon6.sol";
 import { IRegistrationProcessor } from "./interfaces/IRegistrationProcessor.sol";
 import { IHDFCSendProcessor } from "./interfaces/IHDFCSendProcessor.sol";
 
-pragma solidity ^0.8.18;
+import { IeERC20 } from "../../interfaces/IEERC20.sol";
+import "fhevm/lib/TFHE.sol";
 
+pragma solidity ^0.8.18;
 contract HDFCRamp is Ownable {
 
     using Bytes32ArrayUtils for bytes32[];
@@ -26,12 +28,29 @@ contract HDFCRamp is Ownable {
         uint256 amount,
         uint256 conversionRate
     );
+
+    event EncryptedDepositReceived(
+        uint256 indexed depositId,
+        bytes32 indexed idHash,
+        euint32 amount,
+        euint32 conversionRate
+    );
+
     event IntentSignaled(
         bytes32 indexed intentHash,
         uint256 indexed depositId,
         bytes32 indexed idHash,
         address to,
         uint256 amount,
+        uint256 timestamp
+    );
+
+    event EncIntentSignaled(
+        bytes32 indexed intentHash,
+        uint256 indexed depositId,
+        bytes32 indexed idHash,
+        address to,
+        euint32 amount,
         uint256 timestamp
     );
 
@@ -48,6 +67,15 @@ contract HDFCRamp is Ownable {
         uint256 amount,
         uint256 feeAmount
     );
+
+    event EncIntentFulfilled(
+        bytes32 indexed intentHash,
+        uint256 indexed depositId,
+        address indexed onRamper,
+        address to,
+        euint32 amount
+    );
+
     event DepositWithdrawn(
         uint256 indexed depositId,
         address indexed depositor,
@@ -86,6 +114,16 @@ contract HDFCRamp is Ownable {
         bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)
     }
 
+    struct EncryptedDeposit {
+        address depositor;
+        uint256[8] upiId;
+        euint32 depositAmount;
+        euint32 remainingDeposits;
+        euint32 outstandingIntentAmount;
+        euint32 conversionRate;
+        bytes32[] intentHashes;
+    }
+
     struct DepositWithAvailableLiquidity {
         uint256 depositId;                  // ID of the deposit
         bytes32 depositorIdHash;            // Depositor's idHash 
@@ -101,9 +139,23 @@ contract HDFCRamp is Ownable {
         uint256 intentTimestamp;            // Timestamp of when the intent was signaled
     }
 
+    struct EncryptedIntent {
+        address onRamper;                   // On-ramper's address
+        address to;                         // Address to forward funds to (can be same as onRamper)
+        uint256 deposit;                    // ID of the deposit the intent is signaling on
+        euint32 amount;                     // Amount of USDC the on-ramper signals intent for on-chain
+        uint256 intentTimestamp;            // Timestamp of when the intent was signaled
+    }
+
     struct IntentWithOnRamperId {
         bytes32 intentHash;                 // Intent hash
         Intent intent;                      // Intent struct
+        bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's idHash
+    }
+
+    struct EncIntentWithOnRamperId {
+        bytes32 intentHash;                 // Intent hash
+        EncryptedIntent intent;             // Intent struct
         bytes32 onRamperIdHash;             // Poseidon hash of the on-ramper's idHash
     }
 
@@ -135,6 +187,7 @@ contract HDFCRamp is Ownable {
     
     /* ============ State Variables ============ */
     IERC20 public immutable usdc;                                   // USDC token contract
+    IeERC20 public immutable eusdc;                                 // Encrypted USDC token contract (just named is encrypted usdc lol)
     IPoseidon3 public immutable poseidon3;                           // Poseidon hashing contract
     IPoseidon6 public immutable poseidon6;                          // Poseidon hashing contract
     IRegistrationProcessor public registrationProcessor;            // Address of registration processor contract, verifies registration e-mails
@@ -145,7 +198,9 @@ contract HDFCRamp is Ownable {
     mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of idHash to information used to enforce actions across Ethereum accounts
     mapping(address => AccountInfo) internal accounts;              // Mapping of Ethereum accounts to their account information (idHash and deposits)
     mapping(uint256 => Deposit) public deposits;                    // Mapping of depositIds to deposit structs
+    mapping(uint256 => EncryptedDeposit) public encryptedDeposits;  // Mapping of depositIds to deposit structs
     mapping(bytes32 => Intent) public intents;                      // Mapping of intentHashes to intent structs
+    mapping(bytes32 => EncryptedIntent) public encIntents;
 
     uint256 public minDepositAmount;                                // Minimum amount of USDC that can be deposited
     uint256 public maxOnRampAmount;                                 // Maximum amount of USDC that can be on-ramped in a single transaction
@@ -160,6 +215,7 @@ contract HDFCRamp is Ownable {
     constructor(
         address _owner,
         IERC20 _usdc,
+        IeERC20 _eusdc,
         IPoseidon3 _poseidon3,
         IPoseidon6 _poseidon6,
         uint256 _minDepositAmount,
@@ -172,6 +228,7 @@ contract HDFCRamp is Ownable {
         Ownable()
     {
         usdc = _usdc;
+        eusdc = _eusdc;
         poseidon3 = _poseidon3;
         poseidon6 = _poseidon6;
         minDepositAmount = _minDepositAmount;
@@ -274,6 +331,68 @@ contract HDFCRamp is Ownable {
         emit DepositReceived(depositId, account.idHash, _depositAmount, conversionRate);
     }
 
+    // for simplicity considering uint32 only
+    // this method doesn't implements requires and assumes parameters are valid for simplicity
+    function encOffRamp(
+        uint256[8] memory _upiId,
+        einput _encryptedDepositAmount, 
+        einput _encryptedReceiveAmount,
+        bytes calldata _inputProof,
+        uint256 _depositAmount,
+        uint256 _receiveAmount
+    )
+        external
+        onlyRegisteredUser
+    {
+        // require(accounts[msg.sender].deposits.length < MAX_DEPOSITS, "Maximum deposit amount reached");
+        euint32 encryptedDepositAmount = TFHE.asEuint32(_encryptedDepositAmount, _inputProof);
+        euint32 encryptedReceiveAmount = TFHE.asEuint32(_encryptedReceiveAmount, _inputProof);
+
+        // ebool depositAmountGreaterThanMinDeposit = TFHE.gt(encryptedDepositAmount, TFHE.asEuint32(minDepositAmount));
+        // ebool receivedAmountGreaterThanZero = TFHE.gt(encryptedReceiveAmount, TFHE.asEuint32(0));
+
+        // require(_depositAmount >= minDepositAmount, "Deposit amount must be greater than min deposit amount");
+        // require(_receiveAmount > 0, "Receive amount must be greater than 0");
+
+        // uint256 conversionRate = (_depositAmount * PRECISE_UNIT) / _receiveAmount;
+
+        // since 1e18 can't fit into 2^64
+        uint32 ENC_PRECISE_UINT = 1e9;
+        // for now let's keep the conversion uint as 1 since division between two encrypted values is not supported
+        euint32 encryptedConversionRate = TFHE.asEuint32(1);
+        // TFHE.div(TFHE.mul(encryptedDepositAmount, TFHE.asEuint32(ENC_PRECISE_UINT)), encryptedReceiveAmount);
+        uint256 depositId = depositCounter++;
+
+        AccountInfo storage account = accounts[msg.sender];
+        account.deposits.push(depositId);
+
+        encryptedDeposits[depositId] = EncryptedDeposit({
+            depositor: msg.sender,
+            upiId: _upiId,
+            depositAmount: encryptedDepositAmount,
+            remainingDeposits: encryptedDepositAmount,
+            outstandingIntentAmount: TFHE.asEuint32(0),
+            conversionRate: encryptedConversionRate,
+            intentHashes: new bytes32[](0)
+        });
+
+        // deposits[depositId] = Deposit({
+        //     depositor: msg.sender,
+        //     upiId: _upiId,
+        //     depositAmount: _depositAmount,
+        //     remainingDeposits: _depositAmount,
+        //     outstandingIntentAmount: 0,
+        //     conversionRate: conversionRate,
+        //     intentHashes: new bytes32[](0)
+        // });
+
+        // usdc.transferFrom(msg.sender, address(this), _depositAmount);
+        // transferFrom will implicitly convert euint32 to euint64
+        eusdc.transferFrom(msg.sender, address(this), _encryptedDepositAmount, _inputProof);
+        emit EncryptedDepositReceived(depositId, account.idHash, encryptedDepositAmount, encryptedConversionRate);
+        // emit DepositReceived(depositId, account.idHash, _depositAmount, conversionRate);
+    }
+
     /**
      * @notice Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain
      * in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of
@@ -336,6 +455,71 @@ contract HDFCRamp is Ownable {
         emit IntentSignaled(intentHash, _depositId, idHash, _to, _amount, block.timestamp);
     }
 
+
+    function encSignalIntent(
+        uint256 _depositId, 
+        einput _amount,
+        bytes calldata _inputProof,
+        // uint256 _amount, 
+        address _to
+        ) external onlyRegisteredUser {
+        bytes32 idHash = accounts[msg.sender].idHash;
+        // Deposit storage deposit = deposits[_depositId];
+        EncryptedDeposit storage encDeposit = encryptedDeposits[_depositId];
+        bytes32 depositorIdHash = accounts[encDeposit.depositor].idHash;
+
+        // Caller validity checks
+        require(!globalAccount[depositorIdHash].denyList.isDenied[idHash], "Onramper on depositor's denylist");
+        require(
+            globalAccount[idHash].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,
+            "On ramp cool down period not elapsed"
+        );
+        require(globalAccount[idHash].currentIntentHash == bytes32(0), "Intent still outstanding");
+        require(depositorIdHash != idHash, "Sender cannot be the depositor");
+
+        // Intent information checks
+        require(encDeposit.depositor != address(0), "Deposit does not exist");
+        // require(_amount > 0, "Signaled amount must be greater than 0");
+        // require(_amount <= maxOnRampAmount, "Signaled amount must be less than max on-ramp amount");
+        require(_to != address(0), "Cannot send to zero address");
+
+        bytes32 intentHash = _calculateIntentHash(idHash, _depositId);
+
+        // TODO: fix this condition
+        // if (encDeposit.remainingDeposits < _amount) {
+        //     (
+        //         bytes32[] memory prunableIntents,
+        //         uint256 reclaimableAmount
+        //     ) = _getPrunableIntents(_depositId);
+
+        //     require(deposit.remainingDeposits + reclaimableAmount >= _amount, "Not enough liquidity");
+
+        //     _pruneIntents(deposit, prunableIntents);
+        //     deposit.remainingDeposits += reclaimableAmount;
+        //     deposit.outstandingIntentAmount -= reclaimableAmount;
+        // }
+
+        euint32 amount = TFHE.asEuint32(_amount, _inputProof);
+
+        encIntents[intentHash] = EncryptedIntent({
+            onRamper: msg.sender,
+            to: _to,
+            deposit: _depositId,
+            amount: amount,
+            intentTimestamp: block.timestamp
+        });
+
+
+        globalAccount[idHash].currentIntentHash = intentHash;
+
+        encDeposit.remainingDeposits = TFHE.sub(encDeposit.remainingDeposits, amount);
+        encDeposit.outstandingIntentAmount = TFHE.add(encDeposit.outstandingIntentAmount, amount);
+        encDeposit.intentHashes.push(intentHash);
+
+        emit EncIntentSignaled(intentHash, _depositId, idHash, _to, amount, block.timestamp);
+    }
+
+    // TODO: need to implement enc version of cancel intent
     /**
      * @notice Only callable by the originator of the intent. Cancels an outstanding intent thus allowing user to signal a new
      * intent. Deposit state is updated to reflect the cancelled intent.
@@ -392,6 +576,31 @@ contract HDFCRamp is Ownable {
         _transferFunds(intentHash, intent);
     }
 
+    function encOnRamp(
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[15] memory _signals
+    )
+        external
+    {
+        (
+            EncryptedIntent memory intent,
+            EncryptedDeposit storage deposit,
+            bytes32 intentHash
+        ) = _encVerifyOnRampProof(_a, _b, _c, _signals);
+
+        _encPruneIntent(deposit, intentHash);
+
+        deposit.outstandingIntentAmount = TFHE.sub(deposit.outstandingIntentAmount, intent.amount);
+        globalAccount[accounts[intent.onRamper].idHash].lastOnrampTimestamp = block.timestamp;
+        // TODO: skipping this for now
+        // _closeDepositIfNecessary(intent.deposit, deposit);
+
+        _encTransferFunds(intentHash, intent);
+    }
+
+    // TODO: will make it enc later
     /**
      * @notice Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement
      * between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and 
@@ -415,6 +624,7 @@ contract HDFCRamp is Ownable {
         _transferFunds(_intentHash, intent);
     }
 
+    // TODO: will make it enc later
     /**
      * @notice Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all
      * remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be
@@ -451,6 +661,7 @@ contract HDFCRamp is Ownable {
         usdc.transfer(msg.sender, returnAmount);
     }
 
+    // TODO: will make it enc later
     /**
      * @notice Adds an idHash to a depositor's deny list. If an address associated with the banned idHash attempts to
      * signal an intent on the user's deposit they will be denied.
@@ -468,6 +679,7 @@ contract HDFCRamp is Ownable {
         emit UserAddedToDenylist(denyingUser, _deniedUser);
     }
 
+    // TODO: will make it enc later
     /**
      * @notice Removes a idHash from a depositor's deny list.
      *
@@ -723,6 +935,16 @@ contract HDFCRamp is Ownable {
         emit IntentPruned(_intentHash, intent.deposit);
     }
 
+    function _encPruneIntent(EncryptedDeposit storage _deposit, bytes32 _intentHash) internal {
+        EncryptedIntent memory intent = encIntents[_intentHash];
+
+        delete globalAccount[accounts[intent.onRamper].idHash].currentIntentHash;
+        delete intents[_intentHash];
+        _deposit.intentHashes.removeStorage(_intentHash);
+
+        emit IntentPruned(_intentHash, intent.deposit);
+    }
+
     /**
      * @notice Removes a deposit if no outstanding intents AND no remaining deposits. Deleting a deposit deletes it from the
      * deposits mapping and removes tracking it in the user's accounts mapping.
@@ -753,6 +975,21 @@ contract HDFCRamp is Ownable {
         emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, onRampAmount, fee);
     }
 
+    function _encTransferFunds(bytes32 _intentHash, EncryptedIntent memory _intent) internal {
+        uint256 fee;
+        // if (sustainabilityFee != 0) {
+        //     fee = (_intent.amount * sustainabilityFee) / PRECISE_UNIT;
+        //     usdc.transfer(sustainabilityFeeRecipient, fee);
+        // }
+
+        // uint256 onRampAmount = _intent.amount - fee; // charging no fee to user :)
+        // usdc.transfer(_intent.to, onRampAmount);
+        eusdc.transfer(_intent.to, TFHE.asEuint64(_intent.amount));
+
+        // emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, onRampAmount, fee);
+        emit EncIntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, _intent.amount);
+    }
+
     /**
      * @notice Validate send payment email and check that it hasn't already been used (done on SendProcessor).
      * Additionally, we validate that the offRamperIdHash matches the one from the specified intent and that enough
@@ -772,7 +1009,7 @@ contract HDFCRamp is Ownable {
             uint256 timestamp,
             bytes32 offRamperIdHash,
             bytes32 onRamperIdHash,
-            bytes32 intentHash
+            bytes32 intentHash // TODO: fix this since use won't be selecting the intent hash we would need a run a matching engine to select the intent hash
         ) = sendProcessor.processProof(
             IHDFCSendProcessor.SendProof({
                 a: _a,
@@ -790,6 +1027,44 @@ contract HDFCRamp is Ownable {
         require(bytes32(_getUpiIdHash(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
         require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
         require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
+
+        return (intent, deposit, intentHash);
+    }
+
+    function _encVerifyOnRampProof(
+        uint256[2] memory _a,
+        uint256[2][2] memory _b,
+        uint256[2] memory _c,
+        uint256[15] memory _signals
+    )
+        internal
+        returns(EncryptedIntent memory, EncryptedDeposit storage, bytes32)
+    {
+
+        // TODO: for now this proof would be with plaintext amount itself
+        (
+            uint256 amount,
+            uint256 timestamp,
+            bytes32 offRamperIdHash,
+            bytes32 onRamperIdHash,
+            bytes32 intentHash // TODO: fix this since use won't be selecting the intent hash we would need a run a matching engine to select the intent hash
+        ) = sendProcessor.processProof(
+            IHDFCSendProcessor.SendProof({
+                a: _a,
+                b: _b,
+                c: _c,
+                signals: _signals
+            })
+        );
+
+        EncryptedIntent memory intent = encIntents[intentHash];
+        EncryptedDeposit storage deposit = encryptedDeposits[intent.deposit];
+
+        // require(intent.onRamper != address(0), "Intent does not exist");
+        // require(intent.intentTimestamp <= timestamp, "Intent was not created before send");
+        // require(bytes32(_getUpiIdHash(deposit.upiId)) == offRamperIdHash, "Offramper id does not match");
+        // require(accounts[intent.onRamper].idHash == onRamperIdHash, "Onramper id does not match");
+        // require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, "Payment was not enough");
 
         return (intent, deposit, intentHash);
     }
