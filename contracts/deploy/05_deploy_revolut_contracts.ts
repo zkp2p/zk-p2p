@@ -118,14 +118,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await setNewOwner(hre, revolutAccountRegistryContract, multiSig);
   await setNewOwner(
     hre,
-    await ethers.getContractAt("RevolutAccountRegistrationProcessor", accountRegistrationProcessor.address),
+    await ethers.getContractAt("RevolutSendProcessor", sendProcessor.address),
     multiSig
   );
   await setNewOwner(
     hre,
-    await ethers.getContractAt("RevolutSendProcessor", sendProcessor.address),
+    await ethers.getContractAt("RevolutAccountRegistrationProcessor", accountRegistrationProcessor.address),
     multiSig
   );
+
 
   console.log("Deploy finished...");
 };
