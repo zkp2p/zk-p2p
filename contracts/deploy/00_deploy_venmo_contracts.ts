@@ -53,6 +53,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     }
   });
   console.log("Poseidon3 deployed at", poseidon.address);
+  console.log("network: ", network);
 
   const ramp = await deploy("Ramp", {
     from: deployer,

@@ -1,0 +1,1830 @@
+{
+  "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20",
+          "name": "_usdc",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minDepositAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxOnRampAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_intentExpirationPeriod",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_onRampCooldownPeriod",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_sustainabilityFee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_sustainabilityFeeRecipient",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "depositor",
+          "type": "address"
+        }
+      ],
+      "name": "DepositClosed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "offRampId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "currencyId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "conversionRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositReceived",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "depositor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "DepositWithdrawn",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "intentExpirationPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "IntentExpirationPeriodSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "intentHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "onRamper",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "feeAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "IntentFulfilled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "intentHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        }
+      ],
+      "name": "IntentPruned",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "intentHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "depositId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "accountId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "IntentSignaled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxOnRampAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MaxOnRampAmountSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minDepositAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "MinDepositAmountSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "sendProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "NewSendProcessorSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "onRampCooldownPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "OnRampCooldownPeriodSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "feeRecipient",
+          "type": "address"
+        }
+      ],
+      "name": "SustainabilityFeeRecipientUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
+        }
+      ],
+      "name": "SustainabilityFeeUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "accountRegistry",
+      "outputs": [
+        {
+          "internalType": "contract IRevolutAccountRegistry",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_intentHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "cancelIntent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "depositCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposits",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "depositor",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "revolutTag",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "verifierSigningKey",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "notaryKeyHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "depositAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "receiveCurrencyId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "remainingDeposits",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "outstandingIntentAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "conversionRate",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getAccountDeposits",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "depositId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "depositorId",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "depositor",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "revolutTag",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "verifierSigningKey",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "notaryKeyHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "depositAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "receiveCurrencyId",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "remainingDeposits",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "outstandingIntentAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "conversionRate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32[]",
+                  "name": "intentHashes",
+                  "type": "bytes32[]"
+                }
+              ],
+              "internalType": "struct RevolutRamp.Deposit",
+              "name": "deposit",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "availableLiquidity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct RevolutRamp.DepositWithAvailableLiquidity[]",
+          "name": "accountDeposits",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_depositId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getDeposit",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "depositor",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "revolutTag",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "verifierSigningKey",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "notaryKeyHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "depositAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "receiveCurrencyId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "remainingDeposits",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "outstandingIntentAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "conversionRate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "intentHashes",
+              "type": "bytes32[]"
+            }
+          ],
+          "internalType": "struct RevolutRamp.Deposit",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_depositIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "getDepositFromIds",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "depositId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "depositorId",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "depositor",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "revolutTag",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "verifierSigningKey",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "notaryKeyHash",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "depositAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "receiveCurrencyId",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "remainingDeposits",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "outstandingIntentAmount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "conversionRate",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32[]",
+                  "name": "intentHashes",
+                  "type": "bytes32[]"
+                }
+              ],
+              "internalType": "struct RevolutRamp.Deposit",
+              "name": "deposit",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "availableLiquidity",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct RevolutRamp.DepositWithAvailableLiquidity[]",
+          "name": "depositArray",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getIdCurrentIntentHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getIdCurrentIntentHashAsUint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "_intentHashes",
+          "type": "bytes32[]"
+        }
+      ],
+      "name": "getIntentsWithOnRamperId",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "intentHash",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "onRamper",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "to",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "deposit",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "intentTimestamp",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct RevolutRamp.Intent",
+              "name": "intent",
+              "type": "tuple"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "onRamperId",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct RevolutRamp.IntentWithOnRamperId[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "getLastOnRampTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IRevolutAccountRegistry",
+          "name": "_accountRegistry",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IRevolutSendProcessor",
+          "name": "_sendProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "intentExpirationPeriod",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "intents",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "onRamper",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "deposit",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "intentTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isInitialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxOnRampAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minDepositAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_revolutTag",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_receiveCurrencyId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_depositAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_receiveAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_verifierSigningKey",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "_notaryKeyHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "offRamp",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "endpoint",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "host",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "transferId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "recipientId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "amount",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "currencyId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "timestamp",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "intentHash",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "notaryKeyHash",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IRevolutSendProcessor.SendData",
+          "name": "_sendData",
+          "type": "tuple"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_verifierSignature",
+          "type": "bytes"
+        }
+      ],
+      "name": "onRamp",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "onRampCooldownPeriod",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "_intentHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "releaseFundsToOnramper",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sendProcessor",
+      "outputs": [
+        {
+          "internalType": "contract IRevolutSendProcessor",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_intentExpirationPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "setIntentExpirationPeriod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_maxOnRampAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMaxOnRampAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_minDepositAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setMinDepositAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_onRampCooldownPeriod",
+          "type": "uint256"
+        }
+      ],
+      "name": "setOnRampCooldownPeriod",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IRevolutSendProcessor",
+          "name": "_sendProcessor",
+          "type": "address"
+        }
+      ],
+      "name": "setSendProcessor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_fee",
+          "type": "uint256"
+        }
+      ],
+      "name": "setSustainabilityFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_feeRecipient",
+          "type": "address"
+        }
+      ],
+      "name": "setSustainabilityFeeRecipient",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_depositId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        }
+      ],
+      "name": "signalIntent",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sustainabilityFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sustainabilityFeeRecipient",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "usdc",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "_depositIds",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "withdrawDeposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x54439cdd9747b1db00c7c77b2fbf69786b0b1c1704c2941b112e35612fbaa2c3",
+  "receipt": {
+    "to": null,
+    "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "contractAddress": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+    "transactionIndex": 0,
+    "gasUsed": "4010765",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000020000000000000100000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000400000000002000000000000000000020000000000000000000000000000000000008000000000000000000000000000000",
+    "blockHash": "0xb6617985118bd06a95197679b32b6be88bedcba5538d25ed362a1c5610af7b9e",
+    "transactionHash": "0x54439cdd9747b1db00c7c77b2fbf69786b0b1c1704c2941b112e35612fbaa2c3",
+    "logs": [
+      {
+        "transactionIndex": 0,
+        "blockNumber": 33,
+        "transactionHash": "0x54439cdd9747b1db00c7c77b2fbf69786b0b1c1704c2941b112e35612fbaa2c3",
+        "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0xb6617985118bd06a95197679b32b6be88bedcba5538d25ed362a1c5610af7b9e"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 33,
+        "transactionHash": "0x54439cdd9747b1db00c7c77b2fbf69786b0b1c1704c2941b112e35612fbaa2c3",
+        "address": "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+          "0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266"
+        ],
+        "data": "0x",
+        "logIndex": 1,
+        "blockHash": "0xb6617985118bd06a95197679b32b6be88bedcba5538d25ed362a1c5610af7b9e"
+      }
+    ],
+    "blockNumber": 33,
+    "cumulativeGasUsed": "4010765",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "10000000",
+    "999000000",
+    "180",
+    "180",
+    "1000000000000000",
+    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "653f1628715067b7cbdbe74d0cc4d947",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.24+commit.e11b9ed9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"_usdc\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_minDepositAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxOnRampAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_intentExpirationPeriod\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_onRampCooldownPeriod\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_sustainabilityFee\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_sustainabilityFeeRecipient\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"}],\"name\":\"DepositClosed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"offRampId\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"currencyId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"}],\"name\":\"DepositReceived\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"DepositWithdrawn\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"intentExpirationPeriod\",\"type\":\"uint256\"}],\"name\":\"IntentExpirationPeriodSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"intentHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"onRamper\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"feeAmount\",\"type\":\"uint256\"}],\"name\":\"IntentFulfilled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"intentHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"}],\"name\":\"IntentPruned\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"intentHash\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"accountId\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"timestamp\",\"type\":\"uint256\"}],\"name\":\"IntentSignaled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxOnRampAmount\",\"type\":\"uint256\"}],\"name\":\"MaxOnRampAmountSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minDepositAmount\",\"type\":\"uint256\"}],\"name\":\"MinDepositAmountSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sendProcessor\",\"type\":\"address\"}],\"name\":\"NewSendProcessorSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"onRampCooldownPeriod\",\"type\":\"uint256\"}],\"name\":\"OnRampCooldownPeriodSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"feeRecipient\",\"type\":\"address\"}],\"name\":\"SustainabilityFeeRecipientUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"}],\"name\":\"SustainabilityFeeUpdated\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"accountRegistry\",\"outputs\":[{\"internalType\":\"contract IRevolutAccountRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_intentHash\",\"type\":\"bytes32\"}],\"name\":\"cancelIntent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"depositCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"deposits\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"revolutTag\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"verifierSigningKey\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"notaryKeyHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"depositAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"receiveCurrencyId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"remainingDeposits\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"outstandingIntentAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getAccountDeposits\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"depositorId\",\"type\":\"bytes32\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"revolutTag\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"verifierSigningKey\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"notaryKeyHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"depositAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"receiveCurrencyId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"remainingDeposits\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"outstandingIntentAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"intentHashes\",\"type\":\"bytes32[]\"}],\"internalType\":\"struct RevolutRamp.Deposit\",\"name\":\"deposit\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"availableLiquidity\",\"type\":\"uint256\"}],\"internalType\":\"struct RevolutRamp.DepositWithAvailableLiquidity[]\",\"name\":\"accountDeposits\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_depositId\",\"type\":\"uint256\"}],\"name\":\"getDeposit\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"revolutTag\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"verifierSigningKey\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"notaryKeyHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"depositAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"receiveCurrencyId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"remainingDeposits\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"outstandingIntentAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"intentHashes\",\"type\":\"bytes32[]\"}],\"internalType\":\"struct RevolutRamp.Deposit\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"_depositIds\",\"type\":\"uint256[]\"}],\"name\":\"getDepositFromIds\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"depositId\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"depositorId\",\"type\":\"bytes32\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"depositor\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"revolutTag\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"verifierSigningKey\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"notaryKeyHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"depositAmount\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"receiveCurrencyId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"remainingDeposits\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"outstandingIntentAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"},{\"internalType\":\"bytes32[]\",\"name\":\"intentHashes\",\"type\":\"bytes32[]\"}],\"internalType\":\"struct RevolutRamp.Deposit\",\"name\":\"deposit\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"availableLiquidity\",\"type\":\"uint256\"}],\"internalType\":\"struct RevolutRamp.DepositWithAvailableLiquidity[]\",\"name\":\"depositArray\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getIdCurrentIntentHash\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getIdCurrentIntentHashAsUint\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"_intentHashes\",\"type\":\"bytes32[]\"}],\"name\":\"getIntentsWithOnRamperId\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"intentHash\",\"type\":\"bytes32\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"onRamper\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intentTimestamp\",\"type\":\"uint256\"}],\"internalType\":\"struct RevolutRamp.Intent\",\"name\":\"intent\",\"type\":\"tuple\"},{\"internalType\":\"bytes32\",\"name\":\"onRamperId\",\"type\":\"bytes32\"}],\"internalType\":\"struct RevolutRamp.IntentWithOnRamperId[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"getLastOnRampTimestamp\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IRevolutAccountRegistry\",\"name\":\"_accountRegistry\",\"type\":\"address\"},{\"internalType\":\"contract IRevolutSendProcessor\",\"name\":\"_sendProcessor\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"intentExpirationPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"intents\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"onRamper\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"deposit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intentTimestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isInitialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxOnRampAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minDepositAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_revolutTag\",\"type\":\"string\"},{\"internalType\":\"bytes32\",\"name\":\"_receiveCurrencyId\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"_depositAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_receiveAmount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_verifierSigningKey\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"_notaryKeyHash\",\"type\":\"bytes32\"}],\"name\":\"offRamp\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"endpoint\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"host\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"transferId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"recipientId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"amount\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"currencyId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"status\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"timestamp\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"intentHash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"notaryKeyHash\",\"type\":\"uint256\"}],\"internalType\":\"struct IRevolutSendProcessor.SendData\",\"name\":\"_sendData\",\"type\":\"tuple\"},{\"internalType\":\"bytes\",\"name\":\"_verifierSignature\",\"type\":\"bytes\"}],\"name\":\"onRamp\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"onRampCooldownPeriod\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"_intentHash\",\"type\":\"bytes32\"}],\"name\":\"releaseFundsToOnramper\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sendProcessor\",\"outputs\":[{\"internalType\":\"contract IRevolutSendProcessor\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_intentExpirationPeriod\",\"type\":\"uint256\"}],\"name\":\"setIntentExpirationPeriod\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_maxOnRampAmount\",\"type\":\"uint256\"}],\"name\":\"setMaxOnRampAmount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_minDepositAmount\",\"type\":\"uint256\"}],\"name\":\"setMinDepositAmount\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_onRampCooldownPeriod\",\"type\":\"uint256\"}],\"name\":\"setOnRampCooldownPeriod\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IRevolutSendProcessor\",\"name\":\"_sendProcessor\",\"type\":\"address\"}],\"name\":\"setSendProcessor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setSustainabilityFee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_feeRecipient\",\"type\":\"address\"}],\"name\":\"setSustainabilityFeeRecipient\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_depositId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"}],\"name\":\"signalIntent\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sustainabilityFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"sustainabilityFeeRecipient\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"usdc\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"_depositIds\",\"type\":\"uint256[]\"}],\"name\":\"withdrawDeposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"cancelIntent(bytes32)\":{\"params\":{\"_intentHash\":\"Hash of intent being cancelled\"}},\"initialize(address,address)\":{\"params\":{\"_accountRegistry\":\"Account Registry contract for Revolut\",\"_sendProcessor\":\"Send processor address\"}},\"offRamp(string,bytes32,uint256,uint256,address,bytes32)\":{\"params\":{\"_depositAmount\":\"The amount of USDC to off-ramp\",\"_notaryKeyHash\":\"Hash of the notary public key that is required to do notarization\",\"_receiveAmount\":\"The amount of USD to receive\",\"_receiveCurrencyId\":\"Id of the currency to be received off-chain\",\"_revolutTag\":\"Depositor's Revolut tag to receive payments\",\"_verifierSigningKey\":\"Public key of the verifier depositor wants to sign the TLS proof\"}},\"onRamp((string,string,string,string,string,string,string,string,uint256,uint256),bytes)\":{\"params\":{\"_sendData\":\"Struct containing unredacted data from API call to Revolut\",\"_verifierSignature\":\"Signature by verifier of the unredacted data\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"releaseFundsToOnramper(bytes32)\":{\"params\":{\"_intentHash\":\"Hash of intent to resolve by releasing the funds\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"setIntentExpirationPeriod(uint256)\":{\"params\":{\"_intentExpirationPeriod\":\"New intent expiration period\"}},\"setMaxOnRampAmount(uint256)\":{\"params\":{\"_maxOnRampAmount\":\"The new max on ramp amount\"}},\"setMinDepositAmount(uint256)\":{\"params\":{\"_minDepositAmount\":\"The new minimum deposit amount\"}},\"setOnRampCooldownPeriod(uint256)\":{\"params\":{\"_onRampCooldownPeriod\":\"New on-ramp cooldown period\"}},\"setSendProcessor(address)\":{\"params\":{\"_sendProcessor\":\"New send proccesor address\"}},\"setSustainabilityFee(uint256)\":{\"params\":{\"_fee\":\"The new sustainability fee in precise units (10**18, ie 10% = 1e17)\"}},\"setSustainabilityFeeRecipient(address)\":{\"params\":{\"_feeRecipient\":\"The new fee recipient address\"}},\"signalIntent(uint256,uint256,address)\":{\"params\":{\"_amount\":\"The amount of USDC the user wants to on-ramp\",\"_depositId\":\"The ID of the deposit the on-ramper intends to use for \",\"_to\":\"Address to forward funds to (can be same as onRamper)\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"withdrawDeposit(uint256[])\":{\"params\":{\"_depositIds\":\"Array of depositIds the depositor is attempting to withdraw\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"cancelIntent(bytes32)\":{\"notice\":\"Only callable by the originator of the intent. Cancels an outstanding intent thus allowing user to signal a new intent. Deposit state is updated to reflect the cancelled intent.\"},\"initialize(address,address)\":{\"notice\":\"Initialize Ramp with the addresses of the Processors\"},\"offRamp(string,bytes32,uint256,uint256,address,bytes32)\":{\"notice\":\"Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount of USDC.\"},\"onRamp((string,string,string,string,string,string,string,string,uint256,uint256),bytes)\":{\"notice\":\"Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated, intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.\"},\"releaseFundsToOnramper(bytes32)\":{\"notice\":\"Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and  deposit state is updated. USDC is transferred to the on-ramper.\"},\"setIntentExpirationPeriod(uint256)\":{\"notice\":\"GOVERNANCE ONLY: Updates the intent expiration period, after this period elapses an intent can be pruned to prevent locking up a depositor's funds.\"},\"setMaxOnRampAmount(uint256)\":{\"notice\":\"GOVERNANCE ONLY: Updates the max amount allowed to be on-ramped in each transaction. To on-ramp more than this amount a user must make multiple transactions.\"},\"setMinDepositAmount(uint256)\":{\"notice\":\"GOVERNANCE ONLY: Updates the minimum deposit amount a user can specify for off-ramping.\"},\"setOnRampCooldownPeriod(uint256)\":{\"notice\":\"GOVERNANCE ONLY: Updates the on-ramp cooldown period, once an on-ramp transaction is completed the user must wait this amount of time before they can signalIntent to on-ramp again.\"},\"setSendProcessor(address)\":{\"notice\":\"GOVERNANCE ONLY: Updates the send processor address used for validating and interpreting zk proofs.\"},\"setSustainabilityFee(uint256)\":{\"notice\":\"GOVERNANCE ONLY: Updates the sustainability fee. This fee is charged to on-rampers upon a successful on-ramp.\"},\"setSustainabilityFeeRecipient(address)\":{\"notice\":\"GOVERNANCE ONLY: Updates the recepient of sustainability fees.\"},\"signalIntent(uint256,uint256,address)\":{\"notice\":\"Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of address (tracked using accountId). Caller must not be on the depositor's deny list. If there are prunable intents then they will be deleted from the deposit to be able to maintain state hygiene.\"},\"withdrawDeposit(uint256[])\":{\"notice\":\"Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be returned. Deposit will be deleted as long as there are no more outstanding intents.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/ramps/revolut/RevolutRamp.sol\":\"RevolutRamp\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xba43b97fba0d32eb4254f6a5a297b39a19a247082a02d6e69349e071e2946218\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC20/IERC20.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `to`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address to, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `from` to `to` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(address from, address to, uint256 amount) external returns (bool);\\n}\\n\",\"keccak256\":\"0x287b55befed2961a7eabd7d7b1b2839cbca8a5b80ef8dcbb25ed3d4c2002c305\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"contracts/external/Bytes32ArrayUtils.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.17;\\n\\n/**\\n * @title Bytes32ArrayUtils\\n * @author ZKP2P\\n *\\n * Fork of Set Protocol's AddressArrayUtils library adapted for usage with bytes32 arrays.\\n */\\nlibrary Bytes32ArrayUtils {\\n\\n    uint256 constant internal MAX_INT = 2**256 - 1;\\n\\n    /**\\n     * Finds the index of the first occurrence of the given element.\\n     * @param A The input array to search\\n     * @param a The value to find\\n     * @return Returns (index and isIn) for the first occurrence starting from index 0\\n     */\\n    function indexOf(bytes32[] memory A, bytes32 a) internal pure returns (uint256, bool) {\\n        uint256 length = A.length;\\n        for (uint256 i = 0; i < length; i++) {\\n            if (A[i] == a) {\\n                return (i, true);\\n            }\\n        }\\n        return (MAX_INT, false);\\n    }\\n\\n    /**\\n    * Returns true if the value is present in the list. Uses indexOf internally.\\n    * @param A The input array to search\\n    * @param a The value to find\\n    * @return Returns isIn for the first occurrence starting from index 0\\n    */\\n    function contains(bytes32[] memory A, bytes32 a) internal pure returns (bool) {\\n        (, bool isIn) = indexOf(A, a);\\n        return isIn;\\n    }\\n\\n    /**\\n    * Returns true if there are 2 elements that are the same in an array\\n    * @param A The input array to search\\n    * @return Returns boolean for the first occurrence of a duplicate\\n    */\\n    function hasDuplicate(bytes32[] memory A) internal pure returns(bool) {\\n        require(A.length > 0, \\\"A is empty\\\");\\n\\n        for (uint256 i = 0; i < A.length - 1; i++) {\\n            bytes32 current = A[i];\\n            for (uint256 j = i + 1; j < A.length; j++) {\\n                if (current == A[j]) {\\n                    return true;\\n                }\\n            }\\n        }\\n        return false;\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     * @return Returns the array with the object removed.\\n     */\\n    function remove(bytes32[] memory A, bytes32 a)\\n        internal\\n        pure\\n        returns (bytes32[] memory)\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"bytes32 not in array.\\\");\\n        } else {\\n            (bytes32[] memory _A,) = pop(A, index);\\n            return _A;\\n        }\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     */\\n    function removeStorage(bytes32[] storage A, bytes32 a)\\n        internal\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"bytes32 not in array.\\\");\\n        } else {\\n            uint256 lastIndex = A.length - 1; // If the array would be empty, the previous line would throw, so no underflow here\\n            if (index != lastIndex) { A[index] = A[lastIndex]; }\\n            A.pop();\\n        }\\n    }\\n\\n    /**\\n    * Removes specified index from array\\n    * @param A The input array to search\\n    * @param index The index to remove\\n    * @return Returns the new array and the removed entry\\n    */\\n    function pop(bytes32[] memory A, uint256 index)\\n        internal\\n        pure\\n        returns (bytes32[] memory, bytes32)\\n    {\\n        uint256 length = A.length;\\n        require(index < A.length, \\\"Index must be < A length\\\");\\n        bytes32[] memory newBytes = new bytes32[](length - 1);\\n        for (uint256 i = 0; i < index; i++) {\\n            newBytes[i] = A[i];\\n        }\\n        for (uint256 j = index + 1; j < length; j++) {\\n            newBytes[j - 1] = A[j];\\n        }\\n        return (newBytes, A[index]);\\n    }\\n}\\n\",\"keccak256\":\"0x14d572deda126ff812eb5ab0eed33120e13cc568fd611a4a6bff652f3e8440a8\",\"license\":\"MIT\"},\"contracts/external/Uint256ArrayUtils.sol\":{\"content\":\"/*\\n    Copyright 2020 Set Labs Inc.\\n\\n    Licensed under the Apache License, Version 2.0 (the \\\"License\\\");\\n    you may not use this file except in compliance with the License.\\n    You may obtain a copy of the License at\\n\\n    http://www.apache.org/licenses/LICENSE-2.0\\n\\n    Unless required by applicable law or agreed to in writing, software\\n    distributed under the License is distributed on an \\\"AS IS\\\" BASIS,\\n    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n    See the License for the specific language governing permissions and\\n    limitations under the License.\\n\\n    SPDX-License-Identifier: Apache-2.0\\n*/\\n\\npragma solidity ^0.8.18;\\n\\n/**\\n * @title Uint256ArrayUtils\\n * @author Set Protocol\\n *\\n * Utility functions to handle Uint256 Arrays\\n */\\nlibrary Uint256ArrayUtils {\\n\\n    uint256 constant internal MAX_INT = 2**256 - 1;\\n\\n    /**\\n     * Finds the index of the first occurrence of the given element.\\n     * @param A The input array to search\\n     * @param a The value to find\\n     * @return Returns (index and isIn) for the first occurrence starting from index 0\\n     */\\n    function indexOf(uint256[] memory A, uint256 a) internal pure returns (uint256, bool) {\\n        uint256 length = A.length;\\n        for (uint256 i = 0; i < length; i++) {\\n            if (A[i] == a) {\\n                return (i, true);\\n            }\\n        }\\n        return (MAX_INT, false);\\n    }\\n\\n    /**\\n     * Returns the combination of the two arrays\\n     * @param A The first array\\n     * @param B The second array\\n     * @return Returns A extended by B\\n     */\\n    function extend(uint256[] memory A, uint256[] memory B) internal pure returns (uint256[] memory) {\\n        uint256 aLength = A.length;\\n        uint256 bLength = B.length;\\n        uint256[] memory newUints = new uint256[](aLength + bLength);\\n        for (uint256 i = 0; i < aLength; i++) {\\n            newUints[i] = A[i];\\n        }\\n        for (uint256 j = 0; j < bLength; j++) {\\n            newUints[aLength + j] = B[j];\\n        }\\n        return newUints;\\n    }\\n\\n    /**\\n     * @param A The input array to search\\n     * @param a The bytes32 to remove\\n     */\\n    function removeStorage(uint256[] storage A, uint256 a)\\n        internal\\n    {\\n        (uint256 index, bool isIn) = indexOf(A, a);\\n        if (!isIn) {\\n            revert(\\\"uint256 not in array.\\\");\\n        } else {\\n            uint256 lastIndex = A.length - 1; // If the array would be empty, the previous line would throw, so no underflow here\\n            if (index != lastIndex) { A[index] = A[lastIndex]; }\\n            A.pop();\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x102021415f8444ff563fc6d0082f39296f47c09ce73fb4cd642e700ac489eefe\",\"license\":\"Apache-2.0\"},\"contracts/ramps/revolut/RevolutRamp.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\nimport { IERC20 } from \\\"@openzeppelin/contracts/token/ERC20/IERC20.sol\\\";\\nimport { Ownable } from \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\nimport { Bytes32ArrayUtils } from \\\"../../external/Bytes32ArrayUtils.sol\\\";\\nimport { Uint256ArrayUtils } from \\\"../../external/Uint256ArrayUtils.sol\\\";\\n\\nimport { IRevolutAccountRegistry } from \\\"./interfaces/IRevolutAccountRegistry.sol\\\";\\nimport { IRevolutSendProcessor } from \\\"./interfaces/IRevolutSendProcessor.sol\\\";\\n\\npragma solidity ^0.8.18;\\n\\ncontract RevolutRamp is Ownable {\\n\\n    using Bytes32ArrayUtils for bytes32[];\\n    using Uint256ArrayUtils for uint256[];\\n\\n    /* ============ Events ============ */\\n    event DepositReceived(\\n        uint256 indexed depositId,\\n        bytes32 indexed offRampId,\\n        bytes32 indexed currencyId,\\n        uint256 amount,\\n        uint256 conversionRate\\n    );\\n    event IntentSignaled(\\n        bytes32 indexed intentHash,\\n        uint256 indexed depositId,\\n        bytes32 indexed accountId,\\n        address to,\\n        uint256 amount,\\n        uint256 timestamp\\n    );\\n\\n    event IntentPruned(\\n        bytes32 indexed intentHash,\\n        uint256 indexed depositId\\n    );\\n    event IntentFulfilled(\\n        bytes32 indexed intentHash,\\n        uint256 indexed depositId,\\n        address indexed onRamper,\\n        address to,\\n        uint256 amount,\\n        uint256 feeAmount\\n    );\\n    event DepositWithdrawn(\\n        uint256 indexed depositId,\\n        address indexed depositor,\\n        uint256 amount\\n    );\\n\\n    event DepositClosed(uint256 depositId, address depositor);\\n    event MinDepositAmountSet(uint256 minDepositAmount);\\n    event MaxOnRampAmountSet(uint256 maxOnRampAmount);\\n    event IntentExpirationPeriodSet(uint256 intentExpirationPeriod);\\n    event OnRampCooldownPeriodSet(uint256 onRampCooldownPeriod);\\n    event SustainabilityFeeUpdated(uint256 fee);\\n    event SustainabilityFeeRecipientUpdated(address feeRecipient);\\n    event NewSendProcessorSet(address sendProcessor);\\n\\n    /* ============ Structs ============ */\\n\\n    struct Deposit {\\n        address depositor;\\n        string revolutTag;\\n        address verifierSigningKey;         // Public key of the verifier depositor wants to sign the TLS proof\\n        bytes32 notaryKeyHash;              // Hash of notary's public key\\n        uint256 depositAmount;              // Amount of USDC deposited\\n        bytes32 receiveCurrencyId;          // Id of the currency to be received off-chain (bytes32(Revolut currency code))\\n        uint256 remainingDeposits;          // Amount of remaining deposited liquidity\\n        uint256 outstandingIntentAmount;    // Amount of outstanding intents (may include expired intents)\\n        uint256 conversionRate;             // Conversion required by off-ramper between USDC/USD\\n        bytes32[] intentHashes;             // Array of hashes of all open intents (may include some expired if not pruned)\\n    }\\n\\n    struct DepositWithAvailableLiquidity {\\n        uint256 depositId;                  // ID of the deposit\\n        bytes32 depositorId;                // Depositor's accountId, this ID is a hash of the user's original Rev Tag \\n        Deposit deposit;                    // Deposit struct\\n        uint256 availableLiquidity;         // Amount of liquidity available to signal intents (net of expired intents)\\n    }\\n\\n    struct Intent {\\n        address onRamper;                   // On-ramper's address\\n        address to;                         // Address to forward funds to (can be same as onRamper)\\n        uint256 deposit;                    // ID of the deposit the intent is signaling on\\n        uint256 amount;                     // Amount of USDC the on-ramper signals intent for on-chain\\n        uint256 intentTimestamp;            // Timestamp of when the intent was signaled\\n    }\\n\\n    struct IntentWithOnRamperId {\\n        bytes32 intentHash;                 // Intent hash\\n        Intent intent;                      // Intent struct\\n        bytes32 onRamperId;                 // onRamper's onRamperId, this ID is a hash of the user's original Rev Tag\\n    }\\n\\n    // A Global Account is defined as an account represented by one accountId. This is used to enforce limitations on actions across\\n    // all Ethereum addresses that are associated with that accountId. In this case we use it to enforce a cooldown period between on ramps,\\n    // restrict each Revolut account to one outstanding intent at a time, and to enforce deny lists.\\n    struct GlobalAccountInfo {\\n        bytes32 currentIntentHash;          // Hash of the current open intent (if exists)\\n        uint256 lastOnrampTimestamp;        // Timestamp of the last on-ramp transaction used to check if cooldown period elapsed\\n        uint256[] deposits;                 // Array of open account deposits\\n    }\\n\\n    /* ============ Modifiers ============ */\\n    modifier onlyRegisteredUser() {\\n        require(accountRegistry.isRegisteredUser(msg.sender), \\\"Caller must be registered user\\\");\\n        _;\\n    }\\n\\n    /* ============ Constants ============ */\\n    uint256 internal constant PRECISE_UNIT = 1e18;\\n    uint256 internal constant MAX_DEPOSITS = 5;       // An account can only have max 5 different deposit parameterizations to prevent locking funds\\n    uint256 constant CIRCOM_PRIME_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;\\n    uint256 constant MAX_SUSTAINABILITY_FEE = 5e16;   // 5% max sustainability fee\\n    \\n    /* ============ State Variables ============ */\\n    IERC20 public immutable usdc;                                   // USDC token contract\\n    IRevolutAccountRegistry public accountRegistry;                    // Account Registry contract for Revolut\\n    IRevolutSendProcessor public sendProcessor;                        // Address of send processor contract\\n\\n    bool public isInitialized;                                      // Indicates if contract has been initialized\\n\\n    mapping(bytes32 => GlobalAccountInfo) internal globalAccount;   // Mapping of onRamp ID to information used to enforce actions across Ethereum accounts\\n    mapping(uint256 => Deposit) public deposits;                    // Mapping of depositIds to deposit structs\\n    mapping(bytes32 => Intent) public intents;                      // Mapping of intentHashes to intent structs\\n\\n    uint256 public minDepositAmount;                                // Minimum amount of USDC that can be deposited\\n    uint256 public maxOnRampAmount;                                 // Maximum amount of USDC that can be on-ramped in a single transaction\\n    uint256 public onRampCooldownPeriod;                            // Time period that must elapse between completing an on-ramp and signaling a new intent\\n    uint256 public intentExpirationPeriod;                          // Time period after which an intent can be pruned from the system\\n    uint256 public sustainabilityFee;                               // Fee charged to on-rampers in preciseUnits (1e16 = 1%)\\n    address public sustainabilityFeeRecipient;                      // Address that receives the sustainability fee\\n\\n    uint256 public depositCounter;                                  // Counter for depositIds\\n\\n    /* ============ Constructor ============ */\\n    constructor(\\n        address _owner,\\n        IERC20 _usdc,\\n        uint256 _minDepositAmount,\\n        uint256 _maxOnRampAmount,\\n        uint256 _intentExpirationPeriod,\\n        uint256 _onRampCooldownPeriod,\\n        uint256 _sustainabilityFee,\\n        address _sustainabilityFeeRecipient\\n    )\\n        Ownable()\\n    {\\n        usdc = _usdc;\\n        minDepositAmount = _minDepositAmount;\\n        maxOnRampAmount = _maxOnRampAmount;\\n        intentExpirationPeriod = _intentExpirationPeriod;\\n        onRampCooldownPeriod = _onRampCooldownPeriod;\\n        sustainabilityFee = _sustainabilityFee;\\n        sustainabilityFeeRecipient = _sustainabilityFeeRecipient;\\n\\n        transferOwnership(_owner);\\n    }\\n\\n    /* ============ External Functions ============ */\\n\\n    /**\\n     * @notice Initialize Ramp with the addresses of the Processors\\n     *\\n     * @param _accountRegistry     Account Registry contract for Revolut\\n     * @param _sendProcessor       Send processor address\\n     */\\n    function initialize(\\n        IRevolutAccountRegistry _accountRegistry,\\n        IRevolutSendProcessor _sendProcessor\\n    )\\n        external\\n        onlyOwner\\n    {\\n        require(!isInitialized, \\\"Already initialized\\\");\\n\\n        accountRegistry = _accountRegistry;\\n        sendProcessor = _sendProcessor;\\n\\n        isInitialized = true;\\n    }\\n\\n    /**\\n     * @notice Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to\\n     * previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount\\n     * of USDC.\\n     *\\n     * @param _revolutTag           Depositor's Revolut tag to receive payments\\n     * @param _receiveCurrencyId    Id of the currency to be received off-chain\\n     * @param _depositAmount        The amount of USDC to off-ramp\\n     * @param _receiveAmount        The amount of USD to receive\\n     * @param _verifierSigningKey   Public key of the verifier depositor wants to sign the TLS proof\\n     * @param _notaryKeyHash        Hash of the notary public key that is required to do notarization\\n     */\\n    function offRamp(\\n        string calldata _revolutTag,\\n        bytes32 _receiveCurrencyId,\\n        uint256 _depositAmount,\\n        uint256 _receiveAmount,\\n        address _verifierSigningKey,\\n        bytes32 _notaryKeyHash\\n    )\\n        external\\n        onlyRegisteredUser\\n    {\\n        bytes32 offRamperId = accountRegistry.getAccountId(msg.sender);\\n        GlobalAccountInfo storage globalAccountInfo = globalAccount[offRamperId];\\n\\n        require(keccak256(abi.encode(_revolutTag)) == offRamperId, \\\"Revolut tag must match id\\\");\\n        require(globalAccountInfo.deposits.length < MAX_DEPOSITS, \\\"Maximum deposit amount reached\\\");\\n        require(_depositAmount >= minDepositAmount, \\\"Deposit amount must be greater than min deposit amount\\\");\\n        require(_receiveAmount > 0, \\\"Receive amount must be greater than 0\\\");\\n\\n        uint256 conversionRate = (_depositAmount * PRECISE_UNIT) / _receiveAmount;\\n        uint256 depositId = depositCounter++;\\n\\n        globalAccountInfo.deposits.push(depositId);\\n\\n        deposits[depositId] = Deposit({\\n            depositor: msg.sender,\\n            revolutTag: _revolutTag,\\n            receiveCurrencyId: _receiveCurrencyId,\\n            depositAmount: _depositAmount,\\n            remainingDeposits: _depositAmount,\\n            outstandingIntentAmount: 0,\\n            conversionRate: conversionRate,\\n            intentHashes: new bytes32[](0),\\n            verifierSigningKey: _verifierSigningKey,\\n            notaryKeyHash: _notaryKeyHash\\n        });\\n\\n        usdc.transferFrom(msg.sender, address(this), _depositAmount);\\n\\n        emit DepositReceived(depositId, offRamperId, _receiveCurrencyId, _depositAmount, conversionRate);\\n    }\\n\\n    /**\\n     * @notice Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain\\n     * in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of\\n     * address (tracked using accountId). Caller must not be on the depositor's deny list. If there are prunable intents then\\n     * they will be deleted from the deposit to be able to maintain state hygiene.\\n     *\\n     * @param _depositId    The ID of the deposit the on-ramper intends to use for \\n     * @param _amount       The amount of USDC the user wants to on-ramp\\n     * @param _to           Address to forward funds to (can be same as onRamper)\\n     */\\n    function signalIntent(uint256 _depositId, uint256 _amount, address _to) external onlyRegisteredUser {\\n        bytes32 onRamperId = accountRegistry.getAccountId(msg.sender);\\n        Deposit storage deposit = deposits[_depositId];\\n\\n        // Caller validity checks\\n        require(accountRegistry.isAllowedUser(deposit.depositor, onRamperId), \\\"Onramper on depositor's denylist\\\");\\n        require(\\n            globalAccount[onRamperId].lastOnrampTimestamp + onRampCooldownPeriod <= block.timestamp,\\n            \\\"On ramp cool down period not elapsed\\\"\\n        );\\n        require(globalAccount[onRamperId].currentIntentHash == bytes32(0), \\\"Intent still outstanding\\\");\\n        require(accountRegistry.getAccountId(deposit.depositor) != onRamperId, \\\"Sender cannot be the depositor\\\");\\n\\n        // Intent information checks\\n        require(deposit.depositor != address(0), \\\"Deposit does not exist\\\");\\n        require(_amount > 0, \\\"Signaled amount must be greater than 0\\\");\\n        require(_amount <= maxOnRampAmount, \\\"Signaled amount must be less than max on-ramp amount\\\");\\n        require(_to != address(0), \\\"Cannot send to zero address\\\");\\n\\n        bytes32 intentHash = _calculateIntentHash(onRamperId, _depositId);\\n\\n        if (deposit.remainingDeposits < _amount) {\\n            (\\n                bytes32[] memory prunableIntents,\\n                uint256 reclaimableAmount\\n            ) = _getPrunableIntents(_depositId);\\n\\n            require(deposit.remainingDeposits + reclaimableAmount >= _amount, \\\"Not enough liquidity\\\");\\n\\n            _pruneIntents(deposit, prunableIntents);\\n            deposit.remainingDeposits += reclaimableAmount;\\n            deposit.outstandingIntentAmount -= reclaimableAmount;\\n        }\\n\\n        intents[intentHash] = Intent({\\n            onRamper: msg.sender,\\n            to: _to,\\n            deposit: _depositId,\\n            amount: _amount,\\n            intentTimestamp: block.timestamp\\n        });\\n\\n        globalAccount[onRamperId].currentIntentHash = intentHash;\\n\\n        deposit.remainingDeposits -= _amount;\\n        deposit.outstandingIntentAmount += _amount;\\n        deposit.intentHashes.push(intentHash);\\n\\n        emit IntentSignaled(intentHash, _depositId, onRamperId, _to, _amount, block.timestamp);\\n    }\\n\\n    /**\\n     * @notice Only callable by the originator of the intent. Cancels an outstanding intent thus allowing user to signal a new\\n     * intent. Deposit state is updated to reflect the cancelled intent.\\n     *\\n     * @param _intentHash    Hash of intent being cancelled\\n     */\\n    function cancelIntent(bytes32 _intentHash) external {\\n        Intent memory intent = intents[_intentHash];\\n        \\n        require(intent.intentTimestamp != 0, \\\"Intent does not exist\\\");\\n        require(\\n            accountRegistry.getAccountId(intent.onRamper) == accountRegistry.getAccountId(msg.sender),\\n            \\\"Sender must be the on-ramper\\\"\\n        );\\n\\n        Deposit storage deposit = deposits[intent.deposit];\\n\\n        _pruneIntent(deposit, _intentHash);\\n\\n        deposit.remainingDeposits += intent.amount;\\n        deposit.outstandingIntentAmount -= intent.amount;\\n    }\\n\\n    /**\\n     * @notice Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated,\\n     * intent is removed, and deposit state is updated. USDC is transferred to the on-ramper.\\n     *\\n     * @param _sendData         Struct containing unredacted data from API call to Revolut\\n     * @param _verifierSignature  Signature by verifier of the unredacted data\\n     */\\n    function onRamp(\\n        IRevolutSendProcessor.SendData calldata _sendData,\\n        bytes calldata _verifierSignature\\n    )\\n        external\\n    {\\n        (\\n            Intent memory intent,\\n            Deposit storage deposit,\\n            bytes32 intentHash\\n        ) = _verifyOnRampProof(_sendData, _verifierSignature);\\n\\n        _pruneIntent(deposit, intentHash);\\n\\n        deposit.outstandingIntentAmount -= intent.amount;\\n        globalAccount[accountRegistry.getAccountId(intent.onRamper)].lastOnrampTimestamp = block.timestamp;\\n        _closeDepositIfNecessary(intent.deposit, deposit);\\n\\n        _transferFunds(intentHash, intent);\\n    }\\n\\n    /**\\n     * @notice Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement\\n     * between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and \\n     * deposit state is updated. USDC is transferred to the on-ramper.\\n     *\\n     * @param _intentHash        Hash of intent to resolve by releasing the funds\\n     */\\n    function releaseFundsToOnramper(bytes32 _intentHash) external {\\n        Intent memory intent = intents[_intentHash];\\n        Deposit storage deposit = deposits[intent.deposit];\\n\\n        require(intent.onRamper != address(0), \\\"Intent does not exist\\\");\\n        require(deposit.depositor == msg.sender, \\\"Caller must be the depositor\\\");\\n\\n        _pruneIntent(deposit, _intentHash);\\n\\n        deposit.outstandingIntentAmount -= intent.amount;\\n        globalAccount[accountRegistry.getAccountId(intent.onRamper)].lastOnrampTimestamp = block.timestamp;\\n        _closeDepositIfNecessary(intent.deposit, deposit);\\n\\n        _transferFunds(_intentHash, intent);\\n    }\\n\\n    /**\\n     * @notice Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all\\n     * remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be\\n     * returned. Deposit will be deleted as long as there are no more outstanding intents.\\n     *\\n     * @param _depositIds   Array of depositIds the depositor is attempting to withdraw\\n     */\\n    function withdrawDeposit(uint256[] memory _depositIds) external {\\n        uint256 returnAmount;\\n\\n        for (uint256 i = 0; i < _depositIds.length; ++i) {\\n            uint256 depositId = _depositIds[i];\\n            Deposit storage deposit = deposits[depositId];\\n\\n            require(deposit.depositor == msg.sender, \\\"Sender must be the depositor\\\");\\n\\n            (\\n                bytes32[] memory prunableIntents,\\n                uint256 reclaimableAmount\\n            ) = _getPrunableIntents(depositId);\\n\\n            _pruneIntents(deposit, prunableIntents);\\n\\n            returnAmount += deposit.remainingDeposits + reclaimableAmount;\\n            \\n            deposit.outstandingIntentAmount -= reclaimableAmount;\\n\\n            emit DepositWithdrawn(depositId, deposit.depositor, deposit.remainingDeposits + reclaimableAmount);\\n            \\n            delete deposit.remainingDeposits;\\n            _closeDepositIfNecessary(depositId, deposit);\\n        }\\n\\n        usdc.transfer(msg.sender, returnAmount);\\n    }\\n\\n    /* ============ Governance Functions ============ */\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the send processor address used for validating and interpreting zk proofs.\\n     *\\n     * @param _sendProcessor   New send proccesor address\\n     */\\n    function setSendProcessor(IRevolutSendProcessor _sendProcessor) external onlyOwner {\\n        sendProcessor = _sendProcessor;\\n        emit NewSendProcessorSet(address(_sendProcessor));\\n    }\\n\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the minimum deposit amount a user can specify for off-ramping.\\n     *\\n     * @param _minDepositAmount   The new minimum deposit amount\\n     */\\n    function setMinDepositAmount(uint256 _minDepositAmount) external onlyOwner {\\n        require(_minDepositAmount != 0, \\\"Minimum deposit cannot be zero\\\");\\n\\n        minDepositAmount = _minDepositAmount;\\n        emit MinDepositAmountSet(_minDepositAmount);\\n    }\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the sustainability fee. This fee is charged to on-rampers upon a successful on-ramp.\\n     *\\n     * @param _fee   The new sustainability fee in precise units (10**18, ie 10% = 1e17)\\n     */\\n    function setSustainabilityFee(uint256 _fee) external onlyOwner {\\n        require(_fee <= MAX_SUSTAINABILITY_FEE, \\\"Fee cannot be greater than max fee\\\");\\n\\n        sustainabilityFee = _fee;\\n        emit SustainabilityFeeUpdated(_fee);\\n    }\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the recepient of sustainability fees.\\n     *\\n     * @param _feeRecipient   The new fee recipient address\\n     */\\n    function setSustainabilityFeeRecipient(address _feeRecipient) external onlyOwner {\\n        require(_feeRecipient != address(0), \\\"Fee recipient cannot be zero address\\\");\\n\\n        sustainabilityFeeRecipient = _feeRecipient;\\n        emit SustainabilityFeeRecipientUpdated(_feeRecipient);\\n    }\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the max amount allowed to be on-ramped in each transaction. To on-ramp more than\\n     * this amount a user must make multiple transactions.\\n     *\\n     * @param _maxOnRampAmount   The new max on ramp amount\\n     */\\n    function setMaxOnRampAmount(uint256 _maxOnRampAmount) external onlyOwner {\\n        require(_maxOnRampAmount != 0, \\\"Max on ramp amount cannot be zero\\\");\\n\\n        maxOnRampAmount = _maxOnRampAmount;\\n        emit MaxOnRampAmountSet(_maxOnRampAmount);\\n    }\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the on-ramp cooldown period, once an on-ramp transaction is completed the user must wait this\\n     * amount of time before they can signalIntent to on-ramp again.\\n     *\\n     * @param _onRampCooldownPeriod   New on-ramp cooldown period\\n     */\\n    function setOnRampCooldownPeriod(uint256 _onRampCooldownPeriod) external onlyOwner {\\n        onRampCooldownPeriod = _onRampCooldownPeriod;\\n        emit OnRampCooldownPeriodSet(_onRampCooldownPeriod);\\n    }\\n\\n    /**\\n     * @notice GOVERNANCE ONLY: Updates the intent expiration period, after this period elapses an intent can be pruned to prevent\\n     * locking up a depositor's funds.\\n     *\\n     * @param _intentExpirationPeriod   New intent expiration period\\n     */\\n    function setIntentExpirationPeriod(uint256 _intentExpirationPeriod) external onlyOwner {\\n        require(_intentExpirationPeriod != 0, \\\"Max intent expiration period cannot be zero\\\");\\n\\n        intentExpirationPeriod = _intentExpirationPeriod;\\n        emit IntentExpirationPeriodSet(_intentExpirationPeriod);\\n    }\\n\\n\\n    /* ============ External View Functions ============ */\\n\\n    function getDeposit(uint256 _depositId) external view returns (Deposit memory) {\\n        return deposits[_depositId];\\n    }\\n\\n    function getIdCurrentIntentHash(address _account) public view returns (bytes32) {\\n        return globalAccount[accountRegistry.getAccountId(_account)].currentIntentHash;\\n    }\\n\\n    function getIdCurrentIntentHashAsUint(address _account) external view returns (uint256) {\\n        return uint256(getIdCurrentIntentHash(_account));\\n    }\\n\\n    function getLastOnRampTimestamp(address _account) external view returns (uint256) {\\n        return globalAccount[accountRegistry.getAccountId(_account)].lastOnrampTimestamp;\\n    }\\n\\n    function getIntentsWithOnRamperId(bytes32[] calldata _intentHashes) external view returns (IntentWithOnRamperId[] memory) {\\n        IntentWithOnRamperId[] memory intentsWithOnRamperId = new IntentWithOnRamperId[](_intentHashes.length);\\n\\n        for (uint256 i = 0; i < _intentHashes.length; ++i) {\\n            bytes32 intentHash = _intentHashes[i];\\n            Intent memory intent = intents[intentHash];\\n            intentsWithOnRamperId[i] = IntentWithOnRamperId({\\n                intentHash: _intentHashes[i],\\n                intent: intent,\\n                onRamperId: accountRegistry.getAccountId(intent.onRamper)\\n            });\\n        }\\n\\n        return intentsWithOnRamperId;\\n    }\\n\\n    function getAccountDeposits(address _account) external view returns (DepositWithAvailableLiquidity[] memory accountDeposits) {\\n        uint256[] memory accountDepositIds = globalAccount[accountRegistry.getAccountId(_account)].deposits;\\n        accountDeposits = new DepositWithAvailableLiquidity[](accountDepositIds.length);\\n        \\n        for (uint256 i = 0; i < accountDepositIds.length; ++i) {\\n            uint256 depositId = accountDepositIds[i];\\n            Deposit memory deposit = deposits[depositId];\\n            ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);\\n\\n            accountDeposits[i] = DepositWithAvailableLiquidity({\\n                depositId: depositId,\\n                depositorId: accountRegistry.getAccountId(deposit.depositor),\\n                deposit: deposit,\\n                availableLiquidity: deposit.remainingDeposits + reclaimableAmount\\n            });\\n        }\\n    }\\n\\n    function getDepositFromIds(uint256[] memory _depositIds) external view returns (DepositWithAvailableLiquidity[] memory depositArray) {\\n        depositArray = new DepositWithAvailableLiquidity[](_depositIds.length);\\n\\n        for (uint256 i = 0; i < _depositIds.length; ++i) {\\n            uint256 depositId = _depositIds[i];\\n            Deposit memory deposit = deposits[depositId];\\n            ( , uint256 reclaimableAmount) = _getPrunableIntents(depositId);\\n\\n            depositArray[i] = DepositWithAvailableLiquidity({\\n                depositId: depositId,\\n                depositorId: accountRegistry.getAccountId(deposit.depositor),\\n                deposit: deposit,\\n                availableLiquidity: deposit.remainingDeposits + reclaimableAmount\\n            });\\n        }\\n\\n        return depositArray;\\n    }\\n\\n    /* ============ Internal Functions ============ */\\n\\n    /**\\n     * @notice Calculates the intentHash of new intent\\n     */\\n    function _calculateIntentHash(\\n        bytes32 _accountId,\\n        uint256 _depositId\\n    )\\n        internal\\n        view\\n        virtual\\n        returns (bytes32 intentHash)\\n    {\\n        // Mod with circom prime field to make sure it fits in a 254-bit field\\n        uint256 intermediateHash = uint256(keccak256(abi.encodePacked(_accountId, _depositId, block.timestamp)));\\n        intentHash = bytes32(intermediateHash % CIRCOM_PRIME_FIELD);\\n    }\\n\\n    /**\\n     * @notice Cycles through all intents currently open on a deposit and sees if any have expired. If they have expired\\n     * the outstanding amounts are summed and returned alongside the intentHashes\\n     */\\n    function _getPrunableIntents(\\n        uint256 _depositId\\n    )\\n        internal\\n        view\\n        returns(bytes32[] memory prunableIntents, uint256 reclaimedAmount)\\n    {\\n        bytes32[] memory intentHashes = deposits[_depositId].intentHashes;\\n        prunableIntents = new bytes32[](intentHashes.length);\\n\\n        for (uint256 i = 0; i < intentHashes.length; ++i) {\\n            Intent memory intent = intents[intentHashes[i]];\\n            if (intent.intentTimestamp + intentExpirationPeriod < block.timestamp) {\\n                prunableIntents[i] = intentHashes[i];\\n                reclaimedAmount += intent.amount;\\n            }\\n        }\\n    }\\n\\n    function _pruneIntents(Deposit storage _deposit, bytes32[] memory _intents) internal {\\n        for (uint256 i = 0; i < _intents.length; ++i) {\\n            if (_intents[i] != bytes32(0)) {\\n                _pruneIntent(_deposit, _intents[i]);\\n            }\\n        }\\n    }\\n\\n    /**\\n     * @notice Pruning an intent involves deleting its state from the intents mapping, zeroing out the intendee's currentIntentHash in\\n     * their global account mapping, and deleting the intentHash from the deposit's intentHashes array.\\n     */\\n    function _pruneIntent(Deposit storage _deposit, bytes32 _intentHash) internal {\\n        Intent memory intent = intents[_intentHash];\\n\\n        delete globalAccount[accountRegistry.getAccountId(intent.onRamper)].currentIntentHash;\\n        delete intents[_intentHash];\\n        _deposit.intentHashes.removeStorage(_intentHash);\\n\\n        emit IntentPruned(_intentHash, intent.deposit);\\n    }\\n\\n    /**\\n     * @notice Removes a deposit if no outstanding intents AND no remaining deposits. Deleting a deposit deletes it from the\\n     * deposits mapping and removes tracking it in the user's accounts mapping.\\n     */\\n    function _closeDepositIfNecessary(uint256 _depositId, Deposit storage _deposit) internal {\\n        uint256 openDepositAmount = _deposit.outstandingIntentAmount + _deposit.remainingDeposits;\\n        if (openDepositAmount == 0) {\\n            globalAccount[accountRegistry.getAccountId(_deposit.depositor)].deposits.removeStorage(_depositId);\\n            emit DepositClosed(_depositId, _deposit.depositor);\\n            delete deposits[_depositId];\\n        }\\n    }\\n\\n    /**\\n     * @notice Checks if sustainability fee has been defined, if so sends fee to the fee recipient and intent amount minus fee\\n     * to the on-ramper. If sustainability fee is undefined then full intent amount is transferred to on-ramper.\\n     */\\n    function _transferFunds(bytes32 _intentHash, Intent memory _intent) internal {\\n        uint256 fee;\\n        if (sustainabilityFee != 0) {\\n            fee = (_intent.amount * sustainabilityFee) / PRECISE_UNIT;\\n            usdc.transfer(sustainabilityFeeRecipient, fee);\\n        }\\n\\n        uint256 onRampAmount = _intent.amount - fee;\\n        usdc.transfer(_intent.to, onRampAmount);\\n\\n        emit IntentFulfilled(_intentHash, _intent.deposit, _intent.onRamper, _intent.to, onRampAmount, fee);\\n    }\\n\\n    /**\\n     * @notice Validate send payment email and check that it hasn't already been used (done on SendProcessor).\\n     * Additionally, we validate that the offRamperId matches the one from the specified intent and that enough\\n     * was paid off-chain inclusive of the conversionRate.\\n     */\\n    function _verifyOnRampProof(\\n        IRevolutSendProcessor.SendData calldata _data,\\n        bytes calldata _verifierSignature\\n    )\\n        internal\\n        returns(Intent storage intent, Deposit storage deposit, bytes32 intentHash)\\n    {\\n        intentHash = bytes32(_data.intentHash);\\n        intent = intents[intentHash];\\n        require(intent.onRamper == msg.sender, \\\"Caller must be the on-ramper\\\");\\n\\n        deposit = deposits[intent.deposit];\\n\\n        (\\n            uint256 amount,\\n            uint256 timestamp,\\n            bytes32 offRamperId,\\n            bytes32 currencyId,\\n            bytes32 notaryKeyHash\\n        ) = sendProcessor.processProof(\\n            IRevolutSendProcessor.SendProof({\\n                public_values: _data,\\n                proof: _verifierSignature\\n            }),\\n            deposit.verifierSigningKey\\n        );\\n\\n        require(notaryKeyHash == deposit.notaryKeyHash, \\\"Incorrect notary used for notarization\\\");\\n        require(currencyId == deposit.receiveCurrencyId, \\\"Wrong currency sent\\\");\\n        require(intent.intentTimestamp <= timestamp, \\\"Intent was not created before send\\\");\\n        require(keccak256(abi.encodePacked(deposit.revolutTag)) == offRamperId, \\\"Offramper id does not match\\\");\\n        require(amount >= (intent.amount * PRECISE_UNIT) / deposit.conversionRate, \\\"Payment was not enough\\\");\\n    }\\n}\\n\",\"keccak256\":\"0x576f519d82b98521832a1ac34c2ec806e438a73ed562e67718920effcf9f9b2b\",\"license\":\"MIT\"},\"contracts/ramps/revolut/interfaces/IRevolutAccountRegistry.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.18;\\n\\ninterface IRevolutAccountRegistry {\\n    function getAccountId(address _account) external view returns (bytes32);\\n    function isRegisteredUser(address _account) external view returns (bool);\\n    function isAllowedUser(address _account, bytes32 _deniedUser) external view returns (bool);\\n}\\n\",\"keccak256\":\"0x5c58e8996f2d06f3d8bad7b3cef912c6370eecb2f3523ff8c1e15ec05dfb8e74\",\"license\":\"MIT\"},\"contracts/ramps/revolut/interfaces/IRevolutSendProcessor.sol\":{\"content\":\"//SPDX-License-Identifier: MIT\\n\\npragma solidity ^0.8.18;\\n\\ninterface IRevolutSendProcessor {\\n\\n    struct SendData {\\n        string endpoint;\\n        string host;\\n        string transferId;\\n        string recipientId;\\n        string amount;\\n        string currencyId;\\n        string status;\\n        string timestamp;\\n        uint256 intentHash;\\n        uint256 notaryKeyHash;\\n    }\\n\\n    struct SendProof {\\n        SendData public_values;\\n        bytes proof;\\n    }\\n\\n    function processProof(\\n        SendProof calldata _proof,\\n        address _verifierSigningKey\\n    )\\n        external\\n    returns(uint256, uint256, bytes32, bytes32, bytes32);\\n}\\n\",\"keccak256\":\"0x6bb42393fe8c5f9ac83fa56e126413638b4a0c110602eecaa70d2b41cf77f1a3\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a060405234801562000010575f80fd5b5060405162004700380380620047008339810160408190526200003391620001d9565b6200003e3362000095565b6001600160a01b038781166080526006879055600786905560098590556008849055600a839055600b80546001600160a01b0319169183169190911790556200008788620000e4565b50505050505050506200025a565b5f80546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b620000ee62000167565b6001600160a01b038116620001595760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084015b60405180910390fd5b620001648162000095565b50565b5f546001600160a01b03163314620001c25760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604482015260640162000150565b565b6001600160a01b038116811462000164575f80fd5b5f805f805f805f80610100898b031215620001f2575f80fd5b8851620001ff81620001c4565b60208a01519098506200021281620001c4565b8097505060408901519550606089015194506080890151935060a0890151925060c0890151915060e08901516200024981620001c4565b809150509295985092959890939650565b6080516144716200028f5f395f81816102db0152818161196301528181611e03015281816132db015261338601526144715ff3fe608060405234801561000f575f80fd5b506004361061021e575f3560e01c8063711347621161012a578063b3c0cfa4116100b4578063e279d96411610079578063e279d96414610535578063ecb3dc881461053e578063ecd618f014610547578063eea1d19714610567578063f2fde38b1461057a575f80fd5b8063b3c0cfa4146104d6578063b3fa4c01146104e9578063d089e11a146104fc578063d55f960d1461050f578063d9478d2014610522575f80fd5b80639021578a116100fa5780639021578a146103f75780639087beff146104725780639f9fb96814610485578063a1a954b7146104a5578063b02c43d0146104ae575f80fd5b806371134762146103b9578063715018a6146103cc57806371a28f69146103d45780638da5cb5b146103e7575f80fd5b80633e85fc25116101ab5780635081d9521161017b5780635081d952146103575780635d108a22146103775780635dd765151461038a578063645006ca1461039d57806366ec8419146103a6575f80fd5b80633e85fc25146103155780634298734914610328578063485cc9551461033b578063495223e71461034e575f80fd5b80632a80cda3116101f15780632a80cda314610279578063317dcc961461028c578063392e53cd1461029f5780633adba28a146102c35780633e413bee146102d6575f80fd5b80630f1ef98c14610222578063133de6cb1461024857806314ec32fa1461025d578063238c849414610270575b5f80fd5b61023561023036600461383a565b61058d565b6040519081526020015b60405180910390f35b61025b61025636600461383a565b610618565b005b61023561026b36600461383a565b610675565b610235600a5481565b61025b61028736600461385c565b6106fe565b61025b61029a36600461385c565b61078f565b6002546102b390600160a01b900460ff1681565b604051901515815260200161023f565b61025b6102d1366004613873565b6107cc565b6102fd7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b03909116815260200161023f565b61025b6103233660046138e6565b610ebb565b61025b61033636600461385c565b610fe3565b61025b610349366004613951565b611083565b61023560085481565b61036a61036536600461383a565b611116565b60405161023f9190613aab565b61025b610385366004613b37565b6114c9565b61025b61039836600461385c565b611a29565b61023560065481565b61025b6103b436600461385c565b611ac8565b61025b6103c7366004613c1b565b611c91565b61025b611e75565b61036a6103e2366004613c1b565b611e88565b5f546001600160a01b03166102fd565b61043f61040536600461385c565b60056020525f9081526040902080546001820154600283015460038401546004909401546001600160a01b03938416949390921692909185565b604080516001600160a01b039687168152959094166020860152928401919091526060830152608082015260a00161023f565b61025b61048036600461385c565b612169565b61049861049336600461385c565b6121ff565b60405161023f9190613cbb565b61023560095481565b6104c16104bc36600461385c565b61238a565b60405161023f99989796959493929190613ccd565b6102356104e436600461383a565b61246c565b61025b6104f736600461383a565b61247c565b6001546102fd906001600160a01b031681565b61025b61051d36600461385c565b612534565b600b546102fd906001600160a01b031681565b61023560075481565b610235600c5481565b61055a610555366004613d2a565b61274c565b60405161023f9190613d98565b6002546102fd906001600160a01b031681565b61025b61058836600461383a565b612932565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301525f9260039284929091169063e0b490f790602401602060405180830381865afa1580156105dc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906106009190613e27565b81526020019081526020015f20600101549050919050565b6106206129ab565b600280546001600160a01b0319166001600160a01b0383169081179091556040519081527f6e7665a41605edc0d70f4b991d652755f380754eb092d81ef9ab93664778d59e906020015b60405180910390a150565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301525f9260039284929091169063e0b490f790602401602060405180830381865afa1580156106c4573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906106e89190613e27565b815260208101919091526040015f205492915050565b6107066129ab565b805f0361075a5760405162461bcd60e51b815260206004820152601e60248201527f4d696e696d756d206465706f7369742063616e6e6f74206265207a65726f000060448201526064015b60405180910390fd5b60068190556040518181527fbdde72a6d8d8b42770c9899945ccdce09d0c5c794d3326cdb2d2cca61b12a9fc9060200161066a565b6107976129ab565b60088190556040518181527f88397975d177ce5e18abf3a5fdb8de773e80673d85eeb54f48cfaf688b3d2c3e9060200161066a565b600154604051631f5bdf5d60e01b81523360048201526001600160a01b0390911690631f5bdf5d90602401602060405180830381865afa158015610812573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906108369190613e3e565b6108825760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206d7573742062652072656769737465726564207573657200006044820152606401610751565b60015460405163e0b490f760e01b81523360048201525f916001600160a01b03169063e0b490f790602401602060405180830381865afa1580156108c8573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906108ec9190613e27565b5f8581526004602081905260409182902060015481549351630359b09b60e31b81526001600160a01b039485169381019390935260248301859052939450929190911690631acd84d890604401602060405180830381865afa158015610954573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906109789190613e3e565b6109c45760405162461bcd60e51b815260206004820181905260248201527f4f6e72616d706572206f6e206465706f7369746f7227732064656e796c6973746044820152606401610751565b6008545f8381526003602052604090206001015442916109e391613e71565b1115610a3d5760405162461bcd60e51b8152602060048201526024808201527f4f6e2072616d7020636f6f6c20646f776e20706572696f64206e6f7420656c616044820152631c1cd95960e21b6064820152608401610751565b5f8281526003602052604090205415610a985760405162461bcd60e51b815260206004820152601860248201527f496e74656e74207374696c6c206f75747374616e64696e6700000000000000006044820152606401610751565b600154815460405163e0b490f760e01b81526001600160a01b0391821660048201528492919091169063e0b490f790602401602060405180830381865afa158015610ae5573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610b099190613e27565b03610b565760405162461bcd60e51b815260206004820152601e60248201527f53656e6465722063616e6e6f7420626520746865206465706f7369746f7200006044820152606401610751565b80546001600160a01b0316610ba65760405162461bcd60e51b815260206004820152601660248201527511195c1bdcda5d08191bd95cc81b9bdd08195e1a5cdd60521b6044820152606401610751565b5f8411610c045760405162461bcd60e51b815260206004820152602660248201527f5369676e616c656420616d6f756e74206d75737420626520677265617465722060448201526507468616e20360d41b6064820152608401610751565b600754841115610c735760405162461bcd60e51b815260206004820152603460248201527f5369676e616c656420616d6f756e74206d757374206265206c657373207468616044820152731b881b585e081bdb8b5c985b5c08185b5bdd5b9d60621b6064820152608401610751565b6001600160a01b038316610cc95760405162461bcd60e51b815260206004820152601b60248201527f43616e6e6f742073656e6420746f207a65726f206164647265737300000000006044820152606401610751565b5f610cd48387612a04565b90508482600601541015610d86575f80610ced88612a6e565b9150915086818560060154610d029190613e71565b1015610d475760405162461bcd60e51b81526020600482015260146024820152734e6f7420656e6f756768206c697175696469747960601b6044820152606401610751565b610d518483612c06565b80846006015f828254610d649190613e71565b9250508190555080846007015f828254610d7e9190613e84565b909155505050505b6040805160a0810182523381526001600160a01b0386811660208084019182528385018b8152606085018b815242608087019081525f89815260058552888120975188549088166001600160a01b0319918216178955955160018901805491909816961695909517909555905160028601555160038086019190915592516004909401939093558681529152908120829055600683018054879290610e2c908490613e84565b9250508190555084826007015f828254610e469190613e71565b90915550506009820180546001810182555f91825260209182902001829055604080516001600160a01b038716815291820187905242908201528390879083907f1a1292e170a0f000ccf956afba79bee0f9ec1d81f3f901c1d4d11e1f336aae109060600160405180910390a4505050505050565b5f805f610ec9868686612c5e565b6040805160a08101825284546001600160a01b039081168252600186015416602082015260028501549181019190915260038401546060820152600490930154608084015291945092509050610f1f8282612fc7565b8260600151826007015f828254610f369190613e84565b9091555050600154835160405163e0b490f760e01b81526001600160a01b03918216600482015242926003925f9291169063e0b490f790602401602060405180830381865afa158015610f8b573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610faf9190613e27565b81526020019081526020015f2060010181905550610fd183604001518361310b565b610fdb8184613280565b505050505050565b610feb6129ab565b805f0361104e5760405162461bcd60e51b815260206004820152602b60248201527f4d617820696e74656e742065787069726174696f6e20706572696f642063616e60448201526a6e6f74206265207a65726f60a81b6064820152608401610751565b60098190556040518181527f55e3f6b95de9a0ec782f892e93fafe4e56be0696df204ddf8e0a40a9a713a8039060200161066a565b61108b6129ab565b600254600160a01b900460ff16156110db5760405162461bcd60e51b8152602060048201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152606401610751565b600180546001600160a01b039384166001600160a01b0319909116179055600280546001600160a81b0319169190921617600160a01b179055565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301526060925f926003928492169063e0b490f790602401602060405180830381865afa158015611166573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061118a9190613e27565b81526020019081526020015f206002018054806020026020016040519081016040528092919081815260200182805480156111e257602002820191905f5260205f20905b8154815260200190600101908083116111ce575b5050505050905080516001600160401b0381111561120257611202613bae565b60405190808252806020026020018201604052801561123b57816020015b6112286136ff565b8152602001906001900390816112205790505b5091505f5b81518110156114c2575f82828151811061125c5761125c613e97565b6020908102919091018101515f8181526004835260408082208151610140810190925280546001600160a01b0316825260018101805494965092949193909291840191906112a990613eab565b80601f01602080910402602001604051908101604052809291908181526020018280546112d590613eab565b80156113205780601f106112f757610100808354040283529160200191611320565b820191905f5260205f20905b81548152906001019060200180831161130357829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b03168152602001600382015481526020016004820154815260200160058201548152602001600682015481526020016007820154815260200160088201548152602001600982018054806020026020016040519081016040528092919081815260200182805480156113e057602002820191905f5260205f20905b8154815260200190600101908083116113cc575b50505050508152505090505f6113f583612a6e565b604080516080810182528681526001548651925163e0b490f760e01b81526001600160a01b039384166004820152939550909350602084019291169063e0b490f790602401602060405180830381865afa158015611455573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906114799190613e27565b8152602001838152602001828460c001516114949190613e71565b8152508685815181106114a9576114a9613e97565b6020026020010181905250505050806001019050611240565b5050919050565b600154604051631f5bdf5d60e01b81523360048201526001600160a01b0390911690631f5bdf5d90602401602060405180830381865afa15801561150f573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906115339190613e3e565b61157f5760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206d7573742062652072656769737465726564207573657200006044820152606401610751565b60015460405163e0b490f760e01b81523360048201525f916001600160a01b03169063e0b490f790602401602060405180830381865afa1580156115c5573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906115e99190613e27565b90505f60035f8381526020019081526020015f209050818989604051602001611613929190613edd565b60405160208183030381529060405280519060200120146116765760405162461bcd60e51b815260206004820152601960248201527f5265766f6c757420746167206d757374206d61746368206964000000000000006044820152606401610751565b60028101546005116116ca5760405162461bcd60e51b815260206004820152601e60248201527f4d6178696d756d206465706f73697420616d6f756e74207265616368656400006044820152606401610751565b60065486101561173b5760405162461bcd60e51b815260206004820152603660248201527f4465706f73697420616d6f756e74206d757374206265206772656174657220746044820152751a185b881b5a5b8819195c1bdcda5d08185b5bdd5b9d60521b6064820152608401610751565b5f85116117985760405162461bcd60e51b815260206004820152602560248201527f5265636569766520616d6f756e74206d75737420626520677265617465722074604482015264068616e20360dc1b6064820152608401610751565b5f856117ac670de0b6b3a764000089613f0b565b6117b69190613f36565b600c80549192505f9190826117ca83613f49565b909155506002840180546001810182555f9182526020918290200182905560408051610140810182523381528151601f8f018490048402810184019092528d8252929350828201918e908e90819084018382808284375f9201829052509385525050506001600160a01b03891660208084019190915260408084018a9052606084018d9052608084018e905260a084018d905260c0840183905260e084018790528051838152918201905261010090920191905090525f828152600460209081526040909120825181546001600160a01b0319166001600160a01b039091161781559082015160018201906118bf9082613fa5565b5060408201516002820180546001600160a01b0319166001600160a01b03909216919091179055606082015160038201556080820151600482015560a0820151600582015560c0820151600682015560e082015160078201556101008201516008820155610120820151805161193f916009840191602090910190613729565b50506040516323b872dd60e01b8152336004820152306024820152604481018a90527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031691506323b872dd906064016020604051808303815f875af11580156119b2573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906119d69190613e3e565b508884827f94c4b6f8843ea372709c89bc4a9ed85ef74ab10a68713ffdddc31716a76a6c958b86604051611a14929190918252602082015260400190565b60405180910390a45050505050505050505050565b611a316129ab565b66b1a2bc2ec50000811115611a935760405162461bcd60e51b815260206004820152602260248201527f4665652063616e6e6f742062652067726561746572207468616e206d61782066604482015261656560f01b6064820152608401610751565b600a8190556040518181527f44f48e1b871e6db1e909a7b253b054b7150a0b4ddf4d59b159c827d82e7256709060200161066a565b5f818152600560209081526040808320815160a08101835281546001600160a01b03908116825260018301548116828601526002830154828501819052600384015460608401526004938401546080840152865291909352922081519192909116611b6d5760405162461bcd60e51b8152602060048201526015602482015274125b9d195b9d08191bd95cc81b9bdd08195e1a5cdd605a1b6044820152606401610751565b80546001600160a01b03163314611bc65760405162461bcd60e51b815260206004820152601c60248201527f43616c6c6572206d75737420626520746865206465706f7369746f72000000006044820152606401610751565b611bd08184612fc7565b8160600151816007015f828254611be79190613e84565b9091555050600154825160405163e0b490f760e01b81526001600160a01b03918216600482015242926003925f9291169063e0b490f790602401602060405180830381865afa158015611c3c573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190611c609190613e27565b81526020019081526020015f2060010181905550611c8282604001518261310b565b611c8c8383613280565b505050565b5f805b8251811015611de6575f838281518110611cb057611cb0613e97565b6020908102919091018101515f818152600490925260409091208054919250906001600160a01b03163314611d275760405162461bcd60e51b815260206004820152601c60248201527f53656e646572206d75737420626520746865206465706f7369746f72000000006044820152606401610751565b5f80611d3284612a6e565b91509150611d408383612c06565b808360060154611d509190613e71565b611d5a9087613e71565b955080836007015f828254611d6f9190613e84565b9091555050825460068401546001600160a01b039091169085907fae1f357660ab777dcfd38c0ab6357834684ec26289ecfa07ec65dbf6c3c6431290611db6908590613e71565b60405190815260200160405180910390a35f6006840155611dd7848461310b565b50505050806001019050611c94565b5060405163a9059cbb60e01b8152336004820152602481018290527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169063a9059cbb906044016020604051808303815f875af1158015611e51573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190611c8c9190613e3e565b611e7d6129ab565b611e865f613455565b565b606081516001600160401b03811115611ea357611ea3613bae565b604051908082528060200260200182016040528015611edc57816020015b611ec96136ff565b815260200190600190039081611ec15790505b5090505f5b8251811015612163575f838281518110611efd57611efd613e97565b6020908102919091018101515f8181526004835260408082208151610140810190925280546001600160a01b031682526001810180549496509294919390929184019190611f4a90613eab565b80601f0160208091040260200160405190810160405280929190818152602001828054611f7690613eab565b8015611fc15780601f10611f9857610100808354040283529160200191611fc1565b820191905f5260205f20905b815481529060010190602001808311611fa457829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b031681526020016003820154815260200160048201548152602001600582015481526020016006820154815260200160078201548152602001600882015481526020016009820180548060200260200160405190810160405280929190818152602001828054801561208157602002820191905f5260205f20905b81548152602001906001019080831161206d575b50505050508152505090505f61209683612a6e565b604080516080810182528681526001548651925163e0b490f760e01b81526001600160a01b039384166004820152939550909350602084019291169063e0b490f790602401602060405180830381865afa1580156120f6573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061211a9190613e27565b8152602001838152602001828460c001516121359190613e71565b81525085858151811061214a5761214a613e97565b6020026020010181905250505050806001019050611ee1565b50919050565b6121716129ab565b805f036121ca5760405162461bcd60e51b815260206004820152602160248201527f4d6178206f6e2072616d7020616d6f756e742063616e6e6f74206265207a65726044820152606f60f81b6064820152608401610751565b60078190556040518181527fcab6b49ca21dd111cf4a55d507bbe89dd12d69216e28247060d4b2163ca41b399060200161066a565b612207613772565b5f828152600460209081526040918290208251610140810190935280546001600160a01b03168352600181018054919284019161224390613eab565b80601f016020809104026020016040519081016040528092919081815260200182805461226f90613eab565b80156122ba5780601f10612291576101008083540402835291602001916122ba565b820191905f5260205f20905b81548152906001019060200180831161229d57829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b031681526020016003820154815260200160048201548152602001600582015481526020016006820154815260200160078201548152602001600882015481526020016009820180548060200260200160405190810160405280929190818152602001828054801561237a57602002820191905f5260205f20905b815481526020019060010190808311612366575b5050505050815250509050919050565b60046020525f9081526040902080546001820180546001600160a01b0390921692916123b590613eab565b80601f01602080910402602001604051908101604052809291908181526020018280546123e190613eab565b801561242c5780601f106124035761010080835404028352916020019161242c565b820191905f5260205f20905b81548152906001019060200180831161240f57829003601f168201915b5050505060028301546003840154600485015460058601546006870154600788015460089098015496976001600160a01b03909516969395509193909289565b5f61247682610675565b92915050565b6124846129ab565b6001600160a01b0381166124e65760405162461bcd60e51b8152602060048201526024808201527f46656520726563697069656e742063616e6e6f74206265207a65726f206164646044820152637265737360e01b6064820152608401610751565b600b80546001600160a01b0319166001600160a01b0383169081179091556040519081527f594ad6ee98bfc0c73e6d15fd4e762502f359e05d26907b7fa1ff82eb5e99f6e49060200161066a565b5f818152600560209081526040808320815160a08101835281546001600160a01b039081168252600183015416938101939093526002810154918301919091526003810154606083015260040154608082018190529091036125d05760405162461bcd60e51b8152602060048201526015602482015274125b9d195b9d08191bd95cc81b9bdd08195e1a5cdd605a1b6044820152606401610751565b60015460405163e0b490f760e01b81523360048201526001600160a01b039091169063e0b490f790602401602060405180830381865afa158015612616573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061263a9190613e27565b600154825160405163e0b490f760e01b81526001600160a01b03918216600482015291169063e0b490f790602401602060405180830381865afa158015612683573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906126a79190613e27565b146126f45760405162461bcd60e51b815260206004820152601c60248201527f53656e646572206d75737420626520746865206f6e2d72616d706572000000006044820152606401610751565b6040808201515f90815260046020522061270e8184612fc7565b8160600151816006015f8282546127259190613e71565b909155505060608201516007820180545f90612742908490613e84565b9091555050505050565b60605f826001600160401b0381111561276757612767613bae565b6040519080825280602002602001820160405280156127df57816020015b6127cc60408051606080820183525f808352835160a08101855281815260208181018390529481018290529182018190526080820152909182019081525f60209091015290565b8152602001906001900390816127855790505b5090505f5b8381101561292a575f8585838181106127ff576127ff613e97565b602090810292909201355f81815260058452604090819020815160a08101835281546001600160a01b0390811682526001830154169581019590955260028101548583015260038101546060808701919091526004909101546080860152815190810190915290935090508088888681811061287d5761287d613e97565b60209081029290920135835250810183905260015483516040805163e0b490f760e01b81526001600160a01b03928316600482015293019291169063e0b490f790602401602060405180830381865afa1580156128dc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906129009190613e27565b81525084848151811061291557612915613e97565b602090810291909101015250506001016127e4565b509392505050565b61293a6129ab565b6001600160a01b03811661299f5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610751565b6129a881613455565b50565b5f546001600160a01b03163314611e865760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610751565b60408051602081018490529081018290524260608201525f90819060800160408051601f1981840301815291905280516020909101209050612a667f30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f000000182614060565b949350505050565b5f8181526004602090815260408083206009018054825181850281018501909352808352606094938493929190830182828015612ac857602002820191905f5260205f20905b815481526020019060010190808311612ab4575b5050505050905080516001600160401b03811115612ae857612ae8613bae565b604051908082528060200260200182016040528015612b11578160200160208202803683370190505b5092505f5b8151811015612bff575f60055f848481518110612b3557612b35613e97565b60209081029190910181015182528181019290925260409081015f20815160a08101835281546001600160a01b039081168252600183015416938101939093526002810154918301919091526003810154606083015260040154608082018190526009549192504291612ba791613e71565b1015612bf657828281518110612bbf57612bbf613e97565b6020026020010151858381518110612bd957612bd9613e97565b60209081029190910101526060810151612bf39085613e71565b93505b50600101612b16565b5050915091565b5f5b8151811015611c8c575f801b828281518110612c2657612c26613e97565b602002602001015114612c5657612c5683838381518110612c4957612c49613e97565b6020026020010151612fc7565b600101612c08565b6101008301355f81815260056020526040812080549092906001600160a01b03163314612ccd5760405162461bcd60e51b815260206004820152601c60248201527f43616c6c6572206d75737420626520746865206f6e2d72616d706572000000006044820152606401610751565b6002808401545f9081526004602052604080822092548151808301909252929450909182918291829182916001600160a01b031690630f2d076d9080612d128f6140de565b81526020018d8d8080601f0160208091040260200160405190810160405280939291908181526020018383808284375f92019190915250505091525060028a01546040516001600160e01b031960e085901b168152612d7e92916001600160a01b031690600401614236565b60a0604051808303815f875af1158015612d9a573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190612dbe9190614379565b9450945094509450945086600301548114612e2a5760405162461bcd60e51b815260206004820152602660248201527f496e636f7272656374206e6f74617279207573656420666f72206e6f746172696044820152653d30ba34b7b760d11b6064820152608401610751565b86600501548214612e735760405162461bcd60e51b815260206004820152601360248201527215dc9bdb99c818dd5c9c995b98de481cd95b9d606a1b6044820152606401610751565b8388600401541115612ed25760405162461bcd60e51b815260206004820152602260248201527f496e74656e7420776173206e6f742063726561746564206265666f72652073656044820152611b9960f21b6064820152608401610751565b8287600101604051602001612ee791906143b5565b6040516020818303038152906040528051906020012014612f4a5760405162461bcd60e51b815260206004820152601b60248201527f4f666672616d70657220696420646f6573206e6f74206d6174636800000000006044820152606401610751565b8660080154670de0b6b3a76400008960030154612f679190613f0b565b612f719190613f36565b851015612fb95760405162461bcd60e51b81526020600482015260166024820152750a0c2f2dacadce840eec2e640dcdee840cadcdeeaced60531b6044820152606401610751565b505050505093509350939050565b5f818152600560209081526040808320815160a08101835281546001600160a01b03908116808352600180850154831696840196909652600284015483860152600380850154606085015260049485015460808501529554945163e0b490f760e01b815293840152909492169063e0b490f790602401602060405180830381865afa158015613058573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061307c9190613e27565b815260208082019290925260409081015f9081208190558481526005909252812080546001600160a01b0319908116825560018201805490911690556002810182905560038101829055600401556130d760098401836134a4565b604080820151905183907fe8a865b4bab023c399cbd1f2cdd0df2199beb6e5012a4bd2d7691cf7e4199d5a905f90a3505050565b5f816006015482600701546131209190613e71565b9050805f03611c8c57600154825460405163e0b490f760e01b81526001600160a01b0391821660048201526131c19286926003925f92919091169063e0b490f790602401602060405180830381865afa15801561317f573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906131a39190613e27565b81526020019081526020015f206002016135c290919063ffffffff16565b8154604080518581526001600160a01b0390921660208301527f8ac07cc6e38c6222dd0309c80353c1962354bacf222b825d7401cc80e93ff3cc910160405180910390a15f83815260046020526040812080546001600160a01b03191681559061322e60018301826137c4565b6002820180546001600160a01b03191690555f6003830181905560048301819055600583018190556006830181905560078301819055600883018190556132799060098401906137fb565b5050505050565b5f600a545f1461334757670de0b6b3a7640000600a5483606001516132a59190613f0b565b6132af9190613f36565b600b5460405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390529192507f0000000000000000000000000000000000000000000000000000000000000000169063a9059cbb906044016020604051808303815f875af1158015613321573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906133459190613e3e565b505b5f8183606001516133589190613e84565b602084015160405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390529192507f0000000000000000000000000000000000000000000000000000000000000000169063a9059cbb906044016020604051808303815f875af11580156133cc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906133f09190613e3e565b50825160408085015160208087015183516001600160a01b03918216815291820186905292810186905291909216919086907ffa03438194e61c243c6bb5349f1e1dc674431b86f119b5e3b2b327bc43446bce9060600160405180910390a450505050565b5f80546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b5f806134fd848054806020026020016040519081016040528092919081815260200182805480156134f257602002820191905f5260205f20905b8154815260200190600101908083116134de575b505050505084613664565b91509150806135465760405162461bcd60e51b8152602060048201526015602482015274313cba32b99999103737ba1034b71030b93930bc9760591b6044820152606401610751565b83545f9061355690600190613e84565b90508083146135985784818154811061357157613571613e97565b905f5260205f20015485848154811061358c5761358c613e97565b5f918252602090912001555b848054806135a8576135a8614427565b600190038181905f5260205f20015f905590555050505050565b5f8061361b8480548060200260200160405190810160405280929190818152602001828054801561361057602002820191905f5260205f20905b8154815260200190600101908083116135fc575b5050505050846136ba565b91509150806135465760405162461bcd60e51b81526020600482015260156024820152743ab4b73a191a9b103737ba1034b71030b93930bc9760591b6044820152606401610751565b81515f908190815b818110156136a9578486828151811061368757613687613e97565b6020026020010151036136a1579250600191506136b39050565b60010161366c565b505f195f92509250505b9250929050565b81515f908190815b818110156136a957848682815181106136dd576136dd613e97565b6020026020010151036136f7579250600191506136b39050565b6001016136c2565b604080516080810182525f808252602082015290810161371d613772565b81526020015f81525090565b828054828255905f5260205f20908101928215613762579160200282015b82811115613762578251825591602001919060010190613747565b5061376e929150613812565b5090565b60408051610140810182525f8082526060602083018190529282018190528282018190526080820181905260a0820181905260c0820181905260e0820181905261010082015261012081019190915290565b5080546137d090613eab565b5f825580601f106137df575050565b601f0160209004905f5260205f20908101906129a89190613812565b5080545f8255905f5260205f20908101906129a891905b5b8082111561376e575f8155600101613813565b6001600160a01b03811681146129a8575f80fd5b5f6020828403121561384a575f80fd5b813561385581613826565b9392505050565b5f6020828403121561386c575f80fd5b5035919050565b5f805f60608486031215613885575f80fd5b8335925060208401359150604084013561389e81613826565b809150509250925092565b5f8083601f8401126138b9575f80fd5b5081356001600160401b038111156138cf575f80fd5b6020830191508360208285010111156136b3575f80fd5b5f805f604084860312156138f8575f80fd5b83356001600160401b038082111561390e575f80fd5b908501906101408288031215613922575f80fd5b90935060208501359080821115613937575f80fd5b50613944868287016138a9565b9497909650939450505050565b5f8060408385031215613962575f80fd5b823561396d81613826565b9150602083013561397d81613826565b809150509250929050565b5f81518084525f5b818110156139ac57602081850181015186830182015201613990565b505f602082860101526020601f19601f83011685010191505092915050565b5f815180845260208085019450602084015f5b838110156139fa578151875295820195908201906001016139de565b509495945050505050565b80516001600160a01b031682525f6101406020830151816020860152613a2d82860182613988565b9150506040830151613a4a60408601826001600160a01b03169052565b50606083015160608501526080830151608085015260a083015160a085015260c083015160c085015260e083015160e08501526101008084015181860152506101208084015185830382870152613aa183826139cb565b9695505050505050565b5f60208083018184528085518083526040925060408601915060408160051b8701018488015f5b83811015613b2957603f1989840301855281516080815185528882015189860152878201518189870152613b0882870182613a05565b60609384015196909301959095525094870194925090860190600101613ad2565b509098975050505050505050565b5f805f805f805f60c0888a031215613b4d575f80fd5b87356001600160401b03811115613b62575f80fd5b613b6e8a828b016138a9565b9098509650506020880135945060408801359350606088013592506080880135613b9781613826565b8092505060a0880135905092959891949750929550565b634e487b7160e01b5f52604160045260245ffd5b60405161014081016001600160401b0381118282101715613be557613be5613bae565b60405290565b604051601f8201601f191681016001600160401b0381118282101715613c1357613c13613bae565b604052919050565b5f6020808385031215613c2c575f80fd5b82356001600160401b0380821115613c42575f80fd5b818501915085601f830112613c55575f80fd5b813581811115613c6757613c67613bae565b8060051b9150613c78848301613beb565b8181529183018401918481019088841115613c91575f80fd5b938501935b83851015613caf57843582529385019390850190613c96565b98975050505050505050565b602081525f6138556020830184613a05565b6001600160a01b038a81168252610120602083018190525f91613cf28483018d613988565b9a16604084015250506060810196909652608086019490945260a085019290925260c084015260e08301526101009091015292915050565b5f8060208385031215613d3b575f80fd5b82356001600160401b0380821115613d51575f80fd5b818501915085601f830112613d64575f80fd5b813581811115613d72575f80fd5b8660208260051b8501011115613d86575f80fd5b60209290920196919550909350505050565b602080825282518282018190525f919060409081850190868401855b82811015613e1a578151805185528681015180516001600160a01b039081168988015281890151168787015286810151606080880191909152810151608080880191909152015160a086015285015160c085015260e09093019290850190600101613db4565b5091979650505050505050565b5f60208284031215613e37575f80fd5b5051919050565b5f60208284031215613e4e575f80fd5b81518015158114613855575f80fd5b634e487b7160e01b5f52601160045260245ffd5b8082018082111561247657612476613e5d565b8181038181111561247657612476613e5d565b634e487b7160e01b5f52603260045260245ffd5b600181811c90821680613ebf57607f821691505b60208210810361216357634e487b7160e01b5f52602260045260245ffd5b60208152816020820152818360408301375f818301604090810191909152601f909201601f19160101919050565b808202811582820484141761247657612476613e5d565b634e487b7160e01b5f52601260045260245ffd5b5f82613f4457613f44613f22565b500490565b5f60018201613f5a57613f5a613e5d565b5060010190565b601f821115611c8c57805f5260205f20601f840160051c81016020851015613f865750805b601f840160051c820191505b81811015613279575f8155600101613f92565b81516001600160401b03811115613fbe57613fbe613bae565b613fd281613fcc8454613eab565b84613f61565b602080601f831160018114614005575f8415613fee5750858301515b5f19600386901b1c1916600185901b178555610fdb565b5f85815260208120601f198616915b8281101561403357888601518255948401946001909101908401614014565b508582101561405057878501515f19600388901b60f8161c191681555b5050505050600190811b01905550565b5f8261406e5761406e613f22565b500690565b5f82601f830112614082575f80fd5b81356001600160401b0381111561409b5761409b613bae565b6140ae601f8201601f1916602001613beb565b8181528460208386010111156140c2575f80fd5b816020850160208301375f918101602001919091529392505050565b5f61014082360312156140ef575f80fd5b6140f7613bc2565b82356001600160401b038082111561410d575f80fd5b61411936838701614073565b8352602085013591508082111561412e575f80fd5b61413a36838701614073565b60208401526040850135915080821115614152575f80fd5b61415e36838701614073565b60408401526060850135915080821115614176575f80fd5b61418236838701614073565b6060840152608085013591508082111561419a575f80fd5b6141a636838701614073565b608084015260a08501359150808211156141be575f80fd5b6141ca36838701614073565b60a084015260c08501359150808211156141e2575f80fd5b6141ee36838701614073565b60c084015260e0850135915080821115614206575f80fd5b5061421336828601614073565b60e083015250610100838101359082015261012092830135928101929092525090565b604081525f8351604080840152805161014080608086015261425c6101c0860183613988565b91506020830151607f19808785030160a088015261427a8483613988565b935060408501519150808785030160c08801526142978483613988565b935060608501519150808785030160e08801526142b48483613988565b9350608085015191506101008188860301818901526142d38584613988565b945060a086015192506101208289870301818a01526142f28685613988565b955060c087015193508289870301858a015261430e8685613988565b955060e0870151945082898703016101608a015261432c8686613988565b918701516101808a0152909501516101a0880152505050506020850151838203603f19016060850152906143608183613988565b9250505061385560208301846001600160a01b03169052565b5f805f805f60a0868803121561438d575f80fd5b5050835160208501516040860151606087015160809097015192989197509594509092509050565b5f8083546143c281613eab565b600182811680156143da57600181146143ef5761441b565b60ff198416875282151583028701945061441b565b875f526020805f205f5b858110156144125781548a8201529084019082016143f9565b50505082870194505b50929695505050505050565b634e487b7160e01b5f52603160045260245ffdfea26469706673582212203b4618ffb55f9c3d047e17866b0c48ac613e07ed4eb162c19d74f773ce21207764736f6c63430008180033",
+  "deployedBytecode": "0x608060405234801561000f575f80fd5b506004361061021e575f3560e01c8063711347621161012a578063b3c0cfa4116100b4578063e279d96411610079578063e279d96414610535578063ecb3dc881461053e578063ecd618f014610547578063eea1d19714610567578063f2fde38b1461057a575f80fd5b8063b3c0cfa4146104d6578063b3fa4c01146104e9578063d089e11a146104fc578063d55f960d1461050f578063d9478d2014610522575f80fd5b80639021578a116100fa5780639021578a146103f75780639087beff146104725780639f9fb96814610485578063a1a954b7146104a5578063b02c43d0146104ae575f80fd5b806371134762146103b9578063715018a6146103cc57806371a28f69146103d45780638da5cb5b146103e7575f80fd5b80633e85fc25116101ab5780635081d9521161017b5780635081d952146103575780635d108a22146103775780635dd765151461038a578063645006ca1461039d57806366ec8419146103a6575f80fd5b80633e85fc25146103155780634298734914610328578063485cc9551461033b578063495223e71461034e575f80fd5b80632a80cda3116101f15780632a80cda314610279578063317dcc961461028c578063392e53cd1461029f5780633adba28a146102c35780633e413bee146102d6575f80fd5b80630f1ef98c14610222578063133de6cb1461024857806314ec32fa1461025d578063238c849414610270575b5f80fd5b61023561023036600461383a565b61058d565b6040519081526020015b60405180910390f35b61025b61025636600461383a565b610618565b005b61023561026b36600461383a565b610675565b610235600a5481565b61025b61028736600461385c565b6106fe565b61025b61029a36600461385c565b61078f565b6002546102b390600160a01b900460ff1681565b604051901515815260200161023f565b61025b6102d1366004613873565b6107cc565b6102fd7f000000000000000000000000000000000000000000000000000000000000000081565b6040516001600160a01b03909116815260200161023f565b61025b6103233660046138e6565b610ebb565b61025b61033636600461385c565b610fe3565b61025b610349366004613951565b611083565b61023560085481565b61036a61036536600461383a565b611116565b60405161023f9190613aab565b61025b610385366004613b37565b6114c9565b61025b61039836600461385c565b611a29565b61023560065481565b61025b6103b436600461385c565b611ac8565b61025b6103c7366004613c1b565b611c91565b61025b611e75565b61036a6103e2366004613c1b565b611e88565b5f546001600160a01b03166102fd565b61043f61040536600461385c565b60056020525f9081526040902080546001820154600283015460038401546004909401546001600160a01b03938416949390921692909185565b604080516001600160a01b039687168152959094166020860152928401919091526060830152608082015260a00161023f565b61025b61048036600461385c565b612169565b61049861049336600461385c565b6121ff565b60405161023f9190613cbb565b61023560095481565b6104c16104bc36600461385c565b61238a565b60405161023f99989796959493929190613ccd565b6102356104e436600461383a565b61246c565b61025b6104f736600461383a565b61247c565b6001546102fd906001600160a01b031681565b61025b61051d36600461385c565b612534565b600b546102fd906001600160a01b031681565b61023560075481565b610235600c5481565b61055a610555366004613d2a565b61274c565b60405161023f9190613d98565b6002546102fd906001600160a01b031681565b61025b61058836600461383a565b612932565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301525f9260039284929091169063e0b490f790602401602060405180830381865afa1580156105dc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906106009190613e27565b81526020019081526020015f20600101549050919050565b6106206129ab565b600280546001600160a01b0319166001600160a01b0383169081179091556040519081527f6e7665a41605edc0d70f4b991d652755f380754eb092d81ef9ab93664778d59e906020015b60405180910390a150565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301525f9260039284929091169063e0b490f790602401602060405180830381865afa1580156106c4573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906106e89190613e27565b815260208101919091526040015f205492915050565b6107066129ab565b805f0361075a5760405162461bcd60e51b815260206004820152601e60248201527f4d696e696d756d206465706f7369742063616e6e6f74206265207a65726f000060448201526064015b60405180910390fd5b60068190556040518181527fbdde72a6d8d8b42770c9899945ccdce09d0c5c794d3326cdb2d2cca61b12a9fc9060200161066a565b6107976129ab565b60088190556040518181527f88397975d177ce5e18abf3a5fdb8de773e80673d85eeb54f48cfaf688b3d2c3e9060200161066a565b600154604051631f5bdf5d60e01b81523360048201526001600160a01b0390911690631f5bdf5d90602401602060405180830381865afa158015610812573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906108369190613e3e565b6108825760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206d7573742062652072656769737465726564207573657200006044820152606401610751565b60015460405163e0b490f760e01b81523360048201525f916001600160a01b03169063e0b490f790602401602060405180830381865afa1580156108c8573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906108ec9190613e27565b5f8581526004602081905260409182902060015481549351630359b09b60e31b81526001600160a01b039485169381019390935260248301859052939450929190911690631acd84d890604401602060405180830381865afa158015610954573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906109789190613e3e565b6109c45760405162461bcd60e51b815260206004820181905260248201527f4f6e72616d706572206f6e206465706f7369746f7227732064656e796c6973746044820152606401610751565b6008545f8381526003602052604090206001015442916109e391613e71565b1115610a3d5760405162461bcd60e51b8152602060048201526024808201527f4f6e2072616d7020636f6f6c20646f776e20706572696f64206e6f7420656c616044820152631c1cd95960e21b6064820152608401610751565b5f8281526003602052604090205415610a985760405162461bcd60e51b815260206004820152601860248201527f496e74656e74207374696c6c206f75747374616e64696e6700000000000000006044820152606401610751565b600154815460405163e0b490f760e01b81526001600160a01b0391821660048201528492919091169063e0b490f790602401602060405180830381865afa158015610ae5573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610b099190613e27565b03610b565760405162461bcd60e51b815260206004820152601e60248201527f53656e6465722063616e6e6f7420626520746865206465706f7369746f7200006044820152606401610751565b80546001600160a01b0316610ba65760405162461bcd60e51b815260206004820152601660248201527511195c1bdcda5d08191bd95cc81b9bdd08195e1a5cdd60521b6044820152606401610751565b5f8411610c045760405162461bcd60e51b815260206004820152602660248201527f5369676e616c656420616d6f756e74206d75737420626520677265617465722060448201526507468616e20360d41b6064820152608401610751565b600754841115610c735760405162461bcd60e51b815260206004820152603460248201527f5369676e616c656420616d6f756e74206d757374206265206c657373207468616044820152731b881b585e081bdb8b5c985b5c08185b5bdd5b9d60621b6064820152608401610751565b6001600160a01b038316610cc95760405162461bcd60e51b815260206004820152601b60248201527f43616e6e6f742073656e6420746f207a65726f206164647265737300000000006044820152606401610751565b5f610cd48387612a04565b90508482600601541015610d86575f80610ced88612a6e565b9150915086818560060154610d029190613e71565b1015610d475760405162461bcd60e51b81526020600482015260146024820152734e6f7420656e6f756768206c697175696469747960601b6044820152606401610751565b610d518483612c06565b80846006015f828254610d649190613e71565b9250508190555080846007015f828254610d7e9190613e84565b909155505050505b6040805160a0810182523381526001600160a01b0386811660208084019182528385018b8152606085018b815242608087019081525f89815260058552888120975188549088166001600160a01b0319918216178955955160018901805491909816961695909517909555905160028601555160038086019190915592516004909401939093558681529152908120829055600683018054879290610e2c908490613e84565b9250508190555084826007015f828254610e469190613e71565b90915550506009820180546001810182555f91825260209182902001829055604080516001600160a01b038716815291820187905242908201528390879083907f1a1292e170a0f000ccf956afba79bee0f9ec1d81f3f901c1d4d11e1f336aae109060600160405180910390a4505050505050565b5f805f610ec9868686612c5e565b6040805160a08101825284546001600160a01b039081168252600186015416602082015260028501549181019190915260038401546060820152600490930154608084015291945092509050610f1f8282612fc7565b8260600151826007015f828254610f369190613e84565b9091555050600154835160405163e0b490f760e01b81526001600160a01b03918216600482015242926003925f9291169063e0b490f790602401602060405180830381865afa158015610f8b573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190610faf9190613e27565b81526020019081526020015f2060010181905550610fd183604001518361310b565b610fdb8184613280565b505050505050565b610feb6129ab565b805f0361104e5760405162461bcd60e51b815260206004820152602b60248201527f4d617820696e74656e742065787069726174696f6e20706572696f642063616e60448201526a6e6f74206265207a65726f60a81b6064820152608401610751565b60098190556040518181527f55e3f6b95de9a0ec782f892e93fafe4e56be0696df204ddf8e0a40a9a713a8039060200161066a565b61108b6129ab565b600254600160a01b900460ff16156110db5760405162461bcd60e51b8152602060048201526013602482015272105b1c9958591e481a5b9a5d1a585b1a5e9959606a1b6044820152606401610751565b600180546001600160a01b039384166001600160a01b0319909116179055600280546001600160a81b0319169190921617600160a01b179055565b60015460405163e0b490f760e01b81526001600160a01b0383811660048301526060925f926003928492169063e0b490f790602401602060405180830381865afa158015611166573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061118a9190613e27565b81526020019081526020015f206002018054806020026020016040519081016040528092919081815260200182805480156111e257602002820191905f5260205f20905b8154815260200190600101908083116111ce575b5050505050905080516001600160401b0381111561120257611202613bae565b60405190808252806020026020018201604052801561123b57816020015b6112286136ff565b8152602001906001900390816112205790505b5091505f5b81518110156114c2575f82828151811061125c5761125c613e97565b6020908102919091018101515f8181526004835260408082208151610140810190925280546001600160a01b0316825260018101805494965092949193909291840191906112a990613eab565b80601f01602080910402602001604051908101604052809291908181526020018280546112d590613eab565b80156113205780601f106112f757610100808354040283529160200191611320565b820191905f5260205f20905b81548152906001019060200180831161130357829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b03168152602001600382015481526020016004820154815260200160058201548152602001600682015481526020016007820154815260200160088201548152602001600982018054806020026020016040519081016040528092919081815260200182805480156113e057602002820191905f5260205f20905b8154815260200190600101908083116113cc575b50505050508152505090505f6113f583612a6e565b604080516080810182528681526001548651925163e0b490f760e01b81526001600160a01b039384166004820152939550909350602084019291169063e0b490f790602401602060405180830381865afa158015611455573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906114799190613e27565b8152602001838152602001828460c001516114949190613e71565b8152508685815181106114a9576114a9613e97565b6020026020010181905250505050806001019050611240565b5050919050565b600154604051631f5bdf5d60e01b81523360048201526001600160a01b0390911690631f5bdf5d90602401602060405180830381865afa15801561150f573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906115339190613e3e565b61157f5760405162461bcd60e51b815260206004820152601e60248201527f43616c6c6572206d7573742062652072656769737465726564207573657200006044820152606401610751565b60015460405163e0b490f760e01b81523360048201525f916001600160a01b03169063e0b490f790602401602060405180830381865afa1580156115c5573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906115e99190613e27565b90505f60035f8381526020019081526020015f209050818989604051602001611613929190613edd565b60405160208183030381529060405280519060200120146116765760405162461bcd60e51b815260206004820152601960248201527f5265766f6c757420746167206d757374206d61746368206964000000000000006044820152606401610751565b60028101546005116116ca5760405162461bcd60e51b815260206004820152601e60248201527f4d6178696d756d206465706f73697420616d6f756e74207265616368656400006044820152606401610751565b60065486101561173b5760405162461bcd60e51b815260206004820152603660248201527f4465706f73697420616d6f756e74206d757374206265206772656174657220746044820152751a185b881b5a5b8819195c1bdcda5d08185b5bdd5b9d60521b6064820152608401610751565b5f85116117985760405162461bcd60e51b815260206004820152602560248201527f5265636569766520616d6f756e74206d75737420626520677265617465722074604482015264068616e20360dc1b6064820152608401610751565b5f856117ac670de0b6b3a764000089613f0b565b6117b69190613f36565b600c80549192505f9190826117ca83613f49565b909155506002840180546001810182555f9182526020918290200182905560408051610140810182523381528151601f8f018490048402810184019092528d8252929350828201918e908e90819084018382808284375f9201829052509385525050506001600160a01b03891660208084019190915260408084018a9052606084018d9052608084018e905260a084018d905260c0840183905260e084018790528051838152918201905261010090920191905090525f828152600460209081526040909120825181546001600160a01b0319166001600160a01b039091161781559082015160018201906118bf9082613fa5565b5060408201516002820180546001600160a01b0319166001600160a01b03909216919091179055606082015160038201556080820151600482015560a0820151600582015560c0820151600682015560e082015160078201556101008201516008820155610120820151805161193f916009840191602090910190613729565b50506040516323b872dd60e01b8152336004820152306024820152604481018a90527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031691506323b872dd906064016020604051808303815f875af11580156119b2573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906119d69190613e3e565b508884827f94c4b6f8843ea372709c89bc4a9ed85ef74ab10a68713ffdddc31716a76a6c958b86604051611a14929190918252602082015260400190565b60405180910390a45050505050505050505050565b611a316129ab565b66b1a2bc2ec50000811115611a935760405162461bcd60e51b815260206004820152602260248201527f4665652063616e6e6f742062652067726561746572207468616e206d61782066604482015261656560f01b6064820152608401610751565b600a8190556040518181527f44f48e1b871e6db1e909a7b253b054b7150a0b4ddf4d59b159c827d82e7256709060200161066a565b5f818152600560209081526040808320815160a08101835281546001600160a01b03908116825260018301548116828601526002830154828501819052600384015460608401526004938401546080840152865291909352922081519192909116611b6d5760405162461bcd60e51b8152602060048201526015602482015274125b9d195b9d08191bd95cc81b9bdd08195e1a5cdd605a1b6044820152606401610751565b80546001600160a01b03163314611bc65760405162461bcd60e51b815260206004820152601c60248201527f43616c6c6572206d75737420626520746865206465706f7369746f72000000006044820152606401610751565b611bd08184612fc7565b8160600151816007015f828254611be79190613e84565b9091555050600154825160405163e0b490f760e01b81526001600160a01b03918216600482015242926003925f9291169063e0b490f790602401602060405180830381865afa158015611c3c573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190611c609190613e27565b81526020019081526020015f2060010181905550611c8282604001518261310b565b611c8c8383613280565b505050565b5f805b8251811015611de6575f838281518110611cb057611cb0613e97565b6020908102919091018101515f818152600490925260409091208054919250906001600160a01b03163314611d275760405162461bcd60e51b815260206004820152601c60248201527f53656e646572206d75737420626520746865206465706f7369746f72000000006044820152606401610751565b5f80611d3284612a6e565b91509150611d408383612c06565b808360060154611d509190613e71565b611d5a9087613e71565b955080836007015f828254611d6f9190613e84565b9091555050825460068401546001600160a01b039091169085907fae1f357660ab777dcfd38c0ab6357834684ec26289ecfa07ec65dbf6c3c6431290611db6908590613e71565b60405190815260200160405180910390a35f6006840155611dd7848461310b565b50505050806001019050611c94565b5060405163a9059cbb60e01b8152336004820152602481018290527f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03169063a9059cbb906044016020604051808303815f875af1158015611e51573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190611c8c9190613e3e565b611e7d6129ab565b611e865f613455565b565b606081516001600160401b03811115611ea357611ea3613bae565b604051908082528060200260200182016040528015611edc57816020015b611ec96136ff565b815260200190600190039081611ec15790505b5090505f5b8251811015612163575f838281518110611efd57611efd613e97565b6020908102919091018101515f8181526004835260408082208151610140810190925280546001600160a01b031682526001810180549496509294919390929184019190611f4a90613eab565b80601f0160208091040260200160405190810160405280929190818152602001828054611f7690613eab565b8015611fc15780601f10611f9857610100808354040283529160200191611fc1565b820191905f5260205f20905b815481529060010190602001808311611fa457829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b031681526020016003820154815260200160048201548152602001600582015481526020016006820154815260200160078201548152602001600882015481526020016009820180548060200260200160405190810160405280929190818152602001828054801561208157602002820191905f5260205f20905b81548152602001906001019080831161206d575b50505050508152505090505f61209683612a6e565b604080516080810182528681526001548651925163e0b490f760e01b81526001600160a01b039384166004820152939550909350602084019291169063e0b490f790602401602060405180830381865afa1580156120f6573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061211a9190613e27565b8152602001838152602001828460c001516121359190613e71565b81525085858151811061214a5761214a613e97565b6020026020010181905250505050806001019050611ee1565b50919050565b6121716129ab565b805f036121ca5760405162461bcd60e51b815260206004820152602160248201527f4d6178206f6e2072616d7020616d6f756e742063616e6e6f74206265207a65726044820152606f60f81b6064820152608401610751565b60078190556040518181527fcab6b49ca21dd111cf4a55d507bbe89dd12d69216e28247060d4b2163ca41b399060200161066a565b612207613772565b5f828152600460209081526040918290208251610140810190935280546001600160a01b03168352600181018054919284019161224390613eab565b80601f016020809104026020016040519081016040528092919081815260200182805461226f90613eab565b80156122ba5780601f10612291576101008083540402835291602001916122ba565b820191905f5260205f20905b81548152906001019060200180831161229d57829003601f168201915b50505050508152602001600282015f9054906101000a90046001600160a01b03166001600160a01b03166001600160a01b031681526020016003820154815260200160048201548152602001600582015481526020016006820154815260200160078201548152602001600882015481526020016009820180548060200260200160405190810160405280929190818152602001828054801561237a57602002820191905f5260205f20905b815481526020019060010190808311612366575b5050505050815250509050919050565b60046020525f9081526040902080546001820180546001600160a01b0390921692916123b590613eab565b80601f01602080910402602001604051908101604052809291908181526020018280546123e190613eab565b801561242c5780601f106124035761010080835404028352916020019161242c565b820191905f5260205f20905b81548152906001019060200180831161240f57829003601f168201915b5050505060028301546003840154600485015460058601546006870154600788015460089098015496976001600160a01b03909516969395509193909289565b5f61247682610675565b92915050565b6124846129ab565b6001600160a01b0381166124e65760405162461bcd60e51b8152602060048201526024808201527f46656520726563697069656e742063616e6e6f74206265207a65726f206164646044820152637265737360e01b6064820152608401610751565b600b80546001600160a01b0319166001600160a01b0383169081179091556040519081527f594ad6ee98bfc0c73e6d15fd4e762502f359e05d26907b7fa1ff82eb5e99f6e49060200161066a565b5f818152600560209081526040808320815160a08101835281546001600160a01b039081168252600183015416938101939093526002810154918301919091526003810154606083015260040154608082018190529091036125d05760405162461bcd60e51b8152602060048201526015602482015274125b9d195b9d08191bd95cc81b9bdd08195e1a5cdd605a1b6044820152606401610751565b60015460405163e0b490f760e01b81523360048201526001600160a01b039091169063e0b490f790602401602060405180830381865afa158015612616573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061263a9190613e27565b600154825160405163e0b490f760e01b81526001600160a01b03918216600482015291169063e0b490f790602401602060405180830381865afa158015612683573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906126a79190613e27565b146126f45760405162461bcd60e51b815260206004820152601c60248201527f53656e646572206d75737420626520746865206f6e2d72616d706572000000006044820152606401610751565b6040808201515f90815260046020522061270e8184612fc7565b8160600151816006015f8282546127259190613e71565b909155505060608201516007820180545f90612742908490613e84565b9091555050505050565b60605f826001600160401b0381111561276757612767613bae565b6040519080825280602002602001820160405280156127df57816020015b6127cc60408051606080820183525f808352835160a08101855281815260208181018390529481018290529182018190526080820152909182019081525f60209091015290565b8152602001906001900390816127855790505b5090505f5b8381101561292a575f8585838181106127ff576127ff613e97565b602090810292909201355f81815260058452604090819020815160a08101835281546001600160a01b0390811682526001830154169581019590955260028101548583015260038101546060808701919091526004909101546080860152815190810190915290935090508088888681811061287d5761287d613e97565b60209081029290920135835250810183905260015483516040805163e0b490f760e01b81526001600160a01b03928316600482015293019291169063e0b490f790602401602060405180830381865afa1580156128dc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906129009190613e27565b81525084848151811061291557612915613e97565b602090810291909101015250506001016127e4565b509392505050565b61293a6129ab565b6001600160a01b03811661299f5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610751565b6129a881613455565b50565b5f546001600160a01b03163314611e865760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610751565b60408051602081018490529081018290524260608201525f90819060800160408051601f1981840301815291905280516020909101209050612a667f30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f000000182614060565b949350505050565b5f8181526004602090815260408083206009018054825181850281018501909352808352606094938493929190830182828015612ac857602002820191905f5260205f20905b815481526020019060010190808311612ab4575b5050505050905080516001600160401b03811115612ae857612ae8613bae565b604051908082528060200260200182016040528015612b11578160200160208202803683370190505b5092505f5b8151811015612bff575f60055f848481518110612b3557612b35613e97565b60209081029190910181015182528181019290925260409081015f20815160a08101835281546001600160a01b039081168252600183015416938101939093526002810154918301919091526003810154606083015260040154608082018190526009549192504291612ba791613e71565b1015612bf657828281518110612bbf57612bbf613e97565b6020026020010151858381518110612bd957612bd9613e97565b60209081029190910101526060810151612bf39085613e71565b93505b50600101612b16565b5050915091565b5f5b8151811015611c8c575f801b828281518110612c2657612c26613e97565b602002602001015114612c5657612c5683838381518110612c4957612c49613e97565b6020026020010151612fc7565b600101612c08565b6101008301355f81815260056020526040812080549092906001600160a01b03163314612ccd5760405162461bcd60e51b815260206004820152601c60248201527f43616c6c6572206d75737420626520746865206f6e2d72616d706572000000006044820152606401610751565b6002808401545f9081526004602052604080822092548151808301909252929450909182918291829182916001600160a01b031690630f2d076d9080612d128f6140de565b81526020018d8d8080601f0160208091040260200160405190810160405280939291908181526020018383808284375f92019190915250505091525060028a01546040516001600160e01b031960e085901b168152612d7e92916001600160a01b031690600401614236565b60a0604051808303815f875af1158015612d9a573d5f803e3d5ffd5b505050506040513d601f19601f82011682018060405250810190612dbe9190614379565b9450945094509450945086600301548114612e2a5760405162461bcd60e51b815260206004820152602660248201527f496e636f7272656374206e6f74617279207573656420666f72206e6f746172696044820152653d30ba34b7b760d11b6064820152608401610751565b86600501548214612e735760405162461bcd60e51b815260206004820152601360248201527215dc9bdb99c818dd5c9c995b98de481cd95b9d606a1b6044820152606401610751565b8388600401541115612ed25760405162461bcd60e51b815260206004820152602260248201527f496e74656e7420776173206e6f742063726561746564206265666f72652073656044820152611b9960f21b6064820152608401610751565b8287600101604051602001612ee791906143b5565b6040516020818303038152906040528051906020012014612f4a5760405162461bcd60e51b815260206004820152601b60248201527f4f666672616d70657220696420646f6573206e6f74206d6174636800000000006044820152606401610751565b8660080154670de0b6b3a76400008960030154612f679190613f0b565b612f719190613f36565b851015612fb95760405162461bcd60e51b81526020600482015260166024820152750a0c2f2dacadce840eec2e640dcdee840cadcdeeaced60531b6044820152606401610751565b505050505093509350939050565b5f818152600560209081526040808320815160a08101835281546001600160a01b03908116808352600180850154831696840196909652600284015483860152600380850154606085015260049485015460808501529554945163e0b490f760e01b815293840152909492169063e0b490f790602401602060405180830381865afa158015613058573d5f803e3d5ffd5b505050506040513d601f19601f8201168201806040525081019061307c9190613e27565b815260208082019290925260409081015f9081208190558481526005909252812080546001600160a01b0319908116825560018201805490911690556002810182905560038101829055600401556130d760098401836134a4565b604080820151905183907fe8a865b4bab023c399cbd1f2cdd0df2199beb6e5012a4bd2d7691cf7e4199d5a905f90a3505050565b5f816006015482600701546131209190613e71565b9050805f03611c8c57600154825460405163e0b490f760e01b81526001600160a01b0391821660048201526131c19286926003925f92919091169063e0b490f790602401602060405180830381865afa15801561317f573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906131a39190613e27565b81526020019081526020015f206002016135c290919063ffffffff16565b8154604080518581526001600160a01b0390921660208301527f8ac07cc6e38c6222dd0309c80353c1962354bacf222b825d7401cc80e93ff3cc910160405180910390a15f83815260046020526040812080546001600160a01b03191681559061322e60018301826137c4565b6002820180546001600160a01b03191690555f6003830181905560048301819055600583018190556006830181905560078301819055600883018190556132799060098401906137fb565b5050505050565b5f600a545f1461334757670de0b6b3a7640000600a5483606001516132a59190613f0b565b6132af9190613f36565b600b5460405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390529192507f0000000000000000000000000000000000000000000000000000000000000000169063a9059cbb906044016020604051808303815f875af1158015613321573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906133459190613e3e565b505b5f8183606001516133589190613e84565b602084015160405163a9059cbb60e01b81526001600160a01b039182166004820152602481018390529192507f0000000000000000000000000000000000000000000000000000000000000000169063a9059cbb906044016020604051808303815f875af11580156133cc573d5f803e3d5ffd5b505050506040513d601f19601f820116820180604052508101906133f09190613e3e565b50825160408085015160208087015183516001600160a01b03918216815291820186905292810186905291909216919086907ffa03438194e61c243c6bb5349f1e1dc674431b86f119b5e3b2b327bc43446bce9060600160405180910390a450505050565b5f80546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b5f806134fd848054806020026020016040519081016040528092919081815260200182805480156134f257602002820191905f5260205f20905b8154815260200190600101908083116134de575b505050505084613664565b91509150806135465760405162461bcd60e51b8152602060048201526015602482015274313cba32b99999103737ba1034b71030b93930bc9760591b6044820152606401610751565b83545f9061355690600190613e84565b90508083146135985784818154811061357157613571613e97565b905f5260205f20015485848154811061358c5761358c613e97565b5f918252602090912001555b848054806135a8576135a8614427565b600190038181905f5260205f20015f905590555050505050565b5f8061361b8480548060200260200160405190810160405280929190818152602001828054801561361057602002820191905f5260205f20905b8154815260200190600101908083116135fc575b5050505050846136ba565b91509150806135465760405162461bcd60e51b81526020600482015260156024820152743ab4b73a191a9b103737ba1034b71030b93930bc9760591b6044820152606401610751565b81515f908190815b818110156136a9578486828151811061368757613687613e97565b6020026020010151036136a1579250600191506136b39050565b60010161366c565b505f195f92509250505b9250929050565b81515f908190815b818110156136a957848682815181106136dd576136dd613e97565b6020026020010151036136f7579250600191506136b39050565b6001016136c2565b604080516080810182525f808252602082015290810161371d613772565b81526020015f81525090565b828054828255905f5260205f20908101928215613762579160200282015b82811115613762578251825591602001919060010190613747565b5061376e929150613812565b5090565b60408051610140810182525f8082526060602083018190529282018190528282018190526080820181905260a0820181905260c0820181905260e0820181905261010082015261012081019190915290565b5080546137d090613eab565b5f825580601f106137df575050565b601f0160209004905f5260205f20908101906129a89190613812565b5080545f8255905f5260205f20908101906129a891905b5b8082111561376e575f8155600101613813565b6001600160a01b03811681146129a8575f80fd5b5f6020828403121561384a575f80fd5b813561385581613826565b9392505050565b5f6020828403121561386c575f80fd5b5035919050565b5f805f60608486031215613885575f80fd5b8335925060208401359150604084013561389e81613826565b809150509250925092565b5f8083601f8401126138b9575f80fd5b5081356001600160401b038111156138cf575f80fd5b6020830191508360208285010111156136b3575f80fd5b5f805f604084860312156138f8575f80fd5b83356001600160401b038082111561390e575f80fd5b908501906101408288031215613922575f80fd5b90935060208501359080821115613937575f80fd5b50613944868287016138a9565b9497909650939450505050565b5f8060408385031215613962575f80fd5b823561396d81613826565b9150602083013561397d81613826565b809150509250929050565b5f81518084525f5b818110156139ac57602081850181015186830182015201613990565b505f602082860101526020601f19601f83011685010191505092915050565b5f815180845260208085019450602084015f5b838110156139fa578151875295820195908201906001016139de565b509495945050505050565b80516001600160a01b031682525f6101406020830151816020860152613a2d82860182613988565b9150506040830151613a4a60408601826001600160a01b03169052565b50606083015160608501526080830151608085015260a083015160a085015260c083015160c085015260e083015160e08501526101008084015181860152506101208084015185830382870152613aa183826139cb565b9695505050505050565b5f60208083018184528085518083526040925060408601915060408160051b8701018488015f5b83811015613b2957603f1989840301855281516080815185528882015189860152878201518189870152613b0882870182613a05565b60609384015196909301959095525094870194925090860190600101613ad2565b509098975050505050505050565b5f805f805f805f60c0888a031215613b4d575f80fd5b87356001600160401b03811115613b62575f80fd5b613b6e8a828b016138a9565b9098509650506020880135945060408801359350606088013592506080880135613b9781613826565b8092505060a0880135905092959891949750929550565b634e487b7160e01b5f52604160045260245ffd5b60405161014081016001600160401b0381118282101715613be557613be5613bae565b60405290565b604051601f8201601f191681016001600160401b0381118282101715613c1357613c13613bae565b604052919050565b5f6020808385031215613c2c575f80fd5b82356001600160401b0380821115613c42575f80fd5b818501915085601f830112613c55575f80fd5b813581811115613c6757613c67613bae565b8060051b9150613c78848301613beb565b8181529183018401918481019088841115613c91575f80fd5b938501935b83851015613caf57843582529385019390850190613c96565b98975050505050505050565b602081525f6138556020830184613a05565b6001600160a01b038a81168252610120602083018190525f91613cf28483018d613988565b9a16604084015250506060810196909652608086019490945260a085019290925260c084015260e08301526101009091015292915050565b5f8060208385031215613d3b575f80fd5b82356001600160401b0380821115613d51575f80fd5b818501915085601f830112613d64575f80fd5b813581811115613d72575f80fd5b8660208260051b8501011115613d86575f80fd5b60209290920196919550909350505050565b602080825282518282018190525f919060409081850190868401855b82811015613e1a578151805185528681015180516001600160a01b039081168988015281890151168787015286810151606080880191909152810151608080880191909152015160a086015285015160c085015260e09093019290850190600101613db4565b5091979650505050505050565b5f60208284031215613e37575f80fd5b5051919050565b5f60208284031215613e4e575f80fd5b81518015158114613855575f80fd5b634e487b7160e01b5f52601160045260245ffd5b8082018082111561247657612476613e5d565b8181038181111561247657612476613e5d565b634e487b7160e01b5f52603260045260245ffd5b600181811c90821680613ebf57607f821691505b60208210810361216357634e487b7160e01b5f52602260045260245ffd5b60208152816020820152818360408301375f818301604090810191909152601f909201601f19160101919050565b808202811582820484141761247657612476613e5d565b634e487b7160e01b5f52601260045260245ffd5b5f82613f4457613f44613f22565b500490565b5f60018201613f5a57613f5a613e5d565b5060010190565b601f821115611c8c57805f5260205f20601f840160051c81016020851015613f865750805b601f840160051c820191505b81811015613279575f8155600101613f92565b81516001600160401b03811115613fbe57613fbe613bae565b613fd281613fcc8454613eab565b84613f61565b602080601f831160018114614005575f8415613fee5750858301515b5f19600386901b1c1916600185901b178555610fdb565b5f85815260208120601f198616915b8281101561403357888601518255948401946001909101908401614014565b508582101561405057878501515f19600388901b60f8161c191681555b5050505050600190811b01905550565b5f8261406e5761406e613f22565b500690565b5f82601f830112614082575f80fd5b81356001600160401b0381111561409b5761409b613bae565b6140ae601f8201601f1916602001613beb565b8181528460208386010111156140c2575f80fd5b816020850160208301375f918101602001919091529392505050565b5f61014082360312156140ef575f80fd5b6140f7613bc2565b82356001600160401b038082111561410d575f80fd5b61411936838701614073565b8352602085013591508082111561412e575f80fd5b61413a36838701614073565b60208401526040850135915080821115614152575f80fd5b61415e36838701614073565b60408401526060850135915080821115614176575f80fd5b61418236838701614073565b6060840152608085013591508082111561419a575f80fd5b6141a636838701614073565b608084015260a08501359150808211156141be575f80fd5b6141ca36838701614073565b60a084015260c08501359150808211156141e2575f80fd5b6141ee36838701614073565b60c084015260e0850135915080821115614206575f80fd5b5061421336828601614073565b60e083015250610100838101359082015261012092830135928101929092525090565b604081525f8351604080840152805161014080608086015261425c6101c0860183613988565b91506020830151607f19808785030160a088015261427a8483613988565b935060408501519150808785030160c08801526142978483613988565b935060608501519150808785030160e08801526142b48483613988565b9350608085015191506101008188860301818901526142d38584613988565b945060a086015192506101208289870301818a01526142f28685613988565b955060c087015193508289870301858a015261430e8685613988565b955060e0870151945082898703016101608a015261432c8686613988565b918701516101808a0152909501516101a0880152505050506020850151838203603f19016060850152906143608183613988565b9250505061385560208301846001600160a01b03169052565b5f805f805f60a0868803121561438d575f80fd5b5050835160208501516040860151606087015160809097015192989197509594509092509050565b5f8083546143c281613eab565b600182811680156143da57600181146143ef5761441b565b60ff198416875282151583028701945061441b565b875f526020805f205f5b858110156144125781548a8201529084019082016143f9565b50505082870194505b50929695505050505050565b634e487b7160e01b5f52603160045260245ffdfea26469706673582212203b4618ffb55f9c3d047e17866b0c48ac613e07ed4eb162c19d74f773ce21207764736f6c63430008180033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "cancelIntent(bytes32)": {
+        "params": {
+          "_intentHash": "Hash of intent being cancelled"
+        }
+      },
+      "initialize(address,address)": {
+        "params": {
+          "_accountRegistry": "Account Registry contract for Revolut",
+          "_sendProcessor": "Send processor address"
+        }
+      },
+      "offRamp(string,bytes32,uint256,uint256,address,bytes32)": {
+        "params": {
+          "_depositAmount": "The amount of USDC to off-ramp",
+          "_notaryKeyHash": "Hash of the notary public key that is required to do notarization",
+          "_receiveAmount": "The amount of USD to receive",
+          "_receiveCurrencyId": "Id of the currency to be received off-chain",
+          "_revolutTag": "Depositor's Revolut tag to receive payments",
+          "_verifierSigningKey": "Public key of the verifier depositor wants to sign the TLS proof"
+        }
+      },
+      "onRamp((string,string,string,string,string,string,string,string,uint256,uint256),bytes)": {
+        "params": {
+          "_sendData": "Struct containing unredacted data from API call to Revolut",
+          "_verifierSignature": "Signature by verifier of the unredacted data"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "releaseFundsToOnramper(bytes32)": {
+        "params": {
+          "_intentHash": "Hash of intent to resolve by releasing the funds"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "setIntentExpirationPeriod(uint256)": {
+        "params": {
+          "_intentExpirationPeriod": "New intent expiration period"
+        }
+      },
+      "setMaxOnRampAmount(uint256)": {
+        "params": {
+          "_maxOnRampAmount": "The new max on ramp amount"
+        }
+      },
+      "setMinDepositAmount(uint256)": {
+        "params": {
+          "_minDepositAmount": "The new minimum deposit amount"
+        }
+      },
+      "setOnRampCooldownPeriod(uint256)": {
+        "params": {
+          "_onRampCooldownPeriod": "New on-ramp cooldown period"
+        }
+      },
+      "setSendProcessor(address)": {
+        "params": {
+          "_sendProcessor": "New send proccesor address"
+        }
+      },
+      "setSustainabilityFee(uint256)": {
+        "params": {
+          "_fee": "The new sustainability fee in precise units (10**18, ie 10% = 1e17)"
+        }
+      },
+      "setSustainabilityFeeRecipient(address)": {
+        "params": {
+          "_feeRecipient": "The new fee recipient address"
+        }
+      },
+      "signalIntent(uint256,uint256,address)": {
+        "params": {
+          "_amount": "The amount of USDC the user wants to on-ramp",
+          "_depositId": "The ID of the deposit the on-ramper intends to use for ",
+          "_to": "Address to forward funds to (can be same as onRamper)"
+        }
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "withdrawDeposit(uint256[])": {
+        "params": {
+          "_depositIds": "Array of depositIds the depositor is attempting to withdraw"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "cancelIntent(bytes32)": {
+        "notice": "Only callable by the originator of the intent. Cancels an outstanding intent thus allowing user to signal a new intent. Deposit state is updated to reflect the cancelled intent."
+      },
+      "initialize(address,address)": {
+        "notice": "Initialize Ramp with the addresses of the Processors"
+      },
+      "offRamp(string,bytes32,uint256,uint256,address,bytes32)": {
+        "notice": "Generates a deposit entry for off-rampers that can then be fulfilled by an on-ramper. This function will not add to previous deposits. Every deposit has it's own unique identifier. User must approve the contract to transfer the deposit amount of USDC."
+      },
+      "onRamp((string,string,string,string,string,string,string,string,uint256,uint256),bytes)": {
+        "notice": "Anyone can submit an on-ramp transaction, even if caller isn't on-ramper. Upon submission the proof is validated, intent is removed, and deposit state is updated. USDC is transferred to the on-ramper."
+      },
+      "releaseFundsToOnramper(bytes32)": {
+        "notice": "Allows off-ramper to release funds to the on-ramper in case of a failed on-ramp or because of some other arrangement between the two parties. Upon submission we check to make sure the msg.sender is the depositor, the  intent is removed, and  deposit state is updated. USDC is transferred to the on-ramper."
+      },
+      "setIntentExpirationPeriod(uint256)": {
+        "notice": "GOVERNANCE ONLY: Updates the intent expiration period, after this period elapses an intent can be pruned to prevent locking up a depositor's funds."
+      },
+      "setMaxOnRampAmount(uint256)": {
+        "notice": "GOVERNANCE ONLY: Updates the max amount allowed to be on-ramped in each transaction. To on-ramp more than this amount a user must make multiple transactions."
+      },
+      "setMinDepositAmount(uint256)": {
+        "notice": "GOVERNANCE ONLY: Updates the minimum deposit amount a user can specify for off-ramping."
+      },
+      "setOnRampCooldownPeriod(uint256)": {
+        "notice": "GOVERNANCE ONLY: Updates the on-ramp cooldown period, once an on-ramp transaction is completed the user must wait this amount of time before they can signalIntent to on-ramp again."
+      },
+      "setSendProcessor(address)": {
+        "notice": "GOVERNANCE ONLY: Updates the send processor address used for validating and interpreting zk proofs."
+      },
+      "setSustainabilityFee(uint256)": {
+        "notice": "GOVERNANCE ONLY: Updates the sustainability fee. This fee is charged to on-rampers upon a successful on-ramp."
+      },
+      "setSustainabilityFeeRecipient(address)": {
+        "notice": "GOVERNANCE ONLY: Updates the recepient of sustainability fees."
+      },
+      "signalIntent(uint256,uint256,address)": {
+        "notice": "Signals intent to pay the depositor defined in the _depositId the _amount * deposit conversionRate off-chain in order to unlock _amount of funds on-chain. Each user can only have one outstanding intent at a time regardless of address (tracked using accountId). Caller must not be on the depositor's deny list. If there are prunable intents then they will be deleted from the deposit to be able to maintain state hygiene."
+      },
+      "withdrawDeposit(uint256[])": {
+        "notice": "Caller must be the depositor for each depositId in the array, if not whole function fails. Depositor is returned all remaining deposits and any outstanding intents that are expired. If an intent is not expired then those funds will not be returned. Deposit will be deleted as long as there are no more outstanding intents."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 7,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 13582,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "accountRegistry",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_contract(IRevolutAccountRegistry)15550"
+      },
+      {
+        "astId": 13585,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "sendProcessor",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(IRevolutSendProcessor)15598"
+      },
+      {
+        "astId": 13587,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "isInitialized",
+        "offset": 20,
+        "slot": "2",
+        "type": "t_bool"
+      },
+      {
+        "astId": 13592,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "globalAccount",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_bytes32,t_struct(GlobalAccountInfo)13551_storage)"
+      },
+      {
+        "astId": 13597,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "deposits",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_struct(Deposit)13514_storage)"
+      },
+      {
+        "astId": 13602,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "intents",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_bytes32,t_struct(Intent)13535_storage)"
+      },
+      {
+        "astId": 13604,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "minDepositAmount",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 13606,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "maxOnRampAmount",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 13608,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "onRampCooldownPeriod",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 13610,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "intentExpirationPeriod",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 13612,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "sustainabilityFee",
+        "offset": 0,
+        "slot": "10",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 13614,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "sustainabilityFeeRecipient",
+        "offset": 0,
+        "slot": "11",
+        "type": "t_address"
+      },
+      {
+        "astId": 13616,
+        "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+        "label": "depositCounter",
+        "offset": 0,
+        "slot": "12",
+        "type": "t_uint256"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_uint256)dyn_storage": {
+        "base": "t_uint256",
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_contract(IRevolutAccountRegistry)15550": {
+        "encoding": "inplace",
+        "label": "contract IRevolutAccountRegistry",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IRevolutSendProcessor)15598": {
+        "encoding": "inplace",
+        "label": "contract IRevolutSendProcessor",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_bytes32,t_struct(GlobalAccountInfo)13551_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct RevolutRamp.GlobalAccountInfo)",
+        "numberOfBytes": "32",
+        "value": "t_struct(GlobalAccountInfo)13551_storage"
+      },
+      "t_mapping(t_bytes32,t_struct(Intent)13535_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct RevolutRamp.Intent)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Intent)13535_storage"
+      },
+      "t_mapping(t_uint256,t_struct(Deposit)13514_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct RevolutRamp.Deposit)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Deposit)13514_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Deposit)13514_storage": {
+        "encoding": "inplace",
+        "label": "struct RevolutRamp.Deposit",
+        "members": [
+          {
+            "astId": 13494,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "depositor",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 13496,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "revolutTag",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 13498,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "verifierSigningKey",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_address"
+          },
+          {
+            "astId": 13500,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "notaryKeyHash",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 13502,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "depositAmount",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13504,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "receiveCurrencyId",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 13506,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "remainingDeposits",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13508,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "outstandingIntentAmount",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13510,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "conversionRate",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13513,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "intentHashes",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_array(t_bytes32)dyn_storage"
+          }
+        ],
+        "numberOfBytes": "320"
+      },
+      "t_struct(GlobalAccountInfo)13551_storage": {
+        "encoding": "inplace",
+        "label": "struct RevolutRamp.GlobalAccountInfo",
+        "members": [
+          {
+            "astId": 13545,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "currentIntentHash",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 13547,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "lastOnrampTimestamp",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13550,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "deposits",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint256)dyn_storage"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(Intent)13535_storage": {
+        "encoding": "inplace",
+        "label": "struct RevolutRamp.Intent",
+        "members": [
+          {
+            "astId": 13526,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "onRamper",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address"
+          },
+          {
+            "astId": 13528,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "to",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address"
+          },
+          {
+            "astId": 13530,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "deposit",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13532,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "amount",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 13534,
+            "contract": "contracts/ramps/revolut/RevolutRamp.sol:RevolutRamp",
+            "label": "intentTimestamp",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "160"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

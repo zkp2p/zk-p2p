@@ -47,6 +47,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [
       deployer,
       usdcAddress,
+      usdcAddress, // assuming this is eusdc address
       getDeployedContractAddress(network, "Poseidon3"),
       poseidon6.address,
       MIN_DEPOSIT_AMOUNT[paymentProvider][network],

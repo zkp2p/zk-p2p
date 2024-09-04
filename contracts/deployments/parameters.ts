@@ -49,6 +49,12 @@ export const ACCOUNT_TLS_PARAMS = {
       endpoint: "GET https://app.revolut.com/api/retail/user/current",
       host: "app.revolut.com",
     } as TLSParams,
+    "encifher": {
+      verifierSigningKey: "0x166338393593e85bfde8B65358Ec5801A3445D12",
+      notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942").toHexString(),
+      endpoint: "GET https://app.revolut.com/api/retail/user/current",
+      host: "app.revolut.com",
+    } as TLSParams,
     "sepolia": {
       verifierSigningKey: "0x166338393593e85bfde8B65358Ec5801A3445D12",
       notaryKeyHash: BigNumber.from("113116629262703480258914951290401242193028831780154554089583031844538369800942").toHexString(),
@@ -94,6 +100,12 @@ export const SEND_TLS_PARAMS = {
   } as EnvironmentTLSParams,
   "revolut": {
     "localhost": {
+      verifierSigningKey: "",             // We don't pass this in for deploys
+      notaryKeyHash: ZERO.toHexString(),  // We don't pass this in for deploys
+      endpoint: "GET https://app.revolut.com/api/retail/transaction/*",
+      host: "app.revolut.com",
+    } as TLSParams,
+    "encifher": {
       verifierSigningKey: "",             // We don't pass this in for deploys
       notaryKeyHash: ZERO.toHexString(),  // We don't pass this in for deploys
       endpoint: "GET https://app.revolut.com/api/retail/transaction/*",
