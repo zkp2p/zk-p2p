@@ -2064,6 +2064,73 @@ describe("DomainExchange", () => {
       });
     });
 
+    describe("#enableInstantAccept", async () => {
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectCaller = buyer;
+      });
+
+      async function subject(): Promise<any> {
+        return exchange.connect(subjectCaller.wallet).enableInstantAccept();
+      }
+
+      it("should enable instant accept", async () => {
+        await subject();
+
+        const instantAcceptEnabled = await exchange.instantAcceptEnabled(subjectCaller.address);
+        expect(instantAcceptEnabled).to.be.true;
+      });
+
+      it("should emit an InstantAcceptUpdated event", async () => {
+        await expect(subject()).to.emit(exchange, "InstantAcceptUpdated").withArgs(subjectCaller.address, true);
+      });
+
+      describe("when instant accept is already enabled", async () => {
+        beforeEach(async () => {
+          await exchange.connect(subjectCaller.wallet).enableInstantAccept();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Instant accept already enabled");
+        });
+      });
+    });
+
+    describe("#disableInstantAccept", async () => {
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        subjectCaller = buyer;
+        await exchange.connect(subjectCaller.wallet).enableInstantAccept();
+      });
+
+      async function subject(): Promise<any> {
+        return exchange.connect(subjectCaller.wallet).disableInstantAccept();
+      }
+
+      it("should disable instant accept", async () => {
+        await subject();
+
+        const instantAcceptEnabled = await exchange.instantAcceptEnabled(subjectCaller.address);
+        expect(instantAcceptEnabled).to.be.false;
+      });
+
+      it("should emit an InstantAcceptUpdated event", async () => {
+        await expect(subject()).to.emit(exchange, "InstantAcceptUpdated").withArgs(subjectCaller.address, false);
+      });
+
+      describe("when instant accept is already disabled", async () => {
+        beforeEach(async () => {
+          await exchange.connect(subjectCaller.wallet).disableInstantAccept();
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Instant accept already disabled");
+        });
+      });
+    });
+
     /* ============== Admin Functions ============== */
 
 
@@ -2334,6 +2401,7 @@ describe("DomainExchange", () => {
         listingId = (await exchange.listingCounter()).sub(1);
 
         // Create a bid against groth16.xyz
+        await exchange.connect(buyer.wallet).enableInstantAccept();
         await exchange.connect(buyer.wallet).createBid(
           listingId,
           getHashedBuyerId("buyerId"),
@@ -2361,6 +2429,7 @@ describe("DomainExchange", () => {
         expect(userBids[0].bid.buyer).to.equal(buyer.address);
         expect(userBids[0].bid.listingId).to.equal(listingId);
         expect(userBids[0].bid.createdAt).to.equal(await blockchain.getCurrentTimestamp());
+        expect(userBids[0].buyerInstantAcceptEnabled).to.be.true;
       });
 
       describe("when the user has no bids", () => {
@@ -2396,6 +2465,7 @@ describe("DomainExchange", () => {
         listingId = (await exchange.listingCounter()).sub(1);
 
         // Create two bids against the listing
+        await exchange.connect(buyer.wallet).enableInstantAccept();
         await exchange.connect(buyer.wallet).createBid(
           listingId,
           getHashedBuyerId("buyerId1"),
@@ -2433,11 +2503,13 @@ describe("DomainExchange", () => {
         expect(listingBids[0][0].bid.price).to.equal(ether(1));
         expect(listingBids[0][0].bid.buyer).to.equal(buyer.address);
         expect(listingBids[0][0].bid.createdAt).to.approximately(await blockchain.getCurrentTimestamp(), 1);
+        expect(listingBids[0][0].buyerInstantAcceptEnabled).to.be.true;
 
         expect(listingBids[0][1].bidId).to.equal(bidId2);
         expect(listingBids[0][1].bid.price).to.equal(ether(2));
         expect(listingBids[0][1].bid.buyer).to.equal(otherBuyer.address);
         expect(listingBids[0][1].bid.createdAt).to.equal(await blockchain.getCurrentTimestamp());
+        expect(listingBids[0][1].buyerInstantAcceptEnabled).to.be.false;
       });
 
       describe("when the listing has no bids", () => {

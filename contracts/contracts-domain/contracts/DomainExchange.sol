@@ -42,6 +42,8 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
     
     event SaleFinalized(uint256 indexed bidId, uint256 indexed listingId, uint256 priceNetFees, uint256 fees);
     
+    event InstantAcceptUpdated(address indexed buyer, bool instantAccept);
+
     event FeeUpdated(uint256 newFee);
     event FeeRecipientUpdated(address indexed newFeeRecipient);
     event BidSettlementPeriodUpdated(uint256 newBidSettlementPeriod);
@@ -79,9 +81,10 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         bool refundInitiated;
     }
 
-    struct BidWithId {
+    struct BidDetailsWithId {
         uint256 bidId;
         Bid bid;
+        bool buyerInstantAcceptEnabled;
     }
 
     /* ============ Modifiers ============ */
@@ -97,6 +100,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
     mapping(uint256 => Bid) public bids;
     mapping(address => uint256[]) public userBids;
     mapping(bytes32 => uint256) public domainListing;
+    mapping(address => bool) public instantAcceptEnabled;
 
     uint256 public fee;
     address payable public feeRecipient;
@@ -345,7 +349,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
      * @param _bidId The unique identifier of the bid to increase the price for
      * @param _newPrice The new price for the bid
      */
-    function increaseBidPrice(uint256 _bidId, uint256 _newPrice) 
+    function increaseBidPrice(uint256 _bidId, uint256 _newPrice)
         external
         payable
         nonReentrant
@@ -355,7 +359,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         Listing storage listing = listings[bid.listingId];
 
         // Check
-        _validateIncreaseBidPrice(bid, listing, _newPrice);        
+        _validateIncreaseBidPrice(bid, listing, _newPrice);
         
         // Effect
         bid.price = _newPrice;
@@ -363,6 +367,32 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         emit BidPriceIncreased(_bidId, msg.sender, _newPrice);
     }
 
+    /**
+     * @notice Enables the instant accept flag for the buyer. This flag is used to indicate if the buyer has 
+     * configured their Namecheap account to accept ownership of domains immediately upon transfer.
+     * 
+     * DEV NOTE: We can not check that the buyer has actually enabled instant accept on Namecheap. It is only 
+     * an indicative flag to help the seller know if they can finalize the sale immediately or not. The seller
+     * may get tricked by a malicious buyer to initiate a transfer to them assuming instant accept is on. But
+     * if the buyer does not have instant accept enabled, the seller will get immediate feedback and they can 
+     * cancel the transfer immediately.
+     */
+    function enableInstantAccept() external onlyInitialized {
+        require(instantAcceptEnabled[msg.sender] == false, "Instant accept already enabled");
+        
+        instantAcceptEnabled[msg.sender] = true;        
+        emit InstantAcceptUpdated(msg.sender, true);
+    }
+
+    /**
+     * @notice Disables the instant accept flag for the buyer.
+     */
+    function disableInstantAccept() external onlyInitialized {
+        require(instantAcceptEnabled[msg.sender] == true, "Instant accept already disabled");
+
+        instantAcceptEnabled[msg.sender] = false;
+        emit InstantAcceptUpdated(msg.sender, false);
+    }
 
     /**
      * @notice ONLY BUYER: Initiates the refund process for a bid. Can only be called by the bid owner 
@@ -556,14 +586,15 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
      * @notice Returns the bids created by a user
      * @param _user The address of the user to fetch bids for
      */
-    function getUserBids(address _user) external view returns (BidWithId[] memory bidInfo) {
+    function getUserBids(address _user) external view returns (BidDetailsWithId[] memory bidInfo) {
         uint256[] memory userBidIds = userBids[_user];
-        bidInfo = new BidWithId[](userBidIds.length);
+        bidInfo = new BidDetailsWithId[](userBidIds.length);
         for (uint256 i = 0; i < userBidIds.length; i++) {
             uint256 bidId = userBidIds[i];
-            bidInfo[i] = BidWithId({
+            bidInfo[i] = BidDetailsWithId({
                 bidId: bidId,
-                bid: bids[bidId]
+                bid: bids[bidId],
+                buyerInstantAcceptEnabled: instantAcceptEnabled[_user]
             });
         }
     }
@@ -572,17 +603,18 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
      * @notice Returns the bids for given listingIds
      * @param _listingIds An array of listingIds to fetch bids for
      */
-    function getListingBids(uint256[] memory _listingIds) external view returns (BidWithId[][] memory bidInfo) {
-        bidInfo = new BidWithId[][](_listingIds.length);
+    function getListingBids(uint256[] memory _listingIds) external view returns (BidDetailsWithId[][] memory bidInfo) {
+        bidInfo = new BidDetailsWithId[][](_listingIds.length);
         for (uint256 i = 0; i < _listingIds.length; i++) {
             uint256 listingId = _listingIds[i];
             uint256[] memory listingBidIds = listings[listingId].bids;
-            bidInfo[i] = new BidWithId[](listingBidIds.length);
+            bidInfo[i] = new BidDetailsWithId[](listingBidIds.length);
             for (uint256 j = 0; j < listingBidIds.length; j++) {
                 uint256 bidId = listingBidIds[j];
-                bidInfo[i][j] = BidWithId({
+                bidInfo[i][j] = BidDetailsWithId({
                     bidId: bidId,
-                    bid: bids[bidId]
+                    bid: bids[bidId],
+                    buyerInstantAcceptEnabled: instantAcceptEnabled[bids[bidId].buyer]
                 });
             }
         }
