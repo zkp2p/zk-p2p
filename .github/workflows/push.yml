@@ -1,5 +1,5 @@
 name: push
-on: [push]
+on: ["push", "pull_request"]
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -32,5 +32,7 @@ jobs:
       - name: Check deploy
         run: yarn deploy:localhost
         working-directory: ./contracts
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
 
 

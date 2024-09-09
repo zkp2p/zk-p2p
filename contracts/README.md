@@ -1,5 +1,7 @@
 # ZKP2P Contracts
 
+[![Coverage Status](https://coveralls.io/repos/github/zkp2p/zk-p2p/badge.svg)](https://coveralls.io/github/zkp2p/zk-p2p)
+
 ### Local Node Configuration Steps:
 - Run `yarn install` from the `contracts/` directory
 - Run `npx hardhat node`
