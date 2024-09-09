@@ -378,7 +378,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
      * cancel the transfer immediately.
      */
     function enableInstantAccept() external onlyInitialized {
-        require(instantAcceptEnabled[msg.sender] == false, "Instant accept already enabled");
+        require(!instantAcceptEnabled[msg.sender], "Instant accept already enabled");
         
         instantAcceptEnabled[msg.sender] = true;        
         emit InstantAcceptUpdated(msg.sender, true);
@@ -388,7 +388,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
      * @notice Disables the instant accept flag for the buyer.
      */
     function disableInstantAccept() external onlyInitialized {
-        require(instantAcceptEnabled[msg.sender] == true, "Instant accept already disabled");
+        require(instantAcceptEnabled[msg.sender], "Instant accept already disabled");
 
         instantAcceptEnabled[msg.sender] = false;
         emit InstantAcceptUpdated(msg.sender, false);
