@@ -37,10 +37,12 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       allowBlocksWithSameTimestamp: true,
-      gas: 1000000000
+      gas: 1000000000,
+      hardfork: "cancun"
     },
     localhost: {
       allowBlocksWithSameTimestamp: true,
+      hardfork: "cancun"
     },
     // base_staging: {
     //   url: "https://developer-access-mainnet.base.org",
