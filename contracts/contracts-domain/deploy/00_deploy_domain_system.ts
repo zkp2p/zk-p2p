@@ -181,6 +181,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await usdcContract.transfer(USDC_RECIPIENT, USDC_MINT_AMOUNT);
   }
 
+  // Add exchange to VerifiedDomainRegistry
+  const isExchange = await verifiedDomainRegistryContract.isExchange(domainExchange.address);
+  if (!isExchange) {
+    await verifiedDomainRegistryContract.addExchange(domainExchange.address);
+  }
+
   // Add witnesses to VerifyDomainProcessor
   const verifyDomainProcessorContract = await ethers.getContractAt("VerifyDomainProcessor", verifyDomainProcessor.address);
   await addWitness(hre, verifyDomainProcessorContract, VERIFY_DOMAIN_WITNESS[network]);
