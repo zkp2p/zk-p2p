@@ -3,34 +3,34 @@ on: [push]
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=8192
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Specify node version...
         uses: actions/setup-node@v3
         with:
-          node-version: '18.15.0'
+          node-version: '20.9.0'
       - name: Install Dependencies
         run: yarn install
-        working-directory: ./contracts
+        working-directory: ./contracts-domains
       - name: Set up env variables...
         run: cp contracts/.env.default contracts/.env
       - name: Building...
         run: yarn build
-        working-directory: ./contracts
+        working-directory: ./contracts-domains
       - name: Set-up chain...
         run: yarn chain &
-        working-directory: ./contracts
+        working-directory: ./contracts-domains
         env:
           PORT: 8545
       - name: Run smart contract tests...
         run: yarn test:clean --network localhost
-        working-directory: ./contracts
+        working-directory: ./contracts-domains
       - name: Run coverage
         run: yarn coverage
-        working-directory: ./contracts
+        working-directory: ./contracts-domains
       - name: Check deploy
         run: yarn deploy:localhost
-        working-directory: ./contracts
-
-
+        working-directory: ./contracts-domains
