@@ -13,7 +13,7 @@ import {
 
 import DeployHelper from "@utils/deploys";
 import { Address } from "@utils/types";
-import { ONE_DAY_IN_SECONDS, ZERO } from "@utils/constants";
+import { ADDRESS_ZERO, ONE, ONE_DAY_IN_SECONDS, ZERO } from "@utils/constants";
 import {
   calculateDomainId,
   convertToUnixTimestamp,
@@ -23,7 +23,8 @@ import {
 import {
   IProxyBaseProcessor,
   VerifiedDomainRegistry,
-  VerifyDomainProcessorMock
+  VerifyDomainProcessorMock,
+  DomainExchangeMock
 } from "@utils/contracts";
 import { Blockchain, ether, usdc } from "@utils/common";
 
@@ -42,11 +43,17 @@ describe("VerifiedDomainRegistry", () => {
   let snapshotId: string;
   let deployer: DeployHelper;
 
+  let exchange: Account;
+  let secondExchange: Account;
+  let domainExchangeMock: DomainExchangeMock;
+
   before(async () => {
     [
       owner,
       seller,
-      otherSeller
+      otherSeller,
+      exchange,
+      secondExchange
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -54,6 +61,8 @@ describe("VerifiedDomainRegistry", () => {
     verifyDomainProcessor = await deployer.deployVerifyDomainProcessorMock();
     newVerifyDomainProcessor = await deployer.deployVerifyDomainProcessorMock();
     verifiedDomainRegistry = await deployer.deployVerifiedDomainRegistry();
+
+    domainExchangeMock = await deployer.deployDomainExchangeMock(verifiedDomainRegistry.address);
   });
 
   beforeEach(async () => {
@@ -160,6 +169,8 @@ describe("VerifiedDomainRegistry", () => {
         expect(domainInfo[0].domain.owner).to.equal(seller.address);
         expect(domainInfo[0].domain.name).to.equal(domainName);
         expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(expiryTimestamp));
+        expect(domainInfo[0].domain.exchange).to.equal(ADDRESS_ZERO);
+        expect(domainInfo[0].domain.listingId).to.equal(0);
       });
 
       it("should update userDomains", async () => {
@@ -168,8 +179,6 @@ describe("VerifiedDomainRegistry", () => {
         const userDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
         expect(userDomains.length).to.equal(1);
         expect(userDomains[0].domainId).to.equal(domainId);
-        expect(userDomains[0].domain.name).to.equal(domainName);
-        expect(userDomains[0].domain.expiryTime).to.equal(convertToUnixTimestamp(expiryTimestamp));
       });
 
       it("should emit DomainVerified event", async () => {
@@ -212,11 +221,15 @@ describe("VerifiedDomainRegistry", () => {
           expect(domainInfo[0].domain.owner).to.equal(seller.address);
           expect(domainInfo[0].domain.name).to.equal(domainName);
           expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(expiryTimestamp));
+          expect(domainInfo[0].domain.exchange).to.equal(ADDRESS_ZERO);
+          expect(domainInfo[0].domain.listingId).to.equal(0);
 
           expect(domainInfo[1].domainId).to.equal(secondDomainId);
           expect(domainInfo[1].domain.owner).to.equal(seller.address);
           expect(domainInfo[1].domain.name).to.equal(secondDomainName);
           expect(domainInfo[1].domain.expiryTime).to.equal(convertToUnixTimestamp(secondExpiryTimestamp));
+          expect(domainInfo[1].domain.exchange).to.equal(ADDRESS_ZERO);
+          expect(domainInfo[1].domain.listingId).to.equal(0);
         });
 
         it("should update userDomains with both domains", async () => {
@@ -264,6 +277,8 @@ describe("VerifiedDomainRegistry", () => {
           });
 
           it("should update domainInfo", async () => {
+            const previousDomainInfo = await verifiedDomainRegistry.getDomains([domainId]);
+
             await subject();
 
             const domainInfo = await verifiedDomainRegistry.getDomains([domainId]);
@@ -273,6 +288,8 @@ describe("VerifiedDomainRegistry", () => {
             expect(domainInfo[0].domain.owner).to.equal(seller.address);
             expect(domainInfo[0].domain.name).to.equal(domainName);
             expect(domainInfo[0].domain.expiryTime).to.equal(convertToUnixTimestamp(newExpiryTimestamp));
+            expect(domainInfo[0].domain.exchange).to.equal(previousDomainInfo[0].domain.exchange);
+            expect(domainInfo[0].domain.listingId).to.equal(previousDomainInfo[0].domain.listingId);
           });
 
           it("should NOT update userDomains", async () => {
@@ -293,10 +310,9 @@ describe("VerifiedDomainRegistry", () => {
           });
         });
 
-
         describe("and the owner is different from the caller", () => {
           beforeEach(async () => {
-            // seller claims ownership of domain
+            // first seller claims ownership of domain
             await subject();
 
             subjectCaller = otherSeller;
@@ -339,6 +355,28 @@ describe("VerifiedDomainRegistry", () => {
               convertToUnixTimestamp(expiryTimestamp)
             );
           });
+
+          describe("when the domain is already listed on an exchange", () => {
+            beforeEach(async () => {
+              await verifiedDomainRegistry.connect(owner.wallet).addExchange(domainExchangeMock.address);
+              await domainExchangeMock.connect(seller.wallet).createListing(domainId, ONE);
+            });
+
+            it("should reset exchange and listingId", async () => {
+              await subject();
+
+              const domainInfo = await verifiedDomainRegistry.getDomains([domainId]);
+              expect(domainInfo[0].domain.exchange).to.equal(ADDRESS_ZERO);
+              expect(domainInfo[0].domain.listingId).to.equal(0);
+            });
+
+            it("should remove listing from exchange", async () => {
+              await subject();
+
+              const listingActive = await domainExchangeMock.listingActive(ONE);
+              expect(listingActive).to.equal(false);
+            });
+          });
         });
       });
 
@@ -374,8 +412,311 @@ describe("VerifiedDomainRegistry", () => {
         });
       });
     });
-  });
 
+    describe("#setDomainListing", async () => {
+      let subjectDomainId: string;
+      let subjectListingId: BigNumber;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        let domainName = 'groth16.xyz';
+        let expiryTimestamp = '2025-07-08T18:22:00';
+        let domainId = calculateDomainId(domainName);
+
+        if (shouldInitialize) {
+          // Add exchange to verifiedDomainRegistry
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(exchange.address);
+
+          // verify domain
+          const proofs = generateProofsFromDomains([
+            {
+              name: domainName,
+              expiryTimestamp: expiryTimestamp,
+            }
+          ]);
+          await verifiedDomainRegistry.connect(seller.wallet).verifyDomains(proofs);
+        }
+
+        subjectDomainId = domainId;
+        subjectListingId = ONE;
+        subjectCaller = exchange;
+      });
+
+      async function subject(): Promise<any> {
+        return verifiedDomainRegistry.connect(subjectCaller.wallet).setDomainListing(
+          subjectDomainId,
+          subjectListingId
+        );
+      };
+
+      it("should update the exchange for the domain", async () => {
+        await subject();
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.exchange).to.equal(subjectCaller.address);
+      });
+
+      it("should update the listing id for the domain", async () => {
+        await subject();
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.listingId).to.equal(subjectListingId);
+      });
+
+      it("should emit a DomainListed event", async () => {
+        await expect(subject()).to.emit(verifiedDomainRegistry, "DomainListed").withArgs(
+          subjectDomainId,
+          subjectCaller.address,
+          subjectListingId
+        );
+      });
+
+      describe("when the domain is not verified", () => {
+        beforeEach(async () => {
+          subjectDomainId = calculateDomainId("unverified.xyz");
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Domain must be verified");
+        });
+      });
+
+      describe("when the domain is already listed on another exchange", () => {
+        beforeEach(async () => {
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(secondExchange.address);
+          await verifiedDomainRegistry.connect(secondExchange.wallet).setDomainListing(subjectDomainId, ONE);
+
+          subjectCaller = secondExchange;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Domain already listed on another exchange");
+        });
+      });
+
+      describe("when the caller is not an exchange", () => {
+        beforeEach(async () => {
+          subjectCaller = seller;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be exchange");
+        });
+      });
+
+      describe("when the contract is not initialized", () => {
+        before(async () => {
+          shouldInitialize = false;
+        });
+
+        after(async () => {
+          shouldInitialize = true;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Contract must be initialized");
+        });
+      });
+    });
+
+    describe("#removeDomainListing", async () => {
+      let subjectDomainId: string;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        let domainName = 'groth16.xyz';
+        let expiryTimestamp = '2025-07-08T18:22:00';
+        let domainId = calculateDomainId(domainName);
+
+        if (shouldInitialize) {
+          // Add exchange to verifiedDomainRegistry
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(exchange.address);
+
+          // verify domain
+          const proofs = generateProofsFromDomains([
+            {
+              name: domainName,
+              expiryTimestamp: expiryTimestamp,
+            }
+          ]);
+          await verifiedDomainRegistry.connect(seller.wallet).verifyDomains(proofs);
+          await verifiedDomainRegistry.connect(exchange.wallet).setDomainListing(domainId, ONE);
+        }
+
+        subjectDomainId = domainId;
+        subjectCaller = exchange;
+      });
+
+      async function subject(): Promise<any> {
+        return verifiedDomainRegistry.connect(subjectCaller.wallet).removeDomainListing(subjectDomainId);
+      }
+
+      it("should remove domain listing status", async () => {
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.listingId).to.equal(0);
+      });
+
+      it("should remove domain exchange", async () => {
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.exchange).to.equal(ethers.constants.AddressZero);
+      });
+
+      it("should emit DomainListingRemoved event", async () => {
+        await expect(subject()).to.emit(verifiedDomainRegistry, "DomainListingRemoved").withArgs(
+          subjectDomainId,
+          subjectCaller.address
+        );
+      });
+
+      describe("when the domain is not listed on the calling exchange", () => {
+        beforeEach(async () => {
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(secondExchange.address);
+
+          subjectCaller = secondExchange;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Domain not listed on calling exchange");
+        });
+      });
+
+      describe("when the caller is not an exchange", () => {
+        beforeEach(async () => {
+          subjectCaller = seller;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be exchange");
+        });
+      });
+
+      describe("when the contract is not initialized", () => {
+        before(async () => {
+          shouldInitialize = false;
+        });
+
+        after(async () => {
+          shouldInitialize = true;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Contract must be initialized");
+        });
+      });
+    });
+
+    describe("#updateDomainOnSale", async () => {
+      let subjectDomainId: string;
+      let subjectNewOwner: Address;
+      let subjectCaller: Account;
+
+      beforeEach(async () => {
+        let domainName = 'groth16.xyz';
+        let expiryTimestamp = '2025-07-08T18:22:00';
+        let domainId = calculateDomainId(domainName);
+
+        if (shouldInitialize) {
+          // Add exchange to verifiedDomainRegistry
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(exchange.address);
+
+          // verify domain
+          const proofs = generateProofsFromDomains([
+            {
+              name: domainName,
+              expiryTimestamp: expiryTimestamp,
+            }
+          ]);
+          await verifiedDomainRegistry.connect(seller.wallet).verifyDomains(proofs);
+
+          // List the domain
+          await verifiedDomainRegistry.connect(exchange.wallet).setDomainListing(domainId, ONE);
+        }
+
+        subjectDomainId = domainId;
+        subjectNewOwner = otherSeller.address;
+        subjectCaller = exchange;
+      });
+
+      async function subject(): Promise<any> {
+        return verifiedDomainRegistry.connect(subjectCaller.wallet).updateDomainOnSale(
+          subjectDomainId,
+          subjectNewOwner
+        );
+      }
+
+      it("should update the owner of the domain", async () => {
+        await subject();
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.owner).to.equal(subjectNewOwner);
+      });
+
+      it("should remove the exchange and listingId", async () => {
+        await subject();
+        const domainInfo = await verifiedDomainRegistry.getDomains([subjectDomainId]);
+        expect(domainInfo[0].domain.exchange).to.equal(ethers.constants.AddressZero);
+        expect(domainInfo[0].domain.listingId).to.equal(0);
+      });
+
+      it("should update the user domains", async () => {
+        const prevSellerDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
+        expect(prevSellerDomains.length).to.equal(1);
+
+        await subject();
+
+        const newSellerDomains = await verifiedDomainRegistry.getUserDomains(seller.address);
+        expect(newSellerDomains.length).to.equal(0);
+
+        const buyerDomains = await verifiedDomainRegistry.getUserDomains(otherSeller.address);
+        expect(buyerDomains.length).to.equal(1);
+        expect(buyerDomains[0].domainId).to.equal(subjectDomainId);
+      });
+
+      it("should emit DomainTransferred event", async () => {
+        await expect(subject()).to.emit(verifiedDomainRegistry, "DomainTransferred").withArgs(
+          subjectDomainId,
+          seller.address,
+          subjectNewOwner
+        );
+      });
+
+      describe("when the domain is not listed on the calling exchange", () => {
+        beforeEach(async () => {
+          await verifiedDomainRegistry.connect(owner.wallet).addExchange(secondExchange.address);
+          subjectCaller = secondExchange;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Domain not listed on calling exchange");
+        });
+      });
+
+      describe("when the caller is not an exchange", () => {
+        beforeEach(async () => {
+          subjectCaller = seller;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller must be exchange");
+        });
+      });
+
+      describe("when the contract is not initialized", () => {
+        before(async () => {
+          shouldInitialize = false;
+        });
+
+        after(async () => {
+          shouldInitialize = true;
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Contract must be initialized");
+        });
+      });
+    });
+  });
   /* ============ Admin functions ============ */
 
   describe("#setVerifyDomainProcessor", async () => {
@@ -471,6 +812,147 @@ describe("VerifiedDomainRegistry", () => {
       const actualDomainId = await subject();
       const expectedDomainId = calculateDomainId(subjectDomainName);
       expect(actualDomainId).to.equal(expectedDomainId);
+    });
+  });
+
+  describe("#addExchange", async () => {
+    let subjectExchange: Address;
+    let subjectCaller: Account;
+
+    let shouldInitialize: boolean = true;
+
+    beforeEach(async () => {
+      if (shouldInitialize) {
+        await verifiedDomainRegistry.initialize(verifyDomainProcessor.address);
+      }
+
+      subjectExchange = exchange.address;
+      subjectCaller = owner;
+    });
+
+    async function subject(): Promise<any> {
+      return verifiedDomainRegistry.connect(subjectCaller.wallet).addExchange(subjectExchange);
+    }
+
+    it("should update the exchanges array and mapping correctly", async () => {
+      await subject();
+
+      const actualIsExchange = await verifiedDomainRegistry.isExchange(exchange.address);
+      const actualExchanges = await verifiedDomainRegistry.getExchanges();
+
+      expect(actualIsExchange).to.be.true;
+      expect(actualExchanges).to.deep.equal([exchange.address]);
+    });
+
+    it("should emit the correct ExchangeAdded event", async () => {
+      await expect(subject()).to.emit(verifiedDomainRegistry, "ExchangeAdded").withArgs(exchange.address);
+    });
+
+    describe("when the exchange is already added", async () => {
+      beforeEach(async () => {
+        await subject();
+
+        subjectExchange = exchange.address;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Duplicate exchange");
+      });
+    });
+
+    describe("when the contract has not been initialized", async () => {
+      before(async () => {
+        shouldInitialize = false;
+      });
+
+      after(async () => {
+        shouldInitialize = true;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Contract must be initialized");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = seller;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+  });
+
+  describe("#removeExchange", async () => {
+    let subjectExchange: Address;
+    let subjectCaller: Account;
+
+    let shouldInitialize: boolean = true;
+
+    beforeEach(async () => {
+      if (shouldInitialize) {
+        await verifiedDomainRegistry.initialize(verifyDomainProcessor.address);
+        await verifiedDomainRegistry.connect(owner.wallet).addExchange(exchange.address);
+      }
+
+      subjectExchange = exchange.address;
+      subjectCaller = owner;
+    });
+
+    async function subject(): Promise<any> {
+      return verifiedDomainRegistry.connect(subjectCaller.wallet).removeExchange(subjectExchange);
+    }
+
+    it("should update the exchanges array and mapping correctly", async () => {
+      await subject();
+
+      const actualIsExchange = await verifiedDomainRegistry.isExchange(exchange.address);
+      const actualExchanges = await verifiedDomainRegistry.getExchanges();
+
+      expect(actualIsExchange).to.be.false;
+      expect(actualExchanges).to.deep.equal([]);
+    });
+
+    it("should emit the correct ExchangeRemoved event", async () => {
+      await expect(subject()).to.emit(verifiedDomainRegistry, "ExchangeRemoved").withArgs(exchange.address);
+    });
+
+    describe("when the exchange is not already added", async () => {
+      beforeEach(async () => {
+        await subject();
+
+        subjectExchange = exchange.address;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Exchange does not exist");
+      });
+    });
+
+    describe("when the caller is not the owner", async () => {
+      beforeEach(async () => {
+        subjectCaller = seller;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Ownable: caller is not the owner");
+      });
+    });
+
+    describe("when the contract has not been initialized", async () => {
+      before(async () => {
+        shouldInitialize = false;
+      });
+
+      after(async () => {
+        shouldInitialize = true;
+      });
+
+      it("should revert", async () => {
+        await expect(subject()).to.be.revertedWith("Contract must be initialized");
+      });
     });
   });
 });

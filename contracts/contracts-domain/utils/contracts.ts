@@ -11,6 +11,7 @@ export {
   ITransferDomainProcessor,
   ManagedKeyHashAdapterV2,
   VerifiedDomainRegistry,
+  DomainExchangeMock
 } from "../typechain";
 
 export {

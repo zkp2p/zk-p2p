@@ -10,12 +10,13 @@ import { Bytes32ArrayUtils } from "./external/lib/Bytes32ArrayUtils.sol";
 import { Uint256ArrayUtils } from "./external/lib/Uint256ArrayUtils.sol";
 import { IKeyHashAdapterV2 } from "./external/interfaces/IKeyHashAdapterV2.sol";
 
+import { IDomainExchange } from "./interfaces/IDomainExchange.sol";
 import { ITransferDomainProcessor } from "./interfaces/ITransferDomainProcessor.sol";
 import { IVerifiedDomainRegistry } from "./interfaces/IVerifiedDomainRegistry.sol";
 
 pragma solidity ^0.8.18;
 
-contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
+contract DomainExchange is IDomainExchange, AddressAllowList, ReentrancyGuard, Pausable {
 
     using Address for address payable;
     using Bytes32ArrayUtils for bytes32[];
@@ -34,6 +35,7 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
     );
     event ListingUpdated(uint256 indexed listingId, address indexed seller, uint256 newAskPrice, address saleEthRecipient);
     event ListingDeleted(uint256 indexed listingId, address indexed seller);
+    event ListingDeletedByRegistry(uint256 indexed listingId);
     
     event BidCreated(uint256 indexed bidId, uint256 indexed listingId, address indexed buyer, uint256 price);
     event BidPriceIncreased(uint256 indexed bidId, address indexed buyer, uint256 newPrice);
@@ -99,7 +101,6 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
     mapping(address => uint256[]) public userListings;
     mapping(uint256 => Bid) public bids;
     mapping(address => uint256[]) public userBids;
-    mapping(bytes32 => uint256) public domainListing;
     mapping(address => bool) public instantAcceptEnabled;
 
     uint256 public fee;
@@ -178,15 +179,13 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         onlyInitialized 
         whenNotPaused
     {
-        address domainOwner = verifiedDomainRegistry.getDomainOwner(_domainId);
-        require(domainOwner == msg.sender, "Caller is not domain owner");
-        require(_minBidPrice > 0, "Minimum bid price is zero");
-        require(_askPrice >= _minBidPrice, "Ask price is less than min bid price");
-        require(_saleEthRecipient != address(0), "Invalid sale ETH recipient");
+        _verifyCreateListing(_domainId, _minBidPrice, _askPrice, _saleEthRecipient);
 
         uint256 listingId = _updateCreateListingState(
             _domainId, _askPrice, _minBidPrice, _saleEthRecipient, _encryptionKey, _dkimKeyHash
         );
+
+        verifiedDomainRegistry.setDomainListing(_domainId, listingId);
 
         emit ListingCreated(listingId, msg.sender, _domainId, _dkimKeyHash, _askPrice, _minBidPrice, _saleEthRecipient);
     }
@@ -249,6 +248,8 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         _validateFinalizeSale(bid, listing, dkimKeyHash, hashedReceiverId, domainName);
         
         // Effect
+        verifiedDomainRegistry.updateDomainOnSale(listing.domainId, bid.buyer);
+
         uint256 transferValue = bid.price;
         address payable recipient = listing.saleEthRecipient;
         uint256 listingId = bid.listingId;
@@ -283,6 +284,8 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         require(listing.isActive, "Listing not active");
 
         // Effect
+        verifiedDomainRegistry.updateDomainOnSale(listing.domainId, bid.buyer);
+
         uint256 transferValue = bid.price;
         address payable recipient = listing.saleEthRecipient;
         uint256 listingId = bid.listingId;
@@ -334,9 +337,29 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         require(listing.seller == msg.sender, "Caller is not listing owner");
         require(listing.isActive, "Listing not active");
         
+        verifiedDomainRegistry.removeDomainListing(listing.domainId);
+
         _pruneListing(listing, _listingId);
 
         emit ListingDeleted(_listingId, msg.sender);
+    }
+
+    /**
+     * @notice ONLY EXCHANGE: Remove a listing for domain when ownership changes on the registry.
+     * 
+     * @param _listingId    Listing Id to remove
+     */
+    function registryRemoveListing(uint256 _listingId) external override {
+        Listing storage listing = listings[_listingId];
+
+        require(address(verifiedDomainRegistry) == msg.sender, "Caller is not registry");
+        // If listing is NOT active, this function will NOT be called because the listing status
+        // would have already been removed from the registry beforehand; so there is no need to 
+        // check if listing is active
+        
+        _pruneListing(listing, _listingId);
+
+        emit ListingDeletedByRegistry(_listingId);
     }
 
     /**
@@ -627,19 +650,23 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         return _getAllowedAddresses();
     }
 
-    /**
-     * @notice Get the active listing for given domain id
-     * @param _domainId The domain id to fetch the active listing for
-     */
-    function getDomainListing(bytes32 _domainId) external view returns (ListingWithId memory) {
-        uint256 listingId = domainListing[_domainId];
-        return ListingWithId({
-            listingId: listingId,
-            listing: listings[listingId]
-        });
-    }
 
     /* ============ Internal Functions ============ */
+
+    function _verifyCreateListing(
+        bytes32 _domainId, 
+        uint256 _minBidPrice, 
+        uint256 _askPrice, 
+        address _saleEthRecipient
+    ) internal view {
+        IVerifiedDomainRegistry.DomainWithId memory domainWithId = verifiedDomainRegistry.getDomain(_domainId);
+        require(domainWithId.domain.owner == msg.sender, "Caller is not domain owner");
+        require(domainWithId.domain.exchange == address(0), "Domain already listed on registry");
+
+        require(_minBidPrice > 0, "Minimum bid price is zero");
+        require(_askPrice >= _minBidPrice, "Ask price is less than min bid price");
+        require(_saleEthRecipient != address(0), "Invalid sale ETH recipient");
+    }
 
     function _updateCreateListingState(
         bytes32 _domainId, 
@@ -649,13 +676,6 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
         bytes memory _encryptionKey,
         bytes32 _dkimKeyHash
     ) internal returns (uint256 listingId) {
-        
-        // If listing already exists, delete the old listing
-        uint256 oldListingId = domainListing[_domainId];
-        if (oldListingId != 0) {
-            Listing storage listing = listings[oldListingId];
-            _pruneListing(listing, oldListingId);
-        }
         
         // New listing
         listingId = listingCounter;
@@ -672,7 +692,6 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
             bids: new uint256[](0)
         });
         userListings[msg.sender].push(listingId);
-        domainListing[_domainId] = listingId;
 
         // Increment listingCounter
         listingCounter = listingCounter + 1;
@@ -804,7 +823,6 @@ contract DomainExchange is AddressAllowList, ReentrancyGuard, Pausable {
     function _pruneListing(Listing storage _listing, uint256 _listingId) internal {
         _listing.isActive = false;
         userListings[_listing.seller].removeStorage(_listingId);
-        delete domainListing[_listing.domainId];
         if (_listing.bids.length == 0) {
             delete listings[_listingId];
         }

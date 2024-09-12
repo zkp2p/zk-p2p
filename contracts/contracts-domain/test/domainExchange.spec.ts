@@ -5,7 +5,7 @@ import { ethers } from "hardhat";
 import { BigNumber, Bytes, BytesLike } from "ethers";
 
 import { Account } from "@utils/test/types";
-import { Domain } from "@utils/types";
+import { Domain, ReclaimProof } from "@utils/types";
 import {
   getWaffleExpect,
   getAccounts
@@ -48,7 +48,8 @@ describe("DomainExchange", () => {
   let notAllowedSeller: Account;
   let buyer: Account;
   let otherBuyer: Account;
-  let dkimKeyHash: BytesLike;
+  let secondExchange: Account;
+  let verifiedDomainRegistryAccount: Account;
   let newMailServerKeyHashAdapter: Account;
   let newTransferDomainProcessor: Account;
 
@@ -59,6 +60,7 @@ describe("DomainExchange", () => {
   let mailServerKeyHashAdapter: ManagedKeyHashAdapterV2;
 
   let swapFee: BigNumber;
+  let dkimKeyHash: BytesLike;
   let bidSettlementPeriod: BigNumber;
   let bidRefundPeriod: BigNumber;
 
@@ -76,8 +78,10 @@ describe("DomainExchange", () => {
       buyer,
       otherBuyer,
       notAllowedSeller,
+      secondExchange,
       newTransferDomainProcessor,
-      newMailServerKeyHashAdapter
+      newMailServerKeyHashAdapter,
+      verifiedDomainRegistryAccount
     ] = await getAccounts();
 
     deployer = new DeployHelper(owner.wallet);
@@ -104,6 +108,9 @@ describe("DomainExchange", () => {
       bidRefundPeriod,
       [seller.address, otherSeller.address]
     );
+
+    await verifiedDomainRegistry.addExchange(exchange.address);
+    await verifiedDomainRegistry.addExchange(secondExchange.address);
   });
 
   beforeEach(async () => {
@@ -302,15 +309,6 @@ describe("DomainExchange", () => {
         expect(userListings[0].listing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
       });
 
-      it("should update domainListing", async () => {
-        await subject();
-
-        const listingId = (await exchange.listingCounter()).sub(1);
-        const domainListing = await exchange.domainListing(domainId1);
-
-        expect(domainListing).to.equal(listingId);
-      });
-
       it("should increment the listing counter", async () => {
         const listingCounter = await exchange.listingCounter();
         await subject();
@@ -330,119 +328,14 @@ describe("DomainExchange", () => {
         );
       });
 
-      describe("when a listing already exists for the given domain", async () => {
-        let oldListingId: BigNumber;
+      it("should update domain listing and exchange status on registry", async () => {
+        await subject();
 
-        beforeEach(async () => {
-          await subject();
-          oldListingId = (await exchange.listingCounter()).sub(1);
+        const domainDetails = await verifiedDomainRegistry.getDomain(domainId1);
+        const expectedListingId = (await exchange.listingCounter()).sub(1);
 
-          // new owner claims ownership of the domain
-          let domains = [
-            {
-              name: '0xsachink.xyz',
-              expiryTimestamp: '2025-07-08T07:01:00',
-            } as Domain,
-          ];
-          let proofs = generateProofsFromDomains(domains);
-          await verifiedDomainRegistry.connect(otherSeller.wallet).verifyDomains(proofs);
-
-          subjectCaller = otherSeller;
-          subjectAskPrice = ether(6);
-          subjectSaleEthRecipient = otherSeller.address;
-        });
-
-        it("should add a new listing", async () => {
-          await subject();
-
-          const listingId = (await exchange.listingCounter()).sub(1);
-          const updatedListing = await exchange.listings(listingId);
-
-          expect(updatedListing.seller).to.equal(subjectCaller.address);
-          expect(updatedListing.askPrice).to.equal(subjectAskPrice);
-          expect(updatedListing.createdAt).to.equal(await blockchain.getCurrentTimestamp());
-          expect(updatedListing.domainId).to.equal(domainId1);
-          expect(updatedListing.isActive).to.be.true;
-          expect(updatedListing.saleEthRecipient).to.equal(subjectSaleEthRecipient);
-        });
-
-        it("should delete the old listing", async () => {
-          await subject();
-
-          const oldListing = await exchange.listings(oldListingId);
-          expect(oldListing.seller).to.equal(ADDRESS_ZERO);
-        });
-
-        it("should remove old listing from previous seller's listings", async () => {
-          await subject();
-
-          const oldSellerListings = await exchange.getUserListings(seller.address);
-          expect(oldSellerListings.length).to.equal(0);
-        });
-
-        it("should add new listing to new seller's listings", async () => {
-          await subject();
-
-          const listingId = (await exchange.listingCounter()).sub(1);
-          const newSellerListings = await exchange.getUserListings(subjectCaller.address);
-          expect(newSellerListings.length).to.equal(1);
-          expect(newSellerListings[0].listingId).to.equal(listingId);
-          expect(newSellerListings[0].listing.isActive).to.be.true;
-        });
-
-        it("should increment the listing counter", async () => {
-          const listingCounter = await exchange.listingCounter();
-          await subject();
-          expect(await exchange.listingCounter()).to.equal(listingCounter.add(1));
-        });
-
-        it("should update domain listing to new listing", async () => {
-          await subject();
-
-          const listingId = (await exchange.listingCounter()).sub(1);
-          const domainListing = await exchange.domainListing(domainId1);
-          expect(domainListing).to.equal(listingId);
-        });
-
-        it("should emit ListingCreated event", async () => {
-          const listingId = await exchange.listingCounter(); // get listing counter before creating listing
-          await expect(subject()).to.emit(exchange, "ListingCreated").withArgs(
-            listingId,
-            subjectCaller.address,
-            subjectDomainId,
-            subjectDkimKeyHash,
-            subjectAskPrice,
-            subjectMinBidPrice,
-            subjectSaleEthRecipient
-          );
-        });
-
-        describe("when there are bids against the existing listing", async () => {
-          beforeEach(async () => {
-            await exchange.connect(buyer.wallet).createBid(
-              oldListingId,
-              getHashedBuyerId("richardliang2015"),
-              encryptedBuyerId,
-              {
-                value: ether(6)
-              }
-            );
-          });
-
-          it("should not delete the listing", async () => {
-            await subject();
-
-            const oldListing = await exchange.listings(oldListingId);
-            expect(oldListing.seller).to.equal(seller.address);
-          });
-
-          it("should mark old listing as expired", async () => {
-            await subject();
-
-            const oldListing = await exchange.listings(oldListingId);
-            expect(oldListing.isActive).to.be.false;
-          });
-        });
+        expect(domainDetails.domain.listingId).to.equal(expectedListingId);
+        expect(domainDetails.domain.exchange).to.equal(exchange.address);
       });
 
       describe("when caller is not domain owner", async () => {
@@ -452,6 +345,16 @@ describe("DomainExchange", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Caller is not domain owner");
+        });
+      });
+
+      describe("when domain is already listed on another exchange", async () => {
+        beforeEach(async () => {
+          await verifiedDomainRegistry.connect(secondExchange.wallet).setDomainListing(domainId1, ONE);
+        });
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Domain already listed on registry");
         });
       });
 
@@ -717,6 +620,14 @@ describe("DomainExchange", () => {
           subjectListingId,
           subjectCaller.address
         );
+      });
+
+      it("should remove listing status from domain in verifiedDomainRegistry", async () => {
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomain(domainId2);
+        expect(domainInfo.domain.exchange).to.equal(ZERO);
+        expect(domainInfo.domain.listingId).to.equal(ZERO);
       });
 
       describe("when there are bids against the listing", async () => {
@@ -1564,13 +1475,6 @@ describe("DomainExchange", () => {
         expect(buyerBids.length).to.equal(0);
       });
 
-      it("should remove the domain listing", async () => {
-        await subject();
-
-        const domainListing = await exchange.domainListing(domainId2);
-        expect(domainListing).to.equal(ZERO);
-      });
-
       it("should emit a SaleFinalized event", async () => {
         const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
         await expect(subject()).to.emit(exchange, "SaleFinalized").withArgs(
@@ -1579,6 +1483,32 @@ describe("DomainExchange", () => {
           bidPrice.sub(fees),
           fees
         );
+      });
+
+      it("should update domain ownership on registry ", async () => {
+        const sellerDomainsBefore = await verifiedDomainRegistry.getUserDomains(seller.address);
+        const buyerDomainsBefore = await verifiedDomainRegistry.getUserDomains(buyer.address);
+
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomain(domainId2);
+
+        const sellerDomainsAfter = await verifiedDomainRegistry.getUserDomains(seller.address);
+        const buyerDomainsAfter = await verifiedDomainRegistry.getUserDomains(buyer.address);
+        const buyerDomainIds = buyerDomainsAfter.map(domain => domain.domainId);
+
+        expect(domainInfo.domain.owner).to.equal(buyer.address);
+        expect(sellerDomainsAfter.length).to.equal(sellerDomainsBefore.length - 1);
+        expect(buyerDomainsAfter.length).to.equal(buyerDomainsBefore.length + 1);
+        expect(buyerDomainIds).to.include(domainId2);
+      });
+
+      it("should remove domain exchange and listing on registry", async () => {
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomain(domainId2);
+        expect(domainInfo.domain.exchange).to.equal(ZERO);
+        expect(domainInfo.domain.listingId).to.equal(ZERO);
       });
 
       describe("when the sale eth recipient is not the seller address", async () => {
@@ -1980,12 +1910,6 @@ describe("DomainExchange", () => {
         expect(buyerBids.length).to.equal(0);
       });
 
-      it("should remove the domain listing", async () => {
-        await subject();
-
-        const listing = await exchange.domainListing(domainId2);
-        expect(listing).to.equal(ZERO);
-      });
 
       it("should emit a SaleFinalized event", async () => {
         const fees = bidPrice.mul(swapFee).div(PRECISE_UNIT);
@@ -1995,6 +1919,33 @@ describe("DomainExchange", () => {
           bidPrice.sub(fees),
           fees
         );
+      });
+
+      it("should update domain ownership on registry", async () => {
+        const sellerDomainsBefore = await verifiedDomainRegistry.getUserDomains(seller.address);
+        const buyerDomainsBefore = await verifiedDomainRegistry.getUserDomains(buyer.address);
+
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomain(domainId2);
+
+        const sellerDomainsAfter = await verifiedDomainRegistry.getUserDomains(seller.address);
+        const buyerDomainsAfter = await verifiedDomainRegistry.getUserDomains(buyer.address);
+        const buyerDomainIds = buyerDomainsAfter.map(domain => domain.domainId);
+
+
+        expect(domainInfo.domain.owner).to.equal(buyer.address);
+        expect(sellerDomainsAfter.length).to.equal(sellerDomainsBefore.length - 1);
+        expect(buyerDomainsAfter.length).to.equal(buyerDomainsBefore.length + 1);
+        expect(buyerDomainIds).to.include(domainId2);
+      });
+
+      it("should remove domain exchange and listing id on registry", async () => {
+        await subject();
+
+        const domainInfo = await verifiedDomainRegistry.getDomain(domainId2);
+        expect(domainInfo.domain.exchange).to.equal(ZERO);
+        expect(domainInfo.domain.listingId).to.equal(ZERO);
       });
 
       describe("when the sale eth recipient is not the seller address", async () => {
@@ -2127,6 +2078,140 @@ describe("DomainExchange", () => {
 
         it("should revert", async () => {
           await expect(subject()).to.be.revertedWith("Instant accept already disabled");
+        });
+      });
+    });
+
+    /* ============== Registry Functions (Integration Test) ============== */
+
+    describe("#registryRemoveListing", async () => {
+      let listingId: BigNumber;
+      let otherSellerProofs: ReclaimProof[];
+
+      beforeEach(async () => {
+        // seller claims ownership of the domain
+        let domains = [
+          {
+            name: '0xsachink.xyz',
+            expiryTimestamp: '2025-07-08T07:01:00',
+          } as Domain,
+        ];
+        let proofs = generateProofsFromDomains(domains);
+        await verifiedDomainRegistry.connect(seller.wallet).verifyDomains(proofs);
+
+        // seller lists the domain
+        await exchange.connect(seller.wallet).createListing(
+          domainId1,
+          ether(5),
+          ether(0.5),
+          seller.address,
+          sellerEncryptionKey,
+          ethers.constants.HashZero
+        );
+        listingId = (await exchange.listingCounter()).sub(1);
+
+        otherSellerProofs = generateProofsFromDomains([{
+          name: '0xsachink.xyz',
+          expiryTimestamp: '2025-07-08T07:01:00',
+        }]);
+      });
+
+      async function subject(): Promise<any> {
+        // Invokes registryRemoveListing
+        return await verifiedDomainRegistry.connect(otherSeller.wallet).verifyDomains(otherSellerProofs);
+      }
+
+      it("should delete the listing", async () => {
+        await subject();
+
+        const oldListing = await exchange.listings(listingId);
+        expect(oldListing.seller).to.equal(ADDRESS_ZERO);
+      });
+
+      it("should mark the listing as expired", async () => {
+        await subject();
+
+        const oldListing = await exchange.listings(listingId);
+        expect(oldListing.isActive).to.be.false;
+      });
+
+      it("should remove old listing from previous seller's listings", async () => {
+        await subject();
+
+        const oldSellerListings = await exchange.getUserListings(seller.address);
+        expect(oldSellerListings.length).to.equal(0);
+      });
+
+      it("should emit ListingDeletedByRegistry event", async () => {
+        await expect(subject()).to.emit(exchange, "ListingDeletedByRegistry").withArgs(
+          listingId
+        );
+      });
+
+      describe("when there are bids against the existing listing", async () => {
+        beforeEach(async () => {
+          await exchange.connect(buyer.wallet).createBid(
+            listingId,
+            getHashedBuyerId("richardliang2015"),
+            encryptedBuyerId,
+            {
+              value: ether(6)
+            }
+          );
+        });
+
+        it("should not delete the listing", async () => {
+          await subject();
+
+          const oldListing = await exchange.listings(listingId);
+          expect(oldListing.seller).to.equal(seller.address);
+        });
+
+        it("should mark old listing as expired", async () => {
+          await subject();
+
+          const oldListing = await exchange.listings(listingId);
+          expect(oldListing.isActive).to.be.false;
+        });
+
+        it("should remove old listing from previous seller's listings", async () => {
+          await subject();
+
+          const oldSellerListings = await exchange.getUserListings(seller.address);
+          expect(oldSellerListings.length).to.equal(0);
+        });
+
+        it("should emit ListingDeletedByRegistry event", async () => {
+          await expect(subject()).to.emit(exchange, "ListingDeletedByRegistry").withArgs(
+            listingId
+          );
+        });
+      });
+
+      describe("when caller is not registry", async () => {
+        let subjectCaller: Account;
+
+        beforeEach(async () => {
+          subjectCaller = otherBuyer;
+        });
+
+        async function subject(): Promise<any> {
+          return exchange.connect(subjectCaller.wallet).registryRemoveListing(listingId);
+        }
+
+        it("should revert", async () => {
+          await expect(subject()).to.be.revertedWith("Caller is not registry");
+        });
+      });
+
+      describe("when listing is NOT active", async () => {
+        beforeEach(async () => {
+          // original seller deletes the listing the before hand
+          await exchange.connect(seller.wallet).deleteListing(listingId);
+        });
+
+        it("should NOT revert", async () => {
+          await expect(subject()).to.not.be.reverted;
         });
       });
     });
@@ -2544,75 +2629,6 @@ describe("DomainExchange", () => {
           const listingBids = await subject();
 
           expect(listingBids[0].length).to.equal(0);
-        });
-      });
-    });
-
-    describe("getDomainListing", () => {
-      let subjectDomainId: BytesLike;
-
-      let listingId: BigNumber;
-
-      beforeEach(async () => {
-        await exchange.connect(seller.wallet).createListing(
-          domainId1,
-          ether(5),
-          ether(0.5),
-          seller.address,
-          sellerEncryptionKey,
-          ethers.constants.HashZero
-        );
-        listingId = (await exchange.listingCounter()).sub(1);
-
-        subjectDomainId = domainId1;
-      });
-
-      async function subject(): Promise<any> {
-        return await exchange.getDomainListing(subjectDomainId);
-      }
-
-      it("should return the correct listing for the domain", async () => {
-        const listing = await subject();
-
-        expect(listing.listingId).to.equal(listingId);
-        expect(listing.listing.seller).to.equal(seller.address);
-        expect(listing.listing.askPrice).to.equal(ether(5));
-        expect(listing.listing.domainId).to.equal(domainId1);
-        expect(listing.listing.createdAt).to.equal(await blockchain.getCurrentTimestamp());
-        expect(listing.listing.isActive).to.be.true;
-      });
-
-      describe("when the domain has no listing", () => {
-        beforeEach(() => {
-          subjectDomainId = domainId2;
-        });
-
-        it("should return a listing with id 0 and empty fields", async () => {
-          const listing = await subject();
-
-          expect(listing.listingId).to.equal(0);
-          expect(listing.listing.seller).to.equal(ADDRESS_ZERO);
-          expect(listing.listing.askPrice).to.equal(0);
-          expect(listing.listing.domainId).to.equal(ZERO_BYTES32);
-          expect(listing.listing.createdAt).to.equal(0);
-          expect(listing.listing.isActive).to.be.false;
-        });
-      });
-
-      describe("when the listing is deleted", () => {
-        beforeEach(async () => {
-          await exchange.connect(seller.wallet).deleteListing(listingId);
-        });
-
-        it("should return a listing with id 0 and empty fields", async () => {
-          const listing = await subject();
-
-          expect(listing.listingId).to.equal(0);
-          expect(listing.listing.seller).to.equal(ADDRESS_ZERO);
-          expect(listing.listing.askPrice).to.equal(0);
-          expect(listing.listing.domainId).to.equal(ZERO_BYTES32);
-          expect(listing.listing.createdAt).to.equal(0);
-          expect(listing.listing.isActive).to.be.false;
         });
       });
     });

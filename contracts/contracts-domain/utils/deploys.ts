@@ -12,6 +12,7 @@ import {
   VerifyDomainProcessorMock,
   VerifyDomainProcessor,
   VerifiedDomainRegistry,
+  DomainExchangeMock,
   ManagedKeyHashAdapterV2
 } from "./contracts";
 
@@ -25,6 +26,7 @@ import {
   TransferDomainProcessorMock__factory,
   USDCMock__factory,
   VerifyDomainProcessorMock__factory,
+  DomainExchangeMock__factory
 } from "../typechain/factories/contracts/mocks";
 import {
   ClaimVerifier__factory,
@@ -118,6 +120,10 @@ export default class DeployHelper {
 
   public async deployTransferDomainProcessorMock(): Promise<TransferDomainProcessorMock> {
     return await new TransferDomainProcessorMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployDomainExchangeMock(verifiedDomainRegistry: Address): Promise<DomainExchangeMock> {
+    return await new DomainExchangeMock__factory(this._deployerSigner).deploy(verifiedDomainRegistry);
   }
 
   //Libraries
