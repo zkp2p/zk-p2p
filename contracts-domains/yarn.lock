@@ -1273,15 +1273,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reclaimprotocol/verifier-solidity-sdk@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "@reclaimprotocol/verifier-solidity-sdk@npm:1.0.3"
+"@reclaimprotocol/verifier-solidity-sdk@npm:1.0.2":
+  version: 1.0.2
+  resolution: "@reclaimprotocol/verifier-solidity-sdk@npm:1.0.2"
   dependencies:
     "@nomiclabs/hardhat-ethers": ^2.2.3
     "@openzeppelin/contracts": ^4.9.2
     "@openzeppelin/hardhat-upgrades": ^1.28.0
     "@reclaimprotocol/crypto-sdk": ^1.4.0
-  checksum: 3cd86101a0e9d97d371ffba3a25b8737c44d5d5296871c670b049e3376812a5de7b7eda6a7428c6924e2dc6a54268e02bb4404f746647df34dbb4bf1f9d83aee
+  checksum: 30f51b8116cd4975448cfebce53d3d9c345aa5dfc3f860fe8d5517b4b6e510469623b891ea412c92857ce5ca4fe685167ea190b376bed886218ba19fb7344fcd
   languageName: node
   linkType: hard
 
@@ -8022,7 +8022,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.2.2
     "@nomiclabs/hardhat-etherscan": ^3.1.7
     "@openzeppelin/contracts": ^4.9.2
-    "@reclaimprotocol/verifier-solidity-sdk": ^1.0.2
+    "@reclaimprotocol/verifier-solidity-sdk": 1.0.2
     "@typechain/ethers-v5": ^10.2.0
     "@typechain/hardhat": ^6.1.5
     "@types/chai": ^4.2.0
