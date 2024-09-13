@@ -11,7 +11,7 @@ ZKP2P is a trustless and privacy-preserving fiat-to-crypto onramp powered by ZK 
 ## Overview
 The network is powered by ZK proofs of DKIM signatures in payment confirmation emails, proving the SHA256, email regex, and RSA without revealing sensitive contents in the email. We are working with the Privacy and Scaling Exploration ([PSE](https://pse.dev/projects/zkp2p)) group to explore applications for zero-knowledge proving systems
 
-Follow us on our [Twitter](https://twitter.com/zkp2p) and our [Telegram](https://t.me/+XDj9FNnW-xs5ODNl) for announcements and updates!
+Follow us on our [X formerly (Twitter)](https://x.com/zkp2p) and our [Telegram](https://t.me/+XDj9FNnW-xs5ODNl) for announcements and updates!
 
 After the launch of V2, we will continue experimenting with new infrastructure to improve the UX by bringing down proving times and integrating other payment rails such as Paypal and Transferwise.
 
