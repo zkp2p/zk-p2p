@@ -12,25 +12,25 @@ jobs:
           node-version: '18.15.0'
       - name: Install Dependencies
         run: yarn install
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
       - name: Set up env variables...
-        run: cp contracts/.env.default contracts/.env
+        run: cp contracts-ramp/.env.default contracts-ramp/.env
       - name: Building...
         run: yarn build
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
       - name: Set-up chain...
         run: yarn chain &
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
         env:
           PORT: 8545
       - name: Run smart contract tests...
         run: yarn test:clean --network localhost
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
       - name: Run coverage
         run: yarn coverage
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
       - name: Check deploy
         run: yarn deploy:localhost
-        working-directory: ./contracts
+        working-directory: ./contracts-ramp
 
 
