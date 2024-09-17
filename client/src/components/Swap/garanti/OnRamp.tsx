@@ -209,7 +209,7 @@ export const OnRamp: React.FC<OnRampProps> = ({
         <InstructionsAndTogglesContainer>
           <NumberedStep>
             {garantiStrings.get('PROOF_FORM_TITLE_SEND_INSTRUCTIONS')}
-            <Link href="https://docs.zkp2p.xyz/user-guides/on-ramping" target="_blank">
+            <Link href="https://docs.zkp2p.xyz/onramp-guides/on-ramping" target="_blank">
               Learn more ↗
             </Link>
           </NumberedStep>
