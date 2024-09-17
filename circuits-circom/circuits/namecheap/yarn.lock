@@ -3229,8 +3229,8 @@ __metadata:
   linkType: hard
 
 "@zk-email/helpers@npm:^6.1.3":
-  version: 6.1.3
-  resolution: "@zk-email/helpers@npm:6.1.3"
+  version: 6.1.5
+  resolution: "@zk-email/helpers@npm:6.1.5"
   dependencies:
     addressparser: ^1.0.1
     atob: ^2.1.2
@@ -3240,8 +3240,8 @@ __metadata:
     node-forge: ^1.3.1
     pako: ^2.1.0
     psl: ^1.9.0
-    snarkjs: "https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
-  checksum: 1050f81a96002fc49845a20e91d9a3be42aed54837d82f6a3ddfa95095699f88c30b70e511718308dfb0db81d61e3d70b47ede4904aeb6ba63b2fa58f6aba31a
+    snarkjs: "git+https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e"
+  checksum: c104796e5fc64f3e76ab3e90c01cf8eff3cc58e68e83d4888813145427b54dfd3b318ef02489b0ed7499fd1d11314c9ff69f9a6b24b654d4e145a70075e70162
   languageName: node
   linkType: hard
 
@@ -11555,7 +11555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"snarkjs@https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e":
+"snarkjs@git+https://github.com/sampritipanda/snarkjs.git#fef81fc51d17a734637555c6edbd585ecda02d9e":
   version: 0.5.0
   resolution: "snarkjs@https://github.com/sampritipanda/snarkjs.git#commit=fef81fc51d17a734637555c6edbd585ecda02d9e"
   dependencies:
