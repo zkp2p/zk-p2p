@@ -192,7 +192,7 @@ export const SwapModal: React.FC<SwapModalProps> = ({
 
           <InstructionsLabel>
             { commonStrings.get('PAY_MODAL_INSTRUCTIONS') }
-            <Link href='https://docs.zkp2p.xyz/user-guides/on-ramping' target='_blank'>
+            <Link href='https://docs.zkp2p.xyz/onramp-guides/on-ramping' target='_blank'>
               Learn more ↗
             </Link>
           </InstructionsLabel>

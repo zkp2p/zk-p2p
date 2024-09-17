@@ -142,7 +142,7 @@ export const ExistingRegistration: React.FC<ExistingRegistrationProps> = ({
                   <NumberedStep>
                     { garantiStrings.get('REGISTRATION_INSTRUCTIONS') }
                     <Link
-                      href="https://docs.zkp2p.xyz/user-guides/registration"
+                      href="https://docs.zkp2p.xyz/onramp-guides/registration"
                       target="_blank"
                     >
                       Learn more ↗
