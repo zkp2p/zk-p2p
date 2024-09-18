@@ -2,12 +2,9 @@ pragma circom 2.1.9;
 
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/utils/regex.circom";
+include "@zk-email/circuits/helpers/email-nullifier.circom";
 include "@zk-email/circuits/email-verifier.circom";
 include "@zk-email/zk-regex-circom/circuits/common/from_addr_regex.circom";
-
-include "../utils/ceil.circom";
-include "../utils/email_nullifier.circom";
-include "../utils/hash_sign_gen_rand.circom";
 
 include "./regexes/namecheap_subject.circom";
 include "./regexes/namecheap_transfer_details.circom";
@@ -99,14 +96,29 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // Output packed email from
     signal input fromEmailIndex;
+    
+    // Assert fromEmailIndex < emailHeaderLength
+    signal isFromIndexValid <== LessThan(log2Ceil(maxHeadersLength))([fromEmailIndex, emailHeaderLength]);
+    isFromIndexValid === 1;
+
     signal output fromEmailAddrPacked[maxEmailPackedChunks] <== PackRegexReveal(maxHeadersLength, maxEmailFromLen)(fromEmailReveal, fromEmailIndex);
 
     // Packed buyer id (Hashed before making public output)
     signal input namecheapBuyerIdIndex;
+    
+    // Assert namecheapBuyerIdIndex < emailBodyLength
+    signal namecheapBuyerIdIndexValid <== LessThan(log2Ceil(maxBodyLength))([namecheapBuyerIdIndex, emailBodyLength]);
+    namecheapBuyerIdIndexValid === 1;
+
     signal buyerIdPacked[maxBuyerIdPackedChunks] <== PackRegexReveal(maxBodyLength, maxBuyerIdLen)(buyerIdReveal, namecheapBuyerIdIndex);
 
     // Output packed domain name
     signal input namecheapDomainNameIndex;
+    
+    // Assert namecheapDomainNameIndex < emailBodyLength
+    signal namecheapDomainNameIndexValid <== LessThan(log2Ceil(maxBodyLength))([namecheapDomainNameIndex, emailBodyLength]);
+    namecheapDomainNameIndexValid === 1;
+
     signal output domainNamePacked[maxDomainNamePackedChunks] <== PackRegexReveal(maxBodyLength, maxDomainNameLen)(domainNameReveal, namecheapDomainNameIndex);
     
     //---------------POSEIDON HASHING------------------//
@@ -116,8 +128,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // NULLIFIER
     signal output emailNullifier;
-    signal cmRand <== HashSignGenRand(n, k)(signature);
-    emailNullifier <== EmailNullifier()(headerHash, cmRand);
+    emailNullifier <== EmailNullifier(n, k)(signature);
 
     // The following signals do not take part in any computation, but tie the proof to a specific intentHash to prevent replay attacks and frontrunning.
     // https://geometry.xyz/notebook/groth16-malleability
@@ -125,7 +136,7 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     signal bidIdSquared;
     bidIdSquared <== bidId * bidId;
 
-    // TOTAL CONSTRAINTS: 2980073
+    // TOTAL CONSTRAINTS: 2980076
 }
 
 
