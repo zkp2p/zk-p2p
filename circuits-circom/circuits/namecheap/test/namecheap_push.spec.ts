@@ -1,15 +1,10 @@
 import chai from "chai";
 import path from "path";
 import { F1Field, Scalar } from "ffjavascript";
-import { buildPoseidonOpt as buildPoseidon, buildMimcSponge, poseidonContract } from "circomlibjs";
-import { chunkArray, bytesToPacked, chunkedBytesToBigInt, packNullifier, hashSignatureGenRand } from "../../utils/test-utils";
-import { partialSha } from "@zk-email/helpers/src/sha-utils";
-
+import { buildPoseidonOpt as buildPoseidon, buildMimcSponge } from "circomlibjs";
+import { chunkArray, bytesToPacked, chunkedBytesToBigInt } from "../../utils/test-utils";
 import { bigIntToChunkedBytes } from "@zk-email/helpers/dist/binary-format";
-import { ethers } from "ethers";
-import ganache from "ganache";
 
-const { createCode, generateABI } = poseidonContract;
 export const p = Scalar.fromString("21888242871839275222246405745257275088548364400416034343698204186575808495617");
 const Fr = new F1Field(p);
 
@@ -182,11 +177,14 @@ describe("Namecheap Push Domain Circuit", function () {
         // Get returned nullifier
         const nullifier = witness[9];
 
-        // Get expected nullifier
-        const sha_out = await partialSha(input["emailHeader"], input["emailHeaderLength"]);
-        const packed_nullifier = packNullifier(sha_out);
-        const cm_rand = hashSignatureGenRand(input["signature"], N, K, poseidon);
-        const expected_nullifier = poseidon([cm_rand, packed_nullifier])
+        // Calculate expected output
+        const bigIntSignature = chunkedBytesToBigInt(input["signature"], 121);
+        const signatureChunked = bigIntToChunkedBytes(bigIntSignature, 242, 9);
+
+        // Calculate expected nullifier
+        const signatureHash = poseidon(signatureChunked);
+        const expected_nullifier = poseidon([signatureHash]);
+
         assert.equal(JSON.stringify(poseidon.F.e(nullifier)), JSON.stringify(expected_nullifier), true);
     });
 
@@ -207,5 +205,53 @@ describe("Namecheap Push Domain Circuit", function () {
         const expected_bid_id = input["bidId"];
 
         assert.equal(JSON.stringify(bid_id), JSON.stringify(expected_bid_id), true);
+    });
+
+    it("Should not generate witnesses when fromEmailIndex is invalid", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        input["fromEmailIndex"] = 100000;
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(
+                error.message,
+                'Error: Assert Failed.\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 101\n');
+        }
+    });
+
+    it("Should not generate witnesses when namecheapBuyerIdIndex is invalid", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        input["namecheapBuyerIdIndex"] = 100000;
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(
+                error.message,
+                'Error: Assert Failed.\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 101\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 110\n');
+        }
+    });
+
+    it("Should not generate witnesses when namecheapDomainNameIndex is invalid", async () => {
+        const input_path = path.join(__dirname, "../inputs/input_namecheap_push.json");
+        const jsonString = fs.readFileSync(input_path, "utf8");
+        const input = JSON.parse(jsonString);
+        input["namecheapDomainNameIndex"] = 100000;
+        try {
+            await cir.calculateWitness(input, true);
+            assert.fail('Expected calculateWitness to throw an error');
+        } catch (error) {
+            assert.instanceOf(error, Error);
+            assert.equal(
+                error.message,
+                'Error: Assert Failed.\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 101\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 110\nError in template Num2Bits_1 line: 38\nError in template LessThan_252 line: 96\nError in template NamecheapPushDomainVerifier_337 line: 119\n');
+        }
     });
 });
