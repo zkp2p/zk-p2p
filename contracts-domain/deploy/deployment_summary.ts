@@ -26,7 +26,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     multiSig:                   ${multiSig}
     multiSig nonce:             ${await hre.ethers.provider.getTransactionCount(multiSig)}
     ----------------------------------------------------------------------
-    USDC:                                 ${getDeployedContractAddress(network, "USDCMock")}
     DomainExchange:                       ${getDeployedContractAddress(network, "DomainExchange")}
     ClaimVerifier:                        ${getDeployedContractAddress(network, "ClaimVerifier")}
     VerifyDomainProcessor:                ${getDeployedContractAddress(network, "VerifyDomainProcessor")}

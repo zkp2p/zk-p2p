@@ -44,19 +44,19 @@ const config: HardhatUserConfig = {
       allowBlocksWithSameTimestamp: true,
       hardfork: "cancun"
     },
-    // base_staging: {
-    //   url: "https://developer-access-mainnet.base.org",
-    //   // @ts-ignore
-    //   accounts: [
-    //     `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
-    //   ],
-    //   verify: {
-    //     etherscan: {
-    //       apiUrl: "https://api.basescan.org/",
-    //       apiKey: process.env.BASESCAN_API_KEY
-    //     }
-    //   },
-    // },
+    base_staging: {
+      url: "https://developer-access-mainnet.base.org",
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
+      ],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.basescan.org/",
+          apiKey: process.env.BASESCAN_API_KEY
+        }
+      },
+    },
     sepolia: {
       url: "https://sepolia.infura.io/v3/" + process.env.INFURA_TOKEN,
       // @ts-ignore
