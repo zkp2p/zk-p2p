@@ -81,19 +81,19 @@ const config: HardhatUserConfig = {
     //     }
     //   },
     // },
-    // base: {
-    //   url: "https://developer-access-mainnet.base.org",
-    //   // @ts-ignore
-    //   accounts: [
-    //     `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
-    //   ],
-    //   verify: {
-    //     etherscan: {
-    //       apiUrl: "https://api.basescan.org/",
-    //       apiKey: process.env.BASESCAN_API_KEY
-    //     }
-    //   },
-    // },
+    base: {
+      url: "https://developer-access-mainnet.base.org",
+      // @ts-ignore
+      accounts: [
+        `0x${process.env.BASE_DEPLOY_PRIVATE_KEY}`,
+      ],
+      verify: {
+        etherscan: {
+          apiUrl: "https://api.basescan.org/",
+          apiKey: process.env.BASESCAN_API_KEY
+        }
+      },
+    },
   },
   // @ts-ignore
   typechain: {
