@@ -2049,7 +2049,7 @@ export default {
       ]
     },
     "TransferDomainProcessor": {
-      "address": "0x57C3C3880ca40a17d800FF9c42b5C0e2c026F45B",
+      "address": "0x5d915599DEaf3A15b47c2625F1910599B9D5a1fd",
       "abi": [
         {
           "inputs": [
