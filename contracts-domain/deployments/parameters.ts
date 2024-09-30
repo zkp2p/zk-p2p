@@ -30,15 +30,15 @@ export const FEE_PERCENTAGE: any = {
 export const BID_SETTLEMENT_PERIOD: any = {
   "localhost": ONE_DAY_IN_SECONDS,
   "sepolia": THREE_MINUTES_IN_SECONDS,    // 3 minutes
-  "base": THREE_MINUTES_IN_SECONDS.mul(BigNumber.from(10)),   // 30 minutes
-  "base_staging": ONE_DAY_IN_SECONDS,
+  "base_staging": THREE_MINUTES_IN_SECONDS.mul(BigNumber.from(10)),   // 30 minutes
+  "base": ONE_DAY_IN_SECONDS,
 };
 
 export const BID_REFUND_PERIOD: any = {
   "localhost": ONE_DAY_IN_SECONDS,
   "sepolia": THREE_MINUTES_IN_SECONDS,    // 3 minutes  
-  "base": THREE_MINUTES_IN_SECONDS.mul(BigNumber.from(10)),   // 30 minutes
-  "base_staging": ONE_DAY_IN_SECONDS,
+  "base_staging": THREE_MINUTES_IN_SECONDS.mul(BigNumber.from(10)),   // 30 minutes
+  "base": ONE_DAY_IN_SECONDS,
 };
 
 export const VERIFY_DOMAIN_PROVIDER_HASHES: any = [
