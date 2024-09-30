@@ -152,4 +152,46 @@ task("set-block-timestamp", "Sets the timestamp for the next block")
     console.log(`Next block timestamp set to: ${timestamp}`);
   });
 
+
+task("generate-exchange-calldata", "Generates calldata for a contract interaction")
+  .addParam("method", "The method you want to call")
+  .addParam("params", "The parameters for the method, comma-separated")
+  .setAction(async (taskArgs, hre) => {
+    const { method, params } = taskArgs;
+
+    // Get the contract from the Hardhat environment
+    const DomainExchange = await hre.ethers.getContractFactory("DomainExchange");
+    const domainExchangeAddress = await hre.deployments.get("DomainExchange").then(d => d.address);
+    const domainExchange = await DomainExchange.attach(domainExchangeAddress);
+
+    // Convert parameters to an array
+    const methodParams = params.split(",");
+
+    // Generate the calldata
+    const calldata = domainExchange.interface.encodeFunctionData(method, methodParams);
+
+    console.log("Generated Calldata:", calldata);
+  });
+
+
+task("generate-nullifier-registry-calldata", "Generates calldata for NullifierRegistry contract interaction")
+  .addParam("method", "The method you want to call")
+  .addParam("params", "The parameters for the method, comma-separated")
+  .setAction(async (taskArgs, hre) => {
+    const { method, params } = taskArgs;
+
+    // Get the contract from the Hardhat environment
+    const NullifierRegistry = await hre.ethers.getContractFactory("NullifierRegistry");
+    const nullifierRegistryAddress = await hre.deployments.get("NullifierRegistry").then(d => d.address);
+    const nullifierRegistry = await NullifierRegistry.attach(nullifierRegistryAddress);
+
+    // Convert parameters to an array
+    const methodParams = params.split(",");
+
+    // Generate the calldata
+    const calldata = nullifierRegistry.interface.encodeFunctionData(method, methodParams);
+
+    console.log("Generated Calldata:", calldata);
+  });
+
 export default config;
