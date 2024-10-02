@@ -327,9 +327,14 @@ const SwapForm: React.FC<SwapFormProps> = ({
               } else {
                 const isValidRecipientAddress = isValidAddress(recipientAddress);
                 if (isValidRecipientAddress) {
-                  setQuoteState(QuoteState.SUCCESS);
+                  const isVenmoMaintenance = paymentPlatform === PaymentPlatform.VENMO;
+                  if (isVenmoMaintenance) {
+                    setQuoteState(QuoteState.MAINTENANCE);
+                  } else {
+                    setQuoteState(QuoteState.SUCCESS);
 
-                  setShouldConfigureSignalIntentWrite(true);
+                    setShouldConfigureSignalIntentWrite(true);
+                  }
                 } else {
                   updateQuoteErrorState(QuoteState.INVALID_RECIPIENT_ADDRESS);
                 }
