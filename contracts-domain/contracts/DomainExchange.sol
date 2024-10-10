@@ -367,7 +367,7 @@ contract DomainExchange is IDomainExchange, AddressAllowList, ReentrancyGuard, P
      * than the old price. The buyer must send the additional amount of ETH. The function reverts if
      * - bid has initiated refund, caller is not bid owner or listing is not active
      * - the new price is less than old price
-     * - msg.value is NOT STRICTLY EQUAL to than new price - old price
+     * - msg.value is NOT STRICTLY EQUAL to the new price - old price
      *
      * @param _bidId The unique identifier of the bid to increase the price for
      * @param _newPrice The new price for the bid
