@@ -11,7 +11,7 @@ import { LegacyDepositRow } from "@components/Withdraw/LegacyDepositRow";
 import { CustomConnectButton } from "@components/common/ConnectButton";
 import { toUsdcString, conversionRateToMultiplierString } from '@helpers/units';
 import useAccount from '@hooks/useAccount';
-import useLegacyDeposits from '@hooks/useLegacyDeposits';
+import useDeposits from '@hooks/venmo/useDeposits';
 import useSmartContracts from '@hooks/useSmartContracts';
 import useBalances from '@hooks/useBalance';
 
@@ -31,13 +31,13 @@ export const LegacyDepositTable: React.FC = () => {
    */
 
   const { isLoggedIn } = useAccount();
-  const { legacyRampAddress, legacyRampAbi } = useSmartContracts();
+  const { venmoRampAddress, venmoRampAbi } = useSmartContracts();
   const { refetchUsdcBalance } = useBalances();
 
   const {
     deposits: legacyVenmoDeposits,
     refetchDeposits: refetchLegacyVenmoDeposits
-  } = useLegacyDeposits();
+  } = useDeposits();
 
   /*
    * State
@@ -58,8 +58,8 @@ export const LegacyDepositTable: React.FC = () => {
   // withdrawDeposit(uint256[] memory _depositIds)
   //
   const { config: writeWithdrawConfig } = usePrepareContractWrite({
-    address: legacyRampAddress,
-    abi: legacyRampAbi,
+    address: venmoRampAddress,
+    abi: venmoRampAbi,
     functionName: 'withdrawDeposit',
     args: [
       [selectedDepositIdToWithdraw],
