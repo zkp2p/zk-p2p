@@ -31,6 +31,7 @@ export {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
+  VenmoSendProcessorV3,
   WiseRamp,
   WiseAccountRegistrationProcessor,
   WiseAccountRegistrationProcessorMock,

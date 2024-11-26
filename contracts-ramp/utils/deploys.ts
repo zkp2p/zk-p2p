@@ -36,6 +36,7 @@ import {
   VenmoSendProcessorMock,
   VenmoSendProcessor,
   VenmoSendProcessorV2,
+  VenmoSendProcessorV3,
   WiseAccountRegistrationProcessor,
   WiseAccountRegistrationProcessorMock,
   WiseAccountRegistry,
@@ -72,6 +73,9 @@ import {
   VenmoSendProcessorV2__factory,
 } from "../typechain/factories/contracts/ramps/venmo-v2";
 import {
+  VenmoSendProcessorV3__factory,
+} from "../typechain/factories/contracts/ramps/venmo-v3";
+import {
   WiseRamp__factory,
   WiseAccountRegistrationProcessor__factory,
   WiseAccountRegistry__factory,
@@ -95,6 +99,10 @@ import {
   ManagedKeyHashAdapterV2__factory
 } from "../typechain/factories/contracts/processors/keyHashAdapters";
 import { NullifierRegistry__factory } from "../typechain/factories/contracts/processors/nullifierRegistries";
+import {
+  ClaimVerifier__factory,
+} from "../typechain/factories/contracts/lib";
+import { ClaimVerifier } from "@typechain/contracts/lib/ClaimVerifier";
 
 export default class DeployHelper {
   private _deployerSigner: Signer;
@@ -215,6 +223,29 @@ export default class DeployHelper {
       keyHashAdapter,
       nullifierRegistry,
       emailFromAddress,
+      timestampBuffer
+    );
+  }
+
+
+  public async deployVenmoSendProcessorV3(
+    ramp: Address,
+    nullifierRegistry: Address,
+    providerHashes: string[],
+    claimVerifierLibraryName: string,
+    claimVerifierLibraryAddress: Address,
+    timestampBuffer: BigNumber = BigNumber.from(30),
+  ): Promise<VenmoSendProcessorV3> {
+    return await new VenmoSendProcessorV3__factory(
+      // @ts-ignore
+      {
+        [claimVerifierLibraryName]: claimVerifierLibraryAddress,
+      },
+      this._deployerSigner
+    ).deploy(
+      ramp,
+      nullifierRegistry,
+      providerHashes,
       timestampBuffer
     );
   }
@@ -521,7 +552,7 @@ export default class DeployHelper {
 
   public async deployHDFCTimestampParsingMock(): Promise<HDFCTimestampParsingMock> {
     return await new hdfcMocks.HDFCTimestampParsingMock__factory(this._deployerSigner).deploy();
-  }   
+  }
 
   public async deployGarantiSendProcessorMock(): Promise<GarantiSendProcessorMock> {
     return await new garantiMocks.GarantiSendProcessorMock__factory(this._deployerSigner).deploy();
@@ -571,5 +602,9 @@ export default class DeployHelper {
 
   public async deployStringConversionUtilsMock(): Promise<StringConversionUtilsMock> {
     return await new StringConversionUtilsMock__factory(this._deployerSigner).deploy();
+  }
+
+  public async deployClaimVerifier(): Promise<ClaimVerifier> {
+    return await new ClaimVerifier__factory(this._deployerSigner).deploy();
   }
 }
