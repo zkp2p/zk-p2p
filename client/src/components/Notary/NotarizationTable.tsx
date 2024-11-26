@@ -8,6 +8,7 @@ import { ThemedText } from '@theme/text';
 import { colors } from '@theme/colors';
 import { Button } from '@components/common/Button';
 import { AccessoryButton } from '@components/common/AccessoryButton';
+import { ExtensionDataPolicy } from '@components/modals/ExtensionDataPolicy';
 import { NotarizationRow } from '@components/Notary/NotarizationRow';
 import QuestionHelper from '@components/common/QuestionHelper';
 import { ExtensionNotaryProofRequest } from '@hooks/useBrowserExtension';
@@ -31,7 +32,6 @@ import braveSvg from '../../assets/images/browsers/brave.svg';
 
 const ROWS_PER_PAGE = 3;
 const NOTARY_PROOF_FETCH_INTERVAL = 5000;
-const CHROME_EXTENSION_URL = 'https://chromewebstore.google.com/detail/zkp2p-extension/ijpgccednehjpeclfcllnjjcmiohdjih';
 
 
 type ExtensionNotaryProofRow = {
@@ -98,6 +98,8 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   const [didPressProceed, setDidPressProceed] = useState<boolean>(false);
   
   const [isInstallExtensionClicked, setIsInstallExtensionClicked] = useState<boolean>(false);
+
+  const [showDataPolicy, setShowDataPolicy] = useState<boolean>(false);
   
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -132,8 +134,11 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
   };
 
   const handleInstallExtensionClicked = () => {
-    window.open(CHROME_EXTENSION_URL, '_blank');
     setIsInstallExtensionClicked(true)
+  };
+
+  const handlePolicyBackClicked = () => {
+    setIsInstallExtensionClicked(false)
   };
 
   const handleRowClick = (index: number) => {
@@ -568,9 +573,9 @@ export const NotarizationTable: React.FC<NotarizationTableProps> = ({
             </Button>
 
             { isInstallExtensionClicked && (
-              <ThemedText.LabelSmall textAlign="left">
-                Waiting for installation...
-              </ThemedText.LabelSmall>
+              <ExtensionDataPolicy
+                onBackClick={handlePolicyBackClicked}
+              ></ExtensionDataPolicy>
             )}
           </InstallExtensionContainer>
         ) : (
