@@ -98,8 +98,19 @@ export const calculatePackedId = (venmoId: string): [BigNumber, BigNumber, BigNu
   return Bytes2Packed(7, venmoIdArray);
 };
 
+export function convertToUnixTimestamp(dateString: string): BigNumber {
+  const date = new Date(dateString + 'Z'); // Append 'Z' to treat as UTC
+  return BigNumber.from(Math.floor(date.getTime() / 1000));
+}
+
+export function convertUnixTimestampToDateString(timestamp: BigNumber): string {
+  const date = new Date(timestamp.toNumber() * 1000);
+  return date.toISOString();
+}
+
+
 export const createTypedRegistrationProof = (
-  a: string[], 
+  a: string[],
   b: string[][],
   c: string[],
   signals: string[]
@@ -113,7 +124,7 @@ export const createTypedRegistrationProof = (
   const signals_fixed: [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] = [
     BigNumber.from(signals[0]), BigNumber.from(signals[1]), BigNumber.from(signals[2]), BigNumber.from(signals[3]), BigNumber.from(signals[4])
   ];
-  
+
   return {
     a: a_fixed,
     b: b_fixed,
@@ -123,7 +134,7 @@ export const createTypedRegistrationProof = (
 }
 
 export const createTypedSendProof = (
-  a: string[], 
+  a: string[],
   b: string[][],
   c: string[],
   signals: string[]
@@ -135,7 +146,7 @@ export const createTypedSendProof = (
   ];
   const c_fixed: [BigNumber, BigNumber] = [BigNumber.from(c[0]), BigNumber.from(c[1])];
   const signals_fixed: BigNumber[] = signals.map((signal) => BigNumber.from(signal));;
-  
+
   return {
     a: a_fixed,
     b: b_fixed,
@@ -154,7 +165,7 @@ export const createBlankGarantiBodyHashProof = (): any => {
 }
 
 export const createTypedGarantiBodyHashProof = (
-  a: string[], 
+  a: string[],
   b: string[][],
   c: string[],
   signals: string[]
@@ -168,7 +179,7 @@ export const createTypedGarantiBodyHashProof = (
   const signals_fixed: [BigNumber, BigNumber, BigNumber, BigNumber] = [
     BigNumber.from(signals[0]), BigNumber.from(signals[1]), BigNumber.from(signals[2]), BigNumber.from(signals[3])
   ];
-  
+
   return {
     a: a_fixed,
     b: b_fixed,
