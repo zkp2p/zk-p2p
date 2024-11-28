@@ -4,7 +4,7 @@ import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
+import { INullifierRegistry } from "../nullifierRegistries/INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;
 

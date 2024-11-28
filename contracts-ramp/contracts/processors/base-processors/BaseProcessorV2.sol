@@ -2,8 +2,8 @@
 
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { IKeyHashAdapterV2 } from "./keyHashAdapters/IKeyHashAdapterV2.sol";
-import { INullifierRegistry } from "./nullifierRegistries/INullifierRegistry.sol";
+import { IKeyHashAdapterV2 } from "../keyHashAdapters/IKeyHashAdapterV2.sol";
+import { INullifierRegistry } from "../nullifierRegistries/INullifierRegistry.sol";
 
 pragma solidity ^0.8.18;
 
