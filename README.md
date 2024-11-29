@@ -20,7 +20,7 @@ If you're interested in collaborating, please reach out to us on our [Telegram](
 ## How To:
 
 ### Fetch Your Venmo ID
-ZKP2P off-ramping requires submitting Venmo IDs on chain so the on-rampers knows where to send the payment. A Venmo ID is unique identifier (e.g. 1234567891011121314 up to 19 digits) for your Venmo account that is separate from your handle (@Venmo-User). You can look up your Venmo ID using one of the following methods:
+ZKP2P off-ramping requires submitting Venmo IDs on chain so the on-rampers know where to send the payment. A Venmo ID is a unique identifier (e.g. 1234567891011121314 up to 19 digits) for your Venmo account that is separate from your handle (@Venmo-User). You can look up your Venmo ID using one of the following methods:
 
 - Open any Venmo payment receipt email and click on 'Show original' and search for `user_id`. As of writing these instructions [4/30/2023], you should be able to locate your id in multiple places but may need to splice the `3D` encoding in front of the id.
 - Paste `curl https://account.venmo.com/u/[YOUR_VENMO_HANDLE] | grep -o '"user":{"displayName":"[^"]*","id":"[0-9]*"' | sed 's/.*"id":"\([0-9]*\).*/\1/'` into the command line, replacing YOUR_VENMO_HANDLE with your Venmo username without the `@` e.g. `Alex-Soong`.
