@@ -18,7 +18,7 @@ export type { LoginStatusType } from './loginStatus';
 export type { RawEmailResponse } from './googleMailApi';
 
 export { CurrencyCode, CurrencyIndex, PaymentPlatform, paymentPlatforms, paymentPlatformInfo } from './paymentPlatform';
-export type { CurrencyCodeType, CurrencyIndexType, PaymentPlatformType  } from './paymentPlatform';
+export type { CurrencyCodeType, CurrencyIndexType, PaymentPlatformType } from './paymentPlatform';
 
 export { ReceiveNetwork, receiveNetworks, networksInfo } from './receiveNetworks';
 export type { ReceiveNetworkType } from './receiveNetworks';
@@ -42,6 +42,7 @@ export type {
   OnRamperIntent,
   ReceiveCurrencyIdType,
 } from './deposit';
+
 
 export type {
   AccountInfo
