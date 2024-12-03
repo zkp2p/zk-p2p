@@ -17,6 +17,10 @@ import { abi as revolutRampAbi } from "@helpers/abi/revolut/ramp.abi";
 import { abi as revolutSendProcessorAbi } from "@helpers/abi/revolut/send.abi";
 import { abi as revolutAccountRegistryAbi } from "@helpers/abi/revolut/accountRegistry.abi";
 
+import { abi as escrowAbi } from "@helpers/abi/escrow.abi";
+
+import { abi as venmoReclaimVerifierAbi } from "@helpers/abi/venmoReclaimVerifier.abi";
+
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
 import { Abi } from '@helpers/types';
@@ -64,6 +68,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [revolutRampAddress, setRevolutRampAddress] = useState<string | null>(null);
   const [revolutSendProcessorAddress, setRevolutSendProcessorAddress] = useState<string | null>(null);
   const [revolutAccountRegistryAddress, setRevolutAccountRegistryAddress] = useState<string | null>(null);
+
+  // Escrow
+  const [escrowAddress, setEscrowAddress] = useState<string | null>(null);
+  const [escrowAbi, setEscrowAbi] = useState<Abi | null>(null);
+
+  // Venmo Reclaim Verifier
+  const [venmoReclaimVerifierAddress, setVenmoReclaimVerifierAddress] = useState<string | null>(null);
+  const [venmoReclaimVerifierAbi, setVenmoReclaimVerifierAbi] = useState<Abi | null>(null);
 
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
@@ -159,6 +171,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setRevolutRampAddress(null); 
     setRevolutSendProcessorAddress(null);
     setRevolutAccountRegistryAddress(null);
+
+    // Escrow
+    setEscrowAddress(null);
+    setEscrowAbi(null); 
+
+    // Venmo Reclaim Verifier
+    setVenmoReclaimVerifierAddress(null);
+    setVenmoReclaimVerifierAbi(null);
     
     // NFT
     setVenmoNftAddress(null);
@@ -202,6 +222,14 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setRevolutRampAddress(contractsForNetwork.revolutRamp);
     setRevolutSendProcessorAddress(contractsForNetwork.revolutSendProcessor);
     setRevolutAccountRegistryAddress(contractsForNetwork.revolutAccountRegistry);
+
+    // Escrow
+    setEscrowAddress(contractsForNetwork.escrow);
+    setEscrowAbi(escrowAbi as Abi);
+
+    // Venmo Reclaim Verifier
+    setVenmoReclaimVerifierAddress(contractsForNetwork.venmoReclaimVerifier);
+    setVenmoReclaimVerifierAbi(venmoReclaimVerifierAbi as Abi);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -254,6 +282,15 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         revolutSendProcessorAbi: revolutSendProcessorAbi as Abi,
         revolutAccountRegistryAddress,
         revolutAccountRegistryAbi: revolutAccountRegistryAbi as Abi,
+
+
+        // Escrow
+        escrowAddress,
+        escrowAbi: escrowAbi as Abi,  
+
+        // Venmo Reclaim Verifier
+        venmoReclaimVerifierAddress,
+        venmoReclaimVerifierAbi: venmoReclaimVerifierAbi as Abi,
 
         // NFT
         nftAbi: nftAbi as Abi,
