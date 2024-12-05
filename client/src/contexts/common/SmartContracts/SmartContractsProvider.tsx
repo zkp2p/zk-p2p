@@ -17,6 +17,10 @@ import { abi as revolutRampAbi } from "@helpers/abi/revolut/ramp.abi";
 import { abi as revolutSendProcessorAbi } from "@helpers/abi/revolut/send.abi";
 import { abi as revolutAccountRegistryAbi } from "@helpers/abi/revolut/accountRegistry.abi";
 
+import { abi as escrowAbi } from "@helpers/abi/escrow.abi";
+import { abi as venmoReclaimVerifierAbi } from "@helpers/abi/venmoReclaimVerifier.abi";
+import { abi as quoterAbi } from "@helpers/abi/quoter.abi";
+
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
 import { Abi } from '@helpers/types';
@@ -65,6 +69,15 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   const [revolutSendProcessorAddress, setRevolutSendProcessorAddress] = useState<string | null>(null);
   const [revolutAccountRegistryAddress, setRevolutAccountRegistryAddress] = useState<string | null>(null);
 
+  // Escrow
+  const [escrowAddress, setEscrowAddress] = useState<string | null>(null);
+
+  // Venmo Reclaim Verifier
+  const [venmoReclaimVerifierAddress, setVenmoReclaimVerifierAddress] = useState<string | null>(null);
+
+  // Quoter
+  const [quoterAddress, setQuoterAddress] = useState<string | null>(null);
+
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
   const [hdfcNftAddress, setHdfcNftAddress] = useState<string | null>(null);
@@ -76,6 +89,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   
   // Socket
   const [lifiBridgeAddress, setLifiBridgeAddress] = useState<string | null>(null);
+
+  // Gating Service
+  const [gatingServiceAddress, setGatingServiceAddress] = useState<string | null>(null);
 
   /*
    * Hooks
@@ -159,7 +175,16 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setRevolutRampAddress(null); 
     setRevolutSendProcessorAddress(null);
     setRevolutAccountRegistryAddress(null);
-    
+
+    // Escrow
+    setEscrowAddress(null);
+
+    // Venmo Reclaim Verifier
+    setVenmoReclaimVerifierAddress(null);
+
+    // Quoter
+    setQuoterAddress(null);
+
     // NFT
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
@@ -171,6 +196,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
     // Lifi
     setLifiBridgeAddress(null);
+
+    // Gating Service
+    setGatingServiceAddress(null);
 
     esl && console.log('Set venmoRampAddress: null');
   };
@@ -203,6 +231,15 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     setRevolutSendProcessorAddress(contractsForNetwork.revolutSendProcessor);
     setRevolutAccountRegistryAddress(contractsForNetwork.revolutAccountRegistry);
 
+    // Escrow
+    setEscrowAddress(contractsForNetwork.escrow);
+
+    // Venmo Reclaim Verifier
+    setVenmoReclaimVerifierAddress(contractsForNetwork.venmoReclaimVerifier);
+
+    // Quoter
+    setQuoterAddress(contractsForNetwork.quoter);
+
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
     setHdfcNftAddress(contractsForNetwork.hdfcNft);
@@ -214,6 +251,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     
     // Lifi
     setLifiBridgeAddress(contractsForNetwork.lifiBridge);
+
+    // Gating Service
+    setGatingServiceAddress(contractsForNetwork.gatingService);
   };
 
   return (
@@ -255,6 +295,19 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         revolutAccountRegistryAddress,
         revolutAccountRegistryAbi: revolutAccountRegistryAbi as Abi,
 
+
+        // Escrow
+        escrowAddress,
+        escrowAbi: escrowAbi as Abi,  
+
+        // Venmo Reclaim Verifier
+        venmoReclaimVerifierAddress,
+        venmoReclaimVerifierAbi: venmoReclaimVerifierAbi as Abi,
+
+        // Quoter
+        quoterAddress,
+        quoterAbi: quoterAbi as Abi,
+
         // NFT
         nftAbi: nftAbi as Abi,
         venmoNftAddress,
@@ -266,7 +319,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         socketBridgeAddress,
 
         // Lifi
-        lifiBridgeAddress
+        lifiBridgeAddress,
+
+        // Gating Service
+        gatingServiceAddress,
       }}
     >
       {children}

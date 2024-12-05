@@ -7,7 +7,7 @@ interface SmartContractsValues {
   blockscanUrl?: string | null;
   usdcAddress: string | null;
   usdcAbi?: Abi | null;
-  
+
   // legacy
   legacyRampAddress: string | null;
   legacyRampAbi: Abi | null;
@@ -19,7 +19,7 @@ interface SmartContractsValues {
   venmoRegistrationProcessorAddress: string | null;
   venmoSendProcessorAddress: string | null;
   venmoSendProcessorAbi: Abi | null;
-  
+
   // hdfc
   hdfcRampAddress: string | null;
   hdfcRampAbi: Abi | null;
@@ -40,6 +40,19 @@ interface SmartContractsValues {
   revolutAccountRegistryAddress: string | null;
   revolutAccountRegistryAbi: Abi | null;
 
+
+  // escrow
+  escrowAddress: string | null;
+  escrowAbi: Abi | null;
+
+  // Venmo Reclaim Verifier
+  venmoReclaimVerifierAddress: string | null;
+  venmoReclaimVerifierAbi: Abi | null;
+
+  // Quoter
+  quoterAddress: string | null;
+  quoterAbi: Abi | null;
+
   // nft
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
@@ -49,9 +62,12 @@ interface SmartContractsValues {
 
   // Socket
   socketBridgeAddress: string | null;
-  
+
   // Lifi
   lifiBridgeAddress: string | null;
+
+  // Gating Service
+  gatingServiceAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -63,14 +79,14 @@ const defaultValues: SmartContractsValues = {
   legacyRampAddress: null,
   legacyRampAbi: null,
   legacyNftAddress: null,
-  
+
   // venmo
   venmoRampAddress: null,
   venmoRampAbi: null,
   venmoRegistrationProcessorAddress: null,
   venmoSendProcessorAddress: null,
   venmoSendProcessorAbi: null,
-  
+
   // hdfc
   hdfcRampAddress: null,
   hdfcRampAbi: null,
@@ -90,7 +106,19 @@ const defaultValues: SmartContractsValues = {
   revolutSendProcessorAbi: null,
   revolutAccountRegistryAddress: null,
   revolutAccountRegistryAbi: null,
-  
+
+  // escrow
+  escrowAddress: null,
+  escrowAbi: null,
+
+  // Venmo Reclaim Verifier
+  venmoReclaimVerifierAddress: null,
+  venmoReclaimVerifierAbi: null,
+
+  // Quoter
+  quoterAddress: null,
+  quoterAbi: null,
+
   // nft
   nftAbi: null,
   venmoNftAddress: null,
@@ -100,9 +128,12 @@ const defaultValues: SmartContractsValues = {
 
   // Socket
   socketBridgeAddress: null,
-  
+
   // Lifi
   lifiBridgeAddress: null,
+
+  // Gating Service
+  gatingServiceAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)
