@@ -57,10 +57,9 @@ export interface IntentView {
 
 export interface IndicativeQuote {
   depositId?: bigint;
-  usdAmountToSend?: string;
   error?: string;
-  maxUSDCAmountAvailable?: string;
-  conversionRate?: bigint;
+  maxTokenAmount?: bigint;
+  minFiatAmount?: bigint;
 }
 
 export interface DepositIntent {

@@ -43,7 +43,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { escrowAddress, escrowAbi } = useSmartContracts();
+  const { escrowAddress, escrowAbi, quoterAddress, quoterAbi, gatingServiceAddress, usdcAddress } = useSmartContracts();
   const { depositCounter } = useEscrowState();
 
   /*
@@ -78,8 +78,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       for (let j = 0; j < deposits.length; j++) {
         const deposit = deposits[j];
 
-        // todo: update this to take token into account
-        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < 1000000;
+        const orderHasNoAvailableLiquidity = deposit.availableLiquidity < deposit.deposit.minIntentAmount;
         const orderHasNoOustandingIntent = deposit.deposit.outstandingIntentAmount === ZERO;
         const orderIsFilled = orderHasNoAvailableLiquidity && orderHasNoOustandingIntent;
 
@@ -169,6 +168,49 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     return sanitizedDeposits;
   };
 
+  const fetchQuoteMinFiatInputForExactTokenOutput = async (
+    depositIdBatch: bigint[],
+    requestedPaymentVerifier: string,
+    requestedOnRampInputAmount: string,
+    requestedSendCurrency: string
+  ) => {
+    try {
+      /*
+        function quoteMinFiatInputForExactTokenOutput(
+          uint256[] calldata _depositIds,
+          address _paymentVerifier,
+          address _gatingService,
+          address _receiveToken,
+          bytes32 _sendCurrency,
+          uint256 _exactTokenAmount   
+        )
+          external
+          view
+          returns (IEscrow.DepositView memory bestDeposit, uint256 minFiatAmount)
+      */
+      const data = await readContract({
+        address: quoterAddress as `0x${string}`,
+        abi: quoterAbi as Abi,
+        functionName: 'quoteMinFiatInputForExactTokenOutput',
+        args: [
+          depositIdBatch,
+          requestedPaymentVerifier,
+          gatingServiceAddress,
+          usdcAddress, // Enable any token in the future
+          requestedSendCurrency,
+          requestedOnRampInputAmount
+        ],
+        account: CALLER_ACCOUNT,
+      });
+
+      return data as [DepositView, bigint]
+    } catch (error) {
+      console.error('Error fetching deposits batch:', error);
+      
+      return [];
+    }
+  };
+
   /*
    * Hooks
    */
@@ -178,19 +220,19 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [escrowAddress]);
 
   useEffect(() => {
-    esl && console.log('venmo_shouldFetchDeposits_1');
+    esl && console.log('escrow_shouldFetchDeposits_1');
     esl && console.log('checking depositCounter: ', depositCounter);
     esl && console.log('checking escrowAddress: ', escrowAddress);
 
     const fetchData = async () => {
       if (depositCounter && escrowAddress) {
-        esl && console.log('venmo_shouldFetchDeposits_2');
+        esl && console.log('escrow_shouldFetchDeposits_2');
   
         setShouldFetchDeposits(true);
 
         await fetchAndPruneDeposits(depositCounter, escrowAddress);
       } else {
-        esl && console.log('venmo_shouldFetchDeposits_3');
+        esl && console.log('escrow_shouldFetchDeposits_3');
   
         setShouldFetchDeposits(false);
   
@@ -205,17 +247,17 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
   }, [depositCounter, escrowAddress, fetchDepositsTrigger]);
 
   useEffect(() => {
-    esl && console.log('venmo_depositStore_1');
+    esl && console.log('escrow_depositStore_1');
     esl && console.log('checking deposits: ', deposits);
 
     if (deposits && deposits.length > 0) {
-      esl && console.log('venmo_depositStore_2');
+      esl && console.log('escrow_depositStore_2');
 
       const newStore = createDepositsStore(deposits);
 
       setDepositStore(newStore);
     } else {
-      esl && console.log('venmo_depositStore_3');
+      esl && console.log('escrow_depositStore_3');
 
       setDepositStore(null);
     }
@@ -229,14 +271,27 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     setFetchDepositsTrigger(prev => prev + 1);
   };
 
-  const getBestDepositForAmount = useCallback((requestedOnRampInputAmount: string, requestedPaymentVerifier: string, userAddress: string): IndicativeQuote => {
+  const getBestDepositForAmount = useCallback(async (
+    requestedOnRampInputAmount: string,
+    requestedPaymentVerifier: string,
+    userAddress: string,
+    requestedSendCurrency: string
+  ): Promise<IndicativeQuote> => {
     if (depositStore) {
-      return fetchBestDepositForAmount(
-        requestedOnRampInputAmount,
+      // Filter user deposits
+      const depositIds = depositStore
+        .filter(deposit => deposit.deposit.depositor !== userAddress)
+        .map(deposit => deposit.depositId);
+      const [bestDeposit, minFiatAmount] = await fetchQuoteMinFiatInputForExactTokenOutput(
+        depositIds,
         requestedPaymentVerifier,
-        userAddress,
-        depositStore
+        requestedSendCurrency,
+        requestedOnRampInputAmount
       );
+      return {
+        depositId: bestDeposit.depositId,
+        minFiatAmount,
+      } as IndicativeQuote;
     } else {
       return {
         error: 'No deposits available'

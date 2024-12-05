@@ -18,8 +18,8 @@ import { abi as revolutSendProcessorAbi } from "@helpers/abi/revolut/send.abi";
 import { abi as revolutAccountRegistryAbi } from "@helpers/abi/revolut/accountRegistry.abi";
 
 import { abi as escrowAbi } from "@helpers/abi/escrow.abi";
-
 import { abi as venmoReclaimVerifierAbi } from "@helpers/abi/venmoReclaimVerifier.abi";
+import { abi as quoterAbi } from "@helpers/abi/quoter.abi";
 
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
@@ -71,11 +71,12 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
   // Escrow
   const [escrowAddress, setEscrowAddress] = useState<string | null>(null);
-  const [escrowAbi, setEscrowAbi] = useState<Abi | null>(null);
 
   // Venmo Reclaim Verifier
   const [venmoReclaimVerifierAddress, setVenmoReclaimVerifierAddress] = useState<string | null>(null);
-  const [venmoReclaimVerifierAbi, setVenmoReclaimVerifierAbi] = useState<Abi | null>(null);
+
+  // Quoter
+  const [quoterAddress, setQuoterAddress] = useState<string | null>(null);
 
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
@@ -88,6 +89,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
   
   // Socket
   const [lifiBridgeAddress, setLifiBridgeAddress] = useState<string | null>(null);
+
+  // Gating Service
+  const [gatingServiceAddress, setGatingServiceAddress] = useState<string | null>(null);
 
   /*
    * Hooks
@@ -174,12 +178,13 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
     // Escrow
     setEscrowAddress(null);
-    setEscrowAbi(null); 
 
     // Venmo Reclaim Verifier
     setVenmoReclaimVerifierAddress(null);
-    setVenmoReclaimVerifierAbi(null);
-    
+
+    // Quoter
+    setQuoterAddress(null);
+
     // NFT
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
@@ -191,6 +196,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
     // Lifi
     setLifiBridgeAddress(null);
+
+    // Gating Service
+    setGatingServiceAddress(null);
 
     esl && console.log('Set venmoRampAddress: null');
   };
@@ -225,11 +233,12 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
     // Escrow
     setEscrowAddress(contractsForNetwork.escrow);
-    setEscrowAbi(escrowAbi as Abi);
 
     // Venmo Reclaim Verifier
     setVenmoReclaimVerifierAddress(contractsForNetwork.venmoReclaimVerifier);
-    setVenmoReclaimVerifierAbi(venmoReclaimVerifierAbi as Abi);
+
+    // Quoter
+    setQuoterAddress(contractsForNetwork.quoter);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -242,6 +251,9 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     
     // Lifi
     setLifiBridgeAddress(contractsForNetwork.lifiBridge);
+
+    // Gating Service
+    setGatingServiceAddress(contractsForNetwork.gatingService);
   };
 
   return (
@@ -292,6 +304,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         venmoReclaimVerifierAddress,
         venmoReclaimVerifierAbi: venmoReclaimVerifierAbi as Abi,
 
+        // Quoter
+        quoterAddress,
+        quoterAbi: quoterAbi as Abi,
+
         // NFT
         nftAbi: nftAbi as Abi,
         venmoNftAddress,
@@ -303,7 +319,10 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         socketBridgeAddress,
 
         // Lifi
-        lifiBridgeAddress
+        lifiBridgeAddress,
+
+        // Gating Service
+        gatingServiceAddress,
       }}
     >
       {children}

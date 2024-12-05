@@ -8,6 +8,11 @@ export const abi = [
       },
       {
         "internalType": "uint256",
+        "name": "_chainId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "_intentExpirationPeriod",
         "type": "uint256"
       },
@@ -69,13 +74,38 @@ export const abi = [
       {
         "indexed": true,
         "internalType": "address",
-        "name": "depositor",
+        "name": "verifier",
         "type": "address"
       },
       {
         "indexed": true,
+        "internalType": "bytes32",
+        "name": "currency",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "conversionRate",
+        "type": "uint256"
+      }
+    ],
+    "name": "DepositCurrencyAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "depositId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
         "internalType": "address",
-        "name": "verifier",
+        "name": "depositor",
         "type": "address"
       },
       {
@@ -89,15 +119,28 @@ export const abi = [
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "conversionRate",
-        "type": "uint256"
       }
     ],
     "name": "DepositReceived",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "depositId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "verifier",
+        "type": "address"
+      }
+    ],
+    "name": "DepositVerifierAdded",
     "type": "event"
   },
   {
@@ -250,6 +293,12 @@ export const abi = [
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "fiatCurrency",
+        "type": "bytes32"
       },
       {
         "indexed": false,
@@ -413,14 +462,9 @@ export const abi = [
         "internalType": "address",
         "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
-    "name": "accountIntents",
+    "name": "accountIntent",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -463,6 +507,19 @@ export const abi = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "chainId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "contract IERC20",
@@ -487,7 +544,7 @@ export const abi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct Escrow.Range",
+        "internalType": "struct IEscrow.Range",
         "name": "_intentAmountRange",
         "type": "tuple"
       },
@@ -504,11 +561,6 @@ export const abi = [
             "type": "address"
           },
           {
-            "internalType": "uint256",
-            "name": "conversionRate",
-            "type": "uint256"
-          },
-          {
             "internalType": "bytes32",
             "name": "payeeDetailsHash",
             "type": "bytes32"
@@ -519,9 +571,26 @@ export const abi = [
             "type": "bytes"
           }
         ],
-        "internalType": "struct Escrow.PaymentVerificationData[]",
-        "name": "_verificationData",
+        "internalType": "struct IEscrow.DepositVerifierData[]",
+        "name": "_verifierData",
         "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "code",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "conversionRate",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IEscrow.Currency[][]",
+        "name": "_currencies",
+        "type": "tuple[][]"
       }
     ],
     "name": "createDeposit",
@@ -553,6 +622,64 @@ export const abi = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositCurrencies",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "depositCurrencyConversionRate",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "name": "depositVerifierData",
@@ -563,11 +690,6 @@ export const abi = [
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "conversionRate",
-        "type": "uint256"
-      },
-      {
         "internalType": "bytes32",
         "name": "payeeDetailsHash",
         "type": "bytes32"
@@ -576,6 +698,30 @@ export const abi = [
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositVerifiers",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -619,7 +765,7 @@ export const abi = [
             "type": "uint256"
           }
         ],
-        "internalType": "struct Escrow.Range",
+        "internalType": "struct IEscrow.Range",
         "name": "intentAmountRange",
         "type": "tuple"
       },
@@ -707,14 +853,9 @@ export const abi = [
                     "type": "uint256"
                   }
                 ],
-                "internalType": "struct Escrow.Range",
+                "internalType": "struct IEscrow.Range",
                 "name": "intentAmountRange",
                 "type": "tuple"
-              },
-              {
-                "internalType": "address[]",
-                "name": "verifiers",
-                "type": "address[]"
               },
               {
                 "internalType": "bool",
@@ -737,7 +878,7 @@ export const abi = [
                 "type": "bytes32[]"
               }
             ],
-            "internalType": "struct Escrow.Deposit",
+            "internalType": "struct IEscrow.Deposit",
             "name": "deposit",
             "type": "tuple"
           },
@@ -761,11 +902,6 @@ export const abi = [
                     "type": "address"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "conversionRate",
-                    "type": "uint256"
-                  },
-                  {
                     "internalType": "bytes32",
                     "name": "payeeDetailsHash",
                     "type": "bytes32"
@@ -776,17 +912,34 @@ export const abi = [
                     "type": "bytes"
                   }
                 ],
-                "internalType": "struct Escrow.PaymentVerificationData",
+                "internalType": "struct IEscrow.DepositVerifierData",
                 "name": "verificationData",
                 "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "code",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "conversionRate",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct IEscrow.Currency[]",
+                "name": "currencies",
+                "type": "tuple[]"
               }
             ],
-            "internalType": "struct Escrow.VerifierDataView[]",
+            "internalType": "struct IEscrow.VerifierDataView[]",
             "name": "verifiers",
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct Escrow.DepositView[]",
+        "internalType": "struct IEscrow.DepositView[]",
         "name": "depositArray",
         "type": "tuple[]"
       }
@@ -802,7 +955,7 @@ export const abi = [
         "type": "address"
       }
     ],
-    "name": "getAccountIntents",
+    "name": "getAccountIntent",
     "outputs": [
       {
         "components": [
@@ -842,16 +995,148 @@ export const abi = [
                 "internalType": "address",
                 "name": "paymentVerifier",
                 "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "fiatCurrency",
+                "type": "bytes32"
               }
             ],
-            "internalType": "struct Escrow.Intent",
+            "internalType": "struct IEscrow.Intent",
             "name": "intent",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "depositId",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "depositor",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "contract IERC20",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "uint256",
+                        "name": "min",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "max",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Range",
+                    "name": "intentAmountRange",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "acceptingIntents",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "remainingDeposits",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "outstandingIntentAmount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bytes32[]",
+                    "name": "intentHashes",
+                    "type": "bytes32[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.Deposit",
+                "name": "deposit",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "availableLiquidity",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "verifier",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "intentGatingService",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "bytes32",
+                        "name": "payeeDetailsHash",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.DepositVerifierData",
+                    "name": "verificationData",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "bytes32",
+                        "name": "code",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "conversionRate",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Currency[]",
+                    "name": "currencies",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.VerifierDataView[]",
+                "name": "verifiers",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct IEscrow.DepositView",
+            "name": "deposit",
             "type": "tuple"
           }
         ],
-        "internalType": "struct Escrow.IntentView[]",
-        "name": "intentsArray",
-        "type": "tuple[]"
+        "internalType": "struct IEscrow.IntentView",
+        "name": "intentView",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -904,14 +1189,9 @@ export const abi = [
                     "type": "uint256"
                   }
                 ],
-                "internalType": "struct Escrow.Range",
+                "internalType": "struct IEscrow.Range",
                 "name": "intentAmountRange",
                 "type": "tuple"
-              },
-              {
-                "internalType": "address[]",
-                "name": "verifiers",
-                "type": "address[]"
               },
               {
                 "internalType": "bool",
@@ -934,7 +1214,7 @@ export const abi = [
                 "type": "bytes32[]"
               }
             ],
-            "internalType": "struct Escrow.Deposit",
+            "internalType": "struct IEscrow.Deposit",
             "name": "deposit",
             "type": "tuple"
           },
@@ -958,11 +1238,6 @@ export const abi = [
                     "type": "address"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "conversionRate",
-                    "type": "uint256"
-                  },
-                  {
                     "internalType": "bytes32",
                     "name": "payeeDetailsHash",
                     "type": "bytes32"
@@ -973,17 +1248,34 @@ export const abi = [
                     "type": "bytes"
                   }
                 ],
-                "internalType": "struct Escrow.PaymentVerificationData",
+                "internalType": "struct IEscrow.DepositVerifierData",
                 "name": "verificationData",
                 "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "code",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "conversionRate",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct IEscrow.Currency[]",
+                "name": "currencies",
+                "type": "tuple[]"
               }
             ],
-            "internalType": "struct Escrow.VerifierDataView[]",
+            "internalType": "struct IEscrow.VerifierDataView[]",
             "name": "verifiers",
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct Escrow.DepositView",
+        "internalType": "struct IEscrow.DepositView",
         "name": "depositView",
         "type": "tuple"
       }
@@ -1038,14 +1330,9 @@ export const abi = [
                     "type": "uint256"
                   }
                 ],
-                "internalType": "struct Escrow.Range",
+                "internalType": "struct IEscrow.Range",
                 "name": "intentAmountRange",
                 "type": "tuple"
-              },
-              {
-                "internalType": "address[]",
-                "name": "verifiers",
-                "type": "address[]"
               },
               {
                 "internalType": "bool",
@@ -1068,7 +1355,7 @@ export const abi = [
                 "type": "bytes32[]"
               }
             ],
-            "internalType": "struct Escrow.Deposit",
+            "internalType": "struct IEscrow.Deposit",
             "name": "deposit",
             "type": "tuple"
           },
@@ -1092,11 +1379,6 @@ export const abi = [
                     "type": "address"
                   },
                   {
-                    "internalType": "uint256",
-                    "name": "conversionRate",
-                    "type": "uint256"
-                  },
-                  {
                     "internalType": "bytes32",
                     "name": "payeeDetailsHash",
                     "type": "bytes32"
@@ -1107,17 +1389,34 @@ export const abi = [
                     "type": "bytes"
                   }
                 ],
-                "internalType": "struct Escrow.PaymentVerificationData",
+                "internalType": "struct IEscrow.DepositVerifierData",
                 "name": "verificationData",
                 "type": "tuple"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "bytes32",
+                    "name": "code",
+                    "type": "bytes32"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "conversionRate",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct IEscrow.Currency[]",
+                "name": "currencies",
+                "type": "tuple[]"
               }
             ],
-            "internalType": "struct Escrow.VerifierDataView[]",
+            "internalType": "struct IEscrow.VerifierDataView[]",
             "name": "verifiers",
             "type": "tuple[]"
           }
         ],
-        "internalType": "struct Escrow.DepositView[]",
+        "internalType": "struct IEscrow.DepositView[]",
         "name": "depositArray",
         "type": "tuple[]"
       }
@@ -1128,12 +1427,12 @@ export const abi = [
   {
     "inputs": [
       {
-        "internalType": "bytes32[]",
-        "name": "_intentHashes",
-        "type": "bytes32[]"
+        "internalType": "bytes32",
+        "name": "_intentHash",
+        "type": "bytes32"
       }
     ],
-    "name": "getIntentsWithIntentHash",
+    "name": "getIntent",
     "outputs": [
       {
         "components": [
@@ -1173,16 +1472,367 @@ export const abi = [
                 "internalType": "address",
                 "name": "paymentVerifier",
                 "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "fiatCurrency",
+                "type": "bytes32"
               }
             ],
-            "internalType": "struct Escrow.Intent",
+            "internalType": "struct IEscrow.Intent",
             "name": "intent",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "depositId",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "depositor",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "contract IERC20",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "uint256",
+                        "name": "min",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "max",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Range",
+                    "name": "intentAmountRange",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "acceptingIntents",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "remainingDeposits",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "outstandingIntentAmount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bytes32[]",
+                    "name": "intentHashes",
+                    "type": "bytes32[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.Deposit",
+                "name": "deposit",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "availableLiquidity",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "verifier",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "intentGatingService",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "bytes32",
+                        "name": "payeeDetailsHash",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.DepositVerifierData",
+                    "name": "verificationData",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "bytes32",
+                        "name": "code",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "conversionRate",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Currency[]",
+                    "name": "currencies",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.VerifierDataView[]",
+                "name": "verifiers",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct IEscrow.DepositView",
+            "name": "deposit",
             "type": "tuple"
           }
         ],
-        "internalType": "struct Escrow.IntentView[]",
+        "internalType": "struct IEscrow.IntentView",
+        "name": "intentView",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "_intentHashes",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "getIntents",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "intentHash",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "depositId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "paymentVerifier",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "fiatCurrency",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct IEscrow.Intent",
+            "name": "intent",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "depositId",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "depositor",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "contract IERC20",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "uint256",
+                        "name": "min",
+                        "type": "uint256"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "max",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Range",
+                    "name": "intentAmountRange",
+                    "type": "tuple"
+                  },
+                  {
+                    "internalType": "bool",
+                    "name": "acceptingIntents",
+                    "type": "bool"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "remainingDeposits",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "outstandingIntentAmount",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "bytes32[]",
+                    "name": "intentHashes",
+                    "type": "bytes32[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.Deposit",
+                "name": "deposit",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "availableLiquidity",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "verifier",
+                    "type": "address"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "address",
+                        "name": "intentGatingService",
+                        "type": "address"
+                      },
+                      {
+                        "internalType": "bytes32",
+                        "name": "payeeDetailsHash",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "bytes",
+                        "name": "data",
+                        "type": "bytes"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.DepositVerifierData",
+                    "name": "verificationData",
+                    "type": "tuple"
+                  },
+                  {
+                    "components": [
+                      {
+                        "internalType": "bytes32",
+                        "name": "code",
+                        "type": "bytes32"
+                      },
+                      {
+                        "internalType": "uint256",
+                        "name": "conversionRate",
+                        "type": "uint256"
+                      }
+                    ],
+                    "internalType": "struct IEscrow.Currency[]",
+                    "name": "currencies",
+                    "type": "tuple[]"
+                  }
+                ],
+                "internalType": "struct IEscrow.VerifierDataView[]",
+                "name": "verifiers",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct IEscrow.DepositView",
+            "name": "deposit",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IEscrow.IntentView[]",
         "name": "intentArray",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_depositId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPrunableIntents",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "prunableIntents",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reclaimedAmount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -1240,6 +1890,11 @@ export const abi = [
         "internalType": "address",
         "name": "paymentVerifier",
         "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "fiatCurrency",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -1370,6 +2025,11 @@ export const abi = [
         "internalType": "address",
         "name": "_verifier",
         "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_fiatCurrency",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",

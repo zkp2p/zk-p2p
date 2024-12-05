@@ -12,14 +12,19 @@ export const abi = [
         "type": "address"
       },
       {
-        "internalType": "string[]",
-        "name": "_providerHashes",
-        "type": "string[]"
-      },
-      {
         "internalType": "uint256",
         "name": "_timestampBuffer",
         "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_currencies",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "_providerHashes",
+        "type": "string[]"
       }
     ],
     "stateMutability": "nonpayable",
@@ -30,12 +35,25 @@ export const abi = [
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "maxIntentTakeAmount",
-        "type": "uint256"
+        "internalType": "bytes32",
+        "name": "currencyCode",
+        "type": "bytes32"
       }
     ],
-    "name": "MaxIntentTakeAmountSet",
+    "name": "CurrencyAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "currencyCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "CurrencyRemoved",
     "type": "event"
   },
   {
@@ -84,6 +102,32 @@ export const abi = [
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "timestampBuffer",
+        "type": "uint256"
+      }
+    ],
+    "name": "TimestampBufferSet",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_currencyCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "addCurrency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "string",
@@ -104,6 +148,19 @@ export const abi = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCurrencies",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
       }
     ],
     "stateMutability": "view",
@@ -139,6 +196,25 @@ export const abi = [
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "isCurrency",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -203,6 +279,19 @@ export const abi = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_currencyCode",
+        "type": "bytes32"
+      }
+    ],
+    "name": "removeCurrency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -287,14 +376,19 @@ export const abi = [
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "_conversionRate",
-        "type": "uint256"
-      },
-      {
         "internalType": "bytes32",
         "name": "_payeeDetailsHash",
         "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_conversionRate",
+        "type": "uint256"
       },
       {
         "internalType": "bytes",

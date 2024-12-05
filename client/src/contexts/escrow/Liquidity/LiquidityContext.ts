@@ -14,7 +14,12 @@ import {
 interface LiquidityValues {
   deposits: DepositView[] | null;
   depositStore: StoredDeposit[] | null;
-  getBestDepositForAmount: ((requestedOnRampInputAmount: string, requestedPaymentVerifier: string, userAddress: string) => IndicativeQuote) | null;
+  getBestDepositForAmount: ((
+    requestedOnRampInputAmount: string,
+    requestedPaymentVerifier: string,
+    userAddress: string,
+    requestedSendCurrency: string
+  ) => Promise<IndicativeQuote>) | null;
   // getDepositForMaxAvailableTransferSize: ((requestedPaymentVerifier: string) => IndicativeQuote) | null;
   refetchDeposits: (() => void) | null;
   shouldFetchDeposits: boolean;

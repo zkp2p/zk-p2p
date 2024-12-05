@@ -76,17 +76,17 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('revolut_shouldFetchDeposits_1');
+    esl && console.log('escrow_shouldFetchDeposits_1');
     esl && console.log('checking isLoggedIn: ', isLoggedIn);
     esl && console.log('checking loggedInEthereumAddress: ', loggedInEthereumAddress);
     esl && console.log('checking escrowAddress: ', escrowAddress);
 
     if (isLoggedIn && loggedInEthereumAddress && escrowAddress) {
-      esl && console.log('revolut_shouldFetchDeposits_2');
+      esl && console.log('escrow_shouldFetchDeposits_2');
 
       setShouldFetchDeposits(true);
     } else {
-      esl && console.log('revolut_shouldFetchDeposits_3');
+      esl && console.log('escrow_shouldFetchDeposits_3');
 
       setShouldFetchDeposits(false);
 
@@ -96,15 +96,15 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [isLoggedIn, loggedInEthereumAddress, escrowAddress]);
 
   useEffect(() => {
-    esl && console.log('revolut_shouldFetchDepositIntents_1');
+    esl && console.log('escrow_shouldFetchDepositIntents_1');
     esl && console.log('checking uniqueIntentHashes: ', uniqueIntentHashes);
 
     if (uniqueIntentHashes.length > 0) {
-      esl && console.log('revolut_shouldFetchDepositIntents_2');
+      esl && console.log('escrow_shouldFetchDepositIntents_2');
 
       setShouldFetchDepositIntents(true);
     } else {
-      esl && console.log('revolut_shouldFetchDepositIntents_3');
+      esl && console.log('escrow_shouldFetchDepositIntents_3');
 
       setShouldFetchDepositIntents(false);
 
@@ -176,7 +176,7 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
       }
       setIntentIndexDepositMap(intentIndexDepositMap);
     } else {
-      esl && console.log('revolut_depositsRaw_3');
+      esl && console.log('escrow_depositsRaw_3');
 
       setDeposits(null);
       setUniqueIntentHashes([]);
@@ -184,11 +184,11 @@ const DepositsProvider = ({ children }: ProvidersProps) => {
   }, [depositsRaw]);
 
   useEffect(() => {
-    esl && console.log('revolut_depositsIntentsRaw_1');
+    esl && console.log('escrow_depositsIntentsRaw_1');
     esl && console.log('checking depositIntentsRaw: ', depositIntentsRaw);
 
     if (depositIntentsRaw && depositIntentsRaw.length > 0) {
-      esl && console.log('revolut_depositsIntentsRaw_2');
+      esl && console.log('escrow_depositsIntentsRaw_2');
 
       const depositIntentsArray = depositIntentsRaw as any[];
 

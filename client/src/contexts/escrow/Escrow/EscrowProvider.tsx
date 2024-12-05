@@ -46,15 +46,15 @@ const EscrowProvider = ({ children }: ProvidersProps) => {
    */
 
   useEffect(() => {
-    esl && console.log('garanti_shouldFetchEscrowState_1');
+    esl && console.log('escrow_shouldFetchEscrowState_1');
     esl && console.log('checking escrowAddress: ', escrowAddress);
 
     if (escrowAddress) {
-      esl && console.log('garanti_shouldFetchEscrowState_2');
+      esl && console.log('escrow_shouldFetchEscrowState_2');
 
       setShouldFetchEscrowState(true);
     } else {
-      esl && console.log('garanti_shouldFetchEscrowState_3');
+      esl && console.log('escrow_shouldFetchEscrowState_3');
 
       setShouldFetchEscrowState(false);
       setDepositCounter(null);
@@ -62,15 +62,15 @@ const EscrowProvider = ({ children }: ProvidersProps) => {
   }, [escrowAddress]);
 
   useEffect(() => {
-    esl && console.log('garanti_depositCounterRaw_1');
+    esl && console.log('escrow_depositCounterRaw_1');
     esl && console.log('checking depositCounterRaw: ', depositCounterRaw);
   
     if (depositCounterRaw || depositCounterRaw === ZERO) { // BigInt(0) is falsy)
-      esl && console.log('garanti_depositCounterRaw_2');
+      esl && console.log('escrow_depositCounterRaw_2');
       
       setDepositCounter(depositCounterRaw as bigint);
     } else {
-      esl && console.log('garanti_depositCounterRaw_3');
+      esl && console.log('escrow_depositCounterRaw_3');
       
       setDepositCounter(null);
     }

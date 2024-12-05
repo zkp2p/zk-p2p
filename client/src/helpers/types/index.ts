@@ -43,6 +43,9 @@ export type {
   ReceiveCurrencyIdType,
 } from './deposit';
 
+export type {
+  IndicativeQuote as IndicativeQuoteV2
+} from './escrow';
 
 export type {
   AccountInfo

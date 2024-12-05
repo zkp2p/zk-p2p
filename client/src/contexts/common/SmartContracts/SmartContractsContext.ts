@@ -49,6 +49,10 @@ interface SmartContractsValues {
   venmoReclaimVerifierAddress: string | null;
   venmoReclaimVerifierAbi: Abi | null;
 
+  // Quoter
+  quoterAddress: string | null;
+  quoterAbi: Abi | null;
+
   // nft
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
@@ -61,6 +65,9 @@ interface SmartContractsValues {
 
   // Lifi
   lifiBridgeAddress: string | null;
+
+  // Gating Service
+  gatingServiceAddress: string | null;
 }
 
 const defaultValues: SmartContractsValues = {
@@ -108,6 +115,10 @@ const defaultValues: SmartContractsValues = {
   venmoReclaimVerifierAddress: null,
   venmoReclaimVerifierAbi: null,
 
+  // Quoter
+  quoterAddress: null,
+  quoterAbi: null,
+
   // nft
   nftAbi: null,
   venmoNftAddress: null,
@@ -120,6 +131,9 @@ const defaultValues: SmartContractsValues = {
 
   // Lifi
   lifiBridgeAddress: null,
+
+  // Gating Service
+  gatingServiceAddress: null,
 };
 
 const SmartContractsContext = createContext<SmartContractsValues>(defaultValues)
