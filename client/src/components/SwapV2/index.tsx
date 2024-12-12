@@ -169,7 +169,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
     onError: (error: { message: any }) => {
       console.error(error.message);
     },
-    enabled: shouldConfigureSignalIntentWrite && Boolean(escrowAddress) && Array.isArray(JSON.parse(JSON.stringify(escrowAbi || "[]")))
+    enabled: shouldConfigureSignalIntentWrite && Boolean(escrowAddress) && Boolean(verifierAddress) && Boolean(gatingServiceSignature) && Array.isArray(JSON.parse(JSON.stringify(escrowAbi || "[]")))
   });
 
   const {
@@ -493,7 +493,7 @@ const SwapForm: React.FC<SwapFormProps> = ({
                     }
                   });
                   console.log("result: ", result);
-                  setGatingServiceSignature(result.responseObject.gatingServiceSignature);
+                  setGatingServiceSignature(result.responseObject.signedIntent);
                   setShouldConfigureSignalIntentWrite(true);
                   await writeSubmitIntentAsync?.();
                 } catch (error) {
