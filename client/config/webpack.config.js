@@ -672,6 +672,7 @@ module.exports = function (webpackEnv) {
         'process.env.GARANTI_DENY_LIST_URL': JSON.stringify(process.env.GARANTI_DENY_LIST_URL),
         'process.env.USE_GARANTI': JSON.stringify(process.env.USE_GARANTI),
 
+        'process.env.CURATOR_API_URL': JSON.stringify(process.env.CURATOR_API_URL),
         'process.env.REMOTE_NOTARY_VERIFICATION_URL': JSON.stringify(process.env.REMOTE_NOTARY_VERIFICATION_URL),
         'process.env.NOTARY_VERIFICATION_SIGNING_KEY': JSON.stringify(process.env.NOTARY_VERIFICATION_SIGNING_KEY),
         'process.env.NOTARY_PUBKEY': JSON.stringify(process.env.NOTARY_PUBKEY),

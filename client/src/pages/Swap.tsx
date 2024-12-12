@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 
-import SwapForm from "@components/Swap";
+import SwapForm from "@components/SwapV2";
 import { OnRamp as VenmoOnRamp } from '@components/Swap/venmo/OnRamp';
 import { OnRamp as HdfcOnRamp } from '@components/Swap/hdfc/OnRamp';
 import { OnRamp as GarantiOnRamp } from '@components/Swap/garanti/OnRamp';

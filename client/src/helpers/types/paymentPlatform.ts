@@ -35,7 +35,7 @@ export const CurrencyIndex = {
 
 function getPaymentPlatforms(): string[] {
   let platforms = [
-    // PaymentPlatform.VENMO, // Disable Venmo
+    PaymentPlatform.VENMO,
     // PaymentPlatform.HDFC,
     PaymentPlatform.GARANTI,
     PaymentPlatform.REVOLUT

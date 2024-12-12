@@ -49,10 +49,6 @@ interface SmartContractsValues {
   venmoReclaimVerifierAddress: string | null;
   venmoReclaimVerifierAbi: Abi | null;
 
-  // Quoter
-  quoterAddress: string | null;
-  quoterAbi: Abi | null;
-
   // nft
   nftAbi: Abi | null;
   venmoNftAddress: string | null;
@@ -114,10 +110,6 @@ const defaultValues: SmartContractsValues = {
   // Venmo Reclaim Verifier
   venmoReclaimVerifierAddress: null,
   venmoReclaimVerifierAbi: null,
-
-  // Quoter
-  quoterAddress: null,
-  quoterAbi: null,
 
   // nft
   nftAbi: null,

@@ -19,7 +19,6 @@ import { abi as revolutAccountRegistryAbi } from "@helpers/abi/revolut/accountRe
 
 import { abi as escrowAbi } from "@helpers/abi/escrow.abi";
 import { abi as venmoReclaimVerifierAbi } from "@helpers/abi/venmoReclaimVerifier.abi";
-import { abi as quoterAbi } from "@helpers/abi/quoter.abi";
 
 import { contractAddresses, blockExplorerUrls } from "@helpers/deployed_addresses";
 import { esl, DEFAULT_NETWORK } from '@helpers/constants';
@@ -74,9 +73,6 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
   // Venmo Reclaim Verifier
   const [venmoReclaimVerifierAddress, setVenmoReclaimVerifierAddress] = useState<string | null>(null);
-
-  // Quoter
-  const [quoterAddress, setQuoterAddress] = useState<string | null>(null);
 
   // NFT
   const [venmoNftAddress, setVenmoNftAddress] = useState<string | null>(null);
@@ -182,9 +178,6 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
     // Venmo Reclaim Verifier
     setVenmoReclaimVerifierAddress(null);
 
-    // Quoter
-    setQuoterAddress(null);
-
     // NFT
     setVenmoNftAddress(null);
     setHdfcNftAddress(null);
@@ -236,9 +229,6 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
 
     // Venmo Reclaim Verifier
     setVenmoReclaimVerifierAddress(contractsForNetwork.venmoReclaimVerifier);
-
-    // Quoter
-    setQuoterAddress(contractsForNetwork.quoter);
 
     // NFT
     setVenmoNftAddress(contractsForNetwork.venmoNft);
@@ -303,10 +293,6 @@ const SmartContractsProvider = ({ children }: ProvidersProps) => {
         // Venmo Reclaim Verifier
         venmoReclaimVerifierAddress,
         venmoReclaimVerifierAbi: venmoReclaimVerifierAbi as Abi,
-
-        // Quoter
-        quoterAddress,
-        quoterAbi: quoterAbi as Abi,
 
         // NFT
         nftAbi: nftAbi as Abi,

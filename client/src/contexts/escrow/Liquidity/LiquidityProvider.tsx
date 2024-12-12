@@ -1,5 +1,4 @@
-import React, {
-  useCallback,
+import {
   useEffect,
   useRef,
   useState,
@@ -9,19 +8,13 @@ import { readContract } from '@wagmi/core';
 
 import {
   Abi,
-  PaymentPlatform,
 } from '@helpers/types';
 import {
-  Range,
   Deposit,
-  IndicativeQuote,
   DepositView,
   StoredDeposit
 } from '@helpers/types/escrow';
 import {
-  calculateUsdFromRequestedUSDC,
-  fetchDepositForMaxAvailableTransferSize,
-  fetchBestDepositForAmount,
   createDepositsStore
  } from './helper';
 import { esl, CALLER_ACCOUNT, ZERO } from '@helpers/constants';
@@ -43,7 +36,7 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
    * Contexts
    */
 
-  const { escrowAddress, escrowAbi, quoterAddress, quoterAbi, gatingServiceAddress, usdcAddress } = useSmartContracts();
+  const { escrowAddress, escrowAbi } = useSmartContracts();
   const { depositCounter } = useEscrowState();
 
   /*
@@ -168,49 +161,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     return sanitizedDeposits;
   };
 
-  const fetchQuoteMinFiatInputForExactTokenOutput = async (
-    depositIdBatch: bigint[],
-    requestedPaymentVerifier: string,
-    requestedOnRampInputAmount: string,
-    requestedSendCurrency: string
-  ) => {
-    try {
-      /*
-        function quoteMinFiatInputForExactTokenOutput(
-          uint256[] calldata _depositIds,
-          address _paymentVerifier,
-          address _gatingService,
-          address _receiveToken,
-          bytes32 _sendCurrency,
-          uint256 _exactTokenAmount   
-        )
-          external
-          view
-          returns (IEscrow.DepositView memory bestDeposit, uint256 minFiatAmount)
-      */
-      const data = await readContract({
-        address: quoterAddress as `0x${string}`,
-        abi: quoterAbi as Abi,
-        functionName: 'quoteMinFiatInputForExactTokenOutput',
-        args: [
-          depositIdBatch,
-          requestedPaymentVerifier,
-          gatingServiceAddress,
-          usdcAddress, // Enable any token in the future
-          requestedSendCurrency,
-          requestedOnRampInputAmount
-        ],
-        account: CALLER_ACCOUNT,
-      });
-
-      return data as [DepositView, bigint]
-    } catch (error) {
-      console.error('Error fetching deposits batch:', error);
-      
-      return [];
-    }
-  };
-
   /*
    * Hooks
    */
@@ -271,49 +221,6 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
     setFetchDepositsTrigger(prev => prev + 1);
   };
 
-  const getBestDepositForAmount = useCallback(async (
-    requestedOnRampInputAmount: string,
-    requestedPaymentVerifier: string,
-    userAddress: string,
-    requestedSendCurrency: string
-  ): Promise<IndicativeQuote> => {
-    if (depositStore) {
-      // Filter user deposits
-      const depositIds = depositStore
-        .filter(deposit => deposit.deposit.depositor !== userAddress)
-        .map(deposit => deposit.depositId);
-      const [bestDeposit, minFiatAmount] = await fetchQuoteMinFiatInputForExactTokenOutput(
-        depositIds,
-        requestedPaymentVerifier,
-        requestedSendCurrency,
-        requestedOnRampInputAmount
-      );
-      return {
-        depositId: bestDeposit.depositId,
-        minFiatAmount,
-      } as IndicativeQuote;
-    } else {
-      return {
-        error: 'No deposits available'
-      } as IndicativeQuote;
-    }
-  }, [depositStore]);
-
-  // const getDepositForMaxAvailableTransferSize = useCallback((maximumOnRampAmount: bigint, paymentVerifier: string, userAddress: string): IndicativeQuote => {
-  //   if (depositStore && maximumOnRampAmount) {
-  //     return fetchDepositForMaxAvailableTransferSize(
-  //       maximumOnRampAmount,
-  //       paymentVerifier,
-  //       userAddress,
-  //       depositStore
-  //     );
-  //   } else {
-  //     return {
-  //       error: 'No deposits available'
-  //     } as IndicativeQuote;
-  //   }
-  // }, [depositStore, maximumOnRampAmount]);
-
   /*
    * Helpers
    */
@@ -339,11 +246,8 @@ const LiquidityProvider = ({ children }: ProvidersProps) => {
       value={{
         deposits,
         depositStore,
-        getBestDepositForAmount,
-        // getDepositForMaxAvailableTransferSize,
         refetchDeposits,
         shouldFetchDeposits,
-        calculateUsdFromRequestedUSDC
       }}
     >
       {children}

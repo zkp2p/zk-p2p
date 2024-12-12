@@ -101,8 +101,7 @@ export const contractAddresses: Contracts = {
     'socketBridge': '',
     'lifiBridge': '',
     'escrow': '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
-    'quoter': '0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6',
-    'venmoReclaimVerifier': '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    'venmoReclaimVerifier': '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853',
     'gatingService': '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', // Hardhat 0
   },
 };
