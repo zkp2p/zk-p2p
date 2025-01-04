@@ -172,7 +172,7 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
     }
 
     /**
-     * @notice Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be
+     * @notice Removes a passed accountId's from allow list. If allow list is enabled only users on the allow list will be
      * able to signal intents on the user's deposit.
      *
      * @param _disallowedUsers   List of accountIds being approved
