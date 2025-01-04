@@ -243,7 +243,7 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
     /* ============ Internal Functions ============ */
 
     /**
-     * @notice Validate the user has an Revolut account. We nullify this accountId along with the calling address so that
+     * @notice Validate the user has a Revolut account. We nullify this accountId along with the calling address so that
      * it can't be used again.
      */
     function _verifyRegistrationProof(
