@@ -162,7 +162,7 @@ library ClaimVerifier {
             }
             index += providerHashParamBytes.length;
             
-            // final indices tuple in valueIndices will be for star and end indices of provider hash
+            // final indices tuple in valueIndices will be for start and end indices of provider hash
             valueIndices[2 * valuesFound] = index;
             // Keep incrementing until '"'
             while (
