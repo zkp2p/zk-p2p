@@ -110,6 +110,10 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // Packed buyer id (Hashed before making public output)
     signal input namecheapBuyerIdIndex;
+
+    // Assert the bit-length of namecheapBuyerIdIndex
+    component namecheapBuyerIdIndexBits = Num2Bits(log2Ceil(maxBodyLength));
+    namecheapBuyerIdIndexBits.in <== namecheapBuyerIdIndex;
     
     // Assert namecheapBuyerIdIndex < emailBodyLength
     signal namecheapBuyerIdIndexValid <== LessThan(log2Ceil(maxBodyLength))([namecheapBuyerIdIndex, emailBodyLength]);
@@ -119,6 +123,10 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
 
     // Output packed domain name
     signal input namecheapDomainNameIndex;
+
+    // Assert the bit-length of namecheapDomainNameIndex
+    component namecheapDomainNameIndexBits = Num2Bits(log2Ceil(maxBodyLength));
+    namecheapDomainNameIndexBits.in <== namecheapDomainNameIndex;
     
     // Assert namecheapDomainNameIndex < emailBodyLength
     signal namecheapDomainNameIndexValid <== LessThan(log2Ceil(maxBodyLength))([namecheapDomainNameIndex, emailBodyLength]);
