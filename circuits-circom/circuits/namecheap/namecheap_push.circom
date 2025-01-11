@@ -1,5 +1,6 @@
 pragma circom 2.1.9;
 
+include "../node_modules/circomlib/circuits/bitify.circom";
 include "circomlib/circuits/poseidon.circom";
 include "@zk-email/circuits/utils/regex.circom";
 include "@zk-email/circuits/helpers/email-nullifier.circom";
@@ -97,6 +98,10 @@ template NamecheapPushDomainVerifier(maxHeadersLength, maxBodyLength, n, k) {
     // Output packed email from
     signal input fromEmailIndex;
     
+    // Assert the bit-length of fromEmailIndex
+    component fromEmailIndexBits = Num2Bits(log2Ceil(maxHeadersLength));
+    fromEmailIndexBits.in <== fromEmailIndex;
+
     // Assert fromEmailIndex < emailHeaderLength
     signal isFromIndexValid <== LessThan(log2Ceil(maxHeadersLength))([fromEmailIndex, emailHeaderLength]);
     isFromIndexValid === 1;
