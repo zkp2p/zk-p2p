@@ -46,6 +46,14 @@ template GarantiRegistrationEmail(max_header_bytes, max_body_bytes, n, k, pack_s
     // Assert padding is all zeroes
     AssertZeroes(max_body_bytes)(in_body_padded, in_body_len_padded_bytes + 1);
 
+    // Checking the range of the body length.
+    // This check is crucial for the soundness of Sha256BytesPartial.
+    // For details, see:
+    // https://github.com/zkemail/zk-email-verify/blob/b193cf0c760456b837b2bbcf7b2c72d5bb3f43c3/packages/circuits/lib/sha.circom#L44  
+    var bodyLenBits = ceil_log2(max_body_bytes * 8);
+    component bodyLenCheck = Num2Bits(bodyLenBits);
+    bodyLenCheck.in <== in_body_len_padded_bytes * 8; 
+
     // This hashes the body after the precomputed SHA, and outputs the intermediate hash
     signal intermediate_hash_bits[256] <== Sha256BytesPartial(max_body_bytes)(in_body_padded, in_body_len_padded_bytes, precomputed_sha);
     signal intermediate_hash_bytes[32];
