@@ -17,6 +17,14 @@ template BodySuffixHasher(max_body_suffix_bytes) {
     
     //-------Hash Body Suffix----------//
 
+    // Checking the range of body-suffix length.
+    // This check is crucial for the soundness of Sha256BytesPartial.
+    // For details, see:
+    // https://github.com/zkemail/zk-email-verify/blob/b193cf0c760456b837b2bbcf7b2c72d5bb3f43c3/packages/circuits/lib/sha.circom#L44  
+    var suffixLenBits = ceil_log2(max_body_suffix_bytes * 8);
+    component suffixLenCheck = Num2Bits(suffixLenBits);
+    suffixLenCheck.in <== in_body_suffix_len_padded_bytes * 8;
+
     signal body_hash_bits[256] <== Sha256BytesPartial(max_body_suffix_bytes)(in_body_suffix_padded, in_body_suffix_len_padded_bytes, intermediate_hash);
 
     component bits2Num[32];
