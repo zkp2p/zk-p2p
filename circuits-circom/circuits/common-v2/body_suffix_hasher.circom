@@ -3,6 +3,8 @@ pragma circom 2.1.5;
 include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/extract.circom";
 
+include "circomlib/circuits/bitify.circom"; // needed for Num2Bits
+
 template BodySuffixHasher(max_body_suffix_bytes) {
     assert(max_body_suffix_bytes % 64 == 0);
 

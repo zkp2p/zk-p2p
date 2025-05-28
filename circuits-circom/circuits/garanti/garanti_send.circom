@@ -15,6 +15,8 @@ include "./regexes/garanti_payer_details.circom";
 include "./regexes/garanti_payment_details.circom";
 include "./regexes/garanti_timestamp.circom";
 
+include "circomlib/circuits/bitify.circom"; // needed for Num2Bits
+
 
 template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     assert(n * k > 2048); // constraints for 2048 bit RSA
