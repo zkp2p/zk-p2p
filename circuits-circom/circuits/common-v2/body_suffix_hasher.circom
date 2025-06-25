@@ -3,6 +3,9 @@ pragma circom 2.1.5;
 include "@zk-email/circuits/helpers/sha.circom";
 include "@zk-email/circuits/helpers/extract.circom";
 
+include "circomlib/circuits/bitify.circom"; // needed for Num2Bits
+include "@zk-email/circuits/utils/functions.circom"; // needed for log2Ceil
+
 template BodySuffixHasher(max_body_suffix_bytes) {
     assert(max_body_suffix_bytes % 64 == 0);
 
@@ -16,6 +19,14 @@ template BodySuffixHasher(max_body_suffix_bytes) {
     signal input in_body_suffix_len_padded_bytes;
     
     //-------Hash Body Suffix----------//
+
+    // Checking the range of body-suffix length.
+    // This check is crucial for the soundness of Sha256BytesPartial.
+    // For details, see:
+    // https://github.com/zkemail/zk-email-verify/blob/b193cf0c760456b837b2bbcf7b2c72d5bb3f43c3/packages/circuits/lib/sha.circom#L44  
+    var suffixLenBits = log2Ceil(max_body_suffix_bytes * 8);
+    component suffixLenCheck = Num2Bits(suffixLenBits);
+    suffixLenCheck.in <== in_body_suffix_len_padded_bytes * 8;
 
     signal body_hash_bits[256] <== Sha256BytesPartial(max_body_suffix_bytes)(in_body_suffix_padded, in_body_suffix_len_padded_bytes, intermediate_hash);
 
