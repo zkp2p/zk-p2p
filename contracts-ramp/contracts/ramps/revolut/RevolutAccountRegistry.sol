@@ -172,7 +172,7 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
     }
 
     /**
-     * @notice Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be
+     * @notice Removes a passed accountId's from allow list. If allow list is enabled only users on the allow list will be
      * able to signal intents on the user's deposit.
      *
      * @param _disallowedUsers   List of accountIds being approved
@@ -243,7 +243,7 @@ contract RevolutAccountRegistry is IRevolutAccountRegistry, Ownable {
     /* ============ Internal Functions ============ */
 
     /**
-     * @notice Validate the user has an Revolut account. We nullify this accountId along with the calling address so that
+     * @notice Validate the user has a Revolut account. We nullify this accountId along with the calling address so that
      * it can't be used again.
      */
     function _verifyRegistrationProof(

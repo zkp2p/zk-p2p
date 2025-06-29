@@ -205,7 +205,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
     }
 
     /**
-     * @notice Removes an passed accountId's from allow list. If allow list is enabled only users on the allow list will be
+     * @notice Removes a passed accountId's from allow list. If allow list is enabled only users on the allow list will be
      * able to signal intents on the user's deposit.
      *
      * @param _disallowedUsers   List of accountIds being approved
@@ -290,7 +290,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
     /* ============ Internal Functions ============ */
 
     /**
-     * @notice Validate the user has an Wise account, we do not nullify this email since it can be reused to register under
+     * @notice Validate the user has a Wise account, we do not nullify this email since it can be reused to register under
      * different addresses.
      */
     function _verifyRegistrationProof(
@@ -306,7 +306,7 @@ contract WiseAccountRegistry is IWiseAccountRegistry, Ownable {
     }
 
     /**
-     * @notice Validate the user has an Wise account, we do not nullify this email since it can be reused to register under
+     * @notice Validate the user has a Wise account, we do not nullify this email since it can be reused to register under
      * different addresses.
      */
     function _verifyOffRamperRegistrationProof(
