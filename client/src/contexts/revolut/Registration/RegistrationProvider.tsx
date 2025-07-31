@@ -60,7 +60,7 @@ const RegistrationProvider = ({ children }: ProvidersProps) => {
   const isRegistered = !!(registrationHash && registrationHash !== ZERO_ADDRESS);
 
   /*
-   * Contract Reads (migrate to: https://wagmi.sh/react/hooks/useContractReads)
+   * Contract Reads (migrate to: https://wagmi.sh/react/api/hooks/useReadContracts)
    */
 
   // getAccountInfo(address _account) external view returns (bytes32)
