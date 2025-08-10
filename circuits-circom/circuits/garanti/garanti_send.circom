@@ -103,7 +103,7 @@ template GarantiSendEmail(max_header_bytes, max_body_bytes, n, k, pack_size) {
     var max_payee_acc_num_packed_bytes = count_packed(max_payee_acc_num_len, pack_size);
     assert(max_payee_acc_num_packed_bytes < max_body_bytes);
 
-    var max_amount_len = 8; // Length of "2.000,00"; // TODO: What is the MAX amount?
+    var max_amount_len = 9; // Max amount format: "31.000,00" TRY. Based on max USDC amount of 100 USDC * ~31 TRY/USDC exchange rate. Turkish Lira uses dot as thousands separator and comma as decimal separator.
     var max_amount_packed_bytes = count_packed(max_amount_len, pack_size);
     assert(max_amount_packed_bytes < max_body_bytes);
 
